@@ -5,6 +5,7 @@
 #include <cstring>
 #include <cctype>
 #include <list>
+#include <string>
 
 class Tokenizer {
 private:
@@ -28,7 +29,7 @@ private:
     char buffer[Tokenizer::BUFFER_SIZE];
     int index;
 
-    std::list<char *> tokens;
+    std::list<char *> *tokens;
 
     inline bool isLineCommentStart(char c) {
         return '/' == c && last == '/';
@@ -70,9 +71,7 @@ private:
     inline void pushBuffer(char c) {
         buffer[index++] = c;
         if (BUFFER_SIZE <= index) {
-            static char str[128];
-            sprintf(str, "Buffer size exceeded. Identifier or literal string must be less than %d, characters.", BUFFER_SIZE);
-            throw Exception(str);
+            throw BufferSizeExceedException();
         }
     }
 
@@ -80,20 +79,20 @@ private:
         buffer[index++] = '\0';
         char *token = (char *)malloc(index);
         memcpy(token, buffer, (index));
-        tokens.push_back(token);
+        tokens->push_back(token);
     }
 
     inline void pushToken(char c) {
         char *token = (char *)malloc(2);
         token[0] = c;
         token[1] = '\0';
-        tokens.push_back(token);
+        tokens->push_back(token);
     }
 
     inline void popToken() {
-        char *token = tokens.back();
+        char *token = tokens->back();
         free(token);
-        tokens.pop_back();
+        tokens->pop_back();
     }
 
     inline void stateChange(State state) {
@@ -110,8 +109,8 @@ private:
     }
 
 public:
-
     Tokenizer() {
+        tokens = new std::list<char *>;
         state = NONE;
         last = -1;
     }
@@ -119,15 +118,24 @@ public:
     void read(FILE *fp);
 
     std::list<char *> *getTokens() {
-        return &tokens;
+        return tokens;
     }
 
-    class Exception {
-    public:
-        const char *message;
+    static std::list<char *> *read(const char *filename);
+    static void destroyTokens(std::list<char *> *tokens);
 
-        Exception(const char *message) {
-            this->message = message;
-        }
+    class Exception : public std::domain_error {
+    public:
+        Exception(const std::string& cause)
+            : std::domain_error(cause) {}
+    };
+
+    class BufferSizeExceedException : public Exception {
+    public:
+        BufferSizeExceedException()
+            : Exception("BufferSizeExceedException: "
+                        "Identifier or literal string must be less than " +
+                        std::to_string(BUFFER_SIZE) + 
+                        " characters.") {}
     };
 };

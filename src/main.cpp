@@ -3,25 +3,21 @@
 
 int main(int argc, char **argv)
 {
-    FILE *fp;
-    fp = fopen( "./test.namidi" , "r");
+    std::list<char *> *tokens;
 
-    Tokenizer tokenizer;
     try {
-        tokenizer.read(fp);
+        tokens = Tokenizer::read("./test.namidi");
     } catch (Tokenizer::Exception &e) {
-        std::cout << e.message << std::endl;
+        std::cout << e.what() << std::endl;
         return -1;
     }
-
-    std::list<char *> *tokens = tokenizer.getTokens();
 
     for (std::list<char *>::const_iterator iterator = tokens->begin(),
             end = tokens->end(); iterator != end; ++iterator) {
         std::cout << *iterator << std::endl;
     }
 
-    fclose(fp);
+    Tokenizer::destroyTokens(tokens);
 
     return 0;
 }
