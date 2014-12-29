@@ -1,4 +1,5 @@
 #include <iostream>
+#include <queue>
 #include "tokenizer.h"
 
 int main(int argc, char **argv)
@@ -12,9 +13,11 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    for (std::list<char *>::const_iterator iterator = tokens->begin(),
-            end = tokens->end(); iterator != end; ++iterator) {
-        std::cout << *iterator << std::endl;
+    std::queue<char *> tokenQ(std::deque<char *>(tokens->begin(), tokens->end()));
+
+    while (!tokenQ.empty()) {
+        std::cout << tokenQ.front() << std::endl;
+        tokenQ.pop();
     }
 
     Tokenizer::destroyTokens(tokens);
