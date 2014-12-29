@@ -20,6 +20,7 @@ private:
     };
 
     static const int BUFFER_SIZE = 128;
+    const char *LINE_FEED = "<LF>";
 
     State state;
 
@@ -48,8 +49,7 @@ private:
     }
 
     inline bool isLineBreak(char c) {
-        return '\r' == c
-            || '\n' == c;
+        return '\r' == c || ('\n' == c && '\r' != last);
     }
 
     inline bool isOperand(char c) {
@@ -75,18 +75,24 @@ private:
         }
     }
 
-    inline void pushToken() {
-        buffer[index++] = '\0';
-        char *token = (char *)malloc(index);
-        memcpy(token, buffer, (index));
+    inline void pushToken(const char *str) {
+        pushToken(str, strlen(str));
+    }
+
+    inline void pushToken(const char *str, int length) {
+        char *token = (char *)malloc(length);
+        memcpy(token, str, length);
         tokens->push_back(token);
     }
 
+    inline void pushToken() {
+        buffer[index++] = '\0';
+        pushToken(buffer, index);
+    }
+
     inline void pushToken(char c) {
-        char *token = (char *)malloc(2);
-        token[0] = c;
-        token[1] = '\0';
-        tokens->push_back(token);
+        char token[] = {c, '\0'};
+        pushToken(token, sizeof(token));
     }
 
     inline void popToken() {

@@ -71,18 +71,15 @@ void Tokenizer::read(FILE *fp)
                 stateChange(BLOCK_COMMENT);
             }
 
-            {
-                char *last = tokens->back();
-                if (isLineBreak(c) && (NULL == last || ';' != last[0])) {
-                    pushToken(';');
-                }
-            }
-
             if ('\'' == c) {
                 stateChange(SINGLE_QUOTE_LITERAL);
             }
             else if ('"' == c) {
                 stateChange(DOUBLE_QUOTE_LITERAL);
+            }
+
+            if (isLineBreak(c)) {
+                pushToken(LINE_FEED);
             }
 
             break;
@@ -111,6 +108,10 @@ void Tokenizer::read(FILE *fp)
         case LINE_COMMENT:
             if (isLineCommentEnd(c)) {
                 stateChange(NONE);
+            }
+
+            if (isLineBreak(c)) {
+                pushToken(LINE_FEED);
             }
             break;
 
