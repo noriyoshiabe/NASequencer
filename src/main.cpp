@@ -1,26 +1,18 @@
 #include <iostream>
-#include <queue>
 #include "tokenizer.h"
 
 int main(int argc, char **argv)
 {
-    std::list<char *> *tokens;
+    Tokenizer *tokenizer = new Tokenizer();
+    std::deque<char *> *tokenQ = tokenizer->read("./test.namidi")->createTokenQ();
 
-    try {
-        tokens = Tokenizer::read("./test.namidi");
-    } catch (Tokenizer::Exception &e) {
-        std::cout << e.what() << std::endl;
-        return -1;
+    while (!tokenQ->empty()) {
+        std::cout << tokenQ->front() << std::endl;
+        tokenQ->pop_front();
     }
 
-    std::queue<char *> tokenQ(std::deque<char *>(tokens->begin(), tokens->end()));
-
-    while (!tokenQ.empty()) {
-        std::cout << tokenQ.front() << std::endl;
-        tokenQ.pop();
-    }
-
-    Tokenizer::destroyTokens(tokens);
+    delete tokenQ;
+    delete tokenizer;
 
     return 0;
 }

@@ -5,6 +5,7 @@
 #include <cstring>
 #include <cctype>
 #include <list>
+#include <deque>
 #include <string>
 
 class Tokenizer {
@@ -20,7 +21,7 @@ private:
     };
 
     static const int BUFFER_SIZE = 128;
-    const char *LINE_FEED = "<LF>";
+    const char *EOL = "<EOL>";
 
     State state;
 
@@ -30,7 +31,7 @@ private:
     char buffer[Tokenizer::BUFFER_SIZE];
     int index;
 
-    std::list<char *> *tokens;
+    std::list<char *> tokens;
 
     inline bool isLineCommentStart(char c) {
         return '/' == c && last == '/';
@@ -71,7 +72,7 @@ private:
     inline void pushBuffer(char c) {
         buffer[index++] = c;
         if (BUFFER_SIZE <= index) {
-            throw BufferSizeExceedException();
+            throw Exception("Identifier or literal string must be less than " + std::to_string(BUFFER_SIZE) + " characters.");
         }
     }
 
@@ -82,7 +83,7 @@ private:
     inline void pushToken(const char *str, int length) {
         char *token = (char *)malloc(length);
         memcpy(token, str, length);
-        tokens->push_back(token);
+        tokens.push_back(token);
     }
 
     inline void pushToken() {
@@ -96,9 +97,9 @@ private:
     }
 
     inline void popToken() {
-        char *token = tokens->back();
+        char *token = tokens.back();
         free(token);
-        tokens->pop_back();
+        tokens.pop_back();
     }
 
     inline void stateChange(State state) {
@@ -116,32 +117,30 @@ private:
 
 public:
     Tokenizer() {
-        tokens = new std::list<char *>;
         state = NONE;
         last = -1;
     }
 
-    void read(FILE *fp);
-
-    std::list<char *> *getTokens() {
-        return tokens;
+    ~Tokenizer() {
+        clearTokens();
     }
 
-    static std::list<char *> *read(const char *filename);
-    static void destroyTokens(std::list<char *> *tokens);
+    Tokenizer *read(const char *filename);
+
+    std::deque<char *> *createTokenQ() {
+        return new std::deque<char *>(tokens.begin(), tokens.end());
+    }
+
+    Tokenizer *clearTokens() {
+        for (std::list<char *>::const_iterator iterator = tokens.begin(),
+                end = tokens.end(); iterator != end; ++iterator) {
+            free(*iterator);
+        }
+        return this;
+    }
 
     class Exception : public std::domain_error {
     public:
-        Exception(const std::string& cause)
-            : std::domain_error(cause) {}
-    };
-
-    class BufferSizeExceedException : public Exception {
-    public:
-        BufferSizeExceedException()
-            : Exception("BufferSizeExceedException: "
-                        "Identifier or literal string must be less than " +
-                        std::to_string(BUFFER_SIZE) + 
-                        " characters.") {}
+        Exception(const std::string& cause) : std::domain_error(cause) {}
     };
 };

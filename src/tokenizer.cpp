@@ -1,32 +1,9 @@
 #include "tokenizer.h"
 
-std::list<char *> *Tokenizer::read(const char *filename)
+Tokenizer *Tokenizer::read(const char *filename)
 {
-    Tokenizer *tokenizer = new Tokenizer();
+    FILE *fp = fopen(filename, "r");
 
-    FILE *fp;
-    fp = fopen(filename, "r");
-
-    tokenizer->read(fp);
-    fclose(fp);
-
-    std::list<char *> *ret = tokenizer->getTokens();
-    delete tokenizer;
-    
-    return ret;
-}
-
-void Tokenizer::destroyTokens(std::list<char *> *tokens)
-{
-    for (std::list<char *>::const_iterator iterator = tokens->begin(),
-            end = tokens->end(); iterator != end; ++iterator) {
-        free(*iterator);
-    }
-    delete tokens;
-}
-
-void Tokenizer::read(FILE *fp)
-{
     while (EOF != (c = fgetc(fp))) {
         switch (state) {
         case NONE:
@@ -79,7 +56,7 @@ void Tokenizer::read(FILE *fp)
             }
 
             if (isLineBreak(c)) {
-                pushToken(LINE_FEED);
+                pushToken(EOL);
             }
 
             break;
@@ -111,7 +88,7 @@ void Tokenizer::read(FILE *fp)
             }
 
             if (isLineBreak(c)) {
-                pushToken(LINE_FEED);
+                pushToken(EOL);
             }
             break;
 
@@ -127,4 +104,8 @@ void Tokenizer::read(FILE *fp)
 
         last = c;
     }
+
+    fclose(fp);
+
+    return this;
 }
