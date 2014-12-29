@@ -21,7 +21,8 @@ private:
     };
 
     static const int BUFFER_SIZE = 128;
-    const char *EOL = "<EOL>";
+
+    const char *source;
 
     State state;
 
@@ -116,7 +117,10 @@ private:
     }
 
 public:
-    Tokenizer() {
+    static const char *EOL;
+
+    Tokenizer(const char *source) {
+        this->source = source;
         state = NONE;
         last = -1;
     }
@@ -125,7 +129,7 @@ public:
         clearTokens();
     }
 
-    Tokenizer *read(const char *filename);
+    Tokenizer *read();
 
     std::deque<char *> *createTokenQ() {
         return new std::deque<char *>(tokens.begin(), tokens.end());

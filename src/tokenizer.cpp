@@ -1,8 +1,14 @@
 #include "tokenizer.h"
 
-Tokenizer *Tokenizer::read(const char *filename)
+const char *Tokenizer::EOL = "<EOL>";
+
+Tokenizer *Tokenizer::read()
 {
-    FILE *fp = fopen(filename, "r");
+    if (!tokens.empty()) {
+        throw Exception("Illegal state with read(). Tokens are already read.");
+    }
+
+    FILE *fp = fopen(source, "r");
 
     while (EOF != (c = fgetc(fp))) {
         switch (state) {
