@@ -7,6 +7,29 @@
 #include <list>
 #include <deque>
 #include <string>
+#include <sstream>
+
+struct Token {
+    char *token;
+    const char *file;
+    int line;
+
+    Token(char *token, const char *file, int line) {
+        this->token = token;
+        this->file = file;
+        this->line = line;
+    }
+
+    ~Token() {
+        free(token);
+    }
+
+    std::string toString() const {
+        std::ostringstream stringStream;
+        stringStream << file << " - " << line << " - " << token;
+        return stringStream.str();
+    }
+};
 
 class Tokenizer {
 private:
@@ -32,7 +55,9 @@ private:
     char buffer[Tokenizer::BUFFER_SIZE];
     int index;
 
-    std::list<char *> tokens;
+    std::list<Token *> tokens;
+
+    int line = 1;
 
     inline bool isLineCommentStart(char c) {
         return '/' == c && last == '/';
@@ -85,7 +110,7 @@ private:
     inline void pushToken(const char *str, int length) {
         char *token = (char *)malloc(length);
         memcpy(token, str, length);
-        tokens.push_back(token);
+        tokens.push_back(new Token(token, source, line));
     }
 
     inline void pushToken() {
@@ -99,19 +124,18 @@ private:
     }
 
     inline void pushLiteral() {
-        char *token = (char *)malloc(index + 3);
+        char *token = (char *)malloc(index + 2);
 
         memcpy(token + 1, buffer, index);
         token[0] = '"';
-        token[index + 1] = '"';
-        token[index + 2] = '\0';
+        token[index + 1] = '\0';
 
-        tokens.push_back(token);
+        tokens.push_back(new Token(token, source, line));
     }
 
     inline void popToken() {
-        char *token = tokens.back();
-        free(token);
+        Token *token = tokens.back();
+        delete token;
         tokens.pop_back();
     }
 
@@ -143,13 +167,13 @@ public:
 
     Tokenizer *read();
 
-    std::deque<char *> *createTokenQ() {
-        return new std::deque<char *>(tokens.begin(), tokens.end());
+    std::deque<Token *> *createTokenQ() {
+        return new std::deque<Token *>(tokens.begin(), tokens.end());
     }
 
     Tokenizer *clearTokens() {
-        for (char *token : tokens) {
-            free(token);
+        for (Token *token : tokens) {
+            delete token;
         }
         return this;
     }

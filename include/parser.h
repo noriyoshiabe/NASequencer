@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include "context.h"
 #include "expression.h"
+#include "tokenizer.h"
 
 class Parser {
 private:
@@ -19,5 +20,5 @@ private:
 public:
     Parser(const char *source);
     void parse(Context *context);
-    void readToken(Expression *parentExpression, std::deque<char *> *tokenQ);
+    void readToken(Expression *parentExpression, std::deque<Token *> *tokenQ);
 };

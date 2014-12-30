@@ -1,13 +1,19 @@
 #pragma once
 #include <deque>
 #include "context.h"
+#include "tokenizer.h"
 
 class Expression;
-typedef Expression *(*ExpressionFactory)(const char *token);
+typedef Expression *(*ExpressionFactory)(const Token *token);
 
 class Expression {
-private:
-    const char *originalToken;
+protected:
+    const Token *token;
+    void interpretChild(Context *context) {
+        for (Expression *expression : children) {
+            expression->interpret(context);
+        }
+    }
 
 public:
     std::deque<Expression *> children;
@@ -15,14 +21,14 @@ public:
     std::string toString(int depth);
 
     virtual std::string className() = 0;
-    virtual bool isReady(const char *token) {
+    virtual bool isReady(const Token *token) {
         return true;
     }
 
     virtual void interpret(Context *context) {}
 
-    Expression(const char *token) {
-        originalToken = token;
+    Expression(const Token *token) {
+        this->token = token;
     }
 
     virtual ~Expression() {
@@ -39,28 +45,31 @@ public:
 
 class RootExpression : public Expression {
 public:
-    RootExpression(const char *token) : Expression(token) {};
-    bool isReady(const char *token);
+    RootExpression(const Token *token) : Expression(token) {};
+    bool isReady(const Token *token);
+
+    const char *source;
 };
 
 class StatementExpression : public Expression {
 public:
-    StatementExpression(const char *token) : Expression(token) {};
-    bool isReady(const char *token);
+    StatementExpression(const Token *token) : Expression(token) {};
+    bool isReady(const Token *token);
 };
 
 class OperatorExpression : public Expression {
 public:
-    OperatorExpression(const char *token) : Expression(token) {};
-    bool isReady(const char *token);
+    OperatorExpression(const Token *token) : Expression(token) {};
+    bool isReady(const Token *token);
 };
 
 #define DeclareExpresssion(clazz, parent) \
     class clazz : public parent { \
     public: \
-        clazz(const char *token) : parent(token) {}; \
+        clazz(const Token *token) : parent(token) {}; \
         std::string className() { return #clazz; } \
-        static Expression *create(const char *token) { \
+        void interpret(Context *context); \
+        static Expression *create(const Token *token) { \
             return new clazz(token); \
         } \
     };

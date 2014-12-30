@@ -108,6 +108,10 @@ Tokenizer *Tokenizer::read()
             break;
         }
 
+        if (isLineBreak(c)) {
+            ++line;
+        }
+
         last = c;
     }
 

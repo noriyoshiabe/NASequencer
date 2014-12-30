@@ -2,6 +2,7 @@
 #include <cctype>
 #include <string>
 #include <cstdio>
+#include <cstdarg>
 
 class Util {
 public:
@@ -17,6 +18,15 @@ public:
         }
         *pbuf = '\0';
 
+        return std::string(buf);
+    }
+
+    static inline std::string format(const char *format, ...) {
+        char buf[256];
+        va_list ap;
+        va_start(ap, format);
+        vsnprintf(buf, sizeof(buf), format, ap);
+        va_end(ap);
         return std::string(buf);
     }
 };

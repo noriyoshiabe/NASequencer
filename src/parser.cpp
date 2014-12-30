@@ -1,5 +1,4 @@
 #include "parser.h"
-#include "tokenizer.h"
 #include "util.h"
 
 #include <cctype>
@@ -71,10 +70,13 @@ bool Parser::isDigit(const char *str) {
 void Parser::parse(Context *context)
 {
     Tokenizer *tokenizer = new Tokenizer(source);
-    std::deque<char *> *tokenQ = tokenizer->read()->createTokenQ();
+    std::deque<Token *> *tokenQ = tokenizer->read()->createTokenQ();
 
-    Expression *expression = SequenceExpression::create(source);
+    Expression *expression = SequenceExpression::create(NULL);
+    ((SequenceExpression *)expression)->source = source;
+
     readToken(expression, tokenQ);
+
     Log("\n%s", expression->toString().c_str());
     expression->interpret(context);
 
@@ -83,10 +85,10 @@ void Parser::parse(Context *context)
     delete tokenizer;
 }
 
-void Parser::readToken(Expression *parentExpression, std::deque<char *> *tokenQ)
+void Parser::readToken(Expression *parentExpression, std::deque<Token *> *tokenQ)
 {
     while (!tokenQ->empty()) {
-        char *token = tokenQ->front();
+        Token *token = tokenQ->front();
         if (parentExpression->isReady(token)) {
             break;
         }
@@ -95,12 +97,12 @@ void Parser::readToken(Expression *parentExpression, std::deque<char *> *tokenQ)
 
         ExpressionFactory factory;
 
-        if ((factory = statementTable[Util::normalizeCase(token)])) {
+        if ((factory = statementTable[Util::normalizeCase(token->token)])) {
             Expression *expression = factory(token);
             readToken(expression, tokenQ);
             parentExpression->children.push_back(expression);
         }
-        else if ((factory = operatorTable[token])) {
+        else if ((factory = operatorTable[token->token])) {
             Expression *expression = factory(token);
 
             Expression *last = parentExpression->children.empty() ? NULL : parentExpression->children.back();
@@ -118,7 +120,7 @@ void Parser::readToken(Expression *parentExpression, std::deque<char *> *tokenQ)
             }
             else {
                 if (isOperator(parentExpression)) {
-                    expression->children.push_back(EmptyOperand::create(""));
+                    expression->children.push_back(EmptyOperand::create(NULL));
                 }
                 else {
                     if (last && canBeLeftOperand(last)) {
@@ -126,7 +128,7 @@ void Parser::readToken(Expression *parentExpression, std::deque<char *> *tokenQ)
                         expression->children.push_back(last);
                     }
                     else {
-                        expression->children.push_back(EmptyOperand::create(""));
+                        expression->children.push_back(EmptyOperand::create(NULL));
                     }
                 }
 
@@ -134,11 +136,11 @@ void Parser::readToken(Expression *parentExpression, std::deque<char *> *tokenQ)
                 parentExpression->children.push_back(expression);
             }
         }
-        else if ('"' == token[0]) {
+        else if ('"' == token->token[0]) {
             Expression *expression = LiteralExpression::create(token);
             parentExpression->children.push_back(expression);
         }
-        else if (isDigit(token)) {
+        else if (isDigit(token->token)) {
             Expression *expression = NumberExpression::create(token);
             parentExpression->children.push_back(expression);
         }
