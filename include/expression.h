@@ -70,7 +70,7 @@ DeclareExpresssion(SequenceExpression, RootExpression);
 DeclareExpresssion(EndOfLineExpression, Expression);
 DeclareExpresssion(EndOfStatementExpression, Expression);
 
-DeclareExpresssion(DeltaTimeExpression, StatementExpression);
+DeclareExpresssion(ResolutionExpression, StatementExpression);
 DeclareExpresssion(SetExpression, StatementExpression);
 DeclareExpresssion(UnsetExpression, StatementExpression);
 DeclareExpresssion(DefaultModifierExpression, StatementExpression);

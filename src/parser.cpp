@@ -12,7 +12,7 @@ Parser::Parser(const char *source)
     if (statementTable.empty()) {
         statementTable[Util::normalizeCase("<EOL>")] = EndOfLineExpression::create;
         statementTable[Util::normalizeCase(";")] = EndOfStatementExpression::create;
-        statementTable[Util::normalizeCase("delta_time")] = DeltaTimeExpression::create;
+        statementTable[Util::normalizeCase("resolution")] = ResolutionExpression::create;
         statementTable[Util::normalizeCase("set")] = SetExpression::create;
         statementTable[Util::normalizeCase("unset")] = UnsetExpression::create;
         statementTable[Util::normalizeCase("default")] = DefaultModifierExpression::create;
