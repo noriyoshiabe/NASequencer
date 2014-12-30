@@ -3,17 +3,33 @@
 #include "context.h"
 
 class Expression;
-typedef Expression *(*ExpressionFactory)(std::deque<char *> *tokenQ);
+typedef Expression *(*ExpressionFactory)(const char *token);
 
 class Expression {
-protected:
-    virtual std::string className() = 0;
+private:
+    const char *originalToken;
 
 public:
-    virtual void interpret(Context *context) {}
-    virtual std::string toString();
+    std::deque<Expression *> children;
+    std::string toString();
+    std::string toString(int depth);
 
-    virtual ~Expression() {}
+    virtual std::string className() = 0;
+    virtual bool isReady(const char *token) {
+        return true;
+    }
+
+    virtual void interpret(Context *context) {}
+
+    Expression(const char *token) {
+        originalToken = token;
+    }
+
+    virtual ~Expression() {
+        for (Expression *expression : children) {
+            delete expression;
+        }
+    }
 
     class Exception : public std::domain_error {
     public:
@@ -21,149 +37,62 @@ public:
     };
 };
 
-class ParameterExpression : public Expression {
-protected:
-    std::deque<char *> tokenQ;
+class RootExpression : public Expression {
 public:
-    std::string toString();
-    ParameterExpression(std::deque<char *> *tokenQ);
+    RootExpression(const char *token) : Expression(token) {};
+    bool isReady(const char *token);
 };
 
-class EndOfLineExpression : public Expression {
-protected:
-    std::string className() { return "EndOfLineExpression"; }
+class StatementExpression : public Expression {
 public:
-    static Expression *create(std::deque<char *> *tokenQ) {
-        return new EndOfLineExpression();
-    }
+    StatementExpression(const char *token) : Expression(token) {};
+    bool isReady(const char *token);
 };
 
-class EndOfStatementExpression : public Expression {
-protected:
-    std::string className() { return "EndOfStatementExpression"; }
+class OperatorExpression : public Expression {
 public:
-    static Expression *create(std::deque<char *> *tokenQ) {
-        return new EndOfStatementExpression();
-    }
+    OperatorExpression(const char *token) : Expression(token) {};
+    bool isReady(const char *token);
 };
 
-class DeltaTimeExpression : public ParameterExpression {
-protected:
-    std::string className() { return "DeltaTimeExpression"; }
-public:
-    DeltaTimeExpression(std::deque<char *> *tokenQ) : ParameterExpression(tokenQ) {};
+#define DeclareExpresssion(clazz, parent) \
+    class clazz : public parent { \
+    public: \
+        clazz(const char *token) : parent(token) {}; \
+        std::string className() { return #clazz; } \
+        static Expression *create(const char *token) { \
+            return new clazz(token); \
+        } \
+    };
 
-    static Expression *create(std::deque<char *> *tokenQ) {
-        return new DeltaTimeExpression(tokenQ);
-    }
-};
+DeclareExpresssion(SequenceExpression, RootExpression);
 
-class SetExpression : public ParameterExpression {
-protected:
-    std::string className() { return "SetExpression"; }
-public:
-    SetExpression(std::deque<char *> *tokenQ) : ParameterExpression(tokenQ) {};
+DeclareExpresssion(EndOfLineExpression, Expression);
+DeclareExpresssion(EndOfStatementExpression, Expression);
 
-    static Expression *create(std::deque<char *> *tokenQ) {
-        return new SetExpression(tokenQ);
-    }
-};
+DeclareExpresssion(DeltaTimeExpression, StatementExpression);
+DeclareExpresssion(SetExpression, StatementExpression);
+DeclareExpresssion(UnsetExpression, StatementExpression);
+DeclareExpresssion(DefaultModifierExpression, StatementExpression);
+DeclareExpresssion(TrackExpression, StatementExpression);
+DeclareExpresssion(TimeSignatureExpression, StatementExpression);
+DeclareExpresssion(TempoExpression, StatementExpression);
+DeclareExpresssion(BankSelectExpression, StatementExpression);
+DeclareExpresssion(ProgramChangeExpression, StatementExpression);
+DeclareExpresssion(MarkerExpression, StatementExpression);
+DeclareExpresssion(NoteExpression, StatementExpression);
+DeclareExpresssion(TrackEndExpression, StatementExpression);
+DeclareExpresssion(IncludeExpression, StatementExpression);
 
-class UnsetExpression : public ParameterExpression {
-protected:
-    std::string className() { return "UnsetExpression"; }
-public:
-    UnsetExpression(std::deque<char *> *tokenQ) : ParameterExpression(tokenQ) {};
+DeclareExpresssion(AssignExpression, OperatorExpression);
+DeclareExpresssion(PlusExpression, OperatorExpression);
+DeclareExpresssion(MinusExpression, OperatorExpression);
+DeclareExpresssion(DivisionExpression, OperatorExpression);
+DeclareExpresssion(PointExpression, OperatorExpression);
+DeclareExpresssion(ColonExpression, OperatorExpression);
+DeclareExpresssion(CommaExpression, OperatorExpression);
 
-    static Expression *create(std::deque<char *> *tokenQ) {
-        return new UnsetExpression(tokenQ);
-    }
-};
-
-class TrackExpression : public ParameterExpression {
-protected:
-    std::string className() { return "TrackExpression"; }
-public:
-    TrackExpression(std::deque<char *> *tokenQ) : ParameterExpression(tokenQ) {};
-
-    static Expression *create(std::deque<char *> *tokenQ) {
-        return new TrackExpression(tokenQ);
-    }
-};
-
-class TimeSignatureExpression : public ParameterExpression {
-protected:
-    std::string className() { return "TimeSignatureExpression"; }
-public:
-    TimeSignatureExpression(std::deque<char *> *tokenQ) : ParameterExpression(tokenQ) {};
-
-    static Expression *create(std::deque<char *> *tokenQ) {
-        return new TimeSignatureExpression(tokenQ);
-    }
-};
-
-class TempoExpression : public ParameterExpression {
-protected:
-    std::string className() { return "TempoExpression"; }
-public:
-    TempoExpression(std::deque<char *> *tokenQ) : ParameterExpression(tokenQ) {};
-
-    static Expression *create(std::deque<char *> *tokenQ) {
-        return new TempoExpression(tokenQ);
-    }
-};
-
-class BankSelectExpression : public ParameterExpression {
-protected:
-    std::string className() { return "BankSelectExpression"; }
-public:
-    BankSelectExpression(std::deque<char *> *tokenQ) : ParameterExpression(tokenQ) {};
-
-    static Expression *create(std::deque<char *> *tokenQ) {
-        return new BankSelectExpression(tokenQ);
-    }
-};
-
-class ProgramChangeExpression : public ParameterExpression {
-protected:
-    std::string className() { return "ProgramChangeExpression"; }
-public:
-    ProgramChangeExpression(std::deque<char *> *tokenQ) : ParameterExpression(tokenQ) {};
-
-    static Expression *create(std::deque<char *> *tokenQ) {
-        return new ProgramChangeExpression(tokenQ);
-    }
-};
-
-class MarkerExpression : public ParameterExpression {
-protected:
-    std::string className() { return "MarkerExpression"; }
-public:
-    MarkerExpression(std::deque<char *> *tokenQ) : ParameterExpression(tokenQ) {};
-
-    static Expression *create(std::deque<char *> *tokenQ) {
-        return new MarkerExpression(tokenQ);
-    }
-};
-
-class NoteExpression : public ParameterExpression {
-protected:
-    std::string className() { return "NoteExpression"; }
-public:
-    NoteExpression(std::deque<char *> *tokenQ) : ParameterExpression(tokenQ) {};
-
-    static Expression *create(std::deque<char *> *tokenQ) {
-        return new NoteExpression(tokenQ);
-    }
-};
-
-class TrackEndExpression : public ParameterExpression {
-protected:
-    std::string className() { return "TrackEndExpression"; }
-public:
-    TrackEndExpression(std::deque<char *> *tokenQ) : ParameterExpression(tokenQ) {};
-
-    static Expression *create(std::deque<char *> *tokenQ) {
-        return new TrackEndExpression(tokenQ);
-    }
-};
+DeclareExpresssion(LiteralExpression, Expression);
+DeclareExpresssion(NumberExpression, Expression);
+DeclareExpresssion(IdentifierExpression, Expression);
+DeclareExpresssion(EmptyOperand, Expression);

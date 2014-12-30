@@ -61,13 +61,14 @@ private:
     }
 
     inline bool isOperator(char c) {
-        return '/' == c
-            || '=' == c
-            || ':' == c
-            || ';' == c
-            || '-' == c
+        return '=' == c
             || '+' == c
-            || '.' == c;
+            || '-' == c
+            || '/' == c
+            || '.' == c
+            || ':' == c
+            || ',' == c
+            || ';' == c;
     }
 
     inline void pushBuffer(char c) {
@@ -95,6 +96,17 @@ private:
     inline void pushToken(char c) {
         char token[] = {c, '\0'};
         pushToken(token, sizeof(token));
+    }
+
+    inline void pushLiteral() {
+        char *token = (char *)malloc(index + 3);
+
+        memcpy(token + 1, buffer, index);
+        token[0] = '"';
+        token[index + 1] = '"';
+        token[index + 2] = '\0';
+
+        tokens.push_back(token);
     }
 
     inline void popToken() {
@@ -136,9 +148,8 @@ public:
     }
 
     Tokenizer *clearTokens() {
-        for (std::list<char *>::const_iterator iterator = tokens.begin(),
-                end = tokens.end(); iterator != end; ++iterator) {
-            free(*iterator);
+        for (char *token : tokens) {
+            free(token);
         }
         return this;
     }

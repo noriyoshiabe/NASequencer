@@ -1,28 +1,71 @@
-#include "util.h"
-#include "tokenizer.h"
 #include "parser.h"
+#include "tokenizer.h"
+#include "util.h"
 
-std::unordered_map<std::string, ExpressionFactory> Parser::factoryTable;
+#include <cctype>
+
+std::unordered_map<std::string, ExpressionFactory> Parser::statementTable;
+std::unordered_map<std::string, ExpressionFactory> Parser::operatorTable;
 
 Parser::Parser(const char *source)
 {
-    if (factoryTable.empty()) {
-        factoryTable[Util::normalizeCase("<EOL>")] = EndOfLineExpression::create;
-        factoryTable[Util::normalizeCase(";")] = EndOfStatementExpression::create;
-        factoryTable[Util::normalizeCase("delta_time")] = DeltaTimeExpression::create;
-        factoryTable[Util::normalizeCase("set")] = SetExpression::create;
-        factoryTable[Util::normalizeCase("unset")] = UnsetExpression::create;
-        factoryTable[Util::normalizeCase("track")] = TrackExpression::create;
-        factoryTable[Util::normalizeCase("time_signature")] = TimeSignatureExpression::create;
-        factoryTable[Util::normalizeCase("tempo")] = TempoExpression::create;
-        factoryTable[Util::normalizeCase("bank_select")] = BankSelectExpression::create;
-        factoryTable[Util::normalizeCase("program_change")] = ProgramChangeExpression::create;
-        factoryTable[Util::normalizeCase("marker")] = MarkerExpression::create;
-        factoryTable[Util::normalizeCase("note")] = NoteExpression::create;
-        factoryTable[Util::normalizeCase("track_end")] = TrackEndExpression::create;
+    if (statementTable.empty()) {
+        statementTable[Util::normalizeCase("<EOL>")] = EndOfLineExpression::create;
+        statementTable[Util::normalizeCase(";")] = EndOfStatementExpression::create;
+        statementTable[Util::normalizeCase("delta_time")] = DeltaTimeExpression::create;
+        statementTable[Util::normalizeCase("set")] = SetExpression::create;
+        statementTable[Util::normalizeCase("unset")] = UnsetExpression::create;
+        statementTable[Util::normalizeCase("default")] = DefaultModifierExpression::create;
+        statementTable[Util::normalizeCase("track")] = TrackExpression::create;
+        statementTable[Util::normalizeCase("time_signature")] = TimeSignatureExpression::create;
+        statementTable[Util::normalizeCase("tempo")] = TempoExpression::create;
+        statementTable[Util::normalizeCase("bank_select")] = BankSelectExpression::create;
+        statementTable[Util::normalizeCase("program_change")] = ProgramChangeExpression::create;
+        statementTable[Util::normalizeCase("marker")] = MarkerExpression::create;
+        statementTable[Util::normalizeCase("note")] = NoteExpression::create;
+        statementTable[Util::normalizeCase("track_end")] = TrackEndExpression::create;
+        statementTable[Util::normalizeCase("include")] = IncludeExpression::create;
+    }
+
+    if (operatorTable.empty()) {
+        operatorTable["="] = AssignExpression::create;
+        operatorTable["+"] = PlusExpression::create;
+        operatorTable["-"] = MinusExpression::create;
+        operatorTable["/"] = DivisionExpression::create;
+        operatorTable["."] = PointExpression::create;
+        operatorTable[":"] = ColonExpression::create;
+        operatorTable[","] = CommaExpression::create;
     }
 
     this->source = source;
+}
+
+bool Parser::isOperator(Expression *expression)
+{
+    return typeid(AssignExpression) == typeid(*expression)
+        || typeid(PlusExpression) == typeid(*expression)
+        || typeid(MinusExpression) == typeid(*expression)
+        || typeid(DivisionExpression) == typeid(*expression)
+        || typeid(PointExpression) == typeid(*expression)
+        || typeid(ColonExpression) == typeid(*expression)
+        || typeid(CommaExpression) == typeid(*expression);
+}
+
+bool Parser::canBeLeftOperand(Expression *expression)
+{
+    return typeid(IdentifierExpression) == typeid(*expression)
+        || typeid(LiteralExpression) == typeid(*expression)
+        || typeid(NumberExpression) == typeid(*expression);
+}
+
+bool Parser::isDigit(const char *str) {
+    char c;
+    while ((c = *(str++))) {
+        if (!isdigit(c)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 void Parser::parse(Context *context)
@@ -30,19 +73,78 @@ void Parser::parse(Context *context)
     Tokenizer *tokenizer = new Tokenizer(source);
     std::deque<char *> *tokenQ = tokenizer->read()->createTokenQ();
 
-    while (!tokenQ->empty()) {
-        ExpressionFactory factory = factoryTable[Util::normalizeCase(tokenQ->front())];
-        tokenQ->pop_front();
+    Expression *expression = SequenceExpression::create(source);
+    readToken(expression, tokenQ);
+    Log("\n%s", expression->toString().c_str());
+    expression->interpret(context);
 
-        if (factory) {
-            expressions.push_back(factory(tokenQ));
-        }
-    }
-
-    for (int i = 0, size = expressions.size(); i < size; ++i) {
-        Log("%s", expressions[i]->toString().c_str());
-    }
-
+    delete expression;
     delete tokenQ;
     delete tokenizer;
+}
+
+void Parser::readToken(Expression *parentExpression, std::deque<char *> *tokenQ)
+{
+    while (!tokenQ->empty()) {
+        char *token = tokenQ->front();
+        if (parentExpression->isReady(token)) {
+            break;
+        }
+
+        tokenQ->pop_front();
+
+        ExpressionFactory factory;
+
+        if ((factory = statementTable[Util::normalizeCase(token)])) {
+            Expression *expression = factory(token);
+            readToken(expression, tokenQ);
+            parentExpression->children.push_back(expression);
+        }
+        else if ((factory = operatorTable[token])) {
+            Expression *expression = factory(token);
+
+            Expression *last = parentExpression->children.empty() ? NULL : parentExpression->children.back();
+            if (last && isOperator(last)) {
+                Expression *_last = last;
+                while (!_last->children.empty()) {
+                    last = _last;
+                    _last = last->children.back();
+                }
+
+                expression->children.push_back(last->children.back());
+                last->children.pop_back();
+                last->children.push_back(expression);
+                readToken(expression, tokenQ);
+            }
+            else {
+                if (isOperator(parentExpression)) {
+                    expression->children.push_back(EmptyOperand::create(""));
+                }
+                else {
+                    if (last && canBeLeftOperand(last)) {
+                        parentExpression->children.pop_back();
+                        expression->children.push_back(last);
+                    }
+                    else {
+                        expression->children.push_back(EmptyOperand::create(""));
+                    }
+                }
+
+                readToken(expression, tokenQ);
+                parentExpression->children.push_back(expression);
+            }
+        }
+        else if ('"' == token[0]) {
+            Expression *expression = LiteralExpression::create(token);
+            parentExpression->children.push_back(expression);
+        }
+        else if (isDigit(token)) {
+            Expression *expression = NumberExpression::create(token);
+            parentExpression->children.push_back(expression);
+        }
+        else {
+            Expression *expression = IdentifierExpression::create(token);
+            parentExpression->children.push_back(expression);
+        }
+    }
 }

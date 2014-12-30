@@ -69,7 +69,7 @@ Tokenizer *Tokenizer::read()
 
         case SINGLE_QUOTE_LITERAL:
             if ('\'' == c && last != '\\') {
-                pushToken();
+                pushLiteral();
                 state = NONE;
                 index = 0;
             }
@@ -80,7 +80,7 @@ Tokenizer *Tokenizer::read()
 
         case DOUBLE_QUOTE_LITERAL:
             if ('"' == c && last != '\\') {
-                pushToken();
+                pushLiteral();
                 stateChange(NONE);
             }
             else {
