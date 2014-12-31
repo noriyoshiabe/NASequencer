@@ -18,6 +18,7 @@ WSPACE         [[:blank:]]+
 
 KEY            c|d|e|f|g|a|b
 NOTE_NO        {KEY}[#]?({DIGIT}|[+-]{DIGIT})?
+NOTE_NO_LIST   {NOTE_NO}(,{NOTE_NO})*
 
 RESOLUTION     resolution
 SET            set
@@ -66,7 +67,7 @@ IDENTIFIER     [_[:alpha:]][[:alnum:]]*
 {MSB}            location(0); return MSB;
 {LSB}            location(0); return LSB;
 
-{NOTE_NO}        location(0); return NOTE_NO;
+{NOTE_NO_LIST}   location(0); return NOTE_NO_LIST;
 
 {M_B_TICK}       location(0); return M_B_TICK;
 {B_TICK}         location(0); return B_TICK;
