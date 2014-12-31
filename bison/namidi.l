@@ -1,18 +1,11 @@
 %{
 #include <stdio.h>
-struct Loc {
-  int first_line;
-  int first_column;
-  int last_line;
-  int last_column;
-} yylloc = {1,1,1,1};
+#include "namidi.tab.h"
 void location(int cr);
+int yywrap() { return 1; }
 %}
 
-%x STRING
-%x S_STRING
 %x COMMENT
-%x NOTE
 
 NONZERO        [1-9]
 DIGIT          [[:digit:]]
@@ -47,91 +40,85 @@ CHANNEL        channel
 MSB            msb
 LSB            lsb
 
-IDENTIFER      [_[:alpha:]][[:alnum:]]*
+IDENTIFIER     [_[:alpha:]][[:alnum:]]*
 
 %%
-<<EOF>>          printf("END\n"); return 0;
+<<EOF>>          return 0;
 
-{RESOLUTION}     location(0); printf("resolution\n");
-{SET}            location(0); printf("set\n");
-{UNSET}          location(0); printf("unset\n");
-{DEFAULT}        location(0); printf("default\n");
-{TEMPO}          location(0); printf("tempo\n");
-{TRACK}          location(0); printf("track\n");
-{TRACK_END}      location(0); printf("track_end|trackend\n");
-{TIME_SIGNATURE} location(0); printf("time_signature|timesignature\n");
-{BANK_SELECT}    location(0); printf("bank_select|bankselect\n");
-{PROGRAM_CHANGE} location(0); printf("program_change|programchange\n");
-{MARKER}         location(0); printf("marker\n");
-{INCLUDE}        location(0); printf("include\n");
-{NOTE}           location(0); printf("note\n");
+{RESOLUTION}     location(0); return RESOLUTION;
+{SET}            location(0); return SET;
+{UNSET}          location(0); return UNSET;
+{DEFAULT}        location(0); return DEFAULT;
+{TEMPO}          location(0); return TEMPO;
+{TRACK}          location(0); return TRACK;
+{TRACK_END}      location(0); return TRACK_END;
+{TIME_SIGNATURE} location(0); return TIME_SIGNATURE;
+{BANK_SELECT}    location(0); return BANK_SELECT;
+{PROGRAM_CHANGE} location(0); return PROGRAM_CHANGE;
+{MARKER}         location(0); return MARKER;
+{INCLUDE}        location(0); return INCLUDE;
+{NOTE}           location(0); return NOTE;
 
-{VELOCITY}       location(0); printf("velocity\n");
-{GATETIME}       location(0); printf("gatetime|gate_time\n");
-{STEP}           location(0); printf("step\n");
-{CHANNEL}        location(0); printf("channel\n");
-{MSB}            location(0); printf("msb\n");
-{LSB}            location(0); printf("lsb\n");
+{VELOCITY}       location(0); return VELOCITY;
+{GATETIME}       location(0); return GATETIME;
+{STEP}           location(0); return STEP;
+{CHANNEL}        location(0); return CHANNEL;
+{MSB}            location(0); return MSB;
+{LSB}            location(0); return LSB;
 
-{NOTE_NO}        location(0); printf("Note no: %s\n", yytext);
+{NOTE_NO}        location(0); return NOTE_NO;
 
-{M_B_TICK}       location(0); printf("Measure & beat & tick: %s\n", yytext);
-{B_TICK}         location(0); printf("Beat & tick: %s\n", yytext);
+{M_B_TICK}       location(0); return M_B_TICK;
+{B_TICK}         location(0); return B_TICK;
 
-{INTEGER}        location(0); printf("An integer: %s\n", yytext);
-{FLOAT}          location(0); printf("A float: %s\n", yytext);
+{INTEGER}        location(0); return INTEGER;
+{FLOAT}          location(0); return INTEGER;
 
 {WSPACE}         location(0);
 
-"+"              location(0); printf("plus\n");
-"-"              location(0); printf("plus\n");
-"*"              location(0); printf("multiply\n");
-"/"              location(0); printf("devision\n");
-"="              location(0); printf("assign\n");
-";"              location(0); printf("semicolon\n");
-","              location(0); printf("Commma\n");
+"+"              location(0); return PLUS;
+"-"              location(0); return MINUS;
+"*"              location(0); return MULTIPLY;
+"/"              location(0); return DIVISION;
+"="              location(0); return ASSIGN;
+";"              location(0); return EOS;
+","              location(0); return COMMA;
 
-{IDENTIFER}      location(0); printf("Identifier: %s\n", yytext);
+\"[^\"\n]*\"     location(0); return STRING;
+'[^'\n]*'        location(0); return STRING;
 
-\n               location(1); printf("Return\n");
+{IDENTIFIER}     location(0); return IDENTIFIER;
 
-{LINE_COMMENT}     location(0); printf("Comment:\n%s\n", yytext);
+\n               location(1); return EOL;
+
+{LINE_COMMENT}     location(0);
 "/*"               location(0); BEGIN(COMMENT); yymore();
-<COMMENT>"*/"      location(0); printf("Comment:\n%s\n", yytext); BEGIN(INITIAL);
+<COMMENT>"*/"      location(0); BEGIN(INITIAL);
 <COMMENT>\n        location(1); yymore();
 <COMMENT>.         location(0); yymore();
 
-\"                 location(0); BEGIN(STRING); yymore();
-<STRING>\n         location(0); printf("Irregal literal: %s", yytext); BEGIN(INITIAL);
-<STRING>[^\"\n]+   location(0); yymore();
-<STRING>\"         location(0); printf("Literal string: %s\n", yytext); BEGIN(INITIAL);
-
-\'                 location(0); BEGIN(S_STRING); yymore();
-<S_STRING>\n       location(0); printf("Irregal literal: %s", yytext); BEGIN(INITIAL);
-<S_STRING>[^\'\n]+ location(0); yymore();
-<S_STRING>\'       location(0); printf("Literal string: %s\n", yytext); BEGIN(INITIAL);
-
-.                  location(0); printf("Syntax Error. [%s] line=%d, column=%d\n", yytext, yylloc.last_line, yylloc.last_column);
 %%
+
+int last_line;
+int last_column;
+int current_line;
+int current_column;
+
+void location_init()
+{
+  current_line = last_line = 1;
+  current_column = last_column = 0;
+}
 
 void location(int cr)
 {
-  yylloc.first_line   = yylloc.last_line;
-  yylloc.first_column = yylloc.last_column + 1;
+  last_line = current_line;
+  last_column = current_column;
   if (cr) {
-    ++yylloc.last_line;
-    yylloc.last_column = 0;
+    ++current_line;
+    current_column = 0;
   }
   else {
-    yylloc.last_column += yyleng;
+    current_column += yyleng;
   }
-}
-
-int main(int argc, char** argv)
-{
-  if(argc > 1)
-    yyin = fopen(argv[1], "r");
-  int ret = yylex();
-  printf("## %d lines\n", yylloc.last_line - 1);
-  return ret;
 }
