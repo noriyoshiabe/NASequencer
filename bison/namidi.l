@@ -72,7 +72,7 @@ IDENTIFIER     [_[:alpha:]][[:alnum:]]*
 {B_TICK}         location(0); return B_TICK;
 
 {INTEGER}        location(0); return INTEGER;
-{FLOAT}          location(0); return INTEGER;
+{FLOAT}          location(0); return FLOAT;
 
 {WSPACE}         location(0);
 
@@ -84,8 +84,8 @@ IDENTIFIER     [_[:alpha:]][[:alnum:]]*
 ";"              location(0); return EOS;
 ","              location(0); return COMMA;
 
-\"[^\"\n]*\"     location(0); return STRING;
-'[^'\n]*'        location(0); return STRING;
+\"[^\"]*\"       location(0); return STRING;
+'[^']*'          location(0); return STRING;
 
 {IDENTIFIER}     location(0); return IDENTIFIER;
 
