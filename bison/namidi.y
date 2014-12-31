@@ -1,11 +1,14 @@
 %{
 #include <stdio.h>
+#include <stdlib.h>
 void yyerror(const char* s);
 int yylex(void);
 
 extern void location_init();
 extern int last_line;
 extern int last_column;
+
+extern char *yytext;
 %}
 
 %token RESOLUTION
@@ -80,17 +83,20 @@ statement: resolution
          | include
          | note;
 
-resolution: RESOLUTION expr;
+resolution: RESOLUTION expr { printf("resolution %d\n", $2); }
+          ;
 
 set: SET assign_list
-   | SET DEFAULT assign_list;
+   | SET DEFAULT assign_list { printf("set default\n"); }
+   ;
 
 unset: UNSET param_list
-     | UNSET DEFAULT param_list;
+     | UNSET DEFAULT param_list { printf("unset default\n"); }
+     ;
 
-tempo: TEMPO expr
-     | TEMPO expr assign_list
-     | TEMPO assign_list expr;
+tempo: TEMPO float_expr
+     | TEMPO float_expr assign_list
+     | TEMPO assign_list float_expr;
 
 track: TRACK
      | TRACK STRING
@@ -124,19 +130,28 @@ note_no_list: NOTE_NO
             | NOTE_NO COMMA NOTE_NO
             | note_no_list COMMA NOTE_NO;
 
-expr: INTEGER
-    | FLOAT
-    | expr PLUS expr
-    | expr MINUS expr
-    | expr MULTIPLY expr
-    | expr DIVISION expr
-    | MINUS expr %prec NEGATIVE
-    | PLUS expr %prec POSITIVE;
+expr: INTEGER                   { $$ = atoi(yytext); }
+    | expr PLUS expr            { $$ = $1 + $3 }
+    | expr MINUS expr           { $$ = $1 - $3 }
+    | expr MULTIPLY expr        { $$ = $1 * $3 }
+    | expr DIVISION expr        { $$ = $1 / $3 }
+    | MINUS expr %prec NEGATIVE { $$ = -1 * $2 }
+    | PLUS expr %prec POSITIVE  { $$ = $2 }
+    ;
+
+float_expr: FLOAT                     { $$ = atof(yytext); }
+    | float_expr PLUS float_expr      { $$ = $1 + $3 }
+    | float_expr MINUS float_expr     { $$ = $1 - $3 }
+    | float_expr MULTIPLY float_expr  { $$ = $1 * $3 }
+    | float_expr DIVISION float_expr  { $$ = $1 / $3 }
+    | MINUS float_expr %prec NEGATIVE { $$ = -1 * $2 }
+    | PLUS float_expr %prec POSITIVE  { $$ = $2 }
+    ;
 
 assign_list: assign
            | assign_list assign;
 
-assign: VELOCITY ASSIGN expr
+assign: VELOCITY ASSIGN expr { printf("velocity=%d\n", $3)}
       | GATETIME ASSIGN expr
       | STEP ASSIGN expr
       | STEP ASSIGN M_B_TICK
@@ -149,7 +164,7 @@ param_list: param
           | param_list param;
 
 param: VELOCITY
-     | GATETIME
+     | GATETIME { printf("param=%s\n", yytext); }
      | STEP
      | CHANNEL
      | MSB
