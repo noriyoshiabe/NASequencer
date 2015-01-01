@@ -223,14 +223,13 @@ int ParseContext::interpret(int action, int modifier, void *arg)
 Value *ParseContext::getValue(int e)
 {
     Value *val;
-    if ((val = localValues[e])) {
+    if ((val = find(localValues, e))) {
         return val;
     }
-    if ((val = defaultValues[e])) {
+    if ((val = find(defaultValues, e))) {
         return val;
     }
-
-    if ((val = lastValues[e])) {
+    if ((val = find(lastValues, e))) {
         return val;
     }
 
@@ -244,6 +243,30 @@ uint32_t ParseContext::calcTick()
     uint32_t ret = currentTick;
     currentTick += step;
     return ret;
+}
+
+Value *ParseContext::find(std::unordered_map<int, Value *> &map, int key)
+{
+    try {
+        return map.at(key);
+    } catch (std::out_of_range &e) {
+        return NULL;
+    }
+}
+
+void ParseContext::insert(std::unordered_map<int, Value *> &map, int key, Value *newVal)
+{
+    removeIf(map, key);
+    map.emplace(key, newVal);
+}
+
+void ParseContext::removeIf(std::unordered_map<int, Value *> &map, int key)
+{
+    Value *val = find(map, key);
+    if (val) {
+        delete val;
+        map.erase(key);
+    }
 }
 
 void ParseContext::assign(int modifier, void *arg)
@@ -285,10 +308,7 @@ void ParseContext::assign(int modifier, void *arg)
         break;
     }
 
-    if (localValues[modifier]) {
-        delete localValues[modifier];
-    }
-    localValues[modifier] = val;
+    insert(localValues, modifier, val);
 #undef _C
 }
 
@@ -320,12 +340,7 @@ void ParseContext::updateLastValues(int statement)
         }
 
         if (canBeLastValue(entry.first)) {
-            Value *val = lastValues[entry.first];
-            if (val) {
-                delete val;
-            }
-            lastValues.erase(entry.first);
-            lastValues[entry.first] = entry.second;
+            insert(lastValues, entry.first, entry.second);
         } else {
             delete entry.second;
         }
@@ -473,7 +488,7 @@ int ParseContext::parseMBTick(char *str, bool includeMeasure)
 
 void ParseContext::resolution()
 {
-    Value *val = localValues[RESOLUTION];
+    Value *val = find(localValues, RESOLUTION);
     if (checkValue(val, RESOLUTION)) {
         sequence->resolution = val->i;
     }
@@ -481,14 +496,11 @@ void ParseContext::resolution()
 
 void ParseContext::set()
 {
-    Value *val = localValues[DEFAULT];
+    Value *val = find(localValues, DEFAULT);
     if (val) {
         for (std::pair<int, Value *> entry : localValues) {
-            val = defaultValues[entry.first];
-            if (val) {
-                delete val;
-            }
-            defaultValues[entry.first] = entry.second;
+            removeIf(defaultValues, entry.first);
+            insert(defaultValues, entry.first, entry.second);
         }
 
         localValues.clear();
@@ -497,24 +509,16 @@ void ParseContext::set()
 
 void ParseContext::unset()
 {
-    Value *val = localValues[DEFAULT];
+    Value *val = find(localValues, DEFAULT);
     if (val) {
         for (std::pair<int, Value *> entry : localValues) {
-            val = defaultValues[entry.first];
-            if (val) {
-                defaultValues.erase(entry.first);
-                delete val;
-            }
+            removeIf(defaultValues, entry.first);
             delete entry.second;
         }
     }
     else {
         for (std::pair<int, Value *> entry : localValues) {
-            val = lastValues[entry.first];
-            if (val) {
-                lastValues.erase(entry.first);
-                delete val;
-            }
+            removeIf(lastValues, entry.first);
             delete entry.second;
         }
     }

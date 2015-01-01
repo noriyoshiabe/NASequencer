@@ -44,6 +44,9 @@ private:
     const char* e2Key(int e);
     const char* e2Keyword(int e);
     Value *getValue(int e);
+    Value *find(std::unordered_map<int, Value *> &map, int key);
+    void insert(std::unordered_map<int, Value *> &map, int key, Value *newVal);
+    void removeIf(std::unordered_map<int, Value *> &map, int key);
     uint32_t calcTick();
     void assign(int modifier, void *arg);
     bool canBeLastValue(int type);
