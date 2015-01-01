@@ -1,1 +1,8 @@
 bin/
+*.tab.h
+*.tab.c
+*.yy.c
+*.output
+*.o
+*.a
+namidi
