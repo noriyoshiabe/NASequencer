@@ -2,22 +2,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-void yyerror(const char* s);
-int yylex(void);
 
-extern void location_init();
+int yylex(void);
+extern char *yytext;
+
 extern int last_line;
 extern int last_column;
 
-extern char *yytext;
+int (*__interpret)(int action, int modifier, void *arg);
+void (*__on_yy_error)(const char *message, int last_line, int last_column);
 
-static char *trim_literal(char *str);
-static char *trim_last(char *str);
-
-extern int interpret(int action, int modifier, void *arg);
 #define INTERPRET_STATEMENT(modifier) \
   do { \
-    if (interpret(STATEMENT, modifier, NULL)) { \
+    if (__interpret(STATEMENT, modifier, NULL)) { \
       YYERROR; \
     } \
   } while (0)
@@ -25,10 +22,34 @@ extern int interpret(int action, int modifier, void *arg);
   do { \
     type _arg; \
     _arg = (type)arg; \
-    if (interpret(ASSIGN, modifier, (void *)&_arg)) { \
+    if (__interpret(ASSIGN, modifier, (void *)&_arg)) { \
       YYERROR; \
     } \
   } while (0)
+
+void yyerror(const char *s)
+{
+  __on_yy_error(s, last_line, last_column);
+}
+
+static char *trim_literal(char *str)
+{
+  if ('\'' == str[0] || '"' == str[0]) {
+    *strrchr(str, str[0]) = '\0';
+    return str + 1;
+  } else {
+    return str;
+  }
+}
+
+static char *trim_last(char *str)
+{
+  char *p;
+  while ((p = strrchr(str, '\n')) || (p = strrchr(str, '\r'))) {
+    *p = '\0';
+  }
+  return str;
+}
 %}
 
 %union {
@@ -201,83 +222,3 @@ unassign: VELOCITY { INTERPRET_ASSIGN(VELOCITY, int, -1); }
         | LSB      { INTERPRET_ASSIGN(LSB, int, -1); };
 
 %%
-
-int main(void)
-{
-  location_init();
-  return yyparse();
-}
-
-void yyerror(const char* s)
-{
-  fprintf(stderr, "Error: %s line=%d column=%d\n", s, last_line, last_column);
-}
-
-char *trim_literal(char *str)
-{
-  if ('\'' == str[0] || '"' == str[0]) {
-    *strrchr(str, str[0]) = '\0';
-    return str + 1;
-  } else {
-    return str;
-  }
-}
-
-char *trim_last(char *str)
-{
-  char *p;
-  while ((p = strrchr(str, '\n')) || (p = strrchr(str, '\r'))) {
-    *p = '\0';
-  }
-  return str;
-}
-
-#define TO_S(sym) #sym
-
-int interpret(int action, int modifier, void *arg)
-{
-  switch (action) {
-  case STATEMENT:
-    printf("%s ", TO_S(STATEMENT));
-    switch(modifier) {
-    case RESOLUTION: printf("%s\n", TO_S(RESOLUTION)); break;
-    case SET: printf("%s\n", TO_S(SET)); break;
-    case UNSET: printf("%s\n", TO_S(UNSET)); break;
-    case TEMPO: printf("%s\n", TO_S(TEMPO)); break;
-    case TRACK: printf("%s\n", TO_S(TRACK)); break;
-    case TRACK_END: printf("%s\n", TO_S(TRACK_END)); break;
-    case TIME_SIGNATURE: printf("%s\n", TO_S(TIME_SIGNATURE)); break;
-    case BANK_SELECT: printf("%s\n", TO_S(BANK_SELECT)); break;
-    case PROGRAM_CHANGE: printf("%s\n", TO_S(PROGRAM_CHANGE)); break;
-    case MARKER: printf("%s\n", TO_S(MARKER)); break;
-    case INCLUDE: printf("%s\n", TO_S(INCLUDE)); break;
-    case NOTE: printf("%s\n", TO_S(NOTE)); break;
-    }
-    break;
-
-  case ASSIGN:
-    printf("%s ", TO_S(ASSIGN));
-    switch (modifier) {
-    case RESOLUTION: printf("%s=%d\n", TO_S(RESOLUTION), *((int *)arg)); break;
-    case DEFAULT: printf("%s=%d\n", TO_S(DEFAULT), *((int *)arg)); break;
-    case TEMPO: printf("%s=%f\n", TO_S(TEMPO), *((float *)arg)); break;
-    case NUMERATOR: printf("%s=%d\n", TO_S(NUMERATOR), *((int *)arg)); break;
-    case DENOMINATOR: printf("%s=%d\n", TO_S(DENOMINATOR), *((int *)arg)); break;
-    case PROGRAM_CHANGE: printf("%s=%d\n", TO_S(PROGRAM_CHANGE), *((int *)arg)); break;
-    case VELOCITY: printf("%s=%d\n", TO_S(VELOCITY), *((int *)arg)); break;
-    case GATETIME: printf("%s=%d\n", TO_S(GATETIME), *((int *)arg)); break;
-    case STEP: printf("%s=%d\n", TO_S(STEP), *((int *)arg)); break;
-    case CHANNEL: printf("%s=%d\n", TO_S(CHANNEL), *((int *)arg)); break;
-    case MSB: printf("%s=%d\n", TO_S(MSB), *((int *)arg)); break;
-    case LSB: printf("%s=%d\n", TO_S(LSB), *((int *)arg)); break;
-    
-    case M_B_TICK: printf("%s=%s\n", TO_S(M_B_TICK), *((char **)arg)); break;
-    case B_TICK: printf("%s=%s\n", TO_S(B_TICK), *((char **)arg)); break;
-    case NAME: printf("%s=%s\n", TO_S(NAME), *((char **)arg)); break;
-    case NOTE_NO_LIST: printf("%s=%s\n", TO_S(NOTE_NO_LIST), *((char **)arg)); break;
-    }
-    break;
-  }
-
-  return 0;
-}
