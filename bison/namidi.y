@@ -16,7 +16,6 @@ static char *trim_last(char *str);
 %}
 
 %union {
-  int i;
   float f;
   char *s;
 }
@@ -42,14 +41,14 @@ static char *trim_last(char *str);
 %token MSB
 %token LSB
 
-%token <s>NOTE_NO_LIST
+%token NOTE_NO_LIST
 
-%token <s>M_B_TICK
-%token <s>B_TICK
+%token M_B_TICK
+%token B_TICK
 
-%token <i>INTEGER
-%token <f>FLOAT
-%token <s>STRING
+%token INTEGER
+%token FLOAT
+%token STRING
 
 %token WSPACE
 
@@ -93,7 +92,7 @@ statement: resolution
          | include
          | note;
 
-resolution: RESOLUTION float_expr { printf("resolution %f\n", $<f>2); }
+resolution: RESOLUTION expr { printf("resolution %d\n", (int)$<f>2); }
           ;
 
 set: SET assign_list
@@ -104,9 +103,9 @@ unset: UNSET param_list
      | UNSET DEFAULT param_list { printf("unset default\n"); }
      ;
 
-tempo: TEMPO float_expr
-     | TEMPO float_expr assign_list
-     | TEMPO assign_list float_expr;
+tempo: TEMPO expr { printf("tempo=%f\n", $<f>2); }
+     | TEMPO expr assign_list
+     | TEMPO assign_list expr;
 
 track: TRACK
      | TRACK string_expr { printf("[%s]\n", $<s>2); }
@@ -117,12 +116,12 @@ track: TRACK
 track_end: TRACK_END
          | TRACK_END assign_list;
 
-time_signature: TIME_SIGNATURE INTEGER DIVISION INTEGER
-              | TIME_SIGNATURE assign_list INTEGER DIVISION INTEGER
-              | TIME_SIGNATURE INTEGER DIVISION INTEGER assign_list;
+time_signature: TIME_SIGNATURE expr DIVISION expr    { printf("timesig %d/%d\n", (int)$<f>2, (int)$<f>4); }
+              | TIME_SIGNATURE assign_list expr DIVISION expr
+              | TIME_SIGNATURE expr DIVISION expr assign_list;
 
 bank_select: BANK_SELECT assign_list;
-program_change: PROGRAM_CHANGE INTEGER;
+program_change: PROGRAM_CHANGE expr { printf("program change [%d]\n", (int)$<f>2); };
 
 marker: MARKER string_expr
       | MARKER string_expr assign_list
@@ -136,24 +135,15 @@ note: NOTE
     | NOTE assign_list
     | NOTE assign_list note_no_list_expr;
 
-expr: INTEGER                   { $<i>$ = atoi(yytext); }
-    | expr PLUS expr            { $<i>$ = $<i>1 + $<i>3 }
-    | expr MINUS expr           { $<i>$ = $<i>1 - $<i>3 }
-    | expr MULTIPLY expr        { $<i>$ = $<i>1 * $<i>3 }
-    | expr DIVISION expr        { $<i>$ = $<i>1 / $<i>3 }
-    | MINUS expr %prec NEGATIVE { $<i>$ = -1 * $<i>2 }
-    | PLUS expr %prec POSITIVE  { $<i>$ = $<i>2 }
+expr: INTEGER                   { $<f>$ = atof(yytext); }
+    | FLOAT                     { $<f>$ = atof(yytext); }
+    | expr PLUS expr            { $<f>$ = $<f>1 + $<f>3 }
+    | expr MINUS expr           { $<f>$ = $<f>1 - $<f>3 }
+    | expr MULTIPLY expr        { $<f>$ = $<f>1 * $<f>3 }
+    | expr DIVISION expr        { $<f>$ = $<f>1 / $<f>3 }
+    | MINUS expr %prec NEGATIVE { $<f>$ = -1.0 * $<f>2 }
+    | PLUS expr %prec POSITIVE  { $<f>$ = $<f>2 }
     ;
-
-float_expr: FLOAT                           { $<f>$ = atof(yytext); }
-          | INTEGER                         { $<f>$ = atof(yytext); }
-          | float_expr PLUS float_expr      { $<f>$ = $<f>1 + $<f>3 }
-          | float_expr MINUS float_expr     { $<f>$ = $<f>1 - $<f>3 }
-          | float_expr MULTIPLY float_expr  { $<f>$ = $<f>1 * $<f>3 }
-          | float_expr DIVISION float_expr  { $<f>$ = $<f>1 / $<f>3 }
-          | MINUS float_expr %prec NEGATIVE { $<f>$ = -1.0 * $<f>2 }
-          | PLUS float_expr %prec POSITIVE  { $<f>$ = $<f>2 }
-          ;
 
 string_expr: STRING { $<s>$ = trim_literal(yytext); }
 
@@ -165,7 +155,7 @@ mb_tick_expr: M_B_TICK  { $<s>$ = trim_last(yytext); }
 assign_list: assign
            | assign_list assign;
 
-assign: VELOCITY ASSIGN expr { printf("velocity=%d\n", $<i>3)}
+assign: VELOCITY ASSIGN expr { printf("velocity=%d\n", (int)$<f>3)}
       | GATETIME ASSIGN expr
       | STEP ASSIGN expr
       | STEP ASSIGN mb_tick_expr { printf("step=[%s]\n", $<s>3)}
