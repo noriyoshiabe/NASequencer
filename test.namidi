@@ -38,6 +38,7 @@ track "syntax sample"
   // ; は一行に複数書く場合のみ
   bank_select channel=9 msb=0 lsb=127;  program_change 0
   bank_select channel=10 msb=0 lsb=0;   program_change 4
+  bank_select msb=0 lsb=0;   program_change 4
 
   // 曲の途中で拍子を変える
   // step=48:0:0 で48小節目の1拍目のつもり

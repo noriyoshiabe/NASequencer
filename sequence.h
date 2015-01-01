@@ -25,11 +25,11 @@ public:
 
 class Track {
 public:
-    std::vector<MidiEvent> events;
+    std::vector<MidiEvent *> events;
 };
 
 class Sequence {
 public:
     uint16_t resolution;
-    std::vector<Track> tracks;
+    std::vector<Track *> tracks;
 };

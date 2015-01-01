@@ -38,6 +38,7 @@ private:
     std::unordered_map<int, Value *> defaultValues;
 
     uint32_t currentTick = 0;
+    int currentOctaveNo = 0;
     Track *currentTrack = NULL;
 
     const char* e2Key(int e);
@@ -45,6 +46,7 @@ private:
     Value *getValue(int e);
     uint32_t calcTick();
     void assign(int modifier, void *arg);
+    bool canBeLastValue(int type);
     void updateLastValues(int statement);
     bool isUselessValue(int statement, int assign);
     int parseMBTick(char *str, bool includeMeasure);
@@ -52,6 +54,16 @@ private:
     void set();
     void unset();
     void tempo();
+    void track();
+    void trackEnd();
+    void timeSignature();
+    void bankSelect();
+    void programChange();
+    void marker();
+    void note();
+    bool checkCurrentTrack();
+    bool checkValue(Value *val, int type);
+    int noteNo2Int(char *noteNo);
 
 public:
     int interpret(int action, int modifier, void *arg);

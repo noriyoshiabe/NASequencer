@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <cstdarg>
+#include <cctype>
 #include <string>
 #include "namidi.tab.h"
 
@@ -15,6 +16,8 @@ extern FILE *yyin;
 extern FILE *yyout;
 extern int (*__interpret)(int action, int modifier, void *arg);
 extern void (*__on_yy_error)(const char *message, int last_line, int last_column);
+extern int last_line;
+extern int last_column;
 
 }
 
@@ -27,7 +30,7 @@ int Parser::interpret(int action, int modifier, void *arg)
 
 void Parser::onYyError(const char *message, int last_line, int last_column)
 {
-    _context->push_error("%s. line=%d, column=%d", message, last_line, last_column);
+    _context->push_error("%s.", message);
 }
 
 ParseContext *Parser::parse(const char *source)
@@ -54,20 +57,32 @@ ParseContext *Parser::parse(const char *source)
 void ParseContext::push_error(const char *format, ...)
 {
     char buf[256];
+    char info[128];
+
     va_list ap;
     va_start(ap, format);
     vsnprintf(buf, sizeof(buf), format, ap);
     va_end(ap);
+
+    sprintf(info, " line=%d, column=%d", last_line, last_column);
+    strcat(buf, info);
+
     errors.push_back(new std::string(buf));
 }
 
 void ParseContext::push_warning(const char *format, ...)
 {
     char buf[256];
+    char info[128];
+
     va_list ap;
     va_start(ap, format);
     vsnprintf(buf, sizeof(buf), format, ap);
     va_end(ap);
+
+    sprintf(info, " line=%d, column=%d", last_line, last_column);
+    strcat(buf, info);
+
     warnings.push_back(new std::string(buf));
 }
 
@@ -169,20 +184,28 @@ int ParseContext::interpret(int action, int modifier, void *arg)
             tempo();
             break;
         case TRACK:
+            track();
             break;
         case TRACK_END:
+            trackEnd();
             break;
         case TIME_SIGNATURE:
+            timeSignature();
             break;
         case BANK_SELECT:
+            bankSelect();
             break;
         case PROGRAM_CHANGE:
+            programChange();
             break;
         case MARKER:
+            marker();
             break;
         case INCLUDE:
+            // TBD
             break;
         case NOTE:
+            note();
             break;
         }
 
@@ -206,6 +229,7 @@ Value *ParseContext::getValue(int e)
     if ((val = defaultValues[e])) {
         return val;
     }
+
     if ((val = lastValues[e])) {
         return val;
     }
@@ -268,27 +292,49 @@ void ParseContext::assign(int modifier, void *arg)
 #undef _C
 }
 
+bool ParseContext::canBeLastValue(int type)
+{
+    switch (type) {
+    case PROGRAM_CHANGE:
+    case VELOCITY:
+    case GATETIME:
+    case STEP:
+    case CHANNEL:
+    case MSB:
+    case LSB:
+    case NOTE_NO_LIST:
+    case NUMERATOR:
+    case DENOMINATOR:
+        return true;
+    }
+    return false;
+}
+
 void ParseContext::updateLastValues(int statement)
 {
     std::vector<int> uselessValues;
 
-    for (auto it = localValues.begin(); it != localValues.end();) {
-        Value *val = lastValues[it->first];
-        if (val) {
-            lastValues.erase(it->first);
-            delete val;
+    for (std::pair<int, Value *> entry : localValues) {
+        if (isUselessValue(statement, entry.first)) {
+            uselessValues.push_back(entry.first);
         }
 
-        if (isUselessValue(statement, it->first)) {
-            uselessValues.push_back(it->first);
+        if (canBeLastValue(entry.first)) {
+            Value *val = lastValues[entry.first];
+            if (val) {
+                delete val;
+            }
+            lastValues.erase(entry.first);
+            lastValues[entry.first] = entry.second;
+        } else {
+            delete entry.second;
         }
-
-        lastValues[it->first] = it->second;
-        it = localValues.erase(it);
     }
 
-    for (int assign : uselessValues) {
-        push_warning("[%s] is useless for [%s] statement.", e2Key(assign), e2Key(statement));
+    localValues.clear();
+
+    for (int type : uselessValues) {
+        push_warning("[%s] is useless for [%s] statement.", e2Key(type), e2Key(statement));
     }
 }
 
@@ -428,10 +474,8 @@ int ParseContext::parseMBTick(char *str, bool includeMeasure)
 void ParseContext::resolution()
 {
     Value *val = localValues[RESOLUTION];
-    if (val) {
+    if (checkValue(val, RESOLUTION)) {
         sequence->resolution = val->i;
-    } else {
-        push_error("reslution value not found.");
     }
 }
 
@@ -439,9 +483,6 @@ void ParseContext::set()
 {
     Value *val = localValues[DEFAULT];
     if (val) {
-        localValues.erase(DEFAULT);
-        delete val;
-
         for (std::pair<int, Value *> entry : localValues) {
             val = defaultValues[entry.first];
             if (val) {
@@ -458,9 +499,6 @@ void ParseContext::unset()
 {
     Value *val = localValues[DEFAULT];
     if (val) {
-        localValues.erase(DEFAULT);
-        delete val;
-
         for (std::pair<int, Value *> entry : localValues) {
             val = defaultValues[entry.first];
             if (val) {
@@ -486,12 +524,245 @@ void ParseContext::unset()
 
 void ParseContext::tempo()
 {
-    Value *val = localValues[TEMPO];
-    if (!val) {
-        push_error("tempo value is not set.");
+    if (!checkCurrentTrack()) {
+        return;
+    }
+
+    Value *val = getValue(TEMPO);
+    if (checkValue(val, TEMPO)) {
+        //currentTrack->events.push_back(new TempoEvent(calcTick(), val->f));
+    }
+}
+
+void ParseContext::track()
+{
+    currentTick = 0;
+    currentTrack = new Track();
+    sequence->tracks.push_back(currentTrack);
+
+    Value *val = getValue(NAME);
+    if (val) {
+        //currentTrack->events.push_back(new NameEvent(calcTick(), val->s));
+    }
+}
+
+void ParseContext::trackEnd()
+{
+    if (!checkCurrentTrack()) {
+        return;
+    }
+
+    //currentTrack->events.push_back(new TrackEndEvent(calcTick()));
+    currentTrack = NULL;
+}
+
+void ParseContext::timeSignature()
+{
+    if (!checkCurrentTrack()) {
+        return;
+    }
+
+    Value *numerator = getValue(NUMERATOR);
+    Value *denominator = getValue(DENOMINATOR);
+
+    if (checkValue(numerator, NUMERATOR) && checkValue(denominator, DENOMINATOR)) {
+        //currentTrack->events.push_back(new TimeSignatureEvent(calcTick(), numerator->i, denominator->i));
+    }
+}
+
+void ParseContext::bankSelect()
+{
+    if (!checkCurrentTrack()) {
+        return;
+    }
+
+    Value *channel = getValue(CHANNEL);
+    Value *msb = getValue(MSB);
+    Value *lsb = getValue(LSB);
+
+    if (checkValue(channel, CHANNEL) && checkValue(msb, MSB) && checkValue(lsb, LSB)) {
+        //currentTrack->events.push_back(new BankSelectEvent(calcTick(), channel->i, msb->i, lsb->i));
+    }
+}
+
+void ParseContext::programChange()
+{
+    if (!checkCurrentTrack()) {
+        return;
+    }
+
+    Value *channel = getValue(CHANNEL);
+    Value *programNo = getValue(PROGRAM_CHANGE);
+
+    if (checkValue(channel, CHANNEL) && checkValue(programNo, PROGRAM_CHANGE)) {
+        //currentTrack->events.push_back(new ProgramChangeEvent(calcTick(), channel->i, programNo->i));
+    }
+}
+
+void ParseContext::marker()
+{
+    if (!checkCurrentTrack()) {
+        return;
+    }
+
+    Value *name = getValue(NAME);
+
+    if (checkValue(name, NAME)) {
+        //currentTrack->events.push_back(new MarkerEvent(calcTick(), name->s));
+    }
+}
+
+void ParseContext::note()
+{
+    if (!checkCurrentTrack()) {
+        return;
+    }
+
+    Value *channel = getValue(CHANNEL);
+    Value *velocity = getValue(VELOCITY);
+    Value *gatetime = getValue(GATETIME);
+
+    if (checkValue(channel, CHANNEL) && checkValue(velocity, VELOCITY) && checkValue(gatetime, GATETIME)) {
+        Value *noteNoList = getValue(NOTE_NO_LIST);
+        uint32_t notes[32];
+        size_t count = 0;
+
+        char *str = noteNoList->s;
+        char *token;
+        while ((token = strtok(str, ","))) {
+            str = NULL;
+            printf("########### %s\n", token);
+
+            if (32 <= count) {
+                push_warning("note no count is more than 32. ignored.");
+            }
+            else {
+                int noteNo = noteNo2Int(token);
+                if (noteNo < 0 || 127 < noteNo) {
+                    push_error("note no is out of range. C-2 to G8");
+                }
+                else {
+                    printf("########### %d\n", noteNo);
+                    notes[count++] = noteNo;
+                }
+            }
+        }
+
+        if (0 < count) {
+            uint32_t tick = calcTick();
+            for (int i = 0; i < count; ++i) {
+                //currentTrack->events.push_back(new NoteEvent(tick, notes[i]));
+            }
+        }
+    }
+}
+
+bool ParseContext::checkCurrentTrack()
+{
+    if (!currentTrack) {
+        push_error("not inside of track.");
+        return false;
     } else {
-        float tempo = val->f;
-        uint32_t tick = calcTick();
-        //context->currentTrack->events.push_back(MidiEventFactory::createTempoEvent(tick, tempo));
+        return true;
+    }
+}
+
+bool ParseContext::checkValue(Value *val, int type)
+{
+    if (!val) {
+        push_error("%s is not set.", e2Keyword(type));
+        return false;
+    }
+
+    switch (type) {
+    case RESOLUTION:
+        if (val->i < 24 || 960 <  val->i) {
+            push_error("resolution is out of range. 24-960");
+            return false;
+        } 
+        break;
+    case PROGRAM_CHANGE:
+    case VELOCITY:
+    case CHANNEL:
+    case MSB:
+    case LSB:
+        if (val->i < 0 || 127 < val->i) {
+            push_error("%s is out of range. 0-127", e2Keyword(type));
+            return false;
+        } 
+        break;
+    case NUMERATOR:
+        if (val->i < 1 || 32 <  val->i) {
+            push_error("numerator of time signature is out of range. 1-32");
+            return false;
+        } 
+        break;
+    case DENOMINATOR:
+        if (!((((((uint32_t)val->i) - 1U) & (val->i)) == 0))) {
+            push_error("denominator of time signature is not power of 2.");
+            return false;
+        } 
+        if (val->i < 2 || 32 <  val->i) {
+            push_error("denominator of time signature is out of range. 2-32");
+            return false;
+        } 
+        break;
+    case GATETIME:
+    case STEP:
+        if (0 > val->i) {
+            push_error("%s is minus.", e2Keyword(type));
+            return false;
+        } 
+        break;
+    case TEMPO:
+        if (val->f < 10.0 || 300.0 < val->f) {
+            push_error("tempo is out of range. 10.0-300.0");
+            return false;
+        } 
+        break;
+    }
+
+    return true;
+}
+
+int ParseContext::noteNo2Int(char *noteNo)
+{
+    char octave[4] = {0};
+    char *pOctave = octave;
+
+    char *pNoteNo = noteNo;
+    while (*pNoteNo) {
+        *pNoteNo = toupper(*pNoteNo);
+        if (*pNoteNo == '-' || *pNoteNo == '+' || isdigit(*pNoteNo)) {
+            *pOctave = *pNoteNo;
+            *pNoteNo = '\0';
+            *(++pOctave) = '\0';
+        }
+        ++pNoteNo;
+    }
+
+    static std::unordered_map<std::string, int> noteMap;
+    if (noteMap.empty()) {
+        noteMap[std::string("C")]  = 24;
+        noteMap[std::string("C#")] = 25;
+        noteMap[std::string("D")]  = 26;
+        noteMap[std::string("D#")] = 27;
+        noteMap[std::string("E")]  = 28;
+        noteMap[std::string("F")]  = 29;
+        noteMap[std::string("F#")] = 30;
+        noteMap[std::string("G")]  = 31;
+        noteMap[std::string("G#")] = 32;
+        noteMap[std::string("A")]  = 33;
+        noteMap[std::string("A#")] = 34;
+        noteMap[std::string("B")]  = 35;
+    }
+
+    int baseKey = noteMap[noteNo];
+    if (!baseKey) {
+        return -1;
+    }
+    else {
+        currentOctaveNo = '\0' != octave[0] ? atoi(octave) : currentOctaveNo;
+        return baseKey * 12 * currentOctaveNo;
     }
 }
