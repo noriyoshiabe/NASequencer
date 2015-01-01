@@ -3,10 +3,12 @@
 
 int main(int argc, char **argv)
 {
-    try {
-        Sequence *sequence = Parser::parse("./test.namidi");
-    } catch (Parser::Exception &e) {
-        printf("%s\n", e.what());
+    ParseContext *context = Parser::parse("./test.namidi");
+    for (std::string *error : context->errors) {
+        printf("%s\n", error->c_str());
+    }
+    for (std::string *warning : context->warnings) {
+        printf("%s\n", warning->c_str());
     }
     return 0;
 }

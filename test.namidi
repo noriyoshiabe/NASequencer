@@ -42,7 +42,7 @@ track "syntax sample"
   // 曲の途中で拍子を変える
   // step=48:0:0 で48小節目の1拍目のつもり
   //time_signature step=49:1:0:0:0:0:0 4/4
-  time_signature step=48:1:0 4/4
+  time_signature step=120 step=48:1:0 4/4
   time_signature step=1:0 4/4
   tempo step=0 120.0
 
@@ -50,7 +50,7 @@ track "syntax sample"
 track_end
 
 //track name='drums' channel=9
-track channel=9
+track channel=9 msb=1 lsb=1
 
   /*
    * 最初はパターンは実装せず、includeでDRYに出来る仕組み

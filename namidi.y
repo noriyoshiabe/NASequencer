@@ -207,7 +207,7 @@ assign_tempo:          expr        { INTERPRET_ASSIGN(TEMPO, float, $<f>1) };
 assign_name:           string_expr { INTERPRET_ASSIGN(NAME, char *, $<s>1) };
 assign_time_signature: expr DIVISION expr {
                                      INTERPRET_ASSIGN(NUMERATOR, int, $<f>1);
-                                     INTERPRET_ASSIGN(DENOMINATOR, int, $<f>2);};
+                                     INTERPRET_ASSIGN(DENOMINATOR, int, $<f>3);};
 assign_program_change: expr { INTERPRET_ASSIGN(PROGRAM_CHANGE, int, $<f>1) };
 assign_note_no_list:  note_no_list_expr { INTERPRET_ASSIGN(NOTE_NO_LIST, char *, $<s>1) };
 
