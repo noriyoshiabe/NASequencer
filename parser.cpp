@@ -293,8 +293,11 @@ void ParseContext::assign(int modifier, void *arg)
         val->f = _C(float, arg);
         break;
     case NAME:
+        val->s = _C(char *, arg);
+        break;
     case NOTE_NO_LIST:
         val->s = _C(char *, arg);
+        parseNoteNo(val->s);
         break;
     case M_B_TICK:
         val->s = _C(char *, arg);
@@ -322,7 +325,6 @@ bool ParseContext::canBeLastValue(int type)
     case CHANNEL:
     case MSB:
     case LSB:
-    case NOTE_NO_LIST:
     case NUMERATOR:
     case DENOMINATOR:
         return true;
@@ -627,34 +629,10 @@ void ParseContext::note()
     Value *gatetime = getValue(GATETIME);
 
     if (checkValue(channel, CHANNEL) && checkValue(velocity, VELOCITY) && checkValue(gatetime, GATETIME)) {
-        Value *noteNoList = getValue(NOTE_NO_LIST);
-        uint32_t notes[32];
-        size_t count = 0;
-
-        char *str = noteNoList->s;
-        char *token;
-        while ((token = strtok(str, ","))) {
-            str = NULL;
-
-            if (32 <= count) {
-                push_warning("note no count is more than 32. ignored.");
-            }
-            else {
-                int noteNo = noteNo2Int(token);
-                if (noteNo < 0 || 127 < noteNo) {
-                    push_error("note no is out of range. C-2 to G8");
-                }
-                else {
-                    printf("########### %d\n", noteNo);
-                    notes[count++] = noteNo;
-                }
-            }
-        }
-
-        if (0 < count) {
+        if (0 < currentNoteCount) {
             uint32_t tick = calcTick();
-            for (int i = 0; i < count; ++i) {
-                currentTrack->events.push_back(new NoteEvent(tick, channel->i, notes[i], velocity->i, gatetime->i));
+            for (int i = 0; i < currentNoteCount; ++i) {
+                currentTrack->events.push_back(new NoteEvent(tick, channel->i, currentNotes[i], velocity->i, gatetime->i));
             }
         }
     }
@@ -726,6 +704,30 @@ bool ParseContext::checkValue(Value *val, int type)
     }
 
     return true;
+}
+
+void ParseContext::parseNoteNo(char *noteNoList)
+{
+    currentNoteCount = 0;
+
+    char *str = noteNoList;
+    char *token;
+    while ((token = strtok(str, ","))) {
+        str = NULL;
+
+        if (32 <= currentNoteCount) {
+            push_warning("note no count is more than 32. ignored.");
+        }
+        else {
+            int noteNo = noteNo2Int(token);
+            if (noteNo < 0 || 127 < noteNo) {
+                push_error("note no is out of range. C-2 to G8");
+            }
+            else {
+                currentNotes[currentNoteCount++] = noteNo;
+            }
+        }
+    }
 }
 
 int ParseContext::noteNo2Int(char *noteNo)

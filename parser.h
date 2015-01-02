@@ -39,6 +39,8 @@ private:
 
     uint32_t currentTick = 0;
     int currentOctaveNo = 0;
+    uint32_t currentNotes[32];
+    size_t currentNoteCount = 0;
     Track *currentTrack = NULL;
 
     const char* e2Key(int e);
@@ -66,6 +68,7 @@ private:
     void note();
     bool checkCurrentTrack();
     bool checkValue(Value *val, int type);
+    void parseNoteNo(char *noteNoList);
     int noteNo2Int(char *noteNo);
 
 public:
