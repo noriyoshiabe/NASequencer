@@ -16,7 +16,7 @@ private:
         int r = resolution * 4 / denominator;
         int m_l = r * numerator;
         int m = tick / m_l + 1;
-        int b = tick / r + 1;
+        int b = (tick % m_l) / r + 1;
         int t = tick % r;
         sprintf(buffer, "%03d:%02d:%03d", m, b, t);
         return buffer;

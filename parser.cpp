@@ -481,7 +481,7 @@ int ParseContext::parseMBTick(char *str, bool includeMeasure)
         token = strtok(NULL, ":");
     }
 
-    step += atoi(token) * sequence->resolution * 4 / denominator;
+    step += (atoi(token) - 1) * sequence->resolution / denominator * 4;
     token = strtok(NULL, ":");
     step += atoi(token);
 
