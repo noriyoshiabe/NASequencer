@@ -11,10 +11,12 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreServices/CoreServices.h>
 
+class FSWatcher;
+
 class FSWatcherListener {
 public:
-    virtual void onFileChanged(std::vector<std::string> &changedFiles) = 0;
-    virtual void onError(int error, char *message) = 0;
+    virtual void onFileChanged(FSWatcher *fswatcher, std::vector<std::string> &changedFiles) = 0;
+    virtual void onError(FSWatcher *fswatcher, int error, char *message) = 0;
 };
 
 class FSWatcher {

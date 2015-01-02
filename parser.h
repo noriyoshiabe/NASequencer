@@ -29,7 +29,7 @@ struct Value {
     char *s;
 };
 
-class ParseContext {
+class ParseContext : public SequenceElement {
 private:
     std::unordered_map<int, Value *> localValues;
     std::unordered_map<int, Value *> lastValues;
@@ -97,4 +97,16 @@ public:
             delete warning;
         }
     }
+
+    void accept(SequenceVisitor *visitor) {
+        visitor->visit(this);
+
+        sequence->accept(visitor);
+        for (Track *track : sequence->tracks) {
+            track->accept(visitor);
+            for (MidiEvent *event : track->events) {
+                event->accept(visitor);
+            }
+        }
+    };
 };

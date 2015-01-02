@@ -23,8 +23,7 @@ private:
     }
 
 public:
-    void write(ParseContext *context);
-
+    void visit(ParseContext *elem);
     void visit(Sequence *elem);
     void visit(Track *elem);
     void visit(NameEvent *elem);

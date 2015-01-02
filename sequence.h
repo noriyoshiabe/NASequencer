@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <string>
 
+class ParseContext;
 class Sequence;
 class Track;
 class NameEvent;
@@ -17,6 +18,7 @@ class TrackEndEvent;
 
 class SequenceVisitor {
 public:
+    virtual void visit(ParseContext *elem) = 0;
     virtual void visit(Sequence *elem) = 0;
     virtual void visit(Track *elem) = 0;
     virtual void visit(NameEvent *elem) = 0;

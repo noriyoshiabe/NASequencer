@@ -45,7 +45,7 @@ void FSWatcher::registerFilepath(const char *filepath)
     char *actualpath = realpath(filepath, buf);
 
     if (!(clock = getModifiedTime(actualpath))) {
-        listener->onError(errno, strerror(errno));
+        listener->onError(this, errno, strerror(errno));
     }
     else {
         files.emplace(std::string(actualpath), *clock);
@@ -89,7 +89,7 @@ void FSWatcher::onFSChanged()
 
     for (std::pair<std::string, struct tm> entry : files) {
         if (!(clock = getModifiedTime(entry.first.c_str()))) {
-            listener->onError(errno, strerror(errno));
+            listener->onError(this, errno, strerror(errno));
         }
         else {
             if (memcmp(clock, &entry.second, sizeof(struct tm))) {
@@ -99,7 +99,7 @@ void FSWatcher::onFSChanged()
     }
 
     if (!changedFiles.empty()) {
-        listener->onFileChanged(changedFiles);
+        listener->onFileChanged(this, changedFiles);
     }
 }
 

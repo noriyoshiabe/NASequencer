@@ -2,7 +2,7 @@
 
 #include "cstdio"
 
-void ConsoleWriter::write(ParseContext *context)
+void ConsoleWriter::visit(ParseContext *context)
 {
     if (!context->errors.empty()) {
         printf("[Errors] -------------------------------------------------------------------------\n");
@@ -18,14 +18,6 @@ void ConsoleWriter::write(ParseContext *context)
             printf("%s\n", warning->c_str());
         }
         printf("\n");
-    }
-
-    context->sequence->accept(this);
-    for (Track *track : context->sequence->tracks) {
-        track->accept(this);
-        for (MidiEvent *event : track->events) {
-            event->accept(this);
-        }
     }
 }
 
