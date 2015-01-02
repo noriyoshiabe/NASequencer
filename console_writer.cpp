@@ -4,15 +4,20 @@
 
 void ConsoleWriter::write(ParseContext *context)
 {
-    for (std::string *error : context->errors) {
+    if (!context->errors.empty()) {
+        printf("[Errors] -------------------------------------------------------------------------\n");
+        for (std::string *error : context->errors) {
+            printf("%s\n", error->c_str());
+        }
         printf("\n");
-        printf("errors ---------------------------------------------------------------------------\n");
-        printf("%s\n", error->c_str());
     }
-    for (std::string *warning : context->warnings) {
+
+    if (!context->warnings.empty()) {
+        printf("[Warnings] -----------------------------------------------------------------------\n");
+        for (std::string *warning : context->warnings) {
+            printf("%s\n", warning->c_str());
+        }
         printf("\n");
-        printf("warnings -------------------------------------------------------------------------\n");
-        printf("%s\n", warning->c_str());
     }
 
     context->sequence->accept(this);
@@ -26,16 +31,15 @@ void ConsoleWriter::write(ParseContext *context)
 
 void ConsoleWriter::visit(Sequence *elem)
 {
-    printf("\n");
     printf("[Sequence] resolution: %d  track count: %lu\n", elem->resolution, elem->tracks.size());
     printf("==================================================================================\n");
+    printf("\n");
 
     resolution = elem->resolution;
 }
 
 void ConsoleWriter::visit(Track *elem)
 {
-    printf("\n");
     printf("[Track] no: %d\n", ++trackCount);
     printf("----------------------------------------------------------------------------------\n");
     printf("\n");
@@ -82,4 +86,5 @@ void ConsoleWriter::visit(MarkerEvent *elem)
 void ConsoleWriter::visit(TrackEndEvent *elem)
 {
     printf("%s | [Track end]\n", location(elem->tick));
+    printf("\n");
 }
