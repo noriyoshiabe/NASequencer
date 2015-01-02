@@ -534,7 +534,7 @@ void ParseContext::tempo()
 
     Value *val = getValue(TEMPO);
     if (checkValue(val, TEMPO)) {
-        //currentTrack->events.push_back(new TempoEvent(calcTick(), val->f));
+        currentTrack->events.push_back(new TempoEvent(calcTick(), val->f));
     }
 }
 
@@ -546,7 +546,7 @@ void ParseContext::track()
 
     Value *val = getValue(NAME);
     if (val) {
-        //currentTrack->events.push_back(new NameEvent(calcTick(), val->s));
+        currentTrack->events.push_back(new NameEvent(calcTick(), val->s));
     }
 }
 
@@ -556,7 +556,7 @@ void ParseContext::trackEnd()
         return;
     }
 
-    //currentTrack->events.push_back(new TrackEndEvent(calcTick()));
+    currentTrack->events.push_back(new TrackEndEvent(calcTick()));
     currentTrack = NULL;
 }
 
@@ -570,7 +570,7 @@ void ParseContext::timeSignature()
     Value *denominator = getValue(DENOMINATOR);
 
     if (checkValue(numerator, NUMERATOR) && checkValue(denominator, DENOMINATOR)) {
-        //currentTrack->events.push_back(new TimeSignatureEvent(calcTick(), numerator->i, denominator->i));
+        currentTrack->events.push_back(new TimeSignatureEvent(calcTick(), numerator->i, denominator->i));
     }
 }
 
@@ -585,7 +585,7 @@ void ParseContext::bankSelect()
     Value *lsb = getValue(LSB);
 
     if (checkValue(channel, CHANNEL) && checkValue(msb, MSB) && checkValue(lsb, LSB)) {
-        //currentTrack->events.push_back(new BankSelectEvent(calcTick(), channel->i, msb->i, lsb->i));
+        currentTrack->events.push_back(new BankSelectEvent(calcTick(), channel->i, msb->i, lsb->i));
     }
 }
 
@@ -599,7 +599,7 @@ void ParseContext::programChange()
     Value *programNo = getValue(PROGRAM_CHANGE);
 
     if (checkValue(channel, CHANNEL) && checkValue(programNo, PROGRAM_CHANGE)) {
-        //currentTrack->events.push_back(new ProgramChangeEvent(calcTick(), channel->i, programNo->i));
+        currentTrack->events.push_back(new ProgramChangeEvent(calcTick(), channel->i, programNo->i));
     }
 }
 
@@ -612,7 +612,7 @@ void ParseContext::marker()
     Value *name = getValue(NAME);
 
     if (checkValue(name, NAME)) {
-        //currentTrack->events.push_back(new MarkerEvent(calcTick(), name->s));
+        currentTrack->events.push_back(new MarkerEvent(calcTick(), name->s));
     }
 }
 
@@ -654,7 +654,7 @@ void ParseContext::note()
         if (0 < count) {
             uint32_t tick = calcTick();
             for (int i = 0; i < count; ++i) {
-                //currentTrack->events.push_back(new NoteEvent(tick, notes[i]));
+                currentTrack->events.push_back(new NoteEvent(tick, channel->i, notes[i], velocity->i, gatetime->i));
             }
         }
     }
