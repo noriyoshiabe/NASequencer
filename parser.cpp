@@ -635,7 +635,6 @@ void ParseContext::note()
         char *token;
         while ((token = strtok(str, ","))) {
             str = NULL;
-            printf("########### %s\n", token);
 
             if (32 <= count) {
                 push_warning("note no count is more than 32. ignored.");
@@ -767,6 +766,6 @@ int ParseContext::noteNo2Int(char *noteNo)
     }
     else {
         currentOctaveNo = '\0' != octave[0] ? atoi(octave) : currentOctaveNo;
-        return baseKey * 12 * currentOctaveNo;
+        return baseKey + 12 * currentOctaveNo;
     }
 }
