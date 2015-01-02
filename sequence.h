@@ -4,7 +4,37 @@
 #include <cstdlib>
 #include <string>
 
-class MidiEvent {
+class Sequence;
+class Track;
+class NameEvent;
+class TempoEvent;
+class TimeSignatureEvent;
+class BankSelectEvent;
+class ProgramChangeEvent;
+class NoteEvent;
+class MarkerEvent;
+class TrackEndEvent;
+
+class SequenceVisitor {
+public:
+    virtual void visit(Sequence *elem) = 0;
+    virtual void visit(Track *elem) = 0;
+    virtual void visit(NameEvent *elem) = 0;
+    virtual void visit(TempoEvent *elem) = 0;
+    virtual void visit(TimeSignatureEvent *elem) = 0;
+    virtual void visit(BankSelectEvent *elem) = 0;
+    virtual void visit(ProgramChangeEvent *elem) = 0;
+    virtual void visit(NoteEvent *elem) = 0;
+    virtual void visit(MarkerEvent *elem) = 0;
+    virtual void visit(TrackEndEvent *elem) = 0;
+};
+
+class SequenceElement {
+public:
+    virtual void accept(SequenceVisitor *visitor) = 0;
+};
+
+class MidiEvent : public SequenceElement {
 public:
     uint32_t tick;
 
@@ -12,28 +42,6 @@ public:
         this->tick = tick;
     }
     virtual ~MidiEvent() {}
-
-    virtual std::string toString() { return std::string("MidiEvent: ") + std::to_string(tick); };
-};
-
-class TempoEvent : public MidiEvent {
-public:
-    float tempo;
-
-    TempoEvent(uint32_t tick, float tempo) : MidiEvent(tick) {
-        this->tempo = tempo;
-    }
-};
-
-class TimeSignatureEvent : public MidiEvent {
-public:
-    uint8_t numerator;
-    uint8_t denominator;
-
-    TimeSignatureEvent(uint32_t tick, uint8_t numerator, uint8_t denominator) : MidiEvent(tick) {
-        this->numerator = numerator;
-        this->denominator = denominator;
-    }
 };
 
 class TextEvent : public MidiEvent {
@@ -53,14 +61,60 @@ public:
     }
 };
 
+class Sequence : public SequenceElement {
+public:
+    uint16_t resolution;
+    std::vector<Track *> tracks;
+
+    void accept(SequenceVisitor *visitor) {
+        visitor->visit(this);
+    };
+};
+
+class Track : public SequenceElement {
+public:
+    std::vector<MidiEvent *> events;
+
+    void accept(SequenceVisitor *visitor) {
+        visitor->visit(this);
+    };
+};
+
 class NameEvent : public TextEvent {
 public:
     NameEvent(uint32_t tick, const char *text) : TextEvent(tick, text) {}
+
+    void accept(SequenceVisitor *visitor) {
+        visitor->visit(this);
+    };
 };
 
-class TrackEndEvent : public MidiEvent {
+class TempoEvent : public MidiEvent {
 public:
-    TrackEndEvent(uint32_t tick) : MidiEvent(tick) {}
+    float tempo;
+
+    TempoEvent(uint32_t tick, float tempo) : MidiEvent(tick) {
+        this->tempo = tempo;
+    }
+
+    void accept(SequenceVisitor *visitor) {
+        visitor->visit(this);
+    };
+};
+
+class TimeSignatureEvent : public MidiEvent {
+public:
+    uint8_t numerator;
+    uint8_t denominator;
+
+    TimeSignatureEvent(uint32_t tick, uint8_t numerator, uint8_t denominator) : MidiEvent(tick) {
+        this->numerator = numerator;
+        this->denominator = denominator;
+    }
+
+    void accept(SequenceVisitor *visitor) {
+        visitor->visit(this);
+    };
 };
 
 class BankSelectEvent : public MidiEvent {
@@ -74,6 +128,10 @@ public:
         this->msb = msb;
         this->lsb = lsb;
     }
+
+    void accept(SequenceVisitor *visitor) {
+        visitor->visit(this);
+    };
 };
 
 class ProgramChangeEvent : public MidiEvent {
@@ -85,6 +143,10 @@ public:
         this->channel = channel;
         this->programNo = programNo;
     }
+
+    void accept(SequenceVisitor *visitor) {
+        visitor->visit(this);
+    };
 };
 
 class NoteEvent : public MidiEvent {
@@ -100,20 +162,26 @@ public:
         this->velocity = velocity;
         this->gatetime = gatetime;
     }
+
+    void accept(SequenceVisitor *visitor) {
+        visitor->visit(this);
+    };
 };
 
 class MarkerEvent : public TextEvent {
 public:
     MarkerEvent(uint32_t tick, const char *text) : TextEvent(tick, text) {}
+
+    void accept(SequenceVisitor *visitor) {
+        visitor->visit(this);
+    };
 };
 
-class Track {
+class TrackEndEvent : public MidiEvent {
 public:
-    std::vector<MidiEvent *> events;
-};
+    TrackEndEvent(uint32_t tick) : MidiEvent(tick) {}
 
-class Sequence {
-public:
-    uint16_t resolution;
-    std::vector<Track *> tracks;
+    void accept(SequenceVisitor *visitor) {
+        visitor->visit(this);
+    };
 };

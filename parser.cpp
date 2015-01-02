@@ -164,7 +164,7 @@ const char* ParseContext::e2Keyword(int e)
 
 int ParseContext::interpret(int action, int modifier, void *arg)
 {
-#if 1
+#if 0
     printf("%s %s\n", e2Key(action), e2Key(modifier));
 #endif
 

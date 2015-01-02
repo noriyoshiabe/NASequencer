@@ -31,8 +31,6 @@ struct Value {
 
 class ParseContext {
 private:
-    Sequence *sequence;
-
     std::unordered_map<int, Value *> localValues;
     std::unordered_map<int, Value *> lastValues;
     std::unordered_map<int, Value *> defaultValues;
@@ -72,6 +70,8 @@ private:
     int noteNo2Int(char *noteNo);
 
 public:
+    Sequence *sequence;
+
     int interpret(int action, int modifier, void *arg);
 
     void push_error(const char *format, ...);
@@ -96,11 +96,5 @@ public:
         for (std::string *warning : warnings) {
             delete warning;
         }
-    }
-
-    Sequence *getSequence() {
-        Sequence *ret = sequence;
-        sequence = NULL;
-        return ret;
     }
 };

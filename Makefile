@@ -1,5 +1,5 @@
-namidi: main.cpp parser.cpp libnamidiyy.a
-	g++ -std=c++11 -o namidi main.cpp parser.cpp -L. -lnamidiyy
+namidi: main.cpp parser.cpp libnamidiyy.a console_writer.cpp
+	g++ -std=c++11 -o namidi main.cpp parser.cpp console_writer.cpp -L. -lnamidiyy
 
 libnamidiyy.a: namidi.tab.o namidi.yy.o
 	ar rv libnamidiyy.a namidi.tab.o namidi.yy.o
