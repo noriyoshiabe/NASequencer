@@ -100,13 +100,5 @@ public:
 
     void accept(SequenceVisitor *visitor) {
         visitor->visit(this);
-
-        sequence->accept(visitor);
-        for (Track *track : sequence->tracks) {
-            track->accept(visitor);
-            for (MidiEvent *event : track->events) {
-                event->accept(visitor);
-            }
-        }
     };
 };

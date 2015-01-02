@@ -3,6 +3,7 @@
 #include "parser.h"
 #include "sequence.h"
 #include "fswatcher.h"
+#include "player.h"
 
 #include <functional>
 #include <deque>
@@ -19,6 +20,7 @@ private:
     ParseContext *context;
     SequenceVisitor *visitor;
     FSWatcher *watcher;
+    Player *player;
     std::string currentFile;
 
     void postRunLoop(std::function<void()> func);

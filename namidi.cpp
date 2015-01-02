@@ -64,6 +64,8 @@ void NAMidi::readFile()
     if (visitor) {
         context->accept(visitor);
     }
+
+    context->accept(player);
 }
 
 void NAMidi::start()
@@ -94,10 +96,13 @@ void NAMidi::finish()
 
 NAMidi::NAMidi()
 {
+    player = new Player();
 }
 
 NAMidi::~NAMidi()
 {
+    delete player;
+
     if (thread) {
         thread->join();
         delete thread;

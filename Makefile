@@ -1,5 +1,5 @@
-namidi: main.cpp parser.cpp libnamidiyy.a console_writer.cpp fswatcher.cpp namidi.cpp
-	g++ -std=c++11 -o namidi main.cpp namidi.cpp parser.cpp console_writer.cpp fswatcher.cpp -L. -lnamidiyy -framework Foundation -framework CoreServices
+namidi: main.cpp parser.cpp libnamidiyy.a console_writer.cpp fswatcher.cpp namidi.cpp midi_client.cpp player.cpp
+	g++ -std=c++11 -o namidi main.cpp namidi.cpp parser.cpp player.cpp console_writer.cpp fswatcher.cpp midi_client.cpp -L. -lnamidiyy -framework Foundation -framework CoreServices -framework CoreMidi
 
 libnamidiyy.a: namidi.tab.o namidi.yy.o
 	ar rv libnamidiyy.a namidi.tab.o namidi.yy.o

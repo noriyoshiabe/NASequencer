@@ -19,6 +19,14 @@ void ConsoleWriter::visit(ParseContext *context)
         }
         printf("\n");
     }
+
+    context->sequence->accept(this);
+    for (Track *track : context->sequence->tracks) {
+        track->accept(this);
+        for (MidiEvent *event : track->events) {
+            event->accept(this);
+        }
+    }
 }
 
 void ConsoleWriter::visit(Sequence *elem)
