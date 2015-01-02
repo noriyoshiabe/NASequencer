@@ -1,10 +1,12 @@
 #include "parser.h"
 #include "console_writer.h"
-#include <stdio.h>
+#include <cstdio>
 #include <thread>
 #include <iostream>
 
-#include <signal.h>
+#include <csignal>
+
+#include <libgen.h>
 
 /*
 std::mutex mtx;
@@ -32,21 +34,32 @@ void signal_handler(int signo)
     isExit = true;
 }
 
-class NAMidiClient : public FSWatcherListener {
+class NAMidi : public FSWatcherListener {
 public:
-    void onFileChanged(std::vector<std::string> changedFiles) {
+    void onFileChanged(std::vector<std::string> &changedFiles) {
+        for (std::string filepath : changedFiles) {
+            printf("--- %s\n", filepath.c_str());
+        }
     };
+
+    void onError(int error, char *message) {
+        printf("--- error %d - %s\n", error, message);
+    }
 };
 
-int main(int argc, char **argv)
+#include <ctime>
+int main(int argc, char *argv[])
 {
+    if (2 != argc) {
+        printf("Usage: ./namidi <filepath>\n\n");
+        return -1;
+    }
     //th.join();
-    
+    //
 
     //ParseContext *context = Parser::parse("./test.namidi");
     //ConsoleWriter writer;
     //writer.write(context);
-
     //delete context;
 
     if (SIG_ERR == signal(SIGINT, signal_handler)) {
@@ -56,8 +69,9 @@ int main(int argc, char **argv)
     
     //std::thread th(worker);
 
-    FSWatcher watcher(NULL);
-    watcher.registerFilepath("./test.namidi");
+    NAMidi namidi;
+    FSWatcher watcher(&namidi);
+    watcher.registerFilepath(argv[1]);
     watcher.start();
 
     while (!isExit) {

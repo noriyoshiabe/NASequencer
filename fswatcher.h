@@ -3,20 +3,25 @@
 #include <vector>
 #include <string>
 #include <set>
+#include <map>
 #include <thread>
+
+#include <ctime>
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreServices/CoreServices.h>
 
 class FSWatcherListener {
 public:
-    virtual void onFileChanged(std::vector<std::string> changedFiles) = 0;
+    virtual void onFileChanged(std::vector<std::string> &changedFiles) = 0;
+    virtual void onError(int error, char *message) = 0;
 };
 
 class FSWatcher {
 private:
     FSWatcherListener *listener;
-    std::set<std::string> filepaths;
+    std::map<std::string, struct tm> files;
+    std::set<std::string> dirpaths;
 
     std::thread *thread;
     FSEventStreamRef stream;
@@ -26,6 +31,7 @@ public:
     void registerFilepath(const char *filepath);
     void start();
     void run();
+    void onFSChanged();
     void finish();
 
     FSWatcher(FSWatcherListener *listener) {
