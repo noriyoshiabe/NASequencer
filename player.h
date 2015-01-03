@@ -28,7 +28,7 @@ private:
     };
 
     MidiClient client;
-    std::list<MidiMessage> messages;
+    std::list<MidiMessage *> messages;
 
     std::thread *thread;
 

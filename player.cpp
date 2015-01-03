@@ -6,7 +6,7 @@
 
 void Player::run()
 {
-    std::list<MidiMessage>::iterator it = messages.begin();
+    std::list<MidiMessage *>::iterator it = messages.begin();
 
     auto startTime = std::chrono::high_resolution_clock::now();
 
@@ -19,8 +19,9 @@ void Player::run()
         auto msec = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
         uint32_t current = msec.count();
 
-        if (it->msec <= current) {
-            client.send(it->bytes, it->length);
+        MidiMessage *message = *it;
+        if (message->msec <= current) {
+            client.send(message->bytes, message->length);
             ++it;
         }
 
@@ -37,6 +38,8 @@ void Player::visit(ParseContext *context)
 
     resolution = context->sequence->resolution;
     tempoTable.clear();
+
+    for_each(messages.begin(), messages.end(), [](MidiMessage *message) { delete message; });
     messages.clear();
 
     for (Track *track : context->sequence->tracks) {
@@ -45,9 +48,9 @@ void Player::visit(ParseContext *context)
         }
     }
 
-    messages.sort([](MidiMessage &a, MidiMessage &b) { return a.tick > b.tick; });
-    for (std::list<MidiMessage>::iterator it; it != messages.end(); ++it) {
-        it->msec = tick2msec(it->tick);
+    messages.sort([](MidiMessage *a, MidiMessage *b) { return a->tick < b->tick; });
+    for (MidiMessage *message : messages) {
+        message->msec = tick2msec(message->tick);
     }
 
     if (thread) {
@@ -86,43 +89,53 @@ void Player::visit(TempoEvent *elem)
 
 void Player::visit(BankSelectEvent *elem)
 {
-    MidiMessage message;
-    message.bytes[0] = 0xB0 | (0x0F & elem->channel);
-    message.bytes[1] = 0x00;
-    message.bytes[2] = elem->msb;
-    message.length = 3;
-    message.tick = elem->tick;
+    MidiMessage *message;
+
+    message = (MidiMessage *)malloc(sizeof(MidiMessage));
+    message->bytes[0] = 0xB0 | (0x0F & elem->channel);
+    message->bytes[1] = 0x00;
+    message->bytes[2] = elem->msb;
+    message->length = 3;
+    message->tick = elem->tick;
     messages.push_back(message);
 
-    message.bytes[1] = 0x20;
-    message.bytes[2] = elem->lsb;
-    message.tick = elem->tick;
+    message = (MidiMessage *)malloc(sizeof(MidiMessage));
+    message->bytes[0] = 0xB0 | (0x0F & elem->channel);
+    message->bytes[1] = 0x20;
+    message->bytes[2] = elem->lsb;
+    message->length = 3;
+    message->tick = elem->tick;
     messages.push_back(message);
 }
 
 void Player::visit(ProgramChangeEvent *elem)
 {
-    MidiMessage message;
-    message.bytes[0] = 0xC0 | (0x0F & elem->channel);
-    message.bytes[1] = elem->programNo;
-    message.length = 2;
-    message.tick = elem->tick;
+    MidiMessage *message = (MidiMessage *)malloc(sizeof(MidiMessage));
+    message->bytes[0] = 0xC0 | (0x0F & elem->channel);
+    message->bytes[1] = elem->programNo;
+    message->length = 2;
+    message->tick = elem->tick;
     messages.push_back(message);
 }
 
 void Player::visit(NoteEvent *elem)
 {
-    MidiMessage message;
-    message.bytes[0] = 0x90 | (0x0F & elem->channel);
-    message.bytes[1] = elem->noteNo;
-    message.bytes[2] = elem->velocity;
-    message.length = 3;
-    message.tick = elem->tick;
+    MidiMessage *message;
+
+    message = (MidiMessage *)malloc(sizeof(MidiMessage));
+    message->bytes[0] = 0x90 | (0x0F & elem->channel);
+    message->bytes[1] = elem->noteNo;
+    message->bytes[2] = elem->velocity;
+    message->length = 3;
+    message->tick = elem->tick;
     messages.push_back(message);
 
-    message.bytes[0] = 0x80 | (0x0F & elem->channel);
-    message.bytes[2] = 0x00;
-    message.tick = elem->tick + elem->gatetime;
+    message = (MidiMessage *)malloc(sizeof(MidiMessage));
+    message->bytes[0] = 0x80 | (0x0F & elem->channel);
+    message->bytes[1] = elem->noteNo;
+    message->bytes[2] = 0x00;
+    message->length = 3;
+    message->tick = elem->tick + elem->gatetime;
     messages.push_back(message);
 }
 
