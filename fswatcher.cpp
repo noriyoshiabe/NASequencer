@@ -49,7 +49,7 @@ void FSWatcher::registerFilepath(const char *filepath)
     }
     else {
         memcpy(&lastModified, clock, sizeof(struct tm));
-        files.emplace(std::string(filepath));
+        files.emplace(std::string(actualpath));
         dirpaths.emplace(std::string(dirname(actualpath)));
     }
 }
@@ -87,11 +87,6 @@ void FSWatcher::onFSChanged()
 {
     struct tm* clock;
 
-    time_t now = time(NULL);
-    if (3 > (now - lastSeconds)) {
-        return;
-    }
-
     for (std::string file : files) {
         if (!(clock = getModifiedTime(file.c_str()))) {
             listener->onError(this, errno, strerror(errno));
@@ -100,7 +95,6 @@ void FSWatcher::onFSChanged()
             if (memcmp(clock, &lastModified, sizeof(struct tm))) {
                 memcpy(&lastModified, clock, sizeof(struct tm));
                 listener->onFileChanged(this, file);
-                lastSeconds = now;
                 break;
             }
         }

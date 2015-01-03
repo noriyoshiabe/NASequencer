@@ -29,7 +29,6 @@ private:
     FSEventStreamRef stream;
     CFRunLoopRef runloop;
 
-    time_t lastSeconds;
     struct tm lastModified;;
 
 public:
