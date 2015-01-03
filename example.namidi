@@ -34,7 +34,7 @@ note         A#
 set channel=1
 
 bank_select step=0 msb=0 lsb=0
-program_change step=0 1
+program_change step=0 2
 
 note C2,E,G
   tie
@@ -51,26 +51,6 @@ note A
 note B
   tie
 note C3,E,G,C
-  tie
-
-bank_select step=0 msb=0 lsb=0
-program_change step=0 3
-
-note C2,E,G
-  tie
-  tie
-  tie
-note D
-  tie
-note E
-note F
-note G
-  tie
-note A
-  tie
-note B
-  tie
-note C3,E,G,C
-  tie
+  rest
 
 track_end
