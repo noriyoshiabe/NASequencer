@@ -70,6 +70,8 @@ static char *trim_last(char *str)
 %token MARKER
 %token INCLUDE
 %token NOTE
+%token REST
+%token TIE
 
 %token VELOCITY
 %token GATETIME
@@ -133,7 +135,9 @@ statement: resolution     { INTERPRET_STATEMENT(RESOLUTION); }
          | program_change { INTERPRET_STATEMENT(PROGRAM_CHANGE); }
          | marker         { INTERPRET_STATEMENT(MARKER); }
          | include        { INTERPRET_STATEMENT(INCLUDE); }
-         | note           { INTERPRET_STATEMENT(NOTE); };
+         | note           { INTERPRET_STATEMENT(NOTE); }
+         | rest           { INTERPRET_STATEMENT(REST); }
+         | tie            { INTERPRET_STATEMENT(TIE); };
 
 resolution: RESOLUTION assign_resolution;
 
@@ -174,6 +178,12 @@ note: NOTE
     | NOTE assign_note_no_list assign_list
     | NOTE assign_list
     | NOTE assign_list assign_note_no_list;
+
+rest: REST
+    | REST assign_list;
+
+tie: TIE
+   | TIE assign_list;
 
 expr: INTEGER                   { $<f>$ = atof(yytext); }
     | FLOAT                     { $<f>$ = atof(yytext); }

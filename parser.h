@@ -35,6 +35,8 @@ private:
     std::unordered_map<int, Value *> lastValues;
     std::unordered_map<int, Value *> defaultValues;
 
+    std::vector<NoteEvent *> lastNoteEvents;
+
     uint32_t currentTick = 0;
     int currentOctaveNo = 0;
     uint32_t currentNotes[32];
@@ -64,6 +66,8 @@ private:
     void programChange();
     void marker();
     void note();
+    void rest();
+    void tie();
     bool checkCurrentTrack();
     bool checkValue(Value *val, int type);
     void parseNoteNo(char *noteNoList);

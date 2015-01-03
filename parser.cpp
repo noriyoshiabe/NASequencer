@@ -103,6 +103,8 @@ const char* ParseContext::e2Key(int e)
     case MARKER: return _S(MARKER);
     case INCLUDE: return _S(INCLUDE);
     case NOTE: return _S(NOTE);
+    case REST: return _S(REST);
+    case TIE: return _S(TIE);
     case ASSIGN: return _S(ASSIGN);
     case DEFAULT: return _S(DEFAULT);
     case NUMERATOR: return _S(NUMERATOR);
@@ -140,6 +142,8 @@ const char* ParseContext::e2Keyword(int e)
     case MARKER: return "marker";
     case INCLUDE: return "include";
     case NOTE: return "note";
+    case REST: return "rest";
+    case TIE: return "tie";
     case ASSIGN: return "assign";
     case DEFAULT: return "default";
     case NUMERATOR:
@@ -170,6 +174,10 @@ int ParseContext::interpret(int action, int modifier, void *arg)
 
     switch (action) {
     case STATEMENT:
+        if (TIE != modifier) {
+            lastNoteEvents.clear();
+        }
+
         switch (modifier) {
         case RESOLUTION:
             resolution();
@@ -206,6 +214,12 @@ int ParseContext::interpret(int action, int modifier, void *arg)
             break;
         case NOTE:
             note();
+            break;
+        case REST:
+            rest();
+            break;
+        case TIE:
+            tie();
             break;
         }
 
@@ -451,6 +465,15 @@ bool ParseContext::isUselessValue(int statement, int assign)
             return true;
         }
         break;
+    case REST:
+    case TIE:
+        switch (assign) {
+        case STEP:
+            break;
+        default:
+            return true;
+        }
+        break;
     }
 
     return false;
@@ -632,9 +655,28 @@ void ParseContext::note()
         if (0 < currentNoteCount) {
             uint32_t tick = calcTick();
             for (int i = 0; i < currentNoteCount; ++i) {
-                currentTrack->events.push_back(new NoteEvent(tick, channel->i, currentNotes[i], velocity->i, gatetime->i));
+                NoteEvent *note = new NoteEvent(tick, channel->i, currentNotes[i], velocity->i, gatetime->i);
+                currentTrack->events.push_back(note);
+                lastNoteEvents.push_back(note);
             }
         }
+    }
+}
+
+void ParseContext::rest()
+{
+    uint32_t tick = calcTick();
+}
+
+void ParseContext::tie()
+{
+    uint32_t tick = calcTick();
+
+    Value *val = getValue(STEP);
+    uint32_t step = NULL != val ? val->i : 0;
+
+    for (NoteEvent *note : lastNoteEvents) {
+        note->gatetime += step;
     }
 }
 

@@ -33,6 +33,8 @@ PROGRAM_CHANGE program_change|programchange
 MARKER         marker
 INCLUDE        include
 NOTE           note
+REST           rest
+TIE            tie
 
 VELOCITY       velocity
 GATETIME       gatetime|gate_time
@@ -59,6 +61,8 @@ IDENTIFIER     [_[:alpha:]][[:alnum:]]*
 {MARKER}         location(0); return MARKER;
 {INCLUDE}        location(0); return INCLUDE;
 {NOTE}           location(0); return NOTE;
+{REST}           location(0); return REST;
+{TIE}            location(0); return TIE;
 
 {VELOCITY}       location(0); return VELOCITY;
 {GATETIME}       location(0); return GATETIME;
