@@ -29,9 +29,19 @@ void Player::run()
     }
 }
 
+void Player::sendAllNoteOff()
+{
+    uint8_t bytes[3] = {0, 0x7B, 0x00};
+    for(int i = 0; i < 16; ++i) {
+        bytes[0] = 0xB0 | (0x0F & i);
+        client.send(bytes, sizeof(bytes));
+    }
+}
+
 void Player::stop()
 {
     playing = false;
+    sendAllNoteOff();
 }
 
 uint32_t Player::tick2msec(uint32_t tick)
@@ -58,6 +68,7 @@ void Player::visit(ParseContext *context)
 {
     if (playing) {
         playing = false;
+        sendAllNoteOff();
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 

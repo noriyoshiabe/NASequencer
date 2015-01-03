@@ -166,7 +166,9 @@ time_signature: TIME_SIGNATURE assign_time_signature
               | TIME_SIGNATURE assign_time_signature assign_list;
 
 bank_select: BANK_SELECT assign_list;
-program_change: PROGRAM_CHANGE assign_program_change;
+program_change: PROGRAM_CHANGE assign_program_change
+              | PROGRAM_CHANGE assign_list assign_program_change
+              | PROGRAM_CHANGE assign_program_change assign_list;
 marker: MARKER assign_name
       | MARKER assign_name assign_list
       | MARKER assign_list assign_name;

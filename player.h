@@ -38,6 +38,7 @@ private:
     bool playing;
 
     void run();
+    void sendAllNoteOff();
     uint32_t tick2msec(uint32_t tick);
 
 public:
