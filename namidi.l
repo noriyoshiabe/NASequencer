@@ -18,7 +18,7 @@ WSPACE         [[:blank:]]+
 
 KEY            c|d|e|f|g|a|b
 NOTE_NO        {KEY}[#]?({DIGIT}|[+-]{DIGIT})?
-NOTE_NO_LIST   {NOTE_NO}(,{NOTE_NO})*
+NOTE_NO_LIST   {NOTE_NO}[[:blank:]]*(,[[:blank:]]*{NOTE_NO})*
 
 RESOLUTION     resolution
 SET            set

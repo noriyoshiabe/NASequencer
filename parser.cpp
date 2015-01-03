@@ -712,7 +712,7 @@ void ParseContext::parseNoteNo(char *noteNoList)
 
     char *str = noteNoList;
     char *token;
-    while ((token = strtok(str, ","))) {
+    while ((token = strtok(str, ", \t"))) {
         str = NULL;
 
         if (32 <= currentNoteCount) {
