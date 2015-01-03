@@ -1,0 +1,30 @@
+resolution 480
+
+set default velocity=127
+set default gatetime=240
+
+track "syntax sample"
+
+time_signature 4/4
+tempo 120.0
+
+set step=240 channel=9
+
+note C1,C#2
+note C1,F#
+note    F#,E
+note C, F#
+note C, F#
+note C, F#
+note    F#,E
+note    A#
+note C1,F#
+note C1,F#
+note    F#,E
+note C, F#
+note C, F#
+note C, F#
+note    F#,E
+note    A#
+
+track_end
