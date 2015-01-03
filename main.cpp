@@ -25,17 +25,20 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    NAMidi namidi;
-    ConsoleWriter writer;
+    NAMidi *namidi = new NAMidi();
+    ConsoleWriter *writer = new ConsoleWriter();
 
-    namidi.setSequenceVisitor(&writer);
-    namidi.setFile(argv[1]);
-    namidi.start();
+    namidi->setSequenceVisitor(writer);
+    namidi->setFile(argv[1]);
+    namidi->start();
 
     std::unique_lock<std::mutex> lk(mtx);
     cv.wait(lk);
 
-    namidi.finish();
+    namidi->finish();
+
+    delete writer;
+    delete namidi;
 
     return 0;
 }
