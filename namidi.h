@@ -28,7 +28,7 @@ private:
     void readFile();
 
 public:
-    void onFileChanged(FSWatcher *fswatcher, std::vector<std::string> &changedFiles);
+    void onFileChanged(FSWatcher *fswatcher, std::string &changedFile);
     void onError(FSWatcher *fswatcher, int error, char *message);
     void setSequenceVisitor(SequenceVisitor *visitor);
     void setFile(const char *filepath);

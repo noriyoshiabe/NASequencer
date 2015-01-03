@@ -16,10 +16,10 @@ static void executer(FSWatcher *self)
 static void fsCallback(ConstFSEventStreamRef streamRef, void *self, size_t numEvents,
         void *eventPaths, const FSEventStreamEventFlags eventFlags[], const FSEventStreamEventId eventIds[])
 {
+    char **paths = (char **)eventPaths;
     for (int i = 0; i < numEvents; ++i) {
         if (eventFlags[i] & (kFSEventStreamEventFlagItemCreated | kFSEventStreamEventFlagItemRemoved
                     | kFSEventStreamEventFlagItemRenamed | kFSEventStreamEventFlagItemModified)) {
-
             ((FSWatcher *)self)->onFSChanged();
             return;
         }
@@ -48,7 +48,8 @@ void FSWatcher::registerFilepath(const char *filepath)
         listener->onError(this, errno, strerror(errno));
     }
     else {
-        files.emplace(std::string(actualpath), *clock);
+        memcpy(&lastModified, clock, sizeof(struct tm));
+        files.emplace(std::string(filepath));
         dirpaths.emplace(std::string(dirname(actualpath)));
     }
 }
@@ -84,22 +85,25 @@ void FSWatcher::run()
 
 void FSWatcher::onFSChanged()
 {
-    std::vector<std::string> changedFiles;
     struct tm* clock;
 
-    for (std::pair<std::string, struct tm> entry : files) {
-        if (!(clock = getModifiedTime(entry.first.c_str()))) {
+    time_t now = time(NULL);
+    if (3 > (now - lastSeconds)) {
+        return;
+    }
+
+    for (std::string file : files) {
+        if (!(clock = getModifiedTime(file.c_str()))) {
             listener->onError(this, errno, strerror(errno));
         }
         else {
-            if (memcmp(clock, &entry.second, sizeof(struct tm))) {
-                changedFiles.push_back(entry.first);
+            if (memcmp(clock, &lastModified, sizeof(struct tm))) {
+                memcpy(&lastModified, clock, sizeof(struct tm));
+                listener->onFileChanged(this, file);
+                lastSeconds = now;
+                break;
             }
         }
-    }
-
-    if (!changedFiles.empty()) {
-        listener->onFileChanged(this, changedFiles);
     }
 }
 

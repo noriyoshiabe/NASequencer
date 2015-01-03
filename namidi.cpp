@@ -7,13 +7,10 @@ void NAMidi::postRunLoop(std::function<void()> func)
     cv.notify_all();
 }
 
-void NAMidi::onFileChanged(FSWatcher *fswatcher, std::vector<std::string> &changedFiles)
+void NAMidi::onFileChanged(FSWatcher *fswatcher, std::string &changedFile)
 {
     postRunLoop([=]{
-        for (std::string filepath : changedFiles) {
-            printf("--- %s\n", filepath.c_str());
-        }
-
+        printf("File changed. %s\n", changedFile.c_str());
         readFile();
     });
 };
