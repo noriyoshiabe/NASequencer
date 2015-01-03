@@ -29,6 +29,31 @@ void Player::run()
     }
 }
 
+void Player::stop()
+{
+    playing = false;
+}
+
+uint32_t Player::tick2msec(uint32_t tick)
+{
+    if (tempoTable.empty()) {
+        return (uint32_t)(60000.0 / 120.0f / resolution * (tick - 0) + 0);
+    }
+    else {
+        TempoInfo &target = tempoTable.front();
+        for (TempoInfo &info : tempoTable) {
+            if (tick < info.tick) {
+                target = info;
+            }
+            else {
+                break;
+            }
+        }
+
+        return (uint32_t)(60000.0 / target.tempo / resolution * (tick - target.tick) + target.time);
+    }
+}
+
 void Player::visit(ParseContext *context)
 {
     if (playing) {
@@ -60,26 +85,6 @@ void Player::visit(ParseContext *context)
 
     thread = new std::thread(&Player::run, this);
     playing = true;
-}
-
-uint32_t Player::tick2msec(uint32_t tick)
-{
-    if (tempoTable.empty()) {
-        return (uint32_t)(60000.0 / 120.0f / resolution * (tick - 0) + 0);
-    }
-    else {
-        TempoInfo &target = tempoTable.front();
-        for (TempoInfo &info : tempoTable) {
-            if (tick < info.tick) {
-                target = info;
-            }
-            else {
-                break;
-            }
-        }
-
-        return (uint32_t)(60000.0 / target.tempo / resolution * (tick - target.tick) + target.time);
-    }
 }
 
 void Player::visit(TempoEvent *elem)

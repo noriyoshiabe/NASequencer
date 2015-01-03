@@ -41,6 +41,8 @@ private:
     uint32_t tick2msec(uint32_t tick);
 
 public:
+    void stop();
+
     void visit(ParseContext *elem);
     void visit(Sequence *elem);
     void visit(Track *elem);

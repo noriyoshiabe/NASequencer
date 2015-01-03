@@ -87,6 +87,7 @@ void NAMidi::run()
 
 void NAMidi::finish()
 {
+    player->stop();
     isExit = true;
     cv.notify_all();
 }
