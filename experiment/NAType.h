@@ -1,15 +1,9 @@
 #pragma once
 
+#include <stdlib.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
-
-extern uint32_t NAHash(const void *self);
-extern bool NAEqualTo(const void *self, const void *to);
-extern int NACompare(const void *self, const void *to);
-extern const void *NARetain(const void *self);
-extern void NARelease(const void *self);
-extern int16_t NARefCount(const void *self);
 
 typedef struct __NAVtbl {
     int *typeID;
@@ -37,23 +31,31 @@ typedef struct __NATypeVtbl {
     int (*compare)(const void *self, const void *to);
 } NATypeVtbl;
 
-extern void *NATypeAlloc(NAClass *clazz);
-extern void *NATypeResetHash(void *self);
-#define NATypeNew(type, ...) \
-    NATypeResetHash(((NATypeVtbl *)NATypeVtblLookup(type##Class.pvtbl, &NATypeClass))->init(NATypeAlloc(&type##Class), __VA_ARGS__))
-
-extern void *NATypeVtblLookup(NAVtbl *pvtbl, NAClass *clazz);
-#define __NATypeVtblList(self) (((NAType *)self)->clazz->pvtbl)
-#define NATypeLookup(self, type) ((type##Vtbl *)NATypeVtblLookup(__NATypeVtblList(self), &type##Class))
-
 extern void *__NATypeInit(void *self, ...);
 extern void __NATypeDestroy(void *self);
 extern uint32_t __NATypeHash(const void *self);
-extern bool __NATypeEqualTo(const void *self, const void *to);
+extern bool __NATypeEqual(const void *self, const void *to);
 extern int __NATypeCompare(const void *self, const void *to);
 
 extern NAClass NATypeClass;
 extern int NATypeID;
+
+static inline void *NATypeVtblLookup(NAVtbl *pvtbl, int *typeID)
+{
+    do {
+        if (pvtbl->typeID == typeID) {
+            return pvtbl->vtbl;
+        }
+    } while ((++pvtbl)->typeID);
+
+    return 0;
+}
+
+#define __NATypeVtblList(self) (((NAType *)self)->clazz->pvtbl)
+#define NATypeLookup(self, type) ((type##Vtbl *)NATypeVtblLookup(__NATypeVtblList(self), &type##ID))
+
+#define NATypeNew(type, ...) \
+    NATypeResetHash(((NATypeVtbl *)NATypeVtblLookup(type##Class.pvtbl, &NATypeID))->init(NATypeAlloc(&type##Class), __VA_ARGS__))
 
 #define NACast(self, type) ((type *)self)
 #define NAGetCtx(self) (NACast(self, NAType))
@@ -61,5 +63,47 @@ extern int NATypeID;
 
 #define isNAType(self) (NAGetCtx(self)->hdr == 0x4E41)
 
-#include <stdio.h>
-#define __Trace printf("---- %s %d\n", __FILE__, __LINE__)
+static inline void *NATypeAlloc(NAClass *clazz)
+{
+    NAType *self = calloc(1, clazz->size);
+    self->clazz = clazz;
+    self->hdr = 0x4E41;
+    self->refCount = 1;
+    return self;
+}
+
+static inline uint32_t NAHash(const void *self)
+{
+    return NAGetCtx(self)->hash = 0 != NAGetCtx(self)->hash ? NAGetCtx(self)->hash : NATypeLookup(self, NAType)->hash(self);
+}
+
+static inline void *NATypeResetHash(void *self)
+{
+    NAGetCtx(self)->hash = 0;
+    return NAHash(self), self;
+}
+
+static inline bool NAEqualTo(const void *self, const void *to)
+{
+    return NATypeLookup(self, NAType)->equalTo(self, to);
+}
+
+static inline int NACompare(const void *self, const void *to)
+{
+    return NATypeLookup(self, NAType)->compare(self, to);
+}
+
+static inline const void *NARetain(const void *self)
+{
+    return ++NAGetCtx(self)->refCount, self;
+}
+
+static inline void NARelease(const void *self)
+{
+    0 == --NAGetCtx(self)->refCount ? NATypeLookup(self, NAType)->destroy((void *)self), free((void *)self) : (void *)0;
+}
+
+static inline int16_t NARefCount(const void *self)
+{
+    return NAGetCtx(self)->refCount;
+}

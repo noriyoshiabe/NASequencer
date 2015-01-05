@@ -1,5 +1,6 @@
 #include <CoreFoundation/CoreFoundation.h>
 
+#include <NAType.h>
 #include <NAString.h>
 #include <stdio.h>
 
