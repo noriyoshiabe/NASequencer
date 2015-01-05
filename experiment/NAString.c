@@ -9,6 +9,8 @@ struct __NAString {
     int length;
 };
 
+char NAStringID[] = "NAString";
+
 NAString *NAStringAppend(NAString *self, const char *format, ...)
 {
     va_list ap;
@@ -109,5 +111,3 @@ NAClass NAStringClass = {
     sizeof(NAString),
     vEntries,
 };
-
-char NAStringID[] = "NAString";
