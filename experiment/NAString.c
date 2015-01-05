@@ -32,7 +32,6 @@ static NAString *__NAStringAppend(NAString *self, const char *format, va_list ap
 {
     self->buffer = (char *)realloc(self->buffer, self->length + length + 1);
     vsnprintf(self->buffer + self->length, length + 1, format, ap);
-    NATypeResetHash(self);
     return self;
 }
 
@@ -60,7 +59,6 @@ static void *__NAStringInit(void *_self, ...)
     length = vsnprintf(self->buffer, length + 1, format, ap);
     va_end(ap);
 
-    NATypeResetHash(self);
     return self;
 }
 

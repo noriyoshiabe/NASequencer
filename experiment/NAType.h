@@ -18,9 +18,7 @@ typedef struct __NAClass {
 
 typedef struct __NAType {
     NAClass *clazz;
-    uint16_t hdr;
-    int16_t refCount;
-    uint32_t hash;
+    int32_t refCount;
 } NAType;
 
 typedef struct __NATypeVtbl {
@@ -53,34 +51,23 @@ static inline void *NATypeVtblLookup(NAVtbl *pvtbl, int *typeID)
 
 #define __NATypeVtblList(self) (((NAType *)self)->clazz->pvtbl)
 #define NATypeLookup(self, type) ((type##Vtbl *)NATypeVtblLookup(__NATypeVtblList(self), &type##ID))
-
-#define NATypeNew(type, ...) \
-    NATypeResetHash(((NATypeVtbl *)NATypeVtblLookup(type##Class.pvtbl, &NATypeID))->init(NATypeAlloc(&type##Class), __VA_ARGS__))
+#define NATypeNew(type, ...) ((NATypeVtbl *)NATypeVtblLookup(type##Class.pvtbl, &NATypeID))->init(NATypeAlloc(&type##Class), __VA_ARGS__)
 
 #define NACast(self, type) ((type *)self)
-#define NAGetCtx(self) (NACast(self, NAType))
-#define NAGetClass(self) ((NAGetCtx(self)->clazz))
-
-#define isNAType(self) (NAGetCtx(self)->hdr == 0x4E41)
+#define NAGetType(self) (NACast(self, NAType))
+#define NAGetClass(self) ((NAGetType(self)->clazz))
 
 static inline void *NATypeAlloc(NAClass *clazz)
 {
     NAType *self = calloc(1, clazz->size);
     self->clazz = clazz;
-    self->hdr = 0x4E41;
     self->refCount = 1;
     return self;
 }
 
 static inline uint32_t NAHash(const void *self)
 {
-    return NAGetCtx(self)->hash = 0 != NAGetCtx(self)->hash ? NAGetCtx(self)->hash : NATypeLookup(self, NAType)->hash(self);
-}
-
-static inline void *NATypeResetHash(void *self)
-{
-    NAGetCtx(self)->hash = 0;
-    return NAHash(self), self;
+    return NATypeLookup(self, NAType)->hash(self);
 }
 
 static inline bool NAEqualTo(const void *self, const void *to)
@@ -95,15 +82,15 @@ static inline int NACompare(const void *self, const void *to)
 
 static inline const void *NARetain(const void *self)
 {
-    return ++NAGetCtx(self)->refCount, self;
+    return ++NAGetType(self)->refCount, self;
 }
 
 static inline void NARelease(const void *self)
 {
-    0 == --NAGetCtx(self)->refCount ? NATypeLookup(self, NAType)->destroy((void *)self), free((void *)self) : (void *)0;
+    0 == --NAGetType(self)->refCount ? NATypeLookup(self, NAType)->destroy((void *)self), free((void *)self) : (void *)0;
 }
 
 static inline int16_t NARefCount(const void *self)
 {
-    return NAGetCtx(self)->refCount;
+    return NAGetType(self)->refCount;
 }
