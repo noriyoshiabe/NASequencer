@@ -66,7 +66,6 @@ static void __NAStringDestroy(void *_self)
 {
     NAString *self = _self;
     free(self->buffer);
-    printf("str released.\n");
 }
 
 static uint32_t __NAStringHash(const void *_self)
