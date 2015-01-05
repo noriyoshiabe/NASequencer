@@ -41,7 +41,7 @@ static char *__NAStringCString(NAString *self)
     return self->buffer;
 }
 
-static NAType *__NAStringInit(NAType *_self, ...)
+static void *__NAStringInit(void *_self, ...)
 {
     NAString *self = _self;
     const char *format;
@@ -64,16 +64,16 @@ static NAType *__NAStringInit(NAType *_self, ...)
     return self;
 }
 
-static void __NAStringDestroy(NAType *_self)
+static void __NAStringDestroy(void *_self)
 {
     NAString *self = _self;
     free(self->buffer);
     printf("str released.\n");
 }
 
-static uint32_t __NAStringHash(NAType *_self)
+static uint32_t __NAStringHash(const void *_self)
 {
-    NAString *self = _self;
+    const NAString *self = _self;
     uint32_t h = 0;
     for (int i = 0; i < self->length; ++i) {
         h = 31 * h + self->buffer[i];
@@ -81,23 +81,17 @@ static uint32_t __NAStringHash(NAType *_self)
     return h;
 }
 
-static int __NAStringCompare(NAType *_self, NAType *_to)
+static int __NAStringCompare(const void *_self, const void *_to)
 {
-    NAString *self = _self;
-    NAString *to = _to;
+    const NAString *self = _self;
+    const NAString *to = _to;
     return strcmp(self->buffer, to->buffer);
-}
-
-static NAString *__NAStringToString(NAType *_self)
-{
-    return _self;
 }
 
 static NATypeVtbl typeVtbl = {
     __NAStringHash,
     __NATypeEqualTo,
     __NAStringCompare,
-    __NAStringToString,
 };
 
 static NAStringVtbl stringVtbl = {

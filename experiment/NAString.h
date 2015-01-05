@@ -4,6 +4,8 @@
 
 #include <stdarg.h>
 
+typedef struct __NAString NAString;
+
 extern NAString *NAStringAppend(NAString *self, const char *format, ...);
 extern char *NAStringCString(NAString *self);
 

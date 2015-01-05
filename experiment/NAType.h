@@ -4,16 +4,12 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-typedef void NAType;
-typedef struct __NAString NAString;
-
-extern uint32_t NAHash(NAType *self);
-extern bool NAEqualTo(NAType *self, NAType *to);
-extern int NACompare(NAType *self, NAType *to);
-extern NAString *NAToString(NAType *self);
-extern NAType *NARetain(NAType *self);
-extern void NARelease(NAType *self);
-extern int16_t NARefCount(NAType *self);
+extern uint32_t NAHash(const void *self);
+extern bool NAEqualTo(const void *self, const void *to);
+extern int NACompare(const void *self, const void *to);
+extern const void *NARetain(const void *self);
+extern void NARelease(const void *self);
+extern int16_t NARefCount(const void *self);
 
 typedef struct __NAVtbl {
     int *typeID;
@@ -24,8 +20,8 @@ typedef struct __NAClass {
     int *typeID;
     const char *name;
     size_t size;
-    NAType *(*init)(NAType *self, ...);
-    void (*destroy)(NAType *self);
+    void *(*init)(void *self, ...);
+    void (*destroy)(void *self);
     NAVtbl *vtbl;
 } NAClass;
 
@@ -37,25 +33,23 @@ typedef struct __NATypeCtx {
 } NATypeCtx;
 
 typedef struct __NATypeVtbl {
-    uint32_t (*hash)(NAType *self);
-    bool (*equalTo)(NAType *self, NAType *to);
-    int (*compare)(NAType *self, NAType *to);
-    NAString *(*toString)(NAType *self);
+    uint32_t (*hash)(const void *self);
+    bool (*equalTo)(const void *self, const void *to);
+    int (*compare)(const void *self, const void *to);
 } NATypeVtbl;
 
-extern NAType *NATypeAlloc(NAClass *clazz);
-extern NAType *NATypeResetHash(NAType *self);
+extern void *NATypeAlloc(NAClass *clazz);
+extern void *NATypeResetHash(void *self);
 #define NATypeNew(type, ...) (NATypeResetHash(type##Class.init(NATypeAlloc(&type##Class), __VA_ARGS__)))
 
-extern void *NATypeVtblLookup(NAType *self, NAClass *clazz);
+extern void *NATypeVtblLookup(const void *self, NAClass *clazz);
 #define NATypeLookup(self, type) ((type##Vtbl *)NATypeVtblLookup(self, &type##Class))
 
-extern NAType *__NATypeInit(NAType *self, ...);
-extern void __NATypeDestroy(NAType *self);
-extern uint32_t __NATypeHash(NAType *self);
-extern bool __NATypeEqualTo(NAType *self, NAType *to);
-extern int __NATypeCompare(NAType *self, NAType *to);
-extern NAString *__NATypeToString(NAType *self);
+extern void *__NATypeInit(void *self, ...);
+extern void __NATypeDestroy(void *self);
+extern uint32_t __NATypeHash(const void *self);
+extern bool __NATypeEqualTo(const void *self, const void *to);
+extern int __NATypeCompare(const void *self, const void *to);
 
 extern NAClass NATypeClass;
 extern int NATypeID;

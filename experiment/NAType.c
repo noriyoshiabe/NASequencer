@@ -3,42 +3,37 @@
 
 #include <stdlib.h>
 
-uint32_t NAHash(NAType *self)
+uint32_t NAHash(const void *self)
 {
     return NAGetCtx(self)->hash = 0 != NAGetCtx(self)->hash ? NAGetCtx(self)->hash : NATypeLookup(self, NAType)->hash(self);
 }
 
-bool NAEqualTo(NAType *self, NAType *to)
+bool NAEqualTo(const void *self, const void *to)
 {
     return NATypeLookup(self, NAType)->equalTo(self, to);
 }
 
-int NACompare(NAType *self, NAType *to)
+int NACompare(const void *self, const void *to)
 {
     return NATypeLookup(self, NAType)->compare(self, to);
 }
 
-NAString *NAToString(NAType *self)
-{
-    return NATypeLookup(self, NAType)->toString(self);
-}
-
-NAType *NARetain(NAType *self)
+const void *NARetain(const void *self)
 {
     return ++NAGetCtx(self)->refCount, self;
 }
 
-void NARelease(NAType *self)
+void NARelease(const void *self)
 {
-    0 == --NAGetCtx(self)->refCount ? NAGetClass(self)->destroy(self), free(self) : (void *)0;
+    0 == --NAGetCtx(self)->refCount ? NAGetClass(self)->destroy((void *)self), free((void *)self) : (void *)0;
 }
 
-int16_t NARefCount(NAType *self)
+int16_t NARefCount(const void *self)
 {
     return NAGetCtx(self)->refCount;
 }
 
-NAType *NATypeAlloc(NAClass *clazz)
+void *NATypeAlloc(NAClass *clazz)
 {
     NATypeCtx *self = calloc(1, clazz->size);
     self->clazz = clazz;
@@ -47,13 +42,13 @@ NAType *NATypeAlloc(NAClass *clazz)
     return self;
 }
 
-NAType *NATypeResetHash(NAType *self)
+void *NATypeResetHash(void *self)
 {
     NAGetCtx(self)->hash = 0;
     return NAHash(self), self;
 }
 
-void *NATypeVtblLookup(NAType *self, NAClass *clazz)
+void *NATypeVtblLookup(const void *self, NAClass *clazz)
 {
     NAVtbl *pvtbl = ((NATypeCtx *)self)->clazz->vtbl;
     do {
@@ -65,40 +60,34 @@ void *NATypeVtblLookup(NAType *self, NAClass *clazz)
     return 0;
 }
 
-NAType *__NATypeInit(NAType *self, ...)
+void *__NATypeInit(void *self, ...)
 {
     return self;
 }
 
-void __NATypeDestroy(NAType *self)
+void __NATypeDestroy(void *self)
 {
 }
 
-uint32_t __NATypeHash(NAType *self)
+uint32_t __NATypeHash(const void *self)
 {
     return (uint32_t)self >> 2;
 }
 
-bool __NATypeEqualTo(NAType *self, NAType *to)
+bool __NATypeEqualTo(const void *self, const void *to)
 {
     return NAHash(self) == NAHash(to);
 }
 
-int __NATypeCompare(NAType *self, NAType *to)
+int __NATypeCompare(const void *self, const void *to)
 {
     return (int)self - (int)to;
-}
-
-NAString *__NATypeToString(NAType *self)
-{
-    return NATypeNew(NAString, "<%s:%08X>", NAGetClass(self)->name, self);
 }
 
 static NATypeVtbl typeVtbl = {
     __NATypeHash,
     __NATypeEqualTo,
     __NATypeCompare,
-    __NATypeToString,
 };
 
 static NAVtbl vtbl[] = {
