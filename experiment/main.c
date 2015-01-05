@@ -1,36 +1,9 @@
-#include <CoreFoundation/CoreFoundation.h>
-
 #include <NAType.h>
 #include <NAString.h>
+#include <NACFHelper.h>
 #include <stdio.h>
 
-const void *__CFArrayRetainCallBack(CFAllocatorRef allocator, const void *value)
-{
-    return NARetain(value);
-}
-
-void __CFArrayReleaseCallBack(CFAllocatorRef allocator, const void *value)
-{
-    NARelease(value);
-}
-
-CFStringRef __CFArrayCopyDescriptionCallBack(const void *value)
-{
-    return NULL;
-}
-
-Boolean __CFArrayEqualCallBack(const void *value1, const void *value2)
-{
-    return NAEqualTo(value1, value2);
-}
-
-const CFArrayCallBacks __CFArrayCallBacks = {
-    0,
-    __CFArrayRetainCallBack,
-    __CFArrayReleaseCallBack,
-    __CFArrayCopyDescriptionCallBack,
-    __CFArrayEqualCallBack,
-};
+DeclareCFArrayCallBacks(__CFArrayCallBacks, NARetain, NARelease, EmptyCopyDescriptionCallBack, NAEqualTo);
 
 int main(int argc, char **argv)
 {
