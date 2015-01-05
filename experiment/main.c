@@ -1,6 +1,12 @@
 #include <CoreFoundation/CoreFoundation.h>
 
 // natype.h
+extern const void *NARetain(const void *self);
+extern void NARelease(const void *self);
+extern uint32_t NAHash(const void *self);
+extern Boolean NAEqual(const void *self, const void *to);
+
+// natype_in.h
 typedef struct __NATypeVtbl {
     void (*destroy)(const void *self);
     uint32_t (*hash)(const void *self);
@@ -18,14 +24,14 @@ typedef struct __NAType {
     NATypeCtx ctx;
 } NAType;
 
-extern const void *NARetain(const void *self);
-extern void NARelease(const void *self);
-extern uint32_t NAHash(const void *self);
-extern Boolean NAEqual(const void *self, const void *to);
-
-
+void *__NATypeInit(void *self);
+void __NATypeDestroy(const void *self);
+uint32_t __NATypeHash(const void *self);
+Boolean __NATypeEqual(const void *self, const void *to);
+int __NATypeCompare(const void *self, const void *to);
 
 // natype.c
+// #include natype_in.h
 
 void *__NATypeInit(void *self)
 {
@@ -45,14 +51,14 @@ uint32_t __NATypeHash(const void *self)
     return (uint32_t)self >> 2;
 }
 
-const void *__NATypeRetain(const void *self)
+static const void *__NATypeRetain(const void *self)
 {
     NAType *_self = (NAType *)self;
     ++_self->ctx.refCount;
     return self;
 }
 
-void __NATypeRelease(const void *self)
+static void __NATypeRelease(const void *self)
 {
     NAType *_self = (NAType *)self;
     if (0 == --_self->ctx.refCount) {
@@ -120,9 +126,15 @@ const CFArrayCallBacks __CFArrayCallBacks = {
     __CFArrayEqualCallBack,
 };
 
+// hoge.h
+
+extern void *HogeCrate();
+extern void HogeDoHoge(void *self);
+
+// hoge_in.h
 typedef struct __HogeVtbl {
     NATypeVtbl _;
-    void (*doHoge)();
+    void (*doHoge)(void *self);
 } HogeVtbl;
 
 typedef struct __Hoge {
@@ -131,20 +143,18 @@ typedef struct __Hoge {
     int hogeVal;
 } Hoge;
 
-typedef struct __Hage {
-    HogeVtbl *v;
-    NATypeCtx ctx;
-    int hageVal;
-} Hage;
+// hoge.c
 
-static void __doHoge()
+void HogeDoHoge(void *self)
 {
-    printf("-- hoge!!\n");
+    Hoge *_self = self;
+    _self->v->doHoge(self);
 }
 
-static void __doHage()
+static void __doHoge(void *self)
 {
-    printf("-- HAGE!!\n");
+    Hoge *_self = self;
+    printf("-- hoge!! hogeVal=%d\n", _self->hogeVal);
 }
 
 HogeVtbl __hogeVtbl  = {
@@ -154,8 +164,33 @@ HogeVtbl __hogeVtbl  = {
         __NATypeEqual,
         __NATypeCompare,
     },
-    __doHage,
+    __doHoge,
 };
+
+void *HogeCrate()
+{
+    Hoge *self = malloc(sizeof(Hoge));
+    self->v = &__hogeVtbl;
+    self->hogeVal = 1;
+    return __NATypeInit(self);
+}
+
+
+// hage.h
+extern void *HageCrate();
+
+// hage.c
+
+typedef struct __Hage {
+    Hoge base;
+    int hageVal;
+} Hage;
+
+static void __doHage(void *self)
+{
+    Hage *_self = self;
+    printf("-- HAGE!! hogeVal=%d hageVal=%d\n", _self->base.hogeVal, _self->hageVal);
+}
 
 HogeVtbl __hageVtbl  = {
     {
@@ -167,20 +202,14 @@ HogeVtbl __hageVtbl  = {
     __doHage,   
 };
 
-Hoge *HogeCrate()
+void *HageCrate()
 {
-    Hoge *self = malloc(sizeof(Hoge));
-    self->v = &__hogeVtbl;
+    Hage *self = malloc(sizeof(Hoge));
+    self->base.v = &__hageVtbl;
+    self->base.hogeVal = 2;
+    self->hageVal = 3;
     return __NATypeInit(self);
 }
-
-Hoge *HageCrate()
-{
-    Hoge *self = malloc(sizeof(Hoge));
-    self->v = &__hageVtbl;
-    return __NATypeInit(self);
-}
-CFArrayRef CFArrayCreate(CFAllocatorRef allocator, const void **values, CFIndex numValues, const CFArrayCallBacks *callBacks);
 
 int main(int argc, char **argv)
 {
@@ -190,6 +219,9 @@ int main(int argc, char **argv)
     CFMutableArrayRef array = CFArrayCreateMutable(NULL, 0, &__CFArrayCallBacks);
     CFArrayAppendValue(array, hoge);
     CFArrayAppendValue(array, hage);
+
+    HogeDoHoge(hoge);
+    HogeDoHoge(hage);
 
     NARelease(hoge);
     NARelease(hage);
