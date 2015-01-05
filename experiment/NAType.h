@@ -11,7 +11,7 @@ extern uint32_t NAHash(NAType *self);
 extern bool NAEqualTo(NAType *self, NAType *to);
 extern int NACompare(NAType *self, NAType *to);
 extern NAString *NAToString(NAType *self);
-extern NAType *NAAddRef(NAType *self);
+extern NAType *NARetain(NAType *self);
 extern void NARelease(NAType *self);
 extern int16_t NARefCount(NAType *self);
 

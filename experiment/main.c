@@ -5,7 +5,7 @@
 
 const void *__CFArrayRetainCallBack(CFAllocatorRef allocator, const void *value)
 {
-    return NAAddRef(value);
+    return NARetain(value);
 }
 
 void __CFArrayReleaseCallBack(CFAllocatorRef allocator, const void *value)

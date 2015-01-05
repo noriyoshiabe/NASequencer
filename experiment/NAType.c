@@ -23,7 +23,7 @@ NAString *NAToString(NAType *self)
     return NATypeLookup(self, NAType)->toString(self);
 }
 
-NAType *NAAddRef(NAType *self)
+NAType *NARetain(NAType *self)
 {
     return ++NAGetCtx(self)->refCount, self;
 }
