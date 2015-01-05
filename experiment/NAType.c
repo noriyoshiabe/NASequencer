@@ -1,7 +1,7 @@
 #include <NAType.h>
 #include <NAString.h>
 
-int NATypeID;
+char NATypeID[] = "NAType";
 
 void *NATypeInitEmpty(void *self, ...)
 {

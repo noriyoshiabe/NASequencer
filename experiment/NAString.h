@@ -15,4 +15,4 @@ typedef struct __NAStringVtbl {
 } NAStringVtbl;
 
 extern NAClass NAStringClass;
-extern int NAStringID;
+extern char NAStringID[];

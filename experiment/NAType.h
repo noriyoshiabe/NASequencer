@@ -1,19 +1,20 @@
 #pragma once
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
 
-typedef struct __NAVtbl {
-    int *typeID;
+typedef struct __NAVtblEntry {
+    char *typeID;
     void *vtbl;
-} NAVtbl;
+} NAVtblEntry;
 
 typedef struct __NAClass {
-    int *typeID;
+    char *typeID;
     size_t size;
-    NAVtbl *pvtbl;
+    NAVtblEntry *pvEntry;
 } NAClass;
 
 typedef struct __NAType {
@@ -36,22 +37,23 @@ extern bool NATypeEqualDefault(const void *self, const void *to);
 extern int NATypeCompareDefault(const void *self, const void *to);
 
 extern NAClass NATypeClass;
-extern int NATypeID;
+extern char NATypeID[];
 
-static inline void *NATypeVtblLookup(NAVtbl *pvtbl, int *typeID)
+static inline void *NATypeVtblLookup(NAVtblEntry *pvEntry, char *typeID)
 {
     do {
-        if (pvtbl->typeID == typeID) {
-            return pvtbl->vtbl;
+        if (pvEntry->typeID == typeID) {
+            return pvEntry->vtbl;
         }
-    } while ((++pvtbl)->typeID);
+    } while ((++pvEntry)->typeID);
 
-    return 0;
+    fprintf(stderr, "Virtual function table of [%s] is not found.\n", typeID);
+    abort();
 }
 
-#define __NATypeVtblList(self) (((NAType *)self)->clazz->pvtbl)
-#define NATypeLookup(self, type) ((type##Vtbl *)NATypeVtblLookup(__NATypeVtblList(self), &type##ID))
-#define NATypeNew(type, ...) ((NATypeVtbl *)NATypeVtblLookup(type##Class.pvtbl, &NATypeID))->init(NATypeAlloc(&type##Class), __VA_ARGS__)
+#define __NATypeVtblList(self) (((NAType *)self)->clazz->pvEntry)
+#define NATypeLookup(self, type) ((type##Vtbl *)NATypeVtblLookup(__NATypeVtblList(self), type##ID))
+#define NATypeNew(type, ...) ((NATypeVtbl *)NATypeVtblLookup(type##Class.pvEntry, NATypeID))->init(NATypeAlloc(&type##Class), __VA_ARGS__)
 
 #define NACast(self, type) ((type *)self)
 #define NAGetType(self) (NACast(self, NAType))

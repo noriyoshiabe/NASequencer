@@ -98,16 +98,16 @@ static NAStringVtbl stringVtbl = {
     __NAStringCString,
 };
 
-static NAVtbl vtbls[] = {
-    {&NATypeID, &typeVtbl},
-    {&NAStringID, &stringVtbl},
+static NAVtblEntry vEntries[] = {
+    {NATypeID, &typeVtbl},
+    {NAStringID, &stringVtbl},
     {NULL, NULL},
 };
 
 NAClass NAStringClass = {
-    &NAStringID,
+    NAStringID,
     sizeof(NAString),
-    vtbls,
+    vEntries,
 };
 
-int NAStringID;
+char NAStringID[] = "NAString";
