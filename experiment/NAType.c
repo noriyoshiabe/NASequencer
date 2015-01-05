@@ -25,7 +25,7 @@ const void *NARetain(const void *self)
 
 void NARelease(const void *self)
 {
-    0 == --NAGetCtx(self)->refCount ? NAGetClass(self)->destroy((void *)self), free((void *)self) : (void *)0;
+    0 == --NAGetCtx(self)->refCount ? NATypeLookup(self, NAType)->destroy((void *)self), free((void *)self) : (void *)0;
 }
 
 int16_t NARefCount(const void *self)
@@ -35,7 +35,7 @@ int16_t NARefCount(const void *self)
 
 void *NATypeAlloc(NAClass *clazz)
 {
-    NATypeCtx *self = calloc(1, clazz->size);
+    NAType *self = calloc(1, clazz->size);
     self->clazz = clazz;
     self->hdr = 0x4E41;
     self->refCount = 1;
@@ -48,9 +48,8 @@ void *NATypeResetHash(void *self)
     return NAHash(self), self;
 }
 
-void *NATypeVtblLookup(const void *self, NAClass *clazz)
+void *NATypeVtblLookup(NAVtbl *pvtbl, NAClass *clazz)
 {
-    NAVtbl *pvtbl = ((NATypeCtx *)self)->clazz->vtbl;
     do {
         if (pvtbl->typeID == clazz->typeID) {
             return pvtbl->vtbl;
@@ -85,23 +84,22 @@ int __NATypeCompare(const void *self, const void *to)
 }
 
 static NATypeVtbl typeVtbl = {
+    __NATypeInit,
+    __NATypeDestroy,
     __NATypeHash,
     __NATypeEqualTo,
     __NATypeCompare,
 };
 
-static NAVtbl vtbl[] = {
+static NAVtbl vtbls[] = {
     {&NATypeID, &typeVtbl},
     {NULL, 0},
 };
 
 NAClass NATypeClass = {
     &NATypeID,
-    "NAType",
-    sizeof(NATypeCtx),
-    __NATypeInit,
-    __NATypeDestroy,
-    vtbl,
+    sizeof(NAType),
+    vtbls,
 };
 
 int NATypeID;

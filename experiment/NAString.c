@@ -4,7 +4,7 @@
 #include <string.h>
 
 struct __NAString {
-    NATypeCtx ctx;
+    NAType _;
     char *buffer;
     int length;
 };
@@ -89,6 +89,8 @@ static int __NAStringCompare(const void *_self, const void *_to)
 }
 
 static NATypeVtbl typeVtbl = {
+    __NAStringInit,
+    __NAStringDestroy,
     __NAStringHash,
     __NATypeEqualTo,
     __NAStringCompare,
@@ -99,7 +101,7 @@ static NAStringVtbl stringVtbl = {
     __NAStringCString,
 };
 
-static NAVtbl vtbl[] = {
+static NAVtbl vtbls[] = {
     {&NATypeID, &typeVtbl},
     {&NAStringID, &stringVtbl},
     {NULL, NULL},
@@ -107,11 +109,8 @@ static NAVtbl vtbl[] = {
 
 NAClass NAStringClass = {
     &NAStringID,
-    "NAString",
     sizeof(NAString),
-    __NAStringInit,
-    __NAStringDestroy,
-    vtbl,
+    vtbls,
 };
 
 int NAStringID;
