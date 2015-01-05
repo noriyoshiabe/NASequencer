@@ -17,7 +17,7 @@ NAString *NAStringAppend(NAString *self, const char *format, ...)
     va_end(ap);
 
     va_start(ap, format);
-    NAString *ret = NATypeLookup(self, NAString)->append(self, format, ap, length);
+    NAString *ret = NAVtblLookup(self, NAString)->append(self, format, ap, length);
     va_end(ap);
 
     return ret;
@@ -25,7 +25,7 @@ NAString *NAStringAppend(NAString *self, const char *format, ...)
 
 char *NAStringCString(NAString *self)
 {
-    return NATypeLookup(self, NAString)->cstring(self);
+    return NAVtblLookup(self, NAString)->cstring(self);
 }
 
 static NAString *__NAStringAppend(NAString *self, const char *format, va_list ap, int length)

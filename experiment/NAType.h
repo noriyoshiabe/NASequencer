@@ -30,16 +30,15 @@ typedef struct __NATypeVtbl {
     int (*compare)(const void *self, const void *to);
 } NATypeVtbl;
 
+extern char NATypeID[];
+
 extern void *NATypeInitDefault(void *self, ...);
 extern void NATypeDestroyDefault(void *self);
 extern uint32_t NATypeHashDefault(const void *self);
 extern bool NATypeEqualDefault(const void *self, const void *to);
 extern int NATypeCompareDefault(const void *self, const void *to);
 
-extern NAClass NATypeClass;
-extern char NATypeID[];
-
-static inline void *NATypeVtblLookup(NAVtblEntry *pvEntry, char *typeID)
+static inline void *__NAVtblLookup(NAVtblEntry *pvEntry, char *typeID)
 {
     do {
         if (pvEntry->typeID == typeID) {
@@ -51,13 +50,8 @@ static inline void *NATypeVtblLookup(NAVtblEntry *pvEntry, char *typeID)
     abort();
 }
 
-#define __NATypeVtblList(self) (((NAType *)self)->clazz->pvEntry)
-#define NATypeLookup(self, type) ((type##Vtbl *)NATypeVtblLookup(__NATypeVtblList(self), type##ID))
-#define NATypeNew(type, ...) ((NATypeVtbl *)NATypeVtblLookup(type##Class.pvEntry, NATypeID))->init(NATypeAlloc(&type##Class), __VA_ARGS__)
-
-#define NACast(self, type) ((type *)self)
-#define NAGetType(self) (NACast(self, NAType))
-#define NAGetClass(self) ((NAGetType(self)->clazz))
+#define NAVtblLookup(self, type) ((type##Vtbl *)__NAVtblLookup(((NAType *)self)->clazz->pvEntry, type##ID))
+#define NATypeNew(type, ...) ((NATypeVtbl *)__NAVtblLookup(type##Class.pvEntry, NATypeID))->init(NATypeAlloc(&type##Class), __VA_ARGS__)
 
 static inline void *NATypeAlloc(NAClass *clazz)
 {
@@ -69,30 +63,30 @@ static inline void *NATypeAlloc(NAClass *clazz)
 
 static inline uint32_t NAHash(const void *self)
 {
-    return NATypeLookup(self, NAType)->hash(self);
+    return NAVtblLookup(self, NAType)->hash(self);
 }
 
 static inline bool NAEqualTo(const void *self, const void *to)
 {
-    return NATypeLookup(self, NAType)->equalTo(self, to);
+    return NAVtblLookup(self, NAType)->equalTo(self, to);
 }
 
 static inline int NACompare(const void *self, const void *to)
 {
-    return NATypeLookup(self, NAType)->compare(self, to);
+    return NAVtblLookup(self, NAType)->compare(self, to);
 }
 
 static inline const void *NARetain(const void *self)
 {
-    return ++NAGetType(self)->refCount, self;
+    return ++((NAType *)self)->refCount, self;
 }
 
 static inline void NARelease(const void *self)
 {
-    0 == --NAGetType(self)->refCount ? NATypeLookup(self, NAType)->destroy((void *)self), free((void *)self) : (void *)0;
+    0 == --((NAType *)self)->refCount ? NAVtblLookup(self, NAType)->destroy((void *)self), free((void *)self) : (void *)0;
 }
 
 static inline int16_t NARefCount(const void *self)
 {
-    return NAGetType(self)->refCount;
+    return ((NAType *)self)->refCount;
 }
