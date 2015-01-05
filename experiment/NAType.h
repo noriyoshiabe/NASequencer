@@ -31,11 +31,11 @@ typedef struct __NATypeVtbl {
     int (*compare)(const void *self, const void *to);
 } NATypeVtbl;
 
-extern void *__NATypeInit(void *self, ...);
-extern void __NATypeDestroy(void *self);
-extern uint32_t __NATypeHash(const void *self);
-extern bool __NATypeEqual(const void *self, const void *to);
-extern int __NATypeCompare(const void *self, const void *to);
+extern void *NATypeInitDefault(void *self, ...);
+extern void NATypeDestroyDefault(void *self);
+extern uint32_t NATypeHashDefault(const void *self);
+extern bool NATypeEqualDefault(const void *self, const void *to);
+extern int NATypeCompareDefault(const void *self, const void *to);
 
 extern NAClass NATypeClass;
 extern int NATypeID;
