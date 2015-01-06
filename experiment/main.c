@@ -3,7 +3,7 @@
 #include <NACFHelper.h>
 #include <stdio.h>
 
-DeclareCFArrayCallBacks(__CFArrayCallBacks, NARetain, NARelease, EmptyCopyDescriptionCallBack, NAEqualTo);
+DeclareCFArrayCallBacks(__CFArrayCallBacks, NARetain, NARelease, EmptyCopyDescriptionCallBack, NAEqual);
 
 int main(int argc, char **argv)
 {

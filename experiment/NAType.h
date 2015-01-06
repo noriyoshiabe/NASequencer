@@ -42,11 +42,5 @@ extern void NARelease(const void *self);
 extern int16_t NARefCount(const void *self);
 
 extern uint32_t NAHash(const void *self);
-extern bool NAEqualTo(const void *self, const void *to);
+extern bool NAEqual(const void *self, const void *to);
 extern int NACompare(const void *self, const void *to);
-
-extern void *NATypeInitDefault(void *self, ...);
-extern void NATypeDestroyDefault(void *self);
-extern uint32_t NATypeHashDefault(const void *self);
-extern bool NATypeEqualDefault(const void *self, const void *to);
-extern int NATypeCompareDefault(const void *self, const void *to);

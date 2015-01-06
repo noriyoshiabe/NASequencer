@@ -39,7 +39,7 @@ const void *__##name##__CFArrayRetainCallBack(CFAllocatorRef allocator, const vo
      \
     Boolean __##name##__CFArrayEqualCallBack(const void *value1, const void *value2) \
     { \
-        return NAEqualTo(value1, value2); \
+        return NAEqual(value1, value2); \
     } \
      \
     const CFArrayCallBacks name = { \

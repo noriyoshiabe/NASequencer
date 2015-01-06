@@ -40,39 +40,18 @@ int16_t NARefCount(const void *self)
 
 uint32_t NAHash(const void *self)
 {
-    return NAVtblLookup(self, NAType)->hash(self);
+    uint32_t (*hash)(const void *self) = NAVtblLookup(self, NAType)->hash;
+    return hash ? hash(self) : (uint32_t)self >> 2;
 }
 
-bool NAEqualTo(const void *self, const void *to)
+bool NAEqual(const void *self, const void *to)
 {
-    return NAVtblLookup(self, NAType)->equalTo(self, to);
+    bool (*equal)(const void *, const void *) = NAVtblLookup(self, NAType)->equalTo;
+    return equal ? equal(self, to) : NAHash(self) == NAHash(to);
 }
 
 int NACompare(const void *self, const void *to)
 {
-    return NAVtblLookup(self, NAType)->compare(self, to);
-}
-
-void *NATypeInitEmpty(void *self, ...)
-{
-    return self;
-}
-
-void NATypeDestroyDefault(void *self)
-{
-}
-
-uint32_t NATypeHashDefault(const void *self)
-{
-    return (uint32_t)self >> 2;
-}
-
-bool NATypeEqualDefault(const void *self, const void *to)
-{
-    return NAHash(self) == NAHash(to);
-}
-
-int NATypeCompareDefault(const void *self, const void *to)
-{
-    return (int)self - (int)to;
+    int (*compare)(const void *, const void *) = NAVtblLookup(self, NAType)->compare;
+    return compare ? compare(self, to) : (int)self - (int)to;
 }

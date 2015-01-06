@@ -91,7 +91,7 @@ static NATypeVtbl typeVtbl = {
     __NAStringInit,
     __NAStringDestroy,
     __NAStringHash,
-    NATypeEqualDefault,
+    NULL,
     __NAStringCompare,
 };
 
