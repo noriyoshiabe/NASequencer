@@ -42,7 +42,13 @@ const void *NARetain(const void *self)
 
 void NARelease(const void *self)
 {
-    0 == --((NAType *)self)->refCount ? NAVtbl(self, NAType)->destroy((void *)self), free((void *)self) : (void *)0;
+    if (0 == --((NAType *)self)->refCount) {
+        void (*destroy)(void *) = NAVtbl(self, NAType)->destroy;
+        if (destroy) {
+            destroy((void *)self);
+        }
+        free((void *)self);
+    }
 }
 
 int16_t NARefCount(const void *self)
