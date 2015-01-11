@@ -75,7 +75,7 @@
 #include "Lexer.h"
 #include <stdio.h>
  
-int yyerror(SExpression **expression, yyscan_t scanner, const char *msg) {
+int yyerror(YYLTYPE *location, SExpression **expression, yyscan_t scanner, const char *msg) {
     // Add error handling routine as needed
     return 0;
 }
@@ -140,7 +140,7 @@ typedef void* yyscan_t;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 37 "Parser.y" /* yacc.c:355  */
+#line 38 "Parser.y" /* yacc.c:355  */
 
     int value;
     SExpression *expression;
@@ -473,7 +473,7 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    56,    56,    60,    61,    62,    63
+       0,    57,    57,    61,    62,    63,    64
 };
 #endif
 
@@ -1348,37 +1348,39 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 56 "Parser.y" /* yacc.c:1661  */
+#line 57 "Parser.y" /* yacc.c:1661  */
     { *expression = (yyvsp[0].expression); }
 #line 1354 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 3:
-#line 60 "Parser.y" /* yacc.c:1661  */
+#line 61 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createOperation( ePLUS, (yyvsp[-2].expression), (yyvsp[0].expression) ); }
 #line 1360 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 4:
-#line 61 "Parser.y" /* yacc.c:1661  */
+#line 62 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createOperation( eMULTIPLY, (yyvsp[-2].expression), (yyvsp[0].expression) ); }
 #line 1366 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 5:
-#line 62 "Parser.y" /* yacc.c:1661  */
+#line 63 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = (yyvsp[-1].expression); }
 #line 1372 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 6:
-#line 63 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createNumber((yyvsp[0].value)); printf("%d %d %d %d\n", (yylsp[0]).first_column, (yylsp[0]).first_line, (yylsp[0]).last_column, (yylsp[0]).last_line); }
-#line 1378 "Parser.c" /* yacc.c:1661  */
+#line 64 "Parser.y" /* yacc.c:1661  */
+    { (yyval.expression) = createNumber((yyvsp[0].value));
+    printf("%d %d %d %d\n", (yylsp[0]).first_column, (yylsp[0]).first_line, (yylsp[0]).last_column, (yylsp[0]).last_line);
+    }
+#line 1380 "Parser.c" /* yacc.c:1661  */
     break;
 
 
-#line 1382 "Parser.c" /* yacc.c:1661  */
+#line 1384 "Parser.c" /* yacc.c:1661  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1613,5 +1615,5 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 66 "Parser.y" /* yacc.c:1906  */
+#line 69 "Parser.y" /* yacc.c:1906  */
 

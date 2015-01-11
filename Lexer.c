@@ -180,7 +180,20 @@ typedef size_t yy_size_t;
 #define EOB_ACT_END_OF_FILE 1
 #define EOB_ACT_LAST_MATCH 2
 
-    #define YY_LESS_LINENO(n)
+    /* Note: We specifically omit the test for yy_rule_can_match_eol because it requires
+     *       access to the local variable yy_act. Since yyless() is a macro, it would break
+     *       existing scanners that call yyless() from OUTSIDE yylex. 
+     *       One obvious solution it to make yy_act a global. I tried that, and saw
+     *       a 5% performance hit in a non-yylineno scanner, because yy_act is
+     *       normally declared as a register variable-- so it is not worth it.
+     */
+    #define  YY_LESS_LINENO(n) \
+            do { \
+                int yyl;\
+                for ( yyl = n; yyl < yyleng; ++yyl )\
+                    if ( yytext[yyl] == '\n' )\
+                        --yylineno;\
+            }while(0)
     
 /* Return all but the first "n" matched characters back to the input stream. */
 #define yyless(n) \
@@ -428,6 +441,11 @@ static yyconst flex_int16_t yy_chk[22] =
        14
     } ;
 
+/* Table of booleans, true if rule could match eol. */
+static yyconst flex_int32_t yy_rule_can_match_eol[9] =
+    {   0,
+1, 0, 0, 0, 0, 0, 0, 0,     };
+
 /* The intent behind this definition is that it'll catch
  * any uses of REJECT which flex missed.
  */
@@ -447,9 +465,22 @@ static yyconst flex_int16_t yy_chk[22] =
 #include "Parser.h"
  
 #include <stdio.h>
- 
+#include <string.h>
+
+#define YY_USER_INIT \
+    yylineno = 1; \
+    yycolumn = 1;
+
+
+#define YY_USER_ACTION \
+    yylloc->first_line = yylloc->last_line; \
+    yylloc->last_line = yylineno; \
+    yylloc->first_column = yycolumn; yylloc->last_column = yycolumn + yyleng - 1; \
+    if (strchr(yytext, '\n')) yycolumn = 1; \
+    else yycolumn += yyleng;
+
 #define YY_NO_UNISTD_H 1
-#line 453 "Lexer.c"
+#line 484 "Lexer.c"
 
 #define INITIAL 0
 
@@ -499,6 +530,8 @@ struct yyguts_t
 
     YYSTYPE * yylval_r;
 
+    YYLTYPE * yylloc_r;
+
     }; /* end struct yyguts_t */
 
 static int yy_init_globals (yyscan_t yyscanner );
@@ -506,6 +539,8 @@ static int yy_init_globals (yyscan_t yyscanner );
     /* This must go here because YYSTYPE and YYLTYPE are included
      * from bison output in section 1.*/
     #    define yylval yyg->yylval_r
+    
+    #    define yylloc yyg->yylloc_r
     
 int yylex_init (yyscan_t* scanner);
 
@@ -548,6 +583,10 @@ YYSTYPE * yyget_lval (yyscan_t yyscanner );
 
 void yyset_lval (YYSTYPE * yylval_param ,yyscan_t yyscanner );
 
+       YYLTYPE *yyget_lloc (yyscan_t yyscanner );
+    
+        void yyset_lloc (YYLTYPE * yylloc_param ,yyscan_t yyscanner );
+    
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
  */
@@ -656,10 +695,10 @@ static int input (yyscan_t yyscanner );
 #define YY_DECL_IS_OURS 1
 
 extern int yylex \
-               (YYSTYPE * yylval_param ,yyscan_t yyscanner);
+               (YYSTYPE * yylval_param,YYLTYPE * yylloc_param ,yyscan_t yyscanner);
 
 #define YY_DECL int yylex \
-               (YYSTYPE * yylval_param , yyscan_t yyscanner)
+               (YYSTYPE * yylval_param, YYLTYPE * yylloc_param , yyscan_t yyscanner)
 #endif /* !YY_DECL */
 
 /* Code executed at the beginning of each rule, after yytext and yyleng
@@ -686,12 +725,14 @@ YY_DECL
 	register int yy_act;
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
 
-#line 29 "Lexer.l"
+#line 44 "Lexer.l"
 
  
-#line 693 "Lexer.c"
+#line 732 "Lexer.c"
 
     yylval = yylval_param;
+
+    yylloc = yylloc_param;
 
 	if ( !yyg->yy_init )
 		{
@@ -759,6 +800,18 @@ yy_find_action:
 
 		YY_DO_BEFORE_ACTION;
 
+		if ( yy_act != YY_END_OF_BUFFER && yy_rule_can_match_eol[yy_act] )
+			{
+			int yyl;
+			for ( yyl = 0; yyl < yyleng; ++yyl )
+				if ( yytext[yyl] == '\n' )
+					   
+    do{ yylineno++;
+        yycolumn=0;
+    }while(0)
+;
+			}
+
 do_action:	/* This label is used only to access EOF actions. */
 
 		switch ( yy_act )
@@ -773,45 +826,45 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 31 "Lexer.l"
+#line 46 "Lexer.l"
 { /* Skip blanks. */ }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 32 "Lexer.l"
+#line 47 "Lexer.l"
 { sscanf(yytext, "%d", &yylval->value); return TOKEN_NUMBER; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 34 "Lexer.l"
+#line 49 "Lexer.l"
 { return TOKEN_MULTIPLY; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 35 "Lexer.l"
+#line 50 "Lexer.l"
 { return TOKEN_PLUS; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 36 "Lexer.l"
+#line 51 "Lexer.l"
 { return TOKEN_LPAREN; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 37 "Lexer.l"
+#line 52 "Lexer.l"
 { return TOKEN_RPAREN; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 38 "Lexer.l"
+#line 53 "Lexer.l"
 {  }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 40 "Lexer.l"
+#line 55 "Lexer.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 815 "Lexer.c"
+#line 868 "Lexer.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1178,6 +1231,10 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 
 	*--yy_cp = (char) c;
 
+    if ( c == '\n' ){
+        --yylineno;
+    }
+
 	yyg->yytext_ptr = yy_bp;
 	yyg->yy_hold_char = *yy_cp;
 	yyg->yy_c_buf_p = yy_cp;
@@ -1253,6 +1310,13 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 	c = *(unsigned char *) yyg->yy_c_buf_p;	/* cast for 8-bit char's */
 	*yyg->yy_c_buf_p = '\0';	/* preserve yytext */
 	yyg->yy_hold_char = *++yyg->yy_c_buf_p;
+
+	if ( c == '\n' )
+		   
+    do{ yylineno++;
+        yycolumn=0;
+    }while(0)
+;
 
 	return c;
 }
@@ -1801,6 +1865,18 @@ void yyset_lval (YYSTYPE *  yylval_param , yyscan_t yyscanner)
     yylval = yylval_param;
 }
 
+YYLTYPE *yyget_lloc  (yyscan_t yyscanner)
+{
+    struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
+    return yylloc;
+}
+    
+void yyset_lloc (YYLTYPE *  yylloc_param , yyscan_t yyscanner)
+{
+    struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
+    yylloc = yylloc_param;
+}
+    
 /* User-visible API */
 
 /* yylex_init is special because it creates the scanner itself, so it is
@@ -1976,7 +2052,7 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 40 "Lexer.l"
+#line 55 "Lexer.l"
 
 
 

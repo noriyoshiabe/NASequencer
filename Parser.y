@@ -10,7 +10,7 @@
 #include "Lexer.h"
 #include <stdio.h>
  
-int yyerror(SExpression **expression, yyscan_t scanner, const char *msg) {
+int yyerror(YYLTYPE *location, SExpression **expression, yyscan_t scanner, const char *msg) {
     // Add error handling routine as needed
     return 0;
 }
@@ -33,6 +33,7 @@ typedef void* yyscan_t;
 %lex-param   { yyscan_t scanner }
 %parse-param { SExpression **expression }
 %parse-param { yyscan_t scanner }
+%locations
  
 %union {
     int value;
@@ -60,7 +61,9 @@ expr
     : expr[L] TOKEN_PLUS expr[R] { $$ = createOperation( ePLUS, $L, $R ); }
     | expr[L] TOKEN_MULTIPLY expr[R] { $$ = createOperation( eMULTIPLY, $L, $R ); }
     | TOKEN_LPAREN expr[E] TOKEN_RPAREN { $$ = $E; }
-    | TOKEN_NUMBER { $$ = createNumber($1); printf("%d %d %d %d\n", @1.first_column, @1.first_line, @1.last_column, @1.last_line); }
+    | TOKEN_NUMBER { $$ = createNumber($1);
+    printf("%d %d %d %d\n", @1.first_column, @1.first_line, @1.last_column, @1.last_line);
+    }
     ;
  
 %%

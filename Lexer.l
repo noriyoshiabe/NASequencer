@@ -9,14 +9,29 @@
 #include "Parser.h"
  
 #include <stdio.h>
- 
+#include <string.h>
+
+#define YY_USER_INIT \
+    yylineno = 1; \
+    yycolumn = 1;
+
+
+#define YY_USER_ACTION \
+    yylloc->first_line = yylloc->last_line; \
+    yylloc->last_line = yylineno; \
+    yylloc->first_column = yycolumn; yylloc->last_column = yycolumn + yyleng - 1; \
+    if (strchr(yytext, '\n')) yycolumn = 1; \
+    else yycolumn += yyleng;
+
 %}
+
  
 %option outfile="Lexer.c" header-file="Lexer.h"
 %option warn nodefault
  
 %option reentrant noyywrap never-interactive nounistd
-%option bison-bridge
+%option bison-bridge bison-locations
+%option yylineno
  
 LPAREN      "("
 RPAREN      ")"
