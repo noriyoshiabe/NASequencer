@@ -1,11 +1,5 @@
 %{
   
-/*
- * Lexer.l file
- * To generate the lexical analyzer run: "flex Lexer.l"
- */
- 
-#include "Expression.h"
 #include "Parser.h"
  
 #include <stdio.h>
@@ -26,30 +20,110 @@
 %}
 
  
-%option outfile="Lexer.c" header-file="Lexer.h"
-%option warn nodefault
- 
-%option reentrant noyywrap never-interactive nounistd
-%option bison-bridge bison-locations
+%option outfile="Lexer.c"
+%option header-file="Lexer.h"
+%option reentrant
+%option noyywrap
+%option bison-bridge
+%option bison-locations
 %option yylineno
- 
-LPAREN      "("
-RPAREN      ")"
-PLUS        "+"
-MULTIPLY    "*"
- 
-NUMBER      [0-9]+
-WS          [ \r\n\t]*
- 
+%option case-insensitive
+
+%x COMMENT
+
+NONZERO        [1-9]
+DIGIT          [[:digit:]]
+INTEGER        {NONZERO}{DIGIT}*|0
+FLOAT          ({NONZERO}{DIGIT}*\.?|0\.|\.{DIGIT}){DIGIT}*|0
+STRING         \"[^\"]*\"|'[^']*'
+WSPACE         [[:blank:]]+
+
+KEY            c|d|e|f|g|a|b
+NOTE_NO        {KEY}[#b]?({DIGIT}|[+-]{DIGIT})?
+LOCATION       {NONZERO}{DIGIT}{0,2}:{NONZERO}{DIGIT}?(:{DIGIT}{1,3})?
+MEASURE        {NONZERO}{DIGIT}*m
+BEAT           {NONZERO}{DIGIT}*b
+
+RESOLUTION     resolution
+TITLE          title
+TIME           time
+TEMPO          tempo
+MARKER         marker
+SOUND          sound
+SELECT         select
+CHANNEL        channel
+VELOCITY       velocity
+GATETIME       gatetime
+STEP           step
+CUTOFF         cutoff
+OFFSET         offset
+LENGTH         length
+
+REST           "^"
+TIE            "~"
+ASSIGN         "="
+SEMICOLON      ";"
+COMMA          ","
+
+LPAREN         "("
+RPAREN         ")"
+LCURLY         "{"
+RCURLY         "}"
+
+IDENTIFIER     [_[:alpha:]][[:alnum:]]*
+
+EOL            \n
+
+LINE_COMMENT   \/\/.*$
+
 %%
- 
-{WS}            { /* Skip blanks. */ }
-{NUMBER}        { sscanf(yytext, "%d", &yylval->value); return TOKEN_NUMBER; }
- 
-{MULTIPLY}      { return TOKEN_MULTIPLY; }
-{PLUS}          { return TOKEN_PLUS; }
-{LPAREN}        { return TOKEN_LPAREN; }
-{RPAREN}        { return TOKEN_RPAREN; }
-.               {  }
+
+<<EOF>>          { return 0; }
+
+{INTEGER}        { return INTEGER; }
+{FLOAT}          { return FLOAT; }
+{STRING}         { return STRING; }
+{WSPACE}         { }
+
+{NOTE_NO}        { return NOTE_NO; }
+{LOCATION}       { return LOCATION; }
+{MEASURE}        { return MEASURE; }
+{BEAT}           { return BEAT; }
+
+{RESOLUTION}     { return RESOLUTION; }
+{TITLE}          { return TITLE; }
+{TIME}           { return TIME; }
+{TEMPO}          { return TEMPO; }
+{MARKER}         { return MARKER; }
+{SOUND}          { return SOUND; }
+{SELECT}         { return SELECT; }
+{CHANNEL}        { return CHANNEL; }
+{VELOCITY}       { return VELOCITY; }
+{GATETIME}       { return GATETIME; }
+{STEP}           { return STEP; }
+{CUTOFF}         { return CUTOFF; }
+{OFFSET}         { return OFFSET; }
+{LENGTH}         { return LENGTH; }
+
+{REST}           { return REST; }
+{TIE}            { return TIE; }
+{ASSIGN}         { return ASSIGN; }
+{SEMICOLON}      { return SEMICOLON; }
+{COMMA}          { return COMMA; }
+
+{LPAREN}         { return LPAREN; }
+{RPAREN}         { return RPAREN; }
+{LCURLY}         { return LCURLY; }
+{RCURLY}         { return RCURLY; }
+
+{IDENTIFIER}     { return IDENTIFIER; }
+
+{EOL}            { return EOL; }
+
+{LINE_COMMENT}   { }
+"/*"             { BEGIN(COMMENT); }
+<COMMENT>"*/"    { BEGIN(INITIAL); }
+<COMMENT>\n      { }
+<COMMENT>.       { }
  
 %%
