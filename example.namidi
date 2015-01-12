@@ -1,0 +1,142 @@
+/*
+ * example.namidi
+ */
+
+// コメントはC互換
+
+title "syntax sample"
+
+resolution 480
+
+time 4/4
+tempo 120.0
+marker 'START'
+
+velocity 127
+
+// Drums
+channel 9
+bank select msb=127 lsb=0
+program change 0
+
+// Piano
+channel 1
+bank select msb=0 lsb=0
+program change 2
+
+time 3/4 from 2:1:0 
+tempo 120.0
+marker 'A?'
+
+drums = {
+  channel 9
+  gatetime 120
+
+  step 120 {
+    C1   C#2;
+    C1   F#
+
+       E F#
+
+    C    F#
+       E
+    C    F#
+       E
+    C    F#
+
+       E F#
+
+         A#
+
+  }
+}
+
+piano = {
+  channel 1
+  velocity 100
+  gatetime cutoff 20
+  step 120
+
+  step {
+    C2 E G velocity=127
+    ~
+    ~
+    ~
+    D
+    ~
+    E
+    F
+    G
+    ~
+    A
+    ~
+    B
+    ~
+    C3 E G, C4 velocity=127
+    
+  }
+}
+
+serial = {
+  drums from 0
+  piano from 2:1:0
+}
+
+parallel = {
+  drums from 0
+  piano from 0
+}
+
+serial from 1:1:0
+parallel
+
+parallel {
+  replace channel 1 from 1:4:240 to 2:1:0 {
+    step 120 {
+      C3 E G C4, E4 velocity=120
+    }
+  }
+}
+
+mixed = parallel {
+  mix channel 1 from 1:4:240 to 2:1:0 {
+    step 120 {
+      E4 velocity=120
+    }
+  }
+}
+
+mixed from 5:1:0 to 5:3:0
+mixed length 960
+
+manual1 = {
+  channel 9
+
+  C1 240
+  ^
+  C1
+  ^
+  C1
+  ^
+  C1
+  C1
+}
+
+manual2 = {
+  channel 9
+  step 240
+
+  { F# F# F# F# F# F# F# F# } from 0
+  { ^  ^  E1 ^  ^  ^  E  ^  } from 0
+  { C1 ^  C1 ^  C1 ^  C1 C1 } from 0
+
+  { F# F# F# F# F# F# F# F# } from 1:1:0
+  { ^  ^  E1 ^  ^  ^  E  ^  } from 1:1:0
+  { C1 ^  C1 ^  C1 ^  C1 C1 } from 1:1:0
+
+  step 120
+
+  { F# ^  F# ^  F# ^  F# ^  F# ^  F# ^  F# ^  F# ^   } from 1:1:0
+  { ^  ^  ^  ^  E  ^  ^  E  ^  E  ^  ^  E  ^  ^  ^   } from 1:1:0
+  { C1 ^  C1 ^  ^  ^  C1 ^  C1 ^  C1 ^  ^  ^  ^  ^   } from 1:1:0
+}
