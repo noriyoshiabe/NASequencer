@@ -53,11 +53,15 @@ int evaluate(SExpression *e)
 int main(void)
 {
     SExpression *e = NULL;
-    char test[]="4 + 2*100 \n+ \n3*( 5 + 1 )";
+    char test[]="(4 + 2*100 \n+ \n3*( 5 +\n 1 )\n";
     int result = 0;
  
     e = getAST(test);
  
+    if (!e) {
+        printf("## error\n");
+        return 1;
+    }
     result = evaluate(e);
  
     printf("Result of '%s' is %d\n", test, result);

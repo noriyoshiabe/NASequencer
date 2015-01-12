@@ -479,8 +479,11 @@ static yyconst flex_int32_t yy_rule_can_match_eol[9] =
     if (strchr(yytext, '\n')) yycolumn = 1; \
     else yycolumn += yyleng;
 
-#define YY_NO_UNISTD_H 1
-#line 484 "Lexer.c"
+/*
+   %option warn nodefault
+never-interactive nounistd
+   */
+#line 487 "Lexer.c"
 
 #define INITIAL 0
 
@@ -725,10 +728,10 @@ YY_DECL
 	register int yy_act;
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
 
-#line 44 "Lexer.l"
+#line 51 "Lexer.l"
 
- 
-#line 732 "Lexer.c"
+
+#line 735 "Lexer.c"
 
     yylval = yylval_param;
 
@@ -791,12 +794,16 @@ yy_match:
 			yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
 			++yy_cp;
 			}
-		while ( yy_current_state != 14 );
-		yy_cp = yyg->yy_last_accepting_cpos;
-		yy_current_state = yyg->yy_last_accepting_state;
+		while ( yy_base[yy_current_state] != 13 );
 
 yy_find_action:
 		yy_act = yy_accept[yy_current_state];
+		if ( yy_act == 0 )
+			{ /* have to back up */
+			yy_cp = yyg->yy_last_accepting_cpos;
+			yy_current_state = yyg->yy_last_accepting_state;
+			yy_act = yy_accept[yy_current_state];
+			}
 
 		YY_DO_BEFORE_ACTION;
 
@@ -823,50 +830,52 @@ do_action:	/* This label is used only to access EOF actions. */
 			yy_current_state = yyg->yy_last_accepting_state;
 			goto yy_find_action;
 
+case YY_STATE_EOF(INITIAL):
+#line 53 "Lexer.l"
+{ printf("EOF\n"); return 0; }
+	YY_BREAK
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 46 "Lexer.l"
+#line 55 "Lexer.l"
 { /* Skip blanks. */ }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 47 "Lexer.l"
+#line 56 "Lexer.l"
 { sscanf(yytext, "%d", &yylval->value); return TOKEN_NUMBER; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 49 "Lexer.l"
+#line 58 "Lexer.l"
 { return TOKEN_MULTIPLY; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 50 "Lexer.l"
+#line 59 "Lexer.l"
 { return TOKEN_PLUS; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 51 "Lexer.l"
+#line 60 "Lexer.l"
 { return TOKEN_LPAREN; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 52 "Lexer.l"
+#line 61 "Lexer.l"
 { return TOKEN_RPAREN; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 53 "Lexer.l"
+#line 62 "Lexer.l"
 {  }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 55 "Lexer.l"
-YY_FATAL_ERROR( "flex scanner jammed" );
+#line 64 "Lexer.l"
+ECHO;
 	YY_BREAK
-#line 868 "Lexer.c"
-case YY_STATE_EOF(INITIAL):
-	yyterminate();
+#line 879 "Lexer.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -931,8 +940,7 @@ case YY_STATE_EOF(INITIAL):
 
 			else
 				{
-				yy_cp = yyg->yy_last_accepting_cpos;
-				yy_current_state = yyg->yy_last_accepting_state;
+				yy_cp = yyg->yy_c_buf_p;
 				goto yy_find_action;
 				}
 			}
@@ -1460,7 +1468,7 @@ static void yy_load_buffer_state  (yyscan_t yyscanner)
         b->yy_bs_column = 0;
     }
 
-        b->yy_is_interactive = 0;
+        b->yy_is_interactive = file ? (isatty( fileno(file) ) > 0) : 0;
     
 	errno = oerrno;
 }
@@ -2052,7 +2060,7 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 55 "Lexer.l"
+#line 64 "Lexer.l"
 
 
 

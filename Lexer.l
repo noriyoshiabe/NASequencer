@@ -41,8 +41,10 @@ WSPACE         [[:blank:]]+
 KEY            c|d|e|f|g|a|b
 NOTE_NO        {KEY}[#b]?({DIGIT}|[+-]{DIGIT})?
 LOCATION       {NONZERO}{DIGIT}{0,2}:{NONZERO}{DIGIT}?(:{DIGIT}{1,3})?
-MEASURE        {NONZERO}{DIGIT}*m
-BEAT           {NONZERO}{DIGIT}*b
+MEASURE        m{NONZERO}{DIGIT}*
+BEAT           b{NONZERO}{DIGIT}*
+M_LENGTH       {NONZERO}{DIGIT}*m
+B_LENGTH       {NONZERO}{DIGIT}*b
 
 RESOLUTION     resolution
 TITLE          title
@@ -54,13 +56,20 @@ SELECT         select
 CHANNEL        channel
 VELOCITY       velocity
 GATETIME       gatetime
+NOTE           note
+
 STEP           step
+FROM           from
+TO             to
+REPLACE        replace
+MIX            mix
 CUTOFF         cutoff
 OFFSET         offset
 LENGTH         length
 
 REST           "^"
 TIE            "~"
+DIVISION       "/"
 ASSIGN         "="
 SEMICOLON      ";"
 COMMA          ","
@@ -100,6 +109,8 @@ LINE_COMMENT   \/\/.*$
 {CHANNEL}        { return CHANNEL; }
 {VELOCITY}       { return VELOCITY; }
 {GATETIME}       { return GATETIME; }
+{NOTE}           { return NOTE; }
+
 {STEP}           { return STEP; }
 {CUTOFF}         { return CUTOFF; }
 {OFFSET}         { return OFFSET; }
@@ -107,6 +118,7 @@ LINE_COMMENT   \/\/.*$
 
 {REST}           { return REST; }
 {TIE}            { return TIE; }
+{DIVISION}       { return DIVISION; }
 {ASSIGN}         { return ASSIGN; }
 {SEMICOLON}      { return SEMICOLON; }
 {COMMA}          { return COMMA; }

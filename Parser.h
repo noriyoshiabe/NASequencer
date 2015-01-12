@@ -40,7 +40,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 20 "Parser.y" /* yacc.c:1915  */
+#line 21 "Parser.y" /* yacc.c:1915  */
 
  
 #ifndef YY_TYPEDEF_YY_SCANNER_T
@@ -69,7 +69,7 @@ typedef void* yyscan_t;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 38 "Parser.y" /* yacc.c:1915  */
+#line 39 "Parser.y" /* yacc.c:1915  */
 
     int value;
     SExpression *expression;

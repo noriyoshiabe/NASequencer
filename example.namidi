@@ -41,7 +41,7 @@ piano = {
 
   note step 120 {
     C2,E,G velocity=127 ~~~
-    D~ E F G~ A~ B~ C3,E,G,C4(velocity=127) ^
+    D~ E F G~ A~ B~ C3,E,G,C4(velocity=127 gatetime=200) ^
   }
 }
 
