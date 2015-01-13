@@ -1,66 +1,138 @@
-/*
- * Expression.c
- * Implementation of functions used to build the syntax tree.
- */
- 
 #include "Expression.h"
  
+#include <stdio.h>
 #include <stdlib.h>
- 
-/**
- * @brief Allocates space for expression
- * @return The expression or NULL if not enough memory
- */
-static SExpression *allocateExpression()
+
+Expression *createIntegerValue(int tokenType, int value)
 {
-    SExpression *b = (SExpression *)malloc(sizeof(SExpression));
- 
-    if (b == NULL)
-        return NULL;
- 
-    b->type = eVALUE;
-    b->value = 0;
- 
-    b->left = NULL;
-    b->right = NULL;
- 
-    return b;
+    Expression *expr = (Expression *)calloc(sizeof(Expression));
+    expr->tokenType = tokenType;
+    expr->valueType = VALUE_TYPE_INTEGER;
+    expr->v.i = value;
+    return expr;
+}
+
+Expression *createFloatValue(int tokenType, float value)
+{
+    Expression *expr = (Expression *)calloc(sizeof(Expression));
+    expr->tokenType = tokenType;
+    expr->valueType = VALUE_TYPE_FLOAT;
+    expr->v.f = value;
+    return expr;
+}
+
+Expression *createStringValue(int tokenType, char *value)
+{
+    Expression *expr = (Expression *)calloc(sizeof(Expression));
+    expr->tokenType = tokenType;
+    expr->valueType = VALUE_TYPE_STRING;
+    expr->v.s = (char *)malloc(strlen(value) + 1);
+    strcpy(expr->v.s, value);
+    return expr;
+}
+
+Expression *createExpression(int tokenType, Expression *left, Expression *right)
+{
+    Expression *expr = (Expression *)calloc(sizeof(Expression));
+    expr->tokenType = tokenType;
+    expr->left = left;
+    expr->right = expr->rightLast = right;
+    return expr;
+}
+
+Expression *addRightExpression(Expression *expr, Expression *right)
+{
+    if (expr->rightLast) {
+        expr->rightLast->right = right;
+    } else {
+        expr->right = expr->rightLast = right;
+    }
+
+    expr->rightLast = right->rightLast ? right->rightLast : right;
+    return expr;
+}
+
+static const char *tokenType2String(int tokenType)
+{
+#define CASE(type) case type: return #type
+    switch (tokenType) {
+    CASE(INTEGER);
+    CASE(NEGATIVE);
+    CASE(FLOAT);
+    CASE(NEGATIVE_FLOAT);
+    CASE(STRING);
+    CASE(NOTE_NO);
+    CASE(LOCATION);
+    CASE(MB_LENGTH);
+    CASE(RESOLUTION);
+    CASE(TITLE);
+    CASE(TIME);
+    CASE(TEMPO);
+    CASE(MARKER);
+    CASE(SOUND_SELECT);
+    CASE(CHANNEL);
+    CASE(VELOCITY);
+    CASE(GATETIME);
+    CASE(GATETIME_CUTOFF);
+    CASE(NOTE);
+    CASE(STEP);
+    CASE(FROM);
+    CASE(TO);
+    CASE(REPLACE);
+    CASE(MIX);
+    CASE(OFFSET);
+    CASE(LENGTH);
+    CASE(REST);
+    CASE(TIE);
+    CASE(PLUS);
+    CASE(MINUS);
+    CASE(MULTIPLY);
+    CASE(DIVISION);
+    CASE(ASSIGN);
+    CASE(IDENTIFIER);
+    }
+    return "Unknown token type";
+#undef CASE
+}
+
+static char indent[128];
+
+void dumpExpressionImpl(Expression *expr, int depth)
+{
+    memset(buf, ' ', depth * 2);
+    buf[depth * 2] = '\0';
+
+    switch (expr->valueType) {
+    case VALUE_TYPE_NONE:
+        printf("%s[%s]\n", indent, tokenType2String(expr->tokenType));
+        break;
+    case VALUE_TYPE_INTEGER:
+        printf("%s[%s] integer %d\n", indent, tokenType2String(expr->tokenType), expr->v.i);
+        break;
+    case VALUE_TYPE_FLOAT:
+        printf("%s[%s] float %f\n", indent, tokenType2String(expr->tokenType), expr->v.f);
+        break;
+    case VALUE_TYPE_STRING:
+        printf("%s[%s] string %s\n", indent, tokenType2String(expr->tokenType), expr->v.s);
+        break;
+    }
+
+    dumpExpressionImpl(expr->left, depth + 1);
+    dumpExpressionImpl(expr->right, depth);
+}
+
+void dumpExpression(Expression *expr)
+{
+    dumpExpressionImpl(expr, 0);
 }
  
-SExpression *createNumber(int value)
+void deleteExpression(Expression *expr)
 {
-    SExpression *b = allocateExpression();
- 
-    if (b == NULL)
-        return NULL;
- 
-    b->type = eVALUE;
-    b->value = value;
- 
-    return b;
-}
- 
-SExpression *createOperation(EOperationType type, SExpression *left, SExpression *right)
-{
-    SExpression *b = allocateExpression();
- 
-    if (b == NULL)
-        return NULL;
- 
-    b->type = type;
-    b->left = left;
-    b->right = right;
- 
-    return b;
-}
- 
-void deleteExpression(SExpression *b)
-{
-    if (b == NULL)
+    if (!expr)
         return;
  
-    deleteExpression(b->left);
-    deleteExpression(b->right);
+    deleteExpression(expr->left);
+    deleteExpression(expr->right);
  
-    free(b);
+    free(expr);
 }
