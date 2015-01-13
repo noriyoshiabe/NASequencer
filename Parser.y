@@ -1,11 +1,11 @@
 %{
  
-#include "ASTNode.h"
+#include "Expression.h"
 #include "Parser.h"
 #include "Lexer.h"
 #include <stdio.h>
  
-int yyerror(YYLTYPE *location, ASTNode **astRoot, yyscan_t scanner, const char *msg) {
+int yyerror(YYLTYPE *location, Expression **expression, yyscan_t scanner, const char *msg) {
 printf("############ %d %d %s\n", location->last_line, location->last_column, msg);
     // Add error handling routine as needed
     return 0;
@@ -26,20 +26,27 @@ typedef void* yyscan_t;
 %defines "Parser.h"
  
 %define api.pure
-%define api.value.type {ASTNode}
 %lex-param   { yyscan_t scanner }
-%parse-param { ASTNode **astRoot }
+%parse-param { Expression **expression }
 %parse-param { yyscan_t scanner }
 %locations
- 
-%token INTEGER
-%token FLOAT
-%token STRING
 
-%token NOTE_NO
-%token LOCATION
-%token MEASURE
-%token BEAT
+%union {
+    int i;
+    float f;
+    char *s;
+    Expression *expression;
+}
+
+%type <expression> expr
+ 
+%token <i>INTEGER
+%token <f>FLOAT
+%token <s>STRING
+
+%token <s>NOTE_NO
+%token <s>LOCATION
+%token <s>MB_LENGTH
 
 %token RESOLUTION
 %token TITLE
@@ -60,8 +67,13 @@ typedef void* yyscan_t;
 
 %token REST
 %token TIE
+
+%token PLUS
+%token MINUS
 %token DIVISION
+%token MULTIPLY
 %token ASSIGN
+
 %token SEMICOLON
 %token COMMA
 
@@ -80,125 +92,67 @@ typedef void* yyscan_t;
 %left LCURLY
 %left RCURLY
 
-%token TIME_SIGN
 %token SOUND_SELECT
-%token SOUND_PARAM
 %token GATETIME_CUTOFF
+%token NEGATIVE
+%token NEGATIVE_FLOAT
 
 
 %%
  
 input
-    : statement_list { *astRoot = $1; }
-    ;
-
-statement_list
-    : statement                { $$ = $1; }
-    | statement_list statement { $$ = addSiblingToNode($1, $2); }
-    ;
-
-statement
-    : RESOLUTION integer { $$ = createNodeWithChild(RESOLUTION, $2); }
-    | TITLE string       { $$ = createNodeWithChild(TITLE, $2); }
-    | TIME time_sign     { $$ = createNodeWithChild(TIME, $2); }
-    | TEMPO float        { $$ = createNodeWithChild(TEMPO, $2); }
-    | TEMPO integer      { $$ = createNodeWithChild(TEMPO, $2); }
-    | MARKER string      { $$ = createNodeWithChild(MARKER, $2); }
-    | SOUND SELECT sound_param
-                         { $$ = createNodeWithChild(SOUND_SELECT, $3); }
-    | CHANNEL integer    { $$ = createNodeWithChild(CHANNEL, $2); }
-    | VELOCITY integer   { $$ = createNodeWithChild(VELOCITY, $2); }
-    | GATETIME integer   { $$ = createNodeWithChild(GATETIME, $2); }
-    | GATETIME CUTOFF integer
-                         { $$ = createNodeWithChild(GATETIME_CUTOFF, $2); }
-    | note
-    | rest
-    | tie
-    ;
-
-
-param_list
-    : param
-    | param_list param
-    ;
-
-param
-    : integer
-    | float
-    | string
-    | time_sign
-    | sound_param
-    | from
-    | to
-    | step
-    | block
-    ;
-
-
-
-integer
-    : INTEGER { $$ = createNodeWithInteger(INTEGER, yytext); }
-    ;
-
-float
-    : FLOAT { $$ = createNodeWithFloat(FLOAT, yytext); }
-    ;
-
-string
-    : STRING { $$ = createNodeWithString(STRING, yytext); }
-    ;
-
-location
-    : LOCATION { $$ = createNodeWithString(LOCATION, yytext); }
-    | INTEGER  { $$ = createNodeWithString(INTEGER, yytext); }
-    | MEASURE  { $$ = createNodeWithString(MEASURE, yytext); }
-    | BEAT     { $$ = createNodeWithString(BEAT, yytext); }
-    ;
-
-time_sign
-    : integer DIVISION integer { $$ = createNodeWithChildren(TIME_SIGN, $2, $4, NULL); }
-    ;
-
-sound_param
-    : integer integer integer  { $$ = createNodeWithChildren(SOUND_PARAM, $1, $2, $3, NULL); }
-
-from
-    : FROM location { $$ = createNodeWithChild(FROM, $2); }
-    ;
-
-to
-    : FROM location { $$ = createNodeWithChild(FROM, $2); }
-    ;
-
-step
-    : STEP integer { $$ = createNodeWithChild(FROM, $2); }
-
-eos
-    : EOL
-    | SEMICOLON
-    ;
-
-line
-    : eos
-    | statement eos
-    | line eos
-    ;
-
-statement
-    : resolution { create }
-
-
-input
     : expr { *expression = $1; }
     ;
  
 expr
-    : expr[L] TOKEN_PLUS expr[R] { $$ = createOperation( ePLUS, $L, $R ); }
-    | expr[L] TOKEN_MULTIPLY expr[R] { $$ = createOperation( eMULTIPLY, $L, $R ); }
-    | TOKEN_LPAREN expr[E] TOKEN_RPAREN { $$ = $E; }
-    | TOKEN_NUMBER { $$ = createNumber($1);
-    printf("%d %d %d %d\n", @1.first_column, @1.first_line, @1.last_column, @1.last_line);
-    }
+    : expr expr               { $$ = addRightExpression($1, $2); }
+
+    | INTEGER                 { $$ = createIntegerValue(INTEGER, $1); }
+    | PLUS INTEGER            { $$ = createIntegerValue(INTEGER, $2); }
+    | MINUS INTEGER           { $$ = createIntegerValue(NEGATIVE, $2); }
+    | FLOAT                   { $$ = createFloatValue(FLOAT, $1); }
+    | PLUS FLOAT              { $$ = createFloatValue(FLOAT, $2); }
+    | MINUS FLOAT             { $$ = createFloatValue(NEGATIVE_FLOAT, $2); }
+    | STRING                  { $$ = createStringValue(STRING, $1); }
+
+    | NOTE_NO                 { $$ = createStringValue(NOTE_NO, $1); }
+    | LOCATION                { $$ = createStringValue(LOCATION, $1); }
+    | MB_LENGTH               { $$ = createStringValue(MB_LENGTH, $1); }
+
+    | RESOLUTION expr         { $$ = createExpression(RESOLUTION, $1, NULL); }
+    | TITLE expr              { $$ = createExpression(TITLE, $1, NULL); }
+    | TIME expr               { $$ = createExpression(TIME, $1, NULL); }
+    | TEMPO expr              { $$ = createExpression(TEMPO, $1, NULL); }
+    | MARKER expr             { $$ = createExpression(MARKER, $1, NULL); }
+    | SOUND SELECT expr       { $$ = createExpression(SOUND_SELECT, $2, NULL); }
+    | CHANNEL expr            { $$ = createExpression(CHANNEL, $1, NULL); }
+    | VELOCITY expr           { $$ = createExpression(VELOCITY, $1, NULL); }
+    | GATETIME expr           { $$ = createExpression(GATETIME, $1, NULL); }
+    | GATETIME CUTOFF expr    { $$ = createExpression(GATETIME_CUTOFF, $2, NULL); }
+    | NOTE expr               { $$ = createExpression(NOTE, $1, NULL); }
+
+    | STEP expr               { $$ = createExpression(STEP, $1, NULL); }
+    | FROM expr               { $$ = createExpression(FROM, $1, NULL); }
+    | TO expr                 { $$ = createExpression(TO, $1, NULL); }
+    | REPLACE expr            { $$ = createExpression(REPLACE, $1, NULL); }
+    | MIX expr                { $$ = createExpression(MIX, $1, NULL); }
+    | OFFSET expr             { $$ = createExpression(OFFSET, $1, NULL); }
+    | LENGTH expr             { $$ = createExpression(LENGTH, $1, NULL); }
+
+    | REST                    { $$ = createExpression(REST, NULL, NULL); }
+    | TIE                     { $$ = createExpression(TIE, NULL, NULL); }
+
+    | expr PLUS expr          { $$ = createExpression(PLUS, $1, $3); }
+    | expr MINUS expr         { $$ = createExpression(MINUS, $1, $3); }
+    | expr MULTIPLY expr      { $$ = createExpression(MULTIPLY, $1, $3); }
+    | expr DIVISION expr      { $$ = createExpression(DIVISION, $1, $3); }
+    | expr ASSIGN expr        { $$ = createExpression(ASSIGN, $1, $3); }
+    | expr COMMA expr         { $$ = addRightExpression($1, $3); }
+
+    | LPAREN expr RPAREN      { $$ = $2; }
+    | LCURLY expr RCURLY      { $$ = $2; }
+    
+    | IDENTIFIER              { $$ = createStringValue(IDENTIFIER, $1); }
     ;
- 
+
 %%

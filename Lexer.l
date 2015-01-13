@@ -40,11 +40,8 @@ WSPACE         [[:blank:]]+
 
 KEY            c|d|e|f|g|a|b
 NOTE_NO        {KEY}[#b]?({DIGIT}|[+-]{DIGIT})?
-LOCATION       {NONZERO}{DIGIT}{0,2}:{NONZERO}{DIGIT}?(:{DIGIT}{1,3})?
-MEASURE        m{NONZERO}{DIGIT}*
-BEAT           b{NONZERO}{DIGIT}*
-M_LENGTH       {NONZERO}{DIGIT}*m
-B_LENGTH       {NONZERO}{DIGIT}*b
+LOCATION       {NONZERO}{DIGIT}{0,2}:{NONZERO}{DIGIT}?(:{DIGIT}{1,3})?|m{NONZERO}{DIGIT}*|b{NONZERO}{DIGIT}*
+MB_LENGTH      {NONZERO}{DIGIT}*m|{NONZERO}{DIGIT}*b
 
 RESOLUTION     resolution
 TITLE          title
@@ -56,6 +53,7 @@ SELECT         select
 CHANNEL        channel
 VELOCITY       velocity
 GATETIME       gatetime
+CUTOFF         cutoff
 NOTE           note
 
 STEP           step
@@ -63,14 +61,18 @@ FROM           from
 TO             to
 REPLACE        replace
 MIX            mix
-CUTOFF         cutoff
 OFFSET         offset
 LENGTH         length
 
 REST           "^"
 TIE            "~"
+
+PLUS           "+"
+MINUS          "-"
+MULTIPLY       "*"
 DIVISION       "/"
 ASSIGN         "="
+
 SEMICOLON      ";"
 COMMA          ","
 
@@ -96,8 +98,7 @@ LINE_COMMENT   \/\/.*$
 
 {NOTE_NO}        { return NOTE_NO; }
 {LOCATION}       { return LOCATION; }
-{MEASURE}        { return MEASURE; }
-{BEAT}           { return BEAT; }
+{MB_LENGTH}      { return MB_LENGTH; }
 
 {RESOLUTION}     { return RESOLUTION; }
 {TITLE}          { return TITLE; }
@@ -109,18 +110,26 @@ LINE_COMMENT   \/\/.*$
 {CHANNEL}        { return CHANNEL; }
 {VELOCITY}       { return VELOCITY; }
 {GATETIME}       { return GATETIME; }
+{CUTOFF}         { return CUTOFF; }
 {NOTE}           { return NOTE; }
 
 {STEP}           { return STEP; }
-{CUTOFF}         { return CUTOFF; }
+{FROM}           { return FROM; }
+{TO}             { return TO; }
+{REPLACE}        { return REPLACE; }
+{MIX}            { return MIX; }
 {OFFSET}         { return OFFSET; }
 {LENGTH}         { return LENGTH; }
 
 {REST}           { return REST; }
 {TIE}            { return TIE; }
+
+{PLUS}           { return PLUS; }
+{MINUS}          { return MINUS; }
+{MULTIPLY}       { return MULTIPLY; }
 {DIVISION}       { return DIVISION; }
 {ASSIGN}         { return ASSIGN; }
-{SEMICOLON}      { return SEMICOLON; }
+{SEMICOLON}      { }
 {COMMA}          { return COMMA; }
 
 {LPAREN}         { return LPAREN; }
@@ -130,7 +139,7 @@ LINE_COMMENT   \/\/.*$
 
 {IDENTIFIER}     { return IDENTIFIER; }
 
-{EOL}            { return EOL; }
+{EOL}            { }
 
 {LINE_COMMENT}   { }
 "/*"             { BEGIN(COMMENT); }
