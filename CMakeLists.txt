@@ -12,7 +12,7 @@ FLEX_TARGET(Lexer Lexer.l ${CMAKE_SOURCE_DIR}/Lexer.c)
 ADD_FLEX_BISON_DEPENDENCY(Lexer Parser)
 
 include_directories(./)
-add_executable(pp
+add_executable(parse
   main.c
   Expression.c
   ${BISON_Parser_OUTPUTS}

@@ -40,7 +40,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 21 "Parser.y" /* yacc.c:1915  */
+#line 16 "Parser.y" /* yacc.c:1915  */
 
  
 #ifndef YY_TYPEDEF_YY_SCANNER_T
@@ -56,11 +56,50 @@ typedef void* yyscan_t;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    TOKEN_PLUS = 258,
-    TOKEN_MULTIPLY = 259,
-    TOKEN_LPAREN = 260,
-    TOKEN_RPAREN = 261,
-    TOKEN_NUMBER = 262
+    INTEGER = 258,
+    FLOAT = 259,
+    STRING = 260,
+    NOTE_NO = 261,
+    LOCATION = 262,
+    MB_LENGTH = 263,
+    RESOLUTION = 264,
+    TITLE = 265,
+    TIME = 266,
+    TEMPO = 267,
+    MARKER = 268,
+    SOUND = 269,
+    SELECT = 270,
+    CHANNEL = 271,
+    VELOCITY = 272,
+    GATETIME = 273,
+    CUTOFF = 274,
+    NOTE = 275,
+    STEP = 276,
+    FROM = 277,
+    TO = 278,
+    REPLACE = 279,
+    MIX = 280,
+    OFFSET = 281,
+    LENGTH = 282,
+    REST = 283,
+    TIE = 284,
+    PLUS = 285,
+    MINUS = 286,
+    DIVISION = 287,
+    MULTIPLY = 288,
+    ASSIGN = 289,
+    SEMICOLON = 290,
+    COMMA = 291,
+    LPAREN = 292,
+    RPAREN = 293,
+    LCURLY = 294,
+    RCURLY = 295,
+    IDENTIFIER = 296,
+    EOL = 297,
+    SOUND_SELECT = 298,
+    GATETIME_CUTOFF = 299,
+    NEGATIVE = 300,
+    NEGATIVE_FLOAT = 301
   };
 #endif
 
@@ -69,12 +108,14 @@ typedef void* yyscan_t;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 39 "Parser.y" /* yacc.c:1915  */
+#line 34 "Parser.y" /* yacc.c:1915  */
 
-    int value;
-    SExpression *expression;
+    int i;
+    float f;
+    char *s;
+    Expression *expression;
 
-#line 78 "Parser.h" /* yacc.c:1915  */
+#line 119 "Parser.h" /* yacc.c:1915  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
@@ -96,6 +137,6 @@ struct YYLTYPE
 
 
 
-int yyparse (SExpression **expression, yyscan_t scanner);
+int yyparse (Expression **expression, yyscan_t scanner);
 
 #endif /* !YY_YY_PARSER_H_INCLUDED  */

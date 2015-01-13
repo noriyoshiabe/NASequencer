@@ -38,8 +38,6 @@ typedef void* yyscan_t;
     Expression *expression;
 }
 
-%type <expression> expr
- 
 %token <i>INTEGER
 %token <f>FLOAT
 %token <s>STRING
@@ -58,10 +56,14 @@ typedef void* yyscan_t;
 %token CHANNEL
 %token VELOCITY
 %token GATETIME
+%token CUTOFF
 %token NOTE
 
 %token STEP
-%token CUTOFF
+%token FROM
+%token TO
+%token REPLACE
+%token MIX
 %token OFFSET
 %token LENGTH
 
@@ -82,7 +84,7 @@ typedef void* yyscan_t;
 %token LCURLY
 %token RCURLY
 
-%token IDENTIFIER
+%token <s>IDENTIFIER
 
 %token EOL
 
@@ -97,6 +99,7 @@ typedef void* yyscan_t;
 %token NEGATIVE
 %token NEGATIVE_FLOAT
 
+%type <expression> expr
 
 %%
  
@@ -119,25 +122,25 @@ expr
     | LOCATION                { $$ = createStringValue(LOCATION, $1); }
     | MB_LENGTH               { $$ = createStringValue(MB_LENGTH, $1); }
 
-    | RESOLUTION expr         { $$ = createExpression(RESOLUTION, $1, NULL); }
-    | TITLE expr              { $$ = createExpression(TITLE, $1, NULL); }
-    | TIME expr               { $$ = createExpression(TIME, $1, NULL); }
-    | TEMPO expr              { $$ = createExpression(TEMPO, $1, NULL); }
-    | MARKER expr             { $$ = createExpression(MARKER, $1, NULL); }
-    | SOUND SELECT expr       { $$ = createExpression(SOUND_SELECT, $2, NULL); }
-    | CHANNEL expr            { $$ = createExpression(CHANNEL, $1, NULL); }
-    | VELOCITY expr           { $$ = createExpression(VELOCITY, $1, NULL); }
-    | GATETIME expr           { $$ = createExpression(GATETIME, $1, NULL); }
-    | GATETIME CUTOFF expr    { $$ = createExpression(GATETIME_CUTOFF, $2, NULL); }
-    | NOTE expr               { $$ = createExpression(NOTE, $1, NULL); }
+    | RESOLUTION expr         { $$ = createExpression(RESOLUTION, $2, NULL); }
+    | TITLE expr              { $$ = createExpression(TITLE, $2, NULL); }
+    | TIME expr               { $$ = createExpression(TIME, $2, NULL); }
+    | TEMPO expr              { $$ = createExpression(TEMPO, $2, NULL); }
+    | MARKER expr             { $$ = createExpression(MARKER, $2, NULL); }
+    | SOUND SELECT expr       { $$ = createExpression(SOUND_SELECT, $3, NULL); }
+    | CHANNEL expr            { $$ = createExpression(CHANNEL, $2, NULL); }
+    | VELOCITY expr           { $$ = createExpression(VELOCITY, $2, NULL); }
+    | GATETIME expr           { $$ = createExpression(GATETIME, $2, NULL); }
+    | GATETIME CUTOFF expr    { $$ = createExpression(GATETIME_CUTOFF, $3, NULL); }
+    | NOTE expr               { $$ = createExpression(NOTE, $2, NULL); }
 
-    | STEP expr               { $$ = createExpression(STEP, $1, NULL); }
-    | FROM expr               { $$ = createExpression(FROM, $1, NULL); }
-    | TO expr                 { $$ = createExpression(TO, $1, NULL); }
-    | REPLACE expr            { $$ = createExpression(REPLACE, $1, NULL); }
-    | MIX expr                { $$ = createExpression(MIX, $1, NULL); }
-    | OFFSET expr             { $$ = createExpression(OFFSET, $1, NULL); }
-    | LENGTH expr             { $$ = createExpression(LENGTH, $1, NULL); }
+    | STEP expr               { $$ = createExpression(STEP, $2, NULL); }
+    | FROM expr               { $$ = createExpression(FROM, $2, NULL); }
+    | TO expr                 { $$ = createExpression(TO, $2, NULL); }
+    | REPLACE expr            { $$ = createExpression(REPLACE, $2, NULL); }
+    | MIX expr                { $$ = createExpression(MIX, $2, NULL); }
+    | OFFSET expr             { $$ = createExpression(OFFSET, $2, NULL); }
+    | LENGTH expr             { $$ = createExpression(LENGTH, $2, NULL); }
 
     | REST                    { $$ = createExpression(REST, NULL, NULL); }
     | TIE                     { $$ = createExpression(TIE, NULL, NULL); }
@@ -148,6 +151,9 @@ expr
     | expr DIVISION expr      { $$ = createExpression(DIVISION, $1, $3); }
     | expr ASSIGN expr        { $$ = createExpression(ASSIGN, $1, $3); }
     | expr COMMA expr         { $$ = addRightExpression($1, $3); }
+
+    | VELOCITY                { $$ = createExpression(VELOCITY, NULL, NULL); }
+    | GATETIME                { $$ = createExpression(GATETIME, NULL, NULL); }
 
     | LPAREN expr RPAREN      { $$ = $2; }
     | LCURLY expr RCURLY      { $$ = $2; }

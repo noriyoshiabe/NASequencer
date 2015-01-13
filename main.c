@@ -8,65 +8,39 @@
  
 #include <stdio.h>
  
-int yyparse(SExpression **expression, yyscan_t scanner);
- 
-SExpression *getAST(const char *expr)
-{
-    SExpression *expression;
-    yyscan_t scanner;
-    YY_BUFFER_STATE state;
- 
-    if (yylex_init(&scanner)) {
-        // couldn't initialize
-        return NULL;
-    }
- 
-    state = yy_scan_string(expr, scanner);
- 
-    if (yyparse(&expression, scanner)) {
-        // error parsing
-        return NULL;
-    }
- 
-    yy_delete_buffer(state, scanner);
- 
-    yylex_destroy(scanner);
- 
-    return expression;
-}
- 
-int evaluate(SExpression *e)
-{
-    switch (e->type) {
-        case eVALUE:
-            return e->value;
-        case eMULTIPLY:
-            return evaluate(e->left) * evaluate(e->right);
-        case ePLUS:
-            return evaluate(e->left) + evaluate(e->right);
-        default:
-            // shouldn't be here
-            return 0;
-    }
-}
+int yyparse(Expression **expression, yyscan_t scanner);
  
 int main(void)
 {
-    SExpression *e = NULL;
-    char test[]="(4 + 2*100 \n+ \n3*( 5 +\n 1 )\n";
-    int result = 0;
- 
-    e = getAST(test);
- 
-    if (!e) {
-        printf("## error\n");
-        return 1;
+    Expression *expr = NULL;
+
+    yyscan_t scanner;
+
+    if (yylex_init(&scanner)) {
+        printf("## error - %d\n", __LINE__);
+        return -1;
     }
-    result = evaluate(e);
+
+    FILE *fp = fopen("../example.namidi", "r");
+
+    yyset_in(fp, scanner);
+
+    YY_BUFFER_STATE state = yy_create_buffer(fp, YY_BUF_SIZE, scanner);
+    yy_switch_to_buffer(state, scanner);
+
+    if (yyparse(&expr, scanner)) {
+        printf("## error - %d\n", __LINE__);
+        return -1;
+    }
+
+    yy_delete_buffer(state, scanner);
+
+    fclose(fp);
+
+    yylex_destroy(scanner);
  
-    printf("Result of '%s' is %d\n", test, result);
- 
-    deleteExpression(e);
+    dumpExpression(expr);
+    deleteExpression(expr);
  
     return 0;
 }

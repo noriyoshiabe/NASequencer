@@ -1,8 +1,8 @@
 %{
   
+#include "Expression.h"
 #include "Parser.h"
  
-#include <stdio.h>
 #include <string.h>
 
 #define YY_USER_INIT \
@@ -91,14 +91,14 @@ LINE_COMMENT   \/\/.*$
 
 <<EOF>>          { return 0; }
 
-{INTEGER}        { return INTEGER; }
-{FLOAT}          { return FLOAT; }
-{STRING}         { return STRING; }
+{INTEGER}        { yylval->i = atoi(yytext); return INTEGER; }
+{FLOAT}          { yylval->f = atof(yytext); return FLOAT; }
+{STRING}         { yylval->s = strdup(yytext); return STRING; }
 {WSPACE}         { }
 
-{NOTE_NO}        { return NOTE_NO; }
-{LOCATION}       { return LOCATION; }
-{MB_LENGTH}      { return MB_LENGTH; }
+{NOTE_NO}        { yylval->s = strdup(yytext); return NOTE_NO; }
+{LOCATION}       { yylval->s = strdup(yytext); return LOCATION; }
+{MB_LENGTH}      { yylval->s = strdup(yytext); return MB_LENGTH; }
 
 {RESOLUTION}     { return RESOLUTION; }
 {TITLE}          { return TITLE; }
@@ -137,7 +137,7 @@ LINE_COMMENT   \/\/.*$
 {LCURLY}         { return LCURLY; }
 {RCURLY}         { return RCURLY; }
 
-{IDENTIFIER}     { return IDENTIFIER; }
+{IDENTIFIER}     { yylval->s = strdup(yytext); return IDENTIFIER; }
 
 {EOL}            { }
 

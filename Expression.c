@@ -2,10 +2,11 @@
  
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 Expression *createIntegerValue(int tokenType, int value)
 {
-    Expression *expr = (Expression *)calloc(sizeof(Expression));
+    Expression *expr = (Expression *)calloc(1, sizeof(Expression));
     expr->tokenType = tokenType;
     expr->valueType = VALUE_TYPE_INTEGER;
     expr->v.i = value;
@@ -14,7 +15,7 @@ Expression *createIntegerValue(int tokenType, int value)
 
 Expression *createFloatValue(int tokenType, float value)
 {
-    Expression *expr = (Expression *)calloc(sizeof(Expression));
+    Expression *expr = (Expression *)calloc(1, sizeof(Expression));
     expr->tokenType = tokenType;
     expr->valueType = VALUE_TYPE_FLOAT;
     expr->v.f = value;
@@ -23,17 +24,16 @@ Expression *createFloatValue(int tokenType, float value)
 
 Expression *createStringValue(int tokenType, char *value)
 {
-    Expression *expr = (Expression *)calloc(sizeof(Expression));
+    Expression *expr = (Expression *)calloc(1, sizeof(Expression));
     expr->tokenType = tokenType;
     expr->valueType = VALUE_TYPE_STRING;
-    expr->v.s = (char *)malloc(strlen(value) + 1);
-    strcpy(expr->v.s, value);
+    expr->v.s = value;
     return expr;
 }
 
 Expression *createExpression(int tokenType, Expression *left, Expression *right)
 {
-    Expression *expr = (Expression *)calloc(sizeof(Expression));
+    Expression *expr = (Expression *)calloc(1, sizeof(Expression));
     expr->tokenType = tokenType;
     expr->left = left;
     expr->right = expr->rightLast = right;
@@ -51,6 +51,8 @@ Expression *addRightExpression(Expression *expr, Expression *right)
     expr->rightLast = right->rightLast ? right->rightLast : right;
     return expr;
 }
+
+#include "Parser.h"
 
 static const char *tokenType2String(int tokenType)
 {
@@ -99,8 +101,12 @@ static char indent[128];
 
 void dumpExpressionImpl(Expression *expr, int depth)
 {
-    memset(buf, ' ', depth * 2);
-    buf[depth * 2] = '\0';
+    if (!expr) {
+        return;
+    }
+
+    memset(indent, ' ', depth * 2);
+    indent[depth * 2] = '\0';
 
     switch (expr->valueType) {
     case VALUE_TYPE_NONE:
