@@ -36,21 +36,22 @@ Expression *createExpression(int tokenType, Expression *left, Expression *right)
     Expression *expr = (Expression *)calloc(1, sizeof(Expression));
     expr->tokenType = tokenType;
     expr->left = left;
-    expr->right = expr->rightLast = right;
+    expr->right = right;
     return expr;
 }
 
-Expression *addRightExpression(Expression *expr, Expression *right)
+Expression *addNextExpression(Expression *expr, Expression *next)
 {
-    if (expr->rightLast) {
-        expr->rightLast->right = right;
+    if (expr->last) {
+        expr->last->next = next;
+        expr->last = next;
     } else {
-        expr->right = expr->rightLast = right;
+        expr->next = expr->last = next;
     }
 
-    expr->rightLast = right->rightLast ? right->rightLast : right;
     return expr;
 }
+
 
 #include "Parser.h"
 
@@ -92,6 +93,8 @@ static const char *tokenType2String(int tokenType)
     CASE(DIVISION);
     CASE(ASSIGN);
     CASE(IDENTIFIER);
+    CASE(BLOCK);
+    CASE(PARENTHESES);
     }
     return "Unknown token type";
 #undef CASE
@@ -124,7 +127,8 @@ void dumpExpressionImpl(Expression *expr, int depth)
     }
 
     dumpExpressionImpl(expr->left, depth + 1);
-    dumpExpressionImpl(expr->right, depth);
+    dumpExpressionImpl(expr->right, depth + 1);
+    dumpExpressionImpl(expr->next, depth);
 }
 
 void dumpExpression(Expression *expr)

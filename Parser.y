@@ -89,28 +89,39 @@ typedef void* yyscan_t;
 %token EOL
 
 %left ASSIGN
-%left LPAREN
-%left RPAREN
-%left LCURLY
-%left RCURLY
 
 %token SOUND_SELECT
 %token GATETIME_CUTOFF
 %token NEGATIVE
 %token NEGATIVE_FLOAT
+%token BLOCK
+%token PARENTHESES
 
-%type <expression> expr
+%type <expression> expr expr_list
+
+%left RESOLUTION TITLE TIME TEMPO MARKER SOUND SELECT CHANNEL VELOCITY GATETIME CUTOFF NOTE
+%left STEP FROM TP REPLACE MIX OFFSET LENGTH
+%left INTEGER FLOAT STRING
+%left PLUS MINUS
+%left DIVISION MULTIPLY
+%left LCURLY
+%left RCURLY
+%left LPAREN
+%left RPAREN
 
 %%
  
 input
-    : expr { *expression = $1; }
+    : expr_list { *expression = $1; }
     ;
  
-expr
-    : expr expr               { $$ = addRightExpression($1, $2); }
+expr_list
+    : expr               { $$ = $1; }
+    | expr_list expr     { $$ = addNextExpression($1, $2); }
+    ;
 
-    | INTEGER                 { $$ = createIntegerValue(INTEGER, $1); }
+expr
+    : INTEGER                 { $$ = createIntegerValue(INTEGER, $1); }
     | PLUS INTEGER            { $$ = createIntegerValue(INTEGER, $2); }
     | MINUS INTEGER           { $$ = createIntegerValue(NEGATIVE, $2); }
     | FLOAT                   { $$ = createFloatValue(FLOAT, $1); }
@@ -124,15 +135,15 @@ expr
 
     | RESOLUTION expr         { $$ = createExpression(RESOLUTION, $2, NULL); }
     | TITLE expr              { $$ = createExpression(TITLE, $2, NULL); }
-    | TIME expr               { $$ = createExpression(TIME, $2, NULL); }
-    | TEMPO expr              { $$ = createExpression(TEMPO, $2, NULL); }
-    | MARKER expr             { $$ = createExpression(MARKER, $2, NULL); }
-    | SOUND SELECT expr       { $$ = createExpression(SOUND_SELECT, $3, NULL); }
+    | TIME expr_list          { $$ = createExpression(TIME, $2, NULL); }
+    | TEMPO expr_list         { $$ = createExpression(TEMPO, $2, NULL); }
+    | MARKER expr_list        { $$ = createExpression(MARKER, $2, NULL); }
+    | SOUND SELECT expr_list  { $$ = createExpression(SOUND_SELECT, $3, NULL); }
     | CHANNEL expr            { $$ = createExpression(CHANNEL, $2, NULL); }
     | VELOCITY expr           { $$ = createExpression(VELOCITY, $2, NULL); }
     | GATETIME expr           { $$ = createExpression(GATETIME, $2, NULL); }
     | GATETIME CUTOFF expr    { $$ = createExpression(GATETIME_CUTOFF, $3, NULL); }
-    | NOTE expr               { $$ = createExpression(NOTE, $2, NULL); }
+    | NOTE expr_list          { $$ = createExpression(NOTE, $2, NULL); }
 
     | STEP expr               { $$ = createExpression(STEP, $2, NULL); }
     | FROM expr               { $$ = createExpression(FROM, $2, NULL); }
@@ -150,13 +161,13 @@ expr
     | expr MULTIPLY expr      { $$ = createExpression(MULTIPLY, $1, $3); }
     | expr DIVISION expr      { $$ = createExpression(DIVISION, $1, $3); }
     | expr ASSIGN expr        { $$ = createExpression(ASSIGN, $1, $3); }
-    | expr COMMA expr         { $$ = addRightExpression($1, $3); }
+    | expr COMMA expr         { $$ = addNextExpression($1, $3); }
 
     | VELOCITY                { $$ = createExpression(VELOCITY, NULL, NULL); }
     | GATETIME                { $$ = createExpression(GATETIME, NULL, NULL); }
 
-    | LPAREN expr RPAREN      { $$ = $2; }
-    | LCURLY expr RCURLY      { $$ = $2; }
+    | LPAREN expr_list RPAREN { $$ = createExpression(PARENTHESES, $2, NULL);; }
+    | LCURLY expr_list RCURLY { $$ = createExpression(BLOCK, $2, NULL); }
     
     | IDENTIFIER              { $$ = createStringValue(IDENTIFIER, $1); }
     ;
