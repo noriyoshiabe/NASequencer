@@ -96,11 +96,12 @@ typedef void* yyscan_t;
     RCURLY = 295,
     IDENTIFIER = 296,
     EOL = 297,
-    PARAM = 298,
+    TIME_SIGN = 298,
     SOUND_SELECT = 299,
-    GATETIME_CUTOFF = 300,
-    NOTE_BLOCK = 301,
-    NOTE_NO_LIST = 302
+    INTEGER_LIST = 300,
+    GATETIME_CUTOFF = 301,
+    NOTE_BLOCK = 302,
+    NOTE_NO_LIST = 303
   };
 #endif
 
@@ -116,7 +117,7 @@ union YYSTYPE
     char *s;
     Expression *expression;
 
-#line 120 "Parser.h" /* yacc.c:1915  */
+#line 121 "Parser.h" /* yacc.c:1915  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1

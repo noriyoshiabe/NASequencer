@@ -70,11 +70,12 @@ static const char *tokenType2String(int tokenType)
     CASE(TIME);
     CASE(TEMPO);
     CASE(MARKER);
-    CASE(SOUND_SELECT);
+    CASE(SOUND);
+    CASE(SELECT);
     CASE(CHANNEL);
     CASE(VELOCITY);
     CASE(GATETIME);
-    CASE(GATETIME_CUTOFF);
+    CASE(CUTOFF);
     CASE(NOTE);
     CASE(STEP);
     CASE(FROM);
@@ -87,11 +88,21 @@ static const char *tokenType2String(int tokenType)
     CASE(TIE);
     CASE(PLUS);
     CASE(MINUS);
-    CASE(MULTIPLY);
     CASE(DIVISION);
+    CASE(MULTIPLY);
     CASE(ASSIGN);
+    CASE(SEMICOLON);
+    CASE(COMMA);
+    CASE(LPAREN);
+    CASE(RPAREN);
+    CASE(LCURLY);
+    CASE(RCURLY);
     CASE(IDENTIFIER);
-    CASE(PARAM);
+    CASE(EOL);
+    CASE(TIME_SIGN);
+    CASE(SOUND_SELECT);
+    CASE(INTEGER_LIST);
+    CASE(GATETIME_CUTOFF);
     CASE(NOTE_BLOCK);
     CASE(NOTE_NO_LIST);
     }

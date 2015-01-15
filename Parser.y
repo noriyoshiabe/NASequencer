@@ -88,8 +88,9 @@ typedef void* yyscan_t;
 
 %token EOL
 
-%token PARAM
+%token TIME_SIGN
 %token SOUND_SELECT
+%token INTEGER_LIST
 %token GATETIME_CUTOFF
 %token NOTE_BLOCK
 %token NOTE_NO_LIST
@@ -119,7 +120,7 @@ typedef void* yyscan_t;
 %type <expression> string
 %type <expression> integer
 %type <expression> float
-%type <expression> division
+%type <expression> time_sign
 %type <expression> from
 %type <expression> from_param
 %type <expression> step
@@ -131,6 +132,7 @@ typedef void* yyscan_t;
 %type <expression> note_block_param
 %type <expression> note_no_list
 %type <expression> note_no_list_param
+%type <expression> note_no
 
 %%
  
@@ -139,66 +141,66 @@ input
     ;
 
 statement_list
-    : statement                { $$ = $1; }
+    : statement
     | statement_list statement { $$ = addRightExpression($1, $2); }
     ;
 
 statement
-    : title                    { $$ = $1; }
-    | resolution               { $$ = $1; }
-    | time                     { $$ = $1; }
-    | tempo                    { $$ = $1; }
-    | marker                   { $$ = $1; }
-    | velocity                 { $$ = $1; }
-    | gatetime                 { $$ = $1; }
-    | channel                  { $$ = $1; }
-    | sound_select             { $$ = $1; }
-    | note                     { $$ = $1; }
+    : title
+    | resolution
+    | time
+    | tempo
+    | marker
+    | velocity
+    | gatetime
+    | channel
+    | sound_select
+    | note
     ;
 
 title
-    : TITLE string             { $$ = createExpression(TITLE, $2, NULL); }
+    : TITLE string { $$ = createExpression(TITLE, $2, NULL); }
     ;
 
 resolution
-    : RESOLUTION integer       { $$ = createExpression(RESOLUTION, $2, NULL); }
+    : RESOLUTION integer { $$ = createExpression(RESOLUTION, $2, NULL); }
     ;
 
 time
-    : TIME time_param_list     { $$ = createExpression(TIME, $2, NULL); }
+    : TIME time_param_list { $$ = createExpression(TIME, $2, NULL); }
     ;
 time_param_list
-    : time_param                  { $$ = $1; }
-    | time_param_list time_param  { $$ = addRightExpression($1, $2); }
+    : time_param
+    | time_param_list time_param { $$ = addRightExpression($1, $2); }
     ;
 time_param
-    : division                    { $$ = $1; }
-    | from                        { $$ = $1; }
+    : time_sign
+    | from
     ;
 
 tempo
-    : TEMPO tempo_param_list     { $$ = createExpression(TEMPO, $2, NULL); }
+    : TEMPO tempo_param_list { $$ = createExpression(TEMPO, $2, NULL); }
     ;
 tempo_param_list
-    : tempo_param                  { $$ = $1; }
+    : tempo_param
     | tempo_param_list tempo_param { $$ = addRightExpression($1, $2); }
     ;
 tempo_param
-    : integer                    { $$ = $1; }
-    | float                      { $$ = $1; }
-    | from                       { $$ = $1; }
+    : integer
+    | float
+    | from
     ;
 
 marker
-    : MARKER marker_param_list    { $$ = createExpression(MARKER, $2, NULL); }
+    : MARKER marker_param_list { $$ = createExpression(MARKER, $2, NULL); }
     ;
 marker_param_list
-    : marker_param                     { $$ = $1; }
-    | marker_param_list marker_param   { $$ = addRightExpression($1, $2); }
+    : marker_param
+    | marker_param_list marker_param { $$ = addRightExpression($1, $2); }
     ;
 marker_param
-    : string  { $$ = $1; }
-    | from    { $$ = $1; }
+    : string
+    | from
     ;
 
 velocity
@@ -206,8 +208,8 @@ velocity
     ;
 
 gatetime
-    : GATETIME integer         { $$ = createExpression(GATETIME, $2, NULL); }
-    | GATETIME CUTOFF integer  { $$ = createExpression(GATETIME_CUTOFF, $3, NULL); }
+    : GATETIME integer { $$ = createExpression(GATETIME, $2, NULL); }
+    | GATETIME CUTOFF integer { $$ = createExpression(GATETIME_CUTOFF, $3, NULL); }
     ;
 
 channel
@@ -218,19 +220,19 @@ sound_select
     : SOUND SELECT sound_select_param_list { $$ = createExpression(SOUND_SELECT, $3, NULL); }
     ;
 sound_select_param_list
-    : sound_select_param                          { $$ = $1; }
-    | sound_select_param_list sound_select_param  { $$ = addRightExpression($1, $2); }
+    : sound_select_param
+    | sound_select_param_list sound_select_param { $$ = addRightExpression($1, $2); }
     ;
 sound_select_param
-    : integer_list { $$ = $1; }
-    | from         { $$ = $1; }
+    : integer_list
+    | from
     ;
 
 note
     : NOTE note_param_list { $$ = createExpression(NOTE, $2, NULL); }
     ;
 note_param_list
-    : note_param                 { $$ = $1; }
+    : note_param
     | note_param_list note_param { $$ = addRightExpression($1, $2); }
     ;
 note_param
@@ -240,69 +242,66 @@ note_param
     ;
 
 string
-    : STRING  { $$ = createExpression(PARAM, createStringValue(STRING, $1), NULL); }
+    : STRING { $$ = createStringValue(STRING, $1); }
     ;
 integer
-    : INTEGER  { $$ = createExpression(PARAM, createIntegerValue(INTEGER, $1), NULL); }
+    : INTEGER { $$ = createIntegerValue(INTEGER, $1); }
     ;
 float
-    : FLOAT  { $$ = createExpression(PARAM, createFloatValue(FLOAT, $1), NULL); }
+    : FLOAT { $$ = createFloatValue(FLOAT, $1); }
     ;
 
-division
-    : INTEGER DIVISION INTEGER { $$ = createExpression(PARAM,
-                                        createExpression(DIVISION,
-                                          createIntegerValue(INTEGER, $1),
-                                          createIntegerValue(INTEGER, $3)
-                                        ),
-                                        NULL
-                                      ); }
+time_sign
+    : integer DIVISION integer { $$ = createExpression(TIME_SIGN, addRightExpression($1, $3), NULL); }
     ;
 
 from
-    : FROM from_param { $$ = createExpression(PARAM, createExpression(FROM, $2, NULL), NULL); }
+    : FROM from_param { $$ = createExpression(FROM, $2, NULL); }
     ;
 from_param
-    : INTEGER  { $$ = createIntegerValue(INTEGER, $1); }
+    : integer
     | LOCATION { $$ = createStringValue(LOCATION, $1); }
     ;
 
 step
-    : STEP step_param { $$ = createExpression(PARAM, createExpression(STEP, $2, NULL), NULL); }
+    : STEP step_param { $$ = createExpression(STEP, $2, NULL); }
     ;
 step_param
-    : INTEGER  { $$ = createIntegerValue(INTEGER, $1); }
+    : integer
     ;
 
 integer_list
-    : integer_list_param { $$ = createExpression(PARAM, $1, NULL); }
+    : integer_list_param { $$ = createExpression(INTEGER_LIST, $1, NULL); }
     ;
 
 integer_list_param
-    : INTEGER                     { $$ = createIntegerValue(INTEGER, $1); }
-    | integer_list_param INTEGER  { $$ = addRightExpression($1, createIntegerValue(INTEGER, $2)); }
+    : integer
+    | integer_list_param integer { $$ = addRightExpression($1, $2); }
     ;
 
 note_block
-    : LCURLY note_block_param_list RCURLY { $$ = createExpression(PARAM, createExpression(NOTE_BLOCK, $2, NULL), NULL); }
+    : LCURLY note_block_param_list RCURLY { $$ = createExpression(NOTE_BLOCK, $2, NULL); }
     ;
 note_block_param_list
-    : note_block_param                       { $$ = $1; }
+    : note_block_param
     | note_block_param_list note_block_param { $$ = addRightExpression($1, $2); }
     ;
 note_block_param
-    : NOTE_NO { $$ = createStringValue(NOTE_NO, $1); }
-    | REST    { $$ = createExpression(REST, NULL, NULL); }
-    | TIE     { $$ = createExpression(TIE, NULL, NULL); }
-    | note_no_list { $$ = $1; }
+    : note_no
+    | note_no_list
+    | REST { $$ = createExpression(REST, NULL, NULL); }
+    | TIE { $$ = createExpression(TIE, NULL, NULL); }
     ;
 
 note_no_list
     : note_no_list_param { $$ = createExpression(NOTE_NO_LIST, $1, NULL); }
     ;
 note_no_list_param
-    : NOTE_NO COMMA              { $$ = createStringValue(NOTE_NO, $1); }
-    | note_no_list_param NOTE_NO { $$ = addRightExpression($1, createStringValue(NOTE_NO, $2)); }
+    : note_no COMMA note_no { $$ = addRightExpression($1, $3); }
+    | note_no_list_param COMMA note_no { $$ = addRightExpression($1, $3); }
+    ;
+note_no
+    : NOTE_NO { $$ = createStringValue(NOTE_NO, $1); }
     ;
 
 %%
