@@ -40,13 +40,13 @@ Expression *createExpression(int tokenType, Expression *left, Expression *right)
     return expr;
 }
 
-Expression *addNextExpression(Expression *expr, Expression *next)
+Expression *addRightExpression(Expression *expr, Expression *right)
 {
-    if (expr->last) {
-        expr->last->next = next;
-        expr->last = next;
+    if (expr->rightLast) {
+        expr->rightLast->right = right;
+        expr->rightLast = right;
     } else {
-        expr->next = expr->last = next;
+        expr->right = expr->rightLast = right;
     }
 
     return expr;
@@ -60,9 +60,7 @@ static const char *tokenType2String(int tokenType)
 #define CASE(type) case type: return #type
     switch (tokenType) {
     CASE(INTEGER);
-    CASE(NEGATIVE);
     CASE(FLOAT);
-    CASE(NEGATIVE_FLOAT);
     CASE(STRING);
     CASE(NOTE_NO);
     CASE(LOCATION);
@@ -93,8 +91,7 @@ static const char *tokenType2String(int tokenType)
     CASE(DIVISION);
     CASE(ASSIGN);
     CASE(IDENTIFIER);
-    CASE(BLOCK);
-    CASE(PARENTHESES);
+    CASE(PARAM);
     }
     return "Unknown token type";
 #undef CASE
@@ -127,8 +124,7 @@ void dumpExpressionImpl(Expression *expr, int depth)
     }
 
     dumpExpressionImpl(expr->left, depth + 1);
-    dumpExpressionImpl(expr->right, depth + 1);
-    dumpExpressionImpl(expr->next, depth);
+    dumpExpressionImpl(expr->right, depth);
 }
 
 void dumpExpression(Expression *expr)

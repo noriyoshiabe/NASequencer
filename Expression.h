@@ -19,15 +19,14 @@ typedef struct _Expression {
 
     struct _Expression *left;
     struct _Expression *right;
-    struct _Expression *next;
-    struct _Expression *last;
+    struct _Expression *rightLast;
 } Expression;
  
 extern Expression *createIntegerValue(int tokenType, int value);
 extern Expression *createFloatValue(int tokenType, float value);
 extern Expression *createStringValue(int tokenType, char *value);
 extern Expression *createExpression(int tokenType, Expression *left, Expression *right);
-extern Expression *addNextExpression(Expression *expr, Expression *next);
+extern Expression *addRightExpression(Expression *expr, Expression *right);
  
 extern void dumpExpression(Expression *expr);
 extern void deleteExpression(Expression *expr);
