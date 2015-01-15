@@ -91,6 +91,8 @@ typedef void* yyscan_t;
 %token PARAM
 %token SOUND_SELECT
 %token GATETIME_CUTOFF
+%token NOTE_BLOCK
+%token NOTE_NO_LIST
 
 %type <expression> statement_list
 %type <expression> statement
@@ -111,14 +113,24 @@ typedef void* yyscan_t;
 %type <expression> sound_select
 %type <expression> sound_select_param_list
 %type <expression> sound_select_param
+%type <expression> note
+%type <expression> note_param_list
+%type <expression> note_param
 %type <expression> string
 %type <expression> integer
 %type <expression> float
 %type <expression> division
 %type <expression> from
 %type <expression> from_param
+%type <expression> step
+%type <expression> step_param
 %type <expression> integer_list
 %type <expression> integer_list_param
+%type <expression> note_block
+%type <expression> note_block_param_list
+%type <expression> note_block_param
+%type <expression> note_no_list
+%type <expression> note_no_list_param
 
 %%
  
@@ -141,6 +153,7 @@ statement
     | gatetime                 { $$ = $1; }
     | channel                  { $$ = $1; }
     | sound_select             { $$ = $1; }
+    | note                     { $$ = $1; }
     ;
 
 title
@@ -213,6 +226,19 @@ sound_select_param
     | from         { $$ = $1; }
     ;
 
+note
+    : NOTE note_param_list { $$ = createExpression(NOTE, $2, NULL); }
+    ;
+note_param_list
+    : note_param                 { $$ = $1; }
+    | note_param_list note_param { $$ = addRightExpression($1, $2); }
+    ;
+note_param
+    : from
+    | step
+    | note_block
+    ;
+
 string
     : STRING  { $$ = createExpression(PARAM, createStringValue(STRING, $1), NULL); }
     ;
@@ -241,6 +267,13 @@ from_param
     | LOCATION { $$ = createStringValue(LOCATION, $1); }
     ;
 
+step
+    : STEP step_param { $$ = createExpression(PARAM, createExpression(STEP, $2, NULL), NULL); }
+    ;
+step_param
+    : INTEGER  { $$ = createIntegerValue(INTEGER, $1); }
+    ;
+
 integer_list
     : integer_list_param { $$ = createExpression(PARAM, $1, NULL); }
     ;
@@ -248,6 +281,28 @@ integer_list
 integer_list_param
     : INTEGER                     { $$ = createIntegerValue(INTEGER, $1); }
     | integer_list_param INTEGER  { $$ = addRightExpression($1, createIntegerValue(INTEGER, $2)); }
+    ;
+
+note_block
+    : LCURLY note_block_param_list RCURLY { $$ = createExpression(PARAM, createExpression(NOTE_BLOCK, $2, NULL), NULL); }
+    ;
+note_block_param_list
+    : note_block_param                       { $$ = $1; }
+    | note_block_param_list note_block_param { $$ = addRightExpression($1, $2); }
+    ;
+note_block_param
+    : NOTE_NO { $$ = createStringValue(NOTE_NO, $1); }
+    | REST    { $$ = createExpression(REST, NULL, NULL); }
+    | TIE     { $$ = createExpression(TIE, NULL, NULL); }
+    | note_no_list { $$ = $1; }
+    ;
+
+note_no_list
+    : note_no_list_param { $$ = createExpression(NOTE_NO_LIST, $1, NULL); }
+    ;
+note_no_list_param
+    : NOTE_NO COMMA              { $$ = createStringValue(NOTE_NO, $1); }
+    | note_no_list_param NOTE_NO { $$ = addRightExpression($1, createStringValue(NOTE_NO, $2)); }
     ;
 
 %%
