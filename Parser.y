@@ -94,6 +94,8 @@ typedef void* yyscan_t;
 %token GATETIME_CUTOFF
 %token NOTE_BLOCK
 %token NOTE_NO_LIST
+%token PATTERN_DEFINE
+%token PATTERN_BLOCK
 
 %type <expression> statement_list
 %type <expression> statement
@@ -117,6 +119,10 @@ typedef void* yyscan_t;
 %type <expression> note
 %type <expression> note_param_list
 %type <expression> note_param
+%type <expression> pattern_define
+%type <expression> pattern_block
+%type <expression> pattern_statement_list
+%type <expression> pattern_statement
 %type <expression> string
 %type <expression> integer
 %type <expression> float
@@ -133,6 +139,7 @@ typedef void* yyscan_t;
 %type <expression> note_no_list
 %type <expression> note_no_list_param
 %type <expression> note_no
+%type <expression> identifier
 
 %%
  
@@ -156,6 +163,7 @@ statement
     | channel
     | sound_select
     | note
+    | pattern_define
     ;
 
 title
@@ -241,6 +249,29 @@ note_param
     | note_block
     ;
 
+pattern_define
+    : identifier ASSIGN pattern_block { $$ = createExpression(PATTERN_DEFINE, addRightExpression($1, $3), NULL); }
+    ;
+pattern_block
+    : LCURLY pattern_statement_list RCURLY { $$ = createExpression(PATTERN_BLOCK, $2, NULL); }
+    ;
+
+pattern_statement_list
+    : pattern_statement
+    | pattern_statement_list pattern_statement { $$ = addRightExpression($1, $2); }
+    ;
+pattern_statement
+    : time
+    | tempo
+    | marker
+    | velocity
+    | gatetime
+    | channel
+    | sound_select
+    | note
+    | pattern_define
+    ;
+
 string
     : STRING { $$ = createStringValue(STRING, $1); }
     ;
@@ -302,6 +333,10 @@ note_no_list_param
     ;
 note_no
     : NOTE_NO { $$ = createStringValue(NOTE_NO, $1); }
+    ;
+
+identifier
+    : IDENTIFIER { $$ = createStringValue(IDENTIFIER, $1); }
     ;
 
 %%

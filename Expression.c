@@ -105,6 +105,8 @@ static const char *tokenType2String(int tokenType)
     CASE(GATETIME_CUTOFF);
     CASE(NOTE_BLOCK);
     CASE(NOTE_NO_LIST);
+    CASE(PATTERN_DEFINE);
+    CASE(PATTERN_BLOCK);
     }
     return "Unknown token type";
 #undef CASE

@@ -101,7 +101,9 @@ typedef void* yyscan_t;
     INTEGER_LIST = 300,
     GATETIME_CUTOFF = 301,
     NOTE_BLOCK = 302,
-    NOTE_NO_LIST = 303
+    NOTE_NO_LIST = 303,
+    PATTERN_DEFINE = 304,
+    PATTERN_BLOCK = 305
   };
 #endif
 
@@ -117,7 +119,7 @@ union YYSTYPE
     char *s;
     Expression *expression;
 
-#line 121 "Parser.h" /* yacc.c:1915  */
+#line 123 "Parser.h" /* yacc.c:1915  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
