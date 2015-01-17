@@ -97,6 +97,7 @@ typedef void* yyscan_t;
 %token PATTERN_DEFINE
 %token PATTERN_BLOCK
 %token PATTERN_EXPAND
+%token PATTERN_EXTEND_BLOCK
 
 %type <expression> statement_list
 %type <expression> statement
@@ -127,6 +128,13 @@ typedef void* yyscan_t;
 %type <expression> pattern_expand
 %type <expression> pattern_expand_param_list
 %type <expression> pattern_expand_param
+%type <expression> pattern_extend_block
+%type <expression> pattern_extend_block_statement_list
+%type <expression> pattern_extend_block_statement
+%type <expression> replace
+%type <expression> mix
+%type <expression> pattern_extend_param_list
+%type <expression> pattern_extend_param
 %type <expression> string
 %type <expression> integer
 %type <expression> float
@@ -297,6 +305,37 @@ pattern_expand_param
     | to
     | offset
     | length
+    | pattern_extend_block
+    ;
+
+pattern_extend_block
+    : LCURLY pattern_extend_block_statement_list RCURLY  { $$ = createExpression(PATTERN_EXTEND_BLOCK, $2, NULL); }
+    ;
+pattern_extend_block_statement_list
+    : pattern_extend_block_statement
+    | pattern_extend_block_statement_list pattern_extend_block_statement { $$ = addRightExpression($1, $2); }
+    ;
+pattern_extend_block_statement
+    : replace
+    | mix
+    ;
+
+replace
+    : REPLACE pattern_extend_param_list  { $$ = createExpression(REPLACE, $2, NULL); }
+    ;
+mix
+    : MIX pattern_extend_param_list  { $$ = createExpression(MIX, $2, NULL); }
+    ;
+
+pattern_extend_param_list
+    : pattern_extend_param
+    | pattern_extend_param_list pattern_extend_param { $$ = addRightExpression($1, $2); }
+    ;
+pattern_extend_param
+    : channel
+    | from
+    | to
+    | pattern_block
     ;
 
 string
