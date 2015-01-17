@@ -96,6 +96,7 @@ typedef void* yyscan_t;
 %token NOTE_NO_LIST
 %token PATTERN_DEFINE
 %token PATTERN_BLOCK
+%token PATTERN_EXPAND
 
 %type <expression> statement_list
 %type <expression> statement
@@ -123,14 +124,21 @@ typedef void* yyscan_t;
 %type <expression> pattern_block
 %type <expression> pattern_statement_list
 %type <expression> pattern_statement
+%type <expression> pattern_expand
+%type <expression> pattern_expand_param_list
+%type <expression> pattern_expand_param
 %type <expression> string
 %type <expression> integer
 %type <expression> float
 %type <expression> time_sign
+%type <expression> mb_length
 %type <expression> from
-%type <expression> from_param
+%type <expression> to
+%type <expression> location_param
 %type <expression> step
-%type <expression> step_param
+%type <expression> offset
+%type <expression> length
+%type <expression> length_param
 %type <expression> integer_list
 %type <expression> integer_list_param
 %type <expression> note_block
@@ -167,6 +175,7 @@ statement
     | sound_select
     | note
     | pattern_define
+    | pattern_expand
     ;
 
 title
@@ -273,6 +282,21 @@ pattern_statement
     | sound_select
     | note
     | pattern_define
+    | pattern_expand
+    ;
+
+pattern_expand
+    : identifier pattern_expand_param_list { $$ = createExpression(PATTERN_EXPAND, addRightExpression($1, $2), NULL); }
+    ;
+pattern_expand_param_list
+    : pattern_expand_param
+    | pattern_expand_param_list pattern_expand_param { $$ = addRightExpression($1, $2); }
+    ;
+pattern_expand_param
+    : from
+    | to
+    | offset
+    | length
     ;
 
 string
@@ -289,19 +313,34 @@ time_sign
     : integer DIVISION integer { $$ = createExpression(TIME_SIGN, addRightExpression($1, $3), NULL); }
     ;
 
-from
-    : FROM from_param { $$ = createExpression(FROM, $2, NULL); }
+mb_length
+    : MB_LENGTH { $$ = createStringValue(MB_LENGTH, $1); }
     ;
-from_param
+
+from
+    : FROM location_param { $$ = createExpression(FROM, $2, NULL); }
+    ;
+to
+    : TO location_param { $$ = createExpression(TO, $2, NULL); }
+    ;
+location_param
     : integer
     | LOCATION { $$ = createStringValue(LOCATION, $1); }
     ;
 
 step
-    : STEP step_param { $$ = createExpression(STEP, $2, NULL); }
+    : STEP integer { $$ = createExpression(STEP, $2, NULL); }
     ;
-step_param
-    : integer
+
+offset
+    : OFFSET length_param { $$ = createExpression(OFFSET, $2, NULL); }
+    ;
+length
+    : LENGTH length_param { $$ = createExpression(LENGTH, $2, NULL); }
+    ;
+length_param
+    : mb_length
+    | integer
     ;
 
 integer_list

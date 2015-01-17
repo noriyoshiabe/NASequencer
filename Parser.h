@@ -103,7 +103,8 @@ typedef void* yyscan_t;
     NOTE_BLOCK = 302,
     NOTE_NO_LIST = 303,
     PATTERN_DEFINE = 304,
-    PATTERN_BLOCK = 305
+    PATTERN_BLOCK = 305,
+    PATTERN_EXPAND = 306
   };
 #endif
 
@@ -119,7 +120,7 @@ union YYSTYPE
     char *s;
     Expression *expression;
 
-#line 123 "Parser.h" /* yacc.c:1915  */
+#line 124 "Parser.h" /* yacc.c:1915  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
