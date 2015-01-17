@@ -139,6 +139,9 @@ typedef void* yyscan_t;
 %type <expression> note_no_list
 %type <expression> note_no_list_param
 %type <expression> note_no
+%type <expression> assign_statement_list
+%type <expression> assign_statement
+%type <expression> single_note_assign
 %type <expression> identifier
 
 %%
@@ -319,7 +322,9 @@ note_block_param_list
     ;
 note_block_param
     : note_no
+    | note_no assign_statement_list { $$ = $1; $1->left = $2; }
     | note_no_list
+    | note_no_list assign_statement_list { $$ = $1; addRightExpression($1->left, $2); }
     | REST { $$ = createExpression(REST, NULL, NULL); }
     | TIE { $$ = createExpression(TIE, NULL, NULL); }
     ;
@@ -333,6 +338,20 @@ note_no_list_param
     ;
 note_no
     : NOTE_NO { $$ = createStringValue(NOTE_NO, $1); }
+    | note_no single_note_assign { $$ = $1; $1->left = $2; }
+    ;
+
+assign_statement_list
+    : assign_statement
+    | assign_statement_list assign_statement { $$ = addRightExpression($1, $2); }
+    ;
+assign_statement
+    : VELOCITY ASSIGN integer { $$ = createExpression(VELOCITY, $3, NULL); }
+    | GATETIME ASSIGN integer { $$ = createExpression(GATETIME, $3, NULL); }
+    ;
+
+single_note_assign
+    : LPAREN assign_statement_list RPAREN { $$ = $2; }
     ;
 
 identifier

@@ -35,18 +35,20 @@ drums = {
   note from 0 step 120 { ^^  ^^  E^ ^E ^E ^^ E^ ^^ }
   note from 0 step 240 { C   ^   ^  C  C  C  ^  ^  }
 }
-/*
+
 piano = {
   channel 1
   velocity 100
   gatetime cutoff 20
 
   note step 120 {
+    C1 velocity=127
     C2,E,G velocity=127 ~~~
     D~ E F G~ A~ B~ C3,E,G,C4(velocity=127 gatetime=200) ^
   }
 }
 
+/*
 serial = {
   drums from m1
   piano from m2
