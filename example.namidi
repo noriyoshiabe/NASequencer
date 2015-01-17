@@ -67,7 +67,6 @@ parallel {
   }
 }
 
-/*
 mixed = parallel {
   mix channel 1 from 1:4:240 to 2:1:0 {
     note step 120 { E4 velocity=120 }
@@ -89,4 +88,3 @@ note step 240 {
   C
     E
 }
-*/

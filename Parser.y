@@ -271,6 +271,7 @@ note_param
 
 pattern_define
     : identifier ASSIGN pattern_block { $$ = createExpression(PATTERN_DEFINE, addRightExpression($1, $3), NULL); }
+    | identifier ASSIGN pattern_expand { $$ = createExpression(PATTERN_DEFINE, addRightExpression($1, $3), NULL); }
     ;
 pattern_block
     : LCURLY pattern_statement_list RCURLY { $$ = createExpression(PATTERN_BLOCK, $2, NULL); }
