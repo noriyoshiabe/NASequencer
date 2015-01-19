@@ -7,7 +7,16 @@ typedef enum ValueType {
     VALUE_TYPE_STRING
 } ValueType;
 
+typedef struct _Location {
+    int firstLine;
+    int firstColumn;
+    int lastLine;
+    int lastColumn;
+} Location;
+
 typedef struct _Expression {
+    Location location;
+
     int tokenType;
     ValueType valueType;
  
@@ -22,10 +31,10 @@ typedef struct _Expression {
     struct _Expression *rightLast;
 } Expression;
  
-extern Expression *createIntegerValue(int tokenType, int value);
-extern Expression *createFloatValue(int tokenType, float value);
-extern Expression *createStringValue(int tokenType, char *value);
-extern Expression *createExpression(int tokenType, Expression *left, Expression *right);
+extern Expression *createIntegerValue(void *location, int tokenType, int value);
+extern Expression *createFloatValue(void *location, int tokenType, float value);
+extern Expression *createStringValue(void *location, int tokenType, char *value);
+extern Expression *createExpression(void *location, int tokenType, Expression *left, Expression *right);
 extern Expression *addRightExpression(Expression *expr, Expression *right);
  
 extern void dumpExpression(Expression *expr);

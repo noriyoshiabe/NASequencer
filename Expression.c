@@ -4,36 +4,42 @@
 #include <stdlib.h>
 #include <string.h>
 
-Expression *createIntegerValue(int tokenType, int value)
+#define LOC(location) (*(Location *)location)
+
+Expression *createIntegerValue(void *location, int tokenType, int value)
 {
     Expression *expr = (Expression *)calloc(1, sizeof(Expression));
+    expr->location = LOC(location);
     expr->tokenType = tokenType;
     expr->valueType = VALUE_TYPE_INTEGER;
     expr->v.i = value;
     return expr;
 }
 
-Expression *createFloatValue(int tokenType, float value)
+Expression *createFloatValue(void *location, int tokenType, float value)
 {
     Expression *expr = (Expression *)calloc(1, sizeof(Expression));
+    expr->location = LOC(location);
     expr->tokenType = tokenType;
     expr->valueType = VALUE_TYPE_FLOAT;
     expr->v.f = value;
     return expr;
 }
 
-Expression *createStringValue(int tokenType, char *value)
+Expression *createStringValue(void *location, int tokenType, char *value)
 {
     Expression *expr = (Expression *)calloc(1, sizeof(Expression));
+    expr->location = LOC(location);
     expr->tokenType = tokenType;
     expr->valueType = VALUE_TYPE_STRING;
     expr->v.s = value;
     return expr;
 }
 
-Expression *createExpression(int tokenType, Expression *left, Expression *right)
+Expression *createExpression(void *location, int tokenType, Expression *left, Expression *right)
 {
     Expression *expr = (Expression *)calloc(1, sizeof(Expression));
+    expr->location = LOC(location);
     expr->tokenType = tokenType;
     expr->left = left;
     expr->right = right;
@@ -127,18 +133,24 @@ void dumpExpressionImpl(Expression *expr, int depth)
 
     switch (expr->valueType) {
     case VALUE_TYPE_NONE:
-        printf("%s[%s]\n", indent, tokenType2String(expr->tokenType));
+        printf("%s[%s]", indent, tokenType2String(expr->tokenType));
         break;
     case VALUE_TYPE_INTEGER:
-        printf("%s[%s] integer %d\n", indent, tokenType2String(expr->tokenType), expr->v.i);
+        printf("%s[%s] integer %d", indent, tokenType2String(expr->tokenType), expr->v.i);
         break;
     case VALUE_TYPE_FLOAT:
-        printf("%s[%s] float %f\n", indent, tokenType2String(expr->tokenType), expr->v.f);
+        printf("%s[%s] float %f", indent, tokenType2String(expr->tokenType), expr->v.f);
         break;
     case VALUE_TYPE_STRING:
-        printf("%s[%s] string %s\n", indent, tokenType2String(expr->tokenType), expr->v.s);
+        printf("%s[%s] string %s", indent, tokenType2String(expr->tokenType), expr->v.s);
         break;
     }
+
+#if 0
+    printf("    -- %d:%d - %d:%d\n", expr->location.firstLine, expr->location.firstColumn, expr->location.lastLine, expr->location.lastColumn);
+#else
+    putc('\n', stdout);
+#endif
 
     dumpExpressionImpl(expr->left, depth + 1);
     dumpExpressionImpl(expr->right, depth);

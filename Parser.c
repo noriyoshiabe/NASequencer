@@ -1560,19 +1560,19 @@ yyreduce:
 
   case 17:
 #line 190 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createExpression(TITLE, (yyvsp[0].expression), NULL); }
+    { (yyval.expression) = createExpression(&(yyloc), TITLE, (yyvsp[0].expression), NULL); }
 #line 1565 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 18:
 #line 194 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createExpression(RESOLUTION, (yyvsp[0].expression), NULL); }
+    { (yyval.expression) = createExpression(&(yyloc), RESOLUTION, (yyvsp[0].expression), NULL); }
 #line 1571 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 19:
 #line 198 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createExpression(TIME, (yyvsp[0].expression), NULL); }
+    { (yyval.expression) = createExpression(&(yyloc), TIME, (yyvsp[0].expression), NULL); }
 #line 1577 "Parser.c" /* yacc.c:1661  */
     break;
 
@@ -1584,7 +1584,7 @@ yyreduce:
 
   case 24:
 #line 210 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createExpression(TEMPO, (yyvsp[0].expression), NULL); }
+    { (yyval.expression) = createExpression(&(yyloc), TEMPO, (yyvsp[0].expression), NULL); }
 #line 1589 "Parser.c" /* yacc.c:1661  */
     break;
 
@@ -1596,7 +1596,7 @@ yyreduce:
 
   case 30:
 #line 223 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createExpression(MARKER, (yyvsp[0].expression), NULL); }
+    { (yyval.expression) = createExpression(&(yyloc), MARKER, (yyvsp[0].expression), NULL); }
 #line 1601 "Parser.c" /* yacc.c:1661  */
     break;
 
@@ -1608,31 +1608,31 @@ yyreduce:
 
   case 35:
 #line 235 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createExpression(VELOCITY, (yyvsp[0].expression), NULL); }
+    { (yyval.expression) = createExpression(&(yyloc), VELOCITY, (yyvsp[0].expression), NULL); }
 #line 1613 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 36:
 #line 239 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createExpression(GATETIME, (yyvsp[0].expression), NULL); }
+    { (yyval.expression) = createExpression(&(yyloc), GATETIME, (yyvsp[0].expression), NULL); }
 #line 1619 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 37:
 #line 240 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createExpression(GATETIME_CUTOFF, (yyvsp[0].expression), NULL); }
+    { (yyval.expression) = createExpression(&(yyloc), GATETIME_CUTOFF, (yyvsp[0].expression), NULL); }
 #line 1625 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 38:
 #line 244 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createExpression(CHANNEL, (yyvsp[0].expression), NULL); }
+    { (yyval.expression) = createExpression(&(yyloc), CHANNEL, (yyvsp[0].expression), NULL); }
 #line 1631 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 39:
 #line 248 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createExpression(SOUND_SELECT, (yyvsp[0].expression), NULL); }
+    { (yyval.expression) = createExpression(&(yyloc), SOUND_SELECT, (yyvsp[0].expression), NULL); }
 #line 1637 "Parser.c" /* yacc.c:1661  */
     break;
 
@@ -1644,7 +1644,7 @@ yyreduce:
 
   case 44:
 #line 260 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createExpression(NOTE, (yyvsp[0].expression), NULL); }
+    { (yyval.expression) = createExpression(&(yyloc), NOTE, (yyvsp[0].expression), NULL); }
 #line 1649 "Parser.c" /* yacc.c:1661  */
     break;
 
@@ -1656,19 +1656,19 @@ yyreduce:
 
   case 50:
 #line 273 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createExpression(PATTERN_DEFINE, addRightExpression((yyvsp[-2].expression), (yyvsp[0].expression)), NULL); }
+    { (yyval.expression) = createExpression(&(yyloc), PATTERN_DEFINE, addRightExpression((yyvsp[-2].expression), (yyvsp[0].expression)), NULL); }
 #line 1661 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 51:
 #line 274 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createExpression(PATTERN_DEFINE, addRightExpression((yyvsp[-2].expression), (yyvsp[0].expression)), NULL); }
+    { (yyval.expression) = createExpression(&(yyloc), PATTERN_DEFINE, addRightExpression((yyvsp[-2].expression), (yyvsp[0].expression)), NULL); }
 #line 1667 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 52:
 #line 277 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createExpression(PATTERN_BLOCK, (yyvsp[-1].expression), NULL); }
+    { (yyval.expression) = createExpression(&(yyloc), PATTERN_BLOCK, (yyvsp[-1].expression), NULL); }
 #line 1673 "Parser.c" /* yacc.c:1661  */
     break;
 
@@ -1680,7 +1680,7 @@ yyreduce:
 
   case 65:
 #line 298 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createExpression(PATTERN_EXPAND, addRightExpression((yyvsp[-1].expression), (yyvsp[0].expression)), NULL); }
+    { (yyval.expression) = createExpression(&(yyloc), PATTERN_EXPAND, addRightExpression((yyvsp[-1].expression), (yyvsp[0].expression)), NULL); }
 #line 1685 "Parser.c" /* yacc.c:1661  */
     break;
 
@@ -1692,7 +1692,7 @@ yyreduce:
 
   case 73:
 #line 313 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createExpression(PATTERN_EXTEND_BLOCK, (yyvsp[-1].expression), NULL); }
+    { (yyval.expression) = createExpression(&(yyloc), PATTERN_EXTEND_BLOCK, (yyvsp[-1].expression), NULL); }
 #line 1697 "Parser.c" /* yacc.c:1661  */
     break;
 
@@ -1704,13 +1704,13 @@ yyreduce:
 
   case 78:
 #line 325 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createExpression(REPLACE, (yyvsp[0].expression), NULL); }
+    { (yyval.expression) = createExpression(&(yyloc), REPLACE, (yyvsp[0].expression), NULL); }
 #line 1709 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 79:
 #line 328 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createExpression(MIX, (yyvsp[0].expression), NULL); }
+    { (yyval.expression) = createExpression(&(yyloc), MIX, (yyvsp[0].expression), NULL); }
 #line 1715 "Parser.c" /* yacc.c:1661  */
     break;
 
@@ -1722,73 +1722,73 @@ yyreduce:
 
   case 86:
 #line 343 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createStringValue(STRING, (yyvsp[0].s)); }
+    { (yyval.expression) = createStringValue(&(yyloc), STRING, (yyvsp[0].s)); }
 #line 1727 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 87:
 #line 346 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createIntegerValue(INTEGER, (yyvsp[0].i)); }
+    { (yyval.expression) = createIntegerValue(&(yyloc), INTEGER, (yyvsp[0].i)); }
 #line 1733 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 88:
 #line 349 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createFloatValue(FLOAT, (yyvsp[0].f)); }
+    { (yyval.expression) = createFloatValue(&(yyloc), FLOAT, (yyvsp[0].f)); }
 #line 1739 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 89:
 #line 353 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createExpression(TIME_SIGN, addRightExpression((yyvsp[-2].expression), (yyvsp[0].expression)), NULL); }
+    { (yyval.expression) = createExpression(&(yyloc), TIME_SIGN, addRightExpression((yyvsp[-2].expression), (yyvsp[0].expression)), NULL); }
 #line 1745 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 90:
 #line 357 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createStringValue(MB_LENGTH, (yyvsp[0].s)); }
+    { (yyval.expression) = createStringValue(&(yyloc), MB_LENGTH, (yyvsp[0].s)); }
 #line 1751 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 91:
 #line 361 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createExpression(FROM, (yyvsp[0].expression), NULL); }
+    { (yyval.expression) = createExpression(&(yyloc), FROM, (yyvsp[0].expression), NULL); }
 #line 1757 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 92:
 #line 364 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createExpression(TO, (yyvsp[0].expression), NULL); }
+    { (yyval.expression) = createExpression(&(yyloc), TO, (yyvsp[0].expression), NULL); }
 #line 1763 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 94:
 #line 368 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createStringValue(LOCATION, (yyvsp[0].s)); }
+    { (yyval.expression) = createStringValue(&(yyloc), LOCATION, (yyvsp[0].s)); }
 #line 1769 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 95:
 #line 372 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createExpression(STEP, (yyvsp[0].expression), NULL); }
+    { (yyval.expression) = createExpression(&(yyloc), STEP, (yyvsp[0].expression), NULL); }
 #line 1775 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 96:
 #line 376 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createExpression(OFFSET, (yyvsp[0].expression), NULL); }
+    { (yyval.expression) = createExpression(&(yyloc), OFFSET, (yyvsp[0].expression), NULL); }
 #line 1781 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 97:
 #line 379 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createExpression(LENGTH, (yyvsp[0].expression), NULL); }
+    { (yyval.expression) = createExpression(&(yyloc), LENGTH, (yyvsp[0].expression), NULL); }
 #line 1787 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 100:
 #line 387 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createExpression(INTEGER_LIST, (yyvsp[0].expression), NULL); }
+    { (yyval.expression) = createExpression(&(yyloc), INTEGER_LIST, (yyvsp[0].expression), NULL); }
 #line 1793 "Parser.c" /* yacc.c:1661  */
     break;
 
@@ -1800,7 +1800,7 @@ yyreduce:
 
   case 103:
 #line 396 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createExpression(NOTE_BLOCK, (yyvsp[-1].expression), NULL); }
+    { (yyval.expression) = createExpression(&(yyloc), NOTE_BLOCK, (yyvsp[-1].expression), NULL); }
 #line 1805 "Parser.c" /* yacc.c:1661  */
     break;
 
@@ -1824,19 +1824,19 @@ yyreduce:
 
   case 110:
 #line 407 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createExpression(REST, NULL, NULL); }
+    { (yyval.expression) = createExpression(&(yyloc), REST, NULL, NULL); }
 #line 1829 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 111:
 #line 408 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createExpression(TIE, NULL, NULL); }
+    { (yyval.expression) = createExpression(&(yyloc), TIE, NULL, NULL); }
 #line 1835 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 112:
 #line 412 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createExpression(NOTE_NO_LIST, (yyvsp[0].expression), NULL); }
+    { (yyval.expression) = createExpression(&(yyloc), NOTE_NO_LIST, (yyvsp[0].expression), NULL); }
 #line 1841 "Parser.c" /* yacc.c:1661  */
     break;
 
@@ -1854,7 +1854,7 @@ yyreduce:
 
   case 115:
 #line 419 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createStringValue(NOTE_NO, (yyvsp[0].s)); }
+    { (yyval.expression) = createStringValue(&(yyloc), NOTE_NO, (yyvsp[0].s)); }
 #line 1859 "Parser.c" /* yacc.c:1661  */
     break;
 
@@ -1872,13 +1872,13 @@ yyreduce:
 
   case 119:
 #line 428 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createExpression(VELOCITY, (yyvsp[0].expression), NULL); }
+    { (yyval.expression) = createExpression(&(yyloc), VELOCITY, (yyvsp[0].expression), NULL); }
 #line 1877 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 120:
 #line 429 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createExpression(GATETIME, (yyvsp[0].expression), NULL); }
+    { (yyval.expression) = createExpression(&(yyloc), GATETIME, (yyvsp[0].expression), NULL); }
 #line 1883 "Parser.c" /* yacc.c:1661  */
     break;
 
@@ -1890,7 +1890,7 @@ yyreduce:
 
   case 122:
 #line 437 "Parser.y" /* yacc.c:1661  */
-    { (yyval.expression) = createStringValue(IDENTIFIER, (yyvsp[0].s)); }
+    { (yyval.expression) = createStringValue(&(yyloc), IDENTIFIER, (yyvsp[0].s)); }
 #line 1895 "Parser.c" /* yacc.c:1661  */
     break;
 

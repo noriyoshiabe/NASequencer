@@ -187,15 +187,15 @@ statement
     ;
 
 title
-    : TITLE string { $$ = createExpression(TITLE, $2, NULL); }
+    : TITLE string { $$ = createExpression(&@$, TITLE, $2, NULL); }
     ;
 
 resolution
-    : RESOLUTION integer { $$ = createExpression(RESOLUTION, $2, NULL); }
+    : RESOLUTION integer { $$ = createExpression(&@$, RESOLUTION, $2, NULL); }
     ;
 
 time
-    : TIME time_param_list { $$ = createExpression(TIME, $2, NULL); }
+    : TIME time_param_list { $$ = createExpression(&@$, TIME, $2, NULL); }
     ;
 time_param_list
     : time_param
@@ -207,7 +207,7 @@ time_param
     ;
 
 tempo
-    : TEMPO tempo_param_list { $$ = createExpression(TEMPO, $2, NULL); }
+    : TEMPO tempo_param_list { $$ = createExpression(&@$, TEMPO, $2, NULL); }
     ;
 tempo_param_list
     : tempo_param
@@ -220,7 +220,7 @@ tempo_param
     ;
 
 marker
-    : MARKER marker_param_list { $$ = createExpression(MARKER, $2, NULL); }
+    : MARKER marker_param_list { $$ = createExpression(&@$, MARKER, $2, NULL); }
     ;
 marker_param_list
     : marker_param
@@ -232,20 +232,20 @@ marker_param
     ;
 
 velocity
-    : VELOCITY integer { $$ = createExpression(VELOCITY, $2, NULL); }
+    : VELOCITY integer { $$ = createExpression(&@$, VELOCITY, $2, NULL); }
     ;
 
 gatetime
-    : GATETIME integer { $$ = createExpression(GATETIME, $2, NULL); }
-    | GATETIME CUTOFF integer { $$ = createExpression(GATETIME_CUTOFF, $3, NULL); }
+    : GATETIME integer { $$ = createExpression(&@$, GATETIME, $2, NULL); }
+    | GATETIME CUTOFF integer { $$ = createExpression(&@$, GATETIME_CUTOFF, $3, NULL); }
     ;
 
 channel
-    : CHANNEL integer { $$ = createExpression(CHANNEL, $2, NULL); }
+    : CHANNEL integer { $$ = createExpression(&@$, CHANNEL, $2, NULL); }
     ;
 
 sound_select
-    : SOUND SELECT sound_select_param_list { $$ = createExpression(SOUND_SELECT, $3, NULL); }
+    : SOUND SELECT sound_select_param_list { $$ = createExpression(&@$, SOUND_SELECT, $3, NULL); }
     ;
 sound_select_param_list
     : sound_select_param
@@ -257,7 +257,7 @@ sound_select_param
     ;
 
 note
-    : NOTE note_param_list { $$ = createExpression(NOTE, $2, NULL); }
+    : NOTE note_param_list { $$ = createExpression(&@$, NOTE, $2, NULL); }
     ;
 note_param_list
     : note_param
@@ -270,11 +270,11 @@ note_param
     ;
 
 pattern_define
-    : identifier ASSIGN pattern_block { $$ = createExpression(PATTERN_DEFINE, addRightExpression($1, $3), NULL); }
-    | identifier ASSIGN pattern_expand { $$ = createExpression(PATTERN_DEFINE, addRightExpression($1, $3), NULL); }
+    : identifier ASSIGN pattern_block { $$ = createExpression(&@$, PATTERN_DEFINE, addRightExpression($1, $3), NULL); }
+    | identifier ASSIGN pattern_expand { $$ = createExpression(&@$, PATTERN_DEFINE, addRightExpression($1, $3), NULL); }
     ;
 pattern_block
-    : LCURLY pattern_statement_list RCURLY { $$ = createExpression(PATTERN_BLOCK, $2, NULL); }
+    : LCURLY pattern_statement_list RCURLY { $$ = createExpression(&@$, PATTERN_BLOCK, $2, NULL); }
     ;
 
 pattern_statement_list
@@ -295,7 +295,7 @@ pattern_statement
     ;
 
 pattern_expand
-    : identifier pattern_expand_param_list { $$ = createExpression(PATTERN_EXPAND, addRightExpression($1, $2), NULL); }
+    : identifier pattern_expand_param_list { $$ = createExpression(&@$, PATTERN_EXPAND, addRightExpression($1, $2), NULL); }
     ;
 pattern_expand_param_list
     : pattern_expand_param
@@ -310,7 +310,7 @@ pattern_expand_param
     ;
 
 pattern_extend_block
-    : LCURLY pattern_extend_block_statement_list RCURLY  { $$ = createExpression(PATTERN_EXTEND_BLOCK, $2, NULL); }
+    : LCURLY pattern_extend_block_statement_list RCURLY  { $$ = createExpression(&@$, PATTERN_EXTEND_BLOCK, $2, NULL); }
     ;
 pattern_extend_block_statement_list
     : pattern_extend_block_statement
@@ -322,10 +322,10 @@ pattern_extend_block_statement
     ;
 
 replace
-    : REPLACE pattern_extend_param_list  { $$ = createExpression(REPLACE, $2, NULL); }
+    : REPLACE pattern_extend_param_list  { $$ = createExpression(&@$, REPLACE, $2, NULL); }
     ;
 mix
-    : MIX pattern_extend_param_list  { $$ = createExpression(MIX, $2, NULL); }
+    : MIX pattern_extend_param_list  { $$ = createExpression(&@$, MIX, $2, NULL); }
     ;
 
 pattern_extend_param_list
@@ -340,43 +340,43 @@ pattern_extend_param
     ;
 
 string
-    : STRING { $$ = createStringValue(STRING, $1); }
+    : STRING { $$ = createStringValue(&@$, STRING, $1); }
     ;
 integer
-    : INTEGER { $$ = createIntegerValue(INTEGER, $1); }
+    : INTEGER { $$ = createIntegerValue(&@$, INTEGER, $1); }
     ;
 float
-    : FLOAT { $$ = createFloatValue(FLOAT, $1); }
+    : FLOAT { $$ = createFloatValue(&@$, FLOAT, $1); }
     ;
 
 time_sign
-    : integer DIVISION integer { $$ = createExpression(TIME_SIGN, addRightExpression($1, $3), NULL); }
+    : integer DIVISION integer { $$ = createExpression(&@$, TIME_SIGN, addRightExpression($1, $3), NULL); }
     ;
 
 mb_length
-    : MB_LENGTH { $$ = createStringValue(MB_LENGTH, $1); }
+    : MB_LENGTH { $$ = createStringValue(&@$, MB_LENGTH, $1); }
     ;
 
 from
-    : FROM location_param { $$ = createExpression(FROM, $2, NULL); }
+    : FROM location_param { $$ = createExpression(&@$, FROM, $2, NULL); }
     ;
 to
-    : TO location_param { $$ = createExpression(TO, $2, NULL); }
+    : TO location_param { $$ = createExpression(&@$, TO, $2, NULL); }
     ;
 location_param
     : integer
-    | LOCATION { $$ = createStringValue(LOCATION, $1); }
+    | LOCATION { $$ = createStringValue(&@$, LOCATION, $1); }
     ;
 
 step
-    : STEP integer { $$ = createExpression(STEP, $2, NULL); }
+    : STEP integer { $$ = createExpression(&@$, STEP, $2, NULL); }
     ;
 
 offset
-    : OFFSET length_param { $$ = createExpression(OFFSET, $2, NULL); }
+    : OFFSET length_param { $$ = createExpression(&@$, OFFSET, $2, NULL); }
     ;
 length
-    : LENGTH length_param { $$ = createExpression(LENGTH, $2, NULL); }
+    : LENGTH length_param { $$ = createExpression(&@$, LENGTH, $2, NULL); }
     ;
 length_param
     : mb_length
@@ -384,7 +384,7 @@ length_param
     ;
 
 integer_list
-    : integer_list_param { $$ = createExpression(INTEGER_LIST, $1, NULL); }
+    : integer_list_param { $$ = createExpression(&@$, INTEGER_LIST, $1, NULL); }
     ;
 
 integer_list_param
@@ -393,7 +393,7 @@ integer_list_param
     ;
 
 note_block
-    : LCURLY note_block_param_list RCURLY { $$ = createExpression(NOTE_BLOCK, $2, NULL); }
+    : LCURLY note_block_param_list RCURLY { $$ = createExpression(&@$, NOTE_BLOCK, $2, NULL); }
     ;
 note_block_param_list
     : note_block_param
@@ -404,19 +404,19 @@ note_block_param
     | note_no assign_statement_list { $$ = $1; $1->left = $2; }
     | note_no_list
     | note_no_list assign_statement_list { $$ = $1; addRightExpression($1->left, $2); }
-    | REST { $$ = createExpression(REST, NULL, NULL); }
-    | TIE { $$ = createExpression(TIE, NULL, NULL); }
+    | REST { $$ = createExpression(&@$, REST, NULL, NULL); }
+    | TIE { $$ = createExpression(&@$, TIE, NULL, NULL); }
     ;
 
 note_no_list
-    : note_no_list_param { $$ = createExpression(NOTE_NO_LIST, $1, NULL); }
+    : note_no_list_param { $$ = createExpression(&@$, NOTE_NO_LIST, $1, NULL); }
     ;
 note_no_list_param
     : note_no COMMA note_no { $$ = addRightExpression($1, $3); }
     | note_no_list_param COMMA note_no { $$ = addRightExpression($1, $3); }
     ;
 note_no
-    : NOTE_NO { $$ = createStringValue(NOTE_NO, $1); }
+    : NOTE_NO { $$ = createStringValue(&@$, NOTE_NO, $1); }
     | note_no single_note_assign { $$ = $1; $1->left = $2; }
     ;
 
@@ -425,8 +425,8 @@ assign_statement_list
     | assign_statement_list assign_statement { $$ = addRightExpression($1, $2); }
     ;
 assign_statement
-    : VELOCITY ASSIGN integer { $$ = createExpression(VELOCITY, $3, NULL); }
-    | GATETIME ASSIGN integer { $$ = createExpression(GATETIME, $3, NULL); }
+    : VELOCITY ASSIGN integer { $$ = createExpression(&@$, VELOCITY, $3, NULL); }
+    | GATETIME ASSIGN integer { $$ = createExpression(&@$, GATETIME, $3, NULL); }
     ;
 
 single_note_assign
@@ -434,7 +434,7 @@ single_note_assign
     ;
 
 identifier
-    : IDENTIFIER { $$ = createStringValue(IDENTIFIER, $1); }
+    : IDENTIFIER { $$ = createStringValue(&@$, IDENTIFIER, $1); }
     ;
 
 %%
