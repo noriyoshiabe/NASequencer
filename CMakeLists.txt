@@ -14,6 +14,7 @@ ADD_FLEX_BISON_DEPENDENCY(Lexer Parser)
 include_directories(./)
 add_executable(parse
   main.c
+  DSLParser.c
   Expression.c
   ${BISON_Parser_OUTPUTS}
   ${FLEX_Lexer_OUTPUTS}

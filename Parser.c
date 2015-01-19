@@ -68,16 +68,11 @@
 #include "Expression.h"
 #include "Parser.h"
 #include "Lexer.h"
-#include <stdio.h>
- 
-int yyerror(YYLTYPE *location, Expression **expression, yyscan_t scanner, const char *msg) {
-printf("############ %d %d %s\n", location->last_line, location->last_column, msg);
-    // Add error handling routine as needed
-    return 0;
-}
+
+extern int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, const char *message);
  
 
-#line 81 "Parser.c" /* yacc.c:339  */
+#line 76 "Parser.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -107,16 +102,11 @@ printf("############ %d %d %s\n", location->last_line, location->last_column, ms
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 16 "Parser.y" /* yacc.c:355  */
+#line 11 "Parser.y" /* yacc.c:355  */
 
- 
-#ifndef YY_TYPEDEF_YY_SCANNER_T
-#define YY_TYPEDEF_YY_SCANNER_T
-typedef void* yyscan_t;
-#endif
- 
+#include "Expression.h"
 
-#line 120 "Parser.c" /* yacc.c:355  */
+#line 110 "Parser.c" /* yacc.c:355  */
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
@@ -181,14 +171,14 @@ typedef void* yyscan_t;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 34 "Parser.y" /* yacc.c:355  */
+#line 24 "Parser.y" /* yacc.c:355  */
 
     int i;
     float f;
     char *s;
     Expression *expression;
 
-#line 192 "Parser.c" /* yacc.c:355  */
+#line 182 "Parser.c" /* yacc.c:355  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
@@ -210,13 +200,13 @@ struct YYLTYPE
 
 
 
-int yyparse (Expression **expression, yyscan_t scanner);
+int yyparse (void *scanner, Expression **expression);
 
 #endif /* !YY_YY_PARSER_H_INCLUDED  */
 
 /* Copy the second part of user declarations.  */
 
-#line 220 "Parser.c" /* yacc.c:358  */
+#line 210 "Parser.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -520,19 +510,19 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   166,   166,   170,   171,   175,   176,   177,   178,   179,
-     180,   181,   182,   183,   184,   185,   186,   190,   194,   198,
-     201,   202,   205,   206,   210,   213,   214,   217,   218,   219,
-     223,   226,   227,   230,   231,   235,   239,   240,   244,   248,
-     251,   252,   255,   256,   260,   263,   264,   267,   268,   269,
-     273,   274,   277,   281,   282,   285,   286,   287,   288,   289,
-     290,   291,   292,   293,   294,   298,   301,   302,   305,   306,
-     307,   308,   309,   313,   316,   317,   320,   321,   325,   328,
-     332,   333,   336,   337,   338,   339,   343,   346,   349,   353,
-     357,   361,   364,   367,   368,   372,   376,   379,   382,   383,
-     387,   391,   392,   396,   399,   400,   403,   404,   405,   406,
-     407,   408,   412,   415,   416,   419,   420,   424,   425,   428,
-     429,   433,   437
+       0,   156,   156,   160,   161,   165,   166,   167,   168,   169,
+     170,   171,   172,   173,   174,   175,   176,   180,   184,   188,
+     191,   192,   195,   196,   200,   203,   204,   207,   208,   209,
+     213,   216,   217,   220,   221,   225,   229,   230,   234,   238,
+     241,   242,   245,   246,   250,   253,   254,   257,   258,   259,
+     263,   264,   267,   271,   272,   275,   276,   277,   278,   279,
+     280,   281,   282,   283,   284,   288,   291,   292,   295,   296,
+     297,   298,   299,   303,   306,   307,   310,   311,   315,   318,
+     322,   323,   326,   327,   328,   329,   333,   336,   339,   343,
+     347,   351,   354,   357,   358,   362,   366,   369,   372,   373,
+     377,   381,   382,   386,   389,   390,   393,   394,   395,   396,
+     397,   398,   402,   405,   406,   409,   410,   414,   415,   418,
+     419,   423,   427
 };
 #endif
 
@@ -795,7 +785,7 @@ do                                                              \
     }                                                           \
   else                                                          \
     {                                                           \
-      yyerror (&yylloc, expression, scanner, YY_("syntax error: cannot back up")); \
+      yyerror (&yylloc, scanner, expression, YY_("syntax error: cannot back up")); \
       YYERROR;                                                  \
     }                                                           \
 while (0)
@@ -897,7 +887,7 @@ do {                                                                      \
     {                                                                     \
       YYFPRINTF (stderr, "%s ", Title);                                   \
       yy_symbol_print (stderr,                                            \
-                  Type, Value, Location, expression, scanner); \
+                  Type, Value, Location, scanner, expression); \
       YYFPRINTF (stderr, "\n");                                           \
     }                                                                     \
 } while (0)
@@ -908,13 +898,13 @@ do {                                                                      \
 `----------------------------------------*/
 
 static void
-yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, YYLTYPE const * const yylocationp, Expression **expression, yyscan_t scanner)
+yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, YYLTYPE const * const yylocationp, void *scanner, Expression **expression)
 {
   FILE *yyo = yyoutput;
   YYUSE (yyo);
   YYUSE (yylocationp);
-  YYUSE (expression);
   YYUSE (scanner);
+  YYUSE (expression);
   if (!yyvaluep)
     return;
 # ifdef YYPRINT
@@ -930,14 +920,14 @@ yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvalue
 `--------------------------------*/
 
 static void
-yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, YYLTYPE const * const yylocationp, Expression **expression, yyscan_t scanner)
+yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, YYLTYPE const * const yylocationp, void *scanner, Expression **expression)
 {
   YYFPRINTF (yyoutput, "%s %s (",
              yytype < YYNTOKENS ? "token" : "nterm", yytname[yytype]);
 
   YY_LOCATION_PRINT (yyoutput, *yylocationp);
   YYFPRINTF (yyoutput, ": ");
-  yy_symbol_value_print (yyoutput, yytype, yyvaluep, yylocationp, expression, scanner);
+  yy_symbol_value_print (yyoutput, yytype, yyvaluep, yylocationp, scanner, expression);
   YYFPRINTF (yyoutput, ")");
 }
 
@@ -970,7 +960,7 @@ do {                                                            \
 `------------------------------------------------*/
 
 static void
-yy_reduce_print (yytype_int16 *yyssp, YYSTYPE *yyvsp, YYLTYPE *yylsp, int yyrule, Expression **expression, yyscan_t scanner)
+yy_reduce_print (yytype_int16 *yyssp, YYSTYPE *yyvsp, YYLTYPE *yylsp, int yyrule, void *scanner, Expression **expression)
 {
   unsigned long int yylno = yyrline[yyrule];
   int yynrhs = yyr2[yyrule];
@@ -984,7 +974,7 @@ yy_reduce_print (yytype_int16 *yyssp, YYSTYPE *yyvsp, YYLTYPE *yylsp, int yyrule
       yy_symbol_print (stderr,
                        yystos[yyssp[yyi + 1 - yynrhs]],
                        &(yyvsp[(yyi + 1) - (yynrhs)])
-                       , &(yylsp[(yyi + 1) - (yynrhs)])                       , expression, scanner);
+                       , &(yylsp[(yyi + 1) - (yynrhs)])                       , scanner, expression);
       YYFPRINTF (stderr, "\n");
     }
 }
@@ -992,7 +982,7 @@ yy_reduce_print (yytype_int16 *yyssp, YYSTYPE *yyvsp, YYLTYPE *yylsp, int yyrule
 # define YY_REDUCE_PRINT(Rule)          \
 do {                                    \
   if (yydebug)                          \
-    yy_reduce_print (yyssp, yyvsp, yylsp, Rule, expression, scanner); \
+    yy_reduce_print (yyssp, yyvsp, yylsp, Rule, scanner, expression); \
 } while (0)
 
 /* Nonzero means print parse trace.  It is left uninitialized so that
@@ -1250,12 +1240,12 @@ yysyntax_error (YYSIZE_T *yymsg_alloc, char **yymsg,
 `-----------------------------------------------*/
 
 static void
-yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, YYLTYPE *yylocationp, Expression **expression, yyscan_t scanner)
+yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, YYLTYPE *yylocationp, void *scanner, Expression **expression)
 {
   YYUSE (yyvaluep);
   YYUSE (yylocationp);
-  YYUSE (expression);
   YYUSE (scanner);
+  YYUSE (expression);
   if (!yymsg)
     yymsg = "Deleting";
   YY_SYMBOL_PRINT (yymsg, yytype, yyvaluep, yylocationp);
@@ -1273,7 +1263,7 @@ yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, YYLTYPE *yylocatio
 `----------*/
 
 int
-yyparse (Expression **expression, yyscan_t scanner)
+yyparse (void *scanner, Expression **expression)
 {
 /* The lookahead symbol.  */
 int yychar;
@@ -1547,355 +1537,355 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 166 "Parser.y" /* yacc.c:1661  */
+#line 156 "Parser.y" /* yacc.c:1661  */
     { *expression = (yyvsp[0].expression); }
-#line 1553 "Parser.c" /* yacc.c:1661  */
+#line 1543 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 4:
-#line 171 "Parser.y" /* yacc.c:1661  */
+#line 161 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = addRightExpression((yyvsp[-1].expression), (yyvsp[0].expression)); }
-#line 1559 "Parser.c" /* yacc.c:1661  */
+#line 1549 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 17:
-#line 190 "Parser.y" /* yacc.c:1661  */
+#line 180 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createExpression(&(yyloc), TITLE, (yyvsp[0].expression), NULL); }
-#line 1565 "Parser.c" /* yacc.c:1661  */
+#line 1555 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 18:
-#line 194 "Parser.y" /* yacc.c:1661  */
+#line 184 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createExpression(&(yyloc), RESOLUTION, (yyvsp[0].expression), NULL); }
-#line 1571 "Parser.c" /* yacc.c:1661  */
+#line 1561 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 19:
-#line 198 "Parser.y" /* yacc.c:1661  */
+#line 188 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createExpression(&(yyloc), TIME, (yyvsp[0].expression), NULL); }
-#line 1577 "Parser.c" /* yacc.c:1661  */
+#line 1567 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 21:
-#line 202 "Parser.y" /* yacc.c:1661  */
+#line 192 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = addRightExpression((yyvsp[-1].expression), (yyvsp[0].expression)); }
-#line 1583 "Parser.c" /* yacc.c:1661  */
+#line 1573 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 24:
-#line 210 "Parser.y" /* yacc.c:1661  */
+#line 200 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createExpression(&(yyloc), TEMPO, (yyvsp[0].expression), NULL); }
-#line 1589 "Parser.c" /* yacc.c:1661  */
+#line 1579 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 26:
-#line 214 "Parser.y" /* yacc.c:1661  */
+#line 204 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = addRightExpression((yyvsp[-1].expression), (yyvsp[0].expression)); }
-#line 1595 "Parser.c" /* yacc.c:1661  */
+#line 1585 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 30:
-#line 223 "Parser.y" /* yacc.c:1661  */
+#line 213 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createExpression(&(yyloc), MARKER, (yyvsp[0].expression), NULL); }
-#line 1601 "Parser.c" /* yacc.c:1661  */
+#line 1591 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 32:
-#line 227 "Parser.y" /* yacc.c:1661  */
+#line 217 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = addRightExpression((yyvsp[-1].expression), (yyvsp[0].expression)); }
-#line 1607 "Parser.c" /* yacc.c:1661  */
+#line 1597 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 35:
-#line 235 "Parser.y" /* yacc.c:1661  */
+#line 225 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createExpression(&(yyloc), VELOCITY, (yyvsp[0].expression), NULL); }
-#line 1613 "Parser.c" /* yacc.c:1661  */
+#line 1603 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 36:
-#line 239 "Parser.y" /* yacc.c:1661  */
+#line 229 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createExpression(&(yyloc), GATETIME, (yyvsp[0].expression), NULL); }
-#line 1619 "Parser.c" /* yacc.c:1661  */
+#line 1609 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 37:
-#line 240 "Parser.y" /* yacc.c:1661  */
+#line 230 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createExpression(&(yyloc), GATETIME_CUTOFF, (yyvsp[0].expression), NULL); }
-#line 1625 "Parser.c" /* yacc.c:1661  */
+#line 1615 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 38:
-#line 244 "Parser.y" /* yacc.c:1661  */
+#line 234 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createExpression(&(yyloc), CHANNEL, (yyvsp[0].expression), NULL); }
-#line 1631 "Parser.c" /* yacc.c:1661  */
+#line 1621 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 39:
-#line 248 "Parser.y" /* yacc.c:1661  */
+#line 238 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createExpression(&(yyloc), SOUND_SELECT, (yyvsp[0].expression), NULL); }
-#line 1637 "Parser.c" /* yacc.c:1661  */
+#line 1627 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 41:
-#line 252 "Parser.y" /* yacc.c:1661  */
+#line 242 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = addRightExpression((yyvsp[-1].expression), (yyvsp[0].expression)); }
-#line 1643 "Parser.c" /* yacc.c:1661  */
+#line 1633 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 44:
-#line 260 "Parser.y" /* yacc.c:1661  */
+#line 250 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createExpression(&(yyloc), NOTE, (yyvsp[0].expression), NULL); }
-#line 1649 "Parser.c" /* yacc.c:1661  */
+#line 1639 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 46:
-#line 264 "Parser.y" /* yacc.c:1661  */
+#line 254 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = addRightExpression((yyvsp[-1].expression), (yyvsp[0].expression)); }
-#line 1655 "Parser.c" /* yacc.c:1661  */
+#line 1645 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 50:
-#line 273 "Parser.y" /* yacc.c:1661  */
+#line 263 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createExpression(&(yyloc), PATTERN_DEFINE, addRightExpression((yyvsp[-2].expression), (yyvsp[0].expression)), NULL); }
-#line 1661 "Parser.c" /* yacc.c:1661  */
+#line 1651 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 51:
-#line 274 "Parser.y" /* yacc.c:1661  */
+#line 264 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createExpression(&(yyloc), PATTERN_DEFINE, addRightExpression((yyvsp[-2].expression), (yyvsp[0].expression)), NULL); }
-#line 1667 "Parser.c" /* yacc.c:1661  */
+#line 1657 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 52:
-#line 277 "Parser.y" /* yacc.c:1661  */
+#line 267 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createExpression(&(yyloc), PATTERN_BLOCK, (yyvsp[-1].expression), NULL); }
-#line 1673 "Parser.c" /* yacc.c:1661  */
+#line 1663 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 54:
-#line 282 "Parser.y" /* yacc.c:1661  */
+#line 272 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = addRightExpression((yyvsp[-1].expression), (yyvsp[0].expression)); }
-#line 1679 "Parser.c" /* yacc.c:1661  */
+#line 1669 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 65:
-#line 298 "Parser.y" /* yacc.c:1661  */
+#line 288 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createExpression(&(yyloc), PATTERN_EXPAND, addRightExpression((yyvsp[-1].expression), (yyvsp[0].expression)), NULL); }
-#line 1685 "Parser.c" /* yacc.c:1661  */
+#line 1675 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 67:
-#line 302 "Parser.y" /* yacc.c:1661  */
+#line 292 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = addRightExpression((yyvsp[-1].expression), (yyvsp[0].expression)); }
-#line 1691 "Parser.c" /* yacc.c:1661  */
+#line 1681 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 73:
-#line 313 "Parser.y" /* yacc.c:1661  */
+#line 303 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createExpression(&(yyloc), PATTERN_EXTEND_BLOCK, (yyvsp[-1].expression), NULL); }
-#line 1697 "Parser.c" /* yacc.c:1661  */
+#line 1687 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 75:
-#line 317 "Parser.y" /* yacc.c:1661  */
+#line 307 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = addRightExpression((yyvsp[-1].expression), (yyvsp[0].expression)); }
-#line 1703 "Parser.c" /* yacc.c:1661  */
+#line 1693 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 78:
-#line 325 "Parser.y" /* yacc.c:1661  */
+#line 315 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createExpression(&(yyloc), REPLACE, (yyvsp[0].expression), NULL); }
-#line 1709 "Parser.c" /* yacc.c:1661  */
+#line 1699 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 79:
-#line 328 "Parser.y" /* yacc.c:1661  */
+#line 318 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createExpression(&(yyloc), MIX, (yyvsp[0].expression), NULL); }
-#line 1715 "Parser.c" /* yacc.c:1661  */
+#line 1705 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 81:
-#line 333 "Parser.y" /* yacc.c:1661  */
+#line 323 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = addRightExpression((yyvsp[-1].expression), (yyvsp[0].expression)); }
-#line 1721 "Parser.c" /* yacc.c:1661  */
+#line 1711 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 86:
-#line 343 "Parser.y" /* yacc.c:1661  */
+#line 333 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createStringValue(&(yyloc), STRING, (yyvsp[0].s)); }
-#line 1727 "Parser.c" /* yacc.c:1661  */
+#line 1717 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 87:
-#line 346 "Parser.y" /* yacc.c:1661  */
+#line 336 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createIntegerValue(&(yyloc), INTEGER, (yyvsp[0].i)); }
-#line 1733 "Parser.c" /* yacc.c:1661  */
+#line 1723 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 88:
-#line 349 "Parser.y" /* yacc.c:1661  */
+#line 339 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createFloatValue(&(yyloc), FLOAT, (yyvsp[0].f)); }
-#line 1739 "Parser.c" /* yacc.c:1661  */
+#line 1729 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 89:
-#line 353 "Parser.y" /* yacc.c:1661  */
+#line 343 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createExpression(&(yyloc), TIME_SIGN, addRightExpression((yyvsp[-2].expression), (yyvsp[0].expression)), NULL); }
-#line 1745 "Parser.c" /* yacc.c:1661  */
+#line 1735 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 90:
-#line 357 "Parser.y" /* yacc.c:1661  */
+#line 347 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createStringValue(&(yyloc), MB_LENGTH, (yyvsp[0].s)); }
-#line 1751 "Parser.c" /* yacc.c:1661  */
+#line 1741 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 91:
-#line 361 "Parser.y" /* yacc.c:1661  */
+#line 351 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createExpression(&(yyloc), FROM, (yyvsp[0].expression), NULL); }
-#line 1757 "Parser.c" /* yacc.c:1661  */
+#line 1747 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 92:
-#line 364 "Parser.y" /* yacc.c:1661  */
+#line 354 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createExpression(&(yyloc), TO, (yyvsp[0].expression), NULL); }
-#line 1763 "Parser.c" /* yacc.c:1661  */
+#line 1753 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 94:
-#line 368 "Parser.y" /* yacc.c:1661  */
+#line 358 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createStringValue(&(yyloc), LOCATION, (yyvsp[0].s)); }
-#line 1769 "Parser.c" /* yacc.c:1661  */
+#line 1759 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 95:
-#line 372 "Parser.y" /* yacc.c:1661  */
+#line 362 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createExpression(&(yyloc), STEP, (yyvsp[0].expression), NULL); }
-#line 1775 "Parser.c" /* yacc.c:1661  */
+#line 1765 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 96:
-#line 376 "Parser.y" /* yacc.c:1661  */
+#line 366 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createExpression(&(yyloc), OFFSET, (yyvsp[0].expression), NULL); }
-#line 1781 "Parser.c" /* yacc.c:1661  */
+#line 1771 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 97:
-#line 379 "Parser.y" /* yacc.c:1661  */
+#line 369 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createExpression(&(yyloc), LENGTH, (yyvsp[0].expression), NULL); }
-#line 1787 "Parser.c" /* yacc.c:1661  */
+#line 1777 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 100:
-#line 387 "Parser.y" /* yacc.c:1661  */
+#line 377 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createExpression(&(yyloc), INTEGER_LIST, (yyvsp[0].expression), NULL); }
-#line 1793 "Parser.c" /* yacc.c:1661  */
+#line 1783 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 102:
-#line 392 "Parser.y" /* yacc.c:1661  */
+#line 382 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = addRightExpression((yyvsp[-1].expression), (yyvsp[0].expression)); }
-#line 1799 "Parser.c" /* yacc.c:1661  */
+#line 1789 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 103:
-#line 396 "Parser.y" /* yacc.c:1661  */
+#line 386 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createExpression(&(yyloc), NOTE_BLOCK, (yyvsp[-1].expression), NULL); }
-#line 1805 "Parser.c" /* yacc.c:1661  */
+#line 1795 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 105:
-#line 400 "Parser.y" /* yacc.c:1661  */
+#line 390 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = addRightExpression((yyvsp[-1].expression), (yyvsp[0].expression)); }
-#line 1811 "Parser.c" /* yacc.c:1661  */
+#line 1801 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 107:
-#line 404 "Parser.y" /* yacc.c:1661  */
+#line 394 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = (yyvsp[-1].expression); (yyvsp[-1].expression)->left = (yyvsp[0].expression); }
-#line 1817 "Parser.c" /* yacc.c:1661  */
+#line 1807 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 109:
-#line 406 "Parser.y" /* yacc.c:1661  */
+#line 396 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = (yyvsp[-1].expression); addRightExpression((yyvsp[-1].expression)->left, (yyvsp[0].expression)); }
-#line 1823 "Parser.c" /* yacc.c:1661  */
+#line 1813 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 110:
-#line 407 "Parser.y" /* yacc.c:1661  */
+#line 397 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createExpression(&(yyloc), REST, NULL, NULL); }
-#line 1829 "Parser.c" /* yacc.c:1661  */
+#line 1819 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 111:
-#line 408 "Parser.y" /* yacc.c:1661  */
+#line 398 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createExpression(&(yyloc), TIE, NULL, NULL); }
-#line 1835 "Parser.c" /* yacc.c:1661  */
+#line 1825 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 112:
-#line 412 "Parser.y" /* yacc.c:1661  */
+#line 402 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createExpression(&(yyloc), NOTE_NO_LIST, (yyvsp[0].expression), NULL); }
-#line 1841 "Parser.c" /* yacc.c:1661  */
+#line 1831 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 113:
-#line 415 "Parser.y" /* yacc.c:1661  */
+#line 405 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = addRightExpression((yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 1847 "Parser.c" /* yacc.c:1661  */
+#line 1837 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 114:
-#line 416 "Parser.y" /* yacc.c:1661  */
+#line 406 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = addRightExpression((yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 1853 "Parser.c" /* yacc.c:1661  */
+#line 1843 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 115:
-#line 419 "Parser.y" /* yacc.c:1661  */
+#line 409 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createStringValue(&(yyloc), NOTE_NO, (yyvsp[0].s)); }
-#line 1859 "Parser.c" /* yacc.c:1661  */
+#line 1849 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 116:
-#line 420 "Parser.y" /* yacc.c:1661  */
+#line 410 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = (yyvsp[-1].expression); (yyvsp[-1].expression)->left = (yyvsp[0].expression); }
-#line 1865 "Parser.c" /* yacc.c:1661  */
+#line 1855 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 118:
-#line 425 "Parser.y" /* yacc.c:1661  */
+#line 415 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = addRightExpression((yyvsp[-1].expression), (yyvsp[0].expression)); }
-#line 1871 "Parser.c" /* yacc.c:1661  */
+#line 1861 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 119:
-#line 428 "Parser.y" /* yacc.c:1661  */
+#line 418 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createExpression(&(yyloc), VELOCITY, (yyvsp[0].expression), NULL); }
-#line 1877 "Parser.c" /* yacc.c:1661  */
+#line 1867 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 120:
-#line 429 "Parser.y" /* yacc.c:1661  */
+#line 419 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createExpression(&(yyloc), GATETIME, (yyvsp[0].expression), NULL); }
-#line 1883 "Parser.c" /* yacc.c:1661  */
+#line 1873 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 121:
-#line 433 "Parser.y" /* yacc.c:1661  */
+#line 423 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = (yyvsp[-1].expression); }
-#line 1889 "Parser.c" /* yacc.c:1661  */
+#line 1879 "Parser.c" /* yacc.c:1661  */
     break;
 
   case 122:
-#line 437 "Parser.y" /* yacc.c:1661  */
+#line 427 "Parser.y" /* yacc.c:1661  */
     { (yyval.expression) = createStringValue(&(yyloc), IDENTIFIER, (yyvsp[0].s)); }
-#line 1895 "Parser.c" /* yacc.c:1661  */
+#line 1885 "Parser.c" /* yacc.c:1661  */
     break;
 
 
-#line 1899 "Parser.c" /* yacc.c:1661  */
+#line 1889 "Parser.c" /* yacc.c:1661  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1946,7 +1936,7 @@ yyerrlab:
     {
       ++yynerrs;
 #if ! YYERROR_VERBOSE
-      yyerror (&yylloc, expression, scanner, YY_("syntax error"));
+      yyerror (&yylloc, scanner, expression, YY_("syntax error"));
 #else
 # define YYSYNTAX_ERROR yysyntax_error (&yymsg_alloc, &yymsg, \
                                         yyssp, yytoken)
@@ -1973,7 +1963,7 @@ yyerrlab:
                 yymsgp = yymsg;
               }
           }
-        yyerror (&yylloc, expression, scanner, yymsgp);
+        yyerror (&yylloc, scanner, expression, yymsgp);
         if (yysyntax_error_status == 2)
           goto yyexhaustedlab;
       }
@@ -1997,7 +1987,7 @@ yyerrlab:
       else
         {
           yydestruct ("Error: discarding",
-                      yytoken, &yylval, &yylloc, expression, scanner);
+                      yytoken, &yylval, &yylloc, scanner, expression);
           yychar = YYEMPTY;
         }
     }
@@ -2054,7 +2044,7 @@ yyerrlab1:
 
       yyerror_range[1] = *yylsp;
       yydestruct ("Error: popping",
-                  yystos[yystate], yyvsp, yylsp, expression, scanner);
+                  yystos[yystate], yyvsp, yylsp, scanner, expression);
       YYPOPSTACK (1);
       yystate = *yyssp;
       YY_STACK_PRINT (yyss, yyssp);
@@ -2096,7 +2086,7 @@ yyabortlab:
 | yyexhaustedlab -- memory exhaustion comes here.  |
 `-------------------------------------------------*/
 yyexhaustedlab:
-  yyerror (&yylloc, expression, scanner, YY_("memory exhausted"));
+  yyerror (&yylloc, scanner, expression, YY_("memory exhausted"));
   yyresult = 2;
   /* Fall through.  */
 #endif
@@ -2108,7 +2098,7 @@ yyreturn:
          user semantic actions for why this is necessary.  */
       yytoken = YYTRANSLATE (yychar);
       yydestruct ("Cleanup: discarding lookahead",
-                  yytoken, &yylval, &yylloc, expression, scanner);
+                  yytoken, &yylval, &yylloc, scanner, expression);
     }
   /* Do not reclaim the symbols of the rule whose action triggered
      this YYABORT or YYACCEPT.  */
@@ -2117,7 +2107,7 @@ yyreturn:
   while (yyssp != yyss)
     {
       yydestruct ("Cleanup: popping",
-                  yystos[*yyssp], yyvsp, yylsp, expression, scanner);
+                  yystos[*yyssp], yyvsp, yylsp, scanner, expression);
       YYPOPSTACK (1);
     }
 #ifndef yyoverflow
@@ -2130,5 +2120,5 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 440 "Parser.y" /* yacc.c:1906  */
+#line 430 "Parser.y" /* yacc.c:1906  */
 

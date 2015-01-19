@@ -3,32 +3,22 @@
 #include "Expression.h"
 #include "Parser.h"
 #include "Lexer.h"
-#include <stdio.h>
- 
-int yyerror(YYLTYPE *location, Expression **expression, yyscan_t scanner, const char *msg) {
-printf("############ %d %d %s\n", location->last_line, location->last_column, msg);
-    // Add error handling routine as needed
-    return 0;
-}
+
+extern int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, const char *message);
  
 %}
- 
+
 %code requires {
- 
-#ifndef YY_TYPEDEF_YY_SCANNER_T
-#define YY_TYPEDEF_YY_SCANNER_T
-typedef void* yyscan_t;
-#endif
- 
+#include "Expression.h"
 }
  
 %output  "Parser.c"
 %defines "Parser.h"
  
 %define api.pure
-%lex-param   { yyscan_t scanner }
+%lex-param   { void *scanner }
+%parse-param { void *scanner }
 %parse-param { Expression **expression }
-%parse-param { yyscan_t scanner }
 %locations
 
 %union {
