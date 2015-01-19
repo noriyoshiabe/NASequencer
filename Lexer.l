@@ -17,7 +17,6 @@
 
 %}
 
- 
 %option outfile="Lexer.c"
 %option header-file="Lexer.h"
 %option reentrant
