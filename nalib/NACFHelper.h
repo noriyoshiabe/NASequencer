@@ -2,26 +2,7 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
-static inline const void *EmptyRetainCallBack(CFAllocatorRef allocator, const void *value)
-{
-    return value;
-}
-
-static inline void EmptyReleaseCallBack(CFAllocatorRef allocator, const void *value)
-{
-}
-
-static inline CFStringRef EmptyCopyDescriptionCallBack(const void *value)
-{
-    return NULL;
-}
-
-static inline Boolean EmptyEqualCallBack(const void *value1, const void *value2)
-{
-    return false;
-}
-
-#define DeclareCFArrayCallBacks(name, RetainCallBack, ReleaseCallBack, CopyDescriptionCallBack, EqualCallBack) \
+#define DeclareCFArrayCallBacks(name, CopyDescriptionCallBack) \
 const void *__##name##__CFArrayRetainCallBack(CFAllocatorRef allocator, const void *value) \
     { \
         return NARetain(value); \
@@ -34,7 +15,7 @@ const void *__##name##__CFArrayRetainCallBack(CFAllocatorRef allocator, const vo
      \
     CFStringRef __##name##__CFArrayCopyDescriptionCallBack(const void *value) \
     { \
-        return CopyDescriptionCallBack == NULL ? NULL : NULL; \
+        return CopyDescriptionCallBack != NULL ? CopyDescriptionCallBack : NULL; \
     } \
      \
     Boolean __##name##__CFArrayEqualCallBack(const void *value1, const void *value2) \

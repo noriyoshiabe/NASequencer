@@ -1,5 +1,4 @@
 #include <NAType.h>
-#include <NAString.h>
 
 char NATypeID[] = "NAType";
 
