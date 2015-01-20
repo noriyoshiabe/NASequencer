@@ -125,7 +125,7 @@ int main(int argc, char **argv)
     printf("hoge1:description %s\n", buf);
     CFRelease(cfString);
 
-    CFMutableArrayRef cfArray = CFArrayCreateMutable(NULL, 0, &NACFArrayCallBacks);
+    CFMutableArrayRef cfArray = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
     CFArrayAppendValue(cfArray, hoge1);
     CFArrayAppendValue(cfArray, hoge2);
 

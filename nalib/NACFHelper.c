@@ -21,10 +21,12 @@ static Boolean __CFArrayEqualCallBack(const void *value1, const void *value2)
     return NAEqual(value1, value2);
 }
 
-const CFArrayCallBacks NACFArrayCallBacks = {
+static const CFArrayCallBacks __NACFArrayCallBacks = {
     0,
     __CFArrayRetainCallBack,
     __CFArrayReleaseCallBack,
     __CFArrayCopyDescriptionCallBack,
     __CFArrayEqualCallBack
 };
+
+const CFArrayCallBacks *NACFArrayCallBacks = &__NACFArrayCallBacks;
