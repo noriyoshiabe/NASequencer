@@ -28,6 +28,8 @@ typedef struct __NATypeVtbl {
     uint32_t (*hash)(const void *self);
     bool (*equalTo)(const void *self, const void *to);
     int (*compare)(const void *self, const void *to);
+    void *(*copy)(const void *self);
+    void *(*description)(const void *self);
 } NATypeVtbl;
 
 extern char NATypeID[];
@@ -42,6 +44,8 @@ extern int16_t NARefCount(const void *self);
 extern uint32_t NAHash(const void *self);
 extern bool NAEqual(const void *self, const void *to);
 extern int NACompare(const void *self, const void *to);
+extern void *NACopy(const void *self);
+extern void *NADescription(const void *self);
 
 extern void *__NATypeAlloc(NAClass *clazz);
 extern void *(*__NAFindInit(NAClass *clazz))(void *self, ...);

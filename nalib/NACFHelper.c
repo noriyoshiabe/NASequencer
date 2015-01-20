@@ -1,0 +1,30 @@
+#include <NACFHelper.h>
+#include <NAType.h>
+
+static const void *__CFArrayRetainCallBack(CFAllocatorRef allocator, const void *value)
+{
+    return NARetain(value);
+}
+
+static void __CFArrayReleaseCallBack(CFAllocatorRef allocator, const void *value)
+{
+    NARelease(value);
+}
+
+static CFStringRef __CFArrayCopyDescriptionCallBack(const void *value)
+{
+    return NADescription(value);
+}
+
+static Boolean __CFArrayEqualCallBack(const void *value1, const void *value2)
+{
+    return NAEqual(value1, value2);
+}
+
+const CFArrayCallBacks NACFArrayCallBacks = {
+    0,
+    __CFArrayRetainCallBack,
+    __CFArrayReleaseCallBack,
+    __CFArrayCopyDescriptionCallBack,
+    __CFArrayEqualCallBack
+};
