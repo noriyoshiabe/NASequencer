@@ -102,33 +102,35 @@ extern void *__NAVtblLookup(const NAClass *clazz, const char *typeID);
         NADeclareClass1,\
         )(type, __VA_ARGS__)
 
+#define NADeclareVtblEntry(type, inf) {inf##ID, &__##type##__##inf##Vtbl}
+
 #define NADeclareClass4(type,inf1,inf2,inf3,inf4) \
     static NAVtblEntry __##type##__vEntries[] = { \
-        {type##ID, &__##type##__##inf1##Vtbl}, \
-        {type##ID, &__##type##__##inf2##Vtbl}, \
-        {type##ID, &__##type##__##inf3##Vtbl}, \
-        {type##ID, &__##type##__##inf4##Vtbl}, \
+        NADeclareVtblEntry(type, inf1), \
+        NADeclareVtblEntry(type, inf2), \
+        NADeclareVtblEntry(type, inf3), \
+        NADeclareVtblEntry(type, inf4), \
         {NULL, NULL} \
     }; \
     NADeclareClassConstant(type)
 #define NADeclareClass3(type,inf1,inf2,inf3) \
     static NAVtblEntry __##type##__vEntries[] = { \
-        {type##ID, &__##type##__##inf1##Vtbl}, \
-        {type##ID, &__##type##__##inf2##Vtbl}, \
-        {type##ID, &__##type##__##inf3##Vtbl}, \
+        NADeclareVtblEntry(type, inf1), \
+        NADeclareVtblEntry(type, inf2), \
+        NADeclareVtblEntry(type, inf3), \
         {NULL, NULL} \
     }; \
     NADeclareClassConstant(type)
 #define NADeclareClass2(type,inf1,inf2) \
     static NAVtblEntry __##type##__vEntries[] = { \
-        {type##ID, &__##type##__##inf1##Vtbl}, \
-        {type##ID, &__##type##__##inf2##Vtbl}, \
+        NADeclareVtblEntry(type, inf1), \
+        NADeclareVtblEntry(type, inf2), \
         {NULL, NULL} \
     }; \
     NADeclareClassConstant(type)
 #define NADeclareClass1(type,inf1) \
     static NAVtblEntry __##type##__vEntries[] = { \
-        {type##ID, &__##type##__##inf1##Vtbl}, \
+        NADeclareVtblEntry(type, inf1), \
         {NULL, NULL} \
     }; \
     NADeclareClassConstant(type)
