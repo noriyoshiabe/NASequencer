@@ -1,9 +1,9 @@
 #include <NAType.h>
 #include <string.h>
 
-char NATypeID[] = "NAType";
+const char NATypeID[] = "NAType";
 
-void *__NATypeAlloc(NAClass *clazz)
+void *__NATypeAlloc(const NAClass *clazz)
 {
     NAType *self = calloc(1, clazz->size);
     self->clazz = clazz;
@@ -16,15 +16,15 @@ static void *__NANOPInit(void *self, ...)
     return self;
 }
 
-void *(*__NAFindInit(NAClass *clazz))(void *self, ...)
+void *(*__NAFindInit(const NAClass *clazz))(void *self, ...)
 {
     void *(*init)(void *, ...) = __NAVtblLookup(clazz, NATypeID);
     return init ? init : __NANOPInit;
 }
 
-void *__NAVtblLookup(NAClass *clazz, char *typeID)
+void *__NAVtblLookup(const NAClass *clazz, const char *typeID)
 {
-     NAVtblEntry *pv = clazz->pvEntry;
+    NAVtblEntry *pv = clazz->pvEntry;
     do {
         if (pv->typeID == typeID) {
             return pv->vtbl;

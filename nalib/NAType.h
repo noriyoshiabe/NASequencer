@@ -7,18 +7,18 @@
 #include <stdbool.h>
 
 typedef struct __NAVtblEntry {
-    char *typeID;
+    const char *typeID;
     void *vtbl;
 } NAVtblEntry;
 
 typedef struct __NAClass {
-    char *typeID;
+    const char *typeID;
     size_t size;
     NAVtblEntry *pvEntry;
 } NAClass;
 
 typedef struct __NAType {
-    NAClass *clazz;
+    const NAClass *clazz;
     int32_t refCount;
 } NAType;
 
@@ -32,7 +32,7 @@ typedef struct __NATypeVtbl {
     void *(*description)(const void *self);
 } NATypeVtbl;
 
-extern char NATypeID[];
+extern const char NATypeID[];
 
 #define NATypeNew(type, ...) ((NATypeVtbl *)__NAFindInit(&type##Class))->init(__NATypeAlloc(&type##Class), __VA_ARGS__)
 #define NAVtbl(self, type) ((type##Vtbl *)__NAVtblLookup(((NAType *)self)->clazz, type##ID))
@@ -47,6 +47,6 @@ extern int NACompare(const void *self, const void *to);
 extern void *NACopy(const void *self);
 extern void *NADescription(const void *self);
 
-extern void *__NATypeAlloc(NAClass *clazz);
-extern void *(*__NAFindInit(NAClass *clazz))(void *self, ...);
-extern void *__NAVtblLookup(NAClass *clazz, char *typeID);
+extern void *__NATypeAlloc(const NAClass *clazz);
+extern void *(*__NAFindInit(const NAClass *clazz))(void *self, ...);
+extern void *__NAVtblLookup(const NAClass *clazz, const char *typeID);
