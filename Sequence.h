@@ -64,5 +64,5 @@ NAExportClass(MidiEvent);
 NAExportClass(TimeEvent);
 NAExportClass(TempoEvent);
 NAExportClass(MarkerEvent);
-NAExportClass(SouneSelectEvent);
+NAExportClass(SoundSelectEvent);
 NAExportClass(NoteEvent);

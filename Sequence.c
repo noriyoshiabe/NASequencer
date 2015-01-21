@@ -24,27 +24,17 @@ static void *__SequenceDescription(const void *_self)
     return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<Sequence: resolution=%d title=%s tracks=%@>"), self->resolution, self->title, self->tracks);
 }
 
-static NATypeVtbl __Sequence__typeVtbl = {
-    __SequenceInit,
-    __SequenceDestroy,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    __SequenceDescription,
-};
+NADeclareVtbl(Sequence, NAType,
+        __SequenceInit,
+        __SequenceDestroy,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        __SequenceDescription,
+        );
 
-static NAVtblEntry __Sequence__vEntries[] = {
-    {NATypeID, &__Sequence__typeVtbl},
-    {NULL, NULL},
-};
-
-char SequenceID[] = "Sequence";
-NAClass SequenceClass = {
-    SequenceID,
-    sizeof(Sequence),
-    __Sequence__vEntries,
-};
+NADeclareClass(Sequence, NAType);
 
 
 static void *__PatternInit(void *_self, ...)
@@ -66,27 +56,17 @@ static void *__PatternDescription(const void *_self)
     return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<Pattern: tracks=%@>"), self->tracks);
 }
 
-static NATypeVtbl __Pattern__typeVtbl = {
-    __PatternInit,
-    __PatternDestroy,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    __PatternDescription,
-};
+NADeclareVtbl(Pattern, NAType,
+        __PatternInit,
+        __PatternDestroy,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        __PatternDescription,
+        );
 
-static NAVtblEntry __Pattern__vEntries[] = {
-    {NATypeID, &__Pattern__typeVtbl},
-    {NULL, NULL},
-};
-
-char PatternID[] = "Pattern";
-NAClass PatternClass = {
-    PatternID,
-    sizeof(Pattern),
-    __Pattern__vEntries,
-};
+NADeclareClass(Pattern, NAType);
 
 
 static void *__TrackInit(void *_self, ...)
@@ -108,27 +88,17 @@ static void *__TrackDescription(const void *_self)
     return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<Track: events=%@>"), self->events);
 }
 
-static NATypeVtbl __Track__typeVtbl = {
-    __TrackInit,
-    __TrackDestroy,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    __TrackDescription
-};
+NADeclareVtbl(Track, NAType,
+        __TrackInit,
+        __TrackDestroy,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        __TrackDescription
+        );
 
-static NAVtblEntry __Track__vEntries[] = {
-    {NATypeID, &__Track__typeVtbl},
-    {NULL, NULL},
-};
-
-char TrackID[] = "Track";
-NAClass TrackClass = {
-    TrackID,
-    sizeof(Track),
-    __Track__vEntries,
-};
+NADeclareClass(Track, NAType);
 
 
 static int __MidiEventCompare(const void *self, const void *to)
@@ -136,7 +106,8 @@ static int __MidiEventCompare(const void *self, const void *to)
     return ((MidiEvent *)self)->tick - ((MidiEvent *)to)->tick;
 }
 
-char MidiEventID[] = "MidiEvent";
+NADeclareVtbl(MidiEvent, NAType, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+NADeclareClass(MidiEvent, NAType);
 
 
 static void *__TimeEventInit(void *_self, ...)
@@ -158,27 +129,17 @@ static void *__TimeEventDescription(const void *_self)
     return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<TimeEvent: tick=%d numerator=%d denominator=%d>"), self->_.tick, self->numerator, self->denominator);
 }
 
-static NATypeVtbl __TimeEvent__typeVtbl = {
-    __TimeEventInit,
-    NULL,
-    NULL,
-    NULL,
-    __MidiEventCompare,
-    NULL,
-    __TimeEventDescription
-};
+NADeclareVtbl(TimeEvent, NAType,
+        __TimeEventInit,
+        NULL,
+        NULL,
+        NULL,
+        __MidiEventCompare,
+        NULL,
+        __TimeEventDescription
+        );
 
-static NAVtblEntry __TimeEvent__vEntries[] = {
-    {NATypeID, &__TimeEvent__typeVtbl},
-    {NULL, NULL},
-};
-
-char TimeEventID[] = "TimeEvent";
-NAClass TimeEventClass = {
-    TimeEventID,
-    sizeof(TimeEvent),
-    __TimeEvent__vEntries,
-};
+NADeclareClass(TimeEvent, NAType);
 
 
 static void *__TempoEventInit(void *_self, ...)
@@ -199,27 +160,17 @@ static void *__TempoEventDescription(const void *_self)
     return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<TempoEvent: tick=%d tempo=%f>"), self->_.tick, self->tempo);
 }
 
-static NATypeVtbl __TempoEvent__typeVtbl = {
-    __TempoEventInit,
-    NULL,
-    NULL,
-    NULL,
-    __MidiEventCompare,
-    NULL,
-    __TempoEventDescription
-};
+NADeclareVtbl(TempoEvent, NAType,
+        __TempoEventInit,
+        NULL,
+        NULL,
+        NULL,
+        __MidiEventCompare,
+        NULL,
+        __TempoEventDescription
+        );
 
-static NAVtblEntry __TempoEvent__vEntries[] = {
-    {NATypeID, &__TempoEvent__typeVtbl},
-    {NULL, NULL},
-};
-
-char TempoEventID[] = "TempoEvent";
-NAClass TempoEventClass = {
-    TempoEventID,
-    sizeof(TempoEvent),
-    __TempoEvent__vEntries,
-};
+NADeclareClass(TempoEvent, NAType);
 
 
 static void *__MarkerEventInit(void *_self, ...)
@@ -249,27 +200,17 @@ static void *__MarkerEventDescription(const void *_self)
     return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<MarkerEvent: tick=%d text=%s>"), self->_.tick, self->text);
 }
 
-static NATypeVtbl __MarkerEvent__typeVtbl = {
-    __MarkerEventInit,
-    __MarkerEventDestroy,
-    NULL,
-    NULL,
-    __MidiEventCompare,
-    NULL,
-    __MarkerEventDescription
-};
+NADeclareVtbl(MarkerEvent, NAType,
+        __MarkerEventInit,
+        __MarkerEventDestroy,
+        NULL,
+        NULL,
+        __MidiEventCompare,
+        NULL,
+        __MarkerEventDescription
+        );
 
-static NAVtblEntry __MarkerEvent__vEntries[] = {
-    {NATypeID, &__MarkerEvent__typeVtbl},
-    {NULL, NULL},
-};
-
-char MarkerEventID[] = "MarkerEvent";
-NAClass MarkerEventClass = {
-    MarkerEventID,
-    sizeof(MarkerEvent),
-    __MarkerEvent__vEntries,
-};
+NADeclareClass(MarkerEvent, NAType);
 
 
 static void *__SoundSelectEventInit(void *_self, ...)
@@ -293,27 +234,17 @@ static void *__SoundSelectEventDescription(const void *_self)
     return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<SoundSelectEvent: tick=%d channel=%d msb=%d lsb=%d programNo=%d>"), self->_.tick, self->channel, self->msb, self->lsb, self->programNo);
 }
 
-static NATypeVtbl __SoundSelectEvent__typeVtbl = {
-    __SoundSelectEventInit,
-    NULL,
-    NULL,
-    NULL,
-    __MidiEventCompare,
-    NULL,
-    __SoundSelectEventDescription
-};
+NADeclareVtbl(SoundSelectEvent, NAType,
+        __SoundSelectEventInit,
+        NULL,
+        NULL,
+        NULL,
+        __MidiEventCompare,
+        NULL,
+        __SoundSelectEventDescription
+        );
 
-static NAVtblEntry __SoundSelectEvent__vEntries[] = {
-    {NATypeID, &__SoundSelectEvent__typeVtbl},
-    {NULL, NULL},
-};
-
-char SoundSelectEventID[] = "SoundSelectEvent";
-NAClass SoundSelectEventClass = {
-    SoundSelectEventID,
-    sizeof(SoundSelectEvent),
-    __SoundSelectEvent__vEntries,
-};
+NADeclareClass(SoundSelectEvent, NAType);
 
 
 static void *__NoteEventInit(void *_self, ...)
@@ -338,14 +269,13 @@ static void *__NoteEventDescription(const void *_self)
 }
 
 NADeclareVtbl(NoteEvent, NAType,
-    __NoteEventInit,
-    NULL,
-    NULL,
-    NULL,
-    __MidiEventCompare,
-    NULL,
-    __NoteEventDescription
-);
+        __NoteEventInit,
+        NULL,
+        NULL,
+        NULL,
+        __MidiEventCompare,
+        NULL,
+        __NoteEventDescription,
+        );
 
-NADeclareVtblEntry(NoteEvent, NAType);
-NADeclareClass(NoteEvent);
+NADeclareClass(NoteEvent, NAType);

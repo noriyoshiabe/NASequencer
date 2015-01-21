@@ -55,8 +55,17 @@ extern void *__NAVtblLookup(const NAClass *clazz, const char *typeID);
     extern const NAClass type##Class; \
     extern const char type##ID[];
 
-#define NAMacroName(_1,_2,_3,_4,_5,_6,_7,_8,_9,name, ...) name
-#define NADeclareVtbl(type,inf,...) NAMacroName(__VA_ARGS__,\
+#define NAMacroName9(_1,_2,_3,_4,_5,_6,_7,_8,_9,name, ...) name
+#define NAMacroName8(_1,_2,_3,_4,_5,_6,_7,_8,name, ...) name
+#define NAMacroName7(_1,_2,_3,_4,_5,_6,_7,name, ...) name
+#define NAMacroName6(_1,_2,_3,_4,_5,_6,name, ...) name
+#define NAMacroName5(_1,_2,_3,_4,_5,name, ...) name
+#define NAMacroName4(_1,_2,_3,_4,name, ...) name
+#define NAMacroName3(_1,_2,_3,name, ...) name
+#define NAMacroName2(_1,_2,name, ...) name
+#define NAMacroName1(_1,name, ...) name
+
+#define NADeclareVtbl(type,inf,...) NAMacroName9(__VA_ARGS__,\
         NADeclareVtbl9,\
         NADeclareVtbl8,\
         NADeclareVtbl7,\
@@ -78,34 +87,48 @@ extern void *__NAVtblLookup(const NAClass *clazz, const char *typeID);
 #define NADeclareVtbl2(type,inf,f1,f2)  static inf##Vtbl __##type##__##inf##Vtbl = {f1,f2}
 #define NADeclareVtbl1(type,inf,f1)  static inf##Vtbl __##type##__##inf##Vtbl = {f1}
 
-#define NADeclareVtblEntry(type,...) NAMacroName(__VA_ARGS__,\
-        NADeclareVtblEntry9,\
-        NADeclareVtblEntry8,\
-        NADeclareVtblEntry7,\
-        NADeclareVtblEntry6,\
-        NADeclareVtblEntry5,\
-        NADeclareVtblEntry4,\
-        NADeclareVtblEntry3,\
-        NADeclareVtblEntry2,\
-        NADeclareVtblEntry1,\
-        )(type, __VA_ARGS__)
-
-#define NADeclareVtblEntry2(type,inf1,inf2) \
-    static NAVtblEntry __##type##__vEntries[] = { \
-        {type##ID, &__##type##__##inf1##Vtbl}, \
-        {type##ID, &__##type##__##inf2##Vtbl}, \
-        {NULL, NULL} \
-    }
-#define NADeclareVtblEntry1(type,inf1) \
-    static NAVtblEntry __##type##__vEntries[] = { \
-        {type##ID, &__##type##__##inf1##Vtbl}, \
-        {NULL, NULL} \
-    }
-
-#define NADeclareClass(type) \
+#define NADeclareClassConstant(type) \
     const char type##ID[] = #type; \
     const NAClass type##Class = { \
         type##ID, \
         sizeof(type), \
         __##type##__vEntries \
     }
+
+#define NADeclareClass(type,...) NAMacroName4(__VA_ARGS__,\
+        NADeclareClass4,\
+        NADeclareClass3,\
+        NADeclareClass2,\
+        NADeclareClass1,\
+        )(type, __VA_ARGS__)
+
+#define NADeclareClass4(type,inf1,inf2,inf3,inf4) \
+    static NAVtblEntry __##type##__vEntries[] = { \
+        {type##ID, &__##type##__##inf1##Vtbl}, \
+        {type##ID, &__##type##__##inf2##Vtbl}, \
+        {type##ID, &__##type##__##inf3##Vtbl}, \
+        {type##ID, &__##type##__##inf4##Vtbl}, \
+        {NULL, NULL} \
+    }; \
+    NADeclareClassConstant(type)
+#define NADeclareClass3(type,inf1,inf2,inf3) \
+    static NAVtblEntry __##type##__vEntries[] = { \
+        {type##ID, &__##type##__##inf1##Vtbl}, \
+        {type##ID, &__##type##__##inf2##Vtbl}, \
+        {type##ID, &__##type##__##inf3##Vtbl}, \
+        {NULL, NULL} \
+    }; \
+    NADeclareClassConstant(type)
+#define NADeclareClass2(type,inf1,inf2) \
+    static NAVtblEntry __##type##__vEntries[] = { \
+        {type##ID, &__##type##__##inf1##Vtbl}, \
+        {type##ID, &__##type##__##inf2##Vtbl}, \
+        {NULL, NULL} \
+    }; \
+    NADeclareClassConstant(type)
+#define NADeclareClass1(type,inf1) \
+    static NAVtblEntry __##type##__vEntries[] = { \
+        {type##ID, &__##type##__##inf1##Vtbl}, \
+        {NULL, NULL} \
+    }; \
+    NADeclareClassConstant(type)
