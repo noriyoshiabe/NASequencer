@@ -34,7 +34,7 @@ typedef struct __NATypeVtbl {
 
 extern const char NATypeID[];
 
-#define NATypeNew(type, ...) ((NATypeVtbl *)__NAFindInit(&type##Class))->init(__NATypeAlloc(&type##Class), __VA_ARGS__)
+#define NATypeNew(type, ...) ((NATypeVtbl *)__NAFindInit(&type##Class))->init(__NATypeAlloc(&type##Class), ## __VA_ARGS__)
 #define NAVtbl(self, type) ((type##Vtbl *)__NAVtblLookup(((NAType *)self)->clazz, type##ID))
 
 extern const void *NARetain(const void *self);
