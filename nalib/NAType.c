@@ -59,7 +59,7 @@ int16_t NARefCount(const void *self)
 uint32_t NAHash(const void *self)
 {
     uint32_t (*hash)(const void *self) = NAVtbl(self, NAType)->hash;
-    return hash ? hash(self) : (uint32_t)self >> 2;
+    return hash ? hash(self) : (uint32_t)self;
 }
 
 bool NAEqual(const void *self, const void *to)
