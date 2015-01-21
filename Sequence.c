@@ -337,7 +337,7 @@ static void *__NoteEventDescription(const void *_self)
     return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<NoteEvent: tick=%d channel=%d noteNo=%d velocity=%d gatetime=%d>"), self->_.tick, self->channel, self->noteNo, self->velocity, self->gatetime);
 }
 
-static NATypeVtbl __NoteEvent__typeVtbl = {
+NADeclareVtbl(NoteEvent, NAType,
     __NoteEventInit,
     NULL,
     NULL,
@@ -345,16 +345,7 @@ static NATypeVtbl __NoteEvent__typeVtbl = {
     __MidiEventCompare,
     NULL,
     __NoteEventDescription
-};
+);
 
-static NAVtblEntry __NoteEvent__vEntries[] = {
-    {NATypeID, &__NoteEvent__typeVtbl},
-    {NULL, NULL},
-};
-
-char NoteEventID[] = "NoteEvent";
-NAClass NoteEventClass = {
-    NoteEventID,
-    sizeof(NoteEvent),
-    __NoteEvent__vEntries,
-};
+NADeclareVtblEntry(NoteEvent, NAType);
+NADeclareClass(NoteEvent);
