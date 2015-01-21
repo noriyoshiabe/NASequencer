@@ -1,12 +1,10 @@
 #include "Sequence.h"
 #include <NACFHelper.h>
 
-static DeclareCFArrayCallBacks(__CFArrayCallBacks, NULL);
-
 static void *__SequenceInit(void *_self, ...)
 {
     Sequence *self = _self;
-    self->tracks = CFArrayCreateMutable(NULL, 0, &__CFArrayCallBacks);
+    self->tracks = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
     return self;
 }
 
@@ -25,6 +23,8 @@ static NATypeVtbl __Sequence__typeVtbl = {
     NULL,
     NULL,
     NULL,
+    NULL,
+    NULL, // TODO
 };
 
 static NAVtblEntry __Sequence__vEntries[] = {
@@ -43,7 +43,7 @@ NAClass SequenceClass = {
 static void *__TrackInit(void *_self, ...)
 {
     Track *self = _self;
-    self->events = CFArrayCreateMutable(NULL, 0, &__CFArrayCallBacks);
+    self->events = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
     return self;
 }
 
@@ -59,6 +59,8 @@ static NATypeVtbl __Track__typeVtbl = {
     NULL,
     NULL,
     NULL,
+    NULL,
+    NULL, // TODO
 };
 
 static NAVtblEntry __Track__vEntries[] = {

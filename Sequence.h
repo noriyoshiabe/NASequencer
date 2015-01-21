@@ -12,6 +12,13 @@ typedef struct _Sequence {
 extern NAClass SequenceClass;
 extern char SequenceID[];
 
+typedef struct _Pattern {
+    NAType _;
+    CFMutableArrayRef tracks;
+} Pattern;
+extern NAClass PatternClass;
+extern char PatternID[];
+
 typedef struct _Track {
     NAType _;
     CFMutableArrayRef events;
