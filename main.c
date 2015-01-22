@@ -10,18 +10,18 @@
 
 int main(int argc, char **argv)
 {
-    DSLParser *parser = DSLParserCreate();
+    DSLParserError error;
     Expression *expression;
 
-    if (!DSLParserParseFile(parser, argv[1], &expression)) {
-        printf("ERROR=%d\n", parser->error);
-        if (DSLPARSER_PARSE_ERROR == parser->error) {
+    if (!(expression = DSLParserParseFile(argv[1], &error))) {
+        printf("ERROR=%d %s\n", error.kind, error.filepath);
+        if (DSLPARSER_PARSE_ERROR == error.kind) {
             printf("\t%d %d %d %d %s\n",
-                    parser->location.firstLine,
-                    parser->location.firstColumn,
-                    parser->location.lastLine,
-                    parser->location.lastColumn,
-                    parser->message);
+                    error.location.firstLine,
+                    error.location.firstColumn,
+                    error.location.lastLine,
+                    error.location.lastColumn,
+                    error.message);
         }
     }
     else {
@@ -63,7 +63,5 @@ int main(int argc, char **argv)
         NARelease(sequence);
     }
 
-    DSLParserDestroy(parser);
- 
     return 0;
 }
