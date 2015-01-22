@@ -4,13 +4,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, const char *message)
 {
     DSLParser *self = yyget_extra(scanner);
-    Location *location = (Location *)yylloc;
-
-    printf("yyerror() %d %d %d %d %s\n", location->firstLine, location->firstColumn, location->lastLine, location->lastColumn, message);
+    self->location = *((Location *)yylloc);
+    self->message = strdup(message);
     return 0;
 }
 
@@ -19,7 +19,7 @@ DSLParser *DSLParserCreate()
     return (DSLParser *)calloc(1, sizeof(DSLParser));
 }
 
-bool DSLParserParseFile(DSLParser *self, const char *filepath)
+bool DSLParserParseFile(DSLParser *self, const char *filepath, Expression **expression)
 {
     void *scanner;
     bool ret = false;
@@ -30,7 +30,7 @@ bool DSLParserParseFile(DSLParser *self, const char *filepath)
         return ret;
     }
 
-    if (yylex_init_extra(&self, &scanner)) {
+    if (yylex_init_extra(self, &scanner)) {
         self->error = DSLPARSER_INIT_ERROR;
         goto ERROR_1;
     }
@@ -38,7 +38,7 @@ bool DSLParserParseFile(DSLParser *self, const char *filepath)
     YY_BUFFER_STATE state = yy_create_buffer(fp, YY_BUF_SIZE, scanner);
     yy_switch_to_buffer(state, scanner);
 
-    if (yyparse(scanner, &self->expression)) {
+    if (yyparse(scanner, expression)) {
         self->error = DSLPARSER_PARSE_ERROR;
         goto ERROR_2;
     }
@@ -54,13 +54,21 @@ ERROR_1:
     return ret;
 }
 
-void DSLParserDumpExpression(DSLParser *self)
-{
-    dumpExpression(self->expression);
-}
-
 void DSLParserDestroy(DSLParser *self)
 {
-    deleteExpression(self->expression);
+    if (self->message) {
+        free(self->message);
+    }
     free(self);
 }
+
+void DSLParserDumpExpression(Expression *expression)
+{
+    dumpExpression(expression);
+}
+
+void DSLParserDeleteExpression(Expression *expression)
+{
+    deleteExpression(expression);
+}
+

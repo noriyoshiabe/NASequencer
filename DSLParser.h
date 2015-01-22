@@ -11,11 +11,13 @@ typedef enum {
 } DSLParserError;
 
 typedef struct _DSLParser {
-    Expression *expression;
     DSLParserError error;
+    Location location;
+    char *message;
 } DSLParser;
 
 extern DSLParser *DSLParserCreate();
-extern bool DSLParserParseFile(DSLParser *self, const char *filepath);
-extern void DSLParserDumpExpression(DSLParser *self);
+extern bool DSLParserParseFile(DSLParser *self, const char *filepath, Expression **expression);
 extern void DSLParserDestroy(DSLParser *self);
+extern void DSLParserDumpExpression(Expression *expression);
+extern void DSLParserDeleteExpression(Expression *expression);

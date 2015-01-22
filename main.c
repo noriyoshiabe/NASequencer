@@ -11,11 +11,22 @@
 int main(int argc, char **argv)
 {
     DSLParser *parser = DSLParserCreate();
-    if (!DSLParserParseFile(parser, argv[1])) {
+    Expression *expression;
+
+    if (!DSLParserParseFile(parser, argv[1], &expression)) {
         printf("ERROR=%d\n", parser->error);
+        if (DSLPARSER_PARSE_ERROR == parser->error) {
+            printf("\t%d %d %d %d %s\n",
+                    parser->location.firstLine,
+                    parser->location.firstColumn,
+                    parser->location.lastLine,
+                    parser->location.lastColumn,
+                    parser->message);
+        }
     }
     else {
-        DSLParserDumpExpression(parser);
+        DSLParserDumpExpression(expression);
+        DSLParserDeleteExpression(expression);
 
         Sequence *sequence = NATypeNew(Sequence);
         sequence->resolution = 480;
@@ -50,9 +61,9 @@ int main(int argc, char **argv)
         NARelease(track);
 
         NARelease(sequence);
-
-        DSLParserDestroy(parser);
     }
+
+    DSLParserDestroy(parser);
  
     return 0;
 }
