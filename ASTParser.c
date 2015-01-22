@@ -4,10 +4,11 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-static void dispatchExpression(Expression *expression, ParseContext *context)
+static bool dispatchExpression(Expression *expr, ParseContext *context)
 {
     // TODO 振り分け
-    printf("dispatchExpression -- type=%d %d:%d\n", expression->tokenType, expression->location.firstLine,expression->location.firstColumn);
+    printf("dispatchExpression -- type=%d %d:%d\n", expr->tokenType, expr->location.firstLine, expr->location.firstColumn);
+    return true;
 }
 
 static bool parseExpression(Expression *expression, ParseContext *context)
@@ -19,9 +20,13 @@ static bool parseExpression(Expression *expression, ParseContext *context)
     Expression *expr = expression;
 
     do {
-        dispatchExpression(expr, context);
+        if (expr->left) {
+            if (!parseExpression(expr->left, context)) {
+                return false;
+            }
+        }
 
-        if (!parseExpression(expr->left, context)) {
+        if (!dispatchExpression(expr, context)) {
             return false;
         }
     } while ((expr = expr->right));
