@@ -143,5 +143,7 @@ LINE_COMMENT   \/\/.*$
 <COMMENT>"*/"    { BEGIN(INITIAL); }
 <COMMENT>\n      { }
 <COMMENT>.       { }
+
+.                { return 1; }
  
 %%
