@@ -24,6 +24,7 @@ set(SOURCES
   main.c
   Expression.c
   DSLParser.c
+  ASTParser.c
   Sequence.c
 )
 

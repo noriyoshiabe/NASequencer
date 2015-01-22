@@ -3,6 +3,7 @@
  */
  
 #include "DSLParser.h"
+#include "ASTParser.h"
 #include "Sequence.h"
 #include "stdio.h"
 #include "stdlib.h"
@@ -25,9 +26,11 @@ int main(int argc, char **argv)
         }
     }
     else {
+        ASTParserParseExpression(expression);
         DSLParserDumpExpression(expression);
         DSLParserDeleteExpression(expression);
 
+#if 0
         Sequence *sequence = NATypeNew(Sequence);
         sequence->resolution = 480;
         sequence->title = malloc(32);
@@ -61,6 +64,7 @@ int main(int argc, char **argv)
         NARelease(track);
 
         NARelease(sequence);
+#endif
     }
 
     return 0;
