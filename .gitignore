@@ -1,9 +1,5 @@
 bin/
-*.tab.h
-*.tab.c
-*.yy.c
-*.output
-*.o
-*.a
-a.out
-namidi
+Parser.h
+Parser.c
+Lexer.h
+Lexer.c
