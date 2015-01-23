@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <stdbool.h>
 
 typedef struct _ParseContext {
@@ -97,13 +98,13 @@ static bool __dispatch__MB_LENGTH(Expression *expression, ParseContext *context,
 
 static bool __dispatch__RESOLUTION(Expression *expression, ParseContext *context, ASTParserError *error)
 {
-    printf("called __dispatch__RESOLUTION()\n");
+    context->sequence->resolution = expression->left->v.i;
     return true;
 }
 
 static bool __dispatch__TITLE(Expression *expression, ParseContext *context, ASTParserError *error)
 {
-    printf("called __dispatch__TITLE()\n");
+    context->sequence->title = strdup(expression->left->v.s);
     return true;
 }
 

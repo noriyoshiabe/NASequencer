@@ -163,11 +163,16 @@ void dumpExpression(Expression *expr)
  
 void deleteExpression(Expression *expr)
 {
-    if (!expr)
+    if (!expr) {
         return;
+    }
  
     deleteExpression(expr->left);
     deleteExpression(expr->right);
  
+    if (VALUE_TYPE_STRING == expr->valueType) {
+        free(expr->v.s);
+    }
+
     free(expr);
 }
