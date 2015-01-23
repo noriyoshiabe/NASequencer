@@ -28,6 +28,8 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, cons
     Expression *expression;
 }
 
+%token TOKEN_BEGIN
+
 %token <i>INTEGER
 %token <f>FLOAT
 %token <s>STRING
@@ -88,6 +90,8 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, cons
 %token PATTERN_BLOCK
 %token PATTERN_EXPAND
 %token PATTERN_EXTEND_BLOCK
+
+%token TOKEN_END
 
 %type <expression> statement_list
 %type <expression> statement
