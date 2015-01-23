@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Expression.h"
+#include "Sequence.h"
 
 typedef enum {
     ASTPARSER_NOERROR,
@@ -13,7 +14,4 @@ typedef struct _ASTParserError {
     const char *message;
 } ASTParserError;
 
-typedef struct _ParseContext {
-} ParseContext;
-
-extern ParseContext *ASTParserParseExpression(Expression *expression, const char *filepath, ASTParserError *error);
+extern Sequence *ASTParserParseExpression(Expression *expression, const char *filepath, ASTParserError *error);

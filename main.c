@@ -27,7 +27,11 @@ int main(int argc, char **argv)
     }
     else {
         ASTParserError error;
-        ASTParserParseExpression(expression, argv[1], &error);
+        Sequence *sequence = ASTParserParseExpression(expression, argv[1], &error);
+        if (sequence) {
+            NARelease(sequence);
+        }
+
         DSLParserDumpExpression(expression);
         DSLParserDeleteExpression(expression);
 
