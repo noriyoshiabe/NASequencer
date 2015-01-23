@@ -5,6 +5,8 @@
 
 typedef enum {
     ASTPARSER_NOERROR,
+    ASTPARSER_RESOLUTION_REDEFINED,
+    ASTPARSER_TITLE_REDEFINED,
 } ASTParserErrorKind;
 
 typedef struct _ASTParserError {

@@ -13,6 +13,7 @@ typedef struct _ParseContext {
 
 #define TABLE_SIZE (TOKEN_END - TOKEN_BEGIN)
 #define IDX(type) (type - TOKEN_BEGIN - 1)
+#define SET_ERROR(error, _kind, _expression, _message) (error->kind = _kind, error->expression = _expression, error->message = _message ? _message : "")
 
 static bool (*dispatchTable[TABLE_SIZE])(Expression *, ParseContext *, ASTParserError *) = {NULL};
 
@@ -98,12 +99,22 @@ static bool __dispatch__MB_LENGTH(Expression *expression, ParseContext *context,
 
 static bool __dispatch__RESOLUTION(Expression *expression, ParseContext *context, ASTParserError *error)
 {
+    if (0 != context->sequence->resolution) {
+        SET_ERROR(error, ASTPARSER_RESOLUTION_REDEFINED, expression, "resolution cannot be defined twice.");
+        return false;
+    }
+
     context->sequence->resolution = expression->left->v.i;
     return true;
 }
 
 static bool __dispatch__TITLE(Expression *expression, ParseContext *context, ASTParserError *error)
 {
+    if (0 != context->sequence->title) {
+        SET_ERROR(error, ASTPARSER_TITLE_REDEFINED, expression, "title cannot be defined twice.");
+        return false;
+    }
+
     context->sequence->title = strdup(expression->left->v.s);
     return true;
 }
