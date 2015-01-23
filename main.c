@@ -26,7 +26,8 @@ int main(int argc, char **argv)
         }
     }
     else {
-        ASTParserParseExpression(expression);
+        ASTParserError error;
+        ASTParserParseExpression(expression, argv[1], &error);
         DSLParserDumpExpression(expression);
         DSLParserDeleteExpression(expression);
 
