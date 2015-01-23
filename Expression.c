@@ -61,7 +61,7 @@ Expression *addRightExpression(Expression *expr, Expression *right)
 
 #include "Parser.h"
 
-static const char *tokenType2String(int tokenType)
+const char *tokenType2String(int tokenType)
 {
 #define CASE(type) case type: return #type
     switch (tokenType) {

@@ -37,5 +37,6 @@ extern Expression *createStringValue(void *location, int tokenType, char *value)
 extern Expression *createExpression(void *location, int tokenType, Expression *left, Expression *right);
 extern Expression *addRightExpression(Expression *expr, Expression *right);
  
+extern const char *tokenType2String(int tokenType);
 extern void dumpExpression(Expression *expr);
 extern void deleteExpression(Expression *expr);

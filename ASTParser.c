@@ -19,7 +19,7 @@ static bool parseExpression(Expression *expression, ParseContext *context, ASTPa
 {
     bool (*function)(Expression *, ParseContext *, ASTParserError *)= dispatchTable[IDX(expression->tokenType)];
     if (!function) {
-        fprintf(stderr, "Dispatch function is not found. tokenType=%d\n", expression->tokenType);
+        fprintf(stderr, "Dispatch function is not found. tokenType=%s\n", tokenType2String(expression->tokenType));
         abort();
     }
     return function(expression, context, error);
