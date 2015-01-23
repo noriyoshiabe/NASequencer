@@ -49,6 +49,8 @@ Sequence *ASTParserParseExpression(Expression *expression, const char *filepath,
         }
     } while ((expr = expr->right));
 
+    ret = context->sequence;
+
 ERROR:
     destroyParseContext(context);
 
