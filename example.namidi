@@ -28,6 +28,7 @@ marker 'A?'
 
 note from 0 step 240 { C#2 ^ F#1 ~ F# F# F# F# Gb,A# }
 
+/*
 drums = {
   channel 9
   gatetime 120
@@ -88,3 +89,4 @@ note step 240 {
   C
     E
 }
+*/
