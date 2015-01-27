@@ -2,17 +2,22 @@
 #include <NACFHelper.h>
 #include <string.h>
 
+void SequenceAddEvents(Sequence *self, CFArrayRef events)
+{
+    CFArrayAppendArray(self->events, events, CFRangeMake(0, CFArrayGetCount(events)));
+}
+
 static void *__SequenceInit(void *_self, ...)
 {
     Sequence *self = _self;
-    self->tracks = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
+    self->events = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
     return self;
 }
 
 static void __SequenceDestroy(void *_self)
 {
     Sequence *self = _self;
-    CFRelease(self->tracks);
+    CFRelease(self->events);
     if (self->title) {
         free(self->title);
     }
@@ -21,7 +26,7 @@ static void __SequenceDestroy(void *_self)
 static void *__SequenceDescription(const void *_self)
 {
     const Sequence *self = _self;
-    return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<Sequence: resolution=%d title=%s tracks=%@>"), self->resolution, self->title, self->tracks);
+    return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<Sequence: resolution=%d title=%s events=%@>"), self->resolution, self->title, self->events);
 }
 
 NADeclareVtbl(Sequence, NAType,
@@ -35,6 +40,43 @@ NADeclareVtbl(Sequence, NAType,
         );
 
 NADeclareClass(Sequence, NAType);
+
+
+void TimeTableAddTimeEvent(TimeTable *self, TimeEvent *timeEvent)
+{
+    CFArrayAppendValue(self->timeEvents, timeEvent);
+}
+
+static void *__TimeTableInit(void *_self, ...)
+{
+    TimeTable *self = _self;
+    self->timeEvents = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
+    return self;
+}
+
+static void __TimeTableDestroy(void *_self)
+{
+    TimeTable *self = _self;
+    CFRelease(self->timeEvents);
+}
+
+static void *__TimeTableDescription(const void *_self)
+{
+    const TimeTable *self = _self;
+    return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<TimeTable: timeEvents=%@>"), self->timeEvents);
+}
+
+NADeclareVtbl(TimeTable, NAType,
+        __TimeTableInit,
+        __TimeTableDestroy,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        __TimeTableDescription,
+        );
+
+NADeclareClass(TimeTable, NAType);
 
 
 static void *__PatternInit(void *_self, ...)

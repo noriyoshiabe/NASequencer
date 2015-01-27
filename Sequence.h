@@ -7,8 +7,13 @@ typedef struct _Sequence {
     NAType _;
     uint16_t resolution;
     char *title;
-    CFMutableArrayRef tracks;
+    CFMutableArrayRef events;
 } Sequence;
+
+typedef struct _TimeTable {
+    NAType _;
+    CFMutableArrayRef timeEvents;
+} TimeTable;
 
 typedef struct _Pattern {
     NAType _;
@@ -58,6 +63,7 @@ typedef struct _NoteEvent {
 } NoteEvent;
 
 NAExportClass(Sequence);
+NAExportClass(TimeTable);
 NAExportClass(Pattern);
 NAExportClass(Track);
 NAExportClass(MidiEvent);
@@ -66,3 +72,6 @@ NAExportClass(TempoEvent);
 NAExportClass(MarkerEvent);
 NAExportClass(SoundSelectEvent);
 NAExportClass(NoteEvent);
+
+extern void SequenceAddEvents(Sequence *self, CFArrayRef events);
+extern void TimeTableAddTimeEvent(TimeTable *self, TimeEvent *timeEvent);

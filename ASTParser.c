@@ -13,22 +13,28 @@ typedef struct _Context {
     int32_t channel;
     int32_t gatetime;
     CFMutableArrayRef events;
-    //TimeTable *timeTable;
+    TimeTable *timeTable;
 } Context;
 
 static Context *createContext(Sequence *sequence)
 {
     Context *context = calloc(1, sizeof(Context));
-    context->sequence = sequence;
+    context->sequence = NARetain(sequence);
     context->events = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
-    // TODO TimeTable
+    context->timeTable = NATypeNew(TimeTable);
     return context;
+}
+
+static void ContextAddEvent(Context *context, void *event)
+{
+    CFArrayAppendValue(context->events, event);
 }
 
 static void destroyContext(Context *context)
 {
     CFRelease(context->events);
-    // TODO TimeTable
+    NARelease(context->sequence);
+    NARelease(context->timeTable);
     free(context);
 }
 
@@ -50,9 +56,8 @@ static bool parseExpression(Expression *expression, Context *context, void *valu
 
 Sequence *ASTParserParseExpression(Expression *expression, const char *filepath, ASTParserError *error)
 {
-    Sequence *ret = NULL;
-
-    Context *context = createContext(NATypeNew(Sequence));
+    Sequence *sequence = NATypeNew(Sequence);
+    Context *context = createContext(sequence);
 
     error->filepath = filepath;
 
@@ -60,17 +65,18 @@ Sequence *ASTParserParseExpression(Expression *expression, const char *filepath,
 
     do {
         if (!parseExpression(expr, context, NULL, error)) {
-            NARelease(context->sequence);
+            NARelease(sequence);
+            sequence = NULL;
             goto ERROR;
         }
     } while ((expr = expr->right));
 
-    ret = context->sequence;
+    SequenceAddEvents(sequence, context->events);
 
 ERROR:
     destroyContext(context);
 
-    return ret;
+    return sequence;
 }
 
 static bool __dispatch__INTEGER(Expression *expression, Context *context, void *value, ASTParserError *error)
@@ -133,7 +139,29 @@ static bool __dispatch__TITLE(Expression *expression, Context *context, void *va
 
 static bool __dispatch__TIME(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    printf("called __dispatch__TIME()\n");
+    int32_t numerator;
+    int32_t denominator;
+    int32_t tick = context->tick;
+
+    Expression *expr = expression->left;
+
+    do {
+        switch (expr->tokenType) {
+        case TIME_SIGN:
+            parseExpression(expr->left, context, &numerator, error);
+            parseExpression(expr->left->right, context, &denominator, error);
+            break;
+        case FROM:
+            parseExpression(expr->left, context, &tick, error);
+            break;
+        }
+    } while ((expr = expr->right));
+
+    TimeEvent *timeEvent = NATypeNew(TimeEvent, tick, numerator, denominator);
+    TimeTableAddTimeEvent(context->timeTable, timeEvent);
+    ContextAddEvent(context, timeEvent);
+    NARelease(timeEvent);
+
     return true;
 }
 
