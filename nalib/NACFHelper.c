@@ -3,12 +3,12 @@
 
 static const void *__CFArrayRetainCallBack(CFAllocatorRef allocator, const void *value)
 {
-    return NARetain(value);
+    return NARetain((void *)value);
 }
 
 static void __CFArrayReleaseCallBack(CFAllocatorRef allocator, const void *value)
 {
-    NARelease(value);
+    NARelease((void *)value);
 }
 
 static CFStringRef __CFArrayCopyDescriptionCallBack(const void *value)

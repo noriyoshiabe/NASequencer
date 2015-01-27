@@ -35,19 +35,19 @@ void *__NAVtblLookup(const NAClass *clazz, const char *typeID)
     abort();
 }
 
-const void *NARetain(const void *self)
+void *NARetain(void *self)
 {
     return ++((NAType *)self)->refCount, self;
 }
 
-void NARelease(const void *self)
+void NARelease(void *self)
 {
     if (0 == --((NAType *)self)->refCount) {
         void (*destroy)(void *) = NAVtbl(self, NAType)->destroy;
         if (destroy) {
-            destroy((void *)self);
+            destroy(self);
         }
-        free((void *)self);
+        free(self);
     }
 }
 

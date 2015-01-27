@@ -37,8 +37,8 @@ extern const char NATypeID[];
 #define NATypeNew(type, ...) ((NATypeVtbl *)__NAFindInit(&type##Class))->init(__NATypeAlloc(&type##Class), ## __VA_ARGS__)
 #define NAVtbl(self, type) ((type##Vtbl *)__NAVtblLookup(((NAType *)self)->clazz, type##ID))
 
-extern const void *NARetain(const void *self);
-extern void NARelease(const void *self);
+extern void *NARetain(void *self);
+extern void NARelease(void *self);
 extern int16_t NARefCount(const void *self);
 
 extern uint32_t NAHash(const void *self);
