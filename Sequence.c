@@ -47,10 +47,16 @@ void TimeTableAddTimeEvent(TimeTable *self, TimeEvent *timeEvent)
     CFArrayAppendValue(self->timeEvents, timeEvent);
 }
 
+void TimeTableAddTempoEvent(TimeTable *self, TempoEvent *tempoEvent)
+{
+    CFArrayAppendValue(self->tempoEvents, tempoEvent);
+}
+
 static void *__TimeTableInit(void *_self, ...)
 {
     TimeTable *self = _self;
     self->timeEvents = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
+    self->tempoEvents = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
     return self;
 }
 
@@ -58,6 +64,7 @@ static void __TimeTableDestroy(void *_self)
 {
     TimeTable *self = _self;
     CFRelease(self->timeEvents);
+    CFRelease(self->tempoEvents);
 }
 
 static void *__TimeTableDescription(const void *_self)
@@ -182,18 +189,6 @@ NADeclareVtbl(TimeEvent, NAType,
 NADeclareClass(TimeEvent, NAType);
 
 
-static void *__TempoEventInit(void *_self, ...)
-{
-    TempoEvent *self = _self;
-    va_list ap;
-    va_start(ap, _self);
-    self->_.tick = va_arg(ap, uint32_t);
-    self->tempo = (float)va_arg(ap, double);
-    va_end(ap);
-
-    return self;
-}
-
 static void *__TempoEventDescription(const void *_self)
 {
     const TempoEvent *self = _self;
@@ -201,7 +196,7 @@ static void *__TempoEventDescription(const void *_self)
 }
 
 NADeclareVtbl(TempoEvent, NAType,
-        __TempoEventInit,
+        __MidiEventInit,
         NULL,
         NULL,
         NULL,

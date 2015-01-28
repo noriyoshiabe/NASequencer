@@ -13,6 +13,7 @@ typedef struct _Sequence {
 typedef struct _TimeTable {
     NAType _;
     CFMutableArrayRef timeEvents;
+    CFMutableArrayRef tempoEvents;
 } TimeTable;
 
 typedef struct _Pattern {
@@ -75,3 +76,4 @@ NAExportClass(NoteEvent);
 
 extern void SequenceAddEvents(Sequence *self, CFArrayRef events);
 extern void TimeTableAddTimeEvent(TimeTable *self, TimeEvent *timeEvent);
+extern void TimeTableAddTempoEvent(TimeTable *self, TempoEvent *tempoEvent);

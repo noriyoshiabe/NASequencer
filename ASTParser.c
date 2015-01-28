@@ -87,7 +87,7 @@ static bool __dispatch__INTEGER(Expression *expression, Context *context, void *
 
 static bool __dispatch__FLOAT(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    printf("called __dispatch__FLOAT()\n");
+    *((float *)value) = expression->v.f;
     return true;
 }
 
@@ -156,7 +156,23 @@ static bool __dispatch__TIME(Expression *expression, Context *context, void *val
 
 static bool __dispatch__TEMPO(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    printf("called __dispatch__TEMPO()\n");
+    TempoEvent *tempoEvent = NATypeNew(TempoEvent, context->tick);
+
+    Expression *expr = expression->left;
+
+    do {
+        if (FLOAT == expr->tokenType) {
+            parseExpression(expr, context, &tempoEvent->tempo, error);
+        }
+        else {
+            parseExpression(expr, context, tempoEvent, error);
+        }
+    } while ((expr = expr->right));
+
+    TimeTableAddTempoEvent(context->timeTable, tempoEvent);
+    ContextAddEvent(context, tempoEvent);
+    NARelease(tempoEvent);
+
     return true;
 }
 
