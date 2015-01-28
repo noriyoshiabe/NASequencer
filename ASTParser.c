@@ -139,25 +139,14 @@ static bool __dispatch__TITLE(Expression *expression, Context *context, void *va
 
 static bool __dispatch__TIME(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    int32_t numerator;
-    int32_t denominator;
-    int32_t tick = context->tick;
+    TimeEvent *timeEvent = NATypeNew(TimeEvent, context->tick);
 
     Expression *expr = expression->left;
 
     do {
-        switch (expr->tokenType) {
-        case TIME_SIGN:
-            parseExpression(expr->left, context, &numerator, error);
-            parseExpression(expr->left->right, context, &denominator, error);
-            break;
-        case FROM:
-            parseExpression(expr->left, context, &tick, error);
-            break;
-        }
+        parseExpression(expr, context, timeEvent, error);
     } while ((expr = expr->right));
 
-    TimeEvent *timeEvent = NATypeNew(TimeEvent, tick, numerator, denominator);
     TimeTableAddTimeEvent(context->timeTable, timeEvent);
     ContextAddEvent(context, timeEvent);
     NARelease(timeEvent);
@@ -228,8 +217,7 @@ static bool __dispatch__STEP(Expression *expression, Context *context, void *val
 
 static bool __dispatch__FROM(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    printf("called __dispatch__FROM()\n");
-    return true;
+    return parseExpression(expression->left, context, &((MidiEvent *)value)->tick, error);
 }
 
 static bool __dispatch__TO(Expression *expression, Context *context, void *value, ASTParserError *error)
@@ -361,7 +349,9 @@ static bool __dispatch__EOL(Expression *expression, Context *context, void *valu
 
 static bool __dispatch__TIME_SIGN(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    printf("called __dispatch__TIME_SIGN()\n");
+    TimeEvent *timeEvent = value;
+    parseExpression(expression->left, context, &timeEvent->numerator, error);
+    parseExpression(expression->left->right, context, &timeEvent->denominator, error);
     return true;
 }
 

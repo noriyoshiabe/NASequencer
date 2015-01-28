@@ -143,6 +143,17 @@ NADeclareVtbl(Track, NAType,
 NADeclareClass(Track, NAType);
 
 
+static void *__MidiEventInit(void *_self, ...)
+{
+    MidiEvent *self = _self;
+    va_list ap;
+    va_start(ap, _self);
+    self->tick = va_arg(ap, uint32_t);
+    va_end(ap);
+
+    return self;
+}
+
 static int __MidiEventCompare(const void *self, const void *to)
 {
     return ((MidiEvent *)self)->tick - ((MidiEvent *)to)->tick;
@@ -152,19 +163,6 @@ NADeclareVtbl(MidiEvent, NAType, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 NADeclareClass(MidiEvent, NAType);
 
 
-static void *__TimeEventInit(void *_self, ...)
-{
-    TimeEvent *self = _self;
-    va_list ap;
-    va_start(ap, _self);
-    self->_.tick = va_arg(ap, uint32_t);
-    self->numerator = (uint8_t)va_arg(ap, uint32_t);
-    self->denominator = (uint8_t)va_arg(ap, uint32_t);
-    va_end(ap);
-
-    return self;
-}
-
 static void *__TimeEventDescription(const void *_self)
 {
     const TimeEvent *self = _self;
@@ -172,7 +170,7 @@ static void *__TimeEventDescription(const void *_self)
 }
 
 NADeclareVtbl(TimeEvent, NAType,
-        __TimeEventInit,
+        __MidiEventInit,
         NULL,
         NULL,
         NULL,
