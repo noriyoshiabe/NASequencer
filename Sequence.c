@@ -247,21 +247,6 @@ NADeclareVtbl(TempoEvent, NAType,
 NADeclareClass(TempoEvent, NAType);
 
 
-static void *__MarkerEventInit(void *_self, ...)
-{
-    MarkerEvent *self = _self;
-    va_list ap;
-    va_start(ap, _self);
-    self->_.tick = va_arg(ap, uint32_t);
-    const char *text = va_arg(ap, const char *);
-    va_end(ap);
-
-    self->text = malloc(strlen(text) + 1);
-    strcpy(self->text, text);
-
-    return self;
-}
-
 static void __MarkerEventDestroy(void *_self)
 {
     MarkerEvent *self = _self;
@@ -275,7 +260,7 @@ static void *__MarkerEventDescription(const void *_self)
 }
 
 NADeclareVtbl(MarkerEvent, NAType,
-        __MarkerEventInit,
+        __MidiEventInit,
         __MarkerEventDestroy,
         NULL,
         NULL,

@@ -174,46 +174,61 @@ static bool __dispatch__TITLE(Expression *expression, Context *context, void *va
 
 static bool __dispatch__TIME(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    TimeEvent *timeEvent = NATypeNew(TimeEvent, context->tick);
+    TimeEvent *event = NATypeNew(TimeEvent, context->tick);
 
     Expression *expr = expression->left;
 
     do {
-        parseExpression(expr, context, timeEvent, error);
+        parseExpression(expr, context, event, error);
     } while ((expr = expr->right));
 
-    TimeTableAddTimeEvent(context->timeTable, timeEvent);
-    ContextAddEvent(context, timeEvent);
-    NARelease(timeEvent);
+    TimeTableAddTimeEvent(context->timeTable, event);
+    ContextAddEvent(context, event);
+    NARelease(event);
 
     return true;
 }
 
 static bool __dispatch__TEMPO(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    TempoEvent *tempoEvent = NATypeNew(TempoEvent, context->tick);
+    TempoEvent *event = NATypeNew(TempoEvent, context->tick);
 
     Expression *expr = expression->left;
 
     do {
         if (FLOAT == expr->tokenType) {
-            parseExpression(expr, context, &tempoEvent->tempo, error);
+            parseExpression(expr, context, &event->tempo, error);
         }
         else {
-            parseExpression(expr, context, tempoEvent, error);
+            parseExpression(expr, context, event, error);
         }
     } while ((expr = expr->right));
 
-    TimeTableAddTempoEvent(context->timeTable, tempoEvent);
-    ContextAddEvent(context, tempoEvent);
-    NARelease(tempoEvent);
+    TimeTableAddTempoEvent(context->timeTable, event);
+    ContextAddEvent(context, event);
+    NARelease(event);
 
     return true;
 }
 
 static bool __dispatch__MARKER(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    printf("called __dispatch__MARKER()\n");
+    MarkerEvent *event = NATypeNew(MarkerEvent, context->tick);
+
+    Expression *expr = expression->left;
+
+    do {
+        if (STRING == expr->tokenType) {
+            parseExpression(expr, context, &event->text, error);
+        }
+        else {
+            parseExpression(expr, context, event, error);
+        }
+    } while ((expr = expr->right));
+
+    ContextAddEvent(context, event);
+    NARelease(event);
+
     return true;
 }
 
