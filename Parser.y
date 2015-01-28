@@ -34,6 +34,7 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, cons
 %token <f>FLOAT
 %token <s>STRING
 
+%token <s>BNUMBER
 %token <s>NOTE_NO
 %token <s>LOCATION
 %token <s>MB_LENGTH
@@ -360,6 +361,7 @@ to
 location_param
     : integer
     | LOCATION { $$ = createStringValue(&@$, LOCATION, $1); }
+    | BNUMBER  { $$ = createStringValue(&@$, LOCATION, $1); }
     ;
 
 step
@@ -411,6 +413,7 @@ note_no_list_param
     ;
 note_no
     : NOTE_NO { $$ = createStringValue(&@$, NOTE_NO, $1); }
+    | BNUMBER { $$ = createStringValue(&@$, NOTE_NO, $1); }
     | note_no single_note_assign { $$ = $1; $1->left = $2; }
     ;
 

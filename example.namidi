@@ -23,10 +23,10 @@ channel 1
 sound select 0 0 2
 
 time 3/4 from m2
-tempo 120.0
+tempo 120.0 from b2
 marker 'A?'
 
-note from 0 step 240 { C#2 ^ F#1 ~ F# F# F# F# Gb,A# }
+note from 0 step 240 { C#2 ^ F#1 ~ F# F# F# F# Gb,A#,b2 }
 
 /*
 drums = {

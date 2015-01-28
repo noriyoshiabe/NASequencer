@@ -35,6 +35,7 @@ FLOAT          ({NONZERO}{DIGIT}*\.?|0\.|\.{DIGIT}){DIGIT}*|0
 STRING         \"[^\"]*\"|'[^']*'
 WSPACE         [[:blank:]]+
 
+BNUMBER        b{NONZERO}{DIGIT}*
 KEY            c|d|e|f|g|a|b
 NOTE_NO        {KEY}(#|b)?({DIGIT}|[+-]{DIGIT})?
 LOCATION       {NONZERO}{DIGIT}{0,2}:{NONZERO}{DIGIT}?(:{DIGIT}{1,3})?|m{NONZERO}{DIGIT}*|b{NONZERO}{DIGIT}*
@@ -93,6 +94,7 @@ LINE_COMMENT   \/\/.*$
 {STRING}         { yylval->s = strdup(yytext); return STRING; }
 {WSPACE}         { }
 
+{BNUMBER}        { yylval->s = strdup(yytext); return BNUMBER; }
 {NOTE_NO}        { yylval->s = strdup(yytext); return NOTE_NO; }
 {LOCATION}       { yylval->s = strdup(yytext); return LOCATION; }
 {MB_LENGTH}      { yylval->s = strdup(yytext); return MB_LENGTH; }
