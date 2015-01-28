@@ -12,6 +12,7 @@ typedef struct _Sequence {
 
 typedef struct _TimeTable {
     NAType _;
+    uint16_t resolution;
     CFMutableArrayRef timeEvents;
     CFMutableArrayRef tempoEvents;
 } TimeTable;
@@ -77,3 +78,4 @@ NAExportClass(NoteEvent);
 extern void SequenceAddEvents(Sequence *self, CFArrayRef events);
 extern void TimeTableAddTimeEvent(TimeTable *self, TimeEvent *timeEvent);
 extern void TimeTableAddTempoEvent(TimeTable *self, TempoEvent *tempoEvent);
+extern uint32_t TimeTableLocation2Tick(TimeTable *self, int32_t measure, int32_t beat, int32_t tick);

@@ -81,7 +81,7 @@ ERROR:
 
 static bool __dispatch__INTEGER(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    *((int *)value) = expression->v.i;
+    *((int32_t *)value) = expression->v.i;
     return true;
 }
 
@@ -106,7 +106,39 @@ static bool __dispatch__NOTE_NO(Expression *expression, Context *context, void *
 
 static bool __dispatch__LOCATION(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    printf("called __dispatch__LOCATION()\n");
+    if (strrchr(expression->v.s, ':')) {
+        char buf[16];
+        int32_t numbers[3];
+        int count = 0;
+        char *str = buf;
+        char *token;
+
+        strcpy(buf, expression->v.s);
+
+        while ((token = strtok_r(str, ":", &str))) {
+            numbers[count] = atoi(token);
+            ++count;
+            str = NULL;
+        }
+
+        switch (count) {
+        case 2:
+            *((int32_t *)value) = TimeTableLocation2Tick(context->timeTable, 1, numbers[0], numbers[1]);
+            break;
+        case 3:
+            *((int32_t *)value) = TimeTableLocation2Tick(context->timeTable, numbers[0], numbers[1], numbers[2]);
+            break;
+        }
+    }
+    else if (('b' == expression->v.s[0])) {
+        int32_t beat = atoi(&expression->v.s[1]);
+        *((int32_t *)value) = TimeTableLocation2Tick(context->timeTable, 1, beat, 0);
+    }
+    else if (('m' == expression->v.s[0])) {
+        int32_t measure = atoi(&expression->v.s[1]);
+        *((int32_t *)value) = TimeTableLocation2Tick(context->timeTable, measure, 1, 0);
+    }
+
     return true;
 }
 
@@ -124,7 +156,10 @@ static bool __dispatch__RESOLUTION(Expression *expression, Context *context, voi
         return false;
     }
 
-    return parseExpression(expression->left, context, &context->sequence->resolution, error);
+    parseExpression(expression->left, context, &context->sequence->resolution, error);
+    context->timeTable->resolution = context->sequence->resolution;
+
+    return true;
 }
 
 static bool __dispatch__TITLE(Expression *expression, Context *context, void *value, ASTParserError *error)

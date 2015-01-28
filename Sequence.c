@@ -52,6 +52,45 @@ void TimeTableAddTempoEvent(TimeTable *self, TempoEvent *tempoEvent)
     CFArrayAppendValue(self->tempoEvents, tempoEvent);
 }
 
+uint32_t TimeTableLocation2Tick(TimeTable *self, int32_t measure, int32_t beat, int32_t tick)
+{
+    uint8_t numerator = 4;
+    uint8_t denominator = 4;
+    int32_t offsetTick = 0;
+    
+    int32_t tickPerBeat = self->resolution * 4 / denominator;
+    int32_t tickPerMeasure = tickPerBeat * numerator;
+
+    int32_t _tick = 0;
+
+    measure -= 1;
+    beat -= 1;
+
+    CFIndex count = CFArrayGetCount(self->timeEvents);
+    for (int i = 0; i < count; ++i) {
+        const TimeEvent *event = CFArrayGetValueAtIndex(self->timeEvents, i);
+        _tick = tickPerMeasure * measure + tickPerBeat * beat + tick;
+        if ((event->_.tick - offsetTick) <= _tick) {
+            offsetTick = event->_.tick;
+            _tick -= offsetTick;
+
+            numerator = event->numerator;
+            denominator = event->denominator;
+            tickPerBeat = self->resolution * 4 / denominator;
+            tickPerMeasure = tickPerBeat * numerator;
+
+            tick -= event->_.tick & tickPerBeat;
+            measure -= event->_.tick / tickPerMeasure;
+            beat -= (event->_.tick % tickPerMeasure) / tickPerBeat;
+        }
+        else {
+            break;
+        }
+    }
+
+    return _tick + offsetTick;
+}
+
 static void *__TimeTableInit(void *_self, ...)
 {
     TimeTable *self = _self;
