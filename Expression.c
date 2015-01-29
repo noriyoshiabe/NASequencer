@@ -43,6 +43,12 @@ Expression *createExpression(void *location, int tokenType, Expression *left, Ex
     expr->tokenType = tokenType;
     expr->left = left;
     expr->right = right;
+
+    while (left) {
+        left->parent = expr;
+        left = left->right;
+    }
+
     return expr;
 }
 
@@ -146,6 +152,7 @@ void dumpExpressionImpl(Expression *expr, int depth)
         break;
     }
 
+    printf("    -- parent=[%s]", expr->parent ? tokenType2String(expr->parent->tokenType) : "");
 #if 0
     printf("    -- %d:%d - %d:%d\n", expr->location.firstLine, expr->location.firstColumn, expr->location.lastLine, expr->location.lastColumn);
 #else

@@ -26,6 +26,7 @@ typedef struct _Expression {
         char *s;
     } v;
 
+    struct _Expression *parent;
     struct _Expression *left;
     struct _Expression *right;
     struct _Expression *rightLast;
