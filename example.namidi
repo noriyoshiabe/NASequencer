@@ -27,7 +27,7 @@ time 3/4 from m2
 tempo 120.0 from b2
 marker 'A?' from m2
 
-note from 0 step 240 { C#2 ^ F#1 ~ F# F# F# F# Gb,A#,b2 }
+note from 0 step 240 { C#2 ^ F#1 ~ F# F# F# F# Gb,A#,b2(velocity=10) }
 
 /*
 drums = {

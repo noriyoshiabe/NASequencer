@@ -36,6 +36,7 @@ extern Expression *createIntegerValue(void *location, int tokenType, int value);
 extern Expression *createFloatValue(void *location, int tokenType, float value);
 extern Expression *createStringValue(void *location, int tokenType, char *value);
 extern Expression *createExpression(void *location, int tokenType, Expression *left, Expression *right);
+extern Expression *addLeftExpression(Expression *expr, Expression *left);
 extern Expression *addRightExpression(Expression *expr, Expression *right);
  
 extern const char *tokenType2String(int tokenType);

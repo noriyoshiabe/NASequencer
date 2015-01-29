@@ -52,6 +52,13 @@ Expression *createExpression(void *location, int tokenType, Expression *left, Ex
     return expr;
 }
 
+Expression *addLeftExpression(Expression *expr, Expression *left)
+{
+    expr->left = left;
+    left->parent = expr;
+    return expr;
+}
+
 Expression *addRightExpression(Expression *expr, Expression *right)
 {
     if (expr->rightLast) {

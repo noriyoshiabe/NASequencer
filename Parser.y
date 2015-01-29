@@ -397,7 +397,7 @@ note_block_param_list
     ;
 note_block_param
     : note_no
-    | note_no assign_statement_list { $$ = $1; $1->left = $2; }
+    | note_no assign_statement_list { $$ = addLeftExpression($1, $2); }
     | note_no_list
     | note_no_list assign_statement_list { $$ = $1; addRightExpression($1->left, $2); }
     | REST { $$ = createExpression(&@$, REST, NULL, NULL); }
@@ -414,7 +414,7 @@ note_no_list_param
 note_no
     : NOTE_NO { $$ = createStringValue(&@$, NOTE_NO, $1); }
     | BNUMBER { $$ = createStringValue(&@$, NOTE_NO, $1); }
-    | note_no single_note_assign { $$ = $1; $1->left = $2; }
+    | note_no single_note_assign { $$ = addLeftExpression($1, $2); }
     ;
 
 assign_statement_list

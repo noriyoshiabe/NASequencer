@@ -196,17 +196,8 @@ static bool __dispatch__NOTE_NO(Expression *expression, Context *context, void *
     int32_t gatetime = 0 <= context->gatetime ? context->gatetime : context->gatetime + nbContext->step;
     noteEvent->gatetime = 0 < gatetime ? gatetime : 0;
 
-    Expression *expr = expression->left;
-
     for (Expression *expr = expression->left; expr; expr = expr->right) {
-        switch (expr->tokenType) {
-        case VELOCITY:
-            parseExpression(expr, context, &noteEvent->velocity, error);
-            break;
-        case GATETIME:
-            parseExpression(expr, context, &noteEvent->gatetime, error);
-            break;
-        }
+        parseExpression(expr, context, noteEvent, error);
     }
 
     NoteBlockContextAddEvent(nbContext, noteEvent);
@@ -350,12 +341,36 @@ static bool __dispatch__CHANNEL(Expression *expression, Context *context, void *
 
 static bool __dispatch__VELOCITY(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    return parseExpression(expression->left, context, &context->velocity, error);
+    int32_t val; 
+    parseExpression(expression->left, context, &val, error);
+
+    int tokenType = expression->parent ? expression->parent->tokenType : -1;
+    switch (tokenType) {
+    case NOTE_NO:
+        ((NoteEvent *)value)->velocity = val;
+        break;
+    default:
+        context->velocity = val;
+        break;
+    }
+
+    return true;
 }
 
 static bool __dispatch__GATETIME(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    return parseExpression(expression->left, context, &context->gatetime, error);
+    int32_t val; 
+    parseExpression(expression->left, context, &val, error);
+
+    int tokenType = expression->parent ? expression->parent->tokenType : -1;
+    switch (tokenType) {
+    case NOTE_NO:
+        ((NoteEvent *)value)->gatetime = val;
+        break;
+    default:
+        context->gatetime = val;
+        break;
+    }
 }
 
 static bool __dispatch__NOTE(Expression *expression, Context *context, void *value, ASTParserError *error)
