@@ -17,11 +17,12 @@ typedef struct _Context {
     int32_t channel;
     int32_t velocity;
     int32_t gatetime;
+    int32_t octave;
     CFMutableArrayRef events;
     TimeTable *timeTable;
 } Context;
 
-static Context *createContext(Sequence *sequence)
+static Context *ContextCreate(Sequence *sequence)
 {
     Context *context = calloc(1, sizeof(Context));
     context->sequence = NARetain(sequence);
@@ -35,13 +36,40 @@ static void ContextAddEvent(Context *context, void *event)
     CFArrayAppendValue(context->events, event);
 }
 
-static void destroyContext(Context *context)
+static void ContextDestroy(Context *context)
 {
     CFRelease(context->events);
     NARelease(context->sequence);
     NARelease(context->timeTable);
     free(context);
 }
+
+typedef struct _NoteBlockContext {
+    int32_t tick;
+    int32_t step;
+    CFMutableArrayRef events;
+} NoteBlockContext;
+
+static NoteBlockContext *NoteBlockContextCreate(int32_t tick, int32_t step)
+{
+    NoteBlockContext *context = calloc(1, sizeof(NoteBlockContext));
+    context->tick = tick;
+    context->step = step;
+    context->events = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
+    return context;
+}
+
+static void NoteBlockContextAddEvent(NoteBlockContext *context, void *event)
+{
+    CFArrayAppendValue(context->events, event);
+}
+
+static void NoteBlockContextDestroy(NoteBlockContext *context)
+{
+    CFRelease(context->events);
+    free(context);
+}
+
 
 #define TABLE_SIZE (TOKEN_END - TOKEN_BEGIN)
 #define IDX(type) (type - TOKEN_BEGIN - 1)
@@ -62,7 +90,7 @@ static bool parseExpression(Expression *expression, Context *context, void *valu
 Sequence *ASTParserParseExpression(Expression *expression, const char *filepath, ASTParserError *error)
 {
     Sequence *sequence = NATypeNew(Sequence);
-    Context *context = createContext(sequence);
+    Context *context = ContextCreate(sequence);
 
     error->filepath = filepath;
 
@@ -79,7 +107,7 @@ Sequence *ASTParserParseExpression(Expression *expression, const char *filepath,
     SequenceAddEvents(sequence, context->events);
 
 ERROR:
-    destroyContext(context);
+    ContextDestroy(context);
 
     return sequence;
 }
@@ -103,9 +131,87 @@ static bool __dispatch__STRING(Expression *expression, Context *context, void *v
 }
 
 
+static int noteNoString2Int(Context *context, const char *noteNoString)
+{
+    const struct {
+        char *name;
+        int baseKey;
+    } noteMap[] = {
+        {"C", 24},
+        {"C#", 25}, {"DB", 25},
+        {"D", 26},
+        {"D#", 27}, {"EB", 27},
+        {"E", 28},
+        {"F", 29},
+        {"F#", 30}, {"GB", 30},
+        {"G", 31},
+        {"G#", 32}, {"AB", 32},
+        {"A", 33},
+        {"A#", 34}, {"BB", 34},
+        {"B", 35},
+    };
+
+    char octave[4] = {0};
+    char *pOctave = octave;
+
+    char noteNo[8];
+    strcpy(noteNo, noteNoString);
+    char *pNoteNo = noteNo;
+    while (*pNoteNo) {
+        *pNoteNo = toupper(*pNoteNo);
+        if (*pNoteNo == '-' || *pNoteNo == '+' || isdigit(*pNoteNo)) {
+            *pOctave = *pNoteNo;
+            *pNoteNo = '\0';
+            *(++pOctave) = '\0';
+        }
+        ++pNoteNo;
+    }
+
+    int baseKey = -1;
+    for (int i = 0; i < sizeof(noteMap)/sizeof(noteMap[0]); ++i) {
+        if (0 == strcmp(noteMap[i].name, noteNo)) {
+            baseKey = noteMap[i].baseKey;
+            break;
+        }
+    }
+
+    if (-1 == baseKey) {
+        return -1;
+    }
+    else {
+        context->octave = '\0' != octave[0] ? atoi(octave) : context->octave;
+        return baseKey + 12 * context->octave;
+    }
+}
+
 static bool __dispatch__NOTE_NO(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    printf("called __dispatch__NOTE_NO()\n");
+    NoteBlockContext *nbContext = value;
+
+    NoteEvent *noteEvent = NATypeNew(NoteEvent, nbContext->tick);
+    noteEvent->channel = context->channel;
+    noteEvent->noteNo = noteNoString2Int(context, expression->v.s);
+    noteEvent->velocity = context->velocity;
+    
+    int32_t gatetime = 0 <= context->gatetime ? context->gatetime : context->gatetime + nbContext->step;
+    noteEvent->gatetime = 0 < gatetime ? gatetime : 0;
+
+    Expression *expr = expression->left;
+
+    for (Expression *expr = expression->left; expr; expr = expr->right) {
+        switch (expr->tokenType) {
+        case VELOCITY:
+            parseExpression(expr, context, &noteEvent->velocity, error);
+            break;
+        case GATETIME:
+            parseExpression(expr, context, &noteEvent->gatetime, error);
+            break;
+        }
+    }
+
+    NoteBlockContextAddEvent(nbContext, noteEvent);
+    NARelease(noteEvent);
+
     return true;
 }
 
@@ -239,38 +345,57 @@ static bool __dispatch__MARKER(Expression *expression, Context *context, void *v
 
 static bool __dispatch__CHANNEL(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    context->channel = expression->v.i;
-    return true;
+    return parseExpression(expression->left, context, &context->channel, error);
 }
 
 static bool __dispatch__VELOCITY(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    context->velocity = expression->v.i;
-    return true;
+    return parseExpression(expression->left, context, &context->velocity, error);
 }
 
 static bool __dispatch__GATETIME(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    context->gatetime = expression->v.i;
-    return true;
+    return parseExpression(expression->left, context, &context->gatetime, error);
 }
 
 static bool __dispatch__NOTE(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    printf("called __dispatch__NOTE()\n");
-    return true;
+    int32_t step = -1;
+
+    Expression *noteBlockExpr = NULL;
+    Expression *expr = expression->left;
+
+    do {
+        switch (expr->tokenType) {
+        case FROM:
+            parseExpression(expr, context, &context->tick, error);
+            break;
+        case STEP:
+            parseExpression(expr, context, &step, error);
+            break;
+        case NOTE_BLOCK:
+            noteBlockExpr = expr;
+            break;
+        }
+    } while ((expr = expr->right));
+
+    return parseExpression(noteBlockExpr, context, &step, error);
 }
 
 
 static bool __dispatch__STEP(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    printf("called __dispatch__STEP()\n");
-    return true;
+    return parseExpression(expression->left, context, value, error);
 }
 
 static bool __dispatch__FROM(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    return parseExpression(expression->left, context, &((MidiEvent *)value)->tick, error);
+    switch (expression->parent->tokenType) {
+    case NOTE:
+        return parseExpression(expression->left, context, value, error);
+    default:
+        return parseExpression(expression->left, context, &((MidiEvent *)value)->tick, error);
+    }
 }
 
 static bool __dispatch__TO(Expression *expression, Context *context, void *value, ASTParserError *error)
@@ -306,13 +431,21 @@ static bool __dispatch__LENGTH(Expression *expression, Context *context, void *v
 
 static bool __dispatch__REST(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    printf("called __dispatch__REST()\n");
     return true;
 }
 
 static bool __dispatch__TIE(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    printf("called __dispatch__TIE()\n");
+    NoteBlockContext *nbContext = value;
+    int32_t tick = nbContext->tick - nbContext->step;
+    CFIndex count = CFArrayGetCount(nbContext->events);
+    for (int i = count - 1; 0 <= count; --i) {
+        NoteEvent *event = (NoteEvent *)CFArrayGetValueAtIndex(nbContext->events, i);
+        if (tick != event->_.tick) {
+            break;
+        }
+        event->gatetime += nbContext->step;
+    }
     return true;
 }
 
@@ -448,19 +581,40 @@ static bool __dispatch__INTEGER_LIST(Expression *expression, Context *context, v
 
 static bool __dispatch__GATETIME_CUTOFF(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    context->gatetime = -expression->v.i;
+    parseExpression(expression->left, context, &context->gatetime, error);
+    context->gatetime *= -1;
     return true;
 }
 
 static bool __dispatch__NOTE_BLOCK(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    printf("called __dispatch__NOTE_BLOCK()\n");
+    int32_t step = *((int32_t *)value);
+    NoteBlockContext *nbContext = NoteBlockContextCreate(context->tick, step);
+
+    Expression *expr = expression->left;
+
+    do {
+        parseExpression(expr, context, nbContext, error);
+        nbContext->tick += step;
+    } while ((expr = expr->right));
+
+    context->tick = nbContext->tick;
+
+    CFArrayAppendArray(context->events, nbContext->events, CFRangeMake(0, CFArrayGetCount(nbContext->events)));
+
+    NoteBlockContextDestroy(nbContext);
+
     return true;
 }
 
 static bool __dispatch__NOTE_NO_LIST(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    printf("called __dispatch__NOTE_NO_LIST()\n");
+    Expression *expr = expression->left;
+
+    do {
+        parseExpression(expr, context, value, error);
+    } while ((expr = expr->right));
+
     return true;
 }
 

@@ -291,21 +291,6 @@ NADeclareVtbl(SoundSelectEvent, NAType,
 NADeclareClass(SoundSelectEvent, NAType);
 
 
-static void *__NoteEventInit(void *_self, ...)
-{
-    NoteEvent *self = _self;
-    va_list ap;
-    va_start(ap, _self);
-    self->_.tick = va_arg(ap, uint32_t);
-    self->channel = (uint8_t)va_arg(ap, uint32_t);
-    self->noteNo = (uint8_t)va_arg(ap, uint32_t);
-    self->velocity = (uint8_t)va_arg(ap, uint32_t);
-    self->gatetime = va_arg(ap, uint32_t);
-    va_end(ap);
-
-    return self;
-}
-
 static void *__NoteEventDescription(const void *_self)
 {
     const NoteEvent *self = _self;
@@ -313,7 +298,7 @@ static void *__NoteEventDescription(const void *_self)
 }
 
 NADeclareVtbl(NoteEvent, NAType,
-        __NoteEventInit,
+        __MidiEventInit,
         NULL,
         NULL,
         NULL,
