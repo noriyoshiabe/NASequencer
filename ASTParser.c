@@ -7,10 +7,15 @@
 #include <string.h>
 #include <stdbool.h>
 
+/*
+ * TODO error handling
+ */
+
 typedef struct _Context {
     Sequence *sequence;
     uint32_t tick;
     int32_t channel;
+    int32_t velocity;
     int32_t gatetime;
     CFMutableArrayRef events;
     TimeTable *timeTable;
@@ -232,39 +237,27 @@ static bool __dispatch__MARKER(Expression *expression, Context *context, void *v
     return true;
 }
 
-static bool __dispatch__SOUND(Expression *expression, Context *context, void *value, ASTParserError *error)
-{
-    printf("called __dispatch__SOUND()\n");
-    return true;
-}
-
-static bool __dispatch__SELECT(Expression *expression, Context *context, void *value, ASTParserError *error)
-{
-    printf("called __dispatch__SELECT()\n");
-    return true;
-}
-
 static bool __dispatch__CHANNEL(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    printf("called __dispatch__CHANNEL()\n");
+    context->channel = expression->v.i;
     return true;
 }
 
 static bool __dispatch__VELOCITY(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    printf("called __dispatch__VELOCITY()\n");
+    context->velocity = expression->v.i;
     return true;
 }
 
 static bool __dispatch__GATETIME(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    printf("called __dispatch__GATETIME()\n");
+    context->gatetime = expression->v.i;
     return true;
 }
 
 static bool __dispatch__CUTOFF(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    printf("called __dispatch__CUTOFF()\n");
+    context->gatetime = expression->v.i;
     return true;
 }
 
@@ -493,8 +486,6 @@ static void __attribute__((constructor)) initializeTable()
     SET_FUNCTION(TIME);
     SET_FUNCTION(TEMPO);
     SET_FUNCTION(MARKER);
-    SET_FUNCTION(SOUND);
-    SET_FUNCTION(SELECT);
     SET_FUNCTION(CHANNEL);
     SET_FUNCTION(VELOCITY);
     SET_FUNCTION(GATETIME);
