@@ -20,7 +20,7 @@ sound select 127 0 0 // 左からバンクセレクト MSB LSB プログラム�
 
 // Piano
 channel 1
-sound select 0 0 2
+sound select 0 0 2 from m2
 
 time 3/4 from m2
 tempo 120.0 from b2

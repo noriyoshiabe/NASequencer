@@ -272,21 +272,6 @@ NADeclareVtbl(MarkerEvent, NAType,
 NADeclareClass(MarkerEvent, NAType);
 
 
-static void *__SoundSelectEventInit(void *_self, ...)
-{
-    SoundSelectEvent *self = _self;
-    va_list ap;
-    va_start(ap, _self);
-    self->_.tick = va_arg(ap, uint32_t);
-    self->channel = (uint8_t)va_arg(ap, uint32_t);
-    self->msb = (uint8_t)va_arg(ap, uint32_t);
-    self->lsb = (uint8_t)va_arg(ap, uint32_t);
-    self->programNo = (uint8_t)va_arg(ap, uint32_t);
-    va_end(ap);
-
-    return self;
-}
-
 static void *__SoundSelectEventDescription(const void *_self)
 {
     const SoundSelectEvent *self = _self;
@@ -294,7 +279,7 @@ static void *__SoundSelectEventDescription(const void *_self)
 }
 
 NADeclareVtbl(SoundSelectEvent, NAType,
-        __SoundSelectEventInit,
+        __MidiEventInit,
         NULL,
         NULL,
         NULL,

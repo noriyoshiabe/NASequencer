@@ -416,13 +416,39 @@ static bool __dispatch__TIME_SIGN(Expression *expression, Context *context, void
 
 static bool __dispatch__SOUND_SELECT(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    printf("called __dispatch__SOUND_SELECT()\n");
+    SoundSelectEvent *event = NATypeNew(SoundSelectEvent, context->tick);
+    event->channel = context->channel;
+
+    Expression *expr = expression->left;
+
+    do {
+        if (INTEGER_LIST == expr->tokenType) {
+            int32_t integerList[3];
+            parseExpression(expr, context, integerList, error);
+            event->msb = integerList[0];
+            event->lsb = integerList[1];
+            event->programNo = integerList[2];
+        }
+        else {
+            parseExpression(expr, context, event, error);
+        }
+    } while ((expr = expr->right));
+
+    ContextAddEvent(context, event);
+    NARelease(event);
+
     return true;
 }
 
 static bool __dispatch__INTEGER_LIST(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    printf("called __dispatch__INTEGER_LIST()\n");
+    int32_t *integer = value;
+
+    Expression *expr = expression->left;
+    do {
+        *integer = expr->v.i;
+    } while ((++integer, expr = expr->right));
+
     return true;
 }
 
