@@ -255,12 +255,6 @@ static bool __dispatch__GATETIME(Expression *expression, Context *context, void 
     return true;
 }
 
-static bool __dispatch__CUTOFF(Expression *expression, Context *context, void *value, ASTParserError *error)
-{
-    context->gatetime = expression->v.i;
-    return true;
-}
-
 static bool __dispatch__NOTE(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
     printf("called __dispatch__NOTE()\n");
@@ -454,7 +448,7 @@ static bool __dispatch__INTEGER_LIST(Expression *expression, Context *context, v
 
 static bool __dispatch__GATETIME_CUTOFF(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    printf("called __dispatch__GATETIME_CUTOFF()\n");
+    context->gatetime = -expression->v.i;
     return true;
 }
 
@@ -515,7 +509,6 @@ static void __attribute__((constructor)) initializeTable()
     SET_FUNCTION(CHANNEL);
     SET_FUNCTION(VELOCITY);
     SET_FUNCTION(GATETIME);
-    SET_FUNCTION(CUTOFF);
     SET_FUNCTION(NOTE);
 
     SET_FUNCTION(STEP);

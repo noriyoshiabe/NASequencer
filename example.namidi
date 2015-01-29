@@ -12,6 +12,7 @@ time 4/4
 tempo 120.0
 marker 'START'
 
+gatetime cutoff 20
 velocity 127
 
 // Drums
