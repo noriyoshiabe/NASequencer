@@ -371,6 +371,8 @@ static bool __dispatch__GATETIME(Expression *expression, Context *context, void 
         context->gatetime = val;
         break;
     }
+
+    return true;
 }
 
 static bool __dispatch__NOTE(Expression *expression, Context *context, void *value, ASTParserError *error)
