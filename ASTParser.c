@@ -757,7 +757,12 @@ static bool __dispatch__PATTERN_DEFINE(Expression *expression, Context *context,
 
 static bool __dispatch__PATTERN_BLOCK(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    printf("called __dispatch__PATTERN_BLOCK()\n");
+    for (Expression *expr = expression->left; expr; expr = expr->right) {
+        if (!parseExpression(expr, context, NULL, error)) {
+            return false;
+        }
+    }
+
     return true;
 }
 
