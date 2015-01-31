@@ -3,13 +3,6 @@
 #include <NAType.h>
 #include <CoreFoundation/CoreFoundation.h>
 
-typedef struct _Sequence {
-    NAType _;
-    uint16_t resolution;
-    char *title;
-    CFMutableArrayRef events;
-} Sequence;
-
 typedef struct _TimeTable {
     NAType _;
     uint16_t resolution;
@@ -17,9 +10,18 @@ typedef struct _TimeTable {
     CFMutableArrayRef tempoEvents;
 } TimeTable;
 
+typedef struct _Sequence {
+    NAType _;
+    uint16_t resolution;
+    char *title;
+    TimeTable *timeTable;
+    CFMutableArrayRef events;
+} Sequence;
+
 typedef struct _Pattern {
     NAType _;
-    CFMutableArrayRef tracks;
+    TimeTable *timeTable;
+    CFMutableArrayRef events;
 } Pattern;
 
 typedef struct _Track {

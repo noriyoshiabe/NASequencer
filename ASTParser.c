@@ -75,11 +75,18 @@ static Context *ContextCreateLocal(const Context *from)
 
     count = CFArrayGetCount(from->timeTable->timeEvents);
     if (0 < count) {
-        TimeTableAddTimeEvent(local->timeTable, (TimeEvent *)CFArrayGetValueAtIndex(from->timeTable->timeEvents, count - 1));
+        TimeEvent *event = NACopy(CFArrayGetValueAtIndex(from->timeTable->timeEvents, count - 1));
+        event->_.tick = 0;
+        TimeTableAddTimeEvent(local->timeTable, event);
+        NARelease(event);
     }
+
     count = CFArrayGetCount(from->timeTable->tempoEvents);
     if (0 < count) {
-        TimeTableAddTempoEvent(local->timeTable, (TempoEvent *)CFArrayGetValueAtIndex(from->timeTable->tempoEvents, count - 1));
+        TempoEvent *event = NACopy(CFArrayGetValueAtIndex(from->timeTable->timeEvents, count - 1));
+        event->_.tick = 0;
+        TimeTableAddTempoEvent(local->timeTable, event);
+        NARelease(event);
     }
 
     local->patterns = CFDictionaryCreateMutableCopy(NULL, 0, from->patterns);
@@ -617,7 +624,7 @@ static bool __dispatch__RCURLY(Expression *expression, Context *context, void *v
 
 static bool __dispatch__IDENTIFIER(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    printf("called __dispatch__IDENTIFIER()\n");
+    *((CFStringRef *)value) = CFStringCreateWithCString(NULL, expression->v.s, kCFStringEncodingUTF8);
     return true;
 }
 
@@ -716,7 +723,34 @@ static bool __dispatch__NOTE_NO_LIST(Expression *expression, Context *context, v
 
 static bool __dispatch__PATTERN_DEFINE(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    printf("called __dispatch__PATTERN_DEFINE()\n");
+    CFStringRef identifier;
+    Context *local = ContextCreateLocal(context);
+
+    Expression *expr = expression->left;
+
+    do {
+        switch (expr->tokenType) {
+        case IDENTIFIER:
+            parseExpression(expr, local, &identifier, error);
+            break;
+        case PATTERN_BLOCK:
+        case PATTERN_EXPAND:
+            parseExpression(expr, local, NULL, error);
+            break;
+        }
+    } while ((expr = expr->right));
+
+    Pattern *pattern = NATypeNew(Pattern, local->timeTable, local->events);
+    CFDictionarySetValue(context->patterns, identifier, pattern);
+
+    CFStringRef cfString = NADescription(pattern);
+    CFShow(cfString);
+    CFRelease(cfString);
+
+    CFRelease(identifier);
+    NARelease(local);
+    NARelease(pattern);
+
     return true;
 }
 

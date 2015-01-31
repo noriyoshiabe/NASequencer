@@ -128,20 +128,32 @@ NADeclareClass(TimeTable, NAType);
 static void *__PatternInit(void *_self, ...)
 {
     Pattern *self = _self;
-    self->tracks = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
+
+    va_list ap;
+    va_start(ap, _self);
+    self->timeTable = NARetain(va_arg(ap, TimeTable *));
+    self->events = (CFMutableArrayRef)CFRetain(va_arg(ap, CFMutableArrayRef));
+    va_end(ap);
+    
     return self;
 }
 
 static void __PatternDestroy(void *_self)
 {
     Pattern *self = _self;
-    CFRelease(self->tracks);
+    NARelease(self->timeTable);
+    CFRelease(self->events);
 }
 
 static void *__PatternDescription(const void *_self)
 {
     const Pattern *self = _self;
-    return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<Pattern: tracks=%@>"), self->tracks);
+
+    CFStringRef cfString = NADescription(self->timeTable);
+    void *ret = (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<Pattern: timeTable=%@ events=%@>"), cfString, self->events);
+    CFRelease(cfString);
+
+    return ret;
 }
 
 NADeclareVtbl(Pattern, NAType,
@@ -205,6 +217,15 @@ static int __MidiEventCompare(const void *self, const void *to)
     return ((MidiEvent *)self)->tick - ((MidiEvent *)to)->tick;
 }
 
+void *__MidiEventCopy(const void *_self)
+{
+    const MidiEvent *self = _self;
+
+    MidiEvent *copied = (MidiEvent *)__MidiEventInit(__NATypeAlloc(self->_.clazz), self->tick);
+    memcpy(copied + 1, self + 1, self->_.clazz->size - sizeof(NAType));
+    return copied;
+}
+
 NADeclareVtbl(MidiEvent, NAType, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 NADeclareClass(MidiEvent, NAType);
 
@@ -221,7 +242,7 @@ NADeclareVtbl(TimeEvent, NAType,
         NULL,
         NULL,
         __MidiEventCompare,
-        NULL,
+        __MidiEventCopy,
         __TimeEventDescription
         );
 
@@ -240,7 +261,7 @@ NADeclareVtbl(TempoEvent, NAType,
         NULL,
         NULL,
         __MidiEventCompare,
-        NULL,
+        __MidiEventCopy,
         __TempoEventDescription
         );
 
