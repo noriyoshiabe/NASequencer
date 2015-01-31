@@ -296,15 +296,16 @@ static bool __dispatch__NOTE_NO(Expression *expression, Context *context, void *
 static bool __dispatch__LOCATION(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
     if (strrchr(expression->v.s, ':')) {
+        char *saveptr;
         char buf[16];
         int32_t numbers[3];
         int count = 0;
         char *str = buf;
         char *token;
 
-        strcpy(buf, expression->v.s);
+        strcpy(str, expression->v.s);
 
-        while ((token = strtok_r(str, ":", &str))) {
+        while ((token = strtok_r(str, ":", &saveptr))) {
             numbers[count] = atoi(token);
             ++count;
             str = NULL;
