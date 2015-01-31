@@ -83,7 +83,7 @@ static Context *ContextCreateLocal(const Context *from)
 
     count = CFArrayGetCount(from->timeTable->tempoEvents);
     if (0 < count) {
-        TempoEvent *event = NACopy(CFArrayGetValueAtIndex(from->timeTable->timeEvents, count - 1));
+        TempoEvent *event = NACopy(CFArrayGetValueAtIndex(from->timeTable->tempoEvents, count - 1));
         event->_.tick = 0;
         TimeTableAddTempoEvent(local->timeTable, event);
         NARelease(event);
