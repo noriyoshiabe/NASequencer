@@ -71,6 +71,8 @@ static Context *ContextCreateLocal(const Context *from)
     local->gatetime = from->gatetime;
     local->octave = from->octave;
 
+    local->timeTable->resolution = from->timeTable->resolution;
+
     CFIndex count;
 
     count = CFArrayGetCount(from->timeTable->timeEvents);
