@@ -12,6 +12,7 @@
  */
 
 typedef struct _Context {
+    NAType _;
     Sequence *sequence;
     uint32_t tick;
     int32_t channel;
@@ -22,13 +23,18 @@ typedef struct _Context {
     TimeTable *timeTable;
 } Context;
 
-static Context *ContextCreate(Sequence *sequence)
+static void *__ContextInit(void *_self, ...)
 {
-    Context *context = calloc(1, sizeof(Context));
-    context->sequence = NARetain(sequence);
-    context->events = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
-    context->timeTable = NATypeNew(TimeTable);
-    return context;
+    Context *self = _self;
+    
+    va_list ap;
+    va_start(ap, _self);
+    self->sequence = NARetain(va_arg(ap, Sequence *));
+    va_end(ap);
+    
+    self->events = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
+    self->timeTable = NATypeNew(TimeTable);
+    return self;
 }
 
 static void ContextAddEvent(Context *context, void *event)
@@ -36,27 +42,52 @@ static void ContextAddEvent(Context *context, void *event)
     CFArrayAppendValue(context->events, event);
 }
 
-static void ContextDestroy(Context *context)
+static void __ContextDestroy(void *_self)
 {
-    CFRelease(context->events);
-    NARelease(context->sequence);
-    NARelease(context->timeTable);
-    free(context);
+    Context *self = _self;
+
+    CFRelease(self->events);
+    NARelease(self->sequence);
+    NARelease(self->timeTable);
 }
 
+static void *__ContextDescription(const void *_self)
+{
+    const Context *self = _self;
+    return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<Context: timeTable=%@ events=%@>"), self->timeTable, self->events);
+}
+
+NADeclareVtbl(Context, NAType,
+        __ContextInit,
+        __ContextDestroy,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        __ContextDescription,
+        );
+
+NADeclareClass(Context, NAType);
+
 typedef struct _NoteBlockContext {
+    NAType _;
     int32_t tick;
     int32_t step;
     CFMutableArrayRef events;
 } NoteBlockContext;
 
-static NoteBlockContext *NoteBlockContextCreate(int32_t tick, int32_t step)
+static void *__NoteBlockContextInit(void *_self, ...)
 {
-    NoteBlockContext *context = calloc(1, sizeof(NoteBlockContext));
-    context->tick = tick;
-    context->step = step;
-    context->events = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
-    return context;
+    NoteBlockContext *self = _self;
+    
+    va_list ap;
+    va_start(ap, _self);
+    self->tick = va_arg(ap, int32_t);
+    self->step = va_arg(ap, int32_t);
+    va_end(ap);
+    
+    self->events = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
+    return self;
 }
 
 static void NoteBlockContextAddEvent(NoteBlockContext *context, void *event)
@@ -64,11 +95,29 @@ static void NoteBlockContextAddEvent(NoteBlockContext *context, void *event)
     CFArrayAppendValue(context->events, event);
 }
 
-static void NoteBlockContextDestroy(NoteBlockContext *context)
+static void __NoteBlockContextDestroy(void *_self)
 {
-    CFRelease(context->events);
-    free(context);
+    NoteBlockContext *self = _self;
+    CFRelease(self->events);
 }
+
+static void *__NoteBlockContextDescription(const void *_self)
+{
+    const NoteBlockContext *self = _self;
+    return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<NoteBlockContext: step=%d events=%@>"), self->step, self->events);
+}
+
+NADeclareVtbl(NoteBlockContext, NAType,
+        __NoteBlockContextInit,
+        __NoteBlockContextDestroy,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        __NoteBlockContextDescription,
+        );
+
+NADeclareClass(NoteBlockContext, NAType);
 
 
 #define TABLE_SIZE (TOKEN_END - TOKEN_BEGIN)
@@ -90,7 +139,7 @@ static bool parseExpression(Expression *expression, Context *context, void *valu
 Sequence *ASTParserParseExpression(Expression *expression, const char *filepath, ASTParserError *error)
 {
     Sequence *sequence = NATypeNew(Sequence);
-    Context *context = ContextCreate(sequence);
+    Context *context = NATypeNew(Context, sequence);
 
     error->filepath = filepath;
 
@@ -107,7 +156,7 @@ Sequence *ASTParserParseExpression(Expression *expression, const char *filepath,
     SequenceAddEvents(sequence, context->events);
 
 ERROR:
-    ContextDestroy(context);
+    NARelease(context);
 
     return sequence;
 }
@@ -606,7 +655,7 @@ static bool __dispatch__GATETIME_CUTOFF(Expression *expression, Context *context
 static bool __dispatch__NOTE_BLOCK(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
     int32_t step = *((int32_t *)value);
-    NoteBlockContext *nbContext = NoteBlockContextCreate(context->tick, step);
+    NoteBlockContext *nbContext = NATypeNew(NoteBlockContext, context->tick, step);
 
     Expression *expr = expression->left;
 
@@ -619,7 +668,7 @@ static bool __dispatch__NOTE_BLOCK(Expression *expression, Context *context, voi
 
     CFArrayAppendArray(context->events, nbContext->events, CFRangeMake(0, CFArrayGetCount(nbContext->events)));
 
-    NoteBlockContextDestroy(nbContext);
+    NARelease(nbContext);
 
     return true;
 }
