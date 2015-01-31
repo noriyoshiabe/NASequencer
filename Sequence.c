@@ -290,6 +290,15 @@ static void __MarkerEventDestroy(void *_self)
     free(self->text);
 }
 
+void *__MarkerEventCopy(const void *_self)
+{
+    const MarkerEvent *self = _self;
+
+    MarkerEvent *copied = (MarkerEvent *)__MidiEventInit(NATypeAlloc(self->_._.clazz), self->_.tick);
+    copied->text = strdup(self->text);
+    return copied;
+}
+
 static void *__MarkerEventDescription(const void *_self)
 {
     const MarkerEvent *self = _self;
@@ -302,7 +311,7 @@ NADeclareVtbl(MarkerEvent, NAType,
         NULL,
         NULL,
         __MidiEventCompare,
-        NULL,
+        __MarkerEventCopy,
         __MarkerEventDescription
         );
 
@@ -321,7 +330,7 @@ NADeclareVtbl(SoundSelectEvent, NAType,
         NULL,
         NULL,
         __MidiEventCompare,
-        NULL,
+        __MidiEventCopy,
         __SoundSelectEventDescription
         );
 
@@ -340,7 +349,7 @@ NADeclareVtbl(NoteEvent, NAType,
         NULL,
         NULL,
         __MidiEventCompare,
-        NULL,
+        __MidiEventCopy,
         __NoteEventDescription,
         );
 
