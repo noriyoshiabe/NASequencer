@@ -37,7 +37,7 @@ static void *__ContextInit(void *_self, ...)
     
     self->timeTable = NATypeNew(TimeTable);
     self->events = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
-    self->patterns = CFDictionaryCreateMutable(NULL, 0, NULL, NACFDictionaryValueCallBacks);
+    self->patterns = CFDictionaryCreateMutable(NULL, 0, &kCFTypeDictionaryKeyCallBacks, NACFDictionaryValueCallBacks);
     return self;
 }
 
@@ -490,6 +490,7 @@ static bool __dispatch__FROM(Expression *expression, Context *context, void *val
 {
     switch (expression->parent->tokenType) {
     case NOTE:
+    case PATTERN_EXPAND:
         return parseExpression(expression->left, context, value, error);
     default:
         return parseExpression(expression->left, context, &((MidiEvent *)value)->tick, error);
@@ -730,10 +731,6 @@ static bool __dispatch__PATTERN_DEFINE(Expression *expression, Context *context,
     Pattern *pattern = NATypeNew(Pattern, local->timeTable, local->events);
     CFDictionarySetValue(context->patterns, identifier, pattern);
 
-    CFStringRef cfString = NADescription(pattern);
-    CFShow(cfString);
-    CFRelease(cfString);
-
     CFRelease(identifier);
     NARelease(local);
     NARelease(pattern);
@@ -754,7 +751,34 @@ static bool __dispatch__PATTERN_BLOCK(Expression *expression, Context *context, 
 
 static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    printf("called __dispatch__PATTERN_EXPAND()\n");
+    CFStringRef identifier;
+    int32_t from = context->tick;
+
+    for (Expression *expr = expression->left; expr; expr = expr->right) {
+        switch (expr->tokenType) {
+        case IDENTIFIER:
+            parseExpression(expr, context, &identifier, error);
+            break;
+        case FROM:
+            parseExpression(expr, context, &from, error);
+            break;
+        }
+    }
+
+    const Pattern *pattern = CFDictionaryGetValue(context->patterns, identifier);
+    CFRelease(identifier);
+
+    CFIndex count = CFArrayGetCount(pattern->events);
+    for (int i = 0; i < count; ++i) {
+        MidiEvent *event = NACopy(CFArrayGetValueAtIndex(pattern->events, i));
+        event->tick += from;
+        ContextAddEvent(context, event);
+        NARelease(event);
+
+        int32_t step = event->_.clazz->typeID == NoteEventID ? ((NoteEvent *)event)->gatetime : 0;
+        context->tick = event->tick + step;
+    }
+
     return true;
 }
 
