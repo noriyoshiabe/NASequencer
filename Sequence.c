@@ -221,7 +221,7 @@ void *__MidiEventCopy(const void *_self)
 {
     const MidiEvent *self = _self;
 
-    MidiEvent *copied = (MidiEvent *)__MidiEventInit(__NATypeAlloc(self->_.clazz), self->tick);
+    MidiEvent *copied = (MidiEvent *)__MidiEventInit(NATypeAlloc(self->_.clazz), self->tick);
     memcpy(copied + 1, self + 1, self->_.clazz->size - sizeof(NAType));
     return copied;
 }

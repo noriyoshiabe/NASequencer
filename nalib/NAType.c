@@ -3,7 +3,7 @@
 
 const char NATypeID[] = "NAType";
 
-void *__NATypeAlloc(const NAClass *clazz)
+void *NATypeAlloc(const NAClass *clazz)
 {
     NAType *self = calloc(1, clazz->size);
     self->clazz = clazz;
@@ -84,7 +84,7 @@ void *NACopy(const void *_self)
         const NAType *self = _self;
 
         void *(*init)(void *self, ...) = __NAFindInit(self->clazz);
-        NAType *copied = init(__NATypeAlloc(self->clazz));
+        NAType *copied = init(NATypeAlloc(self->clazz));
         memcpy(copied + 1, self + 1, self->clazz->size - sizeof(NAType));
         return copied;
     }
