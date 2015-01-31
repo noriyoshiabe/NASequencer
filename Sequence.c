@@ -2,6 +2,11 @@
 #include <NACFHelper.h>
 #include <string.h>
 
+void SequenceSetTimeTable(Sequence *self, TimeTable *timeTable)
+{
+    self->timeTable = NARetain(timeTable);
+}
+
 void SequenceAddEvents(Sequence *self, CFArrayRef events)
 {
     CFArrayAppendArray(self->events, events, CFRangeMake(0, CFArrayGetCount(events)));
@@ -17,16 +22,27 @@ static void *__SequenceInit(void *_self, ...)
 static void __SequenceDestroy(void *_self)
 {
     Sequence *self = _self;
-    CFRelease(self->events);
+
     if (self->title) {
         free(self->title);
     }
+
+    if (self->timeTable) {
+        NARelease(self->timeTable);
+    }
+
+    CFRelease(self->events);
 }
 
 static void *__SequenceDescription(const void *_self)
 {
     const Sequence *self = _self;
-    return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<Sequence: resolution=%d title=%s events=%@>"), self->resolution, self->title, self->events);
+
+    CFStringRef cfString = NADescription(self->timeTable);
+    void *ret = (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<Sequence: resolution=%d title=%s timeTable=%@ events=%@>"), self->resolution, self->title, cfString, self->events);
+    CFRelease(cfString);
+
+    return ret;
 }
 
 NADeclareVtbl(Sequence, NAType,

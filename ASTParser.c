@@ -190,6 +190,7 @@ Sequence *ASTParserParseExpression(Expression *expression, const char *filepath,
         }
     } while ((expr = expr->right));
 
+    SequenceSetTimeTable(sequence, context->timeTable);
     SequenceAddEvents(sequence, context->events);
 
 ERROR:
