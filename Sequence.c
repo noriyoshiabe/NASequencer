@@ -125,7 +125,7 @@ static void __TimeTableDestroy(void *_self)
 static void *__TimeTableDescription(const void *_self)
 {
     const TimeTable *self = _self;
-    return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<TimeTable: timeEvents=%@>"), self->timeEvents);
+    return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<TimeTable: timeEvents=%@ tempoEvents=%@>"), self->timeEvents, self->tempoEvents);
 }
 
 NADeclareVtbl(TimeTable, NAType,
