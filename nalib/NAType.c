@@ -24,12 +24,11 @@ void *(*__NAFindInit(const NAClass *clazz))(void *self, ...)
 
 void *__NAVtblLookup(const NAClass *clazz, const char *typeID)
 {
-    NAVtblEntry *pv = clazz->pvEntry;
-    do {
+    for (NAVtblEntry *pv = clazz->pvEntry; pv->typeID; ++pv) {
         if (pv->typeID == typeID) {
             return pv->vtbl;
         }
-    } while ((++pv)->typeID);
+    }
 
     fprintf(stderr, "Virtual function table of [%s] is not found.\n", typeID);
     abort();

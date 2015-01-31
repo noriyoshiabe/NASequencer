@@ -180,15 +180,13 @@ Sequence *ASTParserParseExpression(Expression *expression, const char *filepath,
 
     error->filepath = filepath;
 
-    Expression *expr = expression;
-
-    do {
+    for (Expression *expr = expression; expr; expr = expr->right) {
         if (!parseExpression(expr, context, NULL, error)) {
             NARelease(sequence);
             sequence = NULL;
             goto ERROR;
         }
-    } while ((expr = expr->right));
+    }
 
     SequenceSetTimeTable(sequence, context->timeTable);
     SequenceAddEvents(sequence, context->events);
@@ -365,11 +363,9 @@ static bool __dispatch__TIME(Expression *expression, Context *context, void *val
 {
     TimeEvent *event = NATypeNew(TimeEvent, context->tick);
 
-    Expression *expr = expression->left;
-
-    do {
+    for (Expression *expr = expression->left; expr; expr = expr->right) {
         parseExpression(expr, context, event, error);
-    } while ((expr = expr->right));
+    }
 
     TimeTableAddTimeEvent(context->timeTable, event);
     ContextAddEvent(context, event);
@@ -382,16 +378,14 @@ static bool __dispatch__TEMPO(Expression *expression, Context *context, void *va
 {
     TempoEvent *event = NATypeNew(TempoEvent, context->tick);
 
-    Expression *expr = expression->left;
-
-    do {
+    for (Expression *expr = expression->left; expr; expr = expr->right) {
         if (FLOAT == expr->tokenType) {
             parseExpression(expr, context, &event->tempo, error);
         }
         else {
             parseExpression(expr, context, event, error);
         }
-    } while ((expr = expr->right));
+    }
 
     TimeTableAddTempoEvent(context->timeTable, event);
     ContextAddEvent(context, event);
@@ -404,16 +398,14 @@ static bool __dispatch__MARKER(Expression *expression, Context *context, void *v
 {
     MarkerEvent *event = NATypeNew(MarkerEvent, context->tick);
 
-    Expression *expr = expression->left;
-
-    do {
+    for (Expression *expr = expression->left; expr; expr = expr->right) {
         if (STRING == expr->tokenType) {
             parseExpression(expr, context, &event->text, error);
         }
         else {
             parseExpression(expr, context, event, error);
         }
-    } while ((expr = expr->right));
+    }
 
     ContextAddEvent(context, event);
     NARelease(event);
@@ -467,9 +459,8 @@ static bool __dispatch__NOTE(Expression *expression, Context *context, void *val
     int32_t step = -1;
 
     Expression *noteBlockExpr = NULL;
-    Expression *expr = expression->left;
 
-    do {
+    for (Expression *expr = expression->left; expr; expr = expr->right) {
         switch (expr->tokenType) {
         case FROM:
             parseExpression(expr, context, &context->tick, error);
@@ -481,7 +472,7 @@ static bool __dispatch__NOTE(Expression *expression, Context *context, void *val
             noteBlockExpr = expr;
             break;
         }
-    } while ((expr = expr->right));
+    }
 
     return parseExpression(noteBlockExpr, context, &step, error);
 }
@@ -650,9 +641,7 @@ static bool __dispatch__SOUND_SELECT(Expression *expression, Context *context, v
     SoundSelectEvent *event = NATypeNew(SoundSelectEvent, context->tick);
     event->channel = context->channel;
 
-    Expression *expr = expression->left;
-
-    do {
+    for (Expression *expr = expression->left; expr; expr = expr->right) {
         if (INTEGER_LIST == expr->tokenType) {
             int32_t integerList[3];
             parseExpression(expr, context, integerList, error);
@@ -663,7 +652,7 @@ static bool __dispatch__SOUND_SELECT(Expression *expression, Context *context, v
         else {
             parseExpression(expr, context, event, error);
         }
-    } while ((expr = expr->right));
+    }
 
     ContextAddEvent(context, event);
     NARelease(event);
@@ -675,10 +664,10 @@ static bool __dispatch__INTEGER_LIST(Expression *expression, Context *context, v
 {
     int32_t *integer = value;
 
-    Expression *expr = expression->left;
-    do {
+    for (Expression *expr = expression->left; expr; expr = expr->right) {
         *integer = expr->v.i;
-    } while ((++integer, expr = expr->right));
+        ++integer;
+    }
 
     return true;
 }
@@ -695,12 +684,10 @@ static bool __dispatch__NOTE_BLOCK(Expression *expression, Context *context, voi
     int32_t step = *((int32_t *)value);
     NoteBlockContext *nbContext = NATypeNew(NoteBlockContext, context->tick, step);
 
-    Expression *expr = expression->left;
-
-    do {
+    for (Expression *expr = expression->left; expr; expr = expr->right) {
         parseExpression(expr, context, nbContext, error);
         nbContext->tick += step;
-    } while ((expr = expr->right));
+    }
 
     context->tick = nbContext->tick;
 
@@ -713,11 +700,9 @@ static bool __dispatch__NOTE_BLOCK(Expression *expression, Context *context, voi
 
 static bool __dispatch__NOTE_NO_LIST(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    Expression *expr = expression->left;
-
-    do {
+    for (Expression *expr = expression->left; expr; expr = expr->right) {
         parseExpression(expr, context, value, error);
-    } while ((expr = expr->right));
+    }
 
     return true;
 }
@@ -727,9 +712,7 @@ static bool __dispatch__PATTERN_DEFINE(Expression *expression, Context *context,
     CFStringRef identifier;
     Context *local = ContextCreateLocal(context);
 
-    Expression *expr = expression->left;
-
-    do {
+    for (Expression *expr = expression->left; expr; expr = expr->right) {
         switch (expr->tokenType) {
         case IDENTIFIER:
             parseExpression(expr, local, &identifier, error);
@@ -739,7 +722,7 @@ static bool __dispatch__PATTERN_DEFINE(Expression *expression, Context *context,
             parseExpression(expr, local, NULL, error);
             break;
         }
-    } while ((expr = expr->right));
+    }
 
     Pattern *pattern = NATypeNew(Pattern, local->timeTable, local->events);
     CFDictionarySetValue(context->patterns, identifier, pattern);
