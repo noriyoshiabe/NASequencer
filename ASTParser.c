@@ -19,9 +19,12 @@ typedef struct _Context {
     int32_t velocity;
     int32_t gatetime;
     int32_t octave;
-    CFMutableArrayRef events;
     TimeTable *timeTable;
+    CFMutableArrayRef events;
+    CFMutableDictionaryRef patterns;
 } Context;
+
+NAExportClass(Context);
 
 static void *__ContextInit(void *_self, ...)
 {
@@ -32,9 +35,26 @@ static void *__ContextInit(void *_self, ...)
     self->sequence = NARetain(va_arg(ap, Sequence *));
     va_end(ap);
     
-    self->events = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
     self->timeTable = NATypeNew(TimeTable);
+    self->events = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
+    self->patterns = CFDictionaryCreateMutable(NULL, 0, NULL, NACFDictionaryValueCallBacks);
     return self;
+}
+
+static void __ContextDestroy(void *_self)
+{
+    Context *self = _self;
+
+    NARelease(self->sequence);
+    NARelease(self->timeTable);
+    CFRelease(self->events);
+    CFRelease(self->patterns);
+}
+
+static void *__ContextDescription(const void *_self)
+{
+    const Context *self = _self;
+    return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<Context: timeTable=%@ events=%@>"), self->timeTable, self->events);
 }
 
 static void ContextAddEvent(Context *context, void *event)
@@ -42,19 +62,29 @@ static void ContextAddEvent(Context *context, void *event)
     CFArrayAppendValue(context->events, event);
 }
 
-static void __ContextDestroy(void *_self)
+static Context *ContextCreateLocal(const Context *from)
 {
-    Context *self = _self;
+    Context *local = NATypeNew(Context, from->sequence);
 
-    CFRelease(self->events);
-    NARelease(self->sequence);
-    NARelease(self->timeTable);
-}
+    local->channel = from->channel;
+    local->velocity = from->velocity;
+    local->gatetime = from->gatetime;
+    local->octave = from->octave;
 
-static void *__ContextDescription(const void *_self)
-{
-    const Context *self = _self;
-    return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<Context: timeTable=%@ events=%@>"), self->timeTable, self->events);
+    CFIndex count;
+
+    count = CFArrayGetCount(from->timeTable->timeEvents);
+    if (0 < count) {
+        TimeTableAddTimeEvent(local->timeTable, (TimeEvent *)CFArrayGetValueAtIndex(from->timeTable->timeEvents, count - 1));
+    }
+    count = CFArrayGetCount(from->timeTable->tempoEvents);
+    if (0 < count) {
+        TimeTableAddTempoEvent(local->timeTable, (TempoEvent *)CFArrayGetValueAtIndex(from->timeTable->tempoEvents, count - 1));
+    }
+
+    local->patterns = CFDictionaryCreateMutableCopy(NULL, 0, from->patterns);
+
+    return local;
 }
 
 NADeclareVtbl(Context, NAType,
