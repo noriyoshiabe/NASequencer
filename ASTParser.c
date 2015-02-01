@@ -754,6 +754,8 @@ static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context,
     CFStringRef identifier;
     int32_t from = context->tick;
 
+    Expression *patternExtendBlockExpr = NULL;
+
     for (Expression *expr = expression->left; expr; expr = expr->right) {
         switch (expr->tokenType) {
         case IDENTIFIER:
@@ -762,11 +764,22 @@ static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context,
         case FROM:
             parseExpression(expr, context, &from, error);
             break;
+        case PATTERN_EXTEND_BLOCK:
+            patternExtendBlockExpr = expr;
+            break;
         }
     }
 
-    const Pattern *pattern = CFDictionaryGetValue(context->patterns, identifier);
+    Pattern *pattern = (Pattern*)CFDictionaryGetValue(context->patterns, identifier);
     CFRelease(identifier);
+
+    if (patternExtendBlockExpr) {
+        pattern = NACopy(pattern);
+        parseExpression(patternExtendBlockExpr, context, pattern, error);
+    }
+    else {
+        NARetain(pattern);
+    }
 
     CFIndex count = CFArrayGetCount(pattern->events);
     for (int i = 0; i < count; ++i) {
@@ -778,6 +791,8 @@ static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context,
         int32_t step = event->_.clazz->typeID == NoteEventID ? ((NoteEvent *)event)->gatetime : 0;
         context->tick = event->tick + step;
     }
+
+    NARelease(pattern);
 
     return true;
 }

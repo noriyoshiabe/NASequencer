@@ -115,6 +115,18 @@ static void *__TimeTableInit(void *_self, ...)
     return self;
 }
 
+static void *__TimeTableCopy(const void *_self)
+{
+    const TimeTable *self = _self;
+    TimeTable *copied = NATypeNew(TimeTable);
+
+    copied->resolution = self->resolution;
+    CFArrayAppendArray(copied->timeEvents, self->timeEvents, CFRangeMake(0, CFArrayGetCount(self->timeEvents)));
+    CFArrayAppendArray(copied->tempoEvents, self->tempoEvents, CFRangeMake(0, CFArrayGetCount(self->tempoEvents)));
+
+    return copied;
+}
+
 static void __TimeTableDestroy(void *_self)
 {
     TimeTable *self = _self;
@@ -134,7 +146,7 @@ NADeclareVtbl(TimeTable, NAType,
         NULL,
         NULL,
         NULL,
-        NULL,
+        __TimeTableCopy,
         __TimeTableDescription,
         );
 
@@ -152,6 +164,21 @@ static void *__PatternInit(void *_self, ...)
     va_end(ap);
     
     return self;
+}
+
+static void *__PatternCopy(const void *_self)
+{
+    const Pattern *self = _self;
+
+    TimeTable *copiedTimeTable = NACopy(self->timeTable);
+    CFMutableArrayRef copiedEvents = CFArrayCreateMutableCopy(NULL, 0, self->events);
+        
+    Pattern *copied = NATypeNew(Pattern, copiedTimeTable, copiedEvents);
+
+    NARelease(copiedTimeTable);
+    CFRelease(copiedEvents);
+
+    return copied;
 }
 
 static void __PatternDestroy(void *_self)
@@ -178,7 +205,7 @@ NADeclareVtbl(Pattern, NAType,
         NULL,
         NULL,
         NULL,
-        NULL,
+        __PatternCopy,
         __PatternDescription,
         );
 
