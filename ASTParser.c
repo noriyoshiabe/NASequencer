@@ -418,13 +418,15 @@ static bool __dispatch__MARKER(Expression *expression, Context *context, void *v
 
 static bool __dispatch__CHANNEL(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    switch (expression->parent->tokenType) {
-    case REPLACE:
-    case MIX:
-        return parseExpression(expression->left, context, value, error);
-    default:
-        return parseExpression(expression->left, context, &context->channel, error);
+    if (expression->parent) {
+        switch (expression->parent->tokenType) {
+        case REPLACE:
+        case MIX:
+            return parseExpression(expression->left, context, value, error);
+        }
     }
+
+    return parseExpression(expression->left, context, &context->channel, error);
 }
 
 static bool __dispatch__VELOCITY(Expression *expression, Context *context, void *value, ASTParserError *error)
@@ -497,6 +499,8 @@ static bool __dispatch__FROM(Expression *expression, Context *context, void *val
     switch (expression->parent->tokenType) {
     case NOTE:
     case PATTERN_EXPAND:
+    case REPLACE:
+    case MIX:
         return parseExpression(expression->left, context, value, error);
     default:
         return parseExpression(expression->left, context, &((MidiEvent *)value)->tick, error);
@@ -510,15 +514,9 @@ static bool __dispatch__TO(Expression *expression, Context *context, void *value
 
 static bool __dispatch__REPLACE(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    int32_t from = context->tick;
-    int32_t to = context->tick;
+    int32_t from = 0;
+    int32_t to = INT32_MAX;
     int32_t channel = -1;
-
-    CFIndex count = CFArrayGetCount(context->events);
-    if (0 < count) {
-        MidiEvent *event = (MidiEvent *)CFArrayGetValueAtIndex(context->events, count - 1);
-        to = event->tick;
-    }
 
     Expression *patternBlock = NULL;
 
@@ -540,6 +538,7 @@ static bool __dispatch__REPLACE(Expression *expression, Context *context, void *
         }
     }
 
+    CFIndex count = CFArrayGetCount(context->events);
     for (int i = count - 1; 0 <= i; --i) {
         MidiEvent *event = (MidiEvent *)CFArrayGetValueAtIndex(context->events, i);
         if (from <= event->tick && event->tick < to) {
@@ -560,12 +559,32 @@ static bool __dispatch__REPLACE(Expression *expression, Context *context, void *
         }
     }
 
-    return parseExpression(patternBlock, context, NULL, error);
+    Context *local = ContextCreateLocal(context);
+    parseExpression(patternBlock, local, NULL, error);
+
+    count = CFArrayGetCount(local->events);
+    for (int i = 0; i < count; ++i) {
+        const MidiEvent *event = CFArrayGetValueAtIndex(local->events, i);
+        if (event->tick + from < to) {
+            MidiEvent *copied = NACopy(event);
+            copied->tick += from;
+            ContextAddEvent(context, copied);
+            NARelease(copied);
+        }
+        else {
+            break;
+        }
+    }
+
+    NARelease(local);
+
+    return true;
 }
 
 static bool __dispatch__MIX(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    int32_t from = context->tick;
+    int32_t from = 0;
+    int32_t to = INT32_MAX;
 
     Expression *patternBlock = NULL;
 
@@ -575,7 +594,7 @@ static bool __dispatch__MIX(Expression *expression, Context *context, void *valu
             parseExpression(expr, context, &from, error);
             break;
         case TO:
-            // TODO useless (or make range?
+            parseExpression(expr, context, &to, error);
             break;
         case CHANNEL:
             parseExpression(expr, context, &context->channel, error);
@@ -586,7 +605,26 @@ static bool __dispatch__MIX(Expression *expression, Context *context, void *valu
         }
     }
 
-    return parseExpression(patternBlock, context, NULL, error);
+    Context *local = ContextCreateLocal(context);
+    parseExpression(patternBlock, local, NULL, error);
+
+    CFIndex count = CFArrayGetCount(local->events);
+    for (int i = 0; i < count; ++i) {
+        const MidiEvent *event = CFArrayGetValueAtIndex(local->events, i);
+        if (event->tick + from < to) {
+            MidiEvent *copied = NACopy(event);
+            copied->tick += from;
+            ContextAddEvent(context, copied);
+            NARelease(copied);
+        }
+        else {
+            break;
+        }
+    }
+
+    NARelease(local);
+
+    return true;
 }
 
 static bool __dispatch__OFFSET(Expression *expression, Context *context, void *value, ASTParserError *error)
