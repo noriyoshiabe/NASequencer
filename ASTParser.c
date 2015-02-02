@@ -752,6 +752,7 @@ static bool __dispatch__PATTERN_BLOCK(Expression *expression, Context *context, 
 static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
     CFStringRef identifier;
+    CFIndex count;
     int32_t from = context->tick;
 
     Expression *patternExtendBlockExpr = NULL;
@@ -770,36 +771,47 @@ static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context,
         }
     }
 
-    Pattern *pattern = (Pattern*)CFDictionaryGetValue(context->patterns, identifier);
+    const Pattern *pattern = CFDictionaryGetValue(context->patterns, identifier);
     CFRelease(identifier);
 
-    if (patternExtendBlockExpr) {
-        pattern = NACopy(pattern);
-        parseExpression(patternExtendBlockExpr, context, pattern, error);
-    }
-    else {
-        NARetain(pattern);
-    }
+    Context *local = ContextCreateLocal(context);
 
-    CFIndex count = CFArrayGetCount(pattern->events);
+    count = CFArrayGetCount(pattern->events);
     for (int i = 0; i < count; ++i) {
         MidiEvent *event = NACopy(CFArrayGetValueAtIndex(pattern->events, i));
+        ContextAddEvent(local, event);
+        NARelease(event);
+    }
+
+    if (patternExtendBlockExpr) {
+        parseExpression(patternExtendBlockExpr, local, NULL, error);
+    }
+
+    count = CFArrayGetCount(local->events);
+    for (int i = 0; i < count; ++i) {
+        MidiEvent *event = NACopy(CFArrayGetValueAtIndex(local->events, i));
         event->tick += from;
         ContextAddEvent(context, event);
-        NARelease(event);
 
         int32_t step = event->_.clazz->typeID == NoteEventID ? ((NoteEvent *)event)->gatetime : 0;
         context->tick = event->tick + step;
+
+        NARelease(event);
     }
 
-    NARelease(pattern);
+    NARelease(local);
 
     return true;
 }
 
 static bool __dispatch__PATTERN_EXTEND_BLOCK(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    printf("called __dispatch__PATTERN_EXTEND_BLOCK()\n");
+    for (Expression *expr = expression->left; expr; expr = expr->right) {
+        if (!parseExpression(expr, context, value, error)) {
+            return false;
+        }
+    }
+
     return true;
 }
 
