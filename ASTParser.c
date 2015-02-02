@@ -418,7 +418,13 @@ static bool __dispatch__MARKER(Expression *expression, Context *context, void *v
 
 static bool __dispatch__CHANNEL(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    return parseExpression(expression->left, context, &context->channel, error);
+    switch (expression->parent->tokenType) {
+    case REPLACE:
+    case MIX:
+        return parseExpression(expression->left, context, value, error);
+    default:
+        return parseExpression(expression->left, context, &context->channel, error);
+    }
 }
 
 static bool __dispatch__VELOCITY(Expression *expression, Context *context, void *value, ASTParserError *error)
@@ -499,20 +505,88 @@ static bool __dispatch__FROM(Expression *expression, Context *context, void *val
 
 static bool __dispatch__TO(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    printf("called __dispatch__TO()\n");
-    return true;
+    return parseExpression(expression->left, context, value, error);
 }
 
 static bool __dispatch__REPLACE(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    printf("called __dispatch__REPLACE()\n");
-    return true;
+    int32_t from = context->tick;
+    int32_t to = context->tick;
+    int32_t channel = -1;
+
+    CFIndex count = CFArrayGetCount(context->events);
+    if (0 < count) {
+        MidiEvent *event = (MidiEvent *)CFArrayGetValueAtIndex(context->events, count - 1);
+        to = event->tick;
+    }
+
+    Expression *patternBlock = NULL;
+
+    for (Expression *expr = expression->left; expr; expr = expr->right) {
+        switch (expr->tokenType) {
+        case FROM:
+            parseExpression(expr, context, &from, error);
+            break;
+        case TO:
+            parseExpression(expr, context, &to, error);
+            break;
+        case CHANNEL:
+            parseExpression(expr, context, &channel, error);
+            context->channel = channel;
+            break;
+        case PATTERN_BLOCK:
+            patternBlock = expr;
+            break;
+        }
+    }
+
+    for (int i = count - 1; 0 <= i; --i) {
+        MidiEvent *event = (MidiEvent *)CFArrayGetValueAtIndex(context->events, i);
+        if (from <= event->tick && event->tick < to) {
+            // FIXME nonsence!!
+            if (-1 == channel) {
+                CFArrayRemoveValueAtIndex(context->events, i);
+            }
+            else if (event->_.clazz->typeID == NoteEventID) {
+                if (channel == ((NoteEvent *)event)->channel) {
+                    CFArrayRemoveValueAtIndex(context->events, i);
+                }
+            }
+            else if (event->_.clazz->typeID == SoundSelectEventID) {
+                if (channel == ((SoundSelectEvent *)event)->channel) {
+                    CFArrayRemoveValueAtIndex(context->events, i);
+                }
+            }
+        }
+    }
+
+    return parseExpression(patternBlock, context, NULL, error);
 }
 
 static bool __dispatch__MIX(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    printf("called __dispatch__MIX()\n");
-    return true;
+    int32_t from = context->tick;
+
+    Expression *patternBlock = NULL;
+
+    for (Expression *expr = expression->left; expr; expr = expr->right) {
+        switch (expr->tokenType) {
+        case FROM:
+            parseExpression(expr, context, &from, error);
+            break;
+        case TO:
+            // TODO useless (or make range?
+            break;
+        case CHANNEL:
+            parseExpression(expr, context, &context->channel, error);
+            break;
+        case PATTERN_BLOCK:
+            patternBlock = expr;
+            break;
+        }
+    }
+
+    return parseExpression(patternBlock, context, NULL, error);
 }
 
 static bool __dispatch__OFFSET(Expression *expression, Context *context, void *value, ASTParserError *error)
