@@ -632,8 +632,7 @@ static bool __dispatch__MIX(Expression *expression, Context *context, void *valu
 
 static bool __dispatch__OFFSET(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    printf("called __dispatch__OFFSET()\n");
-    return true;
+    return parseExpression(expression->left, context, value, error);
 }
 
 static bool __dispatch__LENGTH(Expression *expression, Context *context, void *value, ASTParserError *error)
@@ -870,6 +869,7 @@ static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context,
     CFStringRef identifier;
     CFIndex count;
     int32_t from = context->tick;
+    int32_t offset = 0;
 
     Expression *patternExtendBlockExpr = NULL;
 
@@ -884,6 +884,9 @@ static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context,
         case PATTERN_EXTEND_BLOCK:
             patternExtendBlockExpr = expr;
             break;
+        case OFFSET:
+            parseExpression(expr, context, &offset, error);
+            break;
         }
     }
 
@@ -894,9 +897,13 @@ static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context,
 
     count = CFArrayGetCount(pattern->events);
     for (int i = 0; i < count; ++i) {
-        MidiEvent *event = NACopy(CFArrayGetValueAtIndex(pattern->events, i));
-        ContextAddEvent(local, event);
-        NARelease(event);
+        const MidiEvent *event = CFArrayGetValueAtIndex(pattern->events, i);
+        if (offset <= event->tick) {
+            MidiEvent *copied = NACopy(event);
+            copied->tick -= offset;
+            ContextAddEvent(local, copied);
+            NARelease(copied);
+        }
     }
 
     if (patternExtendBlockExpr) {
@@ -911,8 +918,9 @@ static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context,
         NARelease(event);
     }
 
-    context->tick += pattern->length;
-    context->length = MAX(context->tick, from + pattern->length);
+    uint32_t length = pattern->length - offset;
+    context->tick += length;
+    context->length = MAX(context->tick, from + length);
 
     NARelease(local);
 
