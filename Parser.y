@@ -290,7 +290,8 @@ pattern_statement
     ;
 
 pattern_expand
-    : identifier pattern_expand_param_list { $$ = createExpression(&@$, PATTERN_EXPAND, addRightExpression($1, $2), NULL); }
+    : identifier { $$ = createExpression(&@$, PATTERN_EXPAND, $1, NULL); }
+    | identifier pattern_expand_param_list { $$ = createExpression(&@$, PATTERN_EXPAND, addRightExpression($1, $2), NULL); }
     ;
 pattern_expand_param_list
     : pattern_expand_param

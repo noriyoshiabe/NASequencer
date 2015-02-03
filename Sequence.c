@@ -161,6 +161,7 @@ static void *__PatternInit(void *_self, ...)
     va_start(ap, _self);
     self->timeTable = NARetain(va_arg(ap, TimeTable *));
     self->events = (CFMutableArrayRef)CFRetain(va_arg(ap, CFMutableArrayRef));
+    self->length = va_arg(ap, uint32_t);
     va_end(ap);
     
     return self;

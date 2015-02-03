@@ -7,6 +7,8 @@
 #include <string.h>
 #include <stdbool.h>
 
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+
 /*
  * TODO error handling
  */
@@ -21,6 +23,7 @@ typedef struct _Context {
     int32_t octave;
     TimeTable *timeTable;
     CFMutableArrayRef events;
+    uint32_t length;
     CFMutableDictionaryRef patterns;
 } Context;
 
@@ -806,6 +809,7 @@ static bool __dispatch__NOTE_BLOCK(Expression *expression, Context *context, voi
     }
 
     context->tick = nbContext->tick;
+    context->length = MAX(context->tick, context->length);
 
     CFArrayAppendArray(context->events, nbContext->events, CFRangeMake(0, CFArrayGetCount(nbContext->events)));
 
@@ -840,7 +844,7 @@ static bool __dispatch__PATTERN_DEFINE(Expression *expression, Context *context,
         }
     }
 
-    Pattern *pattern = NATypeNew(Pattern, local->timeTable, local->events);
+    Pattern *pattern = NATypeNew(Pattern, local->timeTable, local->events, local->length);
     CFDictionarySetValue(context->patterns, identifier, pattern);
 
     CFRelease(identifier);
@@ -904,12 +908,11 @@ static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context,
         MidiEvent *event = NACopy(CFArrayGetValueAtIndex(local->events, i));
         event->tick += from;
         ContextAddEvent(context, event);
-
-        int32_t step = event->_.clazz->typeID == NoteEventID ? ((NoteEvent *)event)->gatetime : 0;
-        context->tick = event->tick + step;
-
         NARelease(event);
     }
+
+    context->tick += pattern->length;
+    context->length = MAX(context->tick, from + pattern->length);
 
     NARelease(local);
 

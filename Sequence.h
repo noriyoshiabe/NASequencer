@@ -22,6 +22,7 @@ typedef struct _Pattern {
     NAType _;
     TimeTable *timeTable;
     CFMutableArrayRef events;
+    uint32_t length;
 } Pattern;
 
 typedef struct _Track {
