@@ -637,8 +637,7 @@ static bool __dispatch__OFFSET(Expression *expression, Context *context, void *v
 
 static bool __dispatch__LENGTH(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    printf("called __dispatch__LENGTH()\n");
-    return true;
+    return parseExpression(expression->left, context, value, error);
 }
 
 
@@ -870,6 +869,7 @@ static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context,
     CFIndex count;
     int32_t from = context->tick;
     int32_t offset = 0;
+    int32_t expandLength = -1;
 
     Expression *patternExtendBlockExpr = NULL;
 
@@ -887,6 +887,9 @@ static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context,
         case OFFSET:
             parseExpression(expr, context, &offset, error);
             break;
+        case LENGTH:
+            parseExpression(expr, context, &expandLength, error);
+            break;
         }
     }
 
@@ -898,7 +901,7 @@ static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context,
     count = CFArrayGetCount(pattern->events);
     for (int i = 0; i < count; ++i) {
         const MidiEvent *event = CFArrayGetValueAtIndex(pattern->events, i);
-        if (offset <= event->tick) {
+        if (offset <= event->tick && (-1 == expandLength || event->tick < offset + expandLength)) {
             MidiEvent *copied = NACopy(event);
             copied->tick -= offset;
             ContextAddEvent(local, copied);
@@ -912,13 +915,16 @@ static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context,
 
     count = CFArrayGetCount(local->events);
     for (int i = 0; i < count; ++i) {
-        MidiEvent *event = NACopy(CFArrayGetValueAtIndex(local->events, i));
-        event->tick += from;
-        ContextAddEvent(context, event);
-        NARelease(event);
+        const MidiEvent *event = CFArrayGetValueAtIndex(local->events, i);
+        if (-1 == expandLength || event->tick < expandLength) {
+            MidiEvent *copied = NACopy(event);
+            copied->tick += from;
+            ContextAddEvent(context, copied);
+            NARelease(copied);
+        }
     }
 
-    uint32_t length = pattern->length - offset;
+    uint32_t length = (-1 != expandLength ? expandLength : pattern->length) - offset;
     context->tick += length;
     context->length = MAX(context->tick, from + length);
 

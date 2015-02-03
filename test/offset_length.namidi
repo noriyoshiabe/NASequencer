@@ -20,5 +20,11 @@ test = {
   }
 }
 
-test offset 960
-test offset 960
+test {
+  replace channel 1 {
+    note step 120 {
+      E
+    }
+  }
+}
+test offset 0 length 480
