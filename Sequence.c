@@ -99,14 +99,10 @@ void TimeTableAddTempoEvent(TimeTable *self, TempoEvent *tempoEvent)
 
 uint32_t TimeTableLocation2Tick(TimeTable *self, int32_t measure, int32_t beat, int32_t tick)
 {
-    uint8_t numerator = 4;
-    uint8_t denominator = 4;
     int32_t offsetTick = 0;
     
-    int32_t tickPerBeat = self->resolution * 4 / denominator;
-    int32_t tickPerMeasure = tickPerBeat * numerator;
-
-    int32_t _tick = 0;
+    int32_t tickPerBeat = self->resolution * 4 / 4;
+    int32_t tickPerMeasure = tickPerBeat * 4;
 
     measure -= 1;
     beat -= 1;
@@ -114,17 +110,15 @@ uint32_t TimeTableLocation2Tick(TimeTable *self, int32_t measure, int32_t beat, 
     CFIndex count = CFArrayGetCount(self->timeEvents);
     for (int i = 0; i < count; ++i) {
         const TimeEvent *event = CFArrayGetValueAtIndex(self->timeEvents, i);
-        _tick = tickPerMeasure * measure + tickPerBeat * beat + tick;
-        if ((event->_.tick - offsetTick) <= _tick) {
+
+        int32_t _tick = tickPerMeasure * measure + tickPerBeat * beat + tick + offsetTick;
+        if (event->_.tick <= _tick) {
             offsetTick = event->_.tick;
-            _tick -= offsetTick;
 
-            numerator = event->numerator;
-            denominator = event->denominator;
-            tickPerBeat = self->resolution * 4 / denominator;
-            tickPerMeasure = tickPerBeat * numerator;
+            tickPerBeat = self->resolution * 4 / event->denominator;
+            tickPerMeasure = tickPerBeat * event->numerator;
 
-            tick -= event->_.tick & tickPerBeat;
+            tick -= event->_.tick % tickPerBeat;
             measure -= event->_.tick / tickPerMeasure;
             beat -= (event->_.tick % tickPerMeasure) / tickPerBeat;
         }
@@ -133,7 +127,7 @@ uint32_t TimeTableLocation2Tick(TimeTable *self, int32_t measure, int32_t beat, 
         }
     }
 
-    return _tick + offsetTick;
+    return tickPerMeasure * measure + tickPerBeat * beat + offsetTick;
 }
 
 static void *__TimeTableInit(void *_self, ...)
