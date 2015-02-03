@@ -4,16 +4,20 @@ resolution 480
 time 4/4
 tempo 120.0
 
-/*
 test = {
-  time 4/3
+  time 2/4
   note step 120 from 2:1:0 {
     C D E F G A B C2
   }
 }
-*/
 
-time 4/4
-note step 120 from 2:1:0 {
-  C D E F G A B C2
+
+test {
+  mix from 3:1:0 {
+    note step 120 {
+      C5
+    }
+  }
 }
+
+//test

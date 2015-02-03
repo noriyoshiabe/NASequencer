@@ -898,6 +898,19 @@ static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context,
 
     Context *local = ContextCreateLocal(context);
 
+    // TODO reflect to parent time table.
+    //      is it limited with local scope?
+
+    count = CFArrayGetCount(pattern->timeTable->timeEvents);
+    for (int i = 0; i < count; ++i) {
+        TimeTableAddTimeEvent(local->timeTable, (TimeEvent *)CFArrayGetValueAtIndex(pattern->timeTable->timeEvents, i));
+    }
+
+    count = CFArrayGetCount(pattern->timeTable->tempoEvents);
+    for (int i = 0; i < count; ++i) {
+        TimeTableAddTempoEvent(local->timeTable, (TempoEvent *)CFArrayGetValueAtIndex(pattern->timeTable->tempoEvents, i));
+    }
+
     count = CFArrayGetCount(pattern->events);
     for (int i = 0; i < count; ++i) {
         const MidiEvent *event = CFArrayGetValueAtIndex(pattern->events, i);
