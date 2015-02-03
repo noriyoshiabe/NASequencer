@@ -10,6 +10,7 @@ void SequenceSetTimeTable(Sequence *self, TimeTable *timeTable)
 void SequenceAddEvents(Sequence *self, CFArrayRef events)
 {
     CFArrayAppendArray(self->events, events, CFRangeMake(0, CFArrayGetCount(events)));
+    CFArraySortValues(self->events, CFRangeMake(0, CFArrayGetCount(self->events)), NACFComparatorFunction, NULL);
 }
 
 static void *__SequenceInit(void *_self, ...)
@@ -186,6 +187,8 @@ static void *__PatternInit(void *_self, ...)
     self->events = (CFMutableArrayRef)CFRetain(va_arg(ap, CFMutableArrayRef));
     self->length = va_arg(ap, uint32_t);
     va_end(ap);
+
+    CFArraySortValues(self->events, CFRangeMake(0, CFArrayGetCount(self->events)), NACFComparatorFunction, NULL);
     
     return self;
 }

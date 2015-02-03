@@ -7,17 +7,19 @@ tempo 120.0
 test = {
   time 2/4
   note step 120 from 2:1:0 {
-    C D E F G A B C2
+    C1
+  }
+
+  note step 120 from 1:1:0 {
+    C2
   }
 }
 
 
 test {
-  mix from 3:1:0 {
+  mix from 1:1:0 {
     note step 120 {
-      C5
+      C3
     }
   }
 }
-
-//test

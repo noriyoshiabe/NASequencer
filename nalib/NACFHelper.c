@@ -77,3 +77,17 @@ static const CFDictionaryValueCallBacks __NACFDictionaryValueCallBacks = {
 };
 
 const CFDictionaryValueCallBacks *NACFDictionaryValueCallBacks = &__NACFDictionaryValueCallBacks;
+
+
+static CFComparisonResult __NACFComparatorFunction(const void *val1, const void *val2, void *context)
+{
+    return NACompare(val1, val2);
+}
+
+static CFComparisonResult __NACFComparatorFunctionDesc(const void *val1, const void *val2, void *context)
+{
+    return -NACompare(val1, val2);
+}
+
+const CFComparatorFunction NACFComparatorFunction = __NACFComparatorFunction;
+const CFComparatorFunction NACFComparatorFunctionDesc = __NACFComparatorFunctionDesc;
