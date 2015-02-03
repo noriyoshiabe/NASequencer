@@ -35,7 +35,7 @@ typedef struct __NATypeVtbl {
 extern const char NATypeID[];
 
 #define NATypeNew(type, ...) ((NATypeVtbl *)__NAFindInit(&type##Class))->init(NATypeAlloc(&type##Class), ## __VA_ARGS__)
-#define NAVtbl(self, type) ((type##Vtbl *)__NAVtblLookup(((NAType *)self)->clazz, type##ID))
+#define NATypeOf(self, type) (((NAType *)self)->clazz->typeID == type##ID)
 
 extern void *NARetain(void *self);
 extern void NARelease(void *self);
@@ -50,6 +50,8 @@ extern void *NADescription(const void *self);
 extern void *NATypeAlloc(const NAClass *clazz);
 extern void *(*__NAFindInit(const NAClass *clazz))(void *self, ...);
 extern void *__NAVtblLookup(const NAClass *clazz, const char *typeID);
+
+#define NAVtbl(self, type) ((type##Vtbl *)__NAVtblLookup(((NAType *)self)->clazz, type##ID))
 
 #define NAExportClass(type) \
     extern const NAClass type##Class; \

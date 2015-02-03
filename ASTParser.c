@@ -547,12 +547,12 @@ static bool __dispatch__REPLACE(Expression *expression, Context *context, void *
             if (-1 == channel) {
                 CFArrayRemoveValueAtIndex(context->events, i);
             }
-            else if (event->_.clazz->typeID == NoteEventID) {
+            else if (NATypeOf(event, NoteEvent)) {
                 if (channel == ((NoteEvent *)event)->channel) {
                     CFArrayRemoveValueAtIndex(context->events, i);
                 }
             }
-            else if (event->_.clazz->typeID == SoundSelectEventID) {
+            else if (NATypeOf(event, SoundSelectEvent)) {
                 if (channel == ((SoundSelectEvent *)event)->channel) {
                     CFArrayRemoveValueAtIndex(context->events, i);
                 }
