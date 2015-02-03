@@ -60,12 +60,41 @@ NADeclareClass(Sequence, NAType);
 
 void TimeTableAddTimeEvent(TimeTable *self, TimeEvent *timeEvent)
 {
-    CFArrayAppendValue(self->timeEvents, timeEvent);
+    CFIndex i;
+    CFIndex count = CFArrayGetCount(self->timeEvents);
+    for (i = 0; i < count; ++i) {
+        TimeEvent *event = (TimeEvent *)CFArrayGetValueAtIndex(self->timeEvents, i);
+        int compare = timeEvent->_.tick - event->_.tick;
+        if (0 == compare) {
+            event->numerator = timeEvent->numerator;
+            event->denominator = timeEvent->denominator;
+            return;
+        }
+        else if (compare < 0) {
+            break;
+        }
+    }
+
+    CFArrayInsertValueAtIndex(self->timeEvents, i, timeEvent);
 }
 
 void TimeTableAddTempoEvent(TimeTable *self, TempoEvent *tempoEvent)
 {
-    CFArrayAppendValue(self->tempoEvents, tempoEvent);
+    CFIndex i;
+    CFIndex count = CFArrayGetCount(self->tempoEvents);
+    for (i = 0; i < count; ++i) {
+        TempoEvent *event = (TempoEvent *)CFArrayGetValueAtIndex(self->tempoEvents, i);
+        int compare = tempoEvent->_.tick - event->_.tick;
+        if (0 == compare) {
+            event->tempo = tempoEvent->tempo;
+            return;
+        }
+        else if (compare < 0) {
+            break;
+        }
+    }
+
+    CFArrayInsertValueAtIndex(self->tempoEvents, i, tempoEvent);
 }
 
 uint32_t TimeTableLocation2Tick(TimeTable *self, int32_t measure, int32_t beat, int32_t tick)
