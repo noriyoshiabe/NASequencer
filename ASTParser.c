@@ -374,7 +374,6 @@ static bool __dispatch__TIME(Expression *expression, Context *context, void *val
     }
 
     TimeTableAddTimeEvent(context->timeTable, event);
-    ContextAddEvent(context, event);
     NARelease(event);
 
     return true;
@@ -394,7 +393,6 @@ static bool __dispatch__TEMPO(Expression *expression, Context *context, void *va
     }
 
     TimeTableAddTempoEvent(context->timeTable, event);
-    ContextAddEvent(context, event);
     NARelease(event);
 
     return true;
