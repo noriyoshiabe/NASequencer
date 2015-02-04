@@ -247,21 +247,6 @@ static void *__PatternInit(void *_self, ...)
     return self;
 }
 
-static void *__PatternCopy(const void *_self)
-{
-    const Pattern *self = _self;
-
-    TimeTable *copiedTimeTable = NACopy(self->timeTable);
-    CFMutableArrayRef copiedEvents = CFArrayCreateMutableCopy(NULL, 0, self->events);
-        
-    Pattern *copied = NATypeNew(Pattern, copiedTimeTable, copiedEvents);
-
-    NARelease(copiedTimeTable);
-    CFRelease(copiedEvents);
-
-    return copied;
-}
-
 static void __PatternDestroy(void *_self)
 {
     Pattern *self = _self;
@@ -286,43 +271,11 @@ NADeclareVtbl(Pattern, NAType,
         NULL,
         NULL,
         NULL,
-        __PatternCopy,
+        NULL,
         __PatternDescription,
         );
 
 NADeclareClass(Pattern, NAType);
-
-
-static void *__TrackInit(void *_self, ...)
-{
-    Track *self = _self;
-    self->events = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
-    return self;
-}
-
-static void __TrackDestroy(void *_self)
-{
-    Track *self = _self;
-    CFRelease(self->events);
-}
-
-static void *__TrackDescription(const void *_self)
-{
-    const Track *self = _self;
-    return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<Track: events=%@>"), self->events);
-}
-
-NADeclareVtbl(Track, NAType,
-        __TrackInit,
-        __TrackDestroy,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        __TrackDescription
-        );
-
-NADeclareClass(Track, NAType);
 
 
 static void *__MidiEventInit(void *_self, ...)

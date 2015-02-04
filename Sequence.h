@@ -25,11 +25,6 @@ typedef struct _Pattern {
     uint32_t length;
 } Pattern;
 
-typedef struct _Track {
-    NAType _;
-    CFMutableArrayRef events;
-} Track;
-
 typedef struct _MidiEvent {
     NAType _;
     uint32_t tick;
@@ -70,7 +65,6 @@ typedef struct _NoteEvent {
 NAExportClass(Sequence);
 NAExportClass(TimeTable);
 NAExportClass(Pattern);
-NAExportClass(Track);
 NAExportClass(MidiEvent);
 NAExportClass(TimeEvent);
 NAExportClass(TempoEvent);
