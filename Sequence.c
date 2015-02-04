@@ -64,12 +64,11 @@ void TimeTableAddTimeEvent(TimeTable *self, TimeEvent *timeEvent)
     CFIndex i;
     CFIndex count = CFArrayGetCount(self->timeEvents);
     for (i = 0; i < count; ++i) {
-        TimeEvent *event = (TimeEvent *)CFArrayGetValueAtIndex(self->timeEvents, i);
+        const TimeEvent *event = CFArrayGetValueAtIndex(self->timeEvents, i);
         int compare = timeEvent->_.tick - event->_.tick;
         if (0 == compare) {
-            event->numerator = timeEvent->numerator;
-            event->denominator = timeEvent->denominator;
-            return;
+            CFArrayRemoveValueAtIndex(self->timeEvents, i);
+            break;
         }
         else if (compare < 0) {
             break;
@@ -84,11 +83,11 @@ void TimeTableAddTempoEvent(TimeTable *self, TempoEvent *tempoEvent)
     CFIndex i;
     CFIndex count = CFArrayGetCount(self->tempoEvents);
     for (i = 0; i < count; ++i) {
-        TempoEvent *event = (TempoEvent *)CFArrayGetValueAtIndex(self->tempoEvents, i);
+        const TempoEvent *event = CFArrayGetValueAtIndex(self->tempoEvents, i);
         int compare = tempoEvent->_.tick - event->_.tick;
         if (0 == compare) {
-            event->tempo = tempoEvent->tempo;
-            return;
+            CFArrayRemoveValueAtIndex(self->tempoEvents, i);
+            break;
         }
         else if (compare < 0) {
             break;
@@ -183,6 +182,18 @@ uint32_t TimeTableMBLength2Tick(TimeTable *self, int32_t offsetTick, int32_t mea
 
 END:
     return ret;
+}
+
+const TimeEvent *TimeTableLastTimeEvent(TimeTable *self)
+{
+    CFIndex count = CFArrayGetCount(self->timeEvents);
+    return 0 == count ? NULL : CFArrayGetValueAtIndex(self->timeEvents, count - 1);
+}
+
+const TempoEvent *TimeTableLastTempoEvent(TimeTable *self)
+{
+    CFIndex count = CFArrayGetCount(self->tempoEvents);
+    return 0 == count ? NULL : CFArrayGetValueAtIndex(self->tempoEvents, count - 1);
 }
 
 static void *__TimeTableInit(void *_self, ...)

@@ -78,3 +78,5 @@ extern void TimeTableAddTimeEvent(TimeTable *self, TimeEvent *timeEvent);
 extern void TimeTableAddTempoEvent(TimeTable *self, TempoEvent *tempoEvent);
 extern uint32_t TimeTableLocation2Tick(TimeTable *self, int32_t measure, int32_t beat, int32_t tick);
 extern uint32_t TimeTableMBLength2Tick(TimeTable *self, int32_t offsetTick, int32_t measure, int32_t beat);
+extern const TimeEvent *TimeTableLastTimeEvent(TimeTable *self);
+extern const TempoEvent *TimeTableLastTempoEvent(TimeTable *self);

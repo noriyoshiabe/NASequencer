@@ -828,9 +828,6 @@ static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context,
 
     Context *local = ContextCreateLocal(context);
 
-    // TODO reflect to parent time table.
-    //      is it limited with local scope?
-
     count = CFArrayGetCount(pattern->timeTable->timeEvents);
     for (int i = 0; i < count; ++i) {
         TimeTableAddTimeEvent(local->timeTable, (TimeEvent *)CFArrayGetValueAtIndex(pattern->timeTable->timeEvents, i));
@@ -872,9 +869,58 @@ static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context,
         }
     }
 
+    TimeEvent *parentTimeEvent = NARetain((TimeEvent *)TimeTableLastTimeEvent(context->timeTable));
+    TempoEvent *parentTempoEvent = NARetain((TempoEvent *)TimeTableLastTempoEvent(context->timeTable));
+
+    count = CFArrayGetCount(local->timeTable->timeEvents);
+    for (int i = 0; i < count; ++i) {
+        const TimeEvent *event = CFArrayGetValueAtIndex(local->timeTable->timeEvents, i);
+        if (-1 == expandLength || event->_.tick < expandLength) {
+            TimeEvent *copied = NACopy(event);
+            copied->_.tick += from;
+            TimeTableAddTimeEvent(context->timeTable, copied);
+            NARelease(copied);
+        }
+    }
+
+    count = CFArrayGetCount(local->timeTable->tempoEvents);
+    for (int i = 0; i < count; ++i) {
+        const TempoEvent *event = CFArrayGetValueAtIndex(local->timeTable->tempoEvents, i);
+        if (-1 == expandLength || event->_.tick < expandLength) {
+            TempoEvent *copied = NACopy(event);
+            copied->_.tick += from;
+            TimeTableAddTempoEvent(context->timeTable, copied);
+            NARelease(copied);
+        }
+    }
+
     uint32_t length = (-1 != expandLength ? expandLength : pattern->length) - offset;
     context->tick += length;
     context->length = MAX(context->tick, from + length);
+
+    const TimeEvent *lastTimeEvent = TimeTableLastTimeEvent(local->timeTable);
+    if (NULL != parentTimeEvent && NULL != lastTimeEvent) {
+        if (parentTimeEvent->numerator != lastTimeEvent->numerator
+                || parentTimeEvent->denominator != lastTimeEvent->denominator) {
+            TimeEvent *newEvent = NACopy(parentTimeEvent);
+            newEvent->_.tick = context->tick;
+            TimeTableAddTimeEvent(context->timeTable, newEvent);
+            NARelease(newEvent);
+        }
+    }
+
+    const TempoEvent *lastTempoEvent = TimeTableLastTempoEvent(local->timeTable);
+    if (NULL != parentTempoEvent && NULL != lastTempoEvent) {
+        if (parentTempoEvent->tempo != lastTempoEvent->tempo) {
+            TempoEvent *newEvent = NACopy(parentTempoEvent);
+            newEvent->_.tick = context->tick;
+            TimeTableAddTempoEvent(context->timeTable, newEvent);
+            NARelease(newEvent);
+        }
+    }
+
+    NARelease(parentTimeEvent);
+    NARelease(parentTempoEvent);
 
     NARelease(local);
 
