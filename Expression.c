@@ -105,10 +105,7 @@ const char *tokenType2String(int tokenType)
     CASE(LENGTH);
     CASE(REST);
     CASE(TIE);
-    CASE(PLUS);
-    CASE(MINUS);
     CASE(DIVISION);
-    CASE(MULTIPLY);
     CASE(ASSIGN);
     CASE(SEMICOLON);
     CASE(COMMA);

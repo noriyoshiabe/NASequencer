@@ -65,9 +65,6 @@ LENGTH         length
 REST           "^"
 TIE            "~"
 
-PLUS           "+"
-MINUS          "-"
-MULTIPLY       "*"
 DIVISION       "/"
 ASSIGN         "="
 
@@ -123,9 +120,6 @@ LINE_COMMENT   \/\/.*$
 {REST}           { return REST; }
 {TIE}            { return TIE; }
 
-{PLUS}           { return PLUS; }
-{MINUS}          { return MINUS; }
-{MULTIPLY}       { return MULTIPLY; }
 {DIVISION}       { return DIVISION; }
 {ASSIGN}         { return ASSIGN; }
 {SEMICOLON}      { }

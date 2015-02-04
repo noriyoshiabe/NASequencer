@@ -9,6 +9,10 @@
 
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 
+#define TABLE_SIZE (TOKEN_END - TOKEN_BEGIN)
+#define IDX(type) (type - TOKEN_BEGIN - 1)
+#define SET_ERROR(error, _kind, _expression, _message) (error->kind = _kind, error->expression = _expression, error->message = _message ? _message : "")
+
 /*
  * TODO error handling
  */
@@ -162,10 +166,6 @@ NADeclareVtbl(NoteBlockContext, NAType,
 
 NADeclareClass(NoteBlockContext, NAType);
 
-
-#define TABLE_SIZE (TOKEN_END - TOKEN_BEGIN)
-#define IDX(type) (type - TOKEN_BEGIN - 1)
-#define SET_ERROR(error, _kind, _expression, _message) (error->kind = _kind, error->expression = _expression, error->message = _message ? _message : "")
 
 static bool (*dispatchTable[TABLE_SIZE])(Expression *, Context *, void *, ASTParserError *) = {NULL};
 
@@ -675,85 +675,9 @@ static bool __dispatch__TIE(Expression *expression, Context *context, void *valu
 }
 
 
-static bool __dispatch__PLUS(Expression *expression, Context *context, void *value, ASTParserError *error)
-{
-    printf("called __dispatch__PLUS()\n");
-    return true;
-}
-
-static bool __dispatch__MINUS(Expression *expression, Context *context, void *value, ASTParserError *error)
-{
-    printf("called __dispatch__MINUS()\n");
-    return true;
-}
-
-static bool __dispatch__DIVISION(Expression *expression, Context *context, void *value, ASTParserError *error)
-{
-    printf("called __dispatch__DIVISION()\n");
-    return true;
-}
-
-static bool __dispatch__MULTIPLY(Expression *expression, Context *context, void *value, ASTParserError *error)
-{
-    printf("called __dispatch__MULTIPLY()\n");
-    return true;
-}
-
-static bool __dispatch__ASSIGN(Expression *expression, Context *context, void *value, ASTParserError *error)
-{
-    printf("called __dispatch__ASSIGN()\n");
-    return true;
-}
-
-
-static bool __dispatch__SEMICOLON(Expression *expression, Context *context, void *value, ASTParserError *error)
-{
-    printf("called __dispatch__SEMICOLON()\n");
-    return true;
-}
-
-static bool __dispatch__COMMA(Expression *expression, Context *context, void *value, ASTParserError *error)
-{
-    printf("called __dispatch__COMMA()\n");
-    return true;
-}
-
-
-static bool __dispatch__LPAREN(Expression *expression, Context *context, void *value, ASTParserError *error)
-{
-    printf("called __dispatch__LPAREN()\n");
-    return true;
-}
-
-static bool __dispatch__RPAREN(Expression *expression, Context *context, void *value, ASTParserError *error)
-{
-    printf("called __dispatch__RPAREN()\n");
-    return true;
-}
-
-static bool __dispatch__LCURLY(Expression *expression, Context *context, void *value, ASTParserError *error)
-{
-    printf("called __dispatch__LCURLY()\n");
-    return true;
-}
-
-static bool __dispatch__RCURLY(Expression *expression, Context *context, void *value, ASTParserError *error)
-{
-    printf("called __dispatch__RCURLY()\n");
-    return true;
-}
-
-
 static bool __dispatch__IDENTIFIER(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
     *((CFStringRef *)value) = CFStringCreateWithCString(NULL, expression->v.s, kCFStringEncodingUTF8);
-    return true;
-}
-
-
-static bool __dispatch__EOL(Expression *expression, Context *context, void *value, ASTParserError *error)
-{
-    printf("called __dispatch__EOL()\n");
     return true;
 }
 
@@ -1011,23 +935,7 @@ static void __attribute__((constructor)) initializeTable()
     SET_FUNCTION(REST);
     SET_FUNCTION(TIE);
 
-    SET_FUNCTION(PLUS);
-    SET_FUNCTION(MINUS);
-    SET_FUNCTION(DIVISION);
-    SET_FUNCTION(MULTIPLY);
-    SET_FUNCTION(ASSIGN);
-
-    SET_FUNCTION(SEMICOLON);
-    SET_FUNCTION(COMMA);
-
-    SET_FUNCTION(LPAREN);
-    SET_FUNCTION(RPAREN);
-    SET_FUNCTION(LCURLY);
-    SET_FUNCTION(RCURLY);
-
     SET_FUNCTION(IDENTIFIER);
-
-    SET_FUNCTION(EOL);
 
     SET_FUNCTION(TIME_SIGN);
     SET_FUNCTION(SOUND_SELECT);

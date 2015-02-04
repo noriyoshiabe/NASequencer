@@ -63,10 +63,7 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, cons
 %token REST
 %token TIE
 
-%token PLUS
-%token MINUS
 %token DIVISION
-%token MULTIPLY
 %token ASSIGN
 
 %token SEMICOLON
