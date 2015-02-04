@@ -61,33 +61,18 @@ NADeclareClass(Sequence, NAType);
 
 void TimeTableAddTimeEvent(TimeTable *self, TimeEvent *timeEvent)
 {
-    const TimeEvent *prev = NULL;
-    bool replace = false;
-
     CFIndex i;
     CFIndex count = CFArrayGetCount(self->timeEvents);
     for (i = 0; i < count; ++i) {
         const TimeEvent *event = CFArrayGetValueAtIndex(self->timeEvents, i);
         int compare = timeEvent->_.tick - event->_.tick;
         if (0 == compare) {
-            replace = true;
+            CFArrayRemoveValueAtIndex(self->timeEvents, i);
             break;
         }
         else if (compare < 0) {
             break;
         }
-        else {
-            prev = event;
-        }
-    }
-
-    if (prev && prev->numerator == timeEvent->numerator
-            && prev->denominator == timeEvent->denominator) {
-        return;
-    }
-
-    if (replace) {
-        CFArrayRemoveValueAtIndex(self->timeEvents, i);
     }
 
     CFArrayInsertValueAtIndex(self->timeEvents, i, timeEvent);
@@ -95,32 +80,18 @@ void TimeTableAddTimeEvent(TimeTable *self, TimeEvent *timeEvent)
 
 void TimeTableAddTempoEvent(TimeTable *self, TempoEvent *tempoEvent)
 {
-    const TempoEvent *prev = NULL;
-    bool replace = false;
-
     CFIndex i;
     CFIndex count = CFArrayGetCount(self->tempoEvents);
     for (i = 0; i < count; ++i) {
         const TempoEvent *event = CFArrayGetValueAtIndex(self->tempoEvents, i);
         int compare = tempoEvent->_.tick - event->_.tick;
         if (0 == compare) {
-            replace = true;
+            CFArrayRemoveValueAtIndex(self->tempoEvents, i);
             break;
         }
         else if (compare < 0) {
             break;
         }
-        else {
-            prev = event;
-        }
-    }
-
-    if (prev && prev->tempo == tempoEvent->tempo) {
-        return;
-    }
-
-    if (replace) {
-        CFArrayRemoveValueAtIndex(self->tempoEvents, i);
     }
 
     CFArrayInsertValueAtIndex(self->tempoEvents, i, tempoEvent);
