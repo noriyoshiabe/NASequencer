@@ -899,6 +899,7 @@ static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context,
             patternExtendBlockExpr = expr;
             break;
         case OFFSET:
+            context->option = &offset;
             parseExpression(expr, context, &offset, error);
             break;
         case LENGTH:
