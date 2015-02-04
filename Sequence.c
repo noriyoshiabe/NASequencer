@@ -131,6 +131,60 @@ uint32_t TimeTableLocation2Tick(TimeTable *self, int32_t measure, int32_t beat, 
     return tickPerMeasure * measure + tickPerBeat * beat + offsetTick;
 }
 
+uint32_t TimeTableMBLength2Tick(TimeTable *self, int32_t offsetTick, int32_t measure, int32_t beat)
+{
+    int32_t tickPerBeat = self->resolution * 4 / 4;
+    int32_t tickPerMeasure = tickPerBeat * 4;
+
+    uint32_t ret = 0;
+    int32_t prev_tick = 0;
+
+    CFIndex count = CFArrayGetCount(self->timeEvents);
+    int i = 0;
+    for (;;) {
+        const TimeEvent *event = NULL;
+
+        if (i < count) {
+            event = CFArrayGetValueAtIndex(self->timeEvents, i);
+        }
+
+        if (0 < i) {
+            for (;;) {
+                if (prev_tick <= offsetTick && (!event || offsetTick < event->_.tick)) {
+                    if (0 < measure) {
+                        ret += tickPerMeasure;
+                        offsetTick += tickPerMeasure;
+                        --measure;
+                    }
+                    else if (0 < beat) {
+                        ret += tickPerBeat;
+                        offsetTick += tickPerBeat;
+                        --beat;
+                    }
+                    else {
+                        goto END;
+                    }
+                }
+                else {
+                    break;
+                }
+            }
+        }
+
+        if (event) {
+            tickPerBeat = self->resolution * 4 / event->denominator;
+            tickPerMeasure = tickPerBeat * event->numerator;
+
+            prev_tick = event->_.tick;
+        }
+
+        ++i;
+    }
+
+END:
+    return ret;
+}
+
 static void *__TimeTableInit(void *_self, ...)
 {
     TimeTable *self = _self;

@@ -25,6 +25,7 @@ typedef struct _Context {
     CFMutableArrayRef events;
     uint32_t length;
     CFMutableDictionaryRef patterns;
+    void *option;
 } Context;
 
 NAExportClass(Context);
@@ -337,7 +338,21 @@ static bool __dispatch__LOCATION(Expression *expression, Context *context, void 
 
 static bool __dispatch__MB_LENGTH(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    printf("called __dispatch__MB_LENGTH()\n");
+    char str[16];
+    char *pch;
+
+    int32_t offset = *((int32_t *)context->option);
+    strcpy(str, expression->v.s);
+
+    if ((pch = strrchr(str, 'm'))) {
+        *pch = '\0';
+        *((int32_t *)value) = TimeTableMBLength2Tick(context->timeTable, offset, atoi(str), 0);
+    }
+    else if ((pch = strrchr(str, 'b'))) {
+        *pch = '\0';
+        *((int32_t *)value) = TimeTableMBLength2Tick(context->timeTable, offset, 0, atoi(str));
+    }
+
     return true;
 }
 
@@ -870,6 +885,7 @@ static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context,
     int32_t expandLength = -1;
 
     Expression *patternExtendBlockExpr = NULL;
+    Expression *lengthExpr = NULL;
 
     for (Expression *expr = expression->left; expr; expr = expr->right) {
         switch (expr->tokenType) {
@@ -886,7 +902,7 @@ static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context,
             parseExpression(expr, context, &offset, error);
             break;
         case LENGTH:
-            parseExpression(expr, context, &expandLength, error);
+            lengthExpr = expr;
             break;
         }
     }
@@ -907,6 +923,11 @@ static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context,
     count = CFArrayGetCount(pattern->timeTable->tempoEvents);
     for (int i = 0; i < count; ++i) {
         TimeTableAddTempoEvent(local->timeTable, (TempoEvent *)CFArrayGetValueAtIndex(pattern->timeTable->tempoEvents, i));
+    }
+
+    if (lengthExpr) {
+        local->option = &offset;
+        parseExpression(lengthExpr, local, &expandLength, error);
     }
 
     count = CFArrayGetCount(pattern->events);
