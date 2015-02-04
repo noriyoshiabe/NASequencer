@@ -75,6 +75,14 @@ void TimeTableAddTimeEvent(TimeTable *self, TimeEvent *timeEvent)
         }
     }
 
+    if (0 < i) {
+        const TimeEvent *prev = CFArrayGetValueAtIndex(self->timeEvents, i - 1);
+        if (prev->numerator == timeEvent->numerator
+                && prev->denominator == timeEvent->denominator) {
+            return;
+        }
+    }
+
     CFArrayInsertValueAtIndex(self->timeEvents, i, timeEvent);
 }
 
@@ -91,6 +99,13 @@ void TimeTableAddTempoEvent(TimeTable *self, TempoEvent *tempoEvent)
         }
         else if (compare < 0) {
             break;
+        }
+    }
+
+    if (0 < i) {
+        const TempoEvent *prev = CFArrayGetValueAtIndex(self->tempoEvents, i - 1);
+        if (prev->tempo == tempoEvent->tempo) {
+            return;
         }
     }
 
