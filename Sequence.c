@@ -184,18 +184,6 @@ END:
     return ret;
 }
 
-const TimeEvent *TimeTableLastTimeEvent(TimeTable *self)
-{
-    CFIndex count = CFArrayGetCount(self->timeEvents);
-    return 0 == count ? NULL : CFArrayGetValueAtIndex(self->timeEvents, count - 1);
-}
-
-const TempoEvent *TimeTableLastTempoEvent(TimeTable *self)
-{
-    CFIndex count = CFArrayGetCount(self->tempoEvents);
-    return 0 == count ? NULL : CFArrayGetValueAtIndex(self->tempoEvents, count - 1);
-}
-
 static void *__TimeTableInit(void *_self, ...)
 {
     TimeTable *self = _self;
