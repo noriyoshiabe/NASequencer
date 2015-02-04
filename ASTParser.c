@@ -558,19 +558,10 @@ static bool __dispatch__REPLACE(Expression *expression, Context *context, void *
     for (int i = count - 1; 0 <= i; --i) {
         MidiEvent *event = (MidiEvent *)CFArrayGetValueAtIndex(context->events, i);
         if (from <= event->tick && event->tick < to) {
-            // FIXME nonsence!!
-            if (-1 == channel) {
+            if (-1 == channel
+                    || (NATypeOf(event, NoteEvent) && channel == ((NoteEvent *)event)->channel)
+                    || (NATypeOf(event, SoundSelectEvent) && channel == ((SoundSelectEvent *)event)->channel)) {
                 CFArrayRemoveValueAtIndex(context->events, i);
-            }
-            else if (NATypeOf(event, NoteEvent)) {
-                if (channel == ((NoteEvent *)event)->channel) {
-                    CFArrayRemoveValueAtIndex(context->events, i);
-                }
-            }
-            else if (NATypeOf(event, SoundSelectEvent)) {
-                if (channel == ((SoundSelectEvent *)event)->channel) {
-                    CFArrayRemoveValueAtIndex(context->events, i);
-                }
             }
         }
     }
