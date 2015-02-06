@@ -173,7 +173,7 @@ static bool parseExpression(Expression *expression, Context *context, void *valu
 {
     bool (*function)(Expression *, Context *, void *, ASTParserError *)= dispatchTable[IDX(expression->tokenType)];
     if (!function) {
-        NAPanic("Dispatch function is not found. tokenType=%s\n", tokenType2String(expression->tokenType));
+        NAPanic("Dispatch function is not found. tokenType=%s", tokenType2String(expression->tokenType));
     }
     return function(expression, context, value, error);
 }
@@ -266,12 +266,11 @@ static int noteNoString2Int(Context *context, const char *noteNoString)
     }
 
     if (-1 == baseKey) {
-        return -1;
+        NAPanic("Unexpected note no. noteNoString=%s", noteNoString);
     }
-    else {
-        context->octave = '\0' != octave[0] ? atoi(octave) : context->octave;
-        return baseKey + 12 * context->octave;
-    }
+
+    context->octave = '\0' != octave[0] ? atoi(octave) : context->octave;
+    return baseKey + 12 * context->octave;
 }
 
 static bool __dispatch__NOTE_NO(Expression *expression, Context *context, void *value, ASTParserError *error)
@@ -287,7 +286,9 @@ static bool __dispatch__NOTE_NO(Expression *expression, Context *context, void *
     noteEvent->gatetime = 0 < gatetime ? gatetime : 0;
 
     for (Expression *expr = expression->left; expr; expr = expr->right) {
-        parseExpression(expr, context, noteEvent, error);
+        if (!parseExpression(expr, context, noteEvent, error)) {
+            return false;
+        }
     }
 
     NoteBlockContextAddEvent(nbContext, noteEvent);
@@ -298,6 +299,8 @@ static bool __dispatch__NOTE_NO(Expression *expression, Context *context, void *
 
 static bool __dispatch__LOCATION(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
+    int32_t tick = -1;
+
     if (strrchr(expression->v.s, ':')) {
         char *saveptr;
         char buf[16];
@@ -316,22 +319,27 @@ static bool __dispatch__LOCATION(Expression *expression, Context *context, void 
 
         switch (count) {
         case 2:
-            *((int32_t *)value) = TimeTableLocation2Tick(context->timeTable, 1, numbers[0], numbers[1]);
+            tick = TimeTableLocation2Tick(context->timeTable, 1, numbers[0], numbers[1]);
             break;
         case 3:
-            *((int32_t *)value) = TimeTableLocation2Tick(context->timeTable, numbers[0], numbers[1], numbers[2]);
+            tick = TimeTableLocation2Tick(context->timeTable, numbers[0], numbers[1], numbers[2]);
             break;
         }
     }
     else if (('b' == expression->v.s[0])) {
         int32_t beat = atoi(&expression->v.s[1]);
-        *((int32_t *)value) = TimeTableLocation2Tick(context->timeTable, 1, beat, 0);
+        tick = TimeTableLocation2Tick(context->timeTable, 1, beat, 0);
     }
     else if (('m' == expression->v.s[0])) {
         int32_t measure = atoi(&expression->v.s[1]);
-        *((int32_t *)value) = TimeTableLocation2Tick(context->timeTable, measure, 1, 0);
+        tick = TimeTableLocation2Tick(context->timeTable, measure, 1, 0);
     }
 
+    if (-1 == tick) {
+        NAPanic("Unexpected location. location=%s", expression->v.s);
+    }
+
+    *((int32_t *)value) = tick;
     return true;
 }
 
@@ -340,18 +348,25 @@ static bool __dispatch__MB_LENGTH(Expression *expression, Context *context, void
     char str[16];
     char *pch;
 
+    int32_t length = -1;
+
     int32_t offset = *((int32_t *)context->option);
     strcpy(str, expression->v.s);
 
     if ((pch = strrchr(str, 'm'))) {
         *pch = '\0';
-        *((int32_t *)value) = TimeTableMBLength2Tick(context->timeTable, offset, atoi(str), 0);
+        length = TimeTableMBLength2Tick(context->timeTable, offset, atoi(str), 0);
     }
     else if ((pch = strrchr(str, 'b'))) {
         *pch = '\0';
-        *((int32_t *)value) = TimeTableMBLength2Tick(context->timeTable, offset, 0, atoi(str));
+        length = TimeTableMBLength2Tick(context->timeTable, offset, 0, atoi(str));
     }
 
+    if (-1 == length) {
+        NAPanic("Unexpected mb length. mb_lenght=%s", expression->v.s);
+    }
+
+    *((int32_t *)value) = length;
     return true;
 }
 
@@ -381,54 +396,57 @@ static bool __dispatch__TITLE(Expression *expression, Context *context, void *va
 
 static bool __dispatch__TIME(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
+    bool success = true;
     TimeEvent *event = NATypeNew(TimeEvent, context->tick);
 
     for (Expression *expr = expression->left; expr; expr = expr->right) {
-        parseExpression(expr, context, event, error);
+        success &= parseExpression(expr, context, event, error);
     }
 
     TimeTableAddTimeEvent(context->timeTable, event);
     NARelease(event);
 
-    return true;
+    return success;
 }
 
 static bool __dispatch__TEMPO(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
+    bool success = true;
     TempoEvent *event = NATypeNew(TempoEvent, context->tick);
 
     for (Expression *expr = expression->left; expr; expr = expr->right) {
         if (FLOAT == expr->tokenType) {
-            parseExpression(expr, context, &event->tempo, error);
+            success &= parseExpression(expr, context, &event->tempo, error);
         }
         else {
-            parseExpression(expr, context, event, error);
+            success &= parseExpression(expr, context, event, error);
         }
     }
 
     TimeTableAddTempoEvent(context->timeTable, event);
     NARelease(event);
 
-    return true;
+    return success;
 }
 
 static bool __dispatch__MARKER(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
+    bool success = true;
     MarkerEvent *event = NATypeNew(MarkerEvent, context->tick);
 
     for (Expression *expr = expression->left; expr; expr = expr->right) {
         if (STRING == expr->tokenType) {
-            parseExpression(expr, context, &event->text, error);
+            success &= parseExpression(expr, context, &event->text, error);
         }
         else {
-            parseExpression(expr, context, event, error);
+            success &= parseExpression(expr, context, event, error);
         }
     }
 
     ContextAddEvent(context, event);
     NARelease(event);
 
-    return true;
+    return success;
 }
 
 static bool __dispatch__CHANNEL(Expression *expression, Context *context, void *value, ASTParserError *error)
@@ -447,7 +465,10 @@ static bool __dispatch__CHANNEL(Expression *expression, Context *context, void *
 static bool __dispatch__VELOCITY(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
     int32_t val; 
-    parseExpression(expression->left, context, &val, error);
+
+    if (!parseExpression(expression->left, context, &val, error)) {
+        return false;
+    }
 
     int tokenType = expression->parent ? expression->parent->tokenType : -1;
     switch (tokenType) {
@@ -465,7 +486,10 @@ static bool __dispatch__VELOCITY(Expression *expression, Context *context, void 
 static bool __dispatch__GATETIME(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
     int32_t val; 
-    parseExpression(expression->left, context, &val, error);
+
+    if (!parseExpression(expression->left, context, &val, error)) {
+        return false;
+    }
 
     int tokenType = expression->parent ? expression->parent->tokenType : -1;
     switch (tokenType) {
@@ -500,6 +524,14 @@ static bool __dispatch__NOTE(Expression *expression, Context *context, void *val
         }
     }
 
+    if (!noteBlockExpr) {
+        NAPanic("Note block is missing.");
+    }
+
+    if (1 > step) {
+        NAPanic("Step is invalid.");
+    }
+
     return parseExpression(noteBlockExpr, context, &step, error);
 }
 
@@ -527,6 +559,7 @@ static bool __dispatch__TO(Expression *expression, Context *context, void *value
     return parseExpression(expression->left, context, value, error);
 }
 
+// TODO from here
 static bool __dispatch__REPLACE(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
     int32_t from = 0;

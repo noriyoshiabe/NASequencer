@@ -36,7 +36,7 @@ extern const char NATypeID[];
 
 #define NATypeNew(type, ...) ((NATypeVtbl *)__NAFindInit(&type##Class))->init(NATypeAlloc(&type##Class), ## __VA_ARGS__)
 #define NATypeOf(self, type) (((NAType *)self)->clazz->typeID == type##ID)
-#define NAPanic(fmt, ...) fprintf(stderr, fmt, __VA_ARGS__), abort()
+#define NAPanic(fmt, ...) fprintf(stderr, fmt, ## __VA_ARGS__),fprintf(stderr, "\n"),abort()
 
 extern void *NARetain(void *self);
 extern void NARelease(void *self);
