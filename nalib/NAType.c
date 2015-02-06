@@ -30,8 +30,7 @@ void *__NAVtblLookup(const NAClass *clazz, const char *typeID)
         }
     }
 
-    fprintf(stderr, "Virtual function table of [%s] is not found.\n", typeID);
-    abort();
+    NAPanic("Virtual function table of [%s] is not found.\n", typeID);
 }
 
 void *NARetain(void *self)
