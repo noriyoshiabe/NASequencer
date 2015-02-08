@@ -726,6 +726,8 @@ static bool __dispatch__TIME_SIGN(Expression *expression, Context *context, void
 
 static bool __dispatch__SOUND_SELECT(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
+    bool ret = false;
+
     SoundSelectEvent *event = NATypeNew(SoundSelectEvent, context->tick);
     event->channel = context->channel;
 
@@ -763,11 +765,12 @@ static bool __dispatch__SOUND_SELECT(Expression *expression, Context *context, v
     }
 
     ContextAddEvent(context, event);
+    ret = true;
 
 ERROR:
     NARelease(event);
 
-    return true;
+    return ret;
 }
 
 static bool __dispatch__INTEGER_LIST(Expression *expression, Context *context, void *value, ASTParserError *error)
@@ -829,6 +832,8 @@ static bool __dispatch__NOTE_NO_LIST(Expression *expression, Context *context, v
 
 static bool __dispatch__PATTERN_DEFINE(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
+    bool ret = false;
+
     CFStringRef identifier = NULL;
     Context *local = ContextCreateLocal(context);
 
@@ -852,6 +857,8 @@ static bool __dispatch__PATTERN_DEFINE(Expression *expression, Context *context,
     CFDictionarySetValue(context->patterns, identifier, pattern);
     NARelease(pattern);
 
+    ret = true;
+
 ERROR:
     if (identifier) {
         CFRelease(identifier);
@@ -859,7 +866,7 @@ ERROR:
 
     NARelease(local);
 
-    return true;
+    return ret;
 }
 
 static bool __dispatch__PATTERN_BLOCK(Expression *expression, Context *context, void *value, ASTParserError *error)
@@ -875,6 +882,8 @@ static bool __dispatch__PATTERN_BLOCK(Expression *expression, Context *context, 
 
 static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
+    bool ret = false;
+
     CFStringRef identifier = NULL;
     CFIndex count;
     int32_t from = context->tick;
@@ -914,6 +923,7 @@ static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context,
     const Pattern *pattern = CFDictionaryGetValue(context->patterns, identifier);
     Context *local = ContextCreateLocal(context);
 
+    printf("----- %d %d\n", error->kind, __LINE__);
     count = CFArrayGetCount(pattern->timeTable->timeEvents);
     for (int i = 0; i < count; ++i) {
         TimeTableAddTimeEvent(local->timeTable, (TimeEvent *)CFArrayGetValueAtIndex(pattern->timeTable->timeEvents, i));
@@ -963,6 +973,8 @@ static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context,
     context->tick += length;
     context->length = MAX(context->tick, from + length);
 
+    ret = true;
+
 ERROR_2:
     NARelease(local);
 
@@ -971,7 +983,7 @@ ERROR_1:
         CFRelease(identifier);
     }
 
-    return true;
+    return ret;
 }
 
 static bool __dispatch__PATTERN_EXTEND_BLOCK(Expression *expression, Context *context, void *value, ASTParserError *error)
