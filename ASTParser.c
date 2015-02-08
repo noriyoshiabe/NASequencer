@@ -662,7 +662,7 @@ static bool __dispatch__TIE(Expression *expression, Context *context, void *valu
     NoteBlockContext *nbContext = value;
     int32_t tick = nbContext->tick - nbContext->step;
     CFIndex count = CFArrayGetCount(nbContext->events);
-    for (int i = count - 1; 0 <= count; --i) {
+    for (int i = count - 1; 0 <= i; --i) {
         NoteEvent *event = (NoteEvent *)CFArrayGetValueAtIndex(nbContext->events, i);
         if (tick != event->_.tick) {
             break;
