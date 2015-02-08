@@ -282,7 +282,7 @@ static bool __dispatch__NOTE_NO(Expression *expression, Context *context, void *
     noteEvent->noteNo = noteNoString2Int(context, expression->v.s);
     noteEvent->velocity = context->velocity;
     
-    int32_t gatetime = 0 <= context->gatetime ? context->gatetime : context->gatetime + nbContext->step;
+    int32_t gatetime = 0 < context->gatetime ? context->gatetime : context->gatetime + nbContext->step;
     noteEvent->gatetime = 0 < gatetime ? gatetime : 0;
 
     for (Expression *expr = expression->left; expr; expr = expr->right) {
