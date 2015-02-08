@@ -2,6 +2,9 @@
 #include <NACFHelper.h>
 #include <string.h>
 
+NADeclareAbstractClass(SequenceVisitor);
+NADeclareAbstractClass(SequenceElement);
+
 void SequenceSetTimeTable(Sequence *self, TimeTable *timeTable)
 {
     self->timeTable = NARetain(timeTable);
@@ -46,6 +49,11 @@ static void *__SequenceDescription(const void *_self)
     return ret;
 }
 
+static void __SequenceAccept(void *self, void *visitor)
+{
+    NAVtbl(visitor, SequenceVisitor)->visitSequence(self);
+}
+
 NADeclareVtbl(Sequence, NAType,
         __SequenceInit,
         __SequenceDestroy,
@@ -55,8 +63,8 @@ NADeclareVtbl(Sequence, NAType,
         NULL,
         __SequenceDescription,
         );
-
-NADeclareClass(Sequence, NAType);
+NADeclareVtbl(Sequence, SequenceElement, __SequenceAccept);
+NADeclareClass(Sequence, NAType, SequenceElement);
 
 
 void TimeTableAddTimeEvent(TimeTable *self, TimeEvent *timeEvent)
@@ -232,6 +240,11 @@ static void *__TimeTableDescription(const void *_self)
     return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<TimeTable: timeEvents=%@ tempoEvents=%@>"), self->timeEvents, self->tempoEvents);
 }
 
+static void __TimeTableAccept(void *self, void *visitor)
+{
+    NAVtbl(visitor, SequenceVisitor)->visitTimeTable(self);
+}
+
 NADeclareVtbl(TimeTable, NAType,
         __TimeTableInit,
         __TimeTableDestroy,
@@ -241,8 +254,8 @@ NADeclareVtbl(TimeTable, NAType,
         __TimeTableCopy,
         __TimeTableDescription,
         );
-
-NADeclareClass(TimeTable, NAType);
+NADeclareVtbl(TimeTable, SequenceElement, __TimeTableAccept);
+NADeclareClass(TimeTable, NAType, SequenceElement);
 
 
 static void *__PatternInit(void *_self, ...)
@@ -279,6 +292,11 @@ static void *__PatternDescription(const void *_self)
     return ret;
 }
 
+static void __PatternAccept(void *self, void *visitor)
+{
+    NAVtbl(visitor, SequenceVisitor)->visitPattern(self);
+}
+
 NADeclareVtbl(Pattern, NAType,
         __PatternInit,
         __PatternDestroy,
@@ -288,8 +306,8 @@ NADeclareVtbl(Pattern, NAType,
         NULL,
         __PatternDescription,
         );
-
-NADeclareClass(Pattern, NAType);
+NADeclareVtbl(Pattern, SequenceElement, __PatternAccept);
+NADeclareClass(Pattern, NAType, SequenceElement);
 
 
 static void *__MidiEventInit(void *_self, ...)
@@ -327,6 +345,11 @@ static void *__TimeEventDescription(const void *_self)
     return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<TimeEvent: tick=%d numerator=%d denominator=%d>"), self->_.tick, self->numerator, self->denominator);
 }
 
+static void __TimeEventAccept(void *self, void *visitor)
+{
+    NAVtbl(visitor, SequenceVisitor)->visitTimeEvent(self);
+}
+
 NADeclareVtbl(TimeEvent, NAType,
         __MidiEventInit,
         NULL,
@@ -336,14 +359,19 @@ NADeclareVtbl(TimeEvent, NAType,
         __MidiEventCopy,
         __TimeEventDescription
         );
-
-NADeclareClass(TimeEvent, NAType);
+NADeclareVtbl(TimeEvent, SequenceElement, __TimeEventAccept);
+NADeclareClass(TimeEvent, NAType, SequenceElement);
 
 
 static void *__TempoEventDescription(const void *_self)
 {
     const TempoEvent *self = _self;
     return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<TempoEvent: tick=%d tempo=%f>"), self->_.tick, self->tempo);
+}
+
+static void __TempoEventAccept(void *self, void *visitor)
+{
+    NAVtbl(visitor, SequenceVisitor)->visitTempoEvent(self);
 }
 
 NADeclareVtbl(TempoEvent, NAType,
@@ -355,8 +383,8 @@ NADeclareVtbl(TempoEvent, NAType,
         __MidiEventCopy,
         __TempoEventDescription
         );
-
-NADeclareClass(TempoEvent, NAType);
+NADeclareVtbl(TempoEvent, SequenceElement, __TempoEventAccept);
+NADeclareClass(TempoEvent, NAType, SequenceElement);
 
 
 static void __MarkerEventDestroy(void *_self)
@@ -380,6 +408,11 @@ static void *__MarkerEventDescription(const void *_self)
     return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<MarkerEvent: tick=%d text=%s>"), self->_.tick, self->text);
 }
 
+static void __MarkerEventAccept(void *self, void *visitor)
+{
+    NAVtbl(visitor, SequenceVisitor)->visitMarkerEvent(self);
+}
+
 NADeclareVtbl(MarkerEvent, NAType,
         __MidiEventInit,
         __MarkerEventDestroy,
@@ -389,14 +422,19 @@ NADeclareVtbl(MarkerEvent, NAType,
         __MarkerEventCopy,
         __MarkerEventDescription
         );
-
-NADeclareClass(MarkerEvent, NAType);
+NADeclareVtbl(MarkerEvent, SequenceElement, __MarkerEventAccept);
+NADeclareClass(MarkerEvent, NAType, SequenceElement);
 
 
 static void *__SoundSelectEventDescription(const void *_self)
 {
     const SoundSelectEvent *self = _self;
     return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<SoundSelectEvent: tick=%d channel=%d msb=%d lsb=%d programNo=%d>"), self->_.tick, self->channel, self->msb, self->lsb, self->programNo);
+}
+
+static void __SoundSelectEventAccept(void *self, void *visitor)
+{
+    NAVtbl(visitor, SequenceVisitor)->visitSoundSelectEvent(self);
 }
 
 NADeclareVtbl(SoundSelectEvent, NAType,
@@ -408,14 +446,19 @@ NADeclareVtbl(SoundSelectEvent, NAType,
         __MidiEventCopy,
         __SoundSelectEventDescription
         );
-
-NADeclareClass(SoundSelectEvent, NAType);
+NADeclareVtbl(SoundSelectEvent, SequenceElement, __SoundSelectEventAccept);
+NADeclareClass(SoundSelectEvent, NAType, SequenceElement);
 
 
 static void *__NoteEventDescription(const void *_self)
 {
     const NoteEvent *self = _self;
     return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<NoteEvent: tick=%d channel=%d noteNo=%d velocity=%d gatetime=%d>"), self->_.tick, self->channel, self->noteNo, self->velocity, self->gatetime);
+}
+
+static void __NoteEventAccept(void *self, void *visitor)
+{
+    NAVtbl(visitor, SequenceVisitor)->visitNoteEvent(self);
 }
 
 NADeclareVtbl(NoteEvent, NAType,
@@ -427,5 +470,5 @@ NADeclareVtbl(NoteEvent, NAType,
         __MidiEventCopy,
         __NoteEventDescription,
         );
-
-NADeclareClass(NoteEvent, NAType);
+NADeclareVtbl(NoteEvent, SequenceElement, __NoteEventAccept);
+NADeclareClass(NoteEvent, NAType, SequenceElement);

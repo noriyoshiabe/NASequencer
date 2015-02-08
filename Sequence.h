@@ -78,3 +78,23 @@ extern void TimeTableAddTimeEvent(TimeTable *self, TimeEvent *timeEvent);
 extern void TimeTableAddTempoEvent(TimeTable *self, TempoEvent *tempoEvent);
 extern uint32_t TimeTableLocation2Tick(TimeTable *self, int32_t measure, int32_t beat, int32_t tick);
 extern uint32_t TimeTableMBLength2Tick(TimeTable *self, int32_t offsetTick, int32_t measure, int32_t beat);
+
+
+typedef struct _SequenceVisitorVtbl {
+    void (*visitSequence)(Sequence *elem);
+    void (*visitPattern)(Pattern *elem);
+    void (*visitTimeTable)(TimeTable *elem);
+    void (*visitTimeEvent)(TimeEvent *elem);
+    void (*visitTempoEvent)(TempoEvent *elem);
+    void (*visitMarkerEvent)(MarkerEvent *elem);
+    void (*visitSoundSelectEvent)(SoundSelectEvent *elem);
+    void (*visitNoteEvent)(NoteEvent *elem);
+} SequenceVisitorVtbl;
+
+NAExportClass(SequenceVisitor);
+
+typedef struct _SequenceElementVtbl {
+    void (*accept)(void *self, void *visitor);
+} SequenceElementVtbl;
+
+NAExportClass(SequenceElement);
