@@ -4,13 +4,13 @@
 
 int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, const char *message)
 {
-    DSLParserError *error = yyget_extra(scanner);
+    ParseError *error = yyget_extra(scanner);
     error->location = *((Location *)yylloc);
     error->message = message;
     return 0;
 }
 
-Expression *DSLParserParseFile(const char *filepath, DSLParserError *error)
+Expression *DSLParserParseFile(const char *filepath, ParseError *error)
 {
     void *scanner;
     Expression *ret = NULL;
@@ -19,12 +19,12 @@ Expression *DSLParserParseFile(const char *filepath, DSLParserError *error)
 
     FILE *fp = fopen(filepath, "r");
     if (!fp) {
-        error->kind = DSLPARSER_FILE_NOT_FOUND;
+        error->kind = PARSE_ERROR_FILE_NOT_FOUND;
         return ret;
     }
 
     if (yylex_init_extra(error, &scanner)) {
-        error->kind = DSLPARSER_INIT_ERROR;
+        error->kind = PARSE_ERROR_INIT_ERROR;
         goto ERROR_1;
     }
 
@@ -32,13 +32,15 @@ Expression *DSLParserParseFile(const char *filepath, DSLParserError *error)
     yy_switch_to_buffer(state, scanner);
 
     if (yyparse(scanner, &ret)) {
-        error->kind = DSLPARSER_PARSE_ERROR;
+        error->kind = PARSE_ERROR_SYNTAX_ERROR;
         if (ret) {
             deleteExpression(ret);
             ret = NULL;
         }
         goto ERROR_2;
     }
+
+    error->kind = PARSE_ERROR_NOERROR;
 
 ERROR_2:
     yy_delete_buffer(state, scanner);

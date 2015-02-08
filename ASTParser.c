@@ -11,7 +11,7 @@
 
 #define TABLE_SIZE (TOKEN_END - TOKEN_BEGIN)
 #define IDX(type) (type - TOKEN_BEGIN - 1)
-#define SET_ERROR(error, _kind, _expression, _message) (error->kind = _kind, error->expression = _expression, error->message = _message ? _message : "")
+#define SET_ERROR(error, _kind, _expression, _message) (error->kind = _kind, error->location = _expression->location, error->message = _message ? _message : "")
 
 /*
  * TODO error handling
@@ -167,18 +167,18 @@ NADeclareVtbl(NoteBlockContext, NAType,
 NADeclareClass(NoteBlockContext, NAType);
 
 
-static bool (*dispatchTable[TABLE_SIZE])(Expression *, Context *, void *, ASTParserError *) = {NULL};
+static bool (*dispatchTable[TABLE_SIZE])(Expression *, Context *, void *, ParseError *) = {NULL};
 
-static bool parseExpression(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool parseExpression(Expression *expression, Context *context, void *value, ParseError *error)
 {
-    bool (*function)(Expression *, Context *, void *, ASTParserError *)= dispatchTable[IDX(expression->tokenType)];
+    bool (*function)(Expression *, Context *, void *, ParseError *)= dispatchTable[IDX(expression->tokenType)];
     if (!function) {
         NAPanic("Dispatch function is not found. tokenType=%s", tokenType2String(expression->tokenType));
     }
     return function(expression, context, value, error);
 }
 
-Sequence *ASTParserParseExpression(Expression *expression, const char *filepath, ASTParserError *error)
+Sequence *ASTParserParseExpression(Expression *expression, const char *filepath, ParseError *error)
 {
     Sequence *sequence = NATypeNew(Sequence);
     Context *context = NATypeNew(Context, sequence);
@@ -202,19 +202,19 @@ ERROR:
     return sequence;
 }
 
-static bool __dispatch__INTEGER(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__INTEGER(Expression *expression, Context *context, void *value, ParseError *error)
 {
     *((int32_t *)value) = expression->v.i;
     return true;
 }
 
-static bool __dispatch__FLOAT(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__FLOAT(Expression *expression, Context *context, void *value, ParseError *error)
 {
     *((float *)value) = expression->v.f;
     return true;
 }
 
-static bool __dispatch__STRING(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__STRING(Expression *expression, Context *context, void *value, ParseError *error)
 {
     *((char **)value) = strdup(expression->v.s);
     return true;
@@ -273,7 +273,7 @@ static int noteNoString2Int(Context *context, const char *noteNoString)
     return baseKey + 12 * context->octave;
 }
 
-static bool __dispatch__NOTE_NO(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__NOTE_NO(Expression *expression, Context *context, void *value, ParseError *error)
 {
     NoteBlockContext *nbContext = value;
 
@@ -297,7 +297,7 @@ static bool __dispatch__NOTE_NO(Expression *expression, Context *context, void *
     return true;
 }
 
-static bool __dispatch__LOCATION(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__LOCATION(Expression *expression, Context *context, void *value, ParseError *error)
 {
     int32_t tick = -1;
 
@@ -343,7 +343,7 @@ static bool __dispatch__LOCATION(Expression *expression, Context *context, void 
     return true;
 }
 
-static bool __dispatch__MB_LENGTH(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__MB_LENGTH(Expression *expression, Context *context, void *value, ParseError *error)
 {
     char str[16];
     char *pch;
@@ -371,10 +371,10 @@ static bool __dispatch__MB_LENGTH(Expression *expression, Context *context, void
 }
 
 
-static bool __dispatch__RESOLUTION(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__RESOLUTION(Expression *expression, Context *context, void *value, ParseError *error)
 {
     if (0 != context->sequence->resolution) {
-        SET_ERROR(error, ASTPARSER_RESOLUTION_REDEFINED, expression, "resolution cannot be defined twice.");
+        SET_ERROR(error, PARSE_ERROR_RESOLUTION_REDEFINED, expression, "resolution cannot be defined twice.");
         return false;
     }
 
@@ -386,17 +386,17 @@ static bool __dispatch__RESOLUTION(Expression *expression, Context *context, voi
     return true;
 }
 
-static bool __dispatch__TITLE(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__TITLE(Expression *expression, Context *context, void *value, ParseError *error)
 {
     if (0 != context->sequence->title) {
-        SET_ERROR(error, ASTPARSER_TITLE_REDEFINED, expression, "title cannot be defined twice.");
+        SET_ERROR(error, PARSE_ERROR_TITLE_REDEFINED, expression, "title cannot be defined twice.");
         return false;
     }
 
     return parseExpression(expression->left, context, &context->sequence->title, error);
 }
 
-static bool __dispatch__TIME(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__TIME(Expression *expression, Context *context, void *value, ParseError *error)
 {
     TimeEvent *event = NATypeNew(TimeEvent, context->tick);
 
@@ -413,7 +413,7 @@ static bool __dispatch__TIME(Expression *expression, Context *context, void *val
     return true;
 }
 
-static bool __dispatch__TEMPO(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__TEMPO(Expression *expression, Context *context, void *value, ParseError *error)
 {
     TempoEvent *event = NATypeNew(TempoEvent, context->tick);
 
@@ -431,7 +431,7 @@ static bool __dispatch__TEMPO(Expression *expression, Context *context, void *va
     return true;
 }
 
-static bool __dispatch__MARKER(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__MARKER(Expression *expression, Context *context, void *value, ParseError *error)
 {
     MarkerEvent *event = NATypeNew(MarkerEvent, context->tick);
 
@@ -449,7 +449,7 @@ static bool __dispatch__MARKER(Expression *expression, Context *context, void *v
     return true;
 }
 
-static bool __dispatch__CHANNEL(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__CHANNEL(Expression *expression, Context *context, void *value, ParseError *error)
 {
     if (expression->parent) {
         switch (expression->parent->tokenType) {
@@ -462,7 +462,7 @@ static bool __dispatch__CHANNEL(Expression *expression, Context *context, void *
     return parseExpression(expression->left, context, &context->channel, error);
 }
 
-static bool __dispatch__VELOCITY(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__VELOCITY(Expression *expression, Context *context, void *value, ParseError *error)
 {
     int32_t val; 
 
@@ -483,7 +483,7 @@ static bool __dispatch__VELOCITY(Expression *expression, Context *context, void 
     return true;
 }
 
-static bool __dispatch__GATETIME(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__GATETIME(Expression *expression, Context *context, void *value, ParseError *error)
 {
     int32_t val; 
 
@@ -504,7 +504,7 @@ static bool __dispatch__GATETIME(Expression *expression, Context *context, void 
     return true;
 }
 
-static bool __dispatch__NOTE(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__NOTE(Expression *expression, Context *context, void *value, ParseError *error)
 {
     int32_t step = -1;
 
@@ -531,12 +531,12 @@ static bool __dispatch__NOTE(Expression *expression, Context *context, void *val
     }
 
     if (!noteBlockExpr) {
-        SET_ERROR(error, ASTPARSER_NOTE_BLOCK_MISSING, expression, "note block is missing.");
+        SET_ERROR(error, PARSE_ERROR_NOTE_BLOCK_MISSING, expression, "note block is missing.");
         return false;
     }
 
     if (1 > step) {
-        SET_ERROR(error, ASTPARSER_INVALID_STEP, expression, "step is invalid.");
+        SET_ERROR(error, PARSE_ERROR_INVALID_STEP, expression, "step is invalid.");
         return false;
     }
 
@@ -544,12 +544,12 @@ static bool __dispatch__NOTE(Expression *expression, Context *context, void *val
 }
 
 
-static bool __dispatch__STEP(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__STEP(Expression *expression, Context *context, void *value, ParseError *error)
 {
     return parseExpression(expression->left, context, value, error);
 }
 
-static bool __dispatch__FROM(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__FROM(Expression *expression, Context *context, void *value, ParseError *error)
 {
     switch (expression->parent->tokenType) {
     case NOTE:
@@ -562,12 +562,12 @@ static bool __dispatch__FROM(Expression *expression, Context *context, void *val
     }
 }
 
-static bool __dispatch__TO(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__TO(Expression *expression, Context *context, void *value, ParseError *error)
 {
     return parseExpression(expression->left, context, value, error);
 }
 
-static bool __dispatch__MIX_OR_REPLACE(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__MIX_OR_REPLACE(Expression *expression, Context *context, void *value, ParseError *error)
 {
     int32_t from = 0;
     int32_t to = INT32_MAX;
@@ -639,33 +639,33 @@ static bool __dispatch__MIX_OR_REPLACE(Expression *expression, Context *context,
     return true;
 }
 
-static bool __dispatch__REPLACE(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__REPLACE(Expression *expression, Context *context, void *value, ParseError *error)
 {
     return __dispatch__MIX_OR_REPLACE(expression, context, value, error);
 }
 
-static bool __dispatch__MIX(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__MIX(Expression *expression, Context *context, void *value, ParseError *error)
 {
     return __dispatch__MIX_OR_REPLACE(expression, context, value, error);
 }
 
-static bool __dispatch__OFFSET(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__OFFSET(Expression *expression, Context *context, void *value, ParseError *error)
 {
     return parseExpression(expression->left, context, value, error);
 }
 
-static bool __dispatch__LENGTH(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__LENGTH(Expression *expression, Context *context, void *value, ParseError *error)
 {
     return parseExpression(expression->left, context, value, error);
 }
 
 
-static bool __dispatch__REST(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__REST(Expression *expression, Context *context, void *value, ParseError *error)
 {
     return true;
 }
 
-static bool __dispatch__TIE(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__TIE(Expression *expression, Context *context, void *value, ParseError *error)
 {
     NoteBlockContext *nbContext = value;
     int32_t tick = -1;
@@ -680,7 +680,7 @@ static bool __dispatch__TIE(Expression *expression, Context *context, void *valu
     }
 
     if (-1 == tick) {
-        SET_ERROR(error, ASTPARSER_INVALID_TIE, expression, "target note for tie is not found.");
+        SET_ERROR(error, PARSE_ERROR_INVALID_TIE, expression, "target note for tie is not found.");
         return false;
     }
 
@@ -688,14 +688,14 @@ static bool __dispatch__TIE(Expression *expression, Context *context, void *valu
 }
 
 
-static bool __dispatch__IDENTIFIER(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__IDENTIFIER(Expression *expression, Context *context, void *value, ParseError *error)
 {
     *((CFStringRef *)value) = CFStringCreateWithCString(NULL, expression->v.s, kCFStringEncodingUTF8);
     return true;
 }
 
 
-static bool __dispatch__TIME_SIGN(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__TIME_SIGN(Expression *expression, Context *context, void *value, ParseError *error)
 {
     TimeEvent *timeEvent = value;
 
@@ -704,7 +704,7 @@ static bool __dispatch__TIME_SIGN(Expression *expression, Context *context, void
     }
 
     if (0 > timeEvent->numerator) {
-        SET_ERROR(error, ASTPARSER_INVALID_TIME_SIGN, expression, "invalid range of time sign numerator");
+        SET_ERROR(error, PARSE_ERROR_INVALID_TIME_SIGN, expression, "invalid range of time sign numerator");
         return false;
     }
 
@@ -715,14 +715,14 @@ static bool __dispatch__TIME_SIGN(Expression *expression, Context *context, void
 #define isPowerOf2(x) ((x != 0) && ((x & (x - 1)) == 0))
     if (!isPowerOf2(timeEvent->denominator)) {
 #undef isPowerOf2
-        SET_ERROR(error, ASTPARSER_INVALID_TIME_SIGN, expression, "time sign denominator is not power of 2");
+        SET_ERROR(error, PARSE_ERROR_INVALID_TIME_SIGN, expression, "time sign denominator is not power of 2");
         return false;
     }
 
     return true;
 }
 
-static bool __dispatch__SOUND_SELECT(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__SOUND_SELECT(Expression *expression, Context *context, void *value, ParseError *error)
 {
     bool ret = false;
 
@@ -738,12 +738,12 @@ static bool __dispatch__SOUND_SELECT(Expression *expression, Context *context, v
 
             struct {
                 uint8_t *result;
-                ASTParserErrorKind errorKind;
+                ParseErrorKind errorKind;
                 const char *message;
             } table[] = {
-                {&event->msb, ASTPARSER_INVALID_MSB, "invalid range of msb"},
-                {&event->lsb, ASTPARSER_INVALID_LSB, "invalid range of lsb"},
-                {&event->programNo, ASTPARSER_INVALID_PROGRAM_NO, "invalid range of program no"},
+                {&event->msb, PARSE_ERROR_INVALID_MSB, "invalid range of msb"},
+                {&event->lsb, PARSE_ERROR_INVALID_LSB, "invalid range of lsb"},
+                {&event->programNo, PARSE_ERROR_INVALID_PROGRAM_NO, "invalid range of program no"},
             };
 
             for (int i = 0; i < sizeof(table) / sizeof(table[0]); ++i) {
@@ -771,7 +771,7 @@ ERROR:
     return ret;
 }
 
-static bool __dispatch__INTEGER_LIST(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__INTEGER_LIST(Expression *expression, Context *context, void *value, ParseError *error)
 {
     int32_t *integer = value;
 
@@ -783,7 +783,7 @@ static bool __dispatch__INTEGER_LIST(Expression *expression, Context *context, v
     return true;
 }
 
-static bool __dispatch__GATETIME_CUTOFF(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__GATETIME_CUTOFF(Expression *expression, Context *context, void *value, ParseError *error)
 {
     if (!parseExpression(expression->left, context, &context->gatetime, error)) {
         return false;
@@ -793,7 +793,7 @@ static bool __dispatch__GATETIME_CUTOFF(Expression *expression, Context *context
     return true;
 }
 
-static bool __dispatch__NOTE_BLOCK(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__NOTE_BLOCK(Expression *expression, Context *context, void *value, ParseError *error)
 {
     int32_t step = *((int32_t *)value);
     NoteBlockContext *nbContext = NATypeNew(NoteBlockContext, context->tick, step);
@@ -817,7 +817,7 @@ static bool __dispatch__NOTE_BLOCK(Expression *expression, Context *context, voi
     return true;
 }
 
-static bool __dispatch__NOTE_NO_LIST(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__NOTE_NO_LIST(Expression *expression, Context *context, void *value, ParseError *error)
 {
     for (Expression *expr = expression->left; expr; expr = expr->right) {
         if (!parseExpression(expr, context, value, error)) {
@@ -828,7 +828,7 @@ static bool __dispatch__NOTE_NO_LIST(Expression *expression, Context *context, v
     return true;
 }
 
-static bool __dispatch__PATTERN_DEFINE(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__PATTERN_DEFINE(Expression *expression, Context *context, void *value, ParseError *error)
 {
     bool ret = false;
 
@@ -867,7 +867,7 @@ ERROR:
     return ret;
 }
 
-static bool __dispatch__PATTERN_BLOCK(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__PATTERN_BLOCK(Expression *expression, Context *context, void *value, ParseError *error)
 {
     for (Expression *expr = expression->left; expr; expr = expr->right) {
         if (!parseExpression(expr, context, NULL, error)) {
@@ -878,7 +878,7 @@ static bool __dispatch__PATTERN_BLOCK(Expression *expression, Context *context, 
     return true;
 }
 
-static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context, void *value, ParseError *error)
 {
     bool ret = false;
 
@@ -983,7 +983,7 @@ ERROR_1:
     return ret;
 }
 
-static bool __dispatch__PATTERN_EXTEND_BLOCK(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__PATTERN_EXTEND_BLOCK(Expression *expression, Context *context, void *value, ParseError *error)
 {
     for (Expression *expr = expression->left; expr; expr = expr->right) {
         if (!parseExpression(expr, context, value, error)) {
