@@ -5,5 +5,5 @@ time 4/4
 tempo 120.0
 
 note step 240 {
-  ~ C1 E F G A B C2
+  C1 D E F G,A,B ~~~ C2
 }

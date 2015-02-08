@@ -667,21 +667,19 @@ static bool __dispatch__REST(Expression *expression, Context *context, void *val
 
 static bool __dispatch__TIE(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    bool found = false;
-
     NoteBlockContext *nbContext = value;
-    int32_t tick = nbContext->tick - nbContext->step;
+    int32_t tick = -1;
     CFIndex count = CFArrayGetCount(nbContext->events);
     for (int i = count - 1; 0 <= i; --i) {
         NoteEvent *event = (NoteEvent *)CFArrayGetValueAtIndex(nbContext->events, i);
-        if (tick != event->_.tick) {
+        if (-1 != tick && tick != event->_.tick) {
             break;
         }
         event->gatetime += nbContext->step;
-        found = true;
+        tick = event->_.tick;
     }
 
-    if (!found) {
+    if (-1 == tick) {
         SET_ERROR(error, ASTPARSER_INVALID_TIE, expression, "target note for tie is not found.");
         return false;
     }
