@@ -178,28 +178,33 @@ static bool parseExpression(Expression *expression, Context *context, void *valu
     return function(expression, context, value, error);
 }
 
-Sequence *ASTParserParseExpression(Expression *expression, const char *filepath, ParseError *error)
+bool ASTParserParseExpression(Expression *expression, const char *filepath, Sequence **sequence, CFMutableDictionaryRef *patterns, ParseError *error)
 {
-    Sequence *sequence = NATypeNew(Sequence);
-    Context *context = NATypeNew(Context, sequence);
+    bool ret = true;
+
+    Sequence *_sequence = NATypeNew(Sequence);
+    Context *context = NATypeNew(Context, _sequence);
 
     error->filepath = filepath;
 
     for (Expression *expr = expression; expr; expr = expr->right) {
         if (!parseExpression(expr, context, NULL, error)) {
-            NARelease(sequence);
-            sequence = NULL;
+            ret = false;
             goto ERROR;
         }
     }
 
-    SequenceSetTimeTable(sequence, context->timeTable);
-    SequenceAddEvents(sequence, context->events);
+    SequenceSetTimeTable(_sequence, context->timeTable);
+    SequenceAddEvents(_sequence, context->events);
+
+    *sequence = NARetain(_sequence);
+    *patterns = (void *)CFRetain(context->patterns);
 
 ERROR:
+    NARelease(_sequence);
     NARelease(context);
 
-    return sequence;
+    return ret;
 }
 
 static bool __dispatch__INTEGER(Expression *expression, Context *context, void *value, ParseError *error)

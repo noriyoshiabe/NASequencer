@@ -3,6 +3,6 @@
 #include "Expression.h"
 #include "ParseError.h"
 
-extern Expression *DSLParserParseFile(const char *filepath, ParseError *error);
-extern void DSLParserDumpExpression(Expression *expression);
-extern void DSLParserDeleteExpression(Expression *expression);
+#include <stdbool.h>
+
+extern bool DSLParserParseFile(const char *filepath, Expression **expression, ParseError *error);

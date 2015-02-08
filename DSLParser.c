@@ -10,10 +10,11 @@ int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, const char 
     return 0;
 }
 
-Expression *DSLParserParseFile(const char *filepath, ParseError *error)
+bool DSLParserParseFile(const char *filepath, Expression **expression, ParseError *error)
 {
+    bool ret = false;
     void *scanner;
-    Expression *ret = NULL;
+    *expression = NULL;
 
     error->filepath = filepath;
 
@@ -31,16 +32,17 @@ Expression *DSLParserParseFile(const char *filepath, ParseError *error)
     YY_BUFFER_STATE state = yy_create_buffer(fp, YY_BUF_SIZE, scanner);
     yy_switch_to_buffer(state, scanner);
 
-    if (yyparse(scanner, &ret)) {
+    if (yyparse(scanner, expression)) {
         error->kind = PARSE_ERROR_SYNTAX_ERROR;
-        if (ret) {
-            deleteExpression(ret);
-            ret = NULL;
+        if (*expression) {
+            deleteExpression(*expression);
+            *expression = NULL;
         }
         goto ERROR_2;
     }
 
     error->kind = PARSE_ERROR_NOERROR;
+    ret = true;
 
 ERROR_2:
     yy_delete_buffer(state, scanner);
@@ -49,14 +51,4 @@ ERROR_1:
     fclose(fp);
 
     return ret;
-}
-
-void DSLParserDumpExpression(Expression *expression)
-{
-    dumpExpression(expression);
-}
-
-void DSLParserDeleteExpression(Expression *expression)
-{
-    deleteExpression(expression);
 }

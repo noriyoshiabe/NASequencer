@@ -4,4 +4,6 @@
 #include "ParseError.h"
 #include "Sequence.h"
 
-extern Sequence *ASTParserParseExpression(Expression *expression, const char *filepath, ParseError *error);
+#include <stdbool.h>
+
+extern bool ASTParserParseExpression(Expression *expression, const char *filepath, Sequence **sequence, CFMutableDictionaryRef *patterns, ParseError *error);
