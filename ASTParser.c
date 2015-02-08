@@ -396,57 +396,55 @@ static bool __dispatch__TITLE(Expression *expression, Context *context, void *va
 
 static bool __dispatch__TIME(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    bool success = true;
     TimeEvent *event = NATypeNew(TimeEvent, context->tick);
 
     for (Expression *expr = expression->left; expr; expr = expr->right) {
-        success &= parseExpression(expr, context, event, error);
+        if (!parseExpression(expr, context, event, error)) {
+            NARelease(event);
+            return false;
+        }
     }
 
     TimeTableAddTimeEvent(context->timeTable, event);
     NARelease(event);
 
-    return success;
+    return true;
 }
 
 static bool __dispatch__TEMPO(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    bool success = true;
     TempoEvent *event = NATypeNew(TempoEvent, context->tick);
 
     for (Expression *expr = expression->left; expr; expr = expr->right) {
-        if (FLOAT == expr->tokenType) {
-            success &= parseExpression(expr, context, &event->tempo, error);
-        }
-        else {
-            success &= parseExpression(expr, context, event, error);
+        void *_value = FLOAT == expr->tokenType ? (void *)&event->tempo : (void *)event;
+        if (!parseExpression(expr, context, _value, error)) {
+            NARelease(event);
+            return false;
         }
     }
 
     TimeTableAddTempoEvent(context->timeTable, event);
     NARelease(event);
 
-    return success;
+    return true;
 }
 
 static bool __dispatch__MARKER(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    bool success = true;
     MarkerEvent *event = NATypeNew(MarkerEvent, context->tick);
 
     for (Expression *expr = expression->left; expr; expr = expr->right) {
-        if (STRING == expr->tokenType) {
-            success &= parseExpression(expr, context, &event->text, error);
-        }
-        else {
-            success &= parseExpression(expr, context, event, error);
+        void *_value = STRING == expr->tokenType ? (void *)&event->text : (void *)event;
+        if (!parseExpression(expr, context, _value, error)) {
+            NARelease(event);
+            return false;
         }
     }
 
     ContextAddEvent(context, event);
     NARelease(event);
 
-    return success;
+    return true;
 }
 
 static bool __dispatch__CHANNEL(Expression *expression, Context *context, void *value, ASTParserError *error)
@@ -525,11 +523,13 @@ static bool __dispatch__NOTE(Expression *expression, Context *context, void *val
     }
 
     if (!noteBlockExpr) {
-        NAPanic("Note block is missing.");
+        SET_ERROR(error, ASTPARSER_NOTE_BLOCK_MISSING, expression, "note block is missing.");
+        return false;
     }
 
     if (1 > step) {
-        NAPanic("Step is invalid.");
+        SET_ERROR(error, ASTPARSER_STEP_INVALID, expression, "step is invalid.");
+        return false;
     }
 
     return parseExpression(noteBlockExpr, context, &step, error);
@@ -559,8 +559,7 @@ static bool __dispatch__TO(Expression *expression, Context *context, void *value
     return parseExpression(expression->left, context, value, error);
 }
 
-// TODO from here
-static bool __dispatch__REPLACE(Expression *expression, Context *context, void *value, ASTParserError *error)
+static bool __dispatch__MIX_OR_REPLACE(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
     int32_t from = 0;
     int32_t to = INT32_MAX;
@@ -569,83 +568,49 @@ static bool __dispatch__REPLACE(Expression *expression, Context *context, void *
     Expression *patternBlock = NULL;
 
     for (Expression *expr = expression->left; expr; expr = expr->right) {
+        bool success = true;
+
         switch (expr->tokenType) {
         case FROM:
-            parseExpression(expr, context, &from, error);
+            success = parseExpression(expr, context, &from, error);
             break;
         case TO:
-            parseExpression(expr, context, &to, error);
+            success = parseExpression(expr, context, &to, error);
             break;
         case CHANNEL:
-            parseExpression(expr, context, &channel, error);
+            success = parseExpression(expr, context, &channel, error);
             context->channel = channel;
             break;
         case PATTERN_BLOCK:
             patternBlock = expr;
             break;
         }
+
+        if (!success) {
+            return false;
+        }
     }
 
-    CFIndex count = CFArrayGetCount(context->events);
-    for (int i = count - 1; 0 <= i; --i) {
-        MidiEvent *event = (MidiEvent *)CFArrayGetValueAtIndex(context->events, i);
-        if (from <= event->tick && event->tick < to) {
-            if (-1 == channel
-                    || (NATypeOf(event, NoteEvent) && channel == ((NoteEvent *)event)->channel)
-                    || (NATypeOf(event, SoundSelectEvent) && channel == ((SoundSelectEvent *)event)->channel)) {
-                CFArrayRemoveValueAtIndex(context->events, i);
+    if (REPLACE == expression->tokenType) {
+        CFIndex count = CFArrayGetCount(context->events);
+        for (int i = count - 1; 0 <= i; --i) {
+            MidiEvent *event = (MidiEvent *)CFArrayGetValueAtIndex(context->events, i);
+            if (from <= event->tick && event->tick < to) {
+                if (-1 == channel
+                        || (NATypeOf(event, NoteEvent) && channel == ((NoteEvent *)event)->channel)
+                        || (NATypeOf(event, SoundSelectEvent) && channel == ((SoundSelectEvent *)event)->channel)) {
+                    CFArrayRemoveValueAtIndex(context->events, i);
+                }
             }
         }
     }
 
     Context *local = ContextCreateLocal(context);
-    parseExpression(patternBlock, local, NULL, error);
 
-    count = CFArrayGetCount(local->events);
-    for (int i = 0; i < count; ++i) {
-        const MidiEvent *event = CFArrayGetValueAtIndex(local->events, i);
-        if (event->tick + from < to) {
-            MidiEvent *copied = NACopy(event);
-            copied->tick += from;
-            ContextAddEvent(context, copied);
-            NARelease(copied);
-        }
-        else {
-            break;
-        }
+    if (!parseExpression(patternBlock, local, NULL, error)) {
+        NARelease(local);
+        return false;
     }
-
-    NARelease(local);
-
-    return true;
-}
-
-static bool __dispatch__MIX(Expression *expression, Context *context, void *value, ASTParserError *error)
-{
-    int32_t from = 0;
-    int32_t to = INT32_MAX;
-
-    Expression *patternBlock = NULL;
-
-    for (Expression *expr = expression->left; expr; expr = expr->right) {
-        switch (expr->tokenType) {
-        case FROM:
-            parseExpression(expr, context, &from, error);
-            break;
-        case TO:
-            parseExpression(expr, context, &to, error);
-            break;
-        case CHANNEL:
-            parseExpression(expr, context, &context->channel, error);
-            break;
-        case PATTERN_BLOCK:
-            patternBlock = expr;
-            break;
-        }
-    }
-
-    Context *local = ContextCreateLocal(context);
-    parseExpression(patternBlock, local, NULL, error);
 
     CFIndex count = CFArrayGetCount(local->events);
     for (int i = 0; i < count; ++i) {
@@ -664,6 +629,16 @@ static bool __dispatch__MIX(Expression *expression, Context *context, void *valu
     NARelease(local);
 
     return true;
+}
+
+static bool __dispatch__REPLACE(Expression *expression, Context *context, void *value, ASTParserError *error)
+{
+    return __dispatch__MIX_OR_REPLACE(expression, context, value, error);
+}
+
+static bool __dispatch__MIX(Expression *expression, Context *context, void *value, ASTParserError *error)
+{
+    return __dispatch__MIX_OR_REPLACE(expression, context, value, error);
 }
 
 static bool __dispatch__OFFSET(Expression *expression, Context *context, void *value, ASTParserError *error)
