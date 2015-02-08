@@ -137,3 +137,8 @@ extern void *__NAVtblLookup(const NAClass *clazz, const char *typeID);
         {NULL, NULL} \
     }; \
     NADeclareClassConstant(type)
+
+#define NADeclareAbstractClass(type) \
+    static NAVtblEntry __##type##__vEntries[0]; \
+    typedef struct __##type {} type; \
+    NADeclareClassConstant(type)
