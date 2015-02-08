@@ -509,16 +509,22 @@ static bool __dispatch__NOTE(Expression *expression, Context *context, void *val
     Expression *noteBlockExpr = NULL;
 
     for (Expression *expr = expression->left; expr; expr = expr->right) {
+        bool success = true;
+
         switch (expr->tokenType) {
         case FROM:
-            parseExpression(expr, context, &context->tick, error);
+            success = parseExpression(expr, context, &context->tick, error);
             break;
         case STEP:
-            parseExpression(expr, context, &step, error);
+            success = parseExpression(expr, context, &step, error);
             break;
         case NOTE_BLOCK:
             noteBlockExpr = expr;
             break;
+        }
+
+        if (!success) {
+            return false;
         }
     }
 
@@ -528,7 +534,7 @@ static bool __dispatch__NOTE(Expression *expression, Context *context, void *val
     }
 
     if (1 > step) {
-        SET_ERROR(error, ASTPARSER_STEP_INVALID, expression, "step is invalid.");
+        SET_ERROR(error, ASTPARSER_INVALID_STEP, expression, "step is invalid.");
         return false;
     }
 
@@ -659,6 +665,8 @@ static bool __dispatch__REST(Expression *expression, Context *context, void *val
 
 static bool __dispatch__TIE(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
+    bool found = false;
+
     NoteBlockContext *nbContext = value;
     int32_t tick = nbContext->tick - nbContext->step;
     CFIndex count = CFArrayGetCount(nbContext->events);
@@ -668,7 +676,14 @@ static bool __dispatch__TIE(Expression *expression, Context *context, void *valu
             break;
         }
         event->gatetime += nbContext->step;
+        found = true;
     }
+
+    if (!found) {
+        SET_ERROR(error, ASTPARSER_INVALID_TIE, expression, "target note for tie is not found.");
+        return false;
+    }
+
     return true;
 }
 
@@ -683,13 +698,26 @@ static bool __dispatch__IDENTIFIER(Expression *expression, Context *context, voi
 static bool __dispatch__TIME_SIGN(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
     TimeEvent *timeEvent = value;
+
     parseExpression(expression->left, context, &timeEvent->numerator, error);
+    if (0 > timeEvent->numerator) {
+        SET_ERROR(error, ASTPARSER_INVALID_TIME_SIGN, expression, "invalid range of time sign numerator");
+        return false;
+    }
+
     parseExpression(expression->left->right, context, &timeEvent->denominator, error);
+#define isPowerOf2(x) ((x != 0) && ((x & (x - 1)) == 0))
+    if (!isPowerOf2(timeEvent->denominator)) {
+#undef isPowerOf2
+        SET_ERROR(error, ASTPARSER_INVALID_TIME_SIGN, expression, "time sign denominator is not power of 2");
+        return false;
+    }
+
     return true;
 }
 
 static bool __dispatch__SOUND_SELECT(Expression *expression, Context *context, void *value, ASTParserError *error)
-{
+{ // TODO from here
     SoundSelectEvent *event = NATypeNew(SoundSelectEvent, context->tick);
     event->channel = context->channel;
 
