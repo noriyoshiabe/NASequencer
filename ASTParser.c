@@ -921,7 +921,6 @@ static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context,
     const Pattern *pattern = CFDictionaryGetValue(context->patterns, identifier);
     Context *local = ContextCreateLocal(context);
 
-    printf("----- %d %d\n", error->kind, __LINE__);
     count = CFArrayGetCount(pattern->timeTable->timeEvents);
     for (int i = 0; i < count; ++i) {
         TimeTableAddTimeEvent(local->timeTable, (TimeEvent *)CFArrayGetValueAtIndex(pattern->timeTable->timeEvents, i));
