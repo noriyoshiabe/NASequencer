@@ -798,7 +798,11 @@ static bool __dispatch__NOTE_BLOCK(Expression *expression, Context *context, voi
     NoteBlockContext *nbContext = NATypeNew(NoteBlockContext, context->tick, step);
 
     for (Expression *expr = expression->left; expr; expr = expr->right) {
-        parseExpression(expr, context, nbContext, error);
+        if (!parseExpression(expr, context, nbContext, error)) {
+            NARelease(nbContext);
+            return false;
+        }
+
         nbContext->tick += step;
     }
 
@@ -815,7 +819,9 @@ static bool __dispatch__NOTE_BLOCK(Expression *expression, Context *context, voi
 static bool __dispatch__NOTE_NO_LIST(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
     for (Expression *expr = expression->left; expr; expr = expr->right) {
-        parseExpression(expr, context, value, error);
+        if (!parseExpression(expr, context, value, error)) {
+            return false;
+        }
     }
 
     return true;
@@ -823,27 +829,35 @@ static bool __dispatch__NOTE_NO_LIST(Expression *expression, Context *context, v
 
 static bool __dispatch__PATTERN_DEFINE(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    CFStringRef identifier;
+    CFStringRef identifier = NULL;
     Context *local = ContextCreateLocal(context);
 
     for (Expression *expr = expression->left; expr; expr = expr->right) {
         switch (expr->tokenType) {
         case IDENTIFIER:
-            parseExpression(expr, local, &identifier, error);
+            if (!parseExpression(expr, local, &identifier, error)) {
+                goto ERROR;
+            }
             break;
         case PATTERN_BLOCK:
         case PATTERN_EXPAND:
-            parseExpression(expr, local, NULL, error);
+            if (!parseExpression(expr, local, NULL, error)) {
+                goto ERROR;
+            }
             break;
         }
     }
 
     Pattern *pattern = NATypeNew(Pattern, local->timeTable, local->events, local->length);
     CFDictionarySetValue(context->patterns, identifier, pattern);
-
-    CFRelease(identifier);
-    NARelease(local);
     NARelease(pattern);
+
+ERROR:
+    if (identifier) {
+        CFRelease(identifier);
+    }
+
+    NARelease(local);
 
     return true;
 }
@@ -861,7 +875,7 @@ static bool __dispatch__PATTERN_BLOCK(Expression *expression, Context *context, 
 
 static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    CFStringRef identifier;
+    CFStringRef identifier = NULL;
     CFIndex count;
     int32_t from = context->tick;
     int32_t offset = 0;
@@ -871,29 +885,33 @@ static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context,
     Expression *lengthExpr = NULL;
 
     for (Expression *expr = expression->left; expr; expr = expr->right) {
+        bool success = true;
+
         switch (expr->tokenType) {
         case IDENTIFIER:
-            parseExpression(expr, context, &identifier, error);
+            success = parseExpression(expr, context, &identifier, error);
             break;
         case FROM:
-            parseExpression(expr, context, &from, error);
+            success = parseExpression(expr, context, &from, error);
             break;
         case PATTERN_EXTEND_BLOCK:
             patternExtendBlockExpr = expr;
             break;
         case OFFSET:
             context->option = &offset;
-            parseExpression(expr, context, &offset, error);
+            success = parseExpression(expr, context, &offset, error);
             break;
         case LENGTH:
             lengthExpr = expr;
             break;
         }
+
+        if (!success) {
+            goto ERROR_1;
+        }
     }
 
     const Pattern *pattern = CFDictionaryGetValue(context->patterns, identifier);
-    CFRelease(identifier);
-
     Context *local = ContextCreateLocal(context);
 
     count = CFArrayGetCount(pattern->timeTable->timeEvents);
@@ -908,7 +926,9 @@ static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context,
 
     if (lengthExpr) {
         local->option = &offset;
-        parseExpression(lengthExpr, local, &expandLength, error);
+        if (!parseExpression(lengthExpr, local, &expandLength, error)) {
+            goto ERROR_2;
+        }
     }
 
     count = CFArrayGetCount(pattern->events);
@@ -923,7 +943,9 @@ static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context,
     }
 
     if (patternExtendBlockExpr) {
-        parseExpression(patternExtendBlockExpr, local, NULL, error);
+        if (!parseExpression(patternExtendBlockExpr, local, NULL, error)) {
+            goto ERROR_2;
+        }
     }
 
     count = CFArrayGetCount(local->events);
@@ -941,7 +963,13 @@ static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context,
     context->tick += length;
     context->length = MAX(context->tick, from + length);
 
+ERROR_2:
     NARelease(local);
+
+ERROR_1:
+    if (identifier) {
+        CFRelease(identifier);
+    }
 
     return true;
 }

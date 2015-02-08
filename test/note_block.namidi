@@ -1,0 +1,9 @@
+title "offset length"
+resolution 480
+
+time 4/4
+tempo 120.0
+
+note step 240 {
+  ~ C1 E F G A B C2
+}
