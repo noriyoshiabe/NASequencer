@@ -378,9 +378,11 @@ static bool __dispatch__RESOLUTION(Expression *expression, Context *context, voi
         return false;
     }
 
-    parseExpression(expression->left, context, &context->sequence->resolution, error);
-    context->timeTable->resolution = context->sequence->resolution;
+    if (!parseExpression(expression->left, context, &context->sequence->resolution, error)) {
+        return false;
+    }
 
+    context->timeTable->resolution = context->sequence->resolution;
     return true;
 }
 
@@ -699,13 +701,19 @@ static bool __dispatch__TIME_SIGN(Expression *expression, Context *context, void
 {
     TimeEvent *timeEvent = value;
 
-    parseExpression(expression->left, context, &timeEvent->numerator, error);
+    if (!parseExpression(expression->left, context, &timeEvent->numerator, error)) {
+        return false;
+    }
+
     if (0 > timeEvent->numerator) {
         SET_ERROR(error, ASTPARSER_INVALID_TIME_SIGN, expression, "invalid range of time sign numerator");
         return false;
     }
 
-    parseExpression(expression->left->right, context, &timeEvent->denominator, error);
+    if (!parseExpression(expression->left->right, context, &timeEvent->denominator, error)) {
+        return false;
+    }
+
 #define isPowerOf2(x) ((x != 0) && ((x & (x - 1)) == 0))
     if (!isPowerOf2(timeEvent->denominator)) {
 #undef isPowerOf2
@@ -717,24 +725,46 @@ static bool __dispatch__TIME_SIGN(Expression *expression, Context *context, void
 }
 
 static bool __dispatch__SOUND_SELECT(Expression *expression, Context *context, void *value, ASTParserError *error)
-{ // TODO from here
+{
     SoundSelectEvent *event = NATypeNew(SoundSelectEvent, context->tick);
     event->channel = context->channel;
 
     for (Expression *expr = expression->left; expr; expr = expr->right) {
         if (INTEGER_LIST == expr->tokenType) {
             int32_t integerList[3];
-            parseExpression(expr, context, integerList, error);
-            event->msb = integerList[0];
-            event->lsb = integerList[1];
-            event->programNo = integerList[2];
+            if (!parseExpression(expr, context, integerList, error)) {
+                goto ERROR;
+            }
+
+            struct {
+                uint8_t *result;
+                ASTParserErrorKind errorKind;
+                const char *message;
+            } table[] = {
+                {&event->msb, ASTPARSER_INVALID_MSB, "invalid range of msb"},
+                {&event->lsb, ASTPARSER_INVALID_LSB, "invalid range of lsb"},
+                {&event->programNo, ASTPARSER_INVALID_PROGRAM_NO, "invalid range of program no"},
+            };
+
+            for (int i = 0; i < sizeof(table) / sizeof(table[0]); ++i) {
+                if (integerList[i] < 0 || 127 < integerList[i]) {
+                    SET_ERROR(error, table[i].errorKind, expression, table[i].message);
+                    goto ERROR;
+                }
+
+                *table[i].result = integerList[i];
+            }
         }
         else {
-            parseExpression(expr, context, event, error);
+            if (!parseExpression(expr, context, event, error)) {
+                goto ERROR;
+            }
         }
     }
 
     ContextAddEvent(context, event);
+
+ERROR:
     NARelease(event);
 
     return true;
@@ -754,7 +784,10 @@ static bool __dispatch__INTEGER_LIST(Expression *expression, Context *context, v
 
 static bool __dispatch__GATETIME_CUTOFF(Expression *expression, Context *context, void *value, ASTParserError *error)
 {
-    parseExpression(expression->left, context, &context->gatetime, error);
+    if (!parseExpression(expression->left, context, &context->gatetime, error)) {
+        return false;
+    }
+
     context->gatetime *= -1;
     return true;
 }
