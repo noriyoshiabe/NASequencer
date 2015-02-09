@@ -856,7 +856,7 @@ static bool __dispatch__PATTERN_DEFINE(Expression *expression, Context *context,
         }
     }
 
-    Pattern *pattern = NATypeNew(Pattern, local->timeTable, local->events, local->length);
+    Pattern *pattern = NATypeNew(Pattern, identifier, local->timeTable, local->events, local->length);
     CFDictionarySetValue(context->patterns, identifier, pattern);
     NARelease(pattern);
 

@@ -264,6 +264,7 @@ static void *__PatternInit(void *_self, ...)
 
     va_list ap;
     va_start(ap, _self);
+    self->name = (CFStringRef)CFRetain(va_arg(ap, CFStringRef));
     self->timeTable = NARetain(va_arg(ap, TimeTable *));
     self->events = (CFMutableArrayRef)CFRetain(va_arg(ap, CFMutableArrayRef));
     self->length = va_arg(ap, uint32_t);
@@ -277,6 +278,7 @@ static void *__PatternInit(void *_self, ...)
 static void __PatternDestroy(void *_self)
 {
     Pattern *self = _self;
+    CFRelease(self->name);
     NARelease(self->timeTable);
     CFRelease(self->events);
 }

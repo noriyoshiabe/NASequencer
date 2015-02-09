@@ -20,6 +20,7 @@ typedef struct _Sequence {
 
 typedef struct _Pattern {
     NAType _;
+    CFStringRef name;
     TimeTable *timeTable;
     CFMutableArrayRef events;
     uint32_t length;
