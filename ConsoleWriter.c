@@ -41,6 +41,17 @@ void ConsoleWriterWrite(ConsoleWriter *self, ParseContext *context)
                 context->error.location.lastLine, context->error.location.lastColumn);
     }
     else {
+        SequenceElementAccept(context->sequence, self);
+
+        CFIndex count = CFDictionaryGetCount(context->patterns);
+        CFTypeRef *keysTypeRef = (CFTypeRef *)malloc(count * sizeof(CFTypeRef));
+        CFDictionaryGetKeysAndValues(context->patterns, (const void **)keysTypeRef, NULL);
+        for (int i = 0; i < count; ++i) {
+            Pattern *pattern = (Pattern *)CFDictionaryGetValue(context->patterns, keysTypeRef[i]);
+            SequenceElementAccept(pattern, self);
+        }
+
+        free(keysTypeRef);
     }
 
     printf("\n");
