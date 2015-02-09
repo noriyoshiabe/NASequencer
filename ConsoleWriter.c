@@ -27,8 +27,23 @@ static void __ConsoleWriterVisitMarkerEvent(MarkerEvent *elem){}
 static void __ConsoleWriterVisitSoundSelectEvent(SoundSelectEvent *elem){}
 static void __ConsoleWriterVisitNoteEvent(NoteEvent *elem){}
 
-void ConsoleWriterWrite(ConsoleWriter *self, ParseContext *parseContext)
+void ConsoleWriterWrite(ConsoleWriter *self, ParseContext *context)
 {
+    printf("\nParse result of %s\n\n", context->filepath);
+
+    if (PARSE_ERROR_NOERROR != context->error.kind) {
+        printf("[Error] --------------------------------------------------------------------------\n");
+        printf("kind: %s\n", ParseError2String(context->error.kind));
+        printf("filepath: %s\n", context->error.filepath);
+        printf("message: %s\n", context->error.message);
+        printf("location: L=%d C=%d - L=%d C=%d\n",
+                context->error.location.firstLine, context->error.location.firstColumn,
+                context->error.location.lastLine, context->error.location.lastColumn);
+    }
+    else {
+    }
+
+    printf("\n");
 }
 
 NADeclareVtbl(ConsoleWriter, NAType,

@@ -3,30 +3,17 @@
  */
  
 #include "ParseContext.h"
-#include "stdio.h"
-#include "stdlib.h"
-#include "string.h"
+#include "ConsoleWriter.h"
 
 int main(int argc, char **argv)
 {
-    ParseContext *parseContext;
-    ParseError error;
+    ParseContext *parseContext = ParseContextParse(argv[1]);
+    ConsoleWriter *writer = NATypeNew(ConsoleWriter);
 
-    if (!(parseContext = ParseContextParse(argv[1], &error))) {
-        printf("ParseError=%d %s\n", error.kind, error.filepath);
-        printf("\t%d %d %d %d %s\n",
-                error.location.firstLine,
-                error.location.firstColumn,
-                error.location.lastLine,
-                error.location.lastColumn,
-                error.message);
-    }
-    else {
-        CFStringRef cfString = NADescription(parseContext);
-        CFShow(cfString);
-        CFRelease(cfString);
-        NARelease(parseContext);
-    }
+    ConsoleWriterWrite(writer, parseContext);
+
+    NARelease(parseContext);
+    NARelease(writer);
 
     return 0;
 }
