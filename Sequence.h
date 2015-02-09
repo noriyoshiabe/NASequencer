@@ -98,3 +98,5 @@ typedef struct _SequenceElementVtbl {
 } SequenceElementVtbl;
 
 NAExportClass(SequenceElement);
+
+extern void SequenceElementAccept(void *self, void *visitor);

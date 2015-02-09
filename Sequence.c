@@ -472,3 +472,8 @@ NADeclareVtbl(NoteEvent, NAType,
         );
 NADeclareVtbl(NoteEvent, SequenceElement, __NoteEventAccept);
 NADeclareClass(NoteEvent, NAType, SequenceElement);
+
+void SequenceElementAccept(void *self, void *visitor)
+{
+    NAVtbl(visitor, SequenceElement)->accept(self, visitor);
+}

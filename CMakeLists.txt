@@ -27,6 +27,7 @@ set(SOURCES
   ASTParser.c
   Sequence.c
   ParseContext.c
+  ConsoleWriter.c
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${BISON_Parser_OUTPUTS} ${FLEX_Lexer_OUTPUTS})
