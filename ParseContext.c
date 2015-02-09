@@ -2,15 +2,12 @@
 #include "DSLParser.h"
 #include "ASTParser.h"
 
-ParseContext *ParseContextParse(const char *filepath, ParseError *error)
+ParseContext *ParseContextParse(const char *filepath)
 {
-    ParseContext *ret = NULL;
-
+    ParseContext *ret = NATypeNew(ParseContext, filepath);
     Expression *expression;
-    Sequence *sequence;
-    CFMutableDictionaryRef patterns;
 
-    if (!DSLParserParseFile(filepath, &expression, error)) {
+    if (!DSLParserParseFile(filepath, &expression, &ret->error)) {
         return ret;
     }
 
@@ -18,13 +15,8 @@ ParseContext *ParseContextParse(const char *filepath, ParseError *error)
     dumpExpression(expression);
 #endif
 
-    if (!ASTParserParseExpression(expression, filepath, &sequence, &patterns, error)) {
-        goto ERROR;
-    }
+    ASTParserParseExpression(expression, filepath, &ret->sequence, &ret->patterns, &ret->error);
 
-    ret = NATypeNew(ParseContext, filepath, sequence, patterns);
-
-ERROR:
     deleteExpression(expression);
 
     return ret;
@@ -36,12 +28,7 @@ static void *__ParseContextInit(void *_self, ...)
     va_list ap;
     va_start(ap, _self);
     self->filepath = va_arg(ap, const char *);
-    self->sequence = NARetain(va_arg(ap, Sequence *));
-    self->patterns = (void *)CFRetain(va_arg(ap, CFMutableDictionaryRef));
     va_end(ap);
-
-    NARetain(self->sequence);
-    CFRetain(self->patterns);
 
     return self;
 }
@@ -49,8 +36,12 @@ static void *__ParseContextInit(void *_self, ...)
 static void __ParseContextDestroy(void *_self)
 {
     ParseContext *self = _self;
-    NARelease(self->sequence);
-    CFRelease(self->patterns);
+    if (self->sequence) {
+        NARelease(self->sequence);
+    }
+    if (self->patterns) {
+        CFRelease(self->patterns);
+    }
 }
 
 static void *__ParseContextDescription(const void *_self)

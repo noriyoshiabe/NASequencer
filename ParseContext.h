@@ -9,8 +9,9 @@ typedef struct _ParseContext {
     const char *filepath;
     Sequence *sequence;
     CFMutableDictionaryRef patterns;
+    ParseError error;
 } ParseContext;
 
-extern ParseContext *ParseContextParse(const char *filepath, ParseError *error);
+extern ParseContext *ParseContextParse(const char *filepath);
 
 NAExportClass(ParseContext);
