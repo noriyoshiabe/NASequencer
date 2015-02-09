@@ -3,6 +3,7 @@
 struct _ConsoleWriter {
     NAType _;
     CFMutableArrayRef tracksBuffer;
+    TimeTable *timeTable;
 };
 
 static void *__ConsoleWriterInit(void *self, ...)
@@ -18,17 +19,103 @@ static void __ConsoleWriterDestroy(void *_self)
     }
 }
 
-static void __ConsoleWriterVisitSequence(void *self, Sequence *elem)
+static void resetTrackBuffer(ConsoleWriter *self)
 {
-    printf("-- called %s\n", __func__);
+    if (self->tracksBuffer) {
+        CFRelease(self->tracksBuffer);
+    }
+
+    self->tracksBuffer = CFArrayCreateMutable(NULL, 17, &kCFTypeArrayCallBacks);
+    for (int i = 0; i < 17; ++i) {
+        CFStringRef string = CFStringCreateMutable(NULL, 0);
+        CFArrayAppendValue(self->tracksBuffer, string);
+        CFRelease(string);
+    }
 }
 
-static void __ConsoleWriterVisitPattern(void *self, Pattern *elem)
+static void writeTrackBuffer(ConsoleWriter *self)
 {
-    printf("-- called %s\n", __func__);
+    CFIndex count = CFArrayGetCount(self->tracksBuffer);
+    for (int i = 0; i < count; ++i) {
+        CFStringRef string = CFArrayGetValueAtIndex(self->tracksBuffer, i);
+        if (0 < CFStringGetLength(string)) {
+            CFShow(string);
+        }
+    }
 }
 
-static void __ConsoleWriterVisitTimeTable(void *self, TimeTable *elem){}
+static void __ConsoleWriterVisitSequence(void *_self, Sequence *elem)
+{
+    ConsoleWriter *self = _self;
+
+    printf("[Sequence] title: %s  resolution: %d\n", elem->title, elem->resolution);
+    printf("==================================================================================\n");
+
+    resetTrackBuffer(self);
+
+    SequenceElementAccept(elem->timeTable, self);
+
+    CFIndex count = CFArrayGetCount(elem->events);
+    for (int i = 0; i < count; ++i) {
+        void *event = (void *)CFArrayGetValueAtIndex(elem->events, i);
+        SequenceElementAccept(event, self);
+    }
+
+    writeTrackBuffer(self);
+    printf("\n");
+}
+
+static void __ConsoleWriterVisitPattern(void *_self, Pattern *elem)
+{
+    ConsoleWriter *self = _self;
+
+    int size = CFStringGetLength(elem->name) + 1;
+    char *cstr = malloc(size);
+    CFStringGetCString(elem->name, cstr, size, kCFStringEncodingUTF8);
+    printf("[Pattern] name: %s  length: %d\n", cstr, elem->length);
+    printf("==================================================================================\n");
+    free(cstr);
+
+    resetTrackBuffer(self);
+
+    SequenceElementAccept(elem->timeTable, self);
+
+    CFIndex count = CFArrayGetCount(elem->events);
+    for (int i = 0; i < count; ++i) {
+        void *event = (void *)CFArrayGetValueAtIndex(elem->events, i);
+        SequenceElementAccept(event, self);
+    }
+
+    writeTrackBuffer(self);
+    printf("\n");
+}
+
+static void __ConsoleWriterVisitTimeTable(void *_self, TimeTable *elem)
+{
+    ConsoleWriter *self = _self;
+    self->timeTable = elem;
+
+    CFIndex count;
+
+    CFMutableStringRef string = (CFMutableStringRef)CFArrayGetValueAtIndex(self->tracksBuffer, 0);
+
+    CFStringAppendFormat(string, NULL, CFSTR("[TimeSign]\n"));
+    CFStringAppendFormat(string, NULL, CFSTR("----------------------------------------------------------------------------------\n"));
+    count = CFArrayGetCount(elem->timeEvents);
+    for (int i = 0; i < count; ++i) {
+        void *event = (void *)CFArrayGetValueAtIndex(elem->timeEvents, i);
+        SequenceElementAccept(event, self);
+    }
+
+    CFStringAppendFormat(string, NULL, CFSTR("[Tempo]\n"));
+    CFStringAppendFormat(string, NULL, CFSTR("----------------------------------------------------------------------------------\n"));
+    count = CFArrayGetCount(elem->tempoEvents);
+    for (int i = 0; i < count; ++i) {
+        void *event = (void *)CFArrayGetValueAtIndex(elem->tempoEvents, i);
+        SequenceElementAccept(event, self);
+    }
+}
+
 static void __ConsoleWriterVisitTimeEvent(void *self, TimeEvent *elem){}
 static void __ConsoleWriterVisitTempoEvent(void *self, TempoEvent *elem){}
 static void __ConsoleWriterVisitMarkerEvent(void *self, MarkerEvent *elem){}
