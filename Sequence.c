@@ -51,7 +51,7 @@ static void *__SequenceDescription(const void *_self)
 
 static void __SequenceAccept(void *self, void *visitor)
 {
-    NAVtbl(visitor, SequenceVisitor)->visitSequence(self);
+    NAVtbl(visitor, SequenceVisitor)->visitSequence(visitor, self);
 }
 
 NADeclareVtbl(Sequence, NAType,
@@ -242,7 +242,7 @@ static void *__TimeTableDescription(const void *_self)
 
 static void __TimeTableAccept(void *self, void *visitor)
 {
-    NAVtbl(visitor, SequenceVisitor)->visitTimeTable(self);
+    NAVtbl(visitor, SequenceVisitor)->visitTimeTable(visitor, self);
 }
 
 NADeclareVtbl(TimeTable, NAType,
@@ -294,7 +294,7 @@ static void *__PatternDescription(const void *_self)
 
 static void __PatternAccept(void *self, void *visitor)
 {
-    NAVtbl(visitor, SequenceVisitor)->visitPattern(self);
+    NAVtbl(visitor, SequenceVisitor)->visitPattern(visitor, self);
 }
 
 NADeclareVtbl(Pattern, NAType,
@@ -347,7 +347,7 @@ static void *__TimeEventDescription(const void *_self)
 
 static void __TimeEventAccept(void *self, void *visitor)
 {
-    NAVtbl(visitor, SequenceVisitor)->visitTimeEvent(self);
+    NAVtbl(visitor, SequenceVisitor)->visitTimeEvent(visitor, self);
 }
 
 NADeclareVtbl(TimeEvent, NAType,
@@ -371,7 +371,7 @@ static void *__TempoEventDescription(const void *_self)
 
 static void __TempoEventAccept(void *self, void *visitor)
 {
-    NAVtbl(visitor, SequenceVisitor)->visitTempoEvent(self);
+    NAVtbl(visitor, SequenceVisitor)->visitTempoEvent(visitor, self);
 }
 
 NADeclareVtbl(TempoEvent, NAType,
@@ -410,7 +410,7 @@ static void *__MarkerEventDescription(const void *_self)
 
 static void __MarkerEventAccept(void *self, void *visitor)
 {
-    NAVtbl(visitor, SequenceVisitor)->visitMarkerEvent(self);
+    NAVtbl(visitor, SequenceVisitor)->visitMarkerEvent(visitor, self);
 }
 
 NADeclareVtbl(MarkerEvent, NAType,
@@ -434,7 +434,7 @@ static void *__SoundSelectEventDescription(const void *_self)
 
 static void __SoundSelectEventAccept(void *self, void *visitor)
 {
-    NAVtbl(visitor, SequenceVisitor)->visitSoundSelectEvent(self);
+    NAVtbl(visitor, SequenceVisitor)->visitSoundSelectEvent(visitor, self);
 }
 
 NADeclareVtbl(SoundSelectEvent, NAType,
@@ -458,7 +458,7 @@ static void *__NoteEventDescription(const void *_self)
 
 static void __NoteEventAccept(void *self, void *visitor)
 {
-    NAVtbl(visitor, SequenceVisitor)->visitNoteEvent(self);
+    NAVtbl(visitor, SequenceVisitor)->visitNoteEvent(visitor, self);
 }
 
 NADeclareVtbl(NoteEvent, NAType,
@@ -475,5 +475,5 @@ NADeclareClass(NoteEvent, NAType, SequenceElement);
 
 void SequenceElementAccept(void *self, void *visitor)
 {
-    NAVtbl(visitor, SequenceElement)->accept(self, visitor);
+    NAVtbl(self, SequenceElement)->accept(self, visitor);
 }

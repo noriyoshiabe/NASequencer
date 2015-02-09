@@ -81,14 +81,14 @@ extern uint32_t TimeTableMBLength2Tick(TimeTable *self, int32_t offsetTick, int3
 
 
 typedef struct _SequenceVisitorVtbl {
-    void (*visitSequence)(Sequence *elem);
-    void (*visitPattern)(Pattern *elem);
-    void (*visitTimeTable)(TimeTable *elem);
-    void (*visitTimeEvent)(TimeEvent *elem);
-    void (*visitTempoEvent)(TempoEvent *elem);
-    void (*visitMarkerEvent)(MarkerEvent *elem);
-    void (*visitSoundSelectEvent)(SoundSelectEvent *elem);
-    void (*visitNoteEvent)(NoteEvent *elem);
+    void (*visitSequence)(void *self, Sequence *elem);
+    void (*visitPattern)(void *self, Pattern *elem);
+    void (*visitTimeTable)(void *self, TimeTable *elem);
+    void (*visitTimeEvent)(void *self, TimeEvent *elem);
+    void (*visitTempoEvent)(void *self, TempoEvent *elem);
+    void (*visitMarkerEvent)(void *self, MarkerEvent *elem);
+    void (*visitSoundSelectEvent)(void *self, SoundSelectEvent *elem);
+    void (*visitNoteEvent)(void *self, NoteEvent *elem);
 } SequenceVisitorVtbl;
 
 NAExportClass(SequenceVisitor);

@@ -18,14 +18,14 @@ static void __ConsoleWriterDestroy(void *_self)
     }
 }
 
-static void __ConsoleWriterVisitSequence(Sequence *elem){}
-static void __ConsoleWriterVisitPattern(Pattern *elem){}
-static void __ConsoleWriterVisitTimeTable(TimeTable *elem){}
-static void __ConsoleWriterVisitTimeEvent(TimeEvent *elem){}
-static void __ConsoleWriterVisitTempoEvent(TempoEvent *elem){}
-static void __ConsoleWriterVisitMarkerEvent(MarkerEvent *elem){}
-static void __ConsoleWriterVisitSoundSelectEvent(SoundSelectEvent *elem){}
-static void __ConsoleWriterVisitNoteEvent(NoteEvent *elem){}
+static void __ConsoleWriterVisitSequence(void *self, Sequence *elem){}
+static void __ConsoleWriterVisitPattern(void *self, Pattern *elem){}
+static void __ConsoleWriterVisitTimeTable(void *self, TimeTable *elem){}
+static void __ConsoleWriterVisitTimeEvent(void *self, TimeEvent *elem){}
+static void __ConsoleWriterVisitTempoEvent(void *self, TempoEvent *elem){}
+static void __ConsoleWriterVisitMarkerEvent(void *self, MarkerEvent *elem){}
+static void __ConsoleWriterVisitSoundSelectEvent(void *self, SoundSelectEvent *elem){}
+static void __ConsoleWriterVisitNoteEvent(void *self, NoteEvent *elem){}
 
 void ConsoleWriterWrite(ConsoleWriter *self, ParseContext *context)
 {
