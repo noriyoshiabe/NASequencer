@@ -18,8 +18,16 @@ static void __ConsoleWriterDestroy(void *_self)
     }
 }
 
-static void __ConsoleWriterVisitSequence(void *self, Sequence *elem){}
-static void __ConsoleWriterVisitPattern(void *self, Pattern *elem){}
+static void __ConsoleWriterVisitSequence(void *self, Sequence *elem)
+{
+    printf("-- called %s\n", __func__);
+}
+
+static void __ConsoleWriterVisitPattern(void *self, Pattern *elem)
+{
+    printf("-- called %s\n", __func__);
+}
+
 static void __ConsoleWriterVisitTimeTable(void *self, TimeTable *elem){}
 static void __ConsoleWriterVisitTimeEvent(void *self, TimeEvent *elem){}
 static void __ConsoleWriterVisitTempoEvent(void *self, TempoEvent *elem){}
