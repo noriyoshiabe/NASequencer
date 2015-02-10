@@ -423,8 +423,23 @@ static bool __dispatch__TEMPO(Expression *expression, Context *context, void *va
     TempoEvent *event = NATypeNew(TempoEvent, context->tick);
 
     for (Expression *expr = expression->left; expr; expr = expr->right) {
-        void *_value = FLOAT == expr->tokenType ? (void *)&event->tempo : (void *)event;
-        if (!parseExpression(expr, context, _value, error)) {
+        bool success = true;
+        int32_t i;
+
+        switch (expr->tokenType) {
+        case FLOAT:
+            success = parseExpression(expr, context, &event->tempo, error);
+            break;
+        case INTEGER:
+            success = parseExpression(expr, context, &i, error);
+            event->tempo = i;
+            break;
+        default:
+            success = parseExpression(expr, context, event, error);
+            break;
+        }
+
+        if (!success) {
             NARelease(event);
             return false;
         }

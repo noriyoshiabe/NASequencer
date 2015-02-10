@@ -80,7 +80,7 @@ mixed from 5:1:0 to 5:3:0
 mixed offset 2b length 2b
 mixed from 5:1:0 to 5:3:0 offset 240 length 2b
 
-tempo 180.00
+tempo 180
 
 channel 9
 note step 240 {
