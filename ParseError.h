@@ -24,7 +24,7 @@ typedef struct _ParseError {
     ParseErrorKind kind;
     const char *filepath;
     const char *message;
-    Location location;
+    ParseLocation location;
 } ParseError;
 
 

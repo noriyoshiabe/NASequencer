@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define LOC(location) (*(Location *)location)
+#define LOC(location) (*(ParseLocation *)location)
 
 Expression *createIntegerValue(void *location, int tokenType, int value)
 {

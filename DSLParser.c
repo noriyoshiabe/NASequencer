@@ -5,7 +5,7 @@
 int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, const char *message)
 {
     ParseError *error = yyget_extra(scanner);
-    error->location = *((Location *)yylloc);
+    error->location = *((ParseLocation *)yylloc);
     error->message = message;
     return 0;
 }

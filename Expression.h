@@ -7,15 +7,15 @@ typedef enum ValueType {
     VALUE_TYPE_STRING
 } ValueType;
 
-typedef struct _Location {
+typedef struct _ParseLocation {
     int firstLine;
     int firstColumn;
     int lastLine;
     int lastColumn;
-} Location;
+} ParseLocation;
 
 typedef struct _Expression {
-    Location location;
+    ParseLocation location;
 
     int tokenType;
     ValueType valueType;
