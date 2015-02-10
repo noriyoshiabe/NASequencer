@@ -3,6 +3,12 @@
 #include <NAType.h>
 #include <CoreFoundation/CoreFoundation.h>
 
+typedef struct _Location {
+    uint32_t m;
+    uint16_t b;
+    uint16_t t;
+} Location;
+
 typedef struct _TimeTable {
     NAType _;
     uint16_t resolution;
@@ -79,6 +85,7 @@ extern void TimeTableAddTimeEvent(TimeTable *self, TimeEvent *timeEvent);
 extern void TimeTableAddTempoEvent(TimeTable *self, TempoEvent *tempoEvent);
 extern uint32_t TimeTableLocation2Tick(TimeTable *self, int32_t measure, int32_t beat, int32_t tick);
 extern uint32_t TimeTableMBLength2Tick(TimeTable *self, int32_t offsetTick, int32_t measure, int32_t beat);
+extern Location TimeTableTick2Location(TimeTable *self, int32_t tick);
 
 
 typedef struct _SequenceVisitorVtbl {

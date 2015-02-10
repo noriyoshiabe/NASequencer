@@ -207,6 +207,45 @@ END:
     return ret;
 }
 
+Location TimeTableTick2Location(TimeTable *self, int32_t tick)
+{
+    Location ret = {0};
+
+    int32_t numerator = 4;
+    int32_t denominator = 4;
+
+    int32_t offsetTick = 0;
+    int32_t measure = 1;
+
+    CFIndex count = CFArrayGetCount(self->timeEvents);
+    for (int i = 0; i < count; ++i) {
+        const TimeEvent *event = CFArrayGetValueAtIndex(self->timeEvents, i);
+        if (tick <= event->_.tick) {
+            break;
+        }
+
+        int32_t resolution = self->resolution * 4 / denominator;
+        int32_t measureLength = resolution * numerator;
+
+        measure += (event->_.tick - offsetTick) / measureLength;
+        offsetTick = event->_.tick;
+
+        numerator = event->numerator;
+        denominator = event->denominator;
+    }
+
+    tick -= offsetTick;
+
+    int32_t resolution = self->resolution * 4 / denominator;
+    int32_t measureLength = resolution * numerator;
+    
+    ret.m = measure + tick / measureLength;
+    ret.b = (tick % measureLength) / resolution + 1;
+    ret.t = tick % resolution;
+
+    return ret;
+}
+
 static void *__TimeTableInit(void *_self, ...)
 {
     TimeTable *self = _self;

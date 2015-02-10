@@ -99,16 +99,15 @@ static void __ConsoleWriterVisitTimeTable(void *_self, TimeTable *elem)
 
     CFMutableStringRef string = (CFMutableStringRef)CFArrayGetValueAtIndex(self->tracksBuffer, 0);
 
-    CFStringAppendFormat(string, NULL, CFSTR("[TimeSign]\n"));
+    CFStringAppendFormat(string, NULL, CFSTR("[Time table]\n"));
     CFStringAppendFormat(string, NULL, CFSTR("----------------------------------------------------------------------------------\n"));
+
     count = CFArrayGetCount(elem->timeEvents);
     for (int i = 0; i < count; ++i) {
         void *event = (void *)CFArrayGetValueAtIndex(elem->timeEvents, i);
         SequenceElementAccept(event, self);
     }
 
-    CFStringAppendFormat(string, NULL, CFSTR("[Tempo]\n"));
-    CFStringAppendFormat(string, NULL, CFSTR("----------------------------------------------------------------------------------\n"));
     count = CFArrayGetCount(elem->tempoEvents);
     for (int i = 0; i < count; ++i) {
         void *event = (void *)CFArrayGetValueAtIndex(elem->tempoEvents, i);
@@ -116,8 +115,22 @@ static void __ConsoleWriterVisitTimeTable(void *_self, TimeTable *elem)
     }
 }
 
-static void __ConsoleWriterVisitTimeEvent(void *self, TimeEvent *elem){}
-static void __ConsoleWriterVisitTempoEvent(void *self, TempoEvent *elem){}
+static void __ConsoleWriterVisitTimeEvent(void *_self, TimeEvent *elem)
+{
+    ConsoleWriter *self = _self;
+    CFMutableStringRef string = (CFMutableStringRef)CFArrayGetValueAtIndex(self->tracksBuffer, 0);
+    Location l = TimeTableTick2Location(self->timeTable, elem->_.tick);
+    CFStringAppendFormat(string, NULL, CFSTR("%03d:%02d:%03d: [Time signature] %d/%d\n"), l.m, l.b, l.t, elem->numerator, elem->denominator);
+}
+
+static void __ConsoleWriterVisitTempoEvent(void *_self, TempoEvent *elem)
+{
+    ConsoleWriter *self = _self;
+    CFMutableStringRef string = (CFMutableStringRef)CFArrayGetValueAtIndex(self->tracksBuffer, 0);
+    Location l = TimeTableTick2Location(self->timeTable, elem->_.tick);
+    CFStringAppendFormat(string, NULL, CFSTR("%03d:%02d:%03d: [Tempo] %.2f\n"), l.m, l.b, l.t, elem->tempo);
+}
+
 static void __ConsoleWriterVisitMarkerEvent(void *self, MarkerEvent *elem){}
 static void __ConsoleWriterVisitSoundSelectEvent(void *self, SoundSelectEvent *elem){}
 static void __ConsoleWriterVisitNoteEvent(void *self, NoteEvent *elem){}
