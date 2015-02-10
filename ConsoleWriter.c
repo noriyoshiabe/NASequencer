@@ -48,17 +48,44 @@ static void __ConsoleWriterVisitSequence(void *_self, Sequence *elem)
 {
     ConsoleWriter *self = _self;
 
+    printf("\n");
     printf("[Sequence] title: %s  resolution: %d\n", elem->title, elem->resolution);
     printf("==================================================================================\n");
 
     resetTrackBuffer(self);
 
+    CFMutableStringRef string = (CFMutableStringRef)CFArrayGetValueAtIndex(self->tracksBuffer, 0);
+
+    CFStringAppendFormat(string, NULL, CFSTR("\n"));
+    CFStringAppendFormat(string, NULL, CFSTR("[Time table]\n"));
+    CFStringAppendFormat(string, NULL, CFSTR("----------------------------------------------------------------------------------\n"));
+
     SequenceElementAccept(elem->timeTable, self);
 
-    CFIndex count = CFArrayGetCount(elem->events);
+    CFStringAppendFormat(string, NULL, CFSTR("\n"));
+    CFStringAppendFormat(string, NULL, CFSTR("[Meta info]\n"));
+    CFStringAppendFormat(string, NULL, CFSTR("----------------------------------------------------------------------------------\n"));
+
+    CFIndex count;
+    
+    count = CFArrayGetCount(elem->events);
     for (int i = 0; i < count; ++i) {
         void *event = (void *)CFArrayGetValueAtIndex(elem->events, i);
         SequenceElementAccept(event, self);
+    }
+
+    count = CFArrayGetCount(self->tracksBuffer);
+    for (int i = 1; i < count; ++i) {
+        CFMutableStringRef string = (CFMutableStringRef)CFArrayGetValueAtIndex(self->tracksBuffer, i);
+        if (0 < CFStringGetLength(string)) {
+            CFMutableStringRef header = CFStringCreateMutable(NULL, 0);
+            CFStringAppendFormat(header, NULL, CFSTR("\n"));
+            CFStringAppendFormat(header, NULL, CFSTR("[Channel %d]\n"), i);
+            CFStringAppendFormat(header, NULL, CFSTR("----------------------------------------------------------------------------------\n"));
+
+            CFStringInsert(string, 0, header);
+            CFRelease(header);
+        }
     }
 
     writeTrackBuffer(self);
@@ -72,18 +99,45 @@ static void __ConsoleWriterVisitPattern(void *_self, Pattern *elem)
     int size = CFStringGetLength(elem->name) + 1;
     char *cstr = malloc(size);
     CFStringGetCString(elem->name, cstr, size, kCFStringEncodingUTF8);
+    printf("\n");
     printf("[Pattern] name: %s  length: %d\n", cstr, elem->length);
     printf("==================================================================================\n");
     free(cstr);
 
     resetTrackBuffer(self);
 
+    CFMutableStringRef string = (CFMutableStringRef)CFArrayGetValueAtIndex(self->tracksBuffer, 0);
+
+    CFStringAppendFormat(string, NULL, CFSTR("\n"));
+    CFStringAppendFormat(string, NULL, CFSTR("[Time table]\n"));
+    CFStringAppendFormat(string, NULL, CFSTR("----------------------------------------------------------------------------------\n"));
+
     SequenceElementAccept(elem->timeTable, self);
 
-    CFIndex count = CFArrayGetCount(elem->events);
+    CFStringAppendFormat(string, NULL, CFSTR("\n"));
+    CFStringAppendFormat(string, NULL, CFSTR("[Meta info]\n"));
+    CFStringAppendFormat(string, NULL, CFSTR("----------------------------------------------------------------------------------\n"));
+
+    CFIndex count;
+
+    count = CFArrayGetCount(elem->events);
     for (int i = 0; i < count; ++i) {
         void *event = (void *)CFArrayGetValueAtIndex(elem->events, i);
         SequenceElementAccept(event, self);
+    }
+
+    count = CFArrayGetCount(self->tracksBuffer);
+    for (int i = 1; i < count; ++i) {
+        CFMutableStringRef string = (CFMutableStringRef)CFArrayGetValueAtIndex(self->tracksBuffer, i);
+        if (0 < CFStringGetLength(string)) {
+            CFMutableStringRef header = CFStringCreateMutable(NULL, 0);
+            CFStringAppendFormat(header, NULL, CFSTR("\n"));
+            CFStringAppendFormat(header, NULL, CFSTR("[Channel %d]\n"), i);
+            CFStringAppendFormat(header, NULL, CFSTR("----------------------------------------------------------------------------------\n"));
+
+            CFStringInsert(string, 0, header);
+            CFRelease(header);
+        }
     }
 
     writeTrackBuffer(self);
@@ -96,11 +150,6 @@ static void __ConsoleWriterVisitTimeTable(void *_self, TimeTable *elem)
     self->timeTable = elem;
 
     CFIndex count;
-
-    CFMutableStringRef string = (CFMutableStringRef)CFArrayGetValueAtIndex(self->tracksBuffer, 0);
-
-    CFStringAppendFormat(string, NULL, CFSTR("[Time table]\n"));
-    CFStringAppendFormat(string, NULL, CFSTR("----------------------------------------------------------------------------------\n"));
 
     count = CFArrayGetCount(elem->timeEvents);
     for (int i = 0; i < count; ++i) {
@@ -131,9 +180,31 @@ static void __ConsoleWriterVisitTempoEvent(void *_self, TempoEvent *elem)
     CFStringAppendFormat(string, NULL, CFSTR("%03d:%02d:%03d: [Tempo] %.2f\n"), l.m, l.b, l.t, elem->tempo);
 }
 
-static void __ConsoleWriterVisitMarkerEvent(void *self, MarkerEvent *elem){}
-static void __ConsoleWriterVisitSoundSelectEvent(void *self, SoundSelectEvent *elem){}
-static void __ConsoleWriterVisitNoteEvent(void *self, NoteEvent *elem){}
+static void __ConsoleWriterVisitMarkerEvent(void *_self, MarkerEvent *elem)
+{
+    ConsoleWriter *self = _self;
+    CFMutableStringRef string = (CFMutableStringRef)CFArrayGetValueAtIndex(self->tracksBuffer, 0);
+    Location l = TimeTableTick2Location(self->timeTable, elem->_.tick);
+    CFStringAppendFormat(string, NULL, CFSTR("%03d:%02d:%03d: [Marker] %s\n"), l.m, l.b, l.t, elem->text);
+}
+
+static void __ConsoleWriterVisitSoundSelectEvent(void *_self, SoundSelectEvent *elem)
+{
+    ConsoleWriter *self = _self;
+    CFMutableStringRef string = (CFMutableStringRef)CFArrayGetValueAtIndex(self->tracksBuffer, elem->channel);
+    Location l = TimeTableTick2Location(self->timeTable, elem->_.tick);
+    CFStringAppendFormat(string, NULL, CFSTR("%03d:%02d:%03d: [Sound select] channel:%d msb:%d lsb:%d program no:%d\n"),
+            l.m, l.b, l.t, elem->channel, elem->msb, elem->lsb, elem->programNo);
+}
+
+static void __ConsoleWriterVisitNoteEvent(void *_self, NoteEvent *elem)
+{
+    ConsoleWriter *self = _self;
+    CFMutableStringRef string = (CFMutableStringRef)CFArrayGetValueAtIndex(self->tracksBuffer, elem->channel);
+    Location l = TimeTableTick2Location(self->timeTable, elem->_.tick);
+    CFStringAppendFormat(string, NULL, CFSTR("%03d:%02d:%03d: [Note] channel:%d note no:%d velocity:%d gatetime:%d\n"),
+            l.m, l.b, l.t, elem->channel, elem->noteNo, elem->velocity, elem->gatetime);
+}
 
 void ConsoleWriterWrite(ConsoleWriter *self, ParseContext *context)
 {
