@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.0)
 project(namidi)
 
 find_library(CF CoreFoundation)
+find_library(CORE_MIDI CoreMidi)
 add_subdirectory (nalib)
 
 set(BISON_EXECUTABLE /usr/local/opt/bison/bin/bison)
@@ -28,7 +29,8 @@ set(SOURCES
   Sequence.c
   ParseContext.c
   ConsoleWriter.c
+  MidiClient.c
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${BISON_Parser_OUTPUTS} ${FLEX_Lexer_OUTPUTS})
-target_link_libraries(${PROJECT_NAME} ${CF} nalib)
+target_link_libraries(${PROJECT_NAME} ${CF} ${CORE_MIDI} nalib)
