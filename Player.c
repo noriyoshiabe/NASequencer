@@ -1,6 +1,7 @@
 #include "Player.h"
 
 #include <pthread.h>
+#include <unistd.h>
 #include <NACFHelper.h>
 #include "MidiClient.h"
 #include "MessageQueue.h"
@@ -67,7 +68,11 @@ static void setSource(Player *self, void *source)
 
 static void sendAllNoteOff(Player *self)
 {
-    // TODO
+    uint8_t bytes[3] = {0, 0x7B, 0x00};
+    for(int i = 0; i < 16; ++i) {
+        bytes[0] = 0xB0 | (0x0F & i);
+        MidiClientSend(self->client, bytes, sizeof(bytes));
+    }
 }
 
 static void changeState(Player *self, PlayerState next)
@@ -131,7 +136,7 @@ static void *__PlayerRun(void *_self)
 
         if (PLAYER_STATE_PLAYING == self->state) {
             play(self);
-            // TODO nanosleep
+            usleep(100);
         }
     }
 
