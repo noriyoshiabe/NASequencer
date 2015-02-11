@@ -147,7 +147,7 @@ static bool play(Player *self)
     }
 }
 
-static void *__PlayerRun(void *_self)
+static void *run(void *_self)
 {
     Player *self = _self;
 
@@ -199,7 +199,7 @@ EXIT:
 static void *__PlayerInit(void *_self, ...)
 {
     Player *self = _self;
-    pthread_create(&self->thread, NULL, __PlayerRun, self);
+    pthread_create(&self->thread, NULL, run, self);
     self->playing = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
     self->msgQ = MessageQueueCreate();
     self->client = NATypeNew(MidiClient);
