@@ -30,6 +30,7 @@ set(SOURCES
   ParseContext.c
   ConsoleWriter.c
   MidiClient.c
+  MessageQueue.c
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${BISON_Parser_OUTPUTS} ${FLEX_Lexer_OUTPUTS})
