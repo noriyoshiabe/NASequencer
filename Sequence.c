@@ -246,6 +246,27 @@ Location TimeTableTick2Location(TimeTable *self, int32_t tick)
     return ret;
 }
 
+uint32_t TimeTableMicroSec2Tick(TimeTable *self, int64_t usec)
+{
+    int32_t offsetTick = 0;
+    double usecPerTick = 60 * 1000 * 1000 / 120.0f / self->resolution;
+
+    CFIndex count = CFArrayGetCount(self->tempoEvents);
+    for (int i = 0; i < count; ++i) {
+        const TempoEvent *event = CFArrayGetValueAtIndex(self->tempoEvents, i);
+        uint32_t tick = offsetTick + usec / usecPerTick;
+        if (tick <= event->_.tick) {
+            break;
+        }
+
+        usec -= (event->_.tick - offsetTick) * usecPerTick;
+        usecPerTick = 60 * 1000 * 1000 / event->tempo / self->resolution;
+        offsetTick = event->_.tick;
+    }
+
+    return offsetTick + usec / usecPerTick;
+}
+
 static void *__TimeTableInit(void *_self, ...)
 {
     TimeTable *self = _self;
