@@ -31,6 +31,7 @@ set(SOURCES
   ConsoleWriter.c
   MidiClient.c
   MessageQueue.c
+  Player.c
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${BISON_Parser_OUTPUTS} ${FLEX_Lexer_OUTPUTS})
