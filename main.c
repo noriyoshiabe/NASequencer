@@ -11,7 +11,7 @@ int main(int argc, char **argv)
     ParseContext *parseContext = ParseContextParse(argv[1]);
     ConsoleWriter *writer = NATypeNew(ConsoleWriter);
 
-    ConsoleWriterWrite(writer, parseContext);
+    ParseContextViewRender(writer, parseContext);
 
     MidiClient *cl = NATypeNew(MidiClient);
     MidiClientOpen(cl);

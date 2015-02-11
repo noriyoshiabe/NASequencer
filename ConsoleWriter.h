@@ -5,5 +5,3 @@
 
 typedef struct _ConsoleWriter ConsoleWriter;
 NAExportClass(ConsoleWriter);
-
-extern void ConsoleWriterWrite(ConsoleWriter *self, ParseContext *context);

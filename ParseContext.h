@@ -15,3 +15,12 @@ typedef struct _ParseContext {
 extern ParseContext *ParseContextParse(const char *filepath);
 
 NAExportClass(ParseContext);
+
+
+typedef struct _ParseContextViewVtbl {
+    void (*render)(void *self, ParseContext *context);
+} ParseContextViewVtbl;
+
+extern void ParseContextViewRender(void *self, ParseContext *context);
+
+NAExportClass(ParseContextView);

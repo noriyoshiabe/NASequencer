@@ -206,7 +206,7 @@ static void __ConsoleWriterVisitNoteEvent(void *_self, NoteEvent *elem)
             l.m, l.b, l.t, elem->channel, elem->noteNo, elem->velocity, elem->gatetime);
 }
 
-void ConsoleWriterWrite(ConsoleWriter *self, ParseContext *context)
+void __ConsoleWriterRender(void *self, ParseContext *context)
 {
     printf("\nParse result of %s\n\n", context->filepath);
 
@@ -257,4 +257,6 @@ NADeclareVtbl(ConsoleWriter, SequenceVisitor,
         __ConsoleWriterVisitNoteEvent,
         );
 
-NADeclareClass(ConsoleWriter, NAType, SequenceVisitor);
+NADeclareVtbl(ConsoleWriter, ParseContextView, __ConsoleWriterRender);
+
+NADeclareClass(ConsoleWriter, NAType, SequenceVisitor, ParseContextView);
