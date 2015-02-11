@@ -104,7 +104,8 @@ static void changeState(Player *self, PlayerState next)
 
 static void sendNoteOff(Player *self, const NoteEvent *event)
 {
-    // TODO
+    uint8_t bytes[3] = {0x80 | (0x0F & (event->channel - 1)), event->noteNo, 0x00};
+    MidiClientSend(self->client, bytes, sizeof(bytes));
 }
 
 static bool play(Player *self)
@@ -235,17 +236,35 @@ static void __PlayerVisitPattern(void *_self, Pattern *elem)
 
 static void __PlayerVisitMarkerEvent(void *self, MarkerEvent *elem)
 {
-    // TODO
 }
 
-static void __PlayerVisitSoundSelectEvent(void *self, SoundSelectEvent *elem)
+static void __PlayerVisitSoundSelectEvent(void *_self, SoundSelectEvent *elem)
 {
-    // TODO
+    Player *self = _self;
+
+    uint8_t bytes[3];
+    bytes[0] = 0xB0 | (0x0F & (elem->channel - 1));
+    bytes[1] = 0x00;
+    bytes[2] = elem->msb;
+    MidiClientSend(self->client, bytes, 3);
+
+    bytes[1] = 0x20;
+    bytes[2] = elem->lsb;
+    MidiClientSend(self->client, bytes, 3);
+
+    bytes[0] = 0xC0 | (0x0F & (elem->channel - 1));
+    bytes[1] = elem->programNo;
+    MidiClientSend(self->client, bytes, 2);
 }
 
-static void __PlayerVisitNoteEvent(void *self, NoteEvent *elem)
+static void __PlayerVisitNoteEvent(void *_self, NoteEvent *elem)
 {
-    // TODO
+    Player *self = _self;
+
+    uint8_t bytes[3] = {0x90 | (0x0F & (elem->channel - 1)), elem->noteNo, elem->velocity};
+    MidiClientSend(self->client, bytes, sizeof(bytes));
+
+    CFArrayAppendValue(self->playing, elem);
 }
 
 NADeclareVtbl(Player, NAType,
