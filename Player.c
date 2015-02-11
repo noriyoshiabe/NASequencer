@@ -1,6 +1,7 @@
 #include "Player.h"
 
 #include <pthread.h>
+#include <sys/time.h>
 #include <unistd.h>
 #include <NACFHelper.h>
 #include "MidiClient.h"
@@ -29,6 +30,10 @@ struct _Player {
     CFMutableArrayRef playing;
     MessageQueue *msgQ;
     MidiClient *client;
+    uint64_t start;
+    uint64_t offset;
+    uint64_t current;
+    int index;
 };
 
 static void setSource(Player *self, void *source)
@@ -75,9 +80,27 @@ static void sendAllNoteOff(Player *self)
     }
 }
 
+static uint64_t currentMicroSec()
+{
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec * 1000 * 1000 + tv.tv_usec;
+}
+
 static void changeState(Player *self, PlayerState next)
 {
-    if (PLAYER_STATE_PLAYING == self->state) {
+    switch (self->state) {
+    case PLAYER_STATE_STOP:
+        switch (next) {
+        case PLAYER_STATE_PLAYING:
+            self->start = currentMicroSec();
+            self->offset = self->current;
+            break;
+        default:
+            break;
+        }
+        break;
+    case PLAYER_STATE_PLAYING:
         switch (next) {
         case PLAYER_STATE_STOP:
         case PLAYER_STATE_EXIT:
@@ -87,14 +110,55 @@ static void changeState(Player *self, PlayerState next)
         default:
             break;
         }
+        break;
+    default:
+        break;
     }
 
     self->state = next;
 }
 
-static void play(Player *self)
+static void sendNoteOff(Player *self, const NoteEvent *event)
 {
-    // TODO
+}
+
+static bool play(Player *self)
+{
+    uint64_t elapsed = currentMicroSec() - self->start;
+    uint64_t prev = self->current;
+    self->current = self->offset + elapsed;
+
+    int32_t prevTick; // TODO
+    int32_t currentTick; // TODO
+
+    for (CFIndex i = CFArrayGetCount(self->playing); 0 < i; --i) {
+        CFIndex idx = i - 1;
+        const NoteEvent *event = CFArrayGetValueAtIndex(self->playing, idx);
+        if (currentTick >= event->_.tick + event->gatetime) {
+            sendNoteOff(self, event);
+            CFArrayRemoveValueAtIndex(self->playing, idx);
+        }
+    }
+
+    CFIndex eventsCount = CFArrayGetCount(self->events);
+    for (; self->index < eventsCount; ++self->index) {
+        const MidiEvent *event = CFArrayGetValueAtIndex(self->events, self->index);
+        if (prevTick < event->tick && event->tick <= currentTick) {
+            // TODO
+        }
+        else if (currentTick < event->tick) {
+            break;
+        }
+    }
+
+    CFIndex playingCount = CFArrayGetCount(self->playing);
+    if (eventsCount <= self->index && 0 == playingCount) {
+        changeState(self, PLAYER_STATE_STOP);
+        return false;
+    }
+    else {
+        return true;
+    }
 }
 
 static void *__PlayerRun(void *_self)
@@ -135,8 +199,9 @@ static void *__PlayerRun(void *_self)
         }
 
         if (PLAYER_STATE_PLAYING == self->state) {
-            play(self);
-            usleep(100);
+            if (play(self)) {
+                usleep(100);
+            }
         }
     }
 
