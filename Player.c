@@ -51,23 +51,7 @@ static void setSource(Player *self, void *source)
         self->events = NULL;
     }
     else {
-        CFArrayRef events;
-        TimeTable *timeTable;
-
-        if (NATypeOf(source, Sequence)) {
-            events = ((Sequence *)source)->events;
-            timeTable = ((Sequence *)source)->timeTable;
-        }
-        else if (NATypeOf(source, Pattern)) {
-            events = ((Pattern *)source)->events;
-            timeTable = ((Pattern *)source)->timeTable;
-        }
-        else {
-            NAPanic("Unexpected source type.");
-        }
-
-        self->events = CFRetain(events);
-        self->timeTable = NARetain(timeTable);
+        SequenceElementAccept(source, self);
     }
 }
 
@@ -120,6 +104,7 @@ static void changeState(Player *self, PlayerState next)
 
 static void sendNoteOff(Player *self, const NoteEvent *event)
 {
+    // TODO
 }
 
 static bool play(Player *self)
@@ -128,8 +113,8 @@ static bool play(Player *self)
     uint64_t prev = self->current;
     self->current = self->offset + elapsed;
 
-    int32_t prevTick; // TODO
-    int32_t currentTick; // TODO
+    uint32_t prevTick = TimeTableMicroSec2Tick(self->timeTable, prev);
+    uint32_t currentTick = TimeTableMicroSec2Tick(self->timeTable, self->current);
 
     for (CFIndex i = CFArrayGetCount(self->playing); 0 < i; --i) {
         CFIndex idx = i - 1;
@@ -142,9 +127,9 @@ static bool play(Player *self)
 
     CFIndex eventsCount = CFArrayGetCount(self->events);
     for (; self->index < eventsCount; ++self->index) {
-        const MidiEvent *event = CFArrayGetValueAtIndex(self->events, self->index);
+        MidiEvent *event = (MidiEvent *)CFArrayGetValueAtIndex(self->events, self->index);
         if (prevTick < event->tick && event->tick <= currentTick) {
-            // TODO
+            SequenceElementAccept(event, self);
         }
         else if (currentTick < event->tick) {
             break;
@@ -233,6 +218,59 @@ static void __PlayerDestroy(void *_self)
     MessageQueueDestroy(self->msgQ);
     NARelease(self->client);
 }
+
+static void __PlayerVisitSequence(void *_self, Sequence *elem)
+{
+    Player *self = _self;
+    self->events = CFRetain(elem->events);
+    self->timeTable = NARetain(elem->timeTable);
+}
+
+static void __PlayerVisitPattern(void *_self, Pattern *elem)
+{
+    Player *self = _self;
+    self->events = CFRetain(elem->events);
+    self->timeTable = NARetain(elem->timeTable);
+}
+
+static void __PlayerVisitMarkerEvent(void *self, MarkerEvent *elem)
+{
+    // TODO
+}
+
+static void __PlayerVisitSoundSelectEvent(void *self, SoundSelectEvent *elem)
+{
+    // TODO
+}
+
+static void __PlayerVisitNoteEvent(void *self, NoteEvent *elem)
+{
+    // TODO
+}
+
+NADeclareVtbl(Player, NAType,
+        __PlayerInit,
+        __PlayerDestroy,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        );
+
+NADeclareVtbl(Player, SequenceVisitor,
+        __PlayerVisitSequence,
+        __PlayerVisitPattern,
+        NULL,
+        NULL,
+        NULL,
+        __PlayerVisitMarkerEvent,
+        __PlayerVisitSoundSelectEvent,
+        __PlayerVisitNoteEvent,
+        );
+
+NADeclareClass(Player, NAType, SequenceVisitor);
+
 
 void PlayerSetSource(Player *self, void *source)
 {

@@ -86,6 +86,7 @@ extern void TimeTableAddTempoEvent(TimeTable *self, TempoEvent *tempoEvent);
 extern uint32_t TimeTableLocation2Tick(TimeTable *self, int32_t measure, int32_t beat, int32_t tick);
 extern uint32_t TimeTableMBLength2Tick(TimeTable *self, int32_t offsetTick, int32_t measure, int32_t beat);
 extern Location TimeTableTick2Location(TimeTable *self, int32_t tick);
+extern uint32_t TimeTableMicroSec2Tick(TimeTable *self, int64_t usec);
 
 
 typedef struct _SequenceVisitorVtbl {
