@@ -1,0 +1,36 @@
+/*
+ * example.namidi
+ */
+
+// コメントはC互換
+
+title "syntax sample"
+
+resolution 480
+
+time 4/4
+tempo 120.0
+
+marker 'START'
+
+gatetime 120
+velocity 127
+
+// Drums
+drums = {
+  channel 10
+  sound select 127 0 0
+  note from 0 step 120 { C1^ C^  E^  C E C E C^  E^  ^^ }
+  note from 0 step 240 { F#1 F#1 F#  F#  F#  F#  F#  A# }
+}
+
+drums {
+  replace channel 10 from 0 to 120 {
+    note step 120 {
+      C1,C#2
+    }
+  }
+}
+drums
+drums
+drums
