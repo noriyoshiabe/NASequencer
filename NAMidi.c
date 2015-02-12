@@ -72,6 +72,7 @@ static void *__NAMidiRun(void *_self)
         case NAMIDI_MSG_SET_FILE:
             // TODO switch file
             FSWatcherRegisterFilepath(self->watcher, msg.arg);
+            FSWatcherStart(self->watcher);
             self->filepath = msg.arg;
             break;
         case NAMIDI_MSG_START:
@@ -112,6 +113,8 @@ static void __NAMidiDestroy(void *_self)
     Message msg = {NAMIDI_MSG_EXIT, NULL};
     MessageQueuePost(self->msgQ, &msg);
 
+    FSWatcherFinish(self->watcher);
+
     pthread_join(self->thread, NULL);
 
     NARelease(self->player);
@@ -148,6 +151,7 @@ NADeclareClass(NAMidi, NAType, FSWatcherListener);
 
 void NAMidiAddContextView(NAMidi *self, void *contextView)
 {
+    NARetain(contextView);
     Message msg = {NAMIDI_MSG_ADD_CONTEXT_VIEW, contextView};
     MessageQueuePost(self->msgQ, &msg);
 }
