@@ -1,31 +1,33 @@
 #include "DSLParser.h"
 #include "Parser.h"
 #include "Lexer.h"
+#include <NACFHelper.h>
 
 int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, const char *message)
 {
     ParseError *error = yyget_extra(scanner);
     error->location = *((ParseLocation *)yylloc);
-    error->message = message;
+    error->message = CFStringCreateWithCString(NULL, message, kCFStringEncodingUTF8);
     return 0;
 }
 
-bool DSLParserParseFile(const char *filepath, Expression **expression, ParseError *error)
+bool DSLParserParseFile(CFStringRef filepath, Expression **expression, ParseError **error)
 {
     bool ret = false;
     void *scanner;
     *expression = NULL;
 
-    error->filepath = filepath;
+    *error = NATypeNew(ParseError);
+    (*error)->filepath = CFRetain(filepath);
 
-    FILE *fp = fopen(filepath, "r");
+    FILE *fp = fopen(NACFString2CString(filepath), "r");
     if (!fp) {
-        error->kind = PARSE_ERROR_FILE_NOT_FOUND;
+        (*error)->kind = PARSE_ERROR_FILE_NOT_FOUND;
         return ret;
     }
 
-    if (yylex_init_extra(error, &scanner)) {
-        error->kind = PARSE_ERROR_INIT_ERROR;
+    if (yylex_init_extra(*error, &scanner)) {
+        (*error)->kind = PARSE_ERROR_INIT_ERROR;
         goto ERROR_1;
     }
 
@@ -33,7 +35,7 @@ bool DSLParserParseFile(const char *filepath, Expression **expression, ParseErro
     yy_switch_to_buffer(state, scanner);
 
     if (yyparse(scanner, expression)) {
-        error->kind = PARSE_ERROR_SYNTAX_ERROR;
+        (*error)->kind = PARSE_ERROR_SYNTAX_ERROR;
         if (*expression) {
             deleteExpression(*expression);
             *expression = NULL;
@@ -41,7 +43,8 @@ bool DSLParserParseFile(const char *filepath, Expression **expression, ParseErro
         goto ERROR_2;
     }
 
-    error->kind = PARSE_ERROR_NOERROR;
+    NARelease(*error);
+    *error = NULL;
     ret = true;
 
 ERROR_2:

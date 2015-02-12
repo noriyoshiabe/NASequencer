@@ -8,7 +8,10 @@
 
 int main(int argc, char **argv)
 {
-    ParseContext *parseContext = ParseContextParse(argv[1]);
+    CFStringRef string = CFStringCreateWithCString(NULL, argv[1], kCFStringEncodingUTF8);
+    ParseContext *parseContext = ParseContextParse(string);
+    CFRelease(string);
+
     ConsoleWriter *writer = NATypeNew(ConsoleWriter);
 
     ParseContextViewRender(writer, parseContext);

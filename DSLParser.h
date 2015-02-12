@@ -5,4 +5,4 @@
 
 #include <stdbool.h>
 
-extern bool DSLParserParseFile(const char *filepath, Expression **expression, ParseError *error);
+extern bool DSLParserParseFile(CFStringRef filepath, Expression **expression, ParseError **error);

@@ -28,6 +28,7 @@ set(SOURCES
   DSLParser.c
   ASTParser.c
   Sequence.c
+  ParseError.c
   ParseContext.c
   ConsoleWriter.c
   MidiClient.c

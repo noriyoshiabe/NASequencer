@@ -91,3 +91,10 @@ static CFComparisonResult __NACFComparatorFunctionDesc(const void *val1, const v
 
 const CFComparatorFunction NACFComparatorFunction = __NACFComparatorFunction;
 const CFComparatorFunction NACFComparatorFunctionDesc = __NACFComparatorFunctionDesc;
+
+
+const char *__NACFString2CString(CFStringRef cfString, char *allocaBuffer)
+{
+    CFStringGetCString(cfString, allocaBuffer, INT32_MAX, kCFStringEncodingUTF8);
+    return allocaBuffer;
+}

@@ -5,6 +5,7 @@
 #include <limits.h>
 #include <libgen.h>
 #include <sys/stat.h>
+#include <NACFHelper.h>
 
 NADeclareAbstractClass(FSWatcherListener);
 
@@ -84,10 +85,7 @@ static void onFSChanged(FSWatcher *self)
     CFSetGetValues(self->files, (const void **)&values);
 
     for (int i = 0; i < count; ++i) {
-        char path[PATH_MAX + 1];
-        CFStringGetCString(values[i], path, sizeof(path), kCFStringEncodingUTF8);
-
-        struct tm* clock = getModifiedTime(path);
+        struct tm* clock = getModifiedTime(NACFString2CString(values[i]));
         if (!clock) {
             onError(self);
         }
@@ -118,11 +116,11 @@ static void fsCallback(ConstFSEventStreamRef streamRef, void *_self, size_t numE
     }
 }
 
-void FSWatcherRegisterFilepath(FSWatcher *self, const char *filepath)
+void FSWatcherRegisterFilepath(FSWatcher *self, CFStringRef filepath)
 {
     struct tm* clock;
     char buf[PATH_MAX + 1];
-    char *actualpath = realpath(filepath, buf);
+    char *actualpath = realpath(NACFString2CString(filepath), buf);
 
     if (!(clock = getModifiedTime(actualpath))) {
         onError(self);

@@ -28,7 +28,7 @@ static void __SequenceDestroy(void *_self)
     Sequence *self = _self;
 
     if (self->title) {
-        free(self->title);
+        CFRelease(self->title);
     }
 
     if (self->timeTable) {
@@ -43,7 +43,7 @@ static void *__SequenceDescription(const void *_self)
     const Sequence *self = _self;
 
     CFStringRef cfString = NADescription(self->timeTable);
-    void *ret = (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<Sequence: resolution=%d title=%s timeTable=%@ events=%@>"), self->resolution, self->title, cfString, self->events);
+    void *ret = (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<Sequence: resolution=%d title=%@ timeTable=%@ events=%@>"), self->resolution, self->title, cfString, self->events);
     CFRelease(cfString);
 
     return ret;
@@ -452,7 +452,9 @@ NADeclareClass(TempoEvent, NAType, SequenceElement);
 static void __MarkerEventDestroy(void *_self)
 {
     MarkerEvent *self = _self;
-    free(self->text);
+    if (self->text) {
+        CFRelease(self->text);
+    }
 }
 
 void *__MarkerEventCopy(const void *_self)
@@ -460,14 +462,14 @@ void *__MarkerEventCopy(const void *_self)
     const MarkerEvent *self = _self;
 
     MarkerEvent *copied = (MarkerEvent *)__MidiEventInit(NATypeAlloc(self->_._.clazz), self->_.tick);
-    copied->text = strdup(self->text);
+    copied->text = CFStringCreateCopy(NULL, self->text);
     return copied;
 }
 
 static void *__MarkerEventDescription(const void *_self)
 {
     const MarkerEvent *self = _self;
-    return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<MarkerEvent: tick=%d text=%s>"), self->_.tick, self->text);
+    return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<MarkerEvent: tick=%d text=%@>"), self->_.tick, self->text);
 }
 
 static void __MarkerEventAccept(void *self, void *visitor)

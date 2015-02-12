@@ -6,13 +6,13 @@
 
 typedef struct _ParseContext {
     NAType _;
-    const char *filepath;
+    CFStringRef filepath;
     Sequence *sequence;
     CFMutableDictionaryRef patterns;
-    ParseError error;
+    ParseError *error;
 } ParseContext;
 
-extern ParseContext *ParseContextParse(const char *filepath);
+extern ParseContext *ParseContextParse(CFStringRef filepath);
 
 NAExportClass(ParseContext);
 

@@ -1,10 +1,10 @@
 #pragma once
 
+#include <NAType.h>
+#include <CoreFoundation/CoreFoundation.h>
 #include "Expression.h"
 
 typedef enum {
-    PARSE_ERROR_NOERROR,
-
     PARSE_ERROR_FILE_NOT_FOUND,
     PARSE_ERROR_INIT_ERROR,
     PARSE_ERROR_SYNTAX_ERROR,
@@ -21,17 +21,18 @@ typedef enum {
 } ParseErrorKind;
 
 typedef struct _ParseError {
+    NAType _;
     ParseErrorKind kind;
-    const char *filepath;
-    const char *message;
+    CFStringRef filepath;
+    CFStringRef message;
     ParseLocation location;
 } ParseError;
 
+NAExportClass(ParseError);
 
 static inline const char *ParseError2String(ParseErrorKind kind)
 {
 #define ERR2STR_AND_RETURN(e, kind) if (e == kind) return #e
-    ERR2STR_AND_RETURN(PARSE_ERROR_NOERROR, kind);
     ERR2STR_AND_RETURN(PARSE_ERROR_FILE_NOT_FOUND, kind);
     ERR2STR_AND_RETURN(PARSE_ERROR_INIT_ERROR, kind);
     ERR2STR_AND_RETURN(PARSE_ERROR_SYNTAX_ERROR, kind);

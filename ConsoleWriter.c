@@ -1,4 +1,5 @@
 #include "ConsoleWriter.h"
+#include <NACFHelper.h>
 
 #define TRACK_BUFFER_NUM 18
 #define TIME_TABLE_INDEX 0
@@ -98,7 +99,7 @@ static void __ConsoleWriterVisitSequence(void *_self, Sequence *elem)
     ConsoleWriter *self = _self;
 
     printf("\n");
-    printf("[Sequence] title: %s  resolution: %d\n", elem->title, elem->resolution);
+    printf("[Sequence] title: %s  resolution: %d\n", NACFString2CString(elem->title), elem->resolution);
     printf("==================================================================================\n");
 
     writeTracks(self, elem->timeTable, elem->events);
@@ -160,7 +161,7 @@ static void __ConsoleWriterVisitMarkerEvent(void *_self, MarkerEvent *elem)
     ConsoleWriter *self = _self;
     CFMutableStringRef string = (CFMutableStringRef)CFArrayGetValueAtIndex(self->tracksBuffer, META_INFO_INDEX);
     Location l = TimeTableTick2Location(self->timeTable, elem->_.tick);
-    CFStringAppendFormat(string, NULL, CFSTR("%03d:%02d:%03d: [Marker] %s\n"), l.m, l.b, l.t, elem->text);
+    CFStringAppendFormat(string, NULL, CFSTR("%03d:%02d:%03d: [Marker] %@\n"), l.m, l.b, l.t, elem->text);
 }
 
 static void __ConsoleWriterVisitSoundSelectEvent(void *_self, SoundSelectEvent *elem)
@@ -183,16 +184,18 @@ static void __ConsoleWriterVisitNoteEvent(void *_self, NoteEvent *elem)
 
 void __ConsoleWriterRender(void *self, ParseContext *context)
 {
-    printf("\nParse result of %s\n\n", context->filepath);
+    printf("\nParse result of %s\n\n", NACFString2CString(context->filepath));
 
-    if (PARSE_ERROR_NOERROR != context->error.kind) {
+    if (context->error) {
         printf("[Error] --------------------------------------------------------------------------\n");
-        printf("kind: %s\n", ParseError2String(context->error.kind));
-        printf("filepath: %s\n", context->error.filepath);
-        printf("message: %s\n", context->error.message);
+        printf("kind: %s\n", ParseError2String(context->error->kind));
+        printf("filepath: %s\n", NACFString2CString(context->error->filepath));
+        printf("message: %s\n", NACFString2CString(context->error->message));
         printf("location: L=%d C=%d - L=%d C=%d\n",
-                context->error.location.firstLine, context->error.location.firstColumn,
-                context->error.location.lastLine, context->error.location.lastColumn);
+                context->error->location.firstLine, context->error->location.firstColumn,
+                context->error->location.lastLine, context->error->location.lastColumn);
+
+        CFShow(NADescription(context->error));
     }
     else {
         SequenceElementAccept(context->sequence, self);

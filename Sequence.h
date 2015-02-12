@@ -19,7 +19,7 @@ typedef struct _TimeTable {
 typedef struct _Sequence {
     NAType _;
     uint16_t resolution;
-    char *title;
+    CFStringRef title;
     TimeTable *timeTable;
     CFMutableArrayRef events;
 } Sequence;
@@ -50,7 +50,7 @@ typedef struct _TempoEvent {
 
 typedef struct _MarkerEvent {
     MidiEvent _;
-    char *text;
+    CFStringRef text;
 } MarkerEvent;
 
 typedef struct _SoundSelectEvent {

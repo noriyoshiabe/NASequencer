@@ -6,7 +6,7 @@
 typedef struct _FSWatcher FSWatcher;
 NAExportClass(FSWatcher);
 
-extern void FSWatcherRegisterFilepath(FSWatcher *self, const char *filepath);
+extern void FSWatcherRegisterFilepath(FSWatcher *self, CFStringRef filepath);
 extern void FSWatcherStart(FSWatcher *self);
 extern void FSWatcherFinish(FSWatcher *self);
 

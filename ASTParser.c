@@ -11,7 +11,8 @@
 
 #define TABLE_SIZE (TOKEN_END - TOKEN_BEGIN)
 #define IDX(type) (type - TOKEN_BEGIN - 1)
-#define SET_ERROR(error, _kind, _expression, _message) (error->kind = _kind, error->location = _expression->location, error->message = _message ? _message : "")
+#define SET_ERROR(error, _kind, _expression, _message) \
+    (error->kind = _kind, error->location = _expression->location, error->message = _message ? CFStringCreateWithCString(NULL, _message, kCFStringEncodingUTF8) : NULL)
 
 /*
  * TODO error handling
@@ -178,17 +179,19 @@ static bool parseExpression(Expression *expression, Context *context, void *valu
     return function(expression, context, value, error);
 }
 
-bool ASTParserParseExpression(Expression *expression, const char *filepath, Sequence **sequence, CFMutableDictionaryRef *patterns, ParseError *error)
+bool ASTParserParseExpression(Expression *expression, CFStringRef filepath, Sequence **sequence, CFMutableDictionaryRef *patterns, ParseError **error)
 {
     bool ret = true;
 
     Sequence *_sequence = NATypeNew(Sequence);
     Context *context = NATypeNew(Context, _sequence);
 
-    error->filepath = filepath;
+    ParseError *err = NATypeNew(ParseError);
+    err->filepath = CFRetain(filepath);
 
     for (Expression *expr = expression; expr; expr = expr->right) {
-        if (!parseExpression(expr, context, NULL, error)) {
+        if (!parseExpression(expr, context, NULL, err)) {
+            *error = err;
             ret = false;
             goto ERROR;
         }
@@ -199,6 +202,8 @@ bool ASTParserParseExpression(Expression *expression, const char *filepath, Sequ
 
     *sequence = NARetain(_sequence);
     *patterns = (void *)CFRetain(context->patterns);
+
+    NARelease(err);
 
 ERROR:
     NARelease(_sequence);

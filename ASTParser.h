@@ -6,4 +6,4 @@
 
 #include <stdbool.h>
 
-extern bool ASTParserParseExpression(Expression *expression, const char *filepath, Sequence **sequence, CFMutableDictionaryRef *patterns, ParseError *error);
+extern bool ASTParserParseExpression(Expression *expression, CFStringRef filepath, Sequence **sequence, CFMutableDictionaryRef *patterns, ParseError **error);
