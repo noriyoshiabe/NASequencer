@@ -82,7 +82,7 @@ static void onFSChanged(FSWatcher *self)
 {
     CFIndex count = CFSetGetCount(self->files);
     CFTypeRef *values = (CFTypeRef *)malloc(count * sizeof(CFTypeRef));
-    CFSetGetValues(self->files, (const void **)&values);
+    CFSetGetValues(self->files, (const void **)values);
 
     for (int i = 0; i < count; ++i) {
         struct tm* clock = getModifiedTime(NACFString2CString(values[i]));
@@ -142,7 +142,7 @@ static void *run(void *_self)
 
     CFIndex count = CFSetGetCount(self->dirPaths);
     CFTypeRef *values = (CFTypeRef *)malloc(count * sizeof(CFTypeRef));
-    CFSetGetValues(self->files, (const void **)&values);
+    CFSetGetValues(self->dirPaths, (const void **)values);
     CFArrayRef _paths = CFArrayCreate(NULL, values, count, &kCFTypeArrayCallBacks);
     free(values);
 
