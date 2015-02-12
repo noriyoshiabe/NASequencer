@@ -150,6 +150,8 @@ static bool __PlayerPlay(Player *self)
 
 static void __PlayerRewind(Player *self)
 {
+    __PlayerSendAllNoteOff(self);
+
     self->index = 0;
     self->offset = 0;
     self->start = currentMicroSec();

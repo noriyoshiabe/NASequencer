@@ -26,7 +26,7 @@ struct _NAMidi {
     ParseContext *context;
 };
 
-static void __NAMidiParse(NAMidi *self)
+static bool __NAMidiParse(NAMidi *self)
 {
     ParseContext *context = ParseContextParse(self->filepath);
 
@@ -41,9 +41,11 @@ static void __NAMidiParse(NAMidi *self)
             NARelease(self->context);
         }
         self->context = context;
+        return true;
     }
     else {
         NARelease(context);
+        return false;
     }
 }
 
@@ -76,12 +78,14 @@ static void *__NAMidiRun(void *_self)
             self->filepath = msg.arg;
             break;
         case NAMIDI_MSG_START:
-            __NAMidiParse(self);
-            __NAMidiPlaySequence(self);
+            if (__NAMidiParse(self)) {
+                __NAMidiPlaySequence(self);
+            }
             break;
         case NAMIDI_MSG_ON_FILE_CHANGED:
-            __NAMidiParse(self);
-            __NAMidiPlaySequence(self);
+            if (__NAMidiParse(self)) {
+                __NAMidiPlaySequence(self);
+            }
             break;
         case NAMIDI_MSG_EXIT:
             goto EXIT;
