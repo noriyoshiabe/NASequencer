@@ -1,30 +1,48 @@
-/*
- * main.c file
- */
- 
-#include "ParseContext.h"
+#include "NAMidi.h"
 #include "ConsoleWriter.h"
-#include "MidiClient.h"
+#include "MessageQueue.h"
+
+#include <signal.h>
+
+static MessageQueue *msgQ;
+static Message dummy = {0, NULL};
+
+static void signalHandler(int signo)
+{
+    MessageQueuePost(msgQ, &dummy);
+}
 
 int main(int argc, char **argv)
 {
-    CFStringRef string = CFStringCreateWithCString(NULL, argv[1], kCFStringEncodingUTF8);
-    ParseContext *parseContext = ParseContextParse(string);
-    CFRelease(string);
+    if (2 != argc) {
+        printf("Usage: ./namidi <filepath>\n\n");
+        return -1;
+    }
 
+    if (SIG_ERR == signal(SIGINT, signalHandler)) {
+        printf("can not catch SIGINT\n");
+        exit(1);
+    }
+
+    msgQ = MessageQueueCreate();
+
+    CFStringRef filepath = CFStringCreateWithCString(NULL, argv[1], kCFStringEncodingUTF8);
+
+    NAMidi *namidi = NATypeNew(NAMidi);
     ConsoleWriter *writer = NATypeNew(ConsoleWriter);
 
-    ParseContextViewRender(writer, parseContext);
+    NAMidiAddContextView(namidi, writer);
+    NAMidiSetFile(namidi, filepath);
 
-    MidiClient *cl = NATypeNew(MidiClient);
-    MidiClientOpen(cl);
-    uint8_t bytes[] = {0x90, 41, 0x00};
-    MidiClientSend(cl, bytes, sizeof(bytes));
-    MidiClientClose(cl);
-    NARelease(cl);
+    NAMidiStart(namidi);
 
-    NARelease(parseContext);
     NARelease(writer);
+    CFRelease(filepath);
+    
+    MessageQueueWait(msgQ, &dummy);
+    MessageQueueDestroy(msgQ);
+
+    NARelease(namidi);
 
     return 0;
 }
