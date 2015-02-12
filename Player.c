@@ -90,7 +90,6 @@ static void __PlayerChangeState(Player *self, PlayerState next)
         case PLAYER_STATE_STOP:
         case PLAYER_STATE_EXIT:
             __PlayerSendAllNoteOff(self);
-            CFArrayRemoveAllValues(self->playing);
             break;
         default:
             break;
@@ -151,9 +150,11 @@ static bool __PlayerPlay(Player *self)
 static void __PlayerRewind(Player *self)
 {
     __PlayerSendAllNoteOff(self);
+    CFArrayRemoveAllValues(self->playing);
 
     self->index = 0;
     self->offset = 0;
+    self->current = 0;
     self->start = currentMicroSec();
 }
 
