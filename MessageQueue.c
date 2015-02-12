@@ -4,6 +4,7 @@
 #include <pthread.h>
 
 #define MSGQ_SIZE 8
+#define INC(idx) (++idx, idx &= ~MSGQ_SIZE)
 
 struct _MessageQueue {
     Message msgQ[MSGQ_SIZE];
@@ -38,7 +39,8 @@ bool MessageQueuePost(MessageQueue *self, const Message *message)
         return false;
     }
 
-    self->msgQ[self->writeIdx++] = *message;
+    self->msgQ[self->writeIdx] = *message;
+    INC(self->writeIdx);
     ++self->count;
     pthread_cond_signal(&self->cond);
 
@@ -55,7 +57,8 @@ bool MessageQueueWait(MessageQueue *self, Message *message)
         pthread_cond_wait(&self->cond, &self->mutex);
     }
 
-    *message = self->msgQ[self->readIdx++];
+    *message = self->msgQ[self->readIdx];
+    INC(self->readIdx);
     --self->count;
 
     pthread_mutex_unlock(&self->mutex);
@@ -72,7 +75,8 @@ bool MessageQueuePeek(MessageQueue *self, Message *message)
         return false;
     }
 
-    *message = self->msgQ[self->readIdx++];
+    *message = self->msgQ[self->readIdx];
+    INC(self->readIdx);
     --self->count;
 
     pthread_mutex_unlock(&self->mutex);
