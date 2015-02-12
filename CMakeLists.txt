@@ -35,6 +35,7 @@ set(SOURCES
   MessageQueue.c
   Player.c
   FSWatcher.c
+  NAMidi.c
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${BISON_Parser_OUTPUTS} ${FLEX_Lexer_OUTPUTS})

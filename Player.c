@@ -18,6 +18,7 @@ typedef enum _PlayerMessageKind {
     PLAYER_MSG_SET_SOURCE,
     PLAYER_MSG_PLAY,
     PLAYER_MSG_STOP,
+    PLAYER_MSG_REWIND,
     PLAYER_MSG_EXIT,
 } PlayerMessageKind;
 
@@ -36,7 +37,7 @@ struct _Player {
     int index;
 };
 
-static void setSource(Player *self, void *source)
+static void __PlayerSetSource(Player *self, void *source)
 {
     if (self->timeTable) {
         NARelease(self->timeTable);
@@ -55,7 +56,7 @@ static void setSource(Player *self, void *source)
     }
 }
 
-static void sendAllNoteOff(Player *self)
+static void __PlayerSendAllNoteOff(Player *self)
 {
     uint8_t bytes[3] = {0, 0x7B, 0x00};
     for(int i = 0; i < 16; ++i) {
@@ -71,7 +72,7 @@ static uint64_t currentMicroSec()
     return tv.tv_sec * 1000 * 1000 + tv.tv_usec;
 }
 
-static void changeState(Player *self, PlayerState next)
+static void __PlayerChangeState(Player *self, PlayerState next)
 {
     switch (self->state) {
     case PLAYER_STATE_STOP:
@@ -88,7 +89,7 @@ static void changeState(Player *self, PlayerState next)
         switch (next) {
         case PLAYER_STATE_STOP:
         case PLAYER_STATE_EXIT:
-            sendAllNoteOff(self);
+            __PlayerSendAllNoteOff(self);
             CFArrayRemoveAllValues(self->playing);
             break;
         default:
@@ -102,13 +103,13 @@ static void changeState(Player *self, PlayerState next)
     self->state = next;
 }
 
-static void sendNoteOff(Player *self, const NoteEvent *event)
+static void __PlayerSendNoteOff(Player *self, const NoteEvent *event)
 {
     uint8_t bytes[3] = {0x80 | (0x0F & (event->channel - 1)), event->noteNo, 0x00};
     MidiClientSend(self->client, bytes, sizeof(bytes));
 }
 
-static bool play(Player *self)
+static bool __PlayerPlay(Player *self)
 {
     uint64_t elapsed = currentMicroSec() - self->start;
     uint64_t prev = self->current;
@@ -121,7 +122,7 @@ static bool play(Player *self)
         CFIndex idx = i - 1;
         const NoteEvent *event = CFArrayGetValueAtIndex(self->playing, idx);
         if (currentTick >= event->_.tick + event->gatetime) {
-            sendNoteOff(self, event);
+            __PlayerSendNoteOff(self, event);
             CFArrayRemoveValueAtIndex(self->playing, idx);
         }
     }
@@ -139,7 +140,7 @@ static bool play(Player *self)
 
     CFIndex playingCount = CFArrayGetCount(self->playing);
     if (eventsCount <= self->index && 0 == playingCount) {
-        changeState(self, PLAYER_STATE_STOP);
+        __PlayerChangeState(self, PLAYER_STATE_STOP);
         return false;
     }
     else {
@@ -147,12 +148,19 @@ static bool play(Player *self)
     }
 }
 
-static void *run(void *_self)
+static void __PlayerRewind(Player *self)
+{
+    self->index = 0;
+    self->offset = 0;
+    self->start = currentMicroSec();
+}
+
+static void *PlayerRun(void *_self)
 {
     Player *self = _self;
 
     MidiClientOpen(self->client);
-    changeState(self, PLAYER_STATE_STOP);
+    __PlayerChangeState(self, PLAYER_STATE_STOP);
 
     for (;;) {
         Message msg;
@@ -168,24 +176,27 @@ static void *run(void *_self)
         if (recv) {
             switch (msg.kind) {
             case PLAYER_MSG_SET_SOURCE:
-                setSource(self, msg.arg);
+                __PlayerSetSource(self, msg.arg);
                 NARelease(msg.arg);
                 break;
             case PLAYER_MSG_PLAY:
-                changeState(self, PLAYER_STATE_PLAYING);
+                __PlayerChangeState(self, PLAYER_STATE_PLAYING);
                 break;
             case PLAYER_MSG_STOP:
-                changeState(self, PLAYER_STATE_STOP);
+                __PlayerChangeState(self, PLAYER_STATE_STOP);
+                break;
+            case PLAYER_MSG_REWIND:
+                __PlayerRewind(self);
                 break;
             case PLAYER_MSG_EXIT:
-                changeState(self, PLAYER_STATE_EXIT);
-                setSource(self, NULL);
+                __PlayerChangeState(self, PLAYER_STATE_EXIT);
+                __PlayerSetSource(self, NULL);
                 goto EXIT;
             }
         }
 
         if (PLAYER_STATE_PLAYING == self->state) {
-            if (play(self)) {
+            if (__PlayerPlay(self)) {
                 usleep(100);
             }
         }
@@ -204,7 +215,7 @@ static void *__PlayerInit(void *_self, ...)
     self->msgQ = MessageQueueCreate();
     self->client = NATypeNew(MidiClient);
 
-    pthread_create(&self->thread, NULL, run, self);
+    pthread_create(&self->thread, NULL, PlayerRun, self);
 
     return self;
 }
@@ -311,5 +322,11 @@ void PlayerPlay(Player *self)
 void PlayerStop(Player *self)
 {
     Message msg = {PLAYER_MSG_STOP, NULL};
+    MessageQueuePost(self->msgQ, &msg);
+}
+
+void PlayerRewind(Player *self)
+{
+    Message msg = {PLAYER_MSG_REWIND, NULL};
     MessageQueuePost(self->msgQ, &msg);
 }
