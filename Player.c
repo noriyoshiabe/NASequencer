@@ -199,10 +199,13 @@ EXIT:
 static void *__PlayerInit(void *_self, ...)
 {
     Player *self = _self;
-    pthread_create(&self->thread, NULL, run, self);
+
     self->playing = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
     self->msgQ = MessageQueueCreate();
     self->client = NATypeNew(MidiClient);
+
+    pthread_create(&self->thread, NULL, run, self);
+
     return self;
 }
 
