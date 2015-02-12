@@ -120,7 +120,7 @@ static bool __PlayerPlay(Player *self)
     for (CFIndex i = CFArrayGetCount(self->playing); 0 < i; --i) {
         CFIndex idx = i - 1;
         const NoteEvent *event = CFArrayGetValueAtIndex(self->playing, idx);
-        if (currentTick >= event->_.tick + event->gatetime) {
+        if (currentTick > event->_.tick + event->gatetime) {
             __PlayerSendNoteOff(self, event);
             CFArrayRemoveValueAtIndex(self->playing, idx);
         }
@@ -129,10 +129,10 @@ static bool __PlayerPlay(Player *self)
     CFIndex eventsCount = CFArrayGetCount(self->events);
     for (; self->index < eventsCount; ++self->index) {
         MidiEvent *event = (MidiEvent *)CFArrayGetValueAtIndex(self->events, self->index);
-        if (prevTick < event->tick && event->tick <= currentTick) {
+        if (prevTick <= event->tick && event->tick < currentTick) {
             SequenceElementAccept(event, self);
         }
-        else if (currentTick < event->tick) {
+        else if (currentTick <= event->tick) {
             break;
         }
     }
