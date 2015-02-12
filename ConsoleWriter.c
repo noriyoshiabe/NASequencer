@@ -194,8 +194,6 @@ void __ConsoleWriterRender(void *self, ParseContext *context)
         printf("location: L=%d C=%d - L=%d C=%d\n",
                 context->error->location.firstLine, context->error->location.firstColumn,
                 context->error->location.lastLine, context->error->location.lastColumn);
-
-        CFShow(NADescription(context->error));
     }
     else {
         SequenceElementAccept(context->sequence, self);

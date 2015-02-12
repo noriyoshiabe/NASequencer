@@ -226,7 +226,7 @@ static bool __dispatch__FLOAT(Expression *expression, Context *context, void *va
 
 static bool __dispatch__STRING(Expression *expression, Context *context, void *value, ParseError *error)
 {
-    *((char **)value) = strdup(expression->v.s);
+    *((CFStringRef *)value) = CFStringCreateWithCString(NULL, expression->v.s, kCFStringEncodingUTF8);
     return true;
 }
 
