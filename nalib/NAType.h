@@ -34,7 +34,7 @@ typedef struct __NATypeVtbl {
 
 extern const char NATypeID[];
 
-#define NATypeNew(type, ...) ((NATypeVtbl *)__NAFindInit(&type##Class))->init(NATypeAlloc(&type##Class), ## __VA_ARGS__)
+#define NATypeNew(type, ...) ((void *(*)(void *, ...))__NAFindInit(&type##Class))(NATypeAlloc(&type##Class), ## __VA_ARGS__)
 #define NATypeOf(self, type) (NULL != self && ((NAType *)self)->clazz->typeID == type##ID)
 #define NAPanic(fmt, ...) fprintf(stderr, fmt, ## __VA_ARGS__),fprintf(stderr, "\n"),abort()
 

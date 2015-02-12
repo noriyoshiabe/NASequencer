@@ -18,8 +18,8 @@ static void *__NANOPInit(void *self, ...)
 
 void *(*__NAFindInit(const NAClass *clazz))(void *self, ...)
 {
-    void *(*init)(void *, ...) = __NAVtblLookup(clazz, NATypeID);
-    return init ? init : __NANOPInit;
+    NATypeVtbl *vtbl = __NAVtblLookup(clazz, NATypeID);
+    return vtbl->init ? vtbl->init : __NANOPInit;
 }
 
 void *__NAVtblLookup(const NAClass *clazz, const char *typeID)
