@@ -11,6 +11,7 @@
 		028091BF1A8F7D10006B7C23 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 028091BE1A8F7D10006B7C23 /* Images.xcassets */; };
 		028091C21A8F7D10006B7C23 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 028091C01A8F7D10006B7C23 /* MainMenu.xib */; };
 		028091CE1A8F7D11006B7C23 /* namidiTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 028091CD1A8F7D11006B7C23 /* namidiTests.swift */; };
+		028091DD1A8F826B006B7C23 /* FileDialogController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 028091DC1A8F826B006B7C23 /* FileDialogController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -32,6 +33,7 @@
 		028091C71A8F7D11006B7C23 /* namidiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = namidiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		028091CC1A8F7D11006B7C23 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		028091CD1A8F7D11006B7C23 /* namidiTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = namidiTests.swift; sourceTree = "<group>"; };
+		028091DC1A8F826B006B7C23 /* FileDialogController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileDialogController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -120,6 +122,7 @@
 		028091D91A8F8189006B7C23 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				028091DC1A8F826B006B7C23 /* FileDialogController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -237,6 +240,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				028091BD1A8F7D10006B7C23 /* AppDelegate.swift in Sources */,
+				028091DD1A8F826B006B7C23 /* FileDialogController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
