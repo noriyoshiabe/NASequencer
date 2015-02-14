@@ -15,7 +15,7 @@ class FileDialogController : NSObject {
         var openPanel = NSOpenPanel()
         openPanel.allowedFileTypes = ["namidi"]
         
-        switch (openPanel.runModal()) {
+        switch openPanel.runModal() {
         case NSOKButton:
             println(NSString(format: "### I wanna open %@", openPanel.URLs))
         default:
