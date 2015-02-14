@@ -73,6 +73,7 @@
 		028091B91A8F7D10006B7C23 /* namidi */ = {
 			isa = PBXGroup;
 			children = (
+				028091D71A8F80D6006B7C23 /* Classes */,
 				028091BC1A8F7D10006B7C23 /* AppDelegate.swift */,
 				028091BE1A8F7D10006B7C23 /* Images.xcassets */,
 				028091C01A8F7D10006B7C23 /* MainMenu.xib */,
@@ -104,6 +105,37 @@
 				028091CC1A8F7D11006B7C23 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		028091D71A8F80D6006B7C23 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				028091D91A8F8189006B7C23 /* Controllers */,
+				028091DA1A8F8189006B7C23 /* Models */,
+				028091DB1A8F8189006B7C23 /* Views */,
+			);
+			path = Classes;
+			sourceTree = "<group>";
+		};
+		028091D91A8F8189006B7C23 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		028091DA1A8F8189006B7C23 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		028091DB1A8F8189006B7C23 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
