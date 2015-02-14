@@ -3,3 +3,6 @@ Parser.h
 Parser.c
 Lexer.h
 Lexer.c
+
+xcuserdata
+*.xccheckout
