@@ -30,5 +30,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         docmuentControler.openDocumentWithContentsOfURL(NSURL(fileURLWithPath: filename)!, display: true) { _ in }
         return true
     }
+    
+    func applicationShouldTerminateAfterLastWindowClosed(sender: NSApplication) -> Bool {
+        return true
+    }
 }
 
