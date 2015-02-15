@@ -13,6 +13,7 @@
 		02225DE51A906E610077ABCB /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 02225DE41A906E610077ABCB /* Images.xcassets */; };
 		02225DE81A906E610077ABCB /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02225DE61A906E610077ABCB /* MainMenu.xib */; };
 		02225DF41A906E610077ABCB /* namidiTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02225DF31A906E610077ABCB /* namidiTests.swift */; };
+		02225E001A9096100077ABCB /* DocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02225DFF1A9096100077ABCB /* DocumentView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,6 +37,7 @@
 		02225DED1A906E610077ABCB /* namidiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = namidiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		02225DF21A906E610077ABCB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		02225DF31A906E610077ABCB /* namidiTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = namidiTests.swift; sourceTree = "<group>"; };
+		02225DFF1A9096100077ABCB /* DocumentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,6 +85,7 @@
 				02225DE41A906E610077ABCB /* Images.xcassets */,
 				02225DE61A906E610077ABCB /* MainMenu.xib */,
 				02225DDB1A906E610077ABCB /* Supporting Files */,
+				02225DFF1A9096100077ABCB /* DocumentView.swift */,
 			);
 			path = namidi;
 			sourceTree = "<group>";
@@ -213,6 +216,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				02225DE01A906E610077ABCB /* Document.swift in Sources */,
+				02225E001A9096100077ABCB /* DocumentView.swift in Sources */,
 				02225DDE1A906E610077ABCB /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -409,6 +413,7 @@
 				02225DF91A906E610077ABCB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		02225DFA1A906E610077ABCB /* Build configuration list for PBXNativeTarget "namidiTests" */ = {
 			isa = XCConfigurationList;
@@ -417,6 +422,7 @@
 				02225DFC1A906E610077ABCB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
