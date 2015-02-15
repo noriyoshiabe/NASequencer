@@ -15,7 +15,7 @@ class DocumentController : NSWindowController {
     override func awakeFromNib() {
         window?.setFrameAutosaveName("sharedWindowFrame")
         
-        var document = self.document? as Document
+        let document = self.document? as Document
         
         println(document.model)
         println(rootView)
