@@ -1,11 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(namidi)
-
-find_library(CF CoreFoundation)
-find_library(CORE_MIDI CoreMidi)
-find_library(CORE_SEARVICES CoreServices)
-add_subdirectory (nalib)
+project(namidi-core)
 
 set(BISON_EXECUTABLE /usr/local/opt/bison/bin/bison)
 set(FLEX_EXECUTABLE /usr/local/opt/flex/bin/flex)
@@ -19,11 +14,10 @@ ADD_FLEX_BISON_DEPENDENCY(Lexer Parser)
 
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}
-  ${PROJECT_SOURCE_DIR}/nalib
+  ../nalib
 )
 
 set(SOURCES
-  main.c
   Expression.c
   DSLParser.c
   ASTParser.c
@@ -38,5 +32,4 @@ set(SOURCES
   NAMidi.c
 )
 
-add_executable(${PROJECT_NAME} ${SOURCES} ${BISON_Parser_OUTPUTS} ${FLEX_Lexer_OUTPUTS})
-target_link_libraries(${PROJECT_NAME} ${CF} ${CORE_MIDI} ${CORE_SEARVICES} nalib)
+add_library(${PROJECT_NAME} ${SOURCES} ${BISON_Parser_OUTPUTS} ${FLEX_Lexer_OUTPUTS})
