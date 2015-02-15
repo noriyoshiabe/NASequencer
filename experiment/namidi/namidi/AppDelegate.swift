@@ -22,6 +22,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Insert code here to tear down your application
     }
 
-
+    func application(sender: NSApplication, openFile filename: String) -> Bool {
+        println(filename)
+        return true
+    }
 }
 
