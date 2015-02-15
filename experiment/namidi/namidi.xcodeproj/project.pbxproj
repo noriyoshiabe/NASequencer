@@ -1,0 +1,424 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		02225DDE1A906E610077ABCB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02225DDD1A906E610077ABCB /* AppDelegate.swift */; };
+		02225DE01A906E610077ABCB /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02225DDF1A906E610077ABCB /* Document.swift */; };
+		02225DE31A906E610077ABCB /* Document.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02225DE11A906E610077ABCB /* Document.xib */; };
+		02225DE51A906E610077ABCB /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 02225DE41A906E610077ABCB /* Images.xcassets */; };
+		02225DE81A906E610077ABCB /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02225DE61A906E610077ABCB /* MainMenu.xib */; };
+		02225DF41A906E610077ABCB /* namidiTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02225DF31A906E610077ABCB /* namidiTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		02225DEE1A906E610077ABCB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 02225DD01A906E610077ABCB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 02225DD71A906E610077ABCB;
+			remoteInfo = namidi;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		02225DD81A906E610077ABCB /* namidi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = namidi.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		02225DDC1A906E610077ABCB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		02225DDD1A906E610077ABCB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		02225DDF1A906E610077ABCB /* Document.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
+		02225DE21A906E610077ABCB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/Document.xib; sourceTree = "<group>"; };
+		02225DE41A906E610077ABCB /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		02225DE71A906E610077ABCB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		02225DED1A906E610077ABCB /* namidiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = namidiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		02225DF21A906E610077ABCB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		02225DF31A906E610077ABCB /* namidiTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = namidiTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		02225DD51A906E610077ABCB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		02225DEA1A906E610077ABCB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		02225DCF1A906E610077ABCB = {
+			isa = PBXGroup;
+			children = (
+				02225DDA1A906E610077ABCB /* namidi */,
+				02225DF01A906E610077ABCB /* namidiTests */,
+				02225DD91A906E610077ABCB /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		02225DD91A906E610077ABCB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				02225DD81A906E610077ABCB /* namidi.app */,
+				02225DED1A906E610077ABCB /* namidiTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		02225DDA1A906E610077ABCB /* namidi */ = {
+			isa = PBXGroup;
+			children = (
+				02225DDD1A906E610077ABCB /* AppDelegate.swift */,
+				02225DDF1A906E610077ABCB /* Document.swift */,
+				02225DE11A906E610077ABCB /* Document.xib */,
+				02225DE41A906E610077ABCB /* Images.xcassets */,
+				02225DE61A906E610077ABCB /* MainMenu.xib */,
+				02225DDB1A906E610077ABCB /* Supporting Files */,
+			);
+			path = namidi;
+			sourceTree = "<group>";
+		};
+		02225DDB1A906E610077ABCB /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				02225DDC1A906E610077ABCB /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		02225DF01A906E610077ABCB /* namidiTests */ = {
+			isa = PBXGroup;
+			children = (
+				02225DF31A906E610077ABCB /* namidiTests.swift */,
+				02225DF11A906E610077ABCB /* Supporting Files */,
+			);
+			path = namidiTests;
+			sourceTree = "<group>";
+		};
+		02225DF11A906E610077ABCB /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				02225DF21A906E610077ABCB /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		02225DD71A906E610077ABCB /* namidi */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 02225DF71A906E610077ABCB /* Build configuration list for PBXNativeTarget "namidi" */;
+			buildPhases = (
+				02225DD41A906E610077ABCB /* Sources */,
+				02225DD51A906E610077ABCB /* Frameworks */,
+				02225DD61A906E610077ABCB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = namidi;
+			productName = namidi;
+			productReference = 02225DD81A906E610077ABCB /* namidi.app */;
+			productType = "com.apple.product-type.application";
+		};
+		02225DEC1A906E610077ABCB /* namidiTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 02225DFA1A906E610077ABCB /* Build configuration list for PBXNativeTarget "namidiTests" */;
+			buildPhases = (
+				02225DE91A906E610077ABCB /* Sources */,
+				02225DEA1A906E610077ABCB /* Frameworks */,
+				02225DEB1A906E610077ABCB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				02225DEF1A906E610077ABCB /* PBXTargetDependency */,
+			);
+			name = namidiTests;
+			productName = namidiTests;
+			productReference = 02225DED1A906E610077ABCB /* namidiTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		02225DD01A906E610077ABCB /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0610;
+				ORGANIZATIONNAME = abechan;
+				TargetAttributes = {
+					02225DD71A906E610077ABCB = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+					02225DEC1A906E610077ABCB = {
+						CreatedOnToolsVersion = 6.1.1;
+						TestTargetID = 02225DD71A906E610077ABCB;
+					};
+				};
+			};
+			buildConfigurationList = 02225DD31A906E610077ABCB /* Build configuration list for PBXProject "namidi" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 02225DCF1A906E610077ABCB;
+			productRefGroup = 02225DD91A906E610077ABCB /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				02225DD71A906E610077ABCB /* namidi */,
+				02225DEC1A906E610077ABCB /* namidiTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		02225DD61A906E610077ABCB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				02225DE31A906E610077ABCB /* Document.xib in Resources */,
+				02225DE51A906E610077ABCB /* Images.xcassets in Resources */,
+				02225DE81A906E610077ABCB /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		02225DEB1A906E610077ABCB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		02225DD41A906E610077ABCB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				02225DE01A906E610077ABCB /* Document.swift in Sources */,
+				02225DDE1A906E610077ABCB /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		02225DE91A906E610077ABCB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				02225DF41A906E610077ABCB /* namidiTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		02225DEF1A906E610077ABCB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 02225DD71A906E610077ABCB /* namidi */;
+			targetProxy = 02225DEE1A906E610077ABCB /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		02225DE11A906E610077ABCB /* Document.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				02225DE21A906E610077ABCB /* Base */,
+			);
+			name = Document.xib;
+			sourceTree = "<group>";
+		};
+		02225DE61A906E610077ABCB /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				02225DE71A906E610077ABCB /* Base */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		02225DF51A906E610077ABCB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		02225DF61A906E610077ABCB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		02225DF81A906E610077ABCB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = namidi/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		02225DF91A906E610077ABCB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = namidi/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		02225DFB1A906E610077ABCB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = namidiTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/namidi.app/Contents/MacOS/namidi";
+			};
+			name = Debug;
+		};
+		02225DFC1A906E610077ABCB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = namidiTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/namidi.app/Contents/MacOS/namidi";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		02225DD31A906E610077ABCB /* Build configuration list for PBXProject "namidi" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				02225DF51A906E610077ABCB /* Debug */,
+				02225DF61A906E610077ABCB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		02225DF71A906E610077ABCB /* Build configuration list for PBXNativeTarget "namidi" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				02225DF81A906E610077ABCB /* Debug */,
+				02225DF91A906E610077ABCB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		02225DFA1A906E610077ABCB /* Build configuration list for PBXNativeTarget "namidiTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				02225DFB1A906E610077ABCB /* Debug */,
+				02225DFC1A906E610077ABCB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 02225DD01A906E610077ABCB /* Project object */;
+}
