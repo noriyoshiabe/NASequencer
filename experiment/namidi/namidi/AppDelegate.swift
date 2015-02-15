@@ -21,6 +21,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Insert code here to tear down your application
     }
 
-
+    func applicationShouldOpenUntitledFile(sender: NSApplication) -> Bool {
+        return false
+    }
+    
+    func application(sender: NSApplication, openFile filename: String) -> Bool {
+        var docmuentControler = NSDocumentController.sharedDocumentController() as NSDocumentController
+        docmuentControler.openDocumentWithContentsOfURL(NSURL(fileURLWithPath: filename)!, display: true) { _ in }
+        println(filename)
+        return true
+    }
 }
 
