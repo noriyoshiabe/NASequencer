@@ -5,8 +5,9 @@
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6254"/>
     </dependencies>
     <objects>
-        <customObject id="-2" userLabel="File's Owner" customClass="Document" customModule="namidi" customModuleProvider="target">
+        <customObject id="-2" userLabel="File's Owner" customClass="DocumentController" customModule="namidi" customModuleProvider="target">
             <connections>
+                <outlet property="rootView" destination="gIp-Ho-8D9" id="f1G-r7-i1c"/>
                 <outlet property="window" destination="xOd-HO-29H" id="JIz-fz-R2o"/>
             </connections>
         </customObject>

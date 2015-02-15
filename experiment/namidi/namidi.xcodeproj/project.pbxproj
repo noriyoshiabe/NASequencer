@@ -14,6 +14,7 @@
 		02225DE81A906E610077ABCB /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02225DE61A906E610077ABCB /* MainMenu.xib */; };
 		02225DF41A906E610077ABCB /* namidiTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02225DF31A906E610077ABCB /* namidiTests.swift */; };
 		02225E001A9096100077ABCB /* DocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02225DFF1A9096100077ABCB /* DocumentView.swift */; };
+		025F67921A90C6B600E87117 /* DocumentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 025F67911A90C6B600E87117 /* DocumentController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,6 +39,7 @@
 		02225DF21A906E610077ABCB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		02225DF31A906E610077ABCB /* namidiTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = namidiTests.swift; sourceTree = "<group>"; };
 		02225DFF1A9096100077ABCB /* DocumentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentView.swift; sourceTree = "<group>"; };
+		025F67911A90C6B600E87117 /* DocumentController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,6 +88,7 @@
 				02225DE61A906E610077ABCB /* MainMenu.xib */,
 				02225DDB1A906E610077ABCB /* Supporting Files */,
 				02225DFF1A9096100077ABCB /* DocumentView.swift */,
+				025F67911A90C6B600E87117 /* DocumentController.swift */,
 			);
 			path = namidi;
 			sourceTree = "<group>";
@@ -217,6 +220,7 @@
 			files = (
 				02225DE01A906E610077ABCB /* Document.swift in Sources */,
 				02225E001A9096100077ABCB /* DocumentView.swift in Sources */,
+				025F67921A90C6B600E87117 /* DocumentController.swift in Sources */,
 				02225DDE1A906E610077ABCB /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
