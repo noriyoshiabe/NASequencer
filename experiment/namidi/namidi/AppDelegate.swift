@@ -54,14 +54,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, DocumentViewDelegate {
     
     @IBAction func onPlayPause(sender: AnyObject) {
         let docmuentControler = NSDocumentController.sharedDocumentController() as NSDocumentController
-        println("onPlayPause()")
-        println(docmuentControler.currentDocument!.fileURL!!.path!)
+        
+        let alert = NSAlert()
+        alert.messageText = "Unimplemented!"
+        alert.informativeText = "Play/Pause " + docmuentControler.currentDocument!.fileURL!!.path!
+        alert.runModal()
     }
     
     @IBAction func onRewind(sender: AnyObject) {
         let docmuentControler = NSDocumentController.sharedDocumentController() as NSDocumentController
-        println("onRewind()")
-        println(docmuentControler.currentDocument!.fileURL!!.path!)
+        
+        let alert = NSAlert()
+        alert.messageText = "Unimplemented!"
+        alert.informativeText = "Rewind" + docmuentControler.currentDocument!.fileURL!!.path!
+        alert.runModal()
     }
 }
 
