@@ -6,8 +6,12 @@
 //  Copyright (c) 2015年 abechan. All rights reserved.
 //
 
-import Foundation
-import AppKit
+import Cocoa
+
+protocol DocumentViewDelegate : NSObjectProtocol {
+    func draggingEntered(sender: DocumentView, draggingInfo: NSDraggingInfo) -> NSDragOperation
+    func performDragOperation(sender: DocumentView, draggingInfo: NSDraggingInfo) -> Bool
+}
 
 class DocumentView : NSView {
 
@@ -17,16 +21,10 @@ class DocumentView : NSView {
     }
     
     override func draggingEntered(sender: NSDraggingInfo) -> NSDragOperation {
-        var pboard = sender.draggingPasteboard()
-        var files:[String] = pboard.propertyListForType(NSFilenamesPboardType) as [String]
-        return 1 == files.count && "namidi" == files[0].pathExtension ? NSDragOperation.Copy : NSDragOperation.None
+        return AppDelegate.sharedApplication().draggingEntered(self, draggingInfo: sender)
     }
     
     override func performDragOperation(sender: NSDraggingInfo) -> Bool {
-        var pboard = sender.draggingPasteboard()
-        var files:[String] = pboard.propertyListForType(NSFilenamesPboardType) as [String]
-        var docmuentControler = NSDocumentController.sharedDocumentController() as NSDocumentController
-        docmuentControler.openDocumentWithContentsOfURL(NSURL(fileURLWithPath: files[0])!, display: true) { _ in }
-        return true
+        return AppDelegate.sharedApplication().performDragOperation(self, draggingInfo: sender)
     }
 }

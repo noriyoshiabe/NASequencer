@@ -42,7 +42,5 @@ class Document: NSDocument {
         //return false
         return true
     }
-
-
 }
 

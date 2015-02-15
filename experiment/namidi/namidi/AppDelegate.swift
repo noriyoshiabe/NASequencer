@@ -9,9 +9,7 @@
 import Cocoa
 
 @NSApplicationMain
-class AppDelegate: NSObject, NSApplicationDelegate {
-
-
+class AppDelegate: NSObject, NSApplicationDelegate, DocumentViewDelegate {
 
     func applicationDidFinishLaunching(aNotification: NSNotification) {
         // Insert code here to initialize your application
@@ -29,6 +27,41 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         var docmuentControler = NSDocumentController.sharedDocumentController() as NSDocumentController
         docmuentControler.openDocumentWithContentsOfURL(NSURL(fileURLWithPath: filename)!, display: true) { _ in }
         return true
+    }
+    
+    // Instant method
+    class func sharedApplication() -> AppDelegate {
+        return NSApplication.sharedApplication().delegate as AppDelegate
+    }
+
+    // DocumentViewDelegate
+    
+    func draggingEntered(sender: DocumentView, draggingInfo: NSDraggingInfo) -> NSDragOperation {
+        var pboard = draggingInfo.draggingPasteboard()
+        var files:[String] = pboard.propertyListForType(NSFilenamesPboardType) as [String]
+        return 1 == files.count && "namidi" == files[0].pathExtension ? NSDragOperation.Copy : NSDragOperation.None
+    }
+    
+    func performDragOperation(sender: DocumentView, draggingInfo: NSDraggingInfo) -> Bool {
+        var pboard = draggingInfo.draggingPasteboard()
+        var files:[String] = pboard.propertyListForType(NSFilenamesPboardType) as [String]
+        var docmuentControler = NSDocumentController.sharedDocumentController() as NSDocumentController
+        docmuentControler.openDocumentWithContentsOfURL(NSURL(fileURLWithPath: files[0])!, display: true) { _ in }
+        return true
+    }
+    
+    // IBAction
+    
+    @IBAction func onPlayPause(sender: AnyObject) {
+        var docmuentControler = NSDocumentController.sharedDocumentController() as NSDocumentController
+        println("onPlayPause()")
+        println(docmuentControler.currentDocument!.fileURL!!.path!)
+    }
+    
+    @IBAction func onRewind(sender: AnyObject) {
+        var docmuentControler = NSDocumentController.sharedDocumentController() as NSDocumentController
+        println("onRewind()")
+        println(docmuentControler.currentDocument!.fileURL!!.path!)
     }
 }
 
