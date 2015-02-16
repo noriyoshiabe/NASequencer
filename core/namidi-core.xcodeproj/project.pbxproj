@@ -1,0 +1,366 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		02D0E97D1A921FFE00430C96 /* ASTParser.c in Sources */ = {isa = PBXBuildFile; fileRef = 02D0E9611A921FFE00430C96 /* ASTParser.c */; };
+		02D0E97E1A921FFE00430C96 /* ASTParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 02D0E9621A921FFE00430C96 /* ASTParser.h */; };
+		02D0E97F1A921FFE00430C96 /* ConsoleWriter.c in Sources */ = {isa = PBXBuildFile; fileRef = 02D0E9631A921FFE00430C96 /* ConsoleWriter.c */; };
+		02D0E9801A921FFE00430C96 /* ConsoleWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 02D0E9641A921FFE00430C96 /* ConsoleWriter.h */; };
+		02D0E9811A921FFE00430C96 /* DSLParser.c in Sources */ = {isa = PBXBuildFile; fileRef = 02D0E9651A921FFE00430C96 /* DSLParser.c */; };
+		02D0E9821A921FFE00430C96 /* DSLParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 02D0E9661A921FFE00430C96 /* DSLParser.h */; };
+		02D0E9831A921FFE00430C96 /* Expression.c in Sources */ = {isa = PBXBuildFile; fileRef = 02D0E9671A921FFE00430C96 /* Expression.c */; };
+		02D0E9841A921FFE00430C96 /* Expression.h in Headers */ = {isa = PBXBuildFile; fileRef = 02D0E9681A921FFE00430C96 /* Expression.h */; };
+		02D0E9851A921FFE00430C96 /* FSWatcher.c in Sources */ = {isa = PBXBuildFile; fileRef = 02D0E9691A921FFE00430C96 /* FSWatcher.c */; };
+		02D0E9861A921FFE00430C96 /* FSWatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 02D0E96A1A921FFE00430C96 /* FSWatcher.h */; };
+		02D0E9871A921FFE00430C96 /* Lexer.c in Sources */ = {isa = PBXBuildFile; fileRef = 02D0E96B1A921FFE00430C96 /* Lexer.c */; };
+		02D0E9881A921FFE00430C96 /* Lexer.h in Headers */ = {isa = PBXBuildFile; fileRef = 02D0E96C1A921FFE00430C96 /* Lexer.h */; };
+		02D0E9891A921FFE00430C96 /* MessageQueue.c in Sources */ = {isa = PBXBuildFile; fileRef = 02D0E96D1A921FFE00430C96 /* MessageQueue.c */; };
+		02D0E98A1A921FFE00430C96 /* MessageQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 02D0E96E1A921FFE00430C96 /* MessageQueue.h */; };
+		02D0E98B1A921FFE00430C96 /* MidiClient.c in Sources */ = {isa = PBXBuildFile; fileRef = 02D0E96F1A921FFE00430C96 /* MidiClient.c */; };
+		02D0E98C1A921FFE00430C96 /* MidiClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 02D0E9701A921FFE00430C96 /* MidiClient.h */; };
+		02D0E98D1A921FFE00430C96 /* NAMidi.c in Sources */ = {isa = PBXBuildFile; fileRef = 02D0E9711A921FFE00430C96 /* NAMidi.c */; };
+		02D0E98E1A921FFE00430C96 /* NAMidi.h in Headers */ = {isa = PBXBuildFile; fileRef = 02D0E9721A921FFE00430C96 /* NAMidi.h */; };
+		02D0E98F1A921FFE00430C96 /* ParseContext.c in Sources */ = {isa = PBXBuildFile; fileRef = 02D0E9731A921FFE00430C96 /* ParseContext.c */; };
+		02D0E9901A921FFE00430C96 /* ParseContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 02D0E9741A921FFE00430C96 /* ParseContext.h */; };
+		02D0E9911A921FFE00430C96 /* ParseError.c in Sources */ = {isa = PBXBuildFile; fileRef = 02D0E9751A921FFE00430C96 /* ParseError.c */; };
+		02D0E9921A921FFE00430C96 /* ParseError.h in Headers */ = {isa = PBXBuildFile; fileRef = 02D0E9761A921FFE00430C96 /* ParseError.h */; };
+		02D0E9931A921FFE00430C96 /* Parser.c in Sources */ = {isa = PBXBuildFile; fileRef = 02D0E9771A921FFE00430C96 /* Parser.c */; };
+		02D0E9941A921FFE00430C96 /* Parser.h in Headers */ = {isa = PBXBuildFile; fileRef = 02D0E9781A921FFE00430C96 /* Parser.h */; };
+		02D0E9951A921FFE00430C96 /* Player.c in Sources */ = {isa = PBXBuildFile; fileRef = 02D0E9791A921FFE00430C96 /* Player.c */; };
+		02D0E9961A921FFE00430C96 /* Player.h in Headers */ = {isa = PBXBuildFile; fileRef = 02D0E97A1A921FFE00430C96 /* Player.h */; };
+		02D0E9971A921FFE00430C96 /* Sequence.c in Sources */ = {isa = PBXBuildFile; fileRef = 02D0E97B1A921FFE00430C96 /* Sequence.c */; };
+		02D0E9981A921FFE00430C96 /* Sequence.h in Headers */ = {isa = PBXBuildFile; fileRef = 02D0E97C1A921FFE00430C96 /* Sequence.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		02D0E95A1A921FB100430C96 /* libnamidi-core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libnamidi-core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		02D0E9611A921FFE00430C96 /* ASTParser.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ASTParser.c; sourceTree = "<group>"; };
+		02D0E9621A921FFE00430C96 /* ASTParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASTParser.h; sourceTree = "<group>"; };
+		02D0E9631A921FFE00430C96 /* ConsoleWriter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ConsoleWriter.c; sourceTree = "<group>"; };
+		02D0E9641A921FFE00430C96 /* ConsoleWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConsoleWriter.h; sourceTree = "<group>"; };
+		02D0E9651A921FFE00430C96 /* DSLParser.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = DSLParser.c; sourceTree = "<group>"; };
+		02D0E9661A921FFE00430C96 /* DSLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DSLParser.h; sourceTree = "<group>"; };
+		02D0E9671A921FFE00430C96 /* Expression.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Expression.c; sourceTree = "<group>"; };
+		02D0E9681A921FFE00430C96 /* Expression.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Expression.h; sourceTree = "<group>"; };
+		02D0E9691A921FFE00430C96 /* FSWatcher.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = FSWatcher.c; sourceTree = "<group>"; };
+		02D0E96A1A921FFE00430C96 /* FSWatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSWatcher.h; sourceTree = "<group>"; };
+		02D0E96B1A921FFE00430C96 /* Lexer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Lexer.c; sourceTree = "<group>"; };
+		02D0E96C1A921FFE00430C96 /* Lexer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lexer.h; sourceTree = "<group>"; };
+		02D0E96D1A921FFE00430C96 /* MessageQueue.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = MessageQueue.c; sourceTree = "<group>"; };
+		02D0E96E1A921FFE00430C96 /* MessageQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageQueue.h; sourceTree = "<group>"; };
+		02D0E96F1A921FFE00430C96 /* MidiClient.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = MidiClient.c; sourceTree = "<group>"; };
+		02D0E9701A921FFE00430C96 /* MidiClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiClient.h; sourceTree = "<group>"; };
+		02D0E9711A921FFE00430C96 /* NAMidi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = NAMidi.c; sourceTree = "<group>"; };
+		02D0E9721A921FFE00430C96 /* NAMidi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NAMidi.h; sourceTree = "<group>"; };
+		02D0E9731A921FFE00430C96 /* ParseContext.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ParseContext.c; sourceTree = "<group>"; };
+		02D0E9741A921FFE00430C96 /* ParseContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParseContext.h; sourceTree = "<group>"; };
+		02D0E9751A921FFE00430C96 /* ParseError.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ParseError.c; sourceTree = "<group>"; };
+		02D0E9761A921FFE00430C96 /* ParseError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParseError.h; sourceTree = "<group>"; };
+		02D0E9771A921FFE00430C96 /* Parser.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Parser.c; sourceTree = "<group>"; };
+		02D0E9781A921FFE00430C96 /* Parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Parser.h; sourceTree = "<group>"; };
+		02D0E9791A921FFE00430C96 /* Player.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Player.c; sourceTree = "<group>"; };
+		02D0E97A1A921FFE00430C96 /* Player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Player.h; sourceTree = "<group>"; };
+		02D0E97B1A921FFE00430C96 /* Sequence.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Sequence.c; sourceTree = "<group>"; };
+		02D0E97C1A921FFE00430C96 /* Sequence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sequence.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		02D0E9571A921FB100430C96 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		02D0E9511A921FB100430C96 = {
+			isa = PBXGroup;
+			children = (
+				02D0E9611A921FFE00430C96 /* ASTParser.c */,
+				02D0E9621A921FFE00430C96 /* ASTParser.h */,
+				02D0E9631A921FFE00430C96 /* ConsoleWriter.c */,
+				02D0E9641A921FFE00430C96 /* ConsoleWriter.h */,
+				02D0E9651A921FFE00430C96 /* DSLParser.c */,
+				02D0E9661A921FFE00430C96 /* DSLParser.h */,
+				02D0E9671A921FFE00430C96 /* Expression.c */,
+				02D0E9681A921FFE00430C96 /* Expression.h */,
+				02D0E9691A921FFE00430C96 /* FSWatcher.c */,
+				02D0E96A1A921FFE00430C96 /* FSWatcher.h */,
+				02D0E96B1A921FFE00430C96 /* Lexer.c */,
+				02D0E96C1A921FFE00430C96 /* Lexer.h */,
+				02D0E96D1A921FFE00430C96 /* MessageQueue.c */,
+				02D0E96E1A921FFE00430C96 /* MessageQueue.h */,
+				02D0E96F1A921FFE00430C96 /* MidiClient.c */,
+				02D0E9701A921FFE00430C96 /* MidiClient.h */,
+				02D0E9711A921FFE00430C96 /* NAMidi.c */,
+				02D0E9721A921FFE00430C96 /* NAMidi.h */,
+				02D0E9731A921FFE00430C96 /* ParseContext.c */,
+				02D0E9741A921FFE00430C96 /* ParseContext.h */,
+				02D0E9751A921FFE00430C96 /* ParseError.c */,
+				02D0E9761A921FFE00430C96 /* ParseError.h */,
+				02D0E9771A921FFE00430C96 /* Parser.c */,
+				02D0E9781A921FFE00430C96 /* Parser.h */,
+				02D0E9791A921FFE00430C96 /* Player.c */,
+				02D0E97A1A921FFE00430C96 /* Player.h */,
+				02D0E97B1A921FFE00430C96 /* Sequence.c */,
+				02D0E97C1A921FFE00430C96 /* Sequence.h */,
+				02D0E95B1A921FB100430C96 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		02D0E95B1A921FB100430C96 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				02D0E95A1A921FB100430C96 /* libnamidi-core.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		02D0E9581A921FB100430C96 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				02D0E9901A921FFE00430C96 /* ParseContext.h in Headers */,
+				02D0E97E1A921FFE00430C96 /* ASTParser.h in Headers */,
+				02D0E9821A921FFE00430C96 /* DSLParser.h in Headers */,
+				02D0E9941A921FFE00430C96 /* Parser.h in Headers */,
+				02D0E98A1A921FFE00430C96 /* MessageQueue.h in Headers */,
+				02D0E9961A921FFE00430C96 /* Player.h in Headers */,
+				02D0E9841A921FFE00430C96 /* Expression.h in Headers */,
+				02D0E98C1A921FFE00430C96 /* MidiClient.h in Headers */,
+				02D0E98E1A921FFE00430C96 /* NAMidi.h in Headers */,
+				02D0E9981A921FFE00430C96 /* Sequence.h in Headers */,
+				02D0E9921A921FFE00430C96 /* ParseError.h in Headers */,
+				02D0E9881A921FFE00430C96 /* Lexer.h in Headers */,
+				02D0E9801A921FFE00430C96 /* ConsoleWriter.h in Headers */,
+				02D0E9861A921FFE00430C96 /* FSWatcher.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		02D0E9591A921FB100430C96 /* namidi-core */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 02D0E95E1A921FB100430C96 /* Build configuration list for PBXNativeTarget "namidi-core" */;
+			buildPhases = (
+				02D0E9991A92201600430C96 /* ShellScript */,
+				02D0E9561A921FB100430C96 /* Sources */,
+				02D0E9571A921FB100430C96 /* Frameworks */,
+				02D0E9581A921FB100430C96 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "namidi-core";
+			productName = "namidi-core";
+			productReference = 02D0E95A1A921FB100430C96 /* libnamidi-core.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		02D0E9521A921FB100430C96 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0610;
+				TargetAttributes = {
+					02D0E9591A921FB100430C96 = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+				};
+			};
+			buildConfigurationList = 02D0E9551A921FB100430C96 /* Build configuration list for PBXProject "namidi-core" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 02D0E9511A921FB100430C96;
+			productRefGroup = 02D0E95B1A921FB100430C96 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				02D0E9591A921FB100430C96 /* namidi-core */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		02D0E9991A92201600430C96 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "bison Parser.y\nflex Lexer.l";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		02D0E9561A921FB100430C96 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				02D0E9871A921FFE00430C96 /* Lexer.c in Sources */,
+				02D0E97F1A921FFE00430C96 /* ConsoleWriter.c in Sources */,
+				02D0E9931A921FFE00430C96 /* Parser.c in Sources */,
+				02D0E9831A921FFE00430C96 /* Expression.c in Sources */,
+				02D0E9811A921FFE00430C96 /* DSLParser.c in Sources */,
+				02D0E9911A921FFE00430C96 /* ParseError.c in Sources */,
+				02D0E97D1A921FFE00430C96 /* ASTParser.c in Sources */,
+				02D0E9951A921FFE00430C96 /* Player.c in Sources */,
+				02D0E9971A921FFE00430C96 /* Sequence.c in Sources */,
+				02D0E98F1A921FFE00430C96 /* ParseContext.c in Sources */,
+				02D0E9891A921FFE00430C96 /* MessageQueue.c in Sources */,
+				02D0E9851A921FFE00430C96 /* FSWatcher.c in Sources */,
+				02D0E98D1A921FFE00430C96 /* NAMidi.c in Sources */,
+				02D0E98B1A921FFE00430C96 /* MidiClient.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		02D0E95C1A921FB100430C96 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		02D0E95D1A921FB100430C96 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		02D0E95F1A921FB100430C96 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					../nalib,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		02D0E9601A921FB100430C96 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					../nalib,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		02D0E9551A921FB100430C96 /* Build configuration list for PBXProject "namidi-core" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				02D0E95C1A921FB100430C96 /* Debug */,
+				02D0E95D1A921FB100430C96 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		02D0E95E1A921FB100430C96 /* Build configuration list for PBXNativeTarget "namidi-core" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				02D0E95F1A921FB100430C96 /* Debug */,
+				02D0E9601A921FB100430C96 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 02D0E9521A921FB100430C96 /* Project object */;
+}
