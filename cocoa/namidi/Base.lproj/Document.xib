@@ -5,7 +5,7 @@
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6254"/>
     </dependencies>
     <objects>
-        <customObject id="-2" userLabel="File's Owner" customClass="DocumentController" customModule="namidi" customModuleProvider="target">
+        <customObject id="-2" userLabel="File's Owner" customClass="DocumentController" customModule="NAMIDI" customModuleProvider="target">
             <connections>
                 <outlet property="rootView" destination="gIp-Ho-8D9" id="f1G-r7-i1c"/>
                 <outlet property="window" destination="xOd-HO-29H" id="JIz-fz-R2o"/>
@@ -19,7 +19,7 @@
             <rect key="contentRect" x="133" y="235" width="507" height="413"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1440" height="878"/>
             <value key="minSize" type="size" width="94" height="86"/>
-            <view key="contentView" id="gIp-Ho-8D9" customClass="DocumentView" customModule="namidi" customModuleProvider="target">
+            <view key="contentView" id="gIp-Ho-8D9" customClass="DocumentView" customModule="NAMIDI" customModuleProvider="target">
                 <rect key="frame" x="0.0" y="0.0" width="507" height="413"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>

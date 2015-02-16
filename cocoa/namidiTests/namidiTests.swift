@@ -1,6 +1,6 @@
 //
-//  namidiTests.swift
-//  namidiTests
+//  NAMIDITests.swift
+//  NAMIDITests
 //
 //  Created by abechan on 2015/02/15.
 //  Copyright (c) 2015年 abechan. All rights reserved.
@@ -9,7 +9,7 @@
 import Cocoa
 import XCTest
 
-class namidiTests: XCTestCase {
+class NAMIDITests: XCTestCase {
     
     override func setUp() {
         super.setUp()

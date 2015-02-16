@@ -9,7 +9,7 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>namidi</string>
+				<string>NAMIDI</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string></string>

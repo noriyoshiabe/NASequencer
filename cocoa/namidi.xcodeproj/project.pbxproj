@@ -12,7 +12,7 @@
 		02225DE31A906E610077ABCB /* Document.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02225DE11A906E610077ABCB /* Document.xib */; };
 		02225DE51A906E610077ABCB /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 02225DE41A906E610077ABCB /* Images.xcassets */; };
 		02225DE81A906E610077ABCB /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02225DE61A906E610077ABCB /* MainMenu.xib */; };
-		02225DF41A906E610077ABCB /* namidiTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02225DF31A906E610077ABCB /* namidiTests.swift */; };
+		02225DF41A906E610077ABCB /* NAMIDITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02225DF31A906E610077ABCB /* NAMIDITests.swift */; };
 		02225E001A9096100077ABCB /* DocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02225DFF1A9096100077ABCB /* DocumentView.swift */; };
 		025F67921A90C6B600E87117 /* DocumentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 025F67911A90C6B600E87117 /* DocumentController.swift */; };
 /* End PBXBuildFile section */
@@ -23,21 +23,21 @@
 			containerPortal = 02225DD01A906E610077ABCB /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 02225DD71A906E610077ABCB;
-			remoteInfo = namidi;
+			remoteInfo = NAMIDI;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		02225DD81A906E610077ABCB /* namidi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = namidi.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		02225DD81A906E610077ABCB /* NAMIDI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = NAMIDI.app; path = NAMIDI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		02225DDC1A906E610077ABCB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		02225DDD1A906E610077ABCB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		02225DDF1A906E610077ABCB /* Document.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
 		02225DE21A906E610077ABCB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/Document.xib; sourceTree = "<group>"; };
 		02225DE41A906E610077ABCB /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		02225DE71A906E610077ABCB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		02225DED1A906E610077ABCB /* namidiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = namidiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		02225DED1A906E610077ABCB /* NAMIDITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = NAMIDITests.xctest; path = NAMIDITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		02225DF21A906E610077ABCB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		02225DF31A906E610077ABCB /* namidiTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = namidiTests.swift; sourceTree = "<group>"; };
+		02225DF31A906E610077ABCB /* NAMIDITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAMIDITests.swift; sourceTree = "<group>"; };
 		02225DFF1A9096100077ABCB /* DocumentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentView.swift; sourceTree = "<group>"; };
 		025F67911A90C6B600E87117 /* DocumentController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -63,8 +63,8 @@
 		02225DCF1A906E610077ABCB = {
 			isa = PBXGroup;
 			children = (
-				02225DDA1A906E610077ABCB /* namidi */,
-				02225DF01A906E610077ABCB /* namidiTests */,
+				02225DDA1A906E610077ABCB /* NAMIDI */,
+				02225DF01A906E610077ABCB /* NAMIDITests */,
 				02225DD91A906E610077ABCB /* Products */,
 			);
 			sourceTree = "<group>";
@@ -72,13 +72,13 @@
 		02225DD91A906E610077ABCB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				02225DD81A906E610077ABCB /* namidi.app */,
-				02225DED1A906E610077ABCB /* namidiTests.xctest */,
+				02225DD81A906E610077ABCB /* NAMIDI.app */,
+				02225DED1A906E610077ABCB /* NAMIDITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		02225DDA1A906E610077ABCB /* namidi */ = {
+		02225DDA1A906E610077ABCB /* NAMIDI */ = {
 			isa = PBXGroup;
 			children = (
 				02225DDD1A906E610077ABCB /* AppDelegate.swift */,
@@ -90,7 +90,8 @@
 				02225DFF1A9096100077ABCB /* DocumentView.swift */,
 				025F67911A90C6B600E87117 /* DocumentController.swift */,
 			);
-			path = namidi;
+			name = NAMIDI;
+			path = NAMIDI;
 			sourceTree = "<group>";
 		};
 		02225DDB1A906E610077ABCB /* Supporting Files */ = {
@@ -101,13 +102,14 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		02225DF01A906E610077ABCB /* namidiTests */ = {
+		02225DF01A906E610077ABCB /* NAMIDITests */ = {
 			isa = PBXGroup;
 			children = (
-				02225DF31A906E610077ABCB /* namidiTests.swift */,
+				02225DF31A906E610077ABCB /* NAMIDITests.swift */,
 				02225DF11A906E610077ABCB /* Supporting Files */,
 			);
-			path = namidiTests;
+			name = NAMIDITests;
+			path = NAMIDITests;
 			sourceTree = "<group>";
 		};
 		02225DF11A906E610077ABCB /* Supporting Files */ = {
@@ -121,9 +123,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		02225DD71A906E610077ABCB /* namidi */ = {
+		02225DD71A906E610077ABCB /* NAMIDI */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 02225DF71A906E610077ABCB /* Build configuration list for PBXNativeTarget "namidi" */;
+			buildConfigurationList = 02225DF71A906E610077ABCB /* Build configuration list for PBXNativeTarget "NAMIDI" */;
 			buildPhases = (
 				02225DD41A906E610077ABCB /* Sources */,
 				02225DD51A906E610077ABCB /* Frameworks */,
@@ -133,14 +135,14 @@
 			);
 			dependencies = (
 			);
-			name = namidi;
-			productName = namidi;
-			productReference = 02225DD81A906E610077ABCB /* namidi.app */;
+			name = NAMIDI;
+			productName = NAMIDI;
+			productReference = 02225DD81A906E610077ABCB /* NAMIDI.app */;
 			productType = "com.apple.product-type.application";
 		};
-		02225DEC1A906E610077ABCB /* namidiTests */ = {
+		02225DEC1A906E610077ABCB /* NAMIDITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 02225DFA1A906E610077ABCB /* Build configuration list for PBXNativeTarget "namidiTests" */;
+			buildConfigurationList = 02225DFA1A906E610077ABCB /* Build configuration list for PBXNativeTarget "NAMIDITests" */;
 			buildPhases = (
 				02225DE91A906E610077ABCB /* Sources */,
 				02225DEA1A906E610077ABCB /* Frameworks */,
@@ -151,9 +153,9 @@
 			dependencies = (
 				02225DEF1A906E610077ABCB /* PBXTargetDependency */,
 			);
-			name = namidiTests;
-			productName = namidiTests;
-			productReference = 02225DED1A906E610077ABCB /* namidiTests.xctest */;
+			name = NAMIDITests;
+			productName = NAMIDITests;
+			productReference = 02225DED1A906E610077ABCB /* NAMIDITests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -174,7 +176,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 02225DD31A906E610077ABCB /* Build configuration list for PBXProject "namidi" */;
+			buildConfigurationList = 02225DD31A906E610077ABCB /* Build configuration list for PBXProject "NAMIDI" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -187,8 +189,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				02225DD71A906E610077ABCB /* namidi */,
-				02225DEC1A906E610077ABCB /* namidiTests */,
+				02225DD71A906E610077ABCB /* NAMIDI */,
+				02225DEC1A906E610077ABCB /* NAMIDITests */,
 			);
 		};
 /* End PBXProject section */
@@ -229,7 +231,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				02225DF41A906E610077ABCB /* namidiTests.swift in Sources */,
+				02225DF41A906E610077ABCB /* NAMIDITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -238,7 +240,7 @@
 /* Begin PBXTargetDependency section */
 		02225DEF1A906E610077ABCB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 02225DD71A906E610077ABCB /* namidi */;
+			target = 02225DD71A906E610077ABCB /* NAMIDI */;
 			targetProxy = 02225DEE1A906E610077ABCB /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -345,7 +347,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = namidi/Info.plist;
+				INFOPLIST_FILE = NAMIDI/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -356,7 +358,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = namidi/Info.plist;
+				INFOPLIST_FILE = NAMIDI/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -375,10 +377,10 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = namidiTests/Info.plist;
+				INFOPLIST_FILE = NAMIDITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/namidi.app/Contents/MacOS/namidi";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/NAMIDI.app/Contents/MacOS/NAMIDI";
 			};
 			name = Debug;
 		};
@@ -391,17 +393,17 @@
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = namidiTests/Info.plist;
+				INFOPLIST_FILE = NAMIDITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/namidi.app/Contents/MacOS/namidi";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/NAMIDI.app/Contents/MacOS/NAMIDI";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		02225DD31A906E610077ABCB /* Build configuration list for PBXProject "namidi" */ = {
+		02225DD31A906E610077ABCB /* Build configuration list for PBXProject "NAMIDI" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				02225DF51A906E610077ABCB /* Debug */,
@@ -410,7 +412,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		02225DF71A906E610077ABCB /* Build configuration list for PBXNativeTarget "namidi" */ = {
+		02225DF71A906E610077ABCB /* Build configuration list for PBXNativeTarget "NAMIDI" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				02225DF81A906E610077ABCB /* Debug */,
@@ -419,7 +421,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		02225DFA1A906E610077ABCB /* Build configuration list for PBXNativeTarget "namidiTests" */ = {
+		02225DFA1A906E610077ABCB /* Build configuration list for PBXNativeTarget "NAMIDITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				02225DFB1A906E610077ABCB /* Debug */,
