@@ -17,7 +17,6 @@ class DocumentController : NSWindowController {
         
         let document = self.document? as Document
         
-        println(document.model)
         println(rootView)
     }
 }

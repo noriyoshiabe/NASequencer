@@ -10,7 +10,7 @@ import Cocoa
 
 class Document: NSDocument {
 
-    var model: String?
+    var namidi: COpaquePointer?
     
     override init() {
         super.init()
@@ -18,15 +18,19 @@ class Document: NSDocument {
     }
     
     override func readFromURL(url: NSURL, ofType typeName: String, error outError: NSErrorPointer) -> Bool {
-        model = url.path
-        var namidi = NAMidiCreate()
-        NAMidiSetFile(namidi, (url.path! as CFString))
-        NAMidiStart(namidi)
+        namidi = NAMidiCreate()
+        NAMidiSetFile(namidi!, url.path! as CFString)
+        NAMidiStart(namidi!)
         return true
     }
 
     override func makeWindowControllers() {
         addWindowController(DocumentController(windowNibName: "Document"))
+    }
+    
+    override func canCloseDocumentWithDelegate(delegate: AnyObject, shouldCloseSelector: Selector, contextInfo: UnsafeMutablePointer<Void>) {
+        NARelease(namidi!)
+        super.canCloseDocumentWithDelegate(delegate, shouldCloseSelector: shouldCloseSelector, contextInfo: contextInfo)
     }
 }
 
