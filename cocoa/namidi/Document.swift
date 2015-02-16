@@ -19,6 +19,9 @@ class Document: NSDocument {
     
     override func readFromURL(url: NSURL, ofType typeName: String, error outError: NSErrorPointer) -> Bool {
         model = url.path
+        var namidi = NAMidiCreate()
+        NAMidiSetFile(namidi, (url.path! as CFString))
+        NAMidiStart(namidi)
         return true
     }
 

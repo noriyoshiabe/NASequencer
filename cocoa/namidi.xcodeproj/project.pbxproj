@@ -15,6 +15,10 @@
 		02225DF41A906E610077ABCB /* NAMIDITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02225DF31A906E610077ABCB /* NAMIDITests.swift */; };
 		02225E001A9096100077ABCB /* DocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02225DFF1A9096100077ABCB /* DocumentView.swift */; };
 		025F67921A90C6B600E87117 /* DocumentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 025F67911A90C6B600E87117 /* DocumentController.swift */; };
+		02FE8D4F1A923B5500BEF62E /* namidi-core-bridge.c in Sources */ = {isa = PBXBuildFile; fileRef = 02FE8D4D1A923B5500BEF62E /* namidi-core-bridge.c */; };
+		02FE8D501A923C4A00BEF62E /* libnalib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0265880A1A922B6C0030461C /* libnalib.a */; };
+		02FE8D511A923C4A00BEF62E /* libnamidi-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 026588041A922B5F0030461C /* libnamidi-core.a */; };
+		02FE8D531A923C6600BEF62E /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FE8D521A923C6600BEF62E /* CoreMIDI.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,6 +74,10 @@
 		025F67911A90C6B600E87117 /* DocumentController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentController.swift; sourceTree = "<group>"; };
 		026587FF1A922B5F0030461C /* namidi-core.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "namidi-core.xcodeproj"; path = "../core/namidi-core.xcodeproj"; sourceTree = "<group>"; };
 		026588051A922B6C0030461C /* nalib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = nalib.xcodeproj; path = ../nalib/nalib.xcodeproj; sourceTree = "<group>"; };
+		02FE8D491A9237BF00BEF62E /* NAMIDI-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NAMIDI-Bridging-Header.h"; sourceTree = "<group>"; };
+		02FE8D4D1A923B5500BEF62E /* namidi-core-bridge.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "namidi-core-bridge.c"; path = "namidi/namidi-core-bridge.c"; sourceTree = SOURCE_ROOT; };
+		02FE8D4E1A923B5500BEF62E /* namidi-core-bridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "namidi-core-bridge.h"; path = "namidi/namidi-core-bridge.h"; sourceTree = SOURCE_ROOT; };
+		02FE8D521A923C6600BEF62E /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,6 +85,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02FE8D531A923C6600BEF62E /* CoreMIDI.framework in Frameworks */,
+				02FE8D501A923C4A00BEF62E /* libnalib.a in Frameworks */,
+				02FE8D511A923C4A00BEF62E /* libnamidi-core.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -93,6 +104,7 @@
 		02225DCF1A906E610077ABCB = {
 			isa = PBXGroup;
 			children = (
+				02FE8D521A923C6600BEF62E /* CoreMIDI.framework */,
 				026588051A922B6C0030461C /* nalib.xcodeproj */,
 				026587FF1A922B5F0030461C /* namidi-core.xcodeproj */,
 				02225DDA1A906E610077ABCB /* NAMIDI */,
@@ -121,6 +133,9 @@
 				02225DDB1A906E610077ABCB /* Supporting Files */,
 				02225DFF1A9096100077ABCB /* DocumentView.swift */,
 				025F67911A90C6B600E87117 /* DocumentController.swift */,
+				02FE8D491A9237BF00BEF62E /* NAMIDI-Bridging-Header.h */,
+				02FE8D4D1A923B5500BEF62E /* namidi-core-bridge.c */,
+				02FE8D4E1A923B5500BEF62E /* namidi-core-bridge.h */,
 			);
 			path = NAMIDI;
 			sourceTree = "<group>";
@@ -224,7 +239,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 02225DD31A906E610077ABCB /* Build configuration list for PBXProject "NAMIDI" */;
+			buildConfigurationList = 02225DD31A906E610077ABCB /* Build configuration list for PBXProject "namidi" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -297,6 +312,7 @@
 			files = (
 				02225DE01A906E610077ABCB /* Document.swift in Sources */,
 				02225E001A9096100077ABCB /* DocumentView.swift in Sources */,
+				02FE8D4F1A923B5500BEF62E /* namidi-core-bridge.c in Sources */,
 				025F67921A90C6B600E87117 /* DocumentController.swift in Sources */,
 				02225DDE1A906E610077ABCB /* AppDelegate.swift in Sources */,
 			);
@@ -431,10 +447,19 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"${SRCROOT}/../nalib",
+					"${SRCROOT}/../core",
+				);
 				INFOPLIST_FILE = NAMIDI/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "NAMIDI/NAMIDI-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
@@ -442,10 +467,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"${SRCROOT}/../nalib",
+					"${SRCROOT}/../core",
+				);
 				INFOPLIST_FILE = NAMIDI/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "NAMIDI/NAMIDI-Bridging-Header.h";
 			};
 			name = Release;
 		};
@@ -488,7 +521,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		02225DD31A906E610077ABCB /* Build configuration list for PBXProject "NAMIDI" */ = {
+		02225DD31A906E610077ABCB /* Build configuration list for PBXProject "namidi" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				02225DF51A906E610077ABCB /* Debug */,
