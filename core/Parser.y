@@ -8,14 +8,10 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, cons
  
 %}
 
-%code requires {
-#include "Expression.h"
-}
+%output = "Parser.c"
+%defines
  
-%output  "Parser.c"
-%defines "Parser.h"
- 
-%define api.pure
+%pure-parser
 %lex-param   { void *scanner }
 %parse-param { void *scanner }
 %parse-param { Expression **expression }

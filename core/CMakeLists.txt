@@ -2,9 +2,6 @@ cmake_minimum_required(VERSION 3.0)
 
 project(namidi-core)
 
-set(BISON_EXECUTABLE /usr/local/opt/bison/bin/bison)
-set(FLEX_EXECUTABLE /usr/local/opt/flex/bin/flex)
-
 find_package(BISON)
 find_package(FLEX)
 

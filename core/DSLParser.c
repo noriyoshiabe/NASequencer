@@ -3,6 +3,8 @@
 #include "Lexer.h"
 #include <NACFHelper.h>
 
+int yyparse(void *scanner, Expression **expression);
+
 int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, const char *message)
 {
     ParseError *error = yyget_extra(scanner);

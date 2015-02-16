@@ -1,5 +1,6 @@
 %{
   
+#include "Expression.h"
 #include "Parser.h"
 #include <string.h>
 
