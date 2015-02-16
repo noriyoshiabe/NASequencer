@@ -109,7 +109,7 @@ static void __ConsoleWriterVisitPattern(void *_self, Pattern *elem)
 {
     ConsoleWriter *self = _self;
 
-    int size = CFStringGetLength(elem->name) + 1;
+    CFIndex size = CFStringGetLength(elem->name) + 1;
     char *cstr = malloc(size);
     CFStringGetCString(elem->name, cstr, size, kCFStringEncodingUTF8);
     printf("\n");

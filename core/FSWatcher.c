@@ -106,7 +106,6 @@ static void fsCallback(ConstFSEventStreamRef streamRef, void *_self, size_t numE
 {
     FSWatcher *self = _self;
 
-    char **paths = (char **)eventPaths;
     for (int i = 0; i < numEvents; ++i) {
         if (eventFlags[i] & (kFSEventStreamEventFlagItemCreated | kFSEventStreamEventFlagItemRemoved
                     | kFSEventStreamEventFlagItemRenamed | kFSEventStreamEventFlagItemModified)) {

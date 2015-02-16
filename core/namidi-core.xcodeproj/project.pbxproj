@@ -17,7 +17,7 @@
 		02D0E9841A921FFE00430C96 /* Expression.h in Headers */ = {isa = PBXBuildFile; fileRef = 02D0E9681A921FFE00430C96 /* Expression.h */; };
 		02D0E9851A921FFE00430C96 /* FSWatcher.c in Sources */ = {isa = PBXBuildFile; fileRef = 02D0E9691A921FFE00430C96 /* FSWatcher.c */; };
 		02D0E9861A921FFE00430C96 /* FSWatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 02D0E96A1A921FFE00430C96 /* FSWatcher.h */; };
-		02D0E9871A921FFE00430C96 /* Lexer.c in Sources */ = {isa = PBXBuildFile; fileRef = 02D0E96B1A921FFE00430C96 /* Lexer.c */; };
+		02D0E9871A921FFE00430C96 /* Lexer.c in Sources */ = {isa = PBXBuildFile; fileRef = 02D0E96B1A921FFE00430C96 /* Lexer.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		02D0E9881A921FFE00430C96 /* Lexer.h in Headers */ = {isa = PBXBuildFile; fileRef = 02D0E96C1A921FFE00430C96 /* Lexer.h */; };
 		02D0E9891A921FFE00430C96 /* MessageQueue.c in Sources */ = {isa = PBXBuildFile; fileRef = 02D0E96D1A921FFE00430C96 /* MessageQueue.c */; };
 		02D0E98A1A921FFE00430C96 /* MessageQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 02D0E96E1A921FFE00430C96 /* MessageQueue.h */; };
@@ -29,7 +29,7 @@
 		02D0E9901A921FFE00430C96 /* ParseContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 02D0E9741A921FFE00430C96 /* ParseContext.h */; };
 		02D0E9911A921FFE00430C96 /* ParseError.c in Sources */ = {isa = PBXBuildFile; fileRef = 02D0E9751A921FFE00430C96 /* ParseError.c */; };
 		02D0E9921A921FFE00430C96 /* ParseError.h in Headers */ = {isa = PBXBuildFile; fileRef = 02D0E9761A921FFE00430C96 /* ParseError.h */; };
-		02D0E9931A921FFE00430C96 /* Parser.c in Sources */ = {isa = PBXBuildFile; fileRef = 02D0E9771A921FFE00430C96 /* Parser.c */; };
+		02D0E9931A921FFE00430C96 /* Parser.c in Sources */ = {isa = PBXBuildFile; fileRef = 02D0E9771A921FFE00430C96 /* Parser.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		02D0E9941A921FFE00430C96 /* Parser.h in Headers */ = {isa = PBXBuildFile; fileRef = 02D0E9781A921FFE00430C96 /* Parser.h */; };
 		02D0E9951A921FFE00430C96 /* Player.c in Sources */ = {isa = PBXBuildFile; fileRef = 02D0E9791A921FFE00430C96 /* Player.c */; };
 		02D0E9961A921FFE00430C96 /* Player.h in Headers */ = {isa = PBXBuildFile; fileRef = 02D0E97A1A921FFE00430C96 /* Player.h */; };

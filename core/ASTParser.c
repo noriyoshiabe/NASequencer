@@ -7,7 +7,9 @@
 #include <string.h>
 #include <stdbool.h>
 
+#ifndef MAX
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
+#endif
 
 #define TABLE_SIZE (TOKEN_END - TOKEN_BEGIN)
 #define IDX(type) (type - TOKEN_BEGIN - 1)
@@ -626,7 +628,7 @@ static bool __dispatch__MIX_OR_REPLACE(Expression *expression, Context *context,
 
     if (REPLACE == expression->tokenType) {
         CFIndex count = CFArrayGetCount(context->events);
-        for (int i = count - 1; 0 <= i; --i) {
+        for (CFIndex i = count - 1; 0 <= i; --i) {
             MidiEvent *event = (MidiEvent *)CFArrayGetValueAtIndex(context->events, i);
             if (from <= event->tick && event->tick < to) {
                 if (-1 == channel
@@ -695,7 +697,7 @@ static bool __dispatch__TIE(Expression *expression, Context *context, void *valu
     NoteBlockContext *nbContext = value;
     int32_t tick = -1;
     CFIndex count = CFArrayGetCount(nbContext->events);
-    for (int i = count - 1; 0 <= i; --i) {
+    for (CFIndex i = count - 1; 0 <= i; --i) {
         NoteEvent *event = (NoteEvent *)CFArrayGetValueAtIndex(nbContext->events, i);
         if (-1 != tick && tick != event->_.tick) {
             break;
