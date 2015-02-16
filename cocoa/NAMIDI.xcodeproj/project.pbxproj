@@ -242,7 +242,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 02225DD31A906E610077ABCB /* Build configuration list for PBXProject "namidi" */;
+			buildConfigurationList = 02225DD31A906E610077ABCB /* Build configuration list for PBXProject "NAMIDI" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -525,7 +525,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		02225DD31A906E610077ABCB /* Build configuration list for PBXProject "namidi" */ = {
+		02225DD31A906E610077ABCB /* Build configuration list for PBXProject "NAMIDI" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				02225DF51A906E610077ABCB /* Debug */,
