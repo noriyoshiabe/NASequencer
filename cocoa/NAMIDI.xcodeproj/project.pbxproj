@@ -16,7 +16,7 @@
 		02225E001A9096100077ABCB /* DocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02225DFF1A9096100077ABCB /* DocumentView.swift */; };
 		022C15201A924E8D0072EB25 /* nalib-bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022C151F1A924E8D0072EB25 /* nalib-bridge.swift */; };
 		025F67921A90C6B600E87117 /* DocumentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 025F67911A90C6B600E87117 /* DocumentController.swift */; };
-		02FE8D4F1A923B5500BEF62E /* namidi-core-bridge.c in Sources */ = {isa = PBXBuildFile; fileRef = 02FE8D4D1A923B5500BEF62E /* namidi-core-bridge.c */; };
+		02A3478F1A939A5700A3AF9B /* NAMidi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02A3478E1A939A5700A3AF9B /* NAMidi.swift */; };
 		02FE8D501A923C4A00BEF62E /* libnalib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0265880A1A922B6C0030461C /* libnalib.a */; };
 		02FE8D511A923C4A00BEF62E /* libnamidi-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 026588041A922B5F0030461C /* libnamidi-core.a */; };
 		02FE8D531A923C6600BEF62E /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FE8D521A923C6600BEF62E /* CoreMIDI.framework */; };
@@ -76,9 +76,8 @@
 		025F67911A90C6B600E87117 /* DocumentController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentController.swift; sourceTree = "<group>"; };
 		026587FF1A922B5F0030461C /* namidi-core.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "namidi-core.xcodeproj"; path = "../core/namidi-core.xcodeproj"; sourceTree = "<group>"; };
 		026588051A922B6C0030461C /* nalib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = nalib.xcodeproj; path = ../nalib/nalib.xcodeproj; sourceTree = "<group>"; };
+		02A3478E1A939A5700A3AF9B /* NAMidi.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NAMidi.swift; sourceTree = "<group>"; };
 		02FE8D491A9237BF00BEF62E /* NAMIDI-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NAMIDI-Bridging-Header.h"; sourceTree = "<group>"; };
-		02FE8D4D1A923B5500BEF62E /* namidi-core-bridge.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "namidi-core-bridge.c"; path = "namidi/namidi-core-bridge.c"; sourceTree = SOURCE_ROOT; };
-		02FE8D4E1A923B5500BEF62E /* namidi-core-bridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "namidi-core-bridge.h"; path = "namidi/namidi-core-bridge.h"; sourceTree = SOURCE_ROOT; };
 		02FE8D521A923C6600BEF62E /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -136,9 +135,8 @@
 				02225DFF1A9096100077ABCB /* DocumentView.swift */,
 				025F67911A90C6B600E87117 /* DocumentController.swift */,
 				02FE8D491A9237BF00BEF62E /* NAMIDI-Bridging-Header.h */,
-				02FE8D4D1A923B5500BEF62E /* namidi-core-bridge.c */,
-				02FE8D4E1A923B5500BEF62E /* namidi-core-bridge.h */,
 				022C151F1A924E8D0072EB25 /* nalib-bridge.swift */,
+				02A3478E1A939A5700A3AF9B /* NAMidi.swift */,
 			);
 			path = NAMIDI;
 			sourceTree = "<group>";
@@ -315,10 +313,10 @@
 			files = (
 				02225DE01A906E610077ABCB /* Document.swift in Sources */,
 				02225E001A9096100077ABCB /* DocumentView.swift in Sources */,
-				02FE8D4F1A923B5500BEF62E /* namidi-core-bridge.c in Sources */,
 				022C15201A924E8D0072EB25 /* nalib-bridge.swift in Sources */,
 				025F67921A90C6B600E87117 /* DocumentController.swift in Sources */,
 				02225DDE1A906E610077ABCB /* AppDelegate.swift in Sources */,
+				02A3478F1A939A5700A3AF9B /* NAMidi.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

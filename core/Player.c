@@ -333,3 +333,8 @@ void PlayerRewind(Player *self)
     Message msg = {PLAYER_MSG_REWIND, NULL};
     MessageQueuePost(self->msgQ, &msg);
 }
+
+bool PlayerIsPlaying(Player *self)
+{
+    return PLAYER_STATE_PLAYING == self->state;
+}

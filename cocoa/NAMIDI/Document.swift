@@ -10,27 +10,19 @@ import Cocoa
 
 class Document: NSDocument {
 
-    var namidi: COpaquePointer?
+    let namidi: NAMidi
     
     override init() {
+        namidi = NAMidi()
         super.init()
-        // Add your subclass-specific initialization here.
     }
     
     override func readFromURL(url: NSURL, ofType typeName: String, error outError: NSErrorPointer) -> Bool {
-        namidi = NAMidiCreate()
-        NAMidiSetFile(namidi!, url.path! as CFString)
-        NAMidiStart(namidi!)
+        namidi.setFile(url)
         return true
     }
 
     override func makeWindowControllers() {
         addWindowController(DocumentController(windowNibName: "Document"))
     }
-    
-    override func canCloseDocumentWithDelegate(delegate: AnyObject, shouldCloseSelector: Selector, contextInfo: UnsafeMutablePointer<Void>) {
-        NARelease(namidi!)
-        super.canCloseDocumentWithDelegate(delegate, shouldCloseSelector: shouldCloseSelector, contextInfo: contextInfo)
-    }
 }
-

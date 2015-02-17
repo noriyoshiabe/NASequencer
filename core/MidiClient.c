@@ -37,7 +37,9 @@ bool MidiClientOpen(MidiClient *self)
     CFStringGetCString(strRef, str, sizeof(str), kCFStringEncodingUTF8);
     CFRelease(strRef);
 
+#if 0
     printf("connected to %s\n", str);
+#endif
 
     MIDIClientCreate(CFSTR("namidi:MidiClient"), NULL, NULL, &self->clientRef);
     MIDIOutputPortCreate(self->clientRef, CFSTR("namidi:MidiClient:outPort"), &self->outPortRef);

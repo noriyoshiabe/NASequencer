@@ -16,7 +16,6 @@ class DocumentController : NSWindowController {
         window?.setFrameAutosaveName("sharedWindowFrame")
         
         let document = self.document? as Document
-        
-        println(rootView)
+        document.namidi.parse()
     }
 }

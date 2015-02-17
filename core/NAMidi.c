@@ -10,7 +10,11 @@
 typedef enum _NAMidiMessageKind {
     NAMIDI_MSG_ADD_CONTEXT_VIEW,
     NAMIDI_MSG_SET_FILE,
-    NAMIDI_MSG_START,
+    NAMIDI_MSG_PARSE,
+    NAMIDI_MSG_PLAY,
+    NAMIDI_MSG_STOP,
+    NAMIDI_MSG_PLAY_PAUSE,
+    NAMIDI_MSG_REWIND,
     NAMIDI_MSG_ON_FILE_CHANGED,
     NAMIDI_MSG_EXIT,
 } NAMidiMessageKind;
@@ -26,7 +30,7 @@ struct _NAMidi {
     ParseContext *context;
 };
 
-static bool __NAMidiParse(NAMidi *self)
+static void __NAMidiParse(NAMidi *self)
 {
     ParseContext *context = ParseContextParse(self->filepath);
 
@@ -41,20 +45,44 @@ static bool __NAMidiParse(NAMidi *self)
             NARelease(self->context);
         }
         self->context = context;
-        return true;
+
+        PlayerSetSource(self->player, self->context->sequence);
     }
     else {
         NARelease(context);
-        return false;
     }
 }
 
 static void __NAMidiPlaySequence(NAMidi *self)
 {
     if (self->context) {
-        PlayerSetSource(self->player, self->context->sequence);
-        PlayerRewind(self->player);
         PlayerPlay(self->player);
+    }
+}
+
+static void __NAMidiStop(NAMidi *self)
+{
+    if (self->context) {
+        PlayerStop(self->player);
+    }
+}
+
+static void __NAMidiPlayPauseSequence(NAMidi *self)
+{
+    if (self->context) {
+        if (PlayerIsPlaying(self->player)) {
+            PlayerStop(self->player);
+        }
+        else {
+            PlayerPlay(self->player);
+        }
+    }
+}
+
+static void __NAMidiRewind(NAMidi *self)
+{
+    if (self->context) {
+        PlayerRewind(self->player);
     }
 }
 
@@ -77,15 +105,23 @@ static void *__NAMidiRun(void *_self)
             FSWatcherStart(self->watcher);
             self->filepath = msg.arg;
             break;
-        case NAMIDI_MSG_START:
-            if (__NAMidiParse(self)) {
-                __NAMidiPlaySequence(self);
-            }
+        case NAMIDI_MSG_PARSE:
+            __NAMidiParse(self);
+            break;
+        case NAMIDI_MSG_PLAY:
+            __NAMidiPlaySequence(self);
+            break;
+        case NAMIDI_MSG_STOP:
+            __NAMidiStop(self);
+            break;
+        case NAMIDI_MSG_PLAY_PAUSE:
+            __NAMidiPlayPauseSequence(self);
+            break;
+        case NAMIDI_MSG_REWIND:
+            __NAMidiRewind(self);
             break;
         case NAMIDI_MSG_ON_FILE_CHANGED:
-            if (__NAMidiParse(self)) {
-                __NAMidiPlaySequence(self);
-            }
+            __NAMidiParse(self);
             break;
         case NAMIDI_MSG_EXIT:
             goto EXIT;
@@ -152,6 +188,10 @@ NADeclareVtbl(NAMidi, NAType, __NAMidiInit, __NAMidiDestroy, NULL, NULL, NULL, N
 NADeclareVtbl(NAMidi, FSWatcherListener, __NAMidiOnFileChanged, __NAMidiOnError);
 NADeclareClass(NAMidi, NAType, FSWatcherListener);
 
+NAMidi *NAMidiCreate()
+{
+    return NATypeNew(NAMidi);
+}
 
 void NAMidiAddContextView(NAMidi *self, void *contextView)
 {
@@ -167,8 +207,32 @@ void NAMidiSetFile(NAMidi *self, CFStringRef filepath)
     MessageQueuePost(self->msgQ, &msg);
 }
 
-void NAMidiStart(NAMidi *self)
+void NAMidiParse(NAMidi *self)
 {
-    Message msg = {NAMIDI_MSG_START, NULL};
+    Message msg = {NAMIDI_MSG_PARSE, NULL};
+    MessageQueuePost(self->msgQ, &msg);
+}
+
+void NAMidiPlay(NAMidi *self)
+{
+    Message msg = {NAMIDI_MSG_PLAY, NULL};
+    MessageQueuePost(self->msgQ, &msg);
+}
+
+void NAMidiStop(NAMidi *self)
+{
+    Message msg = {NAMIDI_MSG_STOP, NULL};
+    MessageQueuePost(self->msgQ, &msg);
+}
+
+void NAMidiPlayPause(NAMidi *self)
+{
+    Message msg = {NAMIDI_MSG_PLAY_PAUSE, NULL};
+    MessageQueuePost(self->msgQ, &msg);
+}
+
+void NAMidiRewind(NAMidi *self)
+{
+    Message msg = {NAMIDI_MSG_REWIND, NULL};
     MessageQueuePost(self->msgQ, &msg);
 }

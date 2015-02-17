@@ -54,20 +54,22 @@ class AppDelegate: NSObject, NSApplicationDelegate, DocumentViewDelegate {
     
     @IBAction func onPlayPause(sender: AnyObject) {
         let docmuentControler = NSDocumentController.sharedDocumentController() as NSDocumentController
+        let currentDocument = docmuentControler.currentDocument as Document?
         
-        let alert = NSAlert()
-        alert.messageText = "Unimplemented!"
-        alert.informativeText = "Play/Pause " + docmuentControler.currentDocument!.fileURL!!.path!
-        alert.runModal()
+        for document in docmuentControler.documents as [Document] {
+            if currentDocument != document {
+                document.namidi.stop()
+            }
+        }
+        
+        let document = docmuentControler.currentDocument as Document?
+        document?.namidi.playPause()
     }
     
     @IBAction func onRewind(sender: AnyObject) {
         let docmuentControler = NSDocumentController.sharedDocumentController() as NSDocumentController
-        
-        let alert = NSAlert()
-        alert.messageText = "Unimplemented!"
-        alert.informativeText = "Rewind" + docmuentControler.currentDocument!.fileURL!!.path!
-        alert.runModal()
+        let currentDocument = docmuentControler.currentDocument as Document?
+        currentDocument?.namidi.rewind()
     }
 }
 
