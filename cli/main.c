@@ -34,7 +34,8 @@ int main(int argc, char **argv)
     NAMidiAddContextView(namidi, writer);
     NAMidiSetFile(namidi, filepath);
 
-    NAMidiStart(namidi);
+    NAMidiParse(namidi);
+    NAMidiPlay(namidi);
 
     NARelease(writer);
     CFRelease(filepath);
