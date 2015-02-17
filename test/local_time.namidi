@@ -4,6 +4,7 @@ resolution 480
 time 4/4
 tempo 120.0
 
+velocity 127
 
 test = {
   time 3/4
