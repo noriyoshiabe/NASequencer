@@ -71,5 +71,17 @@ class AppDelegate: NSObject, NSApplicationDelegate, DocumentViewDelegate {
         let currentDocument = docmuentControler.currentDocument as Document?
         currentDocument?.namidi.rewind()
     }
+    
+    @IBAction func onForward(sender: AnyObject) {
+        let docmuentControler = NSDocumentController.sharedDocumentController() as NSDocumentController
+        let currentDocument = docmuentControler.currentDocument as Document?
+        currentDocument?.namidi.forward()
+    }
+    
+    @IBAction func onBackward(sender: AnyObject) {
+        let docmuentControler = NSDocumentController.sharedDocumentController() as NSDocumentController
+        let currentDocument = docmuentControler.currentDocument as Document?
+        currentDocument?.namidi.backward()
+    }
 }
 

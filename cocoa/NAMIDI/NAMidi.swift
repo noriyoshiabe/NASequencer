@@ -42,4 +42,12 @@ class NAMidi {
     func rewind() {
         NAMidiRewind(namidi)
     }
+    
+    func forward() {
+        NAMidiForward(namidi)
+    }
+    
+    func backward() {
+        NAMidiBackward(namidi)
+    }
 }

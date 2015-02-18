@@ -114,8 +114,16 @@
                                     <action selector="onRewind:" target="Voe-Tx-rLC" id="OsU-WU-Byo"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Previous" keyEquivalent="" id="AgV-U0-Qoz"/>
-                            <menuItem title="Forward" keyEquivalent="" id="okK-OD-f5n"/>
+                            <menuItem title="Forward" keyEquivalent="" id="okK-OD-f5n">
+                                <connections>
+                                    <action selector="onForward:" target="Voe-Tx-rLC" id="gIT-vF-DvV"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Backward" keyEquivalent="" id="AgV-U0-Qoz">
+                                <connections>
+                                    <action selector="onBackward:" target="Voe-Tx-rLC" id="oIb-eu-x9q"/>
+                                </connections>
+                            </menuItem>
                         </items>
                     </menu>
                 </menuItem>
