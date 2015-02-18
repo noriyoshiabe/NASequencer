@@ -178,7 +178,7 @@ static void __PlayerForward(Player *self)
         }
     }
 
-    self->offset = 0;
+    self->offset = self->current;
     self->start = currentMicroSec();
 }
 
@@ -207,7 +207,7 @@ static void __PlayerBackward(Player *self)
         }
     }
     
-    self->offset = 0;
+    self->offset = self->current;
     self->start = currentMicroSec();
 }
 

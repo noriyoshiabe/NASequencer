@@ -1,0 +1,31 @@
+title "foward backward"
+resolution 480
+
+time 4/4
+tempo 120.0
+
+velocity 127
+
+note step 480 {
+  C1 C C C
+}
+
+note step 480 {
+  C2 C C C
+}
+
+note step 480 {
+  C3 C C C
+}
+
+note step 480 {
+  C4 C C C
+}
+
+note step 480 {
+  C5 C C C
+}
+
+note step 480 {
+  C6 C C C
+}
