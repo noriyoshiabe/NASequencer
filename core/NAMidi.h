@@ -14,3 +14,5 @@ extern void NAMidiPlay(NAMidi *self);
 extern void NAMidiStop(NAMidi *self);
 extern void NAMidiPlayPause(NAMidi *self);
 extern void NAMidiRewind(NAMidi *self);
+extern void NAMidiForward(NAMidi *self);
+extern void NAMidiBackward(NAMidi *self);

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		02C154561A94C0DF0039A811 /* Macro.h in Headers */ = {isa = PBXBuildFile; fileRef = 02C154551A94C0DF0039A811 /* Macro.h */; };
 		02D0E97D1A921FFE00430C96 /* ASTParser.c in Sources */ = {isa = PBXBuildFile; fileRef = 02D0E9611A921FFE00430C96 /* ASTParser.c */; };
 		02D0E97E1A921FFE00430C96 /* ASTParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 02D0E9621A921FFE00430C96 /* ASTParser.h */; };
 		02D0E97F1A921FFE00430C96 /* ConsoleWriter.c in Sources */ = {isa = PBXBuildFile; fileRef = 02D0E9631A921FFE00430C96 /* ConsoleWriter.c */; };
@@ -38,6 +39,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		02C154551A94C0DF0039A811 /* Macro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Macro.h; sourceTree = "<group>"; };
 		02D0E95A1A921FB100430C96 /* libnamidi-core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libnamidi-core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		02D0E9611A921FFE00430C96 /* ASTParser.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ASTParser.c; sourceTree = "<group>"; };
 		02D0E9621A921FFE00430C96 /* ASTParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASTParser.h; sourceTree = "<group>"; };
@@ -95,6 +97,7 @@
 				02D0E96A1A921FFE00430C96 /* FSWatcher.h */,
 				02D0E96B1A921FFE00430C96 /* Lexer.c */,
 				02D0E96C1A921FFE00430C96 /* Lexer.h */,
+				02C154551A94C0DF0039A811 /* Macro.h */,
 				02D0E96D1A921FFE00430C96 /* MessageQueue.c */,
 				02D0E96E1A921FFE00430C96 /* MessageQueue.h */,
 				02D0E96F1A921FFE00430C96 /* MidiClient.c */,
@@ -142,6 +145,7 @@
 				02D0E9981A921FFE00430C96 /* Sequence.h in Headers */,
 				02D0E9921A921FFE00430C96 /* ParseError.h in Headers */,
 				02D0E9881A921FFE00430C96 /* Lexer.h in Headers */,
+				02C154561A94C0DF0039A811 /* Macro.h in Headers */,
 				02D0E9801A921FFE00430C96 /* ConsoleWriter.h in Headers */,
 				02D0E9861A921FFE00430C96 /* FSWatcher.h in Headers */,
 			);

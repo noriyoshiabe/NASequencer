@@ -15,6 +15,8 @@ typedef enum _NAMidiMessageKind {
     NAMIDI_MSG_STOP,
     NAMIDI_MSG_PLAY_PAUSE,
     NAMIDI_MSG_REWIND,
+    NAMIDI_MSG_FORWARD,
+    NAMIDI_MSG_BACKWARD,
     NAMIDI_MSG_ON_FILE_CHANGED,
     NAMIDI_MSG_EXIT,
 } NAMidiMessageKind;
@@ -86,6 +88,20 @@ static void __NAMidiRewind(NAMidi *self)
     }
 }
 
+static void __NAMidiForward(NAMidi *self)
+{
+    if (self->context) {
+        PlayerForward(self->player);
+    }
+}
+
+static void __NAMidiBackward(NAMidi *self)
+{
+    if (self->context) {
+        PlayerBackward(self->player);
+    }
+}
+
 static void *__NAMidiRun(void *_self)
 {
     NAMidi *self = _self;
@@ -119,6 +135,12 @@ static void *__NAMidiRun(void *_self)
             break;
         case NAMIDI_MSG_REWIND:
             __NAMidiRewind(self);
+            break;
+        case NAMIDI_MSG_FORWARD:
+            __NAMidiForward(self);
+            break;
+        case NAMIDI_MSG_BACKWARD:
+            __NAMidiBackward(self);
             break;
         case NAMIDI_MSG_ON_FILE_CHANGED:
             __NAMidiParse(self);
@@ -234,5 +256,17 @@ void NAMidiPlayPause(NAMidi *self)
 void NAMidiRewind(NAMidi *self)
 {
     Message msg = {NAMIDI_MSG_REWIND, NULL};
+    MessageQueuePost(self->msgQ, &msg);
+}
+
+void NAMidiForward(NAMidi *self)
+{
+    Message msg = {NAMIDI_MSG_FORWARD, NULL};
+    MessageQueuePost(self->msgQ, &msg);
+}
+
+void NAMidiBackward(NAMidi *self)
+{
+    Message msg = {NAMIDI_MSG_BACKWARD, NULL};
     MessageQueuePost(self->msgQ, &msg);
 }

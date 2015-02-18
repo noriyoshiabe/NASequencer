@@ -1,15 +1,12 @@
 #include "ASTParser.h"
 #include "Parser.h"
+#include "Macro.h"
 #include <NACFHelper.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-
-#ifndef MAX
-#define MAX(a, b) ((a) > (b) ? (a) : (b))
-#endif
 
 #define TABLE_SIZE (TOKEN_END - TOKEN_BEGIN)
 #define IDX(type) (type - TOKEN_BEGIN - 1)

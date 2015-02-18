@@ -4,6 +4,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <NACFHelper.h>
+#include "Macro.h"
 #include "MidiClient.h"
 #include "MessageQueue.h"
 
@@ -19,6 +20,8 @@ typedef enum _PlayerMessageKind {
     PLAYER_MSG_PLAY,
     PLAYER_MSG_STOP,
     PLAYER_MSG_REWIND,
+    PLAYER_MSG_FORWARD,
+    PLAYER_MSG_BACKWARD,
     PLAYER_MSG_EXIT,
 } PlayerMessageKind;
 
@@ -158,6 +161,56 @@ static void __PlayerRewind(Player *self)
     self->start = currentMicroSec();
 }
 
+static void __PlayerForward(Player *self)
+{
+    __PlayerSendAllNoteOff(self);
+    CFArrayRemoveAllValues(self->playing);
+
+    Location location = TimeTableMicroSec2Location(self->timeTable, self->current);
+    uint32_t tick = TimeTableLocation2Tick(self->timeTable, location.m + 1, 1, 0);
+    self->current = TimeTableTick2MicroSec(self->timeTable, tick);
+
+    CFIndex eventsCount = CFArrayGetCount(self->events);
+    for (; self->index < eventsCount; ++self->index) {
+        MidiEvent *event = (MidiEvent *)CFArrayGetValueAtIndex(self->events, self->index);
+        if (tick <= event->tick) {
+            break;
+        }
+    }
+
+    self->offset = 0;
+    self->start = currentMicroSec();
+}
+
+static void __PlayerBackward(Player *self)
+{
+    __PlayerSendAllNoteOff(self);
+    CFArrayRemoveAllValues(self->playing);
+
+    Location location = TimeTableMicroSec2Location(self->timeTable, self->current);
+
+    if (1 == location.b) {
+        location.m -= 1;
+    }
+
+    if (1 > location.m) {
+        location.m = 1;
+    }
+
+    uint32_t tick = TimeTableLocation2Tick(self->timeTable, location.m, 1, 0);
+    self->current = TimeTableTick2MicroSec(self->timeTable, tick);
+
+    for (self->index = MAX(0, self->index - 1); 0 < self->index; --self->index) {
+        MidiEvent *event = (MidiEvent *)CFArrayGetValueAtIndex(self->events, self->index);
+        if (tick >= event->tick) {
+            break;
+        }
+    }
+    
+    self->offset = 0;
+    self->start = currentMicroSec();
+}
+
 static void *PlayerRun(void *_self)
 {
     Player *self = _self;
@@ -190,6 +243,12 @@ static void *PlayerRun(void *_self)
                 break;
             case PLAYER_MSG_REWIND:
                 __PlayerRewind(self);
+                break;
+            case PLAYER_MSG_FORWARD:
+                __PlayerForward(self);
+                break;
+            case PLAYER_MSG_BACKWARD:
+                __PlayerBackward(self);
                 break;
             case PLAYER_MSG_EXIT:
                 __PlayerChangeState(self, PLAYER_STATE_EXIT);
@@ -331,6 +390,18 @@ void PlayerStop(Player *self)
 void PlayerRewind(Player *self)
 {
     Message msg = {PLAYER_MSG_REWIND, NULL};
+    MessageQueuePost(self->msgQ, &msg);
+}
+
+void PlayerForward(Player *self)
+{
+    Message msg = {PLAYER_MSG_FORWARD, NULL};
+    MessageQueuePost(self->msgQ, &msg);
+}
+
+void PlayerBackward(Player *self)
+{
+    Message msg = {PLAYER_MSG_BACKWARD, NULL};
     MessageQueuePost(self->msgQ, &msg);
 }
 
