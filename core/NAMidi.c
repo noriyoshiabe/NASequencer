@@ -116,7 +116,6 @@ static void *__NAMidiRun(void *_self)
             NARelease(msg.arg);
             break;
         case NAMIDI_MSG_SET_FILE:
-            // TODO switch file
             FSWatcherRegisterFilepath(self->watcher, msg.arg);
             FSWatcherStart(self->watcher);
             self->filepath = msg.arg;
