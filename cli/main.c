@@ -31,7 +31,7 @@ int main(int argc, char **argv)
     NAMidi *namidi = NATypeNew(NAMidi);
     ConsoleWriter *writer = NATypeNew(ConsoleWriter);
 
-    NAMidiAddContextView(namidi, writer);
+    NAMidiAddObserver(namidi, writer);
     NAMidiSetFile(namidi, filepath);
 
     NAMidiParse(namidi);

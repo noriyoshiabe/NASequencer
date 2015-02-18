@@ -69,11 +69,3 @@ NADeclareVtbl(ParseContext, NAType,
         __ParseContextDescription
         );
 NADeclareClass(ParseContext, NAType);
-
-
-NADeclareAbstractClass(ParseContextView);
-
-void ParseContextViewRender(void *self, ParseContext *context)
-{
-    NAVtbl(self, ParseContextView)->render(self, context);
-}

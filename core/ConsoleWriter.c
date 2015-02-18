@@ -1,4 +1,5 @@
 #include "ConsoleWriter.h"
+#include "NAMidi.h"
 #include <NACFHelper.h>
 
 #define TRACK_BUFFER_NUM 18
@@ -182,7 +183,7 @@ static void __ConsoleWriterVisitNoteEvent(void *_self, NoteEvent *elem)
             l.m, l.b, l.t, elem->channel, elem->noteNo, elem->velocity, elem->gatetime);
 }
 
-void __ConsoleWriterRender(void *self, ParseContext *context)
+void __ConsoleWriterOnParseFinished(void *self, ParseContext *context)
 {
     printf("\nParse result of %s\n\n", NACFString2CString(context->filepath));
 
@@ -233,6 +234,6 @@ NADeclareVtbl(ConsoleWriter, SequenceVisitor,
         __ConsoleWriterVisitNoteEvent,
         );
 
-NADeclareVtbl(ConsoleWriter, ParseContextView, __ConsoleWriterRender);
+NADeclareVtbl(ConsoleWriter, NAMidiObserver, __ConsoleWriterOnParseFinished, NULL);
 
-NADeclareClass(ConsoleWriter, NAType, SequenceVisitor, ParseContextView);
+NADeclareClass(ConsoleWriter, NAType, SequenceVisitor, NAMidiObserver);

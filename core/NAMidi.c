@@ -5,10 +5,9 @@
 #include "MessageQueue.h"
 #include "Player.h"
 #include "FSWatcher.h"
-#include "ParseContext.h"
 
 typedef enum _NAMidiMessageKind {
-    NAMIDI_MSG_ADD_CONTEXT_VIEW,
+    NAMIDI_MSG_ADD_OBSERVER,
     NAMIDI_MSG_SET_FILE,
     NAMIDI_MSG_PARSE,
     NAMIDI_MSG_PLAY,
@@ -26,20 +25,39 @@ struct _NAMidi {
     pthread_t thread;
     Player *player;
     FSWatcher *watcher;
-    CFMutableArrayRef contextViews;
+    CFMutableArrayRef observers;
     MessageQueue *msgQ;
     CFStringRef filepath;
     ParseContext *context;
 };
 
+NADeclareAbstractClass(NAMidiObserver);
+
+static void __NAMidiObserverOnParseFinished(void *self, ParseContext *context)
+{
+    void (*onParseFinished)(void *, ParseContext *) = NAVtbl(self, NAMidiObserver)->onParseFinished;
+    if (onParseFinished) {
+        onParseFinished(self, context);
+    }
+}
+
+__attribute__((unused))
+static void __NAMidiObserverOnPlayingStateChanged(void *self, void *unimplemented)
+{
+    void (*onPlayingStateChanged)(void *, void *) = NAVtbl(self, NAMidiObserver)->onPlayingStateChanged;
+    if (onPlayingStateChanged) {
+        onPlayingStateChanged(self, unimplemented);
+    }
+}
+
 static void __NAMidiParse(NAMidi *self)
 {
     ParseContext *context = ParseContextParse(self->filepath);
 
-    CFIndex count = CFArrayGetCount(self->contextViews);
+    CFIndex count = CFArrayGetCount(self->observers);
     for (int i = 0; i < count; ++i) {
-        void *view = (void *)CFArrayGetValueAtIndex(self->contextViews, i);
-        ParseContextViewRender(view, context);
+        void *observer = (void *)CFArrayGetValueAtIndex(self->observers, i);
+        __NAMidiObserverOnParseFinished(observer, context);
     }
 
     if (!context->error) {
@@ -111,8 +129,8 @@ static void *__NAMidiRun(void *_self)
         MessageQueueWait(self->msgQ, &msg);
 
         switch (msg.kind) {
-        case NAMIDI_MSG_ADD_CONTEXT_VIEW:
-            CFArrayAppendValue(self->contextViews, msg.arg);
+        case NAMIDI_MSG_ADD_OBSERVER:
+            CFArrayAppendValue(self->observers, msg.arg);
             NARelease(msg.arg);
             break;
         case NAMIDI_MSG_SET_FILE:
@@ -159,7 +177,7 @@ static void *__NAMidiInit(void *_self, ...)
 
     self->player = NATypeNew(Player);
     self->watcher = NATypeNew(FSWatcher, self);
-    self->contextViews = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
+    self->observers = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
     self->msgQ = MessageQueueCreate();
 
     pthread_create(&self->thread, NULL, __NAMidiRun, self);
@@ -180,7 +198,7 @@ static void __NAMidiDestroy(void *_self)
 
     NARelease(self->player);
     NARelease(self->watcher);
-    CFRelease(self->contextViews);
+    CFRelease(self->observers);
 
     MessageQueueDestroy(self->msgQ);
 
@@ -214,10 +232,10 @@ NAMidi *NAMidiCreate()
     return NATypeNew(NAMidi);
 }
 
-void NAMidiAddContextView(NAMidi *self, void *contextView)
+void NAMidiAddObserver(NAMidi *self, void *observer)
 {
-    NARetain(contextView);
-    Message msg = {NAMIDI_MSG_ADD_CONTEXT_VIEW, contextView};
+    NARetain(observer);
+    Message msg = {NAMIDI_MSG_ADD_OBSERVER, observer};
     MessageQueuePost(self->msgQ, &msg);
 }
 
