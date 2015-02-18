@@ -143,6 +143,8 @@ static bool __PlayerPlay(Player *self)
     CFIndex playingCount = CFArrayGetCount(self->playing);
     if (eventsCount <= self->index && 0 == playingCount) {
         __PlayerChangeState(self, PLAYER_STATE_STOP);
+        self->index = 0;
+        self->current = 0;
         return false;
     }
     else {
