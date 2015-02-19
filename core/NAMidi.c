@@ -3,7 +3,6 @@
 #include <pthread.h>
 #include <NACFHelper.h>
 #include "MessageQueue.h"
-#include "Player.h"
 #include "FSWatcher.h"
 
 typedef enum _NAMidiMessageKind {
@@ -42,11 +41,11 @@ static void __NAMidiObserverOnParseFinished(void *self, NAMidi *sender, ParseCon
 }
 
 __attribute__((unused))
-static void __NAMidiObserverOnPlayingStateChanged(void *self, NAMidi *sender, void *unimplemented)
+static void __NAMidiObserverOnPlayerContextChanged(void *self, NAMidi *sender, PlayerContext *playerContext)
 {
-    void (*onPlayingStateChanged)(void *, NAMidi *, void *) = NAVtbl(self, NAMidiObserver)->onPlayingStateChanged;
-    if (onPlayingStateChanged) {
-        onPlayingStateChanged(self, sender, unimplemented);
+    void (*onPlayerContextChanged)(void *, NAMidi *, PlayerContext *) = NAVtbl(self, NAMidiObserver)->onPlayerContextChanged;
+    if (onPlayerContextChanged) {
+        onPlayerContextChanged(self, sender, playerContext);
     }
 }
 

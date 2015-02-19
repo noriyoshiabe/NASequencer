@@ -294,6 +294,39 @@ int64_t TimeTableTick2MicroSec(TimeTable *self, int32_t tick)
     return usec + (tick - offsetTick) * usecPerTick;
 }
 
+void TimeTableGetTempoByTick(TimeTable *self, uint32_t tick, float *tempo)
+{
+    const TempoEvent *targetEvent = NULL;
+    CFIndex count = CFArrayGetCount(self->tempoEvents);
+    for (int i = 0; i < count; ++i) {
+        const TempoEvent *event = CFArrayGetValueAtIndex(self->tempoEvents, i);
+        if (tick <= event->_.tick) {
+            break;
+        }
+
+        targetEvent = event;
+    }
+
+    *tempo = targetEvent ? targetEvent->tempo : 120.0f;
+}
+
+void TimeTableGetTimeSignByTick(TimeTable *self, uint32_t tick, uint8_t *numerator, uint8_t *denominator)
+{
+    const TimeEvent *targetEvent = NULL;
+    CFIndex count = CFArrayGetCount(self->timeEvents);
+    for (int i = 0; i < count; ++i) {
+        const TimeEvent *event = CFArrayGetValueAtIndex(self->timeEvents, i);
+        if (tick <= event->_.tick) {
+            break;
+        }
+
+        targetEvent = event;
+    }
+
+    *numerator = targetEvent ? targetEvent->numerator : 4;
+    *denominator = targetEvent ? targetEvent->denominator : 4;
+}
+
 static void *__TimeTableInit(void *_self, ...)
 {
     TimeTable *self = _self;

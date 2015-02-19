@@ -8,13 +8,6 @@
 #include "MidiClient.h"
 #include "MessageQueue.h"
 
-typedef enum _PlayerState {
-    PLAYER_STATE_INVALID,
-    PLAYER_STATE_STOP,
-    PLAYER_STATE_PLAYING,
-    PLAYER_STATE_EXIT,
-} PlayerState;
-
 typedef enum _PlayerMessageKind {
     PLAYER_MSG_SET_SOURCE,
     PLAYER_MSG_PLAY,
@@ -28,16 +21,14 @@ typedef enum _PlayerMessageKind {
 struct _Player {
     NAType _;
     pthread_t thread;
-    PlayerState state;
     TimeTable *timeTable;
     CFArrayRef events;
-    CFMutableArrayRef playing;
     MessageQueue *msgQ;
     MidiClient *client;
     uint64_t start;
     uint64_t offset;
-    uint64_t current;
     int index;
+    PlayerContext context;
 };
 
 static void __PlayerSetSource(Player *self, void *source)
@@ -77,12 +68,12 @@ static uint64_t currentMicroSec()
 
 static void __PlayerChangeState(Player *self, PlayerState next)
 {
-    switch (self->state) {
+    switch (self->context.state) {
     case PLAYER_STATE_STOP:
         switch (next) {
         case PLAYER_STATE_PLAYING:
             self->start = currentMicroSec();
-            self->offset = self->current;
+            self->offset = self->context.usec;
             break;
         default:
             break;
@@ -102,7 +93,7 @@ static void __PlayerChangeState(Player *self, PlayerState next)
         break;
     }
 
-    self->state = next;
+    self->context.state = next;
 }
 
 static void __PlayerSendNoteOff(Player *self, const NoteEvent *event)
@@ -111,21 +102,21 @@ static void __PlayerSendNoteOff(Player *self, const NoteEvent *event)
     MidiClientSend(self->client, bytes, sizeof(bytes));
 }
 
-static bool __PlayerPlay(Player *self)
+static void __PlayerPlay(Player *self)
 {
     uint64_t elapsed = currentMicroSec() - self->start;
-    uint64_t prev = self->current;
-    self->current = self->offset + elapsed;
+    uint64_t prev = self->context.usec;
+    self->context.usec = self->offset + elapsed;
 
     uint32_t prevTick = TimeTableMicroSec2Tick(self->timeTable, prev);
-    uint32_t currentTick = TimeTableMicroSec2Tick(self->timeTable, self->current);
+    uint32_t currentTick = TimeTableMicroSec2Tick(self->timeTable, self->context.usec);
 
-    for (CFIndex i = CFArrayGetCount(self->playing); 0 < i; --i) {
+    for (CFIndex i = CFArrayGetCount(self->context.playing); 0 < i; --i) {
         CFIndex idx = i - 1;
-        const NoteEvent *event = CFArrayGetValueAtIndex(self->playing, idx);
+        const NoteEvent *event = CFArrayGetValueAtIndex(self->context.playing, idx);
         if (currentTick > event->_.tick + event->gatetime) {
             __PlayerSendNoteOff(self, event);
-            CFArrayRemoveValueAtIndex(self->playing, idx);
+            CFArrayRemoveValueAtIndex(self->context.playing, idx);
         }
     }
 
@@ -140,37 +131,49 @@ static bool __PlayerPlay(Player *self)
         }
     }
 
-    CFIndex playingCount = CFArrayGetCount(self->playing);
+    CFIndex playingCount = CFArrayGetCount(self->context.playing);
     if (eventsCount <= self->index && 0 == playingCount) {
         __PlayerChangeState(self, PLAYER_STATE_STOP);
         self->index = 0;
-        self->current = 0;
-        return false;
+        self->context.usec = 0;
+        currentTick = 0;
     }
-    else {
-        return true;
-    }
+
+    self->context.location = TimeTableTick2Location(self->timeTable, currentTick);
+    TimeTableGetTempoByTick(self->timeTable, currentTick, &self->context.tempo);
+    TimeTableGetTimeSignByTick(self->timeTable, currentTick, &self->context.numerator, &self->context.denominator);
 }
 
 static void __PlayerRewind(Player *self)
 {
     __PlayerSendAllNoteOff(self);
-    CFArrayRemoveAllValues(self->playing);
+    CFArrayRemoveAllValues(self->context.playing);
 
     self->index = 0;
     self->offset = 0;
-    self->current = 0;
+    self->context.usec = 0;
     self->start = currentMicroSec();
+
+    self->context.location = TimeTableTick2Location(self->timeTable, 0);
+    TimeTableGetTempoByTick(self->timeTable, 0, &self->context.tempo);
+    TimeTableGetTimeSignByTick(self->timeTable, 0, &self->context.numerator, &self->context.denominator);
 }
 
 static void __PlayerForward(Player *self)
 {
     __PlayerSendAllNoteOff(self);
-    CFArrayRemoveAllValues(self->playing);
+    CFArrayRemoveAllValues(self->context.playing);
 
-    Location location = TimeTableMicroSec2Location(self->timeTable, self->current);
-    uint32_t tick = TimeTableLocation2Tick(self->timeTable, location.m + 1, 1, 0);
-    self->current = TimeTableTick2MicroSec(self->timeTable, tick);
+    self->context.location = TimeTableMicroSec2Location(self->timeTable, self->context.usec);
+    Location *location = &self->context.location;
+    location->m++;
+    location->b = 1;
+    location->t = 0;
+
+    uint32_t tick = TimeTableLocation2Tick(self->timeTable, location->m, location->b, location->t);
+    self->context.usec = TimeTableTick2MicroSec(self->timeTable, tick);
+    TimeTableGetTempoByTick(self->timeTable, tick, &self->context.tempo);
+    TimeTableGetTimeSignByTick(self->timeTable, tick, &self->context.numerator, &self->context.denominator);
 
     CFIndex eventsCount = CFArrayGetCount(self->events);
     for (; self->index < eventsCount; ++self->index) {
@@ -180,27 +183,33 @@ static void __PlayerForward(Player *self)
         }
     }
 
-    self->offset = self->current;
+    self->offset = self->context.usec;
     self->start = currentMicroSec();
 }
 
 static void __PlayerBackward(Player *self)
 {
     __PlayerSendAllNoteOff(self);
-    CFArrayRemoveAllValues(self->playing);
+    CFArrayRemoveAllValues(self->context.playing);
 
-    Location location = TimeTableMicroSec2Location(self->timeTable, self->current);
+    self->context.location = TimeTableMicroSec2Location(self->timeTable, self->context.usec);
+    Location *location = &self->context.location;
 
-    if (1 == location.b) {
-        location.m -= 1;
+    if (1 == location->b) {
+        location->m -= 1;
     }
 
-    if (1 > location.m) {
-        location.m = 1;
+    if (1 > location->m) {
+        location->m = 1;
     }
 
-    uint32_t tick = TimeTableLocation2Tick(self->timeTable, location.m, 1, 0);
-    self->current = TimeTableTick2MicroSec(self->timeTable, tick);
+    location->b = 1;
+    location->t = 0;
+
+    uint32_t tick = TimeTableLocation2Tick(self->timeTable, location->m, location->b, location->t);
+    self->context.usec = TimeTableTick2MicroSec(self->timeTable, tick);
+    TimeTableGetTempoByTick(self->timeTable, tick, &self->context.tempo);
+    TimeTableGetTimeSignByTick(self->timeTable, tick, &self->context.numerator, &self->context.denominator);
 
     for (self->index = MAX(0, self->index - 1); 0 < self->index; --self->index) {
         MidiEvent *event = (MidiEvent *)CFArrayGetValueAtIndex(self->events, self->index);
@@ -209,7 +218,7 @@ static void __PlayerBackward(Player *self)
         }
     }
     
-    self->offset = self->current;
+    self->offset = self->context.usec;
     self->start = currentMicroSec();
 }
 
@@ -224,7 +233,7 @@ static void *PlayerRun(void *_self)
         Message msg;
         bool recv = false;
         
-        if (PLAYER_STATE_STOP == self->state) {
+        if (PLAYER_STATE_STOP == self->context.state) {
             recv = MessageQueueWait(self->msgQ, &msg);
         }
         else {
@@ -259,8 +268,9 @@ static void *PlayerRun(void *_self)
             }
         }
 
-        if (PLAYER_STATE_PLAYING == self->state) {
-            if (__PlayerPlay(self)) {
+        if (PLAYER_STATE_PLAYING == self->context.state) {
+            __PlayerPlay(self);
+            if (PLAYER_STATE_PLAYING == self->context.state) {
                 usleep(100);
             }
         }
@@ -275,7 +285,7 @@ static void *__PlayerInit(void *_self, ...)
 {
     Player *self = _self;
 
-    self->playing = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
+    self->context.playing = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
     self->msgQ = MessageQueueCreate();
     self->client = NATypeNew(MidiClient);
 
@@ -293,7 +303,7 @@ static void __PlayerDestroy(void *_self)
 
     pthread_join(self->thread, NULL);
 
-    CFRelease(self->playing);
+    CFRelease(self->context.playing);
     MessageQueueDestroy(self->msgQ);
     NARelease(self->client);
 }
@@ -342,7 +352,7 @@ static void __PlayerVisitNoteEvent(void *_self, NoteEvent *elem)
     uint8_t bytes[3] = {0x90 | (0x0F & (elem->channel - 1)), elem->noteNo, elem->velocity};
     MidiClientSend(self->client, bytes, sizeof(bytes));
 
-    CFArrayAppendValue(self->playing, elem);
+    CFArrayAppendValue(self->context.playing, elem);
 }
 
 NADeclareVtbl(Player, NAType,
@@ -409,5 +419,5 @@ void PlayerBackward(Player *self)
 
 bool PlayerIsPlaying(Player *self)
 {
-    return PLAYER_STATE_PLAYING == self->state;
+    return PLAYER_STATE_PLAYING == self->context.state;
 }

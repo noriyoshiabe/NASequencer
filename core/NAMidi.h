@@ -3,13 +3,14 @@
 #include <NAType.h>
 #include <CoreFoundation/CoreFoundation.h>
 #include "ParseContext.h"
+#include "Player.h"
 
 typedef struct _NAMidi NAMidi;
 NAExportClass(NAMidi);
 
 typedef struct _NAMidiObserverVtbl {
     void (*onParseFinished)(void *self, NAMidi *sender, ParseContext *context);
-    void (*onPlayingStateChanged)(void *self, NAMidi *sender, void *unimplemented);
+    void (*onPlayerContextChanged)(void *self, NAMidi *sender, PlayerContext *playerContext);
 } NAMidiObserverVtbl;
 
 NAExportClass(NAMidiObserver);
