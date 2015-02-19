@@ -13,7 +13,7 @@ protocol DocumentViewDelegate : NSObjectProtocol {
     func performDragOperation(sender: DocumentView, draggingInfo: NSDraggingInfo) -> Bool
 }
 
-class DocumentView : NSView {
+class DocumentView : NSView, NAMidiObserverDelegate {
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -26,5 +26,14 @@ class DocumentView : NSView {
     
     override func performDragOperation(sender: NSDraggingInfo) -> Bool {
         return AppDelegate.sharedApplication().performDragOperation(self, draggingInfo: sender)
+    }
+    
+    func onParseFinished(namidi: COpaquePointer, parseContext: UnsafeMutablePointer<ParseContext>) {
+        let vp:UnsafePointer<Void> = UnsafePointer<Void>(NADescription(parseContext))
+        let str = Unmanaged<CFString>.fromOpaque(COpaquePointer(vp)).takeUnretainedValue()
+        println(str)
+    }
+    
+    func onPlayingStateChanged(namidi: COpaquePointer, playingState: UnsafeMutablePointer<Void>) {
     }
 }

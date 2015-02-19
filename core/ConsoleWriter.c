@@ -183,7 +183,7 @@ static void __ConsoleWriterVisitNoteEvent(void *_self, NoteEvent *elem)
             l.m, l.b, l.t, elem->channel, elem->noteNo, elem->velocity, elem->gatetime);
 }
 
-void __ConsoleWriterOnParseFinished(void *self, ParseContext *context)
+void __ConsoleWriterOnParseFinished(void *self, NAMidi *sender, ParseContext *context)
 {
     printf("\nParse result of %s\n\n", NACFString2CString(context->filepath));
 

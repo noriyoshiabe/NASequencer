@@ -11,11 +11,17 @@ import Cocoa
 class DocumentController : NSWindowController {
     
     @IBOutlet var rootView: DocumentView?
+    var namidi: NAMidi?
     
     override func awakeFromNib() {
         window?.setFrameAutosaveName("sharedWindowFrame")
         
         let document = self.document? as Document
-        document.namidi.parse()
+        namidi = document.namidi
+        namidi?.addObserverDelegate(rootView!)
+    }
+    
+    override func windowDidLoad() {
+        namidi?.parse()
     }
 }

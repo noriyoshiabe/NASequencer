@@ -33,20 +33,20 @@ struct _NAMidi {
 
 NADeclareAbstractClass(NAMidiObserver);
 
-static void __NAMidiObserverOnParseFinished(void *self, ParseContext *context)
+static void __NAMidiObserverOnParseFinished(void *self, NAMidi *sender, ParseContext *context)
 {
-    void (*onParseFinished)(void *, ParseContext *) = NAVtbl(self, NAMidiObserver)->onParseFinished;
+    void (*onParseFinished)(void *, NAMidi *, ParseContext *) = NAVtbl(self, NAMidiObserver)->onParseFinished;
     if (onParseFinished) {
-        onParseFinished(self, context);
+        onParseFinished(self, sender, context);
     }
 }
 
 __attribute__((unused))
-static void __NAMidiObserverOnPlayingStateChanged(void *self, void *unimplemented)
+static void __NAMidiObserverOnPlayingStateChanged(void *self, NAMidi *sender, void *unimplemented)
 {
-    void (*onPlayingStateChanged)(void *, void *) = NAVtbl(self, NAMidiObserver)->onPlayingStateChanged;
+    void (*onPlayingStateChanged)(void *, NAMidi *, void *) = NAVtbl(self, NAMidiObserver)->onPlayingStateChanged;
     if (onPlayingStateChanged) {
-        onPlayingStateChanged(self, unimplemented);
+        onPlayingStateChanged(self, sender, unimplemented);
     }
 }
 
@@ -57,7 +57,7 @@ static void __NAMidiParse(NAMidi *self)
     CFIndex count = CFArrayGetCount(self->observers);
     for (int i = 0; i < count; ++i) {
         void *observer = (void *)CFArrayGetValueAtIndex(self->observers, i);
-        __NAMidiObserverOnParseFinished(observer, context);
+        __NAMidiObserverOnParseFinished(observer, self, context);
     }
 
     if (!context->error) {

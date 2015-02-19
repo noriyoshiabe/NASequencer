@@ -10,6 +10,7 @@ import Foundation
 
 class NAMidi {
     private let namidi: COpaquePointer
+    private var observers: [NAMidiObserver] = []
     
     init() {
         namidi = NAMidiCreate()
@@ -17,6 +18,12 @@ class NAMidi {
     
     deinit {
         NARelease(UnsafeMutablePointer<Void>(namidi))
+    }
+    
+    func addObserverDelegate(observerDelegate: NAMidiObserverDelegate) {
+        let observer = NAMidiObserver(delegate: observerDelegate)
+        NAMidiAddObserver(namidi, observer.observerBridge)
+        observers.append(observer)
     }
     
     func setFile(url: NSURL) {
