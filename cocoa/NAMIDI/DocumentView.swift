@@ -29,9 +29,7 @@ class DocumentView : NSView, NAMidiObserverDelegate {
     }
     
     func onParseFinished(namidi: COpaquePointer, parseContext: UnsafeMutablePointer<ParseContext>) {
-        let vp:UnsafePointer<Void> = UnsafePointer<Void>(NADescription(parseContext))
-        let str = Unmanaged<CFString>.fromOpaque(COpaquePointer(vp)).takeUnretainedValue()
-        println(str)
+        println(NACFDescription(parseContext).takeUnretainedValue())
     }
     
     func onPlayingStateChanged(namidi: COpaquePointer, playingState: UnsafeMutablePointer<Void>) {

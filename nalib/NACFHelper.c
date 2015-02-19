@@ -98,3 +98,9 @@ const char *__NACFString2CString(CFStringRef cfString, char *allocaBuffer)
     CFStringGetCString(cfString, allocaBuffer, INT32_MAX, kCFStringEncodingUTF8);
     return allocaBuffer;
 }
+
+extern CFStringRef NACFDescription(const void *self)
+{
+    void *(*description)(const void *) = NAVtbl(self, NAType)->description;
+    return (CFStringRef)description(self);
+}
