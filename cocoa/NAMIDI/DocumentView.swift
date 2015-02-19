@@ -28,10 +28,10 @@ class DocumentView : NSView, NAMidiObserverDelegate {
         return AppDelegate.sharedApplication().performDragOperation(self, draggingInfo: sender)
     }
     
-    func onParseFinished(namidi: COpaquePointer, parseContext: UnsafeMutablePointer<ParseContext>) {
-        println(NACFDescription(parseContext).takeUnretainedValue())
+    func onParseFinished(namidi: COpaquePointer, context: UnsafeMutablePointer<ParseContext>) {
+        println(NACFDescription(context).takeUnretainedValue())
     }
     
-    func onPlayingStateChanged(namidi: COpaquePointer, playingState: UnsafeMutablePointer<Void>) {
+    func onPlayerContextChanged(namidi: COpaquePointer, context: UnsafeMutablePointer<PlayerContext>) {
     }
 }

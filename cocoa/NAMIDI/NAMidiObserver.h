@@ -13,8 +13,8 @@
 
 @protocol NAMidiObserverDelegate <NSObject>
 @required
-- (void)onParseFinished:(NAMidi *)namidi parseContext:(ParseContext *)parseContext;
-- (void)onPlayingStateChanged:(NAMidi *)namidi playingState:(void *)playingState;
+- (void)onParseFinished:(NAMidi *)namidi context:(ParseContext *)context;
+- (void)onPlayerContextChanged:(NAMidi *)namidi context:(PlayerContext *)context;
 @end
 
 @interface NAMidiObserver : NSObject

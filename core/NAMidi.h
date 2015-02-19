@@ -10,7 +10,7 @@ NAExportClass(NAMidi);
 
 typedef struct _NAMidiObserverVtbl {
     void (*onParseFinished)(void *self, NAMidi *sender, ParseContext *context);
-    void (*onPlayerContextChanged)(void *self, NAMidi *sender, PlayerContext *playerContext);
+    void (*onPlayerContextChanged)(void *self, NAMidi *sender, PlayerContext *context);
 } NAMidiObserverVtbl;
 
 NAExportClass(NAMidiObserver);

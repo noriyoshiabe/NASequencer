@@ -27,18 +27,18 @@ static void __ObserverBridgeOnParseFinished(void *_self, NAMidi *sender, ParseCo
 {
     ObserverBridge *self = _self;
     NAMidiObserver *observer = (__bridge NAMidiObserver *)self->observer;
-    [observer.delegate onParseFinished:sender parseContext:context];
+    [observer.delegate onParseFinished:sender context:context];
 }
 
-static void __ObserverBridgeOnPlayingStateChanged(void *_self, NAMidi *sender, void *unimplemented)
+static void __ObserverBridgeOnPlayerContextChanged(void *_self, NAMidi *sender, PlayerContext *context)
 {
     ObserverBridge *self = _self;
     NAMidiObserver *observer = (__bridge NAMidiObserver *)self->observer;
-    [observer.delegate onParseFinished:sender parseContext:unimplemented];
+    [observer.delegate onPlayerContextChanged:sender context:context];
 }
 
 NADeclareVtbl(ObserverBridge, NAType, __ObserverBridgeInit, NULL, NULL, NULL, NULL, NULL, NULL);
-NADeclareVtbl(ObserverBridge, NAMidiObserver, __ObserverBridgeOnParseFinished, __ObserverBridgeOnPlayingStateChanged);
+NADeclareVtbl(ObserverBridge, NAMidiObserver, __ObserverBridgeOnParseFinished, __ObserverBridgeOnPlayerContextChanged);
 NADeclareClass(ObserverBridge, NAType, NAMidiObserver);
 
 @implementation NAMidiObserver

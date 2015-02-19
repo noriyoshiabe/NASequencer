@@ -24,7 +24,7 @@ typedef struct _Player Player;
 NAExportClass(Player);
 
 typedef struct _PlayerObserverVtbl {
-    void (*onPlayerContextChanged)(void *self, Player *sender, PlayerContext *playerContext);
+    void (*onPlayerContextChanged)(void *self, Player *sender, PlayerContext *context);
 } PlayerObserverVtbl;
 
 NAExportClass(PlayerObserver);
