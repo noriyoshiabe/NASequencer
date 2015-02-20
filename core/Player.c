@@ -474,3 +474,8 @@ const char *PlayerState2String(int state)
     return "Unknown token type";
 #undef CASE
 }
+
+CFStringRef PlayerState2CFString(int state)
+{
+    return CFStringCreateWithCString(NULL, PlayerState2String(state), kCFStringEncodingUTF8);
+}

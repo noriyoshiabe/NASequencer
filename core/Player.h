@@ -11,7 +11,7 @@ typedef enum _PlayerState {
 } PlayerState;
 
 typedef struct _PlayerContext {
-    PlayerState state;
+    int state;
     uint64_t usec;
     Location location;
     CFMutableArrayRef playing;
@@ -39,3 +39,4 @@ extern void PlayerBackward(Player *self);
 extern bool PlayerIsPlaying(Player *self);
 
 extern const char *PlayerState2String(int state);
+extern CFStringRef PlayerState2CFString(int state);
