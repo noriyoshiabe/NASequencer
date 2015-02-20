@@ -1,6 +1,7 @@
 #include "Sequence.h"
 #include <NACFHelper.h>
 #include <string.h>
+#include <math.h>
 
 NADeclareAbstractClass(SequenceVisitor);
 NADeclareAbstractClass(SequenceElement);
@@ -136,14 +137,13 @@ uint32_t TimeTableLocation2Tick(TimeTable *self, int32_t measure, int32_t beat, 
 
         int32_t _tick = tickPerMeasure * measure + tickPerBeat * beat + tick + offsetTick;
         if (event->_.tick <= _tick) {
-            offsetTick = event->_.tick;
-
-            tickPerBeat = self->resolution * 4 / event->denominator;
-            tickPerMeasure = tickPerBeat * event->numerator;
-
             tick -= event->_.tick % tickPerBeat;
             measure -= event->_.tick / tickPerMeasure;
             beat -= (event->_.tick % tickPerMeasure) / tickPerBeat;
+
+            tickPerBeat = self->resolution * 4 / event->denominator;
+            tickPerMeasure = tickPerBeat * event->numerator;
+            offsetTick = event->_.tick;
         }
         else {
             break;
@@ -248,14 +248,14 @@ Location TimeTableTick2Location(TimeTable *self, int32_t tick)
 
 uint32_t TimeTableMicroSec2Tick(TimeTable *self, int64_t usec)
 {
-    int32_t offsetTick = 0;
-    double usecPerTick = 60 * 1000 * 1000 / 120.0f / self->resolution;
+    float offsetTick = 0;
+    float usecPerTick = 60 * 1000 * 1000 / 120.0f / self->resolution;
 
     CFIndex count = CFArrayGetCount(self->tempoEvents);
     for (int i = 0; i < count; ++i) {
         const TempoEvent *event = CFArrayGetValueAtIndex(self->tempoEvents, i);
-        uint32_t tick = offsetTick + usec / usecPerTick;
-        if (tick <= event->_.tick) {
+        float tick = offsetTick + usec / usecPerTick;
+        if (tick < event->_.tick) {
             break;
         }
 
@@ -264,7 +264,7 @@ uint32_t TimeTableMicroSec2Tick(TimeTable *self, int64_t usec)
         offsetTick = event->_.tick;
     }
 
-    return offsetTick + usec / usecPerTick;
+    return roundf(offsetTick + usec / usecPerTick);
 }
 
 Location TimeTableMicroSec2Location(TimeTable *self, int64_t usec)
@@ -275,9 +275,9 @@ Location TimeTableMicroSec2Location(TimeTable *self, int64_t usec)
 
 int64_t TimeTableTick2MicroSec(TimeTable *self, int32_t tick)
 {
-    int32_t offsetTick = 0;
-    double usecPerTick = 60 * 1000 * 1000 / 120.0f / self->resolution;
-    int32_t usec = 0;
+    float offsetTick = 0;
+    float usecPerTick = 60 * 1000 * 1000 / 120.0f / self->resolution;
+    float usec = 0;
 
     CFIndex count = CFArrayGetCount(self->tempoEvents);
     for (int i = 0; i < count; ++i) {
@@ -291,7 +291,7 @@ int64_t TimeTableTick2MicroSec(TimeTable *self, int32_t tick)
         offsetTick = event->_.tick;
     }
 
-    return usec + (tick - offsetTick) * usecPerTick;
+    return roundf(usec + (tick - offsetTick) * usecPerTick);
 }
 
 void TimeTableGetTempoByTick(TimeTable *self, uint32_t tick, float *tempo)
