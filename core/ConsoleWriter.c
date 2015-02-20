@@ -215,9 +215,9 @@ void __ConsoleWriterOnParseFinished(void *self, NAMidi *sender, ParseContext *co
 
 void __ConsoleWriterOnPlayerContextChanged(void *self, NAMidi *sender, PlayerContext *context)
 {
-    int32_t min = context->usec / (1000 * 1000 * 60);
-    int32_t sec = context->usec / (1000 * 1000);
-    int32_t msec = (context->usec / 1000) % 1000;
+    int32_t min = (int32_t)(context->usec / (1000 * 1000 * 60));
+    int32_t sec = (int32_t)context->usec / (1000 * 1000);
+    int32_t msec = (int32_t)(context->usec / 1000) % 1000;
 
     printf("\r");
     printf("[%s] time: %02d:%02d:%03d  location: %03d:%02d:%03d  tempo=%.2f  %d/%d",
