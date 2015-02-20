@@ -213,6 +213,26 @@ void __ConsoleWriterOnParseFinished(void *self, NAMidi *sender, ParseContext *co
     printf("\n");
 }
 
+void __ConsoleWriterOnPlayerContextChanged(void *self, NAMidi *sender, PlayerContext *context)
+{
+    int32_t min = context->usec / (1000 * 1000 * 60);
+    int32_t sec = context->usec / (1000 * 1000);
+    int32_t msec = (context->usec / 1000) % 1000;
+
+    printf("\r");
+    printf("[%s] time: %02d:%02d:%03d  location: %03d:%02d:%03d  tempo=%.2f  %d/%d",
+            PlayerState2String(context->state),
+            min,
+            sec,
+            msec,
+            context->location.m,
+            context->location.b,
+            context->location.t,
+            context->tempo,
+            context->numerator,
+            context->denominator);
+}
+
 NADeclareVtbl(ConsoleWriter, NAType,
         __ConsoleWriterInit,
         __ConsoleWriterDestroy,
@@ -234,6 +254,6 @@ NADeclareVtbl(ConsoleWriter, SequenceVisitor,
         __ConsoleWriterVisitNoteEvent,
         );
 
-NADeclareVtbl(ConsoleWriter, NAMidiObserver, __ConsoleWriterOnParseFinished, NULL);
+NADeclareVtbl(ConsoleWriter, NAMidiObserver, __ConsoleWriterOnParseFinished, __ConsoleWriterOnPlayerContextChanged);
 
 NADeclareClass(ConsoleWriter, NAType, SequenceVisitor, NAMidiObserver);
