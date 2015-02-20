@@ -29,6 +29,7 @@ typedef struct _PlayerObserverVtbl {
 
 NAExportClass(PlayerObserver);
 
+extern void PlayerAddObserver(Player *self, void *observer);
 extern void PlayerSetSource(Player *self, void *source);
 extern void PlayerPlay(Player *self);
 extern void PlayerStop(Player *self);
@@ -36,3 +37,5 @@ extern void PlayerRewind(Player *self);
 extern void PlayerForward(Player *self);
 extern void PlayerBackward(Player *self);
 extern bool PlayerIsPlaying(Player *self);
+
+extern const char *PlayerState2String(int state);

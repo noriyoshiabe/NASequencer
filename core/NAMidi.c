@@ -32,32 +32,34 @@ struct _NAMidi {
 
 NADeclareAbstractClass(NAMidiObserver);
 
-static void __NAMidiObserverOnParseFinished(void *self, NAMidi *sender, ParseContext *context)
+static void __NAMidiObserverOnParseFinished(NAMidi *self, ParseContext *context)
 {
-    void (*onParseFinished)(void *, NAMidi *, ParseContext *) = NAVtbl(self, NAMidiObserver)->onParseFinished;
-    if (onParseFinished) {
-        onParseFinished(self, sender, context);
+    CFIndex count = CFArrayGetCount(self->observers);
+    for (int i = 0; i < count; ++i) {
+        void *observer = (void *)CFArrayGetValueAtIndex(self->observers, i);
+        void (*onParseFinished)(void *, NAMidi *, ParseContext *) = NAVtbl(observer, NAMidiObserver)->onParseFinished;
+        if (onParseFinished) {
+            onParseFinished(observer, self, context);
+        }
     }
 }
 
-__attribute__((unused))
-static void __NAMidiObserverOnPlayerContextChanged(void *self, NAMidi *sender, PlayerContext *playerContext)
+static void __NAMidiObserverOnPlayerContextChanged(NAMidi *self, PlayerContext *context)
 {
-    void (*onPlayerContextChanged)(void *, NAMidi *, PlayerContext *) = NAVtbl(self, NAMidiObserver)->onPlayerContextChanged;
-    if (onPlayerContextChanged) {
-        onPlayerContextChanged(self, sender, playerContext);
+    CFIndex count = CFArrayGetCount(self->observers);
+    for (int i = 0; i < count; ++i) {
+        void *observer = (void *)CFArrayGetValueAtIndex(self->observers, i);
+        void (*onPlayerContextChanged)(void *, NAMidi *, PlayerContext *) = NAVtbl(observer, NAMidiObserver)->onPlayerContextChanged;
+        if (onPlayerContextChanged) {
+            onPlayerContextChanged(observer, self, context);
+        }
     }
 }
 
 static void __NAMidiParse(NAMidi *self)
 {
     ParseContext *context = ParseContextParse(self->filepath);
-
-    CFIndex count = CFArrayGetCount(self->observers);
-    for (int i = 0; i < count; ++i) {
-        void *observer = (void *)CFArrayGetValueAtIndex(self->observers, i);
-        __NAMidiObserverOnParseFinished(observer, self, context);
-    }
+    __NAMidiObserverOnParseFinished(self, context);
 
     if (!context->error) {
         if (self->context) {
@@ -179,6 +181,7 @@ static void *__NAMidiInit(void *_self, ...)
     self->observers = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
     self->msgQ = MessageQueueCreate();
 
+    PlayerAddObserver(self->player, self);
     pthread_create(&self->thread, NULL, __NAMidiRun, self);
 
     return self;
@@ -217,14 +220,20 @@ static void __NAMidiOnFileChanged(void *_self, FSWatcher *fswatcher, CFStringRef
     MessageQueuePost(self->msgQ, &msg);
 }
 
+static void __NAMidiOnPlayerContextChanged(void *self, Player *sender, PlayerContext *context)
+{
+    __NAMidiObserverOnPlayerContextChanged(self, context);
+}
+
 static void __NAMidiOnError(void *self, FSWatcher *fswatcher, int error, CFStringRef message)
 {
     CFShow(message);
 }
 
 NADeclareVtbl(NAMidi, NAType, __NAMidiInit, __NAMidiDestroy, NULL, NULL, NULL, NULL, NULL);
+NADeclareVtbl(NAMidi, PlayerObserver, __NAMidiOnPlayerContextChanged);
 NADeclareVtbl(NAMidi, FSWatcherListener, __NAMidiOnFileChanged, __NAMidiOnError);
-NADeclareClass(NAMidi, NAType, FSWatcherListener);
+NADeclareClass(NAMidi, NAType, PlayerObserver, FSWatcherListener);
 
 NAMidi *NAMidiCreate()
 {

@@ -9,6 +9,7 @@
 #include "MessageQueue.h"
 
 typedef enum _PlayerMessageKind {
+    PLAYER_MSG_ADD_OBSERVER,
     PLAYER_MSG_SET_SOURCE,
     PLAYER_MSG_PLAY,
     PLAYER_MSG_STOP,
@@ -23,6 +24,7 @@ struct _Player {
     pthread_t thread;
     TimeTable *timeTable;
     CFArrayRef events;
+    CFMutableArrayRef observers;
     MessageQueue *msgQ;
     MidiClient *client;
     uint64_t start;
@@ -30,6 +32,27 @@ struct _Player {
     int index;
     PlayerContext context;
 };
+
+NADeclareAbstractClass(PlayerObserver);
+
+static void __PlayerObserverOnPlayerContextChanged(Player *self)
+{
+    CFIndex count = CFArrayGetCount(self->observers);
+    for (int i = 0; i < count; ++i) {
+        void *observer = (void *)CFArrayGetValueAtIndex(self->observers, i);
+        void (*onPlayerContextChanged)(void *, Player *, PlayerContext *) = NAVtbl(observer, PlayerObserver)->onPlayerContextChanged;
+        if (onPlayerContextChanged) {
+            onPlayerContextChanged(observer, self, &self->context);
+        }
+    }
+}
+
+void PlayerAddObserver(Player *self, void *observer)
+{
+    NARetain(observer);
+    Message msg = {PLAYER_MSG_ADD_OBSERVER, observer};
+    MessageQueuePost(self->msgQ, &msg);
+}
 
 static void __PlayerSetSource(Player *self, void *source)
 {
@@ -66,7 +89,7 @@ static uint64_t currentMicroSec()
     return tv.tv_sec * 1000 * 1000 + tv.tv_usec;
 }
 
-static void __PlayerChangeState(Player *self, PlayerState next)
+static void __PlayerChangeState(Player *self, PlayerState next, bool silent)
 {
     switch (self->context.state) {
     case PLAYER_STATE_STOP:
@@ -93,7 +116,11 @@ static void __PlayerChangeState(Player *self, PlayerState next)
         break;
     }
 
+    bool notify = self->context.state != next;
     self->context.state = next;
+    if (!silent && notify) {
+        __PlayerObserverOnPlayerContextChanged(self);
+    }
 }
 
 static void __PlayerSendNoteOff(Player *self, const NoteEvent *event)
@@ -133,7 +160,7 @@ static void __PlayerPlay(Player *self)
 
     CFIndex playingCount = CFArrayGetCount(self->context.playing);
     if (eventsCount <= self->index && 0 == playingCount) {
-        __PlayerChangeState(self, PLAYER_STATE_STOP);
+        __PlayerChangeState(self, PLAYER_STATE_STOP, true);
         self->index = 0;
         self->context.usec = 0;
         currentTick = 0;
@@ -142,6 +169,8 @@ static void __PlayerPlay(Player *self)
     self->context.location = TimeTableTick2Location(self->timeTable, currentTick);
     TimeTableGetTempoByTick(self->timeTable, currentTick, &self->context.tempo);
     TimeTableGetTimeSignByTick(self->timeTable, currentTick, &self->context.numerator, &self->context.denominator);
+
+    __PlayerObserverOnPlayerContextChanged(self);
 }
 
 static void __PlayerRewind(Player *self)
@@ -157,6 +186,8 @@ static void __PlayerRewind(Player *self)
     self->context.location = TimeTableTick2Location(self->timeTable, 0);
     TimeTableGetTempoByTick(self->timeTable, 0, &self->context.tempo);
     TimeTableGetTimeSignByTick(self->timeTable, 0, &self->context.numerator, &self->context.denominator);
+
+    __PlayerObserverOnPlayerContextChanged(self);
 }
 
 static void __PlayerForward(Player *self)
@@ -185,6 +216,8 @@ static void __PlayerForward(Player *self)
 
     self->offset = self->context.usec;
     self->start = currentMicroSec();
+
+    __PlayerObserverOnPlayerContextChanged(self);
 }
 
 static void __PlayerBackward(Player *self)
@@ -220,6 +253,8 @@ static void __PlayerBackward(Player *self)
     
     self->offset = self->context.usec;
     self->start = currentMicroSec();
+
+    __PlayerObserverOnPlayerContextChanged(self);
 }
 
 static void *PlayerRun(void *_self)
@@ -227,7 +262,7 @@ static void *PlayerRun(void *_self)
     Player *self = _self;
 
     MidiClientOpen(self->client);
-    __PlayerChangeState(self, PLAYER_STATE_STOP);
+    __PlayerChangeState(self, PLAYER_STATE_STOP, false);
 
     for (;;) {
         Message msg;
@@ -242,15 +277,19 @@ static void *PlayerRun(void *_self)
 
         if (recv) {
             switch (msg.kind) {
+            case PLAYER_MSG_ADD_OBSERVER:
+                CFArrayAppendValue(self->observers, msg.arg);
+                NARelease(msg.arg);
+                break;
             case PLAYER_MSG_SET_SOURCE:
                 __PlayerSetSource(self, msg.arg);
                 NARelease(msg.arg);
                 break;
             case PLAYER_MSG_PLAY:
-                __PlayerChangeState(self, PLAYER_STATE_PLAYING);
+                __PlayerChangeState(self, PLAYER_STATE_PLAYING, false);
                 break;
             case PLAYER_MSG_STOP:
-                __PlayerChangeState(self, PLAYER_STATE_STOP);
+                __PlayerChangeState(self, PLAYER_STATE_STOP, false);
                 break;
             case PLAYER_MSG_REWIND:
                 __PlayerRewind(self);
@@ -262,7 +301,7 @@ static void *PlayerRun(void *_self)
                 __PlayerBackward(self);
                 break;
             case PLAYER_MSG_EXIT:
-                __PlayerChangeState(self, PLAYER_STATE_EXIT);
+                __PlayerChangeState(self, PLAYER_STATE_EXIT, false);
                 __PlayerSetSource(self, NULL);
                 goto EXIT;
             }
@@ -286,6 +325,7 @@ static void *__PlayerInit(void *_self, ...)
     Player *self = _self;
 
     self->context.playing = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
+    self->observers = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
     self->msgQ = MessageQueueCreate();
     self->client = NATypeNew(MidiClient);
 
@@ -420,4 +460,17 @@ void PlayerBackward(Player *self)
 bool PlayerIsPlaying(Player *self)
 {
     return PLAYER_STATE_PLAYING == self->context.state;
+}
+
+const char *PlayerState2String(int state)
+{
+#define CASE(state) case state: return #state
+    switch (state) {
+    CASE(PLAYER_STATE_INVALID);
+    CASE(PLAYER_STATE_STOP);
+    CASE(PLAYER_STATE_PLAYING);
+    CASE(PLAYER_STATE_EXIT);
+    }
+    return "Unknown token type";
+#undef CASE
 }
