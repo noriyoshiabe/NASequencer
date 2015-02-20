@@ -26,6 +26,12 @@ class NAMidi {
         observers.append(observer)
     }
     
+    func detatchObserver() {
+        for observer:NAMidiObserver in observers {
+            observer.dettach()
+        }
+    }
+    
     func setFile(url: NSURL) {
         NAMidiSetFile(namidi, url.path! as CFString)
     }

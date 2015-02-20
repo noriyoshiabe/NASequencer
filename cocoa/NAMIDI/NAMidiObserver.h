@@ -21,6 +21,7 @@
 @property (nonatomic, weak) id<NAMidiObserverDelegate> delegate;
 @property (nonatomic) void *observerBridge;
 - (id)initWithDelegate:(id<NAMidiObserverDelegate>)delegate;
+- (void)dettach;
 @end
 
 #endif

@@ -26,15 +26,19 @@ static void *__ObserverBridgeInit(void *_self, ...)
 static void __ObserverBridgeOnParseFinished(void *_self, NAMidi *sender, ParseContext *context)
 {
     ObserverBridge *self = _self;
-    NAMidiObserver *observer = (__bridge NAMidiObserver *)self->observer;
-    [observer.delegate onParseFinished:sender context:context];
+    if (self->observer) {
+        NAMidiObserver *observer = (__bridge NAMidiObserver *)self->observer;
+        [observer.delegate onParseFinished:sender context:context];
+    }
 }
 
 static void __ObserverBridgeOnPlayerContextChanged(void *_self, NAMidi *sender, PlayerContext *context)
 {
     ObserverBridge *self = _self;
-    NAMidiObserver *observer = (__bridge NAMidiObserver *)self->observer;
-    [observer.delegate onPlayerContextChanged:sender context:context];
+    if (self->observer) {
+        NAMidiObserver *observer = (__bridge NAMidiObserver *)self->observer;
+        [observer.delegate onPlayerContextChanged:sender context:context];
+    }
 }
 
 NADeclareVtbl(ObserverBridge, NAType, __ObserverBridgeInit, NULL, NULL, NULL, NULL, NULL, NULL);
@@ -56,6 +60,11 @@ NADeclareClass(ObserverBridge, NAType, NAMidiObserver);
 {
     self.delegate = nil;
     NARelease(self.observerBridge);
+}
+
+- (void)dettach
+{
+    ((ObserverBridge *)self.observerBridge)->observer = NULL;
 }
 
 @end
