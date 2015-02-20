@@ -2,9 +2,9 @@
 
 #include <pthread.h>
 #include <sys/time.h>
+#include <sys/param.h>
 #include <unistd.h>
 #include <NACFHelper.h>
-#include "Macro.h"
 #include "MidiClient.h"
 #include "MessageQueue.h"
 
