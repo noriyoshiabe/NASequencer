@@ -23,12 +23,5 @@ class DocumentController : NSWindowController {
     
     override func windowDidLoad() {
         namidi?.parse()
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "willCloseWindow:", name: NSWindowWillCloseNotification, object: nil)
-    }
-    
-    func willCloseWindow(notification: NSNotification) {
-        if self.window == notification.object as? NSWindow {
-            namidi?.detatchObserver()
-        }
     }
 }
