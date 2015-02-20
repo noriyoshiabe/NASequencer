@@ -282,7 +282,7 @@ int64_t TimeTableTick2MicroSec(TimeTable *self, int32_t tick)
     CFIndex count = CFArrayGetCount(self->tempoEvents);
     for (int i = 0; i < count; ++i) {
         const TempoEvent *event = CFArrayGetValueAtIndex(self->tempoEvents, i);
-        if (tick <= event->_.tick) {
+        if (tick < event->_.tick) {
             break;
         }
 
@@ -300,7 +300,7 @@ void TimeTableGetTempoByTick(TimeTable *self, uint32_t tick, float *tempo)
     CFIndex count = CFArrayGetCount(self->tempoEvents);
     for (int i = 0; i < count; ++i) {
         const TempoEvent *event = CFArrayGetValueAtIndex(self->tempoEvents, i);
-        if (tick <= event->_.tick) {
+        if (tick < event->_.tick) {
             break;
         }
 

@@ -82,6 +82,9 @@ static void __PlayerSetSource(Player *self, void *source)
         uint32_t tick = TimeTableLocation2Tick(self->timeTable, location->m, location->b, location->t);
         self->offset = self->context.usec = TimeTableTick2MicroSec(self->timeTable, tick);
         self->start = currentMicroSec();
+        TimeTableGetTempoByTick(self->timeTable, tick, &self->context.tempo);
+        TimeTableGetTimeSignByTick(self->timeTable, tick, &self->context.numerator, &self->context.denominator);
+        __PlayerObserverOnPlayerContextChanged(self);
     }
 }
 
