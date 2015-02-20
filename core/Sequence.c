@@ -316,7 +316,7 @@ void TimeTableGetTimeSignByTick(TimeTable *self, uint32_t tick, uint8_t *numerat
     CFIndex count = CFArrayGetCount(self->timeEvents);
     for (int i = 0; i < count; ++i) {
         const TimeEvent *event = CFArrayGetValueAtIndex(self->timeEvents, i);
-        if (tick <= event->_.tick) {
+        if (tick < event->_.tick) {
             break;
         }
 
