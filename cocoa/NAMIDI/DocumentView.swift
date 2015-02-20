@@ -37,9 +37,18 @@ class DocumentView : NSView, NAMidiObserverDelegate {
         let min:Int = Int(ctx.usec / (1000 * 1000 * 60))
         let sec:Int = Int(ctx.usec / (1000 * 1000))
         let msec:Int = Int((ctx.usec / 1000) % 1000)
+
+        switch ctx.state.value {
+        case PLAYER_STATE_STOP.value:
+            println("It's cool!!")
+        case PLAYER_STATE_PLAYING.value:
+            break
+        default:
+            break
+        }
         
         println(String(format: "[%@] time: %02d:%02d:%03d  location: %03d:%02d:%03d  tempo=%.2f  %d/%d\r",
-            PlayerState2CFString(ctx.state).takeUnretainedValue() as String,
+            PlayerState2CFString(Int32(ctx.state.value)).takeUnretainedValue() as String,
             min,
             sec,
             msec,

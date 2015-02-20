@@ -11,7 +11,7 @@ typedef enum _PlayerState {
 } PlayerState;
 
 typedef struct _PlayerContext {
-    int state;
+    PlayerState state;
     uint64_t usec;
     Location location;
     CFMutableArrayRef playing;
