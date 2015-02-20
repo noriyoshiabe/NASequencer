@@ -54,6 +54,13 @@ void PlayerAddObserver(Player *self, void *observer)
     MessageQueuePost(self->msgQ, &msg);
 }
 
+static uint64_t currentMicroSec()
+{
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec * 1000 * 1000 + tv.tv_usec;
+}
+
 static void __PlayerSetSource(Player *self, void *source)
 {
     if (self->timeTable) {
@@ -70,6 +77,11 @@ static void __PlayerSetSource(Player *self, void *source)
     }
     else {
         SequenceElementAccept(source, self);
+
+        Location *location = &self->context.location;
+        uint32_t tick = TimeTableLocation2Tick(self->timeTable, location->m, location->b, location->t);
+        self->offset = self->context.usec = TimeTableTick2MicroSec(self->timeTable, tick);
+        self->start = currentMicroSec();
     }
 }
 
@@ -80,13 +92,6 @@ static void __PlayerSendAllNoteOff(Player *self)
         bytes[0] = 0xB0 | (0x0F & i);
         MidiClientSend(self->client, bytes, sizeof(bytes));
     }
-}
-
-static uint64_t currentMicroSec()
-{
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    return tv.tv_sec * 1000 * 1000 + tv.tv_usec;
 }
 
 static void __PlayerChangeState(Player *self, PlayerState next, bool silent)
@@ -328,6 +333,11 @@ static void *__PlayerInit(void *_self, ...)
     self->observers = CFArrayCreateMutable(NULL, 0, NULL);
     self->msgQ = MessageQueueCreate();
     self->client = NATypeNew(MidiClient);
+
+    Location *location = &self->context.location;
+    location->b = 1;
+    location->m = 1;
+    location->t = 0;
 
     pthread_create(&self->thread, NULL, PlayerRun, self);
 
