@@ -178,7 +178,7 @@ static void *__NAMidiInit(void *_self, ...)
 
     self->player = NATypeNew(Player);
     self->watcher = NATypeNew(FSWatcher, self);
-    self->observers = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
+    self->observers = CFArrayCreateMutable(NULL, 0, NULL);
     self->msgQ = MessageQueueCreate();
 
     PlayerAddObserver(self->player, self);

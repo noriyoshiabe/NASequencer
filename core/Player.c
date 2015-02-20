@@ -325,7 +325,7 @@ static void *__PlayerInit(void *_self, ...)
     Player *self = _self;
 
     self->context.playing = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
-    self->observers = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
+    self->observers = CFArrayCreateMutable(NULL, 0, NULL);
     self->msgQ = MessageQueueCreate();
     self->client = NATypeNew(MidiClient);
 
