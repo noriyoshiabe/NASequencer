@@ -10,7 +10,8 @@ import Cocoa
 
 class DocumentController : NSWindowController {
     
-    @IBOutlet var rootView: DocumentView?
+    @IBOutlet var pianoRollView: PianoRollView?
+    
     var namidi: NAMidi?
     
     override func awakeFromNib() {
@@ -18,7 +19,7 @@ class DocumentController : NSWindowController {
         
         let document = self.document? as Document
         namidi = document.namidi
-        namidi?.addObserverDelegate(rootView!)
+        namidi?.addObserverDelegate(pianoRollView!)
     }
     
     override func windowDidLoad() {
