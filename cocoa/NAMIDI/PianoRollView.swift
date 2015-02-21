@@ -18,7 +18,7 @@ class PianoRollView : NSView, NAMidiObserverDelegate {
     let gridColorBeat: NSColor = NSColor(red: 0.2, green: 0.5, blue: 0.9, alpha: 0.1)
     let gridColorMeasure: NSColor = NSColor(red: 0.2, green: 0.5, blue: 0.9, alpha: 0.3)
 
-    var context: UnsafeMutablePointer<ParseContext>?
+    var context: ParseContextSW?
     
     override var flipped: Bool {
         return true
@@ -48,18 +48,14 @@ class PianoRollView : NSView, NAMidiObserverDelegate {
         let top:CGFloat = CGRectGetMinY(dirtyRect)
         let bottom:CGFloat = CGRectGetMaxY(dirtyRect)
         
-        let timeTable: UnsafeMutablePointer<TimeTable> = context!.memory.sequence.memory.timeTable
-        
         var tick = Int32(left / widthPerTick)
         var tickTo =  Int32(right / widthPerTick)
         
-        var location: Location = TimeTableTick2Location(timeTable, tick)
-        tick = TimeTableLocation2Tick(timeTable, location.m, location.b, 0)
+        var location: Location = context!.sequence.location(tick)
+        location.t = 0
         
-        var numerator: Int16 = 0
-        var __: Int16 = 0
-        
-        TimeTableGetTimeSignByTick(timeTable, tick, &numerator, &__)
+        tick = context!.sequence.tick(location)
+        var timeSign = context!.sequence.timeSign(tick)
         
         while tick <= tickTo {
             (1 == location.b ? gridColorMeasure : gridColorBeat).set()
@@ -67,23 +63,20 @@ class PianoRollView : NSView, NAMidiObserverDelegate {
             let x = round(CGFloat(tick + 120) * widthPerTick) + 0.5
             NSBezierPath.strokeLineFromPoint(CGPointMake(x, top), toPoint: CGPointMake(x, bottom))
             
-            if numerator < ++location.b {
+            if timeSign.numerator < ++location.b {
                 location.b = 1
                 ++location.m
-                TimeTableGetTimeSignByTick(timeTable, tick, &numerator, &__)
+                timeSign = context!.sequence.timeSign(tick)
             }
             
-            tick = TimeTableLocation2Tick(timeTable, location.m, location.b, 0)
+            tick = context!.sequence.tick(location)
         }
     }
     
     func onParseFinished(namidi: COpaquePointer, context: UnsafeMutablePointer<ParseContext>) {
-        if nil != self.context {
-            NARelease(self.context!)
-        }
-        self.context = UnsafeMutablePointer<ParseContext>(NARetain(UnsafeMutablePointer<Void>(context)))
+        self.context = ParseContextSW(contextRef: context)
         
-        let width:CGFloat = CGFloat(self.context!.memory.sequence.memory.length + 240) * widthPerTick
+        let width:CGFloat = CGFloat(self.context!.sequence.length + 240) * widthPerTick
         self.frame = NSMakeRect(0, 0, CGFloat(width), (127 + 2) * heightPerKey)
         
         let parent:NSScrollView = superview?.superview? as NSScrollView

@@ -12,7 +12,7 @@ class DocumentController : NSWindowController {
     
     @IBOutlet var pianoRollView: PianoRollView?
     
-    var namidi: NAMidi?
+    var namidi: NAMidiSW?
     
     override func awakeFromNib() {
         window?.setFrameAutosaveName("sharedWindowFrame")

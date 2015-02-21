@@ -8,7 +8,7 @@
 
 import Foundation
 
-class NAMidi {
+class NAMidiSW {
     private let namidi: COpaquePointer
     private var observers: [NAMidiObserver] = []
     

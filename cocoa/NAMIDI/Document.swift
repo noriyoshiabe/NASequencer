@@ -10,10 +10,10 @@ import Cocoa
 
 class Document: NSDocument {
 
-    let namidi: NAMidi
+    let namidi: NAMidiSW
     
     override init() {
-        namidi = NAMidi()
+        namidi = NAMidiSW()
         super.init()
     }
     
