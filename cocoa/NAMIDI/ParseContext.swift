@@ -27,6 +27,40 @@ class ParseContextSW {
     }
 }
 
+class EventsGenerator: GeneratorType {
+    private let events: CFMutableArray
+    private var index: Int
+    private var count: Int
+    
+    init(events: CFMutableArray) {
+        self.events = events
+        count = CFArrayGetCount(self.events)
+        index = 0
+    }
+    
+    func next() -> MidiEvent? {
+        if count <= index {
+            return nil
+        }
+        
+        let ptr = CFArrayGetValueAtIndex(self.events, index++)
+        return unsafeBitCast(ptr, UnsafeMutablePointer<MidiEvent>.self).memory
+    }
+}
+
+
+class Events : SequenceType {
+    let events: Unmanaged<CFMutableArray>!
+    
+    init (events: Unmanaged<CFMutableArray>) {
+        self.events = events
+    }
+    
+    func generate() -> EventsGenerator {
+        return EventsGenerator(events: events.takeUnretainedValue())
+    }
+}
+
 extension Sequence {
     func location(tick: Int32) -> Location {
         return TimeTableTick2Location(timeTable, tick)
@@ -41,5 +75,11 @@ extension Sequence {
         var denominator: Int16 = 0
         TimeTableGetTimeSignByTick(timeTable, tick, &numerator, &denominator)
         return (numerator, denominator)
+    }
+    
+    var eventsSW: Events {
+        get {
+            return Events(events: self.events)
+        }
     }
 }

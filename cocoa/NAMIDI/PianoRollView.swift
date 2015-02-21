@@ -26,6 +26,7 @@ class PianoRollView : NSView, NAMidiObserverDelegate {
     
     override func drawRect(dirtyRect: NSRect) {
         drawGrid(dirtyRect)
+        drawEvents(dirtyRect)
     }
     
     func drawGrid(dirtyRect: NSRect) {
@@ -70,6 +71,13 @@ class PianoRollView : NSView, NAMidiObserverDelegate {
             }
             
             tick = context!.sequence.tick(location)
+        }
+    }
+    
+    func drawEvents(dirtyRect: NSRect) {
+        for event:MidiEvent in self.context!.sequence.eventsSW {
+            //let note:NoteEvent = reinterpretCast(event)
+            println(event.tick)
         }
     }
     
