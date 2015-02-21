@@ -33,17 +33,16 @@ int main(int argc, char **argv)
 
     NAMidiAddObserver(namidi, writer);
     NAMidiSetFile(namidi, filepath);
+    CFRelease(filepath);
 
     NAMidiParse(namidi);
     NAMidiPlay(namidi);
 
-    NARelease(writer);
-    CFRelease(filepath);
-    
     MessageQueueWait(msgQ, &dummy);
     MessageQueueDestroy(msgQ);
 
     NARelease(namidi);
+    NARelease(writer);
 
     return 0;
 }
