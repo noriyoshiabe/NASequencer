@@ -20,14 +20,14 @@
 typedef struct _Context {
     NAType _;
     Sequence *sequence;
-    uint32_t tick;
+    int32_t tick;
     int32_t channel;
     int32_t velocity;
     int32_t gatetime;
     int32_t octave;
     TimeTable *timeTable;
     CFMutableArrayRef events;
-    uint32_t length;
+    int32_t length;
     CFMutableDictionaryRef patterns;
     void *option;
 } Context;
@@ -993,7 +993,7 @@ static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context,
         }
     }
 
-    uint32_t length = (-1 != expandLength ? expandLength : pattern->length) - offset;
+    int32_t length = (-1 != expandLength ? expandLength : pattern->length) - offset;
     context->tick += length;
     context->length = MAX(context->tick, from + length);
 

@@ -121,7 +121,7 @@ void TimeTableAddTempoEvent(TimeTable *self, TempoEvent *tempoEvent)
     CFArrayInsertValueAtIndex(self->tempoEvents, i, tempoEvent);
 }
 
-uint32_t TimeTableLocation2Tick(TimeTable *self, int32_t measure, int32_t beat, int32_t tick)
+int32_t TimeTableLocation2Tick(TimeTable *self, int32_t measure, int16_t beat, int16_t tick)
 {
     int32_t offsetTick = 0;
     
@@ -153,12 +153,12 @@ uint32_t TimeTableLocation2Tick(TimeTable *self, int32_t measure, int32_t beat, 
     return tickPerMeasure * measure + tickPerBeat * beat + offsetTick;
 }
 
-uint32_t TimeTableMBLength2Tick(TimeTable *self, int32_t offsetTick, int32_t measure, int32_t beat)
+int32_t TimeTableMBLength2Tick(TimeTable *self, int32_t offsetTick, int32_t measure, int16_t beat)
 {
     int32_t tickPerBeat = self->resolution * 4 / 4;
     int32_t tickPerMeasure = tickPerBeat * 4;
 
-    uint32_t ret = 0;
+    int32_t ret = 0;
     int32_t prev_tick = 0;
 
     CFIndex count = CFArrayGetCount(self->timeEvents);
@@ -246,7 +246,7 @@ Location TimeTableTick2Location(TimeTable *self, int32_t tick)
     return ret;
 }
 
-uint32_t TimeTableMicroSec2Tick(TimeTable *self, int64_t usec)
+int32_t TimeTableMicroSec2Tick(TimeTable *self, int64_t usec)
 {
     float offsetTick = 0;
     float usecPerTick = 60 * 1000 * 1000 / 120.0f / self->resolution;
@@ -269,7 +269,7 @@ uint32_t TimeTableMicroSec2Tick(TimeTable *self, int64_t usec)
 
 Location TimeTableMicroSec2Location(TimeTable *self, int64_t usec)
 {
-    uint32_t tick = TimeTableMicroSec2Tick(self, usec);
+    int32_t tick = TimeTableMicroSec2Tick(self, usec);
     return TimeTableTick2Location(self, tick);
 }
 
@@ -294,7 +294,7 @@ int64_t TimeTableTick2MicroSec(TimeTable *self, int32_t tick)
     return roundf(usec + (tick - offsetTick) * usecPerTick);
 }
 
-void TimeTableGetTempoByTick(TimeTable *self, uint32_t tick, float *tempo)
+void TimeTableGetTempoByTick(TimeTable *self, int32_t tick, float *tempo)
 {
     const TempoEvent *targetEvent = NULL;
     CFIndex count = CFArrayGetCount(self->tempoEvents);
@@ -310,7 +310,7 @@ void TimeTableGetTempoByTick(TimeTable *self, uint32_t tick, float *tempo)
     *tempo = targetEvent ? targetEvent->tempo : 120.0f;
 }
 
-void TimeTableGetTimeSignByTick(TimeTable *self, uint32_t tick, uint8_t *numerator, uint8_t *denominator)
+void TimeTableGetTimeSignByTick(TimeTable *self, int32_t tick, int16_t *numerator, int16_t *denominator)
 {
     const TimeEvent *targetEvent = NULL;
     CFIndex count = CFArrayGetCount(self->timeEvents);
@@ -387,7 +387,7 @@ static void *__PatternInit(void *_self, ...)
     self->name = (CFStringRef)CFRetain(va_arg(ap, CFStringRef));
     self->timeTable = NARetain(va_arg(ap, TimeTable *));
     self->events = (CFMutableArrayRef)CFRetain(va_arg(ap, CFMutableArrayRef));
-    self->length = va_arg(ap, uint32_t);
+    self->length = va_arg(ap, int32_t);
     va_end(ap);
 
     CFArraySortValues(self->events, CFRangeMake(0, CFArrayGetCount(self->events)), NACFComparatorFunction, NULL);
@@ -437,7 +437,7 @@ static void *__MidiEventInit(void *_self, ...)
     MidiEvent *self = _self;
     va_list ap;
     va_start(ap, _self);
-    self->tick = va_arg(ap, uint32_t);
+    self->tick = va_arg(ap, int32_t);
     va_end(ap);
 
     return self;

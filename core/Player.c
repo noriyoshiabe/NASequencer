@@ -27,8 +27,8 @@ struct _Player {
     CFMutableArrayRef observers;
     MessageQueue *msgQ;
     MidiClient *client;
-    uint64_t start;
-    uint64_t offset;
+    int64_t start;
+    int64_t offset;
     int index;
     PlayerContext context;
 };
@@ -54,7 +54,7 @@ void PlayerAddObserver(Player *self, void *observer)
     MessageQueuePost(self->msgQ, &msg);
 }
 
-static uint64_t currentMicroSec()
+static int64_t currentMicroSec()
 {
     struct timeval tv;
     gettimeofday(&tv, NULL);
@@ -79,7 +79,7 @@ static void __PlayerSetSource(Player *self, void *source)
         SequenceElementAccept(source, self);
 
         Location *location = &self->context.location;
-        uint32_t tick = TimeTableLocation2Tick(self->timeTable, location->m, location->b, location->t);
+        int32_t tick = TimeTableLocation2Tick(self->timeTable, location->m, location->b, location->t);
         self->offset = self->context.usec = TimeTableTick2MicroSec(self->timeTable, tick);
         self->start = currentMicroSec();
         TimeTableGetTempoByTick(self->timeTable, tick, &self->context.tempo);
@@ -139,12 +139,12 @@ static void __PlayerSendNoteOff(Player *self, const NoteEvent *event)
 
 static void __PlayerPlay(Player *self)
 {
-    uint64_t elapsed = currentMicroSec() - self->start;
-    uint64_t prev = self->context.usec;
+    int64_t elapsed = currentMicroSec() - self->start;
+    int64_t prev = self->context.usec;
     self->context.usec = self->offset + elapsed;
 
-    uint32_t prevTick = TimeTableMicroSec2Tick(self->timeTable, prev);
-    uint32_t currentTick = TimeTableMicroSec2Tick(self->timeTable, self->context.usec);
+    int32_t prevTick = TimeTableMicroSec2Tick(self->timeTable, prev);
+    int32_t currentTick = TimeTableMicroSec2Tick(self->timeTable, self->context.usec);
 
     for (CFIndex i = CFArrayGetCount(self->context.playing); 0 < i; --i) {
         CFIndex idx = i - 1;
@@ -209,7 +209,7 @@ static void __PlayerForward(Player *self)
     location->b = 1;
     location->t = 0;
 
-    uint32_t tick = TimeTableLocation2Tick(self->timeTable, location->m, location->b, location->t);
+    int32_t tick = TimeTableLocation2Tick(self->timeTable, location->m, location->b, location->t);
     self->context.usec = TimeTableTick2MicroSec(self->timeTable, tick);
     TimeTableGetTempoByTick(self->timeTable, tick, &self->context.tempo);
     TimeTableGetTimeSignByTick(self->timeTable, tick, &self->context.numerator, &self->context.denominator);
@@ -247,7 +247,7 @@ static void __PlayerBackward(Player *self)
     location->b = 1;
     location->t = 0;
 
-    uint32_t tick = TimeTableLocation2Tick(self->timeTable, location->m, location->b, location->t);
+    int32_t tick = TimeTableLocation2Tick(self->timeTable, location->m, location->b, location->t);
     self->context.usec = TimeTableTick2MicroSec(self->timeTable, tick);
     TimeTableGetTempoByTick(self->timeTable, tick, &self->context.tempo);
     TimeTableGetTimeSignByTick(self->timeTable, tick, &self->context.numerator, &self->context.denominator);

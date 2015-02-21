@@ -4,25 +4,25 @@
 #include <CoreFoundation/CoreFoundation.h>
 
 typedef struct _Location {
-    uint32_t m;
-    uint16_t b;
-    uint16_t t;
+    int32_t m;
+    int16_t b;
+    int16_t t;
 } Location;
 
 typedef struct _TimeTable {
     NAType _;
-    uint16_t resolution;
+    int16_t resolution;
     CFMutableArrayRef timeEvents;
     CFMutableArrayRef tempoEvents;
 } TimeTable;
 
 typedef struct _Sequence {
     NAType _;
-    uint16_t resolution;
+    int16_t resolution;
     CFStringRef title;
     TimeTable *timeTable;
     CFMutableArrayRef events;
-    uint32_t length;
+    int32_t length;
 } Sequence;
 
 typedef struct _Pattern {
@@ -30,18 +30,18 @@ typedef struct _Pattern {
     CFStringRef name;
     TimeTable *timeTable;
     CFMutableArrayRef events;
-    uint32_t length;
+    int32_t length;
 } Pattern;
 
 typedef struct _MidiEvent {
     NAType _;
-    uint32_t tick;
+    int32_t tick;
 } MidiEvent;
 
 typedef struct _TimeEvent {
     MidiEvent _;
-    uint8_t numerator;
-    uint8_t denominator;
+    int16_t numerator;
+    int16_t denominator;
 } TimeEvent;
 
 typedef struct _TempoEvent {
@@ -84,14 +84,14 @@ extern void SequenceSetTimeTable(Sequence *self, TimeTable *timeTable);
 extern void SequenceAddEvents(Sequence *self, CFArrayRef events);
 extern void TimeTableAddTimeEvent(TimeTable *self, TimeEvent *timeEvent);
 extern void TimeTableAddTempoEvent(TimeTable *self, TempoEvent *tempoEvent);
-extern uint32_t TimeTableLocation2Tick(TimeTable *self, int32_t measure, int32_t beat, int32_t tick);
-extern uint32_t TimeTableMBLength2Tick(TimeTable *self, int32_t offsetTick, int32_t measure, int32_t beat);
+extern int32_t TimeTableLocation2Tick(TimeTable *self, int32_t measure, int16_t beat, int16_t tick);
+extern int32_t TimeTableMBLength2Tick(TimeTable *self, int32_t offsetTick, int32_t measure, int16_t beat);
 extern Location TimeTableTick2Location(TimeTable *self, int32_t tick);
-extern uint32_t TimeTableMicroSec2Tick(TimeTable *self, int64_t usec);
+extern int32_t TimeTableMicroSec2Tick(TimeTable *self, int64_t usec);
 extern Location TimeTableMicroSec2Location(TimeTable *self, int64_t usec);
 extern int64_t TimeTableTick2MicroSec(TimeTable *self, int32_t tick);
-extern void TimeTableGetTempoByTick(TimeTable *self, uint32_t tick, float *tempo);
-extern void TimeTableGetTimeSignByTick(TimeTable *self, uint32_t tick, uint8_t *numerator, uint8_t *denominator);
+extern void TimeTableGetTempoByTick(TimeTable *self, int32_t tick, float *tempo);
+extern void TimeTableGetTimeSignByTick(TimeTable *self, int32_t tick, int16_t *numerator, int16_t *denominator);
 
 
 typedef struct _SequenceVisitorVtbl {

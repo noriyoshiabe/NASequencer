@@ -12,12 +12,12 @@ typedef enum _PlayerState {
 
 typedef struct _PlayerContext {
     PlayerState state;
-    uint64_t usec;
+    int64_t usec;
     Location location;
     CFMutableArrayRef playing;
     float tempo;
-    uint8_t numerator;
-    uint8_t denominator;
+    int16_t numerator;
+    int16_t denominator;
 } PlayerContext;
 
 typedef struct _Player Player;
