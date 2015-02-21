@@ -64,7 +64,7 @@ class PianoRollView : NSView, NAMidiObserverDelegate {
         while tick <= tickTo {
             (1 == location.b ? gridColorMeasure : gridColorBeat).set()
             
-            let x = round(CGFloat(tick) * widthPerTick) + 0.5
+            let x = round(CGFloat(tick + 120) * widthPerTick) + 0.5
             NSBezierPath.strokeLineFromPoint(CGPointMake(x, top), toPoint: CGPointMake(x, bottom))
             
             if numerator < ++location.b {
@@ -83,7 +83,7 @@ class PianoRollView : NSView, NAMidiObserverDelegate {
         }
         self.context = UnsafeMutablePointer<ParseContext>(NARetain(UnsafeMutablePointer<Void>(context)))
         
-        let width:CGFloat = CGFloat(self.context!.memory.sequence.memory.length) * widthPerTick
+        let width:CGFloat = CGFloat(self.context!.memory.sequence.memory.length + 240) * widthPerTick
         self.frame = NSMakeRect(0, 0, CGFloat(width), (127 + 2) * heightPerKey)
         
         let parent:NSScrollView = superview?.superview? as NSScrollView
