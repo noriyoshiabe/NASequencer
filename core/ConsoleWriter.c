@@ -100,7 +100,7 @@ static void __ConsoleWriterVisitSequence(void *_self, Sequence *elem)
     ConsoleWriter *self = _self;
 
     printf("\n");
-    printf("[Sequence] title: %s  resolution: %d\n", NACFString2CString(elem->title), elem->resolution);
+    printf("[Sequence] title: %s  resolution: %d  length: %d\n", NACFString2CString(elem->title), elem->resolution, elem->length);
     printf("==================================================================================\n");
 
     writeTracks(self, elem->timeTable, elem->events);

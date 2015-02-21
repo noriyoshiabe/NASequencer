@@ -22,6 +22,7 @@ typedef struct _Sequence {
     CFStringRef title;
     TimeTable *timeTable;
     CFMutableArrayRef events;
+    uint32_t length;
 } Sequence;
 
 typedef struct _Pattern {

@@ -65,9 +65,11 @@ static void *__ContextDescription(const void *_self)
     return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<Context: timeTable=%@ events=%@>"), self->timeTable, self->events);
 }
 
-static void ContextAddEvent(Context *context, void *event)
+static void ContextAddEvent(Context *context, void *_event)
 {
-    CFArrayAppendValue(context->events, event);
+    CFArrayAppendValue(context->events, _event);
+    MidiEvent *event = _event;
+    context->length = MAX(context->length, event->tick + (NATypeOf(event, NoteEvent) ? ((NoteEvent *)event)->gatetime : 0));
 }
 
 static Context *ContextCreateLocal(const Context *from)
@@ -198,6 +200,7 @@ bool ASTParserParseExpression(Expression *expression, CFStringRef filepath, Sequ
 
     SequenceSetTimeTable(_sequence, context->timeTable);
     SequenceAddEvents(_sequence, context->events);
+    _sequence->length = context->length;
 
     *sequence = NARetain(_sequence);
     *patterns = (void *)CFRetain(context->patterns);
