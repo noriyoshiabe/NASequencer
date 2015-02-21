@@ -5,4 +5,4 @@
 #import <NAType.h>
 #import <NACFHelper.h>
 #import "NAMidi.h"
-#import "NAMidiObserver.h"
+#import "NAMidi-Bridge.h"

@@ -1,13 +1,13 @@
 //
-//  NAMidiObserver.h
+//  NAMidi-Bridge.h
 //  NAMIDI
 //
 //  Created by 張阿部 on 2015/02/19.
 //  Copyright (c) 2015年 abechan. All rights reserved.
 //
 
-#ifndef NAMIDI_NAMidiObserver_h
-#define NAMIDI_NAMidiObserver_h
+#ifndef NAMIDI_NAMidi_Bridge_h
+#define NAMIDI_NAMidi_Bridge_h
 
 #import "NAMidi.h"
 

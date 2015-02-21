@@ -1,12 +1,12 @@
 //
-//  NAMidiObserver.m
+//  NAMidi-Bridge.m
 //  NAMIDI
 //
 //  Created by 張阿部 on 2015/02/19.
 //  Copyright (c) 2015年 abechan. All rights reserved.
 //
 
-#import "NAMidiObserver.h"
+#import "NAMidi-Bridge.h"
 
 typedef struct _ObserverBridge {
     NAType _;

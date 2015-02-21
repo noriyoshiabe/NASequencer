@@ -15,10 +15,9 @@
 		02225DF41A906E610077ABCB /* NAMIDITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02225DF31A906E610077ABCB /* NAMIDITests.swift */; };
 		02225E001A9096100077ABCB /* DocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02225DFF1A9096100077ABCB /* DocumentView.swift */; };
 		024040631A98CE0900858340 /* PianoRollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02AA073A1A98BB6100F413A2 /* PianoRollView.swift */; };
-		0240406B1A991FCA00858340 /* ParseContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0240406A1A991FCA00858340 /* ParseContext.swift */; };
 		025F67921A90C6B600E87117 /* DocumentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 025F67911A90C6B600E87117 /* DocumentController.swift */; };
-		02A3478F1A939A5700A3AF9B /* NAMidi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02A3478E1A939A5700A3AF9B /* NAMidi.swift */; };
-		02F80A421A95FD34002F68A4 /* NAMidiObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 02F80A411A95FD34002F68A4 /* NAMidiObserver.m */; };
+		02A3478F1A939A5700A3AF9B /* NAMidi-Bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02A3478E1A939A5700A3AF9B /* NAMidi-Bridge.swift */; };
+		02F80A421A95FD34002F68A4 /* NAMidi-Bridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 02F80A411A95FD34002F68A4 /* NAMidi-Bridge.m */; };
 		02FE8D501A923C4A00BEF62E /* libnalib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0265880A1A922B6C0030461C /* libnalib.a */; };
 		02FE8D511A923C4A00BEF62E /* libnamidi-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 026588041A922B5F0030461C /* libnamidi-core.a */; };
 		02FE8D531A923C6600BEF62E /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FE8D521A923C6600BEF62E /* CoreMIDI.framework */; };
@@ -74,14 +73,13 @@
 		02225DF21A906E610077ABCB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		02225DF31A906E610077ABCB /* NAMIDITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAMIDITests.swift; sourceTree = "<group>"; };
 		02225DFF1A9096100077ABCB /* DocumentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentView.swift; sourceTree = "<group>"; };
-		0240406A1A991FCA00858340 /* ParseContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParseContext.swift; sourceTree = "<group>"; };
 		025F67911A90C6B600E87117 /* DocumentController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentController.swift; sourceTree = "<group>"; };
 		026587FF1A922B5F0030461C /* namidi-core.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "namidi-core.xcodeproj"; path = "../core/namidi-core.xcodeproj"; sourceTree = "<group>"; };
 		026588051A922B6C0030461C /* nalib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = nalib.xcodeproj; path = ../nalib/nalib.xcodeproj; sourceTree = "<group>"; };
-		02A3478E1A939A5700A3AF9B /* NAMidi.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NAMidi.swift; sourceTree = "<group>"; };
+		02A3478E1A939A5700A3AF9B /* NAMidi-Bridge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NAMidi-Bridge.swift"; sourceTree = "<group>"; };
 		02AA073A1A98BB6100F413A2 /* PianoRollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PianoRollView.swift; sourceTree = "<group>"; };
-		02F80A411A95FD34002F68A4 /* NAMidiObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NAMidiObserver.m; sourceTree = "<group>"; };
-		02F80A431A9603B0002F68A4 /* NAMidiObserver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NAMidiObserver.h; sourceTree = "<group>"; };
+		02F80A411A95FD34002F68A4 /* NAMidi-Bridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NAMidi-Bridge.m"; sourceTree = "<group>"; };
+		02F80A431A9603B0002F68A4 /* NAMidi-Bridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NAMidi-Bridge.h"; sourceTree = "<group>"; };
 		02FE8D491A9237BF00BEF62E /* NAMIDI-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NAMIDI-Bridging-Header.h"; sourceTree = "<group>"; };
 		02FE8D521A923C6600BEF62E /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -140,11 +138,10 @@
 				02225DFF1A9096100077ABCB /* DocumentView.swift */,
 				025F67911A90C6B600E87117 /* DocumentController.swift */,
 				02FE8D491A9237BF00BEF62E /* NAMIDI-Bridging-Header.h */,
-				02A3478E1A939A5700A3AF9B /* NAMidi.swift */,
-				02F80A431A9603B0002F68A4 /* NAMidiObserver.h */,
-				02F80A411A95FD34002F68A4 /* NAMidiObserver.m */,
+				02A3478E1A939A5700A3AF9B /* NAMidi-Bridge.swift */,
+				02F80A431A9603B0002F68A4 /* NAMidi-Bridge.h */,
+				02F80A411A95FD34002F68A4 /* NAMidi-Bridge.m */,
 				02AA073A1A98BB6100F413A2 /* PianoRollView.swift */,
-				0240406A1A991FCA00858340 /* ParseContext.swift */,
 			);
 			path = NAMIDI;
 			sourceTree = "<group>";
@@ -323,9 +320,8 @@
 				02225E001A9096100077ABCB /* DocumentView.swift in Sources */,
 				025F67921A90C6B600E87117 /* DocumentController.swift in Sources */,
 				02225DDE1A906E610077ABCB /* AppDelegate.swift in Sources */,
-				02A3478F1A939A5700A3AF9B /* NAMidi.swift in Sources */,
-				0240406B1A991FCA00858340 /* ParseContext.swift in Sources */,
-				02F80A421A95FD34002F68A4 /* NAMidiObserver.m in Sources */,
+				02A3478F1A939A5700A3AF9B /* NAMidi-Bridge.swift in Sources */,
+				02F80A421A95FD34002F68A4 /* NAMidi-Bridge.m in Sources */,
 				024040631A98CE0900858340 /* PianoRollView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
