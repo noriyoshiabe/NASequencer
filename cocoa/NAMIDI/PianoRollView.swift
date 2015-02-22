@@ -32,9 +32,14 @@ class PianoRollView : NSView, NAMidiObserverDelegate {
     }
     
     override func drawRect(dirtyRect: NSRect) {
-        drawGrid(dirtyRect)
-        drawEvents(dirtyRect)
-        drawPlayingPosition(dirtyRect)
+        if nil != self.context?.sequence {
+            drawGrid(dirtyRect)
+            drawEvents(dirtyRect)
+        }
+        
+        if nil != self.playerContext {
+            drawPlayingPosition(dirtyRect)
+        }
     }
     
     func drawGrid(dirtyRect: NSRect) {
@@ -60,11 +65,11 @@ class PianoRollView : NSView, NAMidiObserverDelegate {
         var tick = Int32(left / widthPerTick)
         var tickTo =  Int32(right / widthPerTick)
         
-        var location: Location = context!.sequence.location(tick)
+        var location: Location = context!.sequence!.location(tick)
         location.t = 0
         
-        tick = context!.sequence.tick(location)
-        var timeSign = context!.sequence.timeSign(tick)
+        tick = context!.sequence!.tick(location)
+        var timeSign = context!.sequence!.timeSign(tick)
         
         while tick <= tickTo {
             (1 == location.b ? gridColorMeasure : gridColorBeat).set()
@@ -75,15 +80,15 @@ class PianoRollView : NSView, NAMidiObserverDelegate {
             if timeSign.numerator < ++location.b {
                 location.b = 1
                 ++location.m
-                timeSign = context!.sequence.timeSign(tick)
+                timeSign = context!.sequence!.timeSign(tick)
             }
             
-            tick = context!.sequence.tick(location)
+            tick = context!.sequence!.tick(location)
         }
     }
     
     func drawEvents(dirtyRect: NSRect) {
-        for event in self.context!.sequence.eventsSW {
+        for event in self.context!.sequence!.eventsSW {
             let tick:Int32 = event.memory.tick
             switch MidiEventGetType(event) {
             case EventType.NoteEvent:
@@ -119,9 +124,14 @@ class PianoRollView : NSView, NAMidiObserverDelegate {
     }
     
     func onParseFinished(namidi: COpaquePointer, context: UnsafeMutablePointer<ParseContext>) {
-        self.context = ParseContextSW(contextRef: context)
+        let try: ParseContextSW = ParseContextSW(contextRef: context)
         
-        let width:CGFloat = CGFloat(self.context!.sequence.length + 240) * widthPerTick
+        if try.hasError {
+            return
+        }
+        self.context = try
+        
+        let width:CGFloat = CGFloat(self.context!.sequence!.length + 240) * widthPerTick
         self.frame = NSMakeRect(0, 0, CGFloat(width), (127 + 2) * heightPerKey)
         
         let parent:NSScrollView = superview?.superview? as NSScrollView

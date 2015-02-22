@@ -22,6 +22,10 @@ class StatusView : NSView, NAMidiObserverDelegate {
     }
     
     override func drawRect(dirtyRect: NSRect) {
+        if nil == context {
+            return
+        }
+        
         let min:Int = Int(context!.usec / (1000 * 1000 * 60))
         let sec:Int = Int(context!.usec / (1000 * 1000))
         let msec:Int = Int((context!.usec / 1000) % 1000)

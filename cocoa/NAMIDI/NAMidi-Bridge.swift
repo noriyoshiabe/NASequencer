@@ -69,8 +69,12 @@ class ParseContextSW {
         NARetain(UnsafeMutablePointer<Void>(contextRef))
     }
     
-    var sequence: Sequence {
+    var sequence: Sequence? {
         return context.sequence.memory
+    }
+    
+    var hasError: Bool {
+        return nil != context.error
     }
     
     deinit {
