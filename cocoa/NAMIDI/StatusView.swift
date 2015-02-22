@@ -10,10 +10,27 @@ import Cocoa
 
 class StatusView : NSView, NAMidiObserverDelegate {
     
+    @IBOutlet var errorInfomation: NSView?
+    @IBOutlet var errorKind: NSTextField?
+    @IBOutlet var filename: NSTextField?
+    @IBOutlet var location: NSTextField?
+
     @IBOutlet var playing: NSTextField?
+    
+    var parseContext: ParseContextSW?
+    var error: ParseError?
     var context: PlayerContext?
     
     func onParseFinished(namidi: COpaquePointer, context: UnsafeMutablePointer<ParseContext>) {
+        self.parseContext = ParseContextSW(contextRef: context)
+        if self.parseContext!.hasError {
+            error = self.parseContext!.context.error.memory
+        }
+        else {
+            error = nil
+        }
+        
+        self.setNeedsDisplayInRect(errorInfomation!.bounds)
     }
     
     func onPlayerContextChanged(namidi: COpaquePointer, context: UnsafeMutablePointer<PlayerContext>) {
@@ -22,6 +39,16 @@ class StatusView : NSView, NAMidiObserverDelegate {
     }
     
     override func drawRect(dirtyRect: NSRect) {
+        if nil != error {
+            errorKind!.stringValue = error!.message.takeUnretainedValue()
+            filename!.stringValue = (error!.filepath.takeUnretainedValue() as NSString).lastPathComponent
+            location!.stringValue = String(format: "Line: %d   Column: %d", error!.location.firstLine, error!.location.firstColumn)
+            errorInfomation!.hidden = false
+        }
+        else {
+            errorInfomation!.hidden = true
+        }
+        
         if nil == context {
             return
         }
