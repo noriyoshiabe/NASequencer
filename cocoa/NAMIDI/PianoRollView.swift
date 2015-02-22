@@ -170,7 +170,10 @@ class PianoRollView : NSView, NAMidiObserverDelegate {
         self.frame = NSMakeRect(0, 0, CGFloat(width), (127 + 2) * heightPerKey)
         
         let parent:NSScrollView = superview?.superview? as NSScrollView
-        setNeedsDisplayInRect(parent.convertRect(parent.bounds, toView: self))
+
+        dispatch_async(dispatch_get_main_queue()) {
+            self.setNeedsDisplayInRect(parent.convertRect(parent.bounds, toView: self))
+        }
     }
     
     func onPlayerContextChanged(namidi: COpaquePointer, context: UnsafeMutablePointer<PlayerContext>) {
@@ -181,8 +184,10 @@ class PianoRollView : NSView, NAMidiObserverDelegate {
         let left = x < lastTick ? x : lastTick
         let right = x > lastTick ? x : lastTick
         let rect:NSRect = NSMakeRect(left - 10, self.frame.origin.y, right + 10, self.frame.size.height)
-        setNeedsDisplayInRect(CGRectIntersection(rect, parent.convertRect(parent.bounds, toView: self)))
-        lastTick = x
+        dispatch_async(dispatch_get_main_queue()) {
+            self.setNeedsDisplayInRect(CGRectIntersection(rect, parent.convertRect(parent.bounds, toView: self)))
+            self.lastTick = x
+        }
         
         let ctx:PlayerContext = context.memory;
         let min:Int = Int(ctx.usec / (1000 * 1000 * 60))

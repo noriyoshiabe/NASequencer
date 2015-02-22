@@ -30,12 +30,16 @@ class StatusView : NSView, NAMidiObserverDelegate {
             error = nil
         }
         
-        self.setNeedsDisplayInRect(errorInfomation!.bounds)
+        dispatch_async(dispatch_get_main_queue(), {
+            self.setNeedsDisplayInRect(self.errorInfomation!.bounds)
+        })
     }
     
     func onPlayerContextChanged(namidi: COpaquePointer, context: UnsafeMutablePointer<PlayerContext>) {
         self.context = context.memory
-        setNeedsDisplayInRect(playing!.bounds)
+        dispatch_async(dispatch_get_main_queue(), {
+            self.setNeedsDisplayInRect(self.playing!.bounds)
+        })
     }
     
     override func drawRect(dirtyRect: NSRect) {
