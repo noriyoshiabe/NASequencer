@@ -104,22 +104,26 @@
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Preview" id="yKN-Tl-8bA">
                         <items>
-                            <menuItem title="Play/Pause" keyEquivalent="p" id="XMB-Jf-w0x">
+                            <menuItem title="Play/Pause" keyEquivalent=" " id="XMB-Jf-w0x">
+                                <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="onPlayPause:" target="Voe-Tx-rLC" id="nuX-yf-49m"/>
                                 </connections>
                             </menuItem>
                             <menuItem title="Rewind" keyEquivalent="r" id="ULs-e8-3J3">
+                                <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="onRewind:" target="Voe-Tx-rLC" id="OsU-WU-Byo"/>
                                 </connections>
                             </menuItem>
                             <menuItem title="Forward" keyEquivalent="" id="okK-OD-f5n">
+                                <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="onForward:" target="Voe-Tx-rLC" id="gIT-vF-DvV"/>
                                 </connections>
                             </menuItem>
                             <menuItem title="Backward" keyEquivalent="" id="AgV-U0-Qoz">
+                                <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="onBackward:" target="Voe-Tx-rLC" id="oIb-eu-x9q"/>
                                 </connections>
