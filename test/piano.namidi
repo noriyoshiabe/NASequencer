@@ -1,0 +1,62 @@
+/*
+ * piano.namidi
+ */
+
+title "piano"
+resolution 480
+
+time 4/4
+tempo 90.0
+
+gatetime cutoff 20
+velocity 127
+
+sound select 0 0 0
+
+// right
+channel 1
+
+right = {
+  note step 240 {
+    ^ ^ ^ ^ ^ E4 G A
+    C,B ~ E B ~ B C5 B4
+    B3,A4 ~ G A ~ A B A
+  }
+
+  note step 120 {
+    A3,G4~~~ G~~G G~ A~ G~ D5~
+    ~~ E5 ~~
+  }
+
+  note step 60 {
+    ^ Bb4 A~~~~~~~
+  }
+  
+  note step 120 {
+    G~ E~~~
+  }
+
+  note step 240 {
+    E,B ~ E E,B ~ B C5 B4
+    D,A D5 ~ D4,A ~ A Bb A
+    C,G G G G G C,F# F# B3,G4
+    ~ ~ ~ ~ ~
+  }
+}
+
+left = {
+  note step 240 {
+    ^ ^ ^ ^ ^ ^ ^ ^
+    E2,G,B D E2,G,B ~ E2,G,B D E2,G,B ~
+    D2,F#,A B1 D2,F#,A ~ D2,F#,A B1 D2,F#,A ~ 
+    E2,G C E2,G ~ E2,G C E2,G ~
+    E,G ~~ F#,A ~~ G,B ~
+    A1,E2 ~~ B ~~ ^^
+    G1,D2 ~~ D3 ~~ ^^
+    F1,C2 ~~~ F1,C2 E1,B ^ E1,B
+    ~ ~ ~ ~ ~
+  }
+}
+
+right from 0
+left from 0
