@@ -74,7 +74,7 @@ void TimeTableAddTimeEvent(TimeTable *self, TimeEvent *timeEvent)
     CFIndex count = CFArrayGetCount(self->timeEvents);
     for (i = 0; i < count; ++i) {
         const TimeEvent *event = CFArrayGetValueAtIndex(self->timeEvents, i);
-        int compare = timeEvent->_.tick - event->_.tick;
+        int compare = timeEvent->__.tick - event->__.tick;
         if (0 == compare) {
             CFArrayRemoveValueAtIndex(self->timeEvents, i);
             break;
@@ -101,7 +101,7 @@ void TimeTableAddTempoEvent(TimeTable *self, TempoEvent *tempoEvent)
     CFIndex count = CFArrayGetCount(self->tempoEvents);
     for (i = 0; i < count; ++i) {
         const TempoEvent *event = CFArrayGetValueAtIndex(self->tempoEvents, i);
-        int compare = tempoEvent->_.tick - event->_.tick;
+        int compare = tempoEvent->__.tick - event->__.tick;
         if (0 == compare) {
             CFArrayRemoveValueAtIndex(self->tempoEvents, i);
             break;
@@ -136,14 +136,14 @@ int32_t TimeTableLocation2Tick(TimeTable *self, int32_t measure, int16_t beat, i
         const TimeEvent *event = CFArrayGetValueAtIndex(self->timeEvents, i);
 
         int32_t _tick = tickPerMeasure * measure + tickPerBeat * beat + tick + offsetTick;
-        if (event->_.tick <= _tick) {
-            tick -= event->_.tick % tickPerBeat;
-            measure -= event->_.tick / tickPerMeasure;
-            beat -= (event->_.tick % tickPerMeasure) / tickPerBeat;
+        if (event->__.tick <= _tick) {
+            tick -= event->__.tick % tickPerBeat;
+            measure -= event->__.tick / tickPerMeasure;
+            beat -= (event->__.tick % tickPerMeasure) / tickPerBeat;
 
             tickPerBeat = self->resolution * 4 / event->denominator;
             tickPerMeasure = tickPerBeat * event->numerator;
-            offsetTick = event->_.tick;
+            offsetTick = event->__.tick;
         }
         else {
             break;
@@ -172,7 +172,7 @@ int32_t TimeTableMBLength2Tick(TimeTable *self, int32_t offsetTick, int32_t meas
 
         if (0 < i) {
             for (;;) {
-                if (prev_tick <= offsetTick && (!event || offsetTick < event->_.tick)) {
+                if (prev_tick <= offsetTick && (!event || offsetTick < event->__.tick)) {
                     if (0 < measure) {
                         ret += tickPerMeasure;
                         offsetTick += tickPerMeasure;
@@ -197,7 +197,7 @@ int32_t TimeTableMBLength2Tick(TimeTable *self, int32_t offsetTick, int32_t meas
             tickPerBeat = self->resolution * 4 / event->denominator;
             tickPerMeasure = tickPerBeat * event->numerator;
 
-            prev_tick = event->_.tick;
+            prev_tick = event->__.tick;
         }
 
         ++i;
@@ -220,15 +220,15 @@ Location TimeTableTick2Location(TimeTable *self, int32_t tick)
     CFIndex count = CFArrayGetCount(self->timeEvents);
     for (int i = 0; i < count; ++i) {
         const TimeEvent *event = CFArrayGetValueAtIndex(self->timeEvents, i);
-        if (tick <= event->_.tick) {
+        if (tick <= event->__.tick) {
             break;
         }
 
         int32_t resolution = self->resolution * 4 / denominator;
         int32_t measureLength = resolution * numerator;
 
-        measure += (event->_.tick - offsetTick) / measureLength;
-        offsetTick = event->_.tick;
+        measure += (event->__.tick - offsetTick) / measureLength;
+        offsetTick = event->__.tick;
 
         numerator = event->numerator;
         denominator = event->denominator;
@@ -255,13 +255,13 @@ int32_t TimeTableMicroSec2Tick(TimeTable *self, int64_t usec)
     for (int i = 0; i < count; ++i) {
         const TempoEvent *event = CFArrayGetValueAtIndex(self->tempoEvents, i);
         float tick = offsetTick + usec / usecPerTick;
-        if (tick < event->_.tick) {
+        if (tick < event->__.tick) {
             break;
         }
 
-        usec -= (event->_.tick - offsetTick) * usecPerTick;
+        usec -= (event->__.tick - offsetTick) * usecPerTick;
         usecPerTick = 60 * 1000 * 1000 / event->tempo / self->resolution;
-        offsetTick = event->_.tick;
+        offsetTick = event->__.tick;
     }
 
     return roundf(offsetTick + usec / usecPerTick);
@@ -282,13 +282,13 @@ int64_t TimeTableTick2MicroSec(TimeTable *self, int32_t tick)
     CFIndex count = CFArrayGetCount(self->tempoEvents);
     for (int i = 0; i < count; ++i) {
         const TempoEvent *event = CFArrayGetValueAtIndex(self->tempoEvents, i);
-        if (tick < event->_.tick) {
+        if (tick < event->__.tick) {
             break;
         }
 
-        usec += (event->_.tick - offsetTick) * usecPerTick;
+        usec += (event->__.tick - offsetTick) * usecPerTick;
         usecPerTick = 60 * 1000 * 1000 / event->tempo / self->resolution;
-        offsetTick = event->_.tick;
+        offsetTick = event->__.tick;
     }
 
     return roundf(usec + (tick - offsetTick) * usecPerTick);
@@ -300,7 +300,7 @@ void TimeTableGetTempoByTick(TimeTable *self, int32_t tick, float *tempo)
     CFIndex count = CFArrayGetCount(self->tempoEvents);
     for (int i = 0; i < count; ++i) {
         const TempoEvent *event = CFArrayGetValueAtIndex(self->tempoEvents, i);
-        if (tick < event->_.tick) {
+        if (tick < event->__.tick) {
             break;
         }
 
@@ -316,7 +316,7 @@ void TimeTableGetTimeSignByTick(TimeTable *self, int32_t tick, int16_t *numerato
     CFIndex count = CFArrayGetCount(self->timeEvents);
     for (int i = 0; i < count; ++i) {
         const TimeEvent *event = CFArrayGetValueAtIndex(self->timeEvents, i);
-        if (tick < event->_.tick) {
+        if (tick < event->__.tick) {
             break;
         }
 
@@ -452,8 +452,8 @@ void *__MidiEventCopy(const void *_self)
 {
     const MidiEvent *self = _self;
 
-    MidiEvent *copied = (MidiEvent *)__MidiEventInit(NATypeAlloc(self->_.clazz), self->tick);
-    memcpy(&copied->tick, &self->tick, self->_.clazz->size - sizeof(NAType));
+    MidiEvent *copied = (MidiEvent *)__MidiEventInit(NATypeAlloc(self->__.clazz), self->tick);
+    memcpy(&copied->tick, &self->tick, self->__.clazz->size - sizeof(NAType));
     return copied;
 }
 
@@ -464,7 +464,7 @@ NADeclareClass(MidiEvent, NAType);
 static void *__TimeEventDescription(const void *_self)
 {
     const TimeEvent *self = _self;
-    return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<TimeEvent: tick=%d numerator=%d denominator=%d>"), self->_.tick, self->numerator, self->denominator);
+    return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<TimeEvent: tick=%d numerator=%d denominator=%d>"), self->__.tick, self->numerator, self->denominator);
 }
 
 static void __TimeEventAccept(void *self, void *visitor)
@@ -488,7 +488,7 @@ NADeclareClass(TimeEvent, NAType, SequenceElement);
 static void *__TempoEventDescription(const void *_self)
 {
     const TempoEvent *self = _self;
-    return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<TempoEvent: tick=%d tempo=%f>"), self->_.tick, self->tempo);
+    return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<TempoEvent: tick=%d tempo=%f>"), self->__.tick, self->tempo);
 }
 
 static void __TempoEventAccept(void *self, void *visitor)
@@ -521,7 +521,7 @@ void *__MarkerEventCopy(const void *_self)
 {
     const MarkerEvent *self = _self;
 
-    MarkerEvent *copied = (MarkerEvent *)__MidiEventInit(NATypeAlloc(self->_._.clazz), self->_.tick);
+    MarkerEvent *copied = (MarkerEvent *)__MidiEventInit(NATypeAlloc(self->__.__.clazz), self->__.tick);
     copied->text = CFStringCreateCopy(NULL, self->text);
     return copied;
 }
@@ -529,7 +529,7 @@ void *__MarkerEventCopy(const void *_self)
 static void *__MarkerEventDescription(const void *_self)
 {
     const MarkerEvent *self = _self;
-    return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<MarkerEvent: tick=%d text=%@>"), self->_.tick, self->text);
+    return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<MarkerEvent: tick=%d text=%@>"), self->__.tick, self->text);
 }
 
 static void __MarkerEventAccept(void *self, void *visitor)
@@ -553,7 +553,7 @@ NADeclareClass(MarkerEvent, NAType, SequenceElement);
 static void *__SoundSelectEventDescription(const void *_self)
 {
     const SoundSelectEvent *self = _self;
-    return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<SoundSelectEvent: tick=%d channel=%d msb=%d lsb=%d programNo=%d>"), self->_.tick, self->channel, self->msb, self->lsb, self->programNo);
+    return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<SoundSelectEvent: tick=%d channel=%d msb=%d lsb=%d programNo=%d>"), self->__.tick, self->channel, self->msb, self->lsb, self->programNo);
 }
 
 static void __SoundSelectEventAccept(void *self, void *visitor)
@@ -577,7 +577,7 @@ NADeclareClass(SoundSelectEvent, NAType, SequenceElement);
 static void *__NoteEventDescription(const void *_self)
 {
     const NoteEvent *self = _self;
-    return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<NoteEvent: tick=%d channel=%d noteNo=%d velocity=%d gatetime=%d>"), self->_.tick, self->channel, self->noteNo, self->velocity, self->gatetime);
+    return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<NoteEvent: tick=%d channel=%d noteNo=%d velocity=%d gatetime=%d>"), self->__.tick, self->channel, self->noteNo, self->velocity, self->gatetime);
 }
 
 static void __NoteEventAccept(void *self, void *visitor)

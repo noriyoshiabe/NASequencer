@@ -5,7 +5,7 @@
 #include "Sequence.h"
 
 typedef struct _ParseContext {
-    NAType _;
+    NAType __;
     CFStringRef filepath;
     Sequence *sequence;
     CFMutableDictionaryRef patterns;

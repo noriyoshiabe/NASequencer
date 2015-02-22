@@ -3,7 +3,7 @@
 #define PACKET_LIST_SIZE 1024
 
 struct _MidiClient {
-    NAType _;
+    NAType __;
     MIDIClientRef clientRef;
     MIDIPortRef outPortRef;
     MIDIEndpointRef destPointRef;

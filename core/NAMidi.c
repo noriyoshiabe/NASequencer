@@ -20,7 +20,7 @@ typedef enum _NAMidiMessageKind {
 } NAMidiMessageKind;
 
 struct _NAMidi {
-    NAType _;
+    NAType __;
     pthread_t thread;
     Player *player;
     FSWatcher *watcher;

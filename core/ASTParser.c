@@ -18,7 +18,7 @@
  */
 
 typedef struct _Context {
-    NAType _;
+    NAType __;
     Sequence *sequence;
     int32_t tick;
     int32_t channel;
@@ -88,7 +88,7 @@ static Context *ContextCreateLocal(const Context *from)
     count = CFArrayGetCount(from->timeTable->timeEvents);
     if (0 < count) {
         TimeEvent *event = NACopy(CFArrayGetValueAtIndex(from->timeTable->timeEvents, count - 1));
-        event->_.tick = 0;
+        event->__.tick = 0;
         TimeTableAddTimeEvent(local->timeTable, event);
         NARelease(event);
     }
@@ -96,7 +96,7 @@ static Context *ContextCreateLocal(const Context *from)
     count = CFArrayGetCount(from->timeTable->tempoEvents);
     if (0 < count) {
         TempoEvent *event = NACopy(CFArrayGetValueAtIndex(from->timeTable->tempoEvents, count - 1));
-        event->_.tick = 0;
+        event->__.tick = 0;
         TimeTableAddTempoEvent(local->timeTable, event);
         NARelease(event);
     }
@@ -119,7 +119,7 @@ NADeclareVtbl(Context, NAType,
 NADeclareClass(Context, NAType);
 
 typedef struct _NoteBlockContext {
-    NAType _;
+    NAType __;
     int32_t tick;
     int32_t step;
     CFMutableArrayRef events;
@@ -699,11 +699,11 @@ static bool __dispatch__TIE(Expression *expression, Context *context, void *valu
     CFIndex count = CFArrayGetCount(nbContext->events);
     for (CFIndex i = count - 1; 0 <= i; --i) {
         NoteEvent *event = (NoteEvent *)CFArrayGetValueAtIndex(nbContext->events, i);
-        if (-1 != tick && tick != event->_.tick) {
+        if (-1 != tick && tick != event->__.tick) {
             break;
         }
         event->gatetime += nbContext->step;
-        tick = event->_.tick;
+        tick = event->__.tick;
     }
 
     if (-1 == tick) {

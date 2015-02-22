@@ -21,7 +21,7 @@ typedef enum {
 } ParseErrorKind;
 
 typedef struct _ParseError {
-    NAType _;
+    NAType __;
     ParseErrorKind kind;
     CFStringRef filepath;
     CFStringRef message;

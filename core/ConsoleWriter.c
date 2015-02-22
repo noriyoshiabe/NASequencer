@@ -9,7 +9,7 @@
 #define INDEX2CHANNEL(index) (index - 1)
 
 struct _ConsoleWriter {
-    NAType _;
+    NAType __;
     CFMutableArrayRef tracksBuffer;
     TimeTable *timeTable;
 };
@@ -145,7 +145,7 @@ static void __ConsoleWriterVisitTimeEvent(void *_self, TimeEvent *elem)
 {
     ConsoleWriter *self = _self;
     CFMutableStringRef string = (CFMutableStringRef)CFArrayGetValueAtIndex(self->tracksBuffer, TIME_TABLE_INDEX);
-    Location l = TimeTableTick2Location(self->timeTable, elem->_.tick);
+    Location l = TimeTableTick2Location(self->timeTable, elem->__.tick);
     CFStringAppendFormat(string, NULL, CFSTR("%03d:%02d:%03d: [Time signature] %d/%d\n"), l.m, l.b, l.t, elem->numerator, elem->denominator);
 }
 
@@ -153,7 +153,7 @@ static void __ConsoleWriterVisitTempoEvent(void *_self, TempoEvent *elem)
 {
     ConsoleWriter *self = _self;
     CFMutableStringRef string = (CFMutableStringRef)CFArrayGetValueAtIndex(self->tracksBuffer, TIME_TABLE_INDEX);
-    Location l = TimeTableTick2Location(self->timeTable, elem->_.tick);
+    Location l = TimeTableTick2Location(self->timeTable, elem->__.tick);
     CFStringAppendFormat(string, NULL, CFSTR("%03d:%02d:%03d: [Tempo] %.2f\n"), l.m, l.b, l.t, elem->tempo);
 }
 
@@ -161,7 +161,7 @@ static void __ConsoleWriterVisitMarkerEvent(void *_self, MarkerEvent *elem)
 {
     ConsoleWriter *self = _self;
     CFMutableStringRef string = (CFMutableStringRef)CFArrayGetValueAtIndex(self->tracksBuffer, META_INFO_INDEX);
-    Location l = TimeTableTick2Location(self->timeTable, elem->_.tick);
+    Location l = TimeTableTick2Location(self->timeTable, elem->__.tick);
     CFStringAppendFormat(string, NULL, CFSTR("%03d:%02d:%03d: [Marker] %@\n"), l.m, l.b, l.t, elem->text);
 }
 
@@ -169,7 +169,7 @@ static void __ConsoleWriterVisitSoundSelectEvent(void *_self, SoundSelectEvent *
 {
     ConsoleWriter *self = _self;
     CFMutableStringRef string = (CFMutableStringRef)CFArrayGetValueAtIndex(self->tracksBuffer, CHANNEL2INDEX(elem->channel));
-    Location l = TimeTableTick2Location(self->timeTable, elem->_.tick);
+    Location l = TimeTableTick2Location(self->timeTable, elem->__.tick);
     CFStringAppendFormat(string, NULL, CFSTR("%03d:%02d:%03d: [Sound select] channel:%d msb:%d lsb:%d program no:%d\n"),
             l.m, l.b, l.t, elem->channel, elem->msb, elem->lsb, elem->programNo);
 }
@@ -178,7 +178,7 @@ static void __ConsoleWriterVisitNoteEvent(void *_self, NoteEvent *elem)
 {
     ConsoleWriter *self = _self;
     CFMutableStringRef string = (CFMutableStringRef)CFArrayGetValueAtIndex(self->tracksBuffer, elem->channel + 1);
-    Location l = TimeTableTick2Location(self->timeTable, elem->_.tick);
+    Location l = TimeTableTick2Location(self->timeTable, elem->__.tick);
     CFStringAppendFormat(string, NULL, CFSTR("%03d:%02d:%03d: [Note] channel:%d note no:%d velocity:%d gatetime:%d\n"),
             l.m, l.b, l.t, elem->channel, elem->noteNo, elem->velocity, elem->gatetime);
 }

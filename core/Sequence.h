@@ -10,14 +10,14 @@ typedef struct _Location {
 } Location;
 
 typedef struct _TimeTable {
-    NAType _;
+    NAType __;
     int16_t resolution;
     CFMutableArrayRef timeEvents;
     CFMutableArrayRef tempoEvents;
 } TimeTable;
 
 typedef struct _Sequence {
-    NAType _;
+    NAType __;
     int16_t resolution;
     CFStringRef title;
     TimeTable *timeTable;
@@ -26,7 +26,7 @@ typedef struct _Sequence {
 } Sequence;
 
 typedef struct _Pattern {
-    NAType _;
+    NAType __;
     CFStringRef name;
     TimeTable *timeTable;
     CFMutableArrayRef events;
@@ -34,28 +34,28 @@ typedef struct _Pattern {
 } Pattern;
 
 typedef struct _MidiEvent {
-    NAType _;
+    NAType __;
     int32_t tick;
 } MidiEvent;
 
 typedef struct _TimeEvent {
-    MidiEvent _;
+    MidiEvent __;
     int16_t numerator;
     int16_t denominator;
 } TimeEvent;
 
 typedef struct _TempoEvent {
-    MidiEvent _;
+    MidiEvent __;
     float tempo;
 } TempoEvent;
 
 typedef struct _MarkerEvent {
-    MidiEvent _;
+    MidiEvent __;
     CFStringRef text;
 } MarkerEvent;
 
 typedef struct _SoundSelectEvent {
-    MidiEvent _;
+    MidiEvent __;
     uint8_t channel;
     uint8_t msb;
     uint8_t lsb;
@@ -63,7 +63,7 @@ typedef struct _SoundSelectEvent {
 } SoundSelectEvent;
 
 typedef struct _NoteEvent {
-    MidiEvent _;
+    MidiEvent __;
     uint8_t channel;
     uint8_t noteNo;
     uint8_t velocity;

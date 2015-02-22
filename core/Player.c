@@ -20,7 +20,7 @@ typedef enum _PlayerMessageKind {
 } PlayerMessageKind;
 
 struct _Player {
-    NAType _;
+    NAType __;
     pthread_t thread;
     TimeTable *timeTable;
     CFArrayRef events;
@@ -149,7 +149,7 @@ static void __PlayerPlay(Player *self)
     for (CFIndex i = CFArrayGetCount(self->context.playing); 0 < i; --i) {
         CFIndex idx = i - 1;
         const NoteEvent *event = CFArrayGetValueAtIndex(self->context.playing, idx);
-        if (currentTick > event->_.tick + event->gatetime) {
+        if (currentTick > event->__.tick + event->gatetime) {
             __PlayerSendNoteOff(self, event);
             CFArrayRemoveValueAtIndex(self->context.playing, idx);
         }
