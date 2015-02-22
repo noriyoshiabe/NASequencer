@@ -149,7 +149,8 @@ static void __PlayerPlay(Player *self)
     for (CFIndex i = CFArrayGetCount(self->context.playing); 0 < i; --i) {
         CFIndex idx = i - 1;
         const NoteEvent *event = CFArrayGetValueAtIndex(self->context.playing, idx);
-        if (self->context.tick > event->__.tick + event->gatetime) {
+        int32_t tick = event->__.tick + event->gatetime;
+        if (prevTick <= tick && tick < self->context.tick) {
             __PlayerSendNoteOff(self, event);
             CFArrayRemoveValueAtIndex(self->context.playing, idx);
         }
