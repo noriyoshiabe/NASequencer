@@ -11,6 +11,7 @@ import Cocoa
 class DocumentController : NSWindowController {
     
     @IBOutlet var pianoRollView: PianoRollView?
+    @IBOutlet var statusView: StatusView?
     
     var namidi: NAMidiSW?
     
@@ -20,6 +21,7 @@ class DocumentController : NSWindowController {
         let document = self.document? as Document
         namidi = document.namidi
         namidi?.addObserverDelegate(pianoRollView!)
+        namidi?.addObserverDelegate(statusView!)
     }
     
     override func windowDidLoad() {

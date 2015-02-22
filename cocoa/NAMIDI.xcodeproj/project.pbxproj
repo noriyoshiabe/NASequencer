@@ -15,6 +15,8 @@
 		02225DF41A906E610077ABCB /* NAMIDITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02225DF31A906E610077ABCB /* NAMIDITests.swift */; };
 		02225E001A9096100077ABCB /* DocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02225DFF1A9096100077ABCB /* DocumentView.swift */; };
 		024040631A98CE0900858340 /* PianoRollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02AA073A1A98BB6100F413A2 /* PianoRollView.swift */; };
+		02531BC71A99B45500AB9B37 /* StatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02531BC61A99B45500AB9B37 /* StatusView.swift */; };
+		02531BC91A99B58300AB9B37 /* StatusBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02531BC81A99B58300AB9B37 /* StatusBackgroundView.swift */; };
 		025F67921A90C6B600E87117 /* DocumentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 025F67911A90C6B600E87117 /* DocumentController.swift */; };
 		02A3478F1A939A5700A3AF9B /* NAMidi-Bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02A3478E1A939A5700A3AF9B /* NAMidi-Bridge.swift */; };
 		02F80A421A95FD34002F68A4 /* NAMidi-Bridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 02F80A411A95FD34002F68A4 /* NAMidi-Bridge.m */; };
@@ -73,6 +75,8 @@
 		02225DF21A906E610077ABCB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		02225DF31A906E610077ABCB /* NAMIDITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAMIDITests.swift; sourceTree = "<group>"; };
 		02225DFF1A9096100077ABCB /* DocumentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentView.swift; sourceTree = "<group>"; };
+		02531BC61A99B45500AB9B37 /* StatusView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusView.swift; sourceTree = "<group>"; };
+		02531BC81A99B58300AB9B37 /* StatusBackgroundView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusBackgroundView.swift; sourceTree = "<group>"; };
 		025F67911A90C6B600E87117 /* DocumentController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentController.swift; sourceTree = "<group>"; };
 		026587FF1A922B5F0030461C /* namidi-core.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "namidi-core.xcodeproj"; path = "../core/namidi-core.xcodeproj"; sourceTree = "<group>"; };
 		026588051A922B6C0030461C /* nalib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = nalib.xcodeproj; path = ../nalib/nalib.xcodeproj; sourceTree = "<group>"; };
@@ -142,6 +146,8 @@
 				02F80A431A9603B0002F68A4 /* NAMidi-Bridge.h */,
 				02F80A411A95FD34002F68A4 /* NAMidi-Bridge.m */,
 				02AA073A1A98BB6100F413A2 /* PianoRollView.swift */,
+				02531BC61A99B45500AB9B37 /* StatusView.swift */,
+				02531BC81A99B58300AB9B37 /* StatusBackgroundView.swift */,
 			);
 			path = NAMIDI;
 			sourceTree = "<group>";
@@ -318,7 +324,9 @@
 			files = (
 				02225DE01A906E610077ABCB /* Document.swift in Sources */,
 				02225E001A9096100077ABCB /* DocumentView.swift in Sources */,
+				02531BC71A99B45500AB9B37 /* StatusView.swift in Sources */,
 				025F67921A90C6B600E87117 /* DocumentController.swift in Sources */,
+				02531BC91A99B58300AB9B37 /* StatusBackgroundView.swift in Sources */,
 				02225DDE1A906E610077ABCB /* AppDelegate.swift in Sources */,
 				02A3478F1A939A5700A3AF9B /* NAMidi-Bridge.swift in Sources */,
 				02F80A421A95FD34002F68A4 /* NAMidi-Bridge.m in Sources */,

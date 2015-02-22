@@ -8,6 +8,7 @@
         <customObject id="-2" userLabel="File's Owner" customClass="DocumentController" customModule="NAMIDI" customModuleProvider="target">
             <connections>
                 <outlet property="pianoRollView" destination="1ay-H8-DJD" id="RbG-K8-7aU"/>
+                <outlet property="statusView" destination="KAa-86-T0I" id="14n-BF-5W4"/>
                 <outlet property="window" destination="xOd-HO-29H" id="JIz-fz-R2o"/>
             </connections>
         </customObject>
@@ -40,11 +41,35 @@
                             <rect key="frame" x="1" y="79" width="181" height="16"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
-                        <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="1Kb-pP-xys">
+                        <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="0.99660441426146007" horizontal="NO" id="1Kb-pP-xys">
                             <rect key="frame" x="166" y="1" width="16" height="94"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                     </scrollView>
+                    <customView id="KAa-86-T0I" customClass="StatusView" customModule="NAMIDI" customModuleProvider="target">
+                        <rect key="frame" x="0.0" y="0.0" width="507" height="413"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <customView id="aZr-Ub-gO7" customClass="StatusBackgroundView" customModule="NAMIDI" customModuleProvider="target">
+                                <rect key="frame" x="87" y="20" width="400" height="58"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="rg5-P9-q3V">
+                                        <rect key="frame" x="18" y="11" width="364" height="36"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="00:00:000   000:00:000" id="n3D-Gb-ULZ">
+                                            <font key="font" metaFont="system" size="30"/>
+                                            <color key="textColor" name="highlightColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                </subviews>
+                            </customView>
+                        </subviews>
+                        <connections>
+                            <outlet property="playing" destination="rg5-P9-q3V" id="vUN-9v-8hv"/>
+                        </connections>
+                    </customView>
                 </subviews>
             </view>
             <connections>
