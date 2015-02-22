@@ -188,10 +188,5 @@ class PianoRollView : NSView, NAMidiObserverDelegate {
             self.setNeedsDisplayInRect(CGRectIntersection(rect, parent.convertRect(parent.bounds, toView: self)))
             self.lastTick = x
         }
-        
-        let ctx:PlayerContext = context.memory;
-        let min:Int = Int(ctx.usec / (1000 * 1000 * 60))
-        let sec:Int = Int(ctx.usec / (1000 * 1000))
-        let msec:Int = Int((ctx.usec / 1000) % 1000)
     }
 }
