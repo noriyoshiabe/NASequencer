@@ -79,11 +79,11 @@ static void __PlayerSetSource(Player *self, void *source)
         SequenceElementAccept(source, self);
 
         Location *location = &self->context.location;
-        int32_t tick = TimeTableLocation2Tick(self->timeTable, location->m, location->b, location->t);
-        self->offset = self->context.usec = TimeTableTick2MicroSec(self->timeTable, tick);
+        self->context.tick = TimeTableLocation2Tick(self->timeTable, location->m, location->b, location->t);
+        self->offset = self->context.usec = TimeTableTick2MicroSec(self->timeTable, self->context.tick);
         self->start = currentMicroSec();
-        TimeTableGetTempoByTick(self->timeTable, tick, &self->context.tempo);
-        TimeTableGetTimeSignByTick(self->timeTable, tick, &self->context.numerator, &self->context.denominator);
+        TimeTableGetTempoByTick(self->timeTable, self->context.tick, &self->context.tempo);
+        TimeTableGetTimeSignByTick(self->timeTable, self->context.tick, &self->context.numerator, &self->context.denominator);
         __PlayerObserverOnPlayerContextChanged(self);
     }
 }
@@ -144,12 +144,12 @@ static void __PlayerPlay(Player *self)
     self->context.usec = self->offset + elapsed;
 
     int32_t prevTick = TimeTableMicroSec2Tick(self->timeTable, prev);
-    int32_t currentTick = TimeTableMicroSec2Tick(self->timeTable, self->context.usec);
+    self->context.tick = TimeTableMicroSec2Tick(self->timeTable, self->context.usec);
 
     for (CFIndex i = CFArrayGetCount(self->context.playing); 0 < i; --i) {
         CFIndex idx = i - 1;
         const NoteEvent *event = CFArrayGetValueAtIndex(self->context.playing, idx);
-        if (currentTick > event->__.tick + event->gatetime) {
+        if (self->context.tick > event->__.tick + event->gatetime) {
             __PlayerSendNoteOff(self, event);
             CFArrayRemoveValueAtIndex(self->context.playing, idx);
         }
@@ -158,10 +158,10 @@ static void __PlayerPlay(Player *self)
     CFIndex eventsCount = CFArrayGetCount(self->events);
     for (; self->index < eventsCount; ++self->index) {
         MidiEvent *event = (MidiEvent *)CFArrayGetValueAtIndex(self->events, self->index);
-        if (prevTick <= event->tick && event->tick < currentTick) {
+        if (prevTick <= event->tick && event->tick < self->context.tick) {
             SequenceElementAccept(event, self);
         }
-        else if (currentTick <= event->tick) {
+        else if (self->context.tick <= event->tick) {
             break;
         }
     }
@@ -171,12 +171,12 @@ static void __PlayerPlay(Player *self)
         __PlayerChangeState(self, PLAYER_STATE_STOP, true);
         self->index = 0;
         self->context.usec = 0;
-        currentTick = 0;
+        self->context.tick = 0;
     }
 
-    self->context.location = TimeTableTick2Location(self->timeTable, currentTick);
-    TimeTableGetTempoByTick(self->timeTable, currentTick, &self->context.tempo);
-    TimeTableGetTimeSignByTick(self->timeTable, currentTick, &self->context.numerator, &self->context.denominator);
+    self->context.location = TimeTableTick2Location(self->timeTable, self->context.tick);
+    TimeTableGetTempoByTick(self->timeTable, self->context.tick, &self->context.tempo);
+    TimeTableGetTimeSignByTick(self->timeTable, self->context.tick, &self->context.numerator, &self->context.denominator);
 
     __PlayerObserverOnPlayerContextChanged(self);
 }
@@ -189,6 +189,7 @@ static void __PlayerRewind(Player *self)
     self->index = 0;
     self->offset = 0;
     self->context.usec = 0;
+    self->context.tick = 0;
     self->start = currentMicroSec();
 
     self->context.location = TimeTableTick2Location(self->timeTable, 0);
@@ -203,21 +204,22 @@ static void __PlayerForward(Player *self)
     __PlayerSendAllNoteOff(self);
     CFArrayRemoveAllValues(self->context.playing);
 
-    self->context.location = TimeTableMicroSec2Location(self->timeTable, self->context.usec);
+    self->context.tick = TimeTableMicroSec2Tick(self->timeTable, self->context.usec);
+    self->context.location = TimeTableTick2Location(self->timeTable, self->context.tick);
     Location *location = &self->context.location;
     location->m++;
     location->b = 1;
     location->t = 0;
 
-    int32_t tick = TimeTableLocation2Tick(self->timeTable, location->m, location->b, location->t);
-    self->context.usec = TimeTableTick2MicroSec(self->timeTable, tick);
-    TimeTableGetTempoByTick(self->timeTable, tick, &self->context.tempo);
-    TimeTableGetTimeSignByTick(self->timeTable, tick, &self->context.numerator, &self->context.denominator);
+    self->context.tick = TimeTableLocation2Tick(self->timeTable, location->m, location->b, location->t);
+    self->context.usec = TimeTableTick2MicroSec(self->timeTable, self->context.tick);
+    TimeTableGetTempoByTick(self->timeTable, self->context.tick, &self->context.tempo);
+    TimeTableGetTimeSignByTick(self->timeTable, self->context.tick, &self->context.numerator, &self->context.denominator);
 
     CFIndex eventsCount = CFArrayGetCount(self->events);
     for (; self->index < eventsCount; ++self->index) {
         MidiEvent *event = (MidiEvent *)CFArrayGetValueAtIndex(self->events, self->index);
-        if (tick <= event->tick) {
+        if (self->context.tick <= event->tick) {
             break;
         }
     }
@@ -233,7 +235,8 @@ static void __PlayerBackward(Player *self)
     __PlayerSendAllNoteOff(self);
     CFArrayRemoveAllValues(self->context.playing);
 
-    self->context.location = TimeTableMicroSec2Location(self->timeTable, self->context.usec);
+    self->context.tick = TimeTableMicroSec2Tick(self->timeTable, self->context.usec);
+    self->context.location = TimeTableTick2Location(self->timeTable, self->context.tick);
     Location *location = &self->context.location;
 
     if (1 == location->b) {
@@ -247,14 +250,14 @@ static void __PlayerBackward(Player *self)
     location->b = 1;
     location->t = 0;
 
-    int32_t tick = TimeTableLocation2Tick(self->timeTable, location->m, location->b, location->t);
-    self->context.usec = TimeTableTick2MicroSec(self->timeTable, tick);
-    TimeTableGetTempoByTick(self->timeTable, tick, &self->context.tempo);
-    TimeTableGetTimeSignByTick(self->timeTable, tick, &self->context.numerator, &self->context.denominator);
+    self->context.tick = TimeTableLocation2Tick(self->timeTable, location->m, location->b, location->t);
+    self->context.usec = TimeTableTick2MicroSec(self->timeTable, self->context.tick);
+    TimeTableGetTempoByTick(self->timeTable, self->context.tick, &self->context.tempo);
+    TimeTableGetTimeSignByTick(self->timeTable, self->context.tick, &self->context.numerator, &self->context.denominator);
 
     for (self->index = MAX(0, self->index - 1); 0 < self->index; --self->index) {
         MidiEvent *event = (MidiEvent *)CFArrayGetValueAtIndex(self->events, self->index);
-        if (tick >= event->tick) {
+        if (self->context.tick >= event->tick) {
             break;
         }
     }

@@ -267,12 +267,6 @@ int32_t TimeTableMicroSec2Tick(TimeTable *self, int64_t usec)
     return roundf(offsetTick + usec / usecPerTick);
 }
 
-Location TimeTableMicroSec2Location(TimeTable *self, int64_t usec)
-{
-    int32_t tick = TimeTableMicroSec2Tick(self, usec);
-    return TimeTableTick2Location(self, tick);
-}
-
 int64_t TimeTableTick2MicroSec(TimeTable *self, int32_t tick)
 {
     float offsetTick = 0;

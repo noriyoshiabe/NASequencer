@@ -88,7 +88,6 @@ extern int32_t TimeTableLocation2Tick(TimeTable *self, int32_t measure, int16_t 
 extern int32_t TimeTableMBLength2Tick(TimeTable *self, int32_t offsetTick, int32_t measure, int16_t beat);
 extern Location TimeTableTick2Location(TimeTable *self, int32_t tick);
 extern int32_t TimeTableMicroSec2Tick(TimeTable *self, int64_t usec);
-extern Location TimeTableMicroSec2Location(TimeTable *self, int64_t usec);
 extern int64_t TimeTableTick2MicroSec(TimeTable *self, int32_t tick);
 extern void TimeTableGetTempoByTick(TimeTable *self, int32_t tick, float *tempo);
 extern void TimeTableGetTimeSignByTick(TimeTable *self, int32_t tick, int16_t *numerator, int16_t *denominator);
