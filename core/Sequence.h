@@ -67,7 +67,7 @@ typedef struct _NoteEvent {
     uint8_t channel;
     uint8_t noteNo;
     uint8_t velocity;
-    uint32_t gatetime;
+    int32_t gatetime;
 } NoteEvent;
 
 NAExportClass(Sequence);
