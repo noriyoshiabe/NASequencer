@@ -89,13 +89,13 @@ class EventsGenerator: GeneratorType {
         index = 0
     }
     
-    func next() -> MidiEvent? {
+    func next() -> UnsafeMutablePointer<MidiEvent>? {
         if count <= index {
             return nil
         }
         
         let ptr = CFArrayGetValueAtIndex(self.events, index++)
-        return unsafeBitCast(ptr, UnsafeMutablePointer<MidiEvent>.self).memory
+        return unsafeBitCast(ptr, UnsafeMutablePointer<MidiEvent>.self)
     }
 }
 

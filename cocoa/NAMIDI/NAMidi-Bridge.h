@@ -10,6 +10,7 @@
 #define NAMIDI_NAMidi_Bridge_h
 
 #import "NAMidi.h"
+@import Foundation;
 
 @protocol NAMidiObserverDelegate <NSObject>
 @required
@@ -22,5 +23,12 @@
 @property (nonatomic) void *observerBridge;
 - (id)initWithDelegate:(id<NAMidiObserverDelegate>)delegate;
 @end
+
+typedef NS_ENUM(NSUInteger, EventType) {
+    EventType_NoteEvent,
+    EventType_Unknown,
+};
+
+extern EventType MidiEventGetType(MidiEvent *event);
 
 #endif

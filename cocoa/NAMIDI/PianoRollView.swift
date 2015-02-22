@@ -17,6 +17,9 @@ class PianoRollView : NSView, NAMidiObserverDelegate {
     let gridColorCKey: NSColor = NSColor(red: 0.2, green: 0.5, blue: 0.9, alpha: 0.3)
     let gridColorBeat: NSColor = NSColor(red: 0.2, green: 0.5, blue: 0.9, alpha: 0.1)
     let gridColorMeasure: NSColor = NSColor(red: 0.2, green: 0.5, blue: 0.9, alpha: 0.3)
+    
+    let noteColor: NSColor = NSColor(red: 1, green: 0, blue: 0, alpha: 0.05)
+    let noteBorderColor: NSColor = NSColor(red: 1, green: 0, blue: 0, alpha: 1)
 
     var context: ParseContextSW?
     
@@ -75,9 +78,29 @@ class PianoRollView : NSView, NAMidiObserverDelegate {
     }
     
     func drawEvents(dirtyRect: NSRect) {
-        for event:MidiEvent in self.context!.sequence.eventsSW {
-            //let note:NoteEvent = reinterpretCast(event)
-            println(event.tick)
+        for event in self.context!.sequence.eventsSW {
+            let tick:Int32 = event.memory.tick
+            switch MidiEventGetType(event) {
+            case EventType.NoteEvent:
+                drawNote(dirtyRect, note: unsafeBitCast(event, UnsafePointer<NoteEvent>.self).memory)
+            default:
+                break
+            }
+        }
+    }
+    
+    func drawNote(dirtyRect: NSRect, note: NoteEvent) {
+        let left:CGFloat = round(CGFloat(note.__.tick + 120) * widthPerTick) + 0.5
+        let right:CGFloat = round(CGFloat(note.__.tick + 120 + note.gatetime)) * widthPerTick + 0.5
+        let y:CGFloat = CGFloat(127 - note.noteNo + 1) * heightPerKey + 0.5
+        
+        let rect:NSRect = NSMakeRect(left - 5, y - 5, right - left, 10)
+        if dirtyRect.intersects(rect) {
+            let path:NSBezierPath = NSBezierPath(roundedRect: rect, xRadius: 5, yRadius: 5)
+            noteColor.set()
+            path.fill()
+            noteBorderColor.set()
+            path.stroke()
         }
     }
     
