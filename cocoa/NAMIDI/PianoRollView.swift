@@ -20,8 +20,12 @@ class PianoRollView : NSView, NAMidiObserverDelegate {
     
     let noteColor: NSColor = NSColor(red: 1, green: 0, blue: 0, alpha: 0.05)
     let noteBorderColor: NSColor = NSColor(red: 1, green: 0, blue: 0, alpha: 1)
+    
+    let currentPositionColor: NSColor = NSColor(red: 0.75, green: 0.75, blue: 0, alpha: 1)
 
     var context: ParseContextSW?
+    var playerContext: PlayerContext?
+    var lastTick: CGFloat = 0
     
     override var flipped: Bool {
         return true
@@ -30,6 +34,7 @@ class PianoRollView : NSView, NAMidiObserverDelegate {
     override func drawRect(dirtyRect: NSRect) {
         drawGrid(dirtyRect)
         drawEvents(dirtyRect)
+        drawPlayingPosition(dirtyRect)
     }
     
     func drawGrid(dirtyRect: NSRect) {
@@ -104,6 +109,15 @@ class PianoRollView : NSView, NAMidiObserverDelegate {
         }
     }
     
+    func drawPlayingPosition(dirtyRect: NSRect) {
+        let x = round(CGFloat(self.playerContext!.tick + 120) * widthPerTick) + 0.5
+        let top:CGFloat = CGRectGetMinY(dirtyRect)
+        let bottom:CGFloat = CGRectGetMaxY(dirtyRect)
+        
+        currentPositionColor.set()
+        NSBezierPath.strokeLineFromPoint(CGPointMake(x, top), toPoint: CGPointMake(x, bottom))
+    }
+    
     func onParseFinished(namidi: COpaquePointer, context: UnsafeMutablePointer<ParseContext>) {
         self.context = ParseContextSW(contextRef: context)
         
@@ -115,6 +129,18 @@ class PianoRollView : NSView, NAMidiObserverDelegate {
     }
     
     func onPlayerContextChanged(namidi: COpaquePointer, context: UnsafeMutablePointer<PlayerContext>) {
+        let parent:NSScrollView = superview?.superview? as NSScrollView
+        self.playerContext = context.memory;
+        
+        let x = round(CGFloat(self.playerContext!.tick + 120) * widthPerTick) + 0.5
+        
+        let current:NSRect = NSMakeRect(x, self.frame.origin.y, x, self.frame.size.height)
+        setNeedsDisplayInRect(CGRectIntersection(current, parent.convertRect(parent.bounds, toView: self)))
+        
+        let last:NSRect = NSMakeRect(lastTick, self.frame.origin.y, lastTick, self.frame.size.height)
+        setNeedsDisplayInRect(CGRectIntersection(last, parent.convertRect(parent.bounds, toView: self)))
+        lastTick = x
+        
         let ctx:PlayerContext = context.memory;
         let min:Int = Int(ctx.usec / (1000 * 1000 * 60))
         let sec:Int = Int(ctx.usec / (1000 * 1000))
