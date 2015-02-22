@@ -60,20 +60,21 @@ class PianoRollView : NSView, NAMidiObserverDelegate {
 
     var context: ParseContextSW?
     var playerContext: PlayerContext?
-    var lastTick: CGFloat = 0
     
     override var flipped: Bool {
         return true
     }
     
     override func drawRect(dirtyRect: NSRect) {
+        let playing = CGFloat(round(CGFloat(self.playerContext!.tick + 120) * widthPerTick) + 0.5)
+        
         if nil != self.context?.sequence {
             drawGrid(dirtyRect)
-            drawEvents(dirtyRect)
+            drawEvents(dirtyRect, x: playing)
         }
         
         if nil != self.playerContext {
-            drawPlayingPosition(dirtyRect)
+            drawPlayingPosition(dirtyRect, x: playing)
         }
     }
     
@@ -122,56 +123,58 @@ class PianoRollView : NSView, NAMidiObserverDelegate {
         }
     }
     
-    func drawEvents(dirtyRect: NSRect) {
+    func drawEvents(dirtyRect: NSRect, x: CGFloat) {
         for event in self.context!.sequence!.eventsSW {
             let tick:Int32 = event.memory.tick
             switch MidiEventGetType(event) {
             case EventType.NoteEvent:
-                drawNote(dirtyRect, note: unsafeBitCast(event, UnsafePointer<NoteEvent>.self).memory)
+                drawNote(dirtyRect, note: unsafeBitCast(event, UnsafePointer<NoteEvent>.self).memory, x: x)
             default:
                 break
             }
         }
     }
     
-    func drawNote(dirtyRect: NSRect, note: NoteEvent) {
+    func drawNote(dirtyRect: NSRect, note: NoteEvent, x: CGFloat) {
         let left:CGFloat = round(CGFloat(note.__.tick + 120) * widthPerTick) + 0.5
         let right:CGFloat = round(CGFloat(note.__.tick + 120 + note.gatetime)) * widthPerTick + 0.5
         let y:CGFloat = CGFloat(127 - note.noteNo + 1) * heightPerKey + 0.5
         
         let rect:NSRect = NSMakeRect(left - 5, y - 5, right - left, 10)
-        if dirtyRect.intersects(rect) {
+        if CGRectInset(dirtyRect, 10, 0).intersects(rect) {
             let path:NSBezierPath = NSBezierPath(roundedRect: rect, xRadius: 5, yRadius: 5)
-            noteColors[Int(note.channel - 1)].set()
-            path.fill()
-            noteBorderColors[Int(note.channel - 1)].set()
-            path.stroke()
+            if PLAYER_STATE_PLAYING.value == playerContext!.state.value
+                    && CGRectIntersectsRect(rect, CGRectMake(x, 0, 0, self.bounds.size.height)) {
+                noteBorderColors[Int(note.channel - 1)].set()
+                path.fill()
+            }
+            else {
+                noteColors[Int(note.channel - 1)].set()
+                path.fill()
+                noteBorderColors[Int(note.channel - 1)].set()
+                path.stroke()
+            }
         }
     }
     
-    func drawPlayingPosition(dirtyRect: NSRect) {
-        let x = round(CGFloat(self.playerContext!.tick + 120) * widthPerTick) + 0.5
+    func drawPlayingPosition(dirtyRect: NSRect, x: CGFloat) {
         let top:CGFloat = CGRectGetMinY(dirtyRect)
         let bottom:CGFloat = CGRectGetMaxY(dirtyRect)
-        
         currentPositionColor.set()
         NSBezierPath.strokeLineFromPoint(CGPointMake(x, top), toPoint: CGPointMake(x, bottom))
     }
     
     func onParseFinished(namidi: COpaquePointer, context: UnsafeMutablePointer<ParseContext>) {
         let try: ParseContextSW = ParseContextSW(contextRef: context)
-        
         if try.hasError {
             return
         }
         self.context = try
         
-        let width:CGFloat = CGFloat(self.context!.sequence!.length + 240) * widthPerTick
-        self.frame = NSMakeRect(0, 0, CGFloat(width), (127 + 2) * heightPerKey)
-        
-        let parent:NSScrollView = superview?.superview? as NSScrollView
-
         dispatch_async(dispatch_get_main_queue()) {
+            let width:CGFloat = CGFloat(self.context!.sequence!.length + 240) * self.widthPerTick
+            self.frame = NSMakeRect(0, 0, CGFloat(width), (127 + 2) * self.heightPerKey)
+            let parent:NSScrollView = self.superview?.superview? as NSScrollView
             self.setNeedsDisplayInRect(parent.convertRect(parent.bounds, toView: self))
         }
     }
@@ -179,14 +182,8 @@ class PianoRollView : NSView, NAMidiObserverDelegate {
     func onPlayerContextChanged(namidi: COpaquePointer, context: UnsafeMutablePointer<PlayerContext>) {
         let parent:NSScrollView = superview?.superview? as NSScrollView
         self.playerContext = context.memory;
-        
-        let x = round(CGFloat(self.playerContext!.tick + 120) * widthPerTick) + 0.5
-        let left = x < lastTick ? x : lastTick
-        let right = x > lastTick ? x : lastTick
-        let rect:NSRect = NSMakeRect(left - 10, self.frame.origin.y, right + 10, self.frame.size.height)
         dispatch_async(dispatch_get_main_queue()) {
-            self.setNeedsDisplayInRect(CGRectIntersection(rect, parent.convertRect(parent.bounds, toView: self)))
-            self.lastTick = x
+            self.setNeedsDisplayInRect(parent.convertRect(parent.bounds, toView: self))
         }
     }
 }
