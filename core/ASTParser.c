@@ -385,16 +385,15 @@ static bool __dispatch__MB_LENGTH(Expression *expression, Context *context, void
 
 static bool __dispatch__RESOLUTION(Expression *expression, Context *context, void *value, ParseError *error)
 {
-    if (0 != context->sequence->resolution) {
+    if (0 != context->timeTable->resolution) {
         SET_ERROR(error, PARSE_ERROR_RESOLUTION_REDEFINED, expression, "resolution cannot be defined twice.");
         return false;
     }
 
-    if (!parseExpression(expression->left, context, &context->sequence->resolution, error)) {
+    if (!parseExpression(expression->left, context, &context->timeTable->resolution, error)) {
         return false;
     }
 
-    context->timeTable->resolution = context->sequence->resolution;
     return true;
 }
 
@@ -878,7 +877,12 @@ static bool __dispatch__PATTERN_DEFINE(Expression *expression, Context *context,
         }
     }
 
-    Pattern *pattern = NATypeNew(Pattern, identifier, local->timeTable, local->events, local->length);
+    Sequence *pattern = NATypeNew(Sequence);
+    SequenceSetTimeTable(pattern, local->timeTable);
+    SequenceAddEvents(pattern, local->events);
+    pattern->title = (CFStringRef)CFRetain(identifier);
+    pattern->length = local->length;
+    
     CFDictionarySetValue(context->patterns, identifier, pattern);
     NARelease(pattern);
 
@@ -945,7 +949,7 @@ static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context,
         }
     }
 
-    const Pattern *pattern = CFDictionaryGetValue(context->patterns, identifier);
+    const Sequence *pattern = CFDictionaryGetValue(context->patterns, identifier);
     Context *local = ContextCreateLocal(context);
 
     count = CFArrayGetCount(pattern->timeTable->timeEvents);

@@ -18,20 +18,11 @@ typedef struct _TimeTable {
 
 typedef struct _Sequence {
     NAType __;
-    int16_t resolution;
     CFStringRef title;
     TimeTable *timeTable;
     CFMutableArrayRef events;
     int32_t length;
 } Sequence;
-
-typedef struct _Pattern {
-    NAType __;
-    CFStringRef name;
-    TimeTable *timeTable;
-    CFMutableArrayRef events;
-    int32_t length;
-} Pattern;
 
 typedef struct _MidiEvent {
     NAType __;
@@ -72,7 +63,6 @@ typedef struct _NoteEvent {
 
 NAExportClass(Sequence);
 NAExportClass(TimeTable);
-NAExportClass(Pattern);
 NAExportClass(MidiEvent);
 NAExportClass(TimeEvent);
 NAExportClass(TempoEvent);
@@ -95,7 +85,6 @@ extern void TimeTableGetTimeSignByTick(TimeTable *self, int32_t tick, int16_t *n
 
 typedef struct _SequenceVisitorVtbl {
     void (*visitSequence)(void *self, Sequence *elem);
-    void (*visitPattern)(void *self, Pattern *elem);
     void (*visitTimeTable)(void *self, TimeTable *elem);
     void (*visitTimeEvent)(void *self, TimeEvent *elem);
     void (*visitTempoEvent)(void *self, TempoEvent *elem);

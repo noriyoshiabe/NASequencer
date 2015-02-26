@@ -44,7 +44,7 @@ static void *__SequenceDescription(const void *_self)
     const Sequence *self = _self;
 
     CFStringRef cfString = NADescription(self->timeTable);
-    void *ret = (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<Sequence: resolution=%d title=%@ timeTable=%@ events=%@>"), self->resolution, self->title, cfString, self->events);
+    void *ret = (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<Sequence: title=%@ timeTable=%@ events=%@>"), self->title, cfString, self->events);
     CFRelease(cfString);
 
     return ret;
@@ -351,7 +351,7 @@ static void __TimeTableDestroy(void *_self)
 static void *__TimeTableDescription(const void *_self)
 {
     const TimeTable *self = _self;
-    return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<TimeTable: timeEvents=%@ tempoEvents=%@>"), self->timeEvents, self->tempoEvents);
+    return (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<TimeTable: resolution=%d timeEvents=%@ tempoEvents=%@>"), self->resolution, self->timeEvents, self->tempoEvents);
 }
 
 static void __TimeTableAccept(void *self, void *visitor)
@@ -370,60 +370,6 @@ NADeclareVtbl(TimeTable, NAType,
         );
 NADeclareVtbl(TimeTable, SequenceElement, __TimeTableAccept);
 NADeclareClass(TimeTable, NAType, SequenceElement);
-
-
-static void *__PatternInit(void *_self, ...)
-{
-    Pattern *self = _self;
-
-    va_list ap;
-    va_start(ap, _self);
-    self->name = (CFStringRef)CFRetain(va_arg(ap, CFStringRef));
-    self->timeTable = NARetain(va_arg(ap, TimeTable *));
-    self->events = (CFMutableArrayRef)CFRetain(va_arg(ap, CFMutableArrayRef));
-    self->length = va_arg(ap, int32_t);
-    va_end(ap);
-
-    CFArraySortValues(self->events, CFRangeMake(0, CFArrayGetCount(self->events)), NACFComparatorFunction, NULL);
-    
-    return self;
-}
-
-static void __PatternDestroy(void *_self)
-{
-    Pattern *self = _self;
-    CFRelease(self->name);
-    NARelease(self->timeTable);
-    CFRelease(self->events);
-}
-
-static void *__PatternDescription(const void *_self)
-{
-    const Pattern *self = _self;
-
-    CFStringRef cfString = NADescription(self->timeTable);
-    void *ret = (void *)CFStringCreateWithFormat(NULL, NULL, CFSTR("<Pattern: timeTable=%@ events=%@>"), cfString, self->events);
-    CFRelease(cfString);
-
-    return ret;
-}
-
-static void __PatternAccept(void *self, void *visitor)
-{
-    NAVtbl(visitor, SequenceVisitor)->visitPattern(visitor, self);
-}
-
-NADeclareVtbl(Pattern, NAType,
-        __PatternInit,
-        __PatternDestroy,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        __PatternDescription,
-        );
-NADeclareVtbl(Pattern, SequenceElement, __PatternAccept);
-NADeclareClass(Pattern, NAType, SequenceElement);
 
 
 static void *__MidiEventInit(void *_self, ...)

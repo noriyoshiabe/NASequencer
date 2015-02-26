@@ -52,8 +52,9 @@ static void writeTrackBuffer(ConsoleWriter *self)
     }
 }
 
-static void writeTracks(ConsoleWriter *self, TimeTable *timeTable, CFMutableArrayRef events)
+static void __ConsoleWriterVisitSequence(void *_self, Sequence *elem)
 {
+    ConsoleWriter *self = _self;
     CFIndex count;
 
     resetTrackBuffer(self);
@@ -61,14 +62,14 @@ static void writeTracks(ConsoleWriter *self, TimeTable *timeTable, CFMutableArra
     CFMutableStringRef string = (CFMutableStringRef)CFArrayGetValueAtIndex(self->tracksBuffer, TIME_TABLE_INDEX);
 
     CFStringAppendFormat(string, NULL, CFSTR("\n"));
-    CFStringAppendFormat(string, NULL, CFSTR("[Time table]\n"));
+    CFStringAppendFormat(string, NULL, CFSTR("[Time table] resolution: %d\n"), elem->timeTable->resolution);
     CFStringAppendFormat(string, NULL, CFSTR("----------------------------------------------------------------------------------\n"));
 
-    SequenceElementAccept(timeTable, self);
+    SequenceElementAccept(elem->timeTable, self);
 
-    count = CFArrayGetCount(events);
+    count = CFArrayGetCount(elem->events);
     for (int i = 0; i < count; ++i) {
-        void *event = (void *)CFArrayGetValueAtIndex(events, i);
+        void *event = (void *)CFArrayGetValueAtIndex(elem->events, i);
         SequenceElementAccept(event, self);
     }
 
@@ -93,32 +94,6 @@ static void writeTracks(ConsoleWriter *self, TimeTable *timeTable, CFMutableArra
 
     writeTrackBuffer(self);
     printf("\n");
-}
-
-static void __ConsoleWriterVisitSequence(void *_self, Sequence *elem)
-{
-    ConsoleWriter *self = _self;
-
-    printf("\n");
-    printf("[Sequence] title: %s  resolution: %d  length: %d\n", NACFString2CString(elem->title), elem->resolution, elem->length);
-    printf("==================================================================================\n");
-
-    writeTracks(self, elem->timeTable, elem->events);
-}
-
-static void __ConsoleWriterVisitPattern(void *_self, Pattern *elem)
-{
-    ConsoleWriter *self = _self;
-
-    CFIndex size = CFStringGetLength(elem->name) + 1;
-    char *cstr = malloc(size);
-    CFStringGetCString(elem->name, cstr, size, kCFStringEncodingUTF8);
-    printf("\n");
-    printf("[Pattern] name: %s  length: %d\n", cstr, elem->length);
-    printf("==================================================================================\n");
-    free(cstr);
-
-    writeTracks(self, elem->timeTable, elem->events);
 }
 
 static void __ConsoleWriterVisitTimeTable(void *_self, TimeTable *elem)
@@ -197,13 +172,22 @@ void __ConsoleWriterOnParseFinished(void *self, NAMidi *sender, ParseContext *co
                 context->error->location.lastLine, context->error->location.lastColumn);
     }
     else {
+        printf("\n");
+        printf("[Sequence] title: %s  length: %d\n", NACFString2CString(context->sequence->title), context->sequence->length);
+        printf("==================================================================================\n");
+
         SequenceElementAccept(context->sequence, self);
 
         CFIndex count = CFDictionaryGetCount(context->patterns);
         CFTypeRef *keysTypeRef = (CFTypeRef *)malloc(count * sizeof(CFTypeRef));
         CFDictionaryGetKeysAndValues(context->patterns, (const void **)keysTypeRef, NULL);
         for (int i = 0; i < count; ++i) {
-            Pattern *pattern = (Pattern *)CFDictionaryGetValue(context->patterns, keysTypeRef[i]);
+            Sequence *pattern = (Sequence *)CFDictionaryGetValue(context->patterns, keysTypeRef[i]);
+
+            printf("\n");
+            printf("[Pattern] title: %s  length: %d\n", NACFString2CString(pattern->title), pattern->length);
+            printf("==================================================================================\n");
+
             SequenceElementAccept(pattern, self);
         }
 
@@ -245,7 +229,6 @@ NADeclareVtbl(ConsoleWriter, NAType,
 
 NADeclareVtbl(ConsoleWriter, SequenceVisitor,
         __ConsoleWriterVisitSequence,
-        __ConsoleWriterVisitPattern,
         __ConsoleWriterVisitTimeTable,
         __ConsoleWriterVisitTimeEvent,
         __ConsoleWriterVisitTempoEvent,

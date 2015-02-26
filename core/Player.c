@@ -372,13 +372,6 @@ static void __PlayerVisitSequence(void *_self, Sequence *elem)
     self->timeTable = NARetain(elem->timeTable);
 }
 
-static void __PlayerVisitPattern(void *_self, Pattern *elem)
-{
-    Player *self = _self;
-    self->events = CFRetain(elem->events);
-    self->timeTable = NARetain(elem->timeTable);
-}
-
 static void __PlayerVisitMarkerEvent(void *self, MarkerEvent *elem)
 {
 }
@@ -424,7 +417,6 @@ NADeclareVtbl(Player, NAType,
 
 NADeclareVtbl(Player, SequenceVisitor,
         __PlayerVisitSequence,
-        __PlayerVisitPattern,
         NULL,
         NULL,
         NULL,
