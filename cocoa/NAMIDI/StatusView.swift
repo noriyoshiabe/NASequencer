@@ -8,7 +8,7 @@
 
 import Cocoa
 
-class StatusView : NSView, NAMidiObserverDelegate {
+class StatusView : NSView, NAMidiProxyDelegate {
     
     @IBOutlet var errorInfomation: NSView?
     @IBOutlet var errorKind: NSTextField?
@@ -21,7 +21,7 @@ class StatusView : NSView, NAMidiObserverDelegate {
     var error: ParseError?
     var context: PlayerContext?
     
-    func onParseFinished(namidi: COpaquePointer, context: UnsafeMutablePointer<ParseContext>) {
+    func onParseFinished(namidi: NAMidiProxy, context: UnsafeMutablePointer<ParseContext>) {
         self.parseContext = ParseContextSW(contextRef: context)
         if self.parseContext!.hasError {
             error = self.parseContext!.context.error.memory
@@ -35,7 +35,7 @@ class StatusView : NSView, NAMidiObserverDelegate {
         })
     }
     
-    func onPlayerContextChanged(namidi: COpaquePointer, context: UnsafeMutablePointer<PlayerContext>) {
+    func onPlayerContextChanged(namidi: NAMidiProxy, context: UnsafeMutablePointer<PlayerContext>) {
         self.context = context.memory
         dispatch_async(dispatch_get_main_queue(), {
             self.setNeedsDisplayInRect(self.playing!.bounds)

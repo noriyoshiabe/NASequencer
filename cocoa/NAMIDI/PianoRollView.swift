@@ -8,7 +8,7 @@
 
 import Cocoa
 
-class PianoRollView : NSView, NAMidiObserverDelegate {
+class PianoRollView : NSView, NAMidiProxyDelegate {
     
     let widthPerTick: CGFloat = 50.0 / 480.0
     let heightPerKey: CGFloat = 10.0
@@ -164,7 +164,7 @@ class PianoRollView : NSView, NAMidiObserverDelegate {
         NSBezierPath.strokeLineFromPoint(CGPointMake(x, top), toPoint: CGPointMake(x, bottom))
     }
     
-    func onParseFinished(namidi: COpaquePointer, context: UnsafeMutablePointer<ParseContext>) {
+    func onParseFinished(namidi: NAMidiProxy, context: UnsafeMutablePointer<ParseContext>) {
         let try: ParseContextSW = ParseContextSW(contextRef: context)
         if try.hasError {
             return
@@ -179,7 +179,7 @@ class PianoRollView : NSView, NAMidiObserverDelegate {
         }
     }
     
-    func onPlayerContextChanged(namidi: COpaquePointer, context: UnsafeMutablePointer<PlayerContext>) {
+    func onPlayerContextChanged(namidi: NAMidiProxy, context: UnsafeMutablePointer<PlayerContext>) {
         let parent:NSScrollView = superview?.superview? as NSScrollView
         self.playerContext = context.memory;
         dispatch_async(dispatch_get_main_queue()) {

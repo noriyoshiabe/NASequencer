@@ -13,15 +13,15 @@ class DocumentController : NSWindowController {
     @IBOutlet var pianoRollView: PianoRollView?
     @IBOutlet var statusView: StatusView?
     
-    var namidi: NAMidiSW?
+    var namidi: NAMidiProxy?
     
     override func awakeFromNib() {
         window?.setFrameAutosaveName("sharedWindowFrame")
         
         let document = self.document? as Document
         namidi = document.namidi
-        namidi?.addObserverDelegate(pianoRollView!)
-        namidi?.addObserverDelegate(statusView!)
+        namidi?.addDelegate(pianoRollView!)
+        namidi?.addDelegate(statusView!)
     }
     
     override func windowDidLoad() {

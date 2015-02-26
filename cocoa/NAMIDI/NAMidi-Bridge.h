@@ -9,20 +9,8 @@
 #ifndef NAMIDI_NAMidi_Bridge_h
 #define NAMIDI_NAMidi_Bridge_h
 
+#import <Foundation/Foundation.h>
 #import "NAMidi.h"
-@import Foundation;
-
-@protocol NAMidiObserverDelegate <NSObject>
-@required
-- (void)onParseFinished:(NAMidi *)namidi context:(ParseContext *)context;
-- (void)onPlayerContextChanged:(NAMidi *)namidi context:(PlayerContext *)context;
-@end
-
-@interface NAMidiObserver : NSObject
-@property (nonatomic, weak) id<NAMidiObserverDelegate> delegate;
-@property (nonatomic) void *observerBridge;
-- (id)initWithDelegate:(id<NAMidiObserverDelegate>)delegate;
-@end
 
 typedef NS_ENUM(NSUInteger, EventType) {
     EventType_NoteEvent,
