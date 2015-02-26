@@ -235,11 +235,6 @@ NADeclareVtbl(NAMidi, PlayerObserver, __NAMidiOnPlayerContextChanged);
 NADeclareVtbl(NAMidi, FSWatcherListener, __NAMidiOnFileChanged, __NAMidiOnError);
 NADeclareClass(NAMidi, NAType, PlayerObserver, FSWatcherListener);
 
-NAMidi *NAMidiCreate()
-{
-    return NATypeNew(NAMidi);
-}
-
 void NAMidiAddObserver(NAMidi *self, void *observer)
 {
     NARetain(observer);

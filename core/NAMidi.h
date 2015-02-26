@@ -15,7 +15,6 @@ typedef struct _NAMidiObserverVtbl {
 
 NAExportClass(NAMidiObserver);
 
-extern NAMidi *NAMidiCreate();
 extern void NAMidiAddObserver(NAMidi *self, void *observer);
 extern void NAMidiSetFile(NAMidi *self, CFStringRef filepath);
 extern void NAMidiParse(NAMidi *self);
