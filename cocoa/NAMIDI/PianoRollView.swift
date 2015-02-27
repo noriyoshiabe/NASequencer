@@ -125,9 +125,8 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
     
     func drawEvents(dirtyRect: NSRect, x: CGFloat) {
         for event in self.context!.sequence!.eventsSW {
-            let tick:Int32 = event.memory.tick
-            switch MidiEventGetType(event) {
-            case EventType.NoteEvent:
+            switch event.memory.__.clazz.memory.typeID {
+            case NoteEventClass.typeID:
                 drawNote(dirtyRect, note: unsafeBitCast(event, UnsafePointer<NoteEvent>.self).memory, x: x)
             default:
                 break

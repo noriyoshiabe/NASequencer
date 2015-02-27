@@ -3,4 +3,3 @@
 //
 
 #import "NAMidiProxy.h"
-#import "NAMidi-Bridge.h"
