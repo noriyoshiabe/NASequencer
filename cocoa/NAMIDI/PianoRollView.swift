@@ -58,7 +58,7 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
     
     let currentPositionColor: NSColor = NSColor(red: 0.75, green: 0.75, blue: 0, alpha: 1)
 
-    var context: ParseContextSW?
+    var context: ParseContextAdapter?
     var playerContext: PlayerContext?
     
     override var flipped: Bool {
@@ -66,16 +66,15 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
     }
     
     override func drawRect(dirtyRect: NSRect) {
+        if nil == self.playerContext || nil == self.context?.sequence {
+            return
+        }
+        
         let playing = CGFloat(round(CGFloat(self.playerContext!.tick + 120) * widthPerTick) + 0.5)
         
-        if nil != self.context?.sequence {
-            drawGrid(dirtyRect)
-            drawEvents(dirtyRect, x: playing)
-        }
-        
-        if nil != self.playerContext {
-            drawPlayingPosition(dirtyRect, x: playing)
-        }
+        drawGrid(dirtyRect)
+        drawEvents(dirtyRect, x: playing)
+        drawPlayingPosition(dirtyRect, x: playing)
     }
     
     func drawGrid(dirtyRect: NSRect) {
@@ -101,11 +100,11 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
         var tick = Int32(left / widthPerTick)
         var tickTo =  Int32(right / widthPerTick)
         
-        var location: Location = context!.sequence!.location(tick)
+        var location: Location = context!.sequence.location(tick)
         location.t = 0
         
-        tick = context!.sequence!.tick(location)
-        var timeSign = context!.sequence!.timeSign(tick)
+        tick = context!.sequence.tick(location)
+        var timeSign = context!.sequence.timeSign(tick)
         
         while tick <= tickTo {
             (1 == location.b ? gridColorMeasure : gridColorBeat).set()
@@ -116,15 +115,15 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
             if timeSign.numerator < ++location.b {
                 location.b = 1
                 ++location.m
-                timeSign = context!.sequence!.timeSign(tick)
+                timeSign = context!.sequence.timeSign(tick)
             }
             
-            tick = context!.sequence!.tick(location)
+            tick = context!.sequence.tick(location)
         }
     }
     
     func drawEvents(dirtyRect: NSRect, x: CGFloat) {
-        for event in self.context!.sequence!.eventsSW {
+        for event in self.context!.sequence.events {
             switch event.memory.__.clazz.memory.typeID {
             case NoteEventClass.typeID:
                 drawNote(dirtyRect, note: unsafeBitCast(event, UnsafePointer<NoteEvent>.self).memory, x: x)
@@ -164,14 +163,14 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
     }
     
     func onParseFinished(namidi: NAMidiProxy, context: UnsafeMutablePointer<ParseContext>) {
-        let try: ParseContextSW = ParseContextSW(contextRef: context)
+        let try: ParseContextAdapter = ParseContextAdapter(contextRef: context)
         if try.hasError {
             return
         }
         self.context = try
         
         dispatch_async(dispatch_get_main_queue()) {
-            let width:CGFloat = CGFloat(self.context!.sequence!.length + 240) * self.widthPerTick
+            let width:CGFloat = CGFloat(self.context!.sequence.length + 240) * self.widthPerTick
             self.frame = NSMakeRect(0, 0, CGFloat(width), (127 + 2) * self.heightPerKey)
             let parent:NSScrollView = self.superview?.superview? as NSScrollView
             self.setNeedsDisplayInRect(parent.convertRect(parent.bounds, toView: self))

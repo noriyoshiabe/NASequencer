@@ -17,14 +17,14 @@ class StatusView : NSView, NAMidiProxyDelegate {
 
     @IBOutlet var playing: NSTextField?
     
-    var parseContext: ParseContextSW?
+    var parseContext: ParseContextAdapter?
     var error: ParseError?
     var context: PlayerContext?
     
     func onParseFinished(namidi: NAMidiProxy, context: UnsafeMutablePointer<ParseContext>) {
-        self.parseContext = ParseContextSW(contextRef: context)
+        self.parseContext = ParseContextAdapter(contextRef: context)
         if self.parseContext!.hasError {
-            error = self.parseContext!.context.error.memory
+            error = self.parseContext!.error
         }
         else {
             error = nil

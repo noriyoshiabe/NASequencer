@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		020C95C01AA09CEC00DA4D63 /* ParseContextAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020C95BF1AA09CEC00DA4D63 /* ParseContextAdapter.swift */; };
 		02225DDE1A906E610077ABCB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02225DDD1A906E610077ABCB /* AppDelegate.swift */; };
 		02225DE01A906E610077ABCB /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02225DDF1A906E610077ABCB /* Document.swift */; };
 		02225DE31A906E610077ABCB /* Document.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02225DE11A906E610077ABCB /* Document.xib */; };
@@ -19,7 +20,6 @@
 		02531BC71A99B45500AB9B37 /* StatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02531BC61A99B45500AB9B37 /* StatusView.swift */; };
 		02531BC91A99B58300AB9B37 /* StatusBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02531BC81A99B58300AB9B37 /* StatusBackgroundView.swift */; };
 		025F67921A90C6B600E87117 /* DocumentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 025F67911A90C6B600E87117 /* DocumentController.swift */; };
-		02A3478F1A939A5700A3AF9B /* NAMidi-Bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02A3478E1A939A5700A3AF9B /* NAMidi-Bridge.swift */; };
 		02FE8D501A923C4A00BEF62E /* libnalib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0265880A1A922B6C0030461C /* libnalib.a */; };
 		02FE8D511A923C4A00BEF62E /* libnamidi-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 026588041A922B5F0030461C /* libnamidi-core.a */; };
 		02FE8D531A923C6600BEF62E /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FE8D521A923C6600BEF62E /* CoreMIDI.framework */; };
@@ -64,6 +64,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		020C95BF1AA09CEC00DA4D63 /* ParseContextAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParseContextAdapter.swift; sourceTree = "<group>"; };
 		02225DD81A906E610077ABCB /* NAMIDI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NAMIDI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		02225DDC1A906E610077ABCB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		02225DDD1A906E610077ABCB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -82,7 +83,6 @@
 		025F67911A90C6B600E87117 /* DocumentController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentController.swift; sourceTree = "<group>"; };
 		026587FF1A922B5F0030461C /* namidi-core.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "namidi-core.xcodeproj"; path = "../core/namidi-core.xcodeproj"; sourceTree = "<group>"; };
 		026588051A922B6C0030461C /* nalib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = nalib.xcodeproj; path = ../nalib/nalib.xcodeproj; sourceTree = "<group>"; };
-		02A3478E1A939A5700A3AF9B /* NAMidi-Bridge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NAMidi-Bridge.swift"; sourceTree = "<group>"; };
 		02AA073A1A98BB6100F413A2 /* PianoRollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PianoRollView.swift; sourceTree = "<group>"; };
 		02FE8D491A9237BF00BEF62E /* NAMIDI-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NAMIDI-Bridging-Header.h"; sourceTree = "<group>"; };
 		02FE8D521A923C6600BEF62E /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
@@ -144,7 +144,7 @@
 				02FE8D491A9237BF00BEF62E /* NAMIDI-Bridging-Header.h */,
 				0222A9DD1A9F3A7400DA92B9 /* NAMidiProxy.h */,
 				0222A9DE1A9F46CF00DA92B9 /* NAMidiProxy.m */,
-				02A3478E1A939A5700A3AF9B /* NAMidi-Bridge.swift */,
+				020C95BF1AA09CEC00DA4D63 /* ParseContextAdapter.swift */,
 				02AA073A1A98BB6100F413A2 /* PianoRollView.swift */,
 				02531BC61A99B45500AB9B37 /* StatusView.swift */,
 				02531BC81A99B58300AB9B37 /* StatusBackgroundView.swift */,
@@ -329,8 +329,8 @@
 				025F67921A90C6B600E87117 /* DocumentController.swift in Sources */,
 				02531BC91A99B58300AB9B37 /* StatusBackgroundView.swift in Sources */,
 				02225DDE1A906E610077ABCB /* AppDelegate.swift in Sources */,
-				02A3478F1A939A5700A3AF9B /* NAMidi-Bridge.swift in Sources */,
 				024040631A98CE0900858340 /* PianoRollView.swift in Sources */,
+				020C95C01AA09CEC00DA4D63 /* ParseContextAdapter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
