@@ -257,23 +257,24 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
         
         let playing = CGFloat(round(CGFloat(self.playerContext!.tick + 120) * widthPerTick) + 0.5)
         
-        for event in context!.sequence.events {
-            if event.memory.__.clazz.memory.typeID == NoteEventClass.typeID {
-                let note = unsafeBitCast(event, UnsafePointer<NoteEvent>.self).memory
-                if self.playerContext!.tick > note.__.tick + note.gatetime {
-                    continue
-                }
-                else if self.playerContext!.tick < note.__.tick {
-                    break
-                }
-                
-                let left:CGFloat = round(CGFloat(note.__.tick + 120) * widthPerTick) + 0.5
-                let right:CGFloat = round(CGFloat(note.__.tick + 120 + note.gatetime)) * widthPerTick + 0.5
-                let y:CGFloat = CGFloat(127 - note.noteNo + 1) * heightPerKey + 0.5
-                let rect:NSRect = NSMakeRect(left - 5, y - 5, right - left, 10)
-                if CGRectIntersectsRect(rect, CGRectMake(playing, 0, 0, self.bounds.size.height)) {
-                    drawNote(ctx, note: note, active: true)
-                }
+        var arr:CFMutableArray = playerContext!.playing.takeUnretainedValue()
+        var size = CFArrayGetCount(arr)
+        for var i = 0; i < size; ++i {
+            var ptr = CFArrayGetValueAtIndex(arr, i)
+            var note:NoteEvent = unsafeBitCast(ptr, UnsafeMutablePointer<NoteEvent>.self).memory
+            if self.playerContext!.tick > note.__.tick + note.gatetime {
+                continue
+            }
+            else if self.playerContext!.tick < note.__.tick {
+                break
+            }
+            
+            let left:CGFloat = round(CGFloat(note.__.tick + 120) * widthPerTick) + 0.5
+            let right:CGFloat = round(CGFloat(note.__.tick + 120 + note.gatetime)) * widthPerTick + 0.5
+            let y:CGFloat = CGFloat(127 - note.noteNo + 1) * heightPerKey + 0.5
+            let rect:NSRect = NSMakeRect(left - 5, y - 5, right - left, 10)
+            if CGRectIntersectsRect(rect, CGRectMake(playing, 0, 0, self.bounds.size.height)) {
+                drawNote(ctx, note: note, active: true)
             }
         }
     }
