@@ -9,7 +9,6 @@
 import Cocoa
 import QuartzCore
 
-/*
 class PianoRollView : NSView, NAMidiProxyDelegate {
     
     let widthPerTick: CGFloat = 50.0 / 480.0
@@ -68,6 +67,9 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
     var positionLayer: CGLayer?
     var playingLayer: CGLayer?
     
+    var time:CFAbsoluteTime = CFAbsoluteTimeGetCurrent()
+    var drawCount:Int = 0;
+    
     override var flipped: Bool {
         return true
     }
@@ -97,6 +99,8 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
             CGContextDrawLayerAtPoint(context, CGPointZero, positionLayer)
             CGContextRestoreGState(context)
         }
+        
+        calcFPS();
     }
     
     func onParseFinished(namidi: NAMidiProxy, context: UnsafeMutablePointer<ParseContext>) {
@@ -279,5 +283,14 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
             }
         }
     }
+    
+    func calcFPS() {
+        ++drawCount;
+        var _time = CFAbsoluteTimeGetCurrent()
+        if 1.0 < _time - time {
+            println(String(format: "-FPS: %d", drawCount))
+            time = _time
+            drawCount = 0;
+        }
+    }
 }
-*/

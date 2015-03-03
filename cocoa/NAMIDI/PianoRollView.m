@@ -28,11 +28,12 @@
     CGLayerRef notesLayer;
     CGLayerRef positionLayer;
     CGLayerRef playingLayer;
+    
+    CFAbsoluteTime time;
+    int drawCount;
 }
 
 @end
-
-
 
 
 @implementation PianoRollView
@@ -59,6 +60,9 @@
     }
     
     currentPositionColor = CGColorCreateGenericRGB(0.75, 0.75, 0.0, 1.0);
+    
+    time = CFAbsoluteTimeGetCurrent();
+    drawCount = 0;
 }
 
 - (void)dealloc
@@ -114,6 +118,8 @@
         CGContextDrawLayerAtPoint(context, CGPointZero, positionLayer);
         CGContextRestoreGState(context);
     }
+    
+    [self calcFPS];
 }
 
 - (void)onParseFinished:(NAMidiProxy *)namidi context:(ParseContext *)context
@@ -298,6 +304,18 @@
         if (CGRectIntersectsRect(rect, CGRectMake(playing, 0, 0, self.bounds.size.height))) {
             [self drawNote:ctx note:note active: true];
         }
+    }
+}
+
+- (void)calcFPS
+{
+    ++drawCount;
+    
+    CFAbsoluteTime _time = CFAbsoluteTimeGetCurrent();
+    if (1.0 < _time - time) {
+        printf("FPS: %d\n", drawCount);
+        time = _time;
+        drawCount = 0;
     }
 }
 
