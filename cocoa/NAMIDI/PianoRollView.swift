@@ -95,7 +95,7 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
             let tick = nil != self.playerContext ? self.playerContext!.tick : 0
             
             CGContextSaveGState(context)
-            CGContextTranslateCTM(context, CGFloat(tick + 120) * widthPerTick, 0)
+            CGContextTranslateCTM(context, round(CGFloat(tick + 120) * widthPerTick), 0)
             CGContextDrawLayerAtPoint(context, CGPointZero, positionLayer)
             CGContextRestoreGState(context)
         }
@@ -112,7 +112,7 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
         
         dispatch_async(dispatch_get_main_queue()) {
             let width:CGFloat = CGFloat(self.context!.sequence.length + 240) * self.widthPerTick
-            self.frame = NSMakeRect(0, 0, CGFloat(width), (127 + 2) * self.heightPerKey)
+            self.frame = NSMakeRect(0, 0, round(width), round((127 + 2) * self.heightPerKey))
             
             let contextPtr = NSGraphicsContext.currentContext()!.graphicsPort
             let context = unsafeBitCast(contextPtr, CGContext.self)
@@ -145,7 +145,7 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
         CGContextSetLineWidth(ctx, 1.0)
         
         for i in 0...127 {
-            let y = heightPerKey * CGFloat(i + 1)
+            let y = round(heightPerKey * CGFloat(i + 1)) + 0.5
             let color:CGColor = (0 == (127 - i) % 12 ? gridColorCKey : gridColorKey).CGColor
             CGContextSetStrokeColorWithColor(ctx, color)
             CGContextMoveToPoint(ctx, 0, y)
@@ -164,7 +164,7 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
         
         while tick <= tickTo {
             let color:CGColor = (1 == location.b ? gridColorMeasure : gridColorBeat).CGColor
-            let x = round(CGFloat(tick + 120) * widthPerTick)
+            let x = round(CGFloat(tick + 120) * widthPerTick) + 0.5
             
             CGContextSetStrokeColorWithColor(ctx, color)
             CGContextMoveToPoint(ctx, x, 0)
@@ -195,9 +195,9 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
     }
     
     func drawNote(ctx: CGContext, note: NoteEvent, active: Bool) {
-        let left:CGFloat = round(CGFloat(note.__.tick + 120) * widthPerTick)
-        let right:CGFloat = round(CGFloat(note.__.tick + 120 + note.gatetime)) * widthPerTick
-        let y:CGFloat = CGFloat(127 - note.noteNo + 1) * heightPerKey
+        let left:CGFloat = round(CGFloat(note.__.tick + 120) * widthPerTick) + 0.5
+        let right:CGFloat = round(CGFloat(note.__.tick + 120 + note.gatetime) * widthPerTick) + 0.5
+        let y:CGFloat = round(CGFloat(127 - note.noteNo + 1) * heightPerKey) + 0.5
         
         let rect:NSRect = NSMakeRect(left - 5, y - 5, right - left, 10)
         let lx = CGRectGetMinX(rect)
@@ -250,8 +250,8 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
         CGContextSetLineWidth(ctx, 1.0)
         
         CGContextSetStrokeColorWithColor(ctx, currentPositionColor.CGColor)
-        CGContextMoveToPoint(ctx, 0, 0)
-        CGContextAddLineToPoint(ctx, 0, self.bounds.size.height)
+        CGContextMoveToPoint(ctx, 0.5, 0)
+        CGContextAddLineToPoint(ctx, 0.5, self.bounds.size.height)
         CGContextStrokePath(ctx)
     }
     
@@ -280,9 +280,9 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
             
             let left:CGFloat = round(CGFloat(note.__.tick + 120) * widthPerTick) + 0.5
             let right:CGFloat = round(CGFloat(note.__.tick + 120 + note.gatetime)) * widthPerTick + 0.5
-            let y:CGFloat = CGFloat(127 - note.noteNo + 1) * heightPerKey + 0.5
+            let y:CGFloat = round(CGFloat(127 - note.noteNo + 1) * heightPerKey) + 0.5
             let rect:NSRect = NSMakeRect(left - 5, y - 5, right - left, 10)
-            if CGRectIntersectsRect(rect, CGRectMake(playing, 0, 0, self.bounds.size.height)) {
+            if CGRectIntersectsRect(rect, dirtyRect) {
                 drawNote(ctx, note: note, active: true)
             }
         }
