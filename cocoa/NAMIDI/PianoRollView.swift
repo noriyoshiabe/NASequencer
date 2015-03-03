@@ -9,6 +9,7 @@
 import Cocoa
 import QuartzCore
 
+/*
 class PianoRollView : NSView, NAMidiProxyDelegate {
     
     let widthPerTick: CGFloat = 50.0 / 480.0
@@ -279,3 +280,4 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
         }
     }
 }
+*/

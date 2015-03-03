@@ -16,6 +16,7 @@
 		02225DF41A906E610077ABCB /* NAMIDITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02225DF31A906E610077ABCB /* NAMIDITests.swift */; };
 		02225E001A9096100077ABCB /* DocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02225DFF1A9096100077ABCB /* DocumentView.swift */; };
 		0222A9DF1A9F46CF00DA92B9 /* NAMidiProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 0222A9DE1A9F46CF00DA92B9 /* NAMidiProxy.m */; };
+		023A03011AA5E0C200237DE0 /* PianoRollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 023A03001AA5E0C200237DE0 /* PianoRollView.m */; };
 		024040631A98CE0900858340 /* PianoRollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02AA073A1A98BB6100F413A2 /* PianoRollView.swift */; };
 		02531BC71A99B45500AB9B37 /* StatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02531BC61A99B45500AB9B37 /* StatusView.swift */; };
 		02531BC91A99B58300AB9B37 /* StatusBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02531BC81A99B58300AB9B37 /* StatusBackgroundView.swift */; };
@@ -78,6 +79,8 @@
 		02225DFF1A9096100077ABCB /* DocumentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentView.swift; sourceTree = "<group>"; };
 		0222A9DD1A9F3A7400DA92B9 /* NAMidiProxy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NAMidiProxy.h; sourceTree = "<group>"; };
 		0222A9DE1A9F46CF00DA92B9 /* NAMidiProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NAMidiProxy.m; sourceTree = "<group>"; };
+		023A02FF1AA5E0C200237DE0 /* PianoRollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PianoRollView.h; sourceTree = "<group>"; };
+		023A03001AA5E0C200237DE0 /* PianoRollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PianoRollView.m; sourceTree = "<group>"; };
 		02531BC61A99B45500AB9B37 /* StatusView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusView.swift; sourceTree = "<group>"; };
 		02531BC81A99B58300AB9B37 /* StatusBackgroundView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusBackgroundView.swift; sourceTree = "<group>"; };
 		025F67911A90C6B600E87117 /* DocumentController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentController.swift; sourceTree = "<group>"; };
@@ -148,6 +151,8 @@
 				02AA073A1A98BB6100F413A2 /* PianoRollView.swift */,
 				02531BC61A99B45500AB9B37 /* StatusView.swift */,
 				02531BC81A99B58300AB9B37 /* StatusBackgroundView.swift */,
+				023A02FF1AA5E0C200237DE0 /* PianoRollView.h */,
+				023A03001AA5E0C200237DE0 /* PianoRollView.m */,
 			);
 			path = NAMIDI;
 			sourceTree = "<group>";
@@ -325,6 +330,7 @@
 				0222A9DF1A9F46CF00DA92B9 /* NAMidiProxy.m in Sources */,
 				02225DE01A906E610077ABCB /* Document.swift in Sources */,
 				02225E001A9096100077ABCB /* DocumentView.swift in Sources */,
+				023A03011AA5E0C200237DE0 /* PianoRollView.m in Sources */,
 				02531BC71A99B45500AB9B37 /* StatusView.swift in Sources */,
 				025F67921A90C6B600E87117 /* DocumentController.swift in Sources */,
 				02531BC91A99B58300AB9B37 /* StatusBackgroundView.swift in Sources */,
