@@ -266,6 +266,10 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
         var size = CFArrayGetCount(arr)
         for var i = 0; i < size; ++i {
             var ptr = CFArrayGetValueAtIndex(arr, i)
+            if ptr == UnsafeMutablePointer<Void>.null() {
+                continue
+            }
+            
             var note:NoteEvent = unsafeBitCast(ptr, UnsafeMutablePointer<NoteEvent>.self).memory
             if self.playerContext!.tick > note.__.tick + note.gatetime {
                 continue
