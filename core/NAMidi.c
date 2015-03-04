@@ -132,7 +132,6 @@ static void *__NAMidiRun(void *_self)
         switch (msg.kind) {
         case NAMIDI_MSG_ADD_OBSERVER:
             CFArrayAppendValue(self->observers, msg.arg);
-            NARelease(msg.arg);
             break;
         case NAMIDI_MSG_SET_FILE:
             FSWatcherRegisterFilepath(self->watcher, msg.arg);
@@ -237,7 +236,6 @@ NADeclareClass(NAMidi, NAType, PlayerObserver, FSWatcherListener);
 
 void NAMidiAddObserver(NAMidi *self, void *observer)
 {
-    NARetain(observer);
     Message msg = {NAMIDI_MSG_ADD_OBSERVER, observer};
     MessageQueuePost(self->msgQ, &msg);
 }
