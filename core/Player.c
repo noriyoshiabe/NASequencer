@@ -48,7 +48,6 @@ static void __PlayerObserverOnPlayerContextChanged(Player *self)
 
 void PlayerAddObserver(Player *self, void *observer)
 {
-    NARetain(observer);
     Message msg = {PLAYER_MSG_ADD_OBSERVER, observer};
     MessageQueuePost(self->msgQ, &msg);
 }
@@ -283,7 +282,6 @@ static void *PlayerRun(void *_self)
             switch (msg.kind) {
             case PLAYER_MSG_ADD_OBSERVER:
                 CFArrayAppendValue(self->observers, msg.arg);
-                NARelease(msg.arg);
                 break;
             case PLAYER_MSG_SET_SOURCE:
                 __PlayerSetSource(self, msg.arg);
