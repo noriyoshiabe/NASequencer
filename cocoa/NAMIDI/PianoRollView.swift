@@ -118,12 +118,15 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
         setNeedsDisplayInRect(self.bounds)
     }
     
+    func currentX() -> CGFloat {
+        let tick = nil != self.playerContext ? self.playerContext!.tick : 0
+        return round(CGFloat(tick + 120) * widthPerTick)
+    }
+    
     func onPlayerContextChanged(namidi: NAMidiProxy!, context: UnsafeMutablePointer<PlayerContext>, playingNotes:CFArray!) {
         self.playerContext = context.memory
         
-        let tick = nil != self.playerContext ? self.playerContext!.tick : 0
-        let currnentX = round(CGFloat(tick + 120) * widthPerTick)
-        setPlayingPosition(currnentX)
+        setPlayingPosition(currentX())
         
         var size = CFArrayGetCount(playingNotes)
         for var i = 0; i < size; ++i {
@@ -136,20 +139,27 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
             setNeedsDisplayInRect(noteRect(note))
         }
         
+        autoScroll()
+    }
+    
+    func autoScroll() {
         if scrolling {
             return
         }
         
+        let toX: CGFloat = currentX()
+        
         let parent:NSScrollView = self.superview?.superview? as NSScrollView
-        if !parent.documentVisibleRect.intersects(CGRectMake(currnentX, 0, 0, self.bounds.size.height)) {
+        if !parent.documentVisibleRect.intersects(CGRectMake(toX, 0, 0, self.bounds.size.height)) {
             scrolling = true
             
             NSAnimationContext.runAnimationGroup({ (context:NSAnimationContext!) -> Void in
                 context.duration = 0.5
-                parent.contentView.animator().setBoundsOrigin(CGPointMake(currnentX - 120, parent.documentVisibleRect.origin.y))
+                parent.contentView.animator().setBoundsOrigin(CGPointMake(toX - round(120 * self.widthPerTick), parent.documentVisibleRect.origin.y))
                 },
                 completionHandler: {
                     self.scrolling = false
+                    self.autoScroll()
             })
         }
     }
@@ -244,11 +254,9 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
         
         CGContextSetLineWidth(ctx, 1.0)
         
-        var active:Bool = false
-        if nil != playerContext && PLAYER_STATE_PLAYING.value == playerContext!.state.value {
-            let playing = CGFloat(round(CGFloat(self.playerContext!.tick + 120) * widthPerTick) + 0.5)
-            active = noteRect(note).intersects(CGRectMake(playing, 0, 0, self.bounds.size.height))
-        }
+        var active:Bool = nil != playerContext
+            && PLAYER_STATE_PLAYING.value == playerContext!.state.value
+            && noteRect(note).intersects(CGRectMake(currentX() + 0.5, 0, 0, self.bounds.size.height))
         
         if active {
             CGContextMoveToPoint(ctx, lx, cy)
