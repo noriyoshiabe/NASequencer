@@ -67,6 +67,8 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
     var playingPosition:CGFloat = 0
     var playingLine: CALayer?
     
+    var scrolling:Bool = false
+    
     var time:CFAbsoluteTime = CFAbsoluteTimeGetCurrent()
     var drawCount:Int = 0;
     
@@ -133,6 +135,23 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
             
             var note:NoteEvent = unsafeBitCast(ptr, UnsafeMutablePointer<NoteEvent>.self).memory
             setNeedsDisplayInRect(noteRect(note))
+        }
+        
+        if scrolling {
+            return
+        }
+        
+        let parent:NSScrollView = self.superview?.superview? as NSScrollView
+        if !parent.documentVisibleRect.intersects(CGRectMake(currnentX, 0, 0, self.bounds.size.height)) {
+            scrolling = true
+            
+            NSAnimationContext.runAnimationGroup({ (context:NSAnimationContext!) -> Void in
+                context.duration = 0.5
+                parent.contentView.animator().setBoundsOrigin(CGPointMake(currnentX - 120, parent.documentVisibleRect.origin.y))
+                },
+                completionHandler: {
+                    self.scrolling = false
+            })
         }
     }
     
