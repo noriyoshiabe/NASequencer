@@ -34,7 +34,7 @@ class StatusView : NSView, NAMidiProxyDelegate {
         
     }
     
-    func onPlayerContextChanged(namidi: NAMidiProxy, context: UnsafeMutablePointer<PlayerContext>) {
+    func onPlayerContextChanged(namidi: NAMidiProxy, context: UnsafeMutablePointer<PlayerContext>, playingNotes:CFArray!) {
         let context = context.memory
         
         if 10000 > abs(context.usec - lastUsec) {

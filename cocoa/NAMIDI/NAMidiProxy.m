@@ -49,6 +49,8 @@ static void __ObserverBridgeOnParseFinished(void *_self, NAMidi *sender, ParseCo
 
 static void __ObserverBridgeOnPlayerContextChanged(void *_self, NAMidi *sender, PlayerContext *context)
 {
+    CFArrayRef copied = CFArrayCreateCopy(NULL, context->playing);
+    
     dispatch_async(dispatch_get_main_queue(), ^{
         ObserverBridge *self = _self;
         if (self->exit) {
@@ -57,7 +59,7 @@ static void __ObserverBridgeOnPlayerContextChanged(void *_self, NAMidi *sender, 
         
         NAMidiProxy *proxy = (__bridge NAMidiProxy *)self->proxy;
         for (id<NAMidiProxyDelegate> delegate in proxy.delegates) {
-            [delegate onPlayerContextChanged:proxy context:context];
+            [delegate onPlayerContextChanged:proxy context:context playingNotes:copied];
         }
     });
 }

@@ -118,17 +118,16 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
         setNeedsDisplayInRect(self.bounds)
     }
     
-    func onPlayerContextChanged(namidi: NAMidiProxy, context: UnsafeMutablePointer<PlayerContext>) {
+    func onPlayerContextChanged(namidi: NAMidiProxy!, context: UnsafeMutablePointer<PlayerContext>, playingNotes:CFArray!) {
         self.playerContext = context.memory
         
         let tick = nil != self.playerContext ? self.playerContext!.tick : 0
         let currnentX = round(CGFloat(tick + 120) * widthPerTick)
         setPlayingPosition(currnentX)
         
-        var arr:CFMutableArray = playerContext!.playing.takeUnretainedValue()
-        var size = CFArrayGetCount(arr)
+        var size = CFArrayGetCount(playingNotes)
         for var i = 0; i < size; ++i {
-            var ptr = CFArrayGetValueAtIndex(arr, i)
+            var ptr = CFArrayGetValueAtIndex(playingNotes, i)
             if ptr == UnsafeMutablePointer<Void>.null() {
                 continue
             }

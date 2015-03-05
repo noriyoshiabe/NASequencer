@@ -30,7 +30,7 @@
 @protocol NAMidiProxyDelegate <NSObject>
 @required
 - (void)onParseFinished:(NAMidiProxy *)namidi context:(ParseContext *)context;
-- (void)onPlayerContextChanged:(NAMidiProxy *)namidi context:(PlayerContext *)context;
+- (void)onPlayerContextChanged:(NAMidiProxy *)namidi context:(PlayerContext *)context playingNotes:(CFArrayRef)playingNotes;
 @end
 
 #endif
