@@ -11,6 +11,7 @@
 typedef struct _ObserverBridge {
     NAType _;
     void *proxy;
+    bool exit;
 } ObserverBridge;
 
 @interface NAMidiProxy() {
@@ -33,20 +34,32 @@ static void *__ObserverBridgeInit(void *_self, ...)
 
 static void __ObserverBridgeOnParseFinished(void *_self, NAMidi *sender, ParseContext *context)
 {
-    ObserverBridge *self = _self;
-    NAMidiProxy *proxy = (__bridge NAMidiProxy *)self->proxy;
-    for (id<NAMidiProxyDelegate> delegate in proxy.delegates) {
-        [delegate onParseFinished:proxy context:context];
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        ObserverBridge *self = _self;
+        if (self->exit) {
+            return;
+        }
+        
+        NAMidiProxy *proxy = (__bridge NAMidiProxy *)self->proxy;
+        for (id<NAMidiProxyDelegate> delegate in proxy.delegates) {
+            [delegate onParseFinished:proxy context:context];
+        }
+    });
 }
 
 static void __ObserverBridgeOnPlayerContextChanged(void *_self, NAMidi *sender, PlayerContext *context)
 {
-    ObserverBridge *self = _self;
-    NAMidiProxy *proxy = (__bridge NAMidiProxy *)self->proxy;
-    for (id<NAMidiProxyDelegate> delegate in proxy.delegates) {
-        [delegate onPlayerContextChanged:proxy context:context];
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        ObserverBridge *self = _self;
+        if (self->exit) {
+            return;
+        }
+        
+        NAMidiProxy *proxy = (__bridge NAMidiProxy *)self->proxy;
+        for (id<NAMidiProxyDelegate> delegate in proxy.delegates) {
+            [delegate onPlayerContextChanged:proxy context:context];
+        }
+    });
 }
 
 NADeclareVtbl(ObserverBridge, NAType, __ObserverBridgeInit, NULL, NULL, NULL, NULL, NULL, NULL);
@@ -68,9 +81,14 @@ NADeclareClass(ObserverBridge, NAType, NAMidiObserver);
 
 - (void)dealloc
 {
-    NARelease(namidi);
-    NARelease(bridge);
+    bridge->exit = true;
     self.delegates = nil;
+    NARelease(namidi);
+    
+    ObserverBridge *willRelease = bridge;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NARelease(willRelease);
+    });
 }
 
 - (void)addDelegate:(id<NAMidiProxyDelegate>)delegate

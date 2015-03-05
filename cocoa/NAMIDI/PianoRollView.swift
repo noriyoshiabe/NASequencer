@@ -110,33 +110,29 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
         }
         self.context = try
         
-        dispatch_async(dispatch_get_main_queue()) {
-            let width:CGFloat = CGFloat(self.context!.sequence.length + 240) * self.widthPerTick
-            self.frame = NSMakeRect(0, 0, round(width), round((127 + 2) * self.heightPerKey))
-            
-            let contextPtr = NSGraphicsContext.currentContext()!.graphicsPort
-            let context = unsafeBitCast(contextPtr, CGContext.self)
-            
-            self.gridLayer = CGLayerCreateWithContext(context, self.bounds.size, nil)
-            self.notesLayer = CGLayerCreateWithContext(context, self.bounds.size, nil)
-            self.positionLayer = CGLayerCreateWithContext(context, CGSizeMake(1, self.bounds.size.height), nil)
-            self.playingLayer = CGLayerCreateWithContext(context, self.bounds.size, nil)
-            
-            self.drawGridLayer()
-            self.drawNotesLayer()
-            self.drawPositionLayer()
-            
-            let parent:NSScrollView = self.superview?.superview? as NSScrollView
-            self.setNeedsDisplayInRect(parent.convertRect(parent.bounds, toView: self))
-        }
+        let width:CGFloat = CGFloat(self.context!.sequence.length + 240) * self.widthPerTick
+        self.frame = NSMakeRect(0, 0, round(width), round((127 + 2) * self.heightPerKey))
+        
+        let contextPtr = NSGraphicsContext.currentContext()!.graphicsPort
+        let context = unsafeBitCast(contextPtr, CGContext.self)
+        
+        gridLayer = CGLayerCreateWithContext(context, self.bounds.size, nil)
+        notesLayer = CGLayerCreateWithContext(context, self.bounds.size, nil)
+        positionLayer = CGLayerCreateWithContext(context, CGSizeMake(1, self.bounds.size.height), nil)
+        playingLayer = CGLayerCreateWithContext(context, self.bounds.size, nil)
+        
+        drawGridLayer()
+        drawNotesLayer()
+        drawPositionLayer()
+        
+        let parent:NSScrollView = self.superview?.superview? as NSScrollView
+        setNeedsDisplayInRect(parent.convertRect(parent.bounds, toView: self))
     }
     
     func onPlayerContextChanged(namidi: NAMidiProxy, context: UnsafeMutablePointer<PlayerContext>) {
         self.playerContext = context.memory
-        dispatch_async(dispatch_get_main_queue()) {
-            let parent:NSScrollView = self.superview?.superview? as NSScrollView
-            self.setNeedsDisplayInRect(parent.convertRect(parent.bounds, toView: self))
-        }
+        let parent:NSScrollView = self.superview?.superview? as NSScrollView
+        setNeedsDisplayInRect(parent.convertRect(parent.bounds, toView: self))
     }
     
     func drawGridLayer() {
