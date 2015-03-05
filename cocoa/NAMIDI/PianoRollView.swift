@@ -63,9 +63,9 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
     var playerContext: PlayerContext?
     
     var gridLayer: CGLayer?
-    var notesLayer: CGLayer?
-    var positionLayer: CGLayer?
-    var playingLayer: CGLayer?
+    
+    var playingPosition:CGFloat = 0
+    var playingLine: CALayer?
     
     var time:CFAbsoluteTime = CFAbsoluteTimeGetCurrent()
     var drawCount:Int = 0;
@@ -74,6 +74,12 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
         return true
     }
 
+    override func awakeFromNib() {
+        playingLine = CALayer()
+        playingLine!.backgroundColor = currentPositionColor.CGColor;
+        self.layer!.addSublayer(playingLine)
+    }
+    
     override func drawRect(dirtyRect: NSRect) {
         let contextPtr = NSGraphicsContext.currentContext()!.graphicsPort
         let context = unsafeBitCast(contextPtr, CGContext.self)
@@ -83,21 +89,8 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
             CGContextDrawLayerAtPoint(context, CGPointZero, gridLayer)
         }
         
-        if nil != notesLayer {
-            CGContextDrawLayerAtPoint(context, CGPointZero, notesLayer)
-        }
-        
-        if nil != playerContext {
-            drawPlayingLayer(context, dirtyRect: dirtyRect)
-        }
-        
-        if nil != positionLayer {
-            let tick = nil != self.playerContext ? self.playerContext!.tick : 0
-            
-            CGContextSaveGState(context)
-            CGContextTranslateCTM(context, round(CGFloat(tick + 120) * widthPerTick), 0)
-            CGContextDrawLayerAtPoint(context, CGPointZero, positionLayer)
-            CGContextRestoreGState(context)
+        if nil != self.context {
+            drawNotes(context, dirtyRect: dirtyRect)
         }
         
         calcFPS();
@@ -112,27 +105,48 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
         
         let width:CGFloat = CGFloat(self.context!.sequence.length + 240) * self.widthPerTick
         self.frame = NSMakeRect(0, 0, round(width), round((127 + 2) * self.heightPerKey))
+        playingLine!.frame = NSMakeRect(0, 0, 1, self.bounds.size.height)
         
         let contextPtr = NSGraphicsContext.currentContext()!.graphicsPort
         let context = unsafeBitCast(contextPtr, CGContext.self)
         
         gridLayer = CGLayerCreateWithContext(context, self.bounds.size, nil)
-        notesLayer = CGLayerCreateWithContext(context, self.bounds.size, nil)
-        positionLayer = CGLayerCreateWithContext(context, CGSizeMake(1, self.bounds.size.height), nil)
-        playingLayer = CGLayerCreateWithContext(context, self.bounds.size, nil)
-        
         drawGridLayer()
-        drawNotesLayer()
-        drawPositionLayer()
         
-        let parent:NSScrollView = self.superview?.superview? as NSScrollView
-        setNeedsDisplayInRect(parent.convertRect(parent.bounds, toView: self))
+        setNeedsDisplayInRect(self.bounds)
     }
     
     func onPlayerContextChanged(namidi: NAMidiProxy, context: UnsafeMutablePointer<PlayerContext>) {
         self.playerContext = context.memory
-        let parent:NSScrollView = self.superview?.superview? as NSScrollView
-        setNeedsDisplayInRect(parent.convertRect(parent.bounds, toView: self))
+        
+        let tick = nil != self.playerContext ? self.playerContext!.tick : 0
+        let currnentX = round(CGFloat(tick + 120) * widthPerTick)
+        setPlayingPosition(currnentX)
+        
+        var arr:CFMutableArray = playerContext!.playing.takeUnretainedValue()
+        var size = CFArrayGetCount(arr)
+        for var i = 0; i < size; ++i {
+            var ptr = CFArrayGetValueAtIndex(arr, i)
+            if ptr == UnsafeMutablePointer<Void>.null() {
+                continue
+            }
+            
+            var note:NoteEvent = unsafeBitCast(ptr, UnsafeMutablePointer<NoteEvent>.self).memory
+            setNeedsDisplayInRect(noteRect(note))
+        }
+    }
+    
+    func setPlayingPosition(x: CGFloat) {
+        if playingPosition == x {
+            return
+        }
+        
+        CATransaction.begin()
+        CATransaction.setValue(kCFBooleanTrue, forKey: kCATransactionDisableActions)
+        playingLine!.transform = CATransform3DMakeTranslation(x, 0, 0)
+        CATransaction.commit()
+        
+        playingPosition = x
     }
     
     func drawGridLayer() {
@@ -177,25 +191,31 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
         }
     }
     
-    func drawNotesLayer() {
-        let ctx:CGContext = CGLayerGetContext(notesLayer)
-        
+    func drawNotes(ctx: CGContext, dirtyRect: NSRect) {
         for event in self.context!.sequence.events {
             switch event.memory.__.clazz.memory.typeID {
             case NoteEventClass.typeID:
-                drawNote(ctx, note: unsafeBitCast(event, UnsafePointer<NoteEvent>.self).memory, active: false)
+                let note:NoteEvent = unsafeBitCast(event, UnsafePointer<NoteEvent>.self).memory
+                if dirtyRect.intersects(noteRect(note)) {
+                    drawNote(ctx, note: note)
+                }
             default:
                 break
             }
         }
     }
     
-    func drawNote(ctx: CGContext, note: NoteEvent, active: Bool) {
+    func noteRect(note: NoteEvent) -> CGRect {
         let left:CGFloat = round(CGFloat(note.__.tick + 120) * widthPerTick) + 0.5
         let right:CGFloat = round(CGFloat(note.__.tick + 120 + note.gatetime) * widthPerTick) + 0.5
         let y:CGFloat = round(CGFloat(127 - note.noteNo + 1) * heightPerKey) + 0.5
         
-        let rect:NSRect = NSMakeRect(left - 5, y - 5, right - left, 10)
+        return NSMakeRect(left - 5, y - 5, right - left, 10)
+    }
+    
+    func drawNote(ctx: CGContext, note: NoteEvent) {
+        let rect:CGRect = noteRect(note)
+        
         let lx = CGRectGetMinX(rect)
         let cx = CGRectGetMidX(rect)
         let rx = CGRectGetMaxX(rect)
@@ -205,6 +225,12 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
         let radius:CGFloat = 5.0
         
         CGContextSetLineWidth(ctx, 1.0)
+        
+        var active:Bool = false
+        if nil != playerContext && PLAYER_STATE_PLAYING.value == playerContext!.state.value {
+            let playing = CGFloat(round(CGFloat(self.playerContext!.tick + 120) * widthPerTick) + 0.5)
+            active = noteRect(note).intersects(CGRectMake(playing, 0, 0, self.bounds.size.height))
+        }
         
         if active {
             CGContextMoveToPoint(ctx, lx, cy)
@@ -237,50 +263,6 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
             
             CGContextSetStrokeColorWithColor(ctx, noteBorderColors[Int(note.channel - 1)].CGColor)
             CGContextStrokePath(ctx)
-        }
-    }
-    
-    func drawPositionLayer() {
-        let ctx:CGContext = CGLayerGetContext(positionLayer)
-        
-        CGContextSetLineWidth(ctx, 1.0)
-        
-        CGContextSetStrokeColorWithColor(ctx, currentPositionColor.CGColor)
-        CGContextMoveToPoint(ctx, 0.5, 0)
-        CGContextAddLineToPoint(ctx, 0.5, self.bounds.size.height)
-        CGContextStrokePath(ctx)
-    }
-    
-    func drawPlayingLayer(ctx: CGContext, dirtyRect: NSRect) {
-        if PLAYER_STATE_PLAYING.value != playerContext!.state.value {
-            return
-        }
-        
-        let playing = CGFloat(round(CGFloat(self.playerContext!.tick + 120) * widthPerTick) + 0.5)
-        
-        var arr:CFMutableArray = playerContext!.playing.takeUnretainedValue()
-        var size = CFArrayGetCount(arr)
-        for var i = 0; i < size; ++i {
-            var ptr = CFArrayGetValueAtIndex(arr, i)
-            if ptr == UnsafeMutablePointer<Void>.null() {
-                continue
-            }
-            
-            var note:NoteEvent = unsafeBitCast(ptr, UnsafeMutablePointer<NoteEvent>.self).memory
-            if self.playerContext!.tick > note.__.tick + note.gatetime {
-                continue
-            }
-            else if self.playerContext!.tick < note.__.tick {
-                break
-            }
-            
-            let left:CGFloat = round(CGFloat(note.__.tick + 120) * widthPerTick) + 0.5
-            let right:CGFloat = round(CGFloat(note.__.tick + 120 + note.gatetime)) * widthPerTick + 0.5
-            let y:CGFloat = round(CGFloat(127 - note.noteNo + 1) * heightPerKey) + 0.5
-            let rect:NSRect = NSMakeRect(left - 5, y - 5, right - left, 10)
-            if CGRectIntersectsRect(rect, dirtyRect) {
-                drawNote(ctx, note: note, active: true)
-            }
         }
     }
     
