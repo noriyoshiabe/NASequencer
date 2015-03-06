@@ -173,6 +173,10 @@ static bool (*dispatchTable[TABLE_SIZE])(Expression *, Context *, void *, ParseE
 
 static bool parseExpression(Expression *expression, Context *context, void *value, ParseError *error)
 {
+#if 0
+    printf("Attempt to parse expression [%s]\n", tokenType2String(expression->tokenType));
+#endif
+
     bool (*function)(Expression *, Context *, void *, ParseError *)= dispatchTable[IDX(expression->tokenType)];
     if (!function) {
         NAPanic("Dispatch function is not found. tokenType=%s", tokenType2String(expression->tokenType));
@@ -953,6 +957,14 @@ static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context,
     }
 
     const Sequence *pattern = CFDictionaryGetValue(context->patterns, identifier);
+    if (!pattern) {
+        int len = CFStringGetLength(identifier) + 64;
+        char *buf = alloca(len);
+        snprintf(buf, len, "pattern named '%s' is missing.", NACFString2CString(identifier));
+        SET_ERROR(error, PARSE_ERROR_PATTERN_MISSING, expression, buf);
+        return ret;
+    }
+
     Context *local = ContextCreateLocal(context);
 
     count = CFArrayGetCount(pattern->timeTable->timeEvents);

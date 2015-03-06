@@ -38,3 +38,13 @@ _
 
 Z = { note step 120 { C } }
 z
+
+what
+
+what {
+  replace channel 10 from 0 to 120 {
+    note step 120 {
+      C1,C#2
+    }
+  }
+}
