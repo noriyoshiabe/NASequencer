@@ -77,7 +77,7 @@ RPAREN         ")"
 LCURLY         "{"
 RCURLY         "}"
 
-IDENTIFIER     [_[:alpha:]][[:alnum:]]*
+IDENTIFIER     [_[:alpha:]][_[:alnum:]]*
 
 EOL            \n
 
