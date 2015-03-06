@@ -716,7 +716,10 @@ static bool __dispatch__TIE(Expression *expression, Context *context, void *valu
 
 static bool __dispatch__IDENTIFIER(Expression *expression, Context *context, void *value, ParseError *error)
 {
-    *((CFStringRef *)value) = CFStringCreateWithCString(NULL, expression->v.s, kCFStringEncodingUTF8);
+    char *lower = strdup(expression->v.s);
+    for (char *p = lower; *p; ++p) *p = tolower(*p);
+    *((CFStringRef *)value) = CFStringCreateWithCString(NULL, lower, kCFStringEncodingUTF8);
+    free(lower);
     return true;
 }
 

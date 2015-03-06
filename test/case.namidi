@@ -32,5 +32,9 @@ drums_a {
   }
 }
 drums_a
-drums_a
-drums_a
+
+_ = { note step 120 { C } }
+_
+
+Z = { note step 120 { C } }
+z
