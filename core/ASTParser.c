@@ -20,6 +20,7 @@
 typedef struct _Context {
     NAType __;
     Sequence *sequence;
+    int16_t resolution;
     int32_t tick;
     int32_t channel;
     int32_t velocity;
@@ -389,15 +390,21 @@ static bool __dispatch__MB_LENGTH(Expression *expression, Context *context, void
 
 static bool __dispatch__RESOLUTION(Expression *expression, Context *context, void *value, ParseError *error)
 {
-    if (0 != context->timeTable->resolution) {
+    if (0 != context->resolution) {
         SET_ERROR(error, PARSE_ERROR_RESOLUTION_REDEFINED, expression, "resolution cannot be defined twice.");
         return false;
     }
 
-    if (!parseExpression(expression->left, context, &context->timeTable->resolution, error)) {
+    if (!parseExpression(expression->left, context, &context->resolution, error)) {
         return false;
     }
 
+    if (1 > context->resolution) {
+        SET_ERROR(error, PARSE_ERROR_INVALID_RESOLUTION, expression, "resolution is invalid.");
+        return false;
+    }
+
+    context->timeTable->resolution = context->resolution;
     return true;
 }
 

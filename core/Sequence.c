@@ -326,6 +326,7 @@ static void *__TimeTableInit(void *_self, ...)
     TimeTable *self = _self;
     self->timeEvents = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
     self->tempoEvents = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
+    self->resolution = 480;
     return self;
 }
 
