@@ -1,0 +1,13 @@
+ptn1 = {
+  note step 480 {
+    C1 D1
+  }
+}
+
+ptn2 = {
+  note step 480 {
+    C2 D2
+  }
+}
+
+ptn1, ptn2

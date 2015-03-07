@@ -83,6 +83,7 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, cons
 %token PATTERN_DEFINE
 %token PATTERN_BLOCK
 %token PATTERN_EXPAND
+%token PATTERN_EXPAND_LIST
 %token PATTERN_EXTEND_BLOCK
 
 %token TOKEN_END
@@ -113,6 +114,8 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, cons
 %type <expression> pattern_block
 %type <expression> pattern_statement_list
 %type <expression> pattern_statement
+%type <expression> pattern_expand_list
+%type <expression> pattern_expand_list_param
 %type <expression> pattern_expand
 %type <expression> pattern_expand_param_list
 %type <expression> pattern_expand_param
@@ -172,6 +175,7 @@ statement
     | note
     | pattern_define
     | pattern_expand
+    | pattern_expand_list
     ;
 
 title
@@ -280,6 +284,16 @@ pattern_statement
     | note
     | pattern_define
     | pattern_expand
+    | pattern_expand_list
+    ;
+
+pattern_expand_list
+    : pattern_expand_list_param { $$ = createExpression(&@$, PATTERN_EXPAND_LIST, $1, NULL); }
+    ;
+
+pattern_expand_list_param
+    : pattern_expand COMMA pattern_expand { $$ = addRightExpression($1, $3); }
+    | pattern_expand_list COMMA pattern_expand { $$ = addRightExpression($1, $3); }
     ;
 
 pattern_expand

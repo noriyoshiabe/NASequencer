@@ -124,6 +124,7 @@ const char *tokenType2String(int tokenType)
     CASE(PATTERN_DEFINE);
     CASE(PATTERN_BLOCK);
     CASE(PATTERN_EXPAND);
+    CASE(PATTERN_EXPAND_LIST);
     CASE(PATTERN_EXTEND_BLOCK);
     }
     return "Unknown token type";

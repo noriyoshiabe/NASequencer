@@ -1046,6 +1046,21 @@ ERROR_1:
     return ret;
 }
 
+static bool __dispatch__PATTERN_EXPAND_LIST(Expression *expression, Context *context, void *value, ParseError *error)
+{
+    int32_t from = context->tick;
+
+    for (Expression *expr = expression->left; expr; expr = expr->right) {
+        if (!parseExpression(expr, context, NULL, error)) {
+            return false;
+        }
+
+        context->tick = from;
+    }
+
+    return true;
+}
+
 static bool __dispatch__PATTERN_EXTEND_BLOCK(Expression *expression, Context *context, void *value, ParseError *error)
 {
     for (Expression *expr = expression->left; expr; expr = expr->right) {
@@ -1102,5 +1117,6 @@ static void __attribute__((constructor)) initializeTable()
     SET_FUNCTION(PATTERN_DEFINE);
     SET_FUNCTION(PATTERN_BLOCK);
     SET_FUNCTION(PATTERN_EXPAND);
+    SET_FUNCTION(PATTERN_EXPAND_LIST);
     SET_FUNCTION(PATTERN_EXTEND_BLOCK);
 }
