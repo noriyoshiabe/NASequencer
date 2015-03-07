@@ -234,7 +234,7 @@ static bool __dispatch__FLOAT(Expression *expression, Context *context, void *va
 
 static bool __dispatch__STRING(Expression *expression, Context *context, void *value, ParseError *error)
 {
-    int len = strlen(expression->v.s) - 2;
+    size_t len = strlen(expression->v.s) - 2;
     char *buf = alloca(len);
     strncpy(buf, expression->v.s + 1, len);
     buf[len] = '\0';
@@ -975,7 +975,7 @@ static bool __dispatch__PATTERN_EXPAND(Expression *expression, Context *context,
 
     const Sequence *pattern = CFDictionaryGetValue(context->patterns, identifier);
     if (!pattern) {
-        int len = CFStringGetLength(identifier) + 64;
+        size_t len = CFStringGetLength(identifier) + 64;
         char *buf = alloca(len);
         snprintf(buf, len, "pattern named '%s' is missing.", NACFString2CString(identifier));
         SET_ERROR(error, PARSE_ERROR_PATTERN_MISSING, expression, buf);
