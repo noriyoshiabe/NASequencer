@@ -6,6 +6,14 @@
 NADeclareAbstractClass(SequenceVisitor);
 NADeclareAbstractClass(SequenceElement);
 
+void SequenceSetTitle(Sequence *self, CFStringRef title)
+{
+    if (self->title) {
+        CFRelease(self->title);
+    }
+    self->title = CFRetain(title);
+}
+
 void SequenceSetTimeTable(Sequence *self, TimeTable *timeTable)
 {
     self->timeTable = NARetain(timeTable);
@@ -20,6 +28,7 @@ void SequenceAddEvents(Sequence *self, CFArrayRef events)
 static void *__SequenceInit(void *_self, ...)
 {
     Sequence *self = _self;
+    self->title = CFSTR("Untitled");
     self->events = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
     return self;
 }
@@ -28,15 +37,12 @@ static void __SequenceDestroy(void *_self)
 {
     Sequence *self = _self;
 
-    if (self->title) {
-        CFRelease(self->title);
-    }
+    CFRelease(self->title);
+    CFRelease(self->events);
 
     if (self->timeTable) {
         NARelease(self->timeTable);
     }
-
-    CFRelease(self->events);
 }
 
 static void *__SequenceDescription(const void *_self)

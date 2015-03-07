@@ -70,6 +70,7 @@ NAExportClass(MarkerEvent);
 NAExportClass(SoundSelectEvent);
 NAExportClass(NoteEvent);
 
+extern void SequenceSetTitle(Sequence *self, CFStringRef title);
 extern void SequenceSetTimeTable(Sequence *self, TimeTable *timeTable);
 extern void SequenceAddEvents(Sequence *self, CFArrayRef events);
 extern void TimeTableAddTimeEvent(TimeTable *self, TimeEvent *timeEvent);

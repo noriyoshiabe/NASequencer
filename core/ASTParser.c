@@ -21,6 +21,7 @@ typedef struct _Context {
     NAType __;
     Sequence *sequence;
     int16_t resolution;
+    CFStringRef title;
     int32_t tick;
     int32_t channel;
     int32_t velocity;
@@ -58,6 +59,10 @@ static void __ContextDestroy(void *_self)
     NARelease(self->timeTable);
     CFRelease(self->events);
     CFRelease(self->patterns);
+
+    if (self->title) {
+        CFRelease(self->title);
+    }
 }
 
 static void *__ContextDescription(const void *_self)
@@ -410,12 +415,17 @@ static bool __dispatch__RESOLUTION(Expression *expression, Context *context, voi
 
 static bool __dispatch__TITLE(Expression *expression, Context *context, void *value, ParseError *error)
 {
-    if (0 != context->sequence->title) {
+    if (NULL != context->title) {
         SET_ERROR(error, PARSE_ERROR_TITLE_REDEFINED, expression, "title cannot be defined twice.");
         return false;
     }
 
-    return parseExpression(expression->left, context, &context->sequence->title, error);
+    if (!parseExpression(expression->left, context, &context->title, error)) {
+        return false;
+    }
+
+    SequenceSetTitle(context->sequence, context->title);
+    return true;
 }
 
 static bool __dispatch__TIME(Expression *expression, Context *context, void *value, ParseError *error)
@@ -892,9 +902,9 @@ static bool __dispatch__PATTERN_DEFINE(Expression *expression, Context *context,
     }
 
     Sequence *pattern = NATypeNew(Sequence);
+    SequenceSetTitle(pattern, identifier);
     SequenceSetTimeTable(pattern, local->timeTable);
     SequenceAddEvents(pattern, local->events);
-    pattern->title = (CFStringRef)CFRetain(identifier);
     pattern->length = local->length;
     
     CFDictionarySetValue(context->patterns, identifier, pattern);
