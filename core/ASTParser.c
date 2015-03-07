@@ -13,10 +13,6 @@
 #define SET_ERROR(error, _kind, _expression, _message) \
     (error->kind = _kind, error->location = _expression->location, error->message = _message ? CFStringCreateWithCString(NULL, _message, kCFStringEncodingUTF8) : NULL)
 
-/*
- * TODO error handling
- */
-
 typedef struct _Context {
     NAType __;
     Sequence *sequence;
