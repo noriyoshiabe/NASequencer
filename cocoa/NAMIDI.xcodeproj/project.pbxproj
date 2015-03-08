@@ -19,6 +19,7 @@
 		024040631A98CE0900858340 /* PianoRollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02AA073A1A98BB6100F413A2 /* PianoRollView.swift */; };
 		02531BC71A99B45500AB9B37 /* StatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02531BC61A99B45500AB9B37 /* StatusView.swift */; };
 		02531BC91A99B58300AB9B37 /* StatusBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02531BC81A99B58300AB9B37 /* StatusBackgroundView.swift */; };
+		025715891AAC88DD00CD4124 /* PlayerContextAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 025715881AAC88DD00CD4124 /* PlayerContextAdapter.swift */; };
 		025F67921A90C6B600E87117 /* DocumentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 025F67911A90C6B600E87117 /* DocumentController.swift */; };
 		02FE8D501A923C4A00BEF62E /* libnalib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0265880A1A922B6C0030461C /* libnalib.a */; };
 		02FE8D511A923C4A00BEF62E /* libnamidi-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 026588041A922B5F0030461C /* libnamidi-core.a */; };
@@ -80,6 +81,7 @@
 		0222A9DE1A9F46CF00DA92B9 /* NAMidiProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NAMidiProxy.m; sourceTree = "<group>"; };
 		02531BC61A99B45500AB9B37 /* StatusView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusView.swift; sourceTree = "<group>"; };
 		02531BC81A99B58300AB9B37 /* StatusBackgroundView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusBackgroundView.swift; sourceTree = "<group>"; };
+		025715881AAC88DD00CD4124 /* PlayerContextAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayerContextAdapter.swift; sourceTree = "<group>"; };
 		025F67911A90C6B600E87117 /* DocumentController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentController.swift; sourceTree = "<group>"; };
 		026587FF1A922B5F0030461C /* namidi-core.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "namidi-core.xcodeproj"; path = "../core/namidi-core.xcodeproj"; sourceTree = "<group>"; };
 		026588051A922B6C0030461C /* nalib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = nalib.xcodeproj; path = ../nalib/nalib.xcodeproj; sourceTree = "<group>"; };
@@ -145,6 +147,7 @@
 				0222A9DD1A9F3A7400DA92B9 /* NAMidiProxy.h */,
 				0222A9DE1A9F46CF00DA92B9 /* NAMidiProxy.m */,
 				020C95BF1AA09CEC00DA4D63 /* ParseContextAdapter.swift */,
+				025715881AAC88DD00CD4124 /* PlayerContextAdapter.swift */,
 				02AA073A1A98BB6100F413A2 /* PianoRollView.swift */,
 				02531BC61A99B45500AB9B37 /* StatusView.swift */,
 				02531BC81A99B58300AB9B37 /* StatusBackgroundView.swift */,
@@ -324,6 +327,7 @@
 			files = (
 				0222A9DF1A9F46CF00DA92B9 /* NAMidiProxy.m in Sources */,
 				02225DE01A906E610077ABCB /* Document.swift in Sources */,
+				025715891AAC88DD00CD4124 /* PlayerContextAdapter.swift in Sources */,
 				02225E001A9096100077ABCB /* DocumentView.swift in Sources */,
 				02531BC71A99B45500AB9B37 /* StatusView.swift in Sources */,
 				025F67921A90C6B600E87117 /* DocumentController.swift in Sources */,

@@ -7,6 +7,7 @@
 //
 
 #import "NAMidiProxy.h"
+#import "NAMIDI-Swift.h"
 
 typedef struct _ObserverBridge {
     NAType _;
@@ -34,22 +35,7 @@ static void *__ObserverBridgeInit(void *_self, ...)
 
 static void __ObserverBridgeOnParseFinished(void *_self, NAMidi *sender, ParseContext *context)
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        ObserverBridge *self = _self;
-        if (self->exit) {
-            return;
-        }
-        
-        NAMidiProxy *proxy = (__bridge NAMidiProxy *)self->proxy;
-        for (id<NAMidiProxyDelegate> delegate in proxy.delegates) {
-            [delegate onParseFinished:proxy context:context];
-        }
-    });
-}
-
-static void __ObserverBridgeOnPlayerContextChanged(void *_self, NAMidi *sender, PlayerContext *context)
-{
-    CFArrayRef copied = CFArrayCreateCopy(NULL, context->playing);
+    ParseContextAdapter *adapter = [[ParseContextAdapter alloc] initWithContextRef:context];
     
     dispatch_async(dispatch_get_main_queue(), ^{
         ObserverBridge *self = _self;
@@ -59,7 +45,24 @@ static void __ObserverBridgeOnPlayerContextChanged(void *_self, NAMidi *sender, 
         
         NAMidiProxy *proxy = (__bridge NAMidiProxy *)self->proxy;
         for (id<NAMidiProxyDelegate> delegate in proxy.delegates) {
-            [delegate onPlayerContextChanged:proxy context:context playingNotes:copied];
+            [delegate onParseFinished:proxy context:adapter];
+        }
+    });
+}
+
+static void __ObserverBridgeOnPlayerContextChanged(void *_self, NAMidi *sender, PlayerContext *context)
+{
+    PlayerContextAdapter *adapter = [[PlayerContextAdapter alloc] initWithContextRef:context playing:CFArrayCreateCopy(NULL, context->playing)];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        ObserverBridge *self = _self;
+        if (self->exit) {
+            return;
+        }
+        
+        NAMidiProxy *proxy = (__bridge NAMidiProxy *)self->proxy;
+        for (id<NAMidiProxyDelegate> delegate in proxy.delegates) {
+            [delegate onPlayerContextChanged:proxy context:adapter];
         }
     });
 }

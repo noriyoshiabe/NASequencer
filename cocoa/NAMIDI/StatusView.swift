@@ -19,10 +19,9 @@ class StatusView : NSView, NAMidiProxyDelegate {
     
     var lastUsec: Int64 = 0
     
-    func onParseFinished(namidi: NAMidiProxy, context: UnsafeMutablePointer<ParseContext>) {
-        let parseContext = ParseContextAdapter(contextRef: context)
-        if parseContext.hasError {
-            let error = parseContext.error
+    func onParseFinished(namidi: NAMidiProxy, context: ParseContextAdapter) {
+        if context.hasError {
+            let error = context.error
             errorKind!.stringValue = error.message.takeUnretainedValue()
             filename!.stringValue = (error.filepath.takeUnretainedValue() as NSString).lastPathComponent
             location!.stringValue = String(format: "Line: %d   Column: %d", error.location.firstLine, error.location.firstColumn)
@@ -34,9 +33,7 @@ class StatusView : NSView, NAMidiProxyDelegate {
         
     }
     
-    func onPlayerContextChanged(namidi: NAMidiProxy, context: UnsafeMutablePointer<PlayerContext>, playingNotes:CFArray!) {
-        let context = context.memory
-        
+    func onPlayerContextChanged(namidi: NAMidiProxy, context: PlayerContextAdapter) {
         if 10000 > abs(context.usec - lastUsec) {
             return
         }

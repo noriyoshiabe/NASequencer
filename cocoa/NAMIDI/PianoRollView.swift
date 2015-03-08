@@ -60,7 +60,7 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
     let currentPositionColor: NSColor = NSColor(red: 0.75, green: 0.75, blue: 0, alpha: 1)
 
     var context: ParseContextAdapter?
-    var playerContext: PlayerContext?
+    var playerContext: PlayerContextAdapter?
     
     var gridLayer: CGLayer?
     
@@ -98,12 +98,11 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
         calcFPS();
     }
     
-    func onParseFinished(namidi: NAMidiProxy, context: UnsafeMutablePointer<ParseContext>) {
-        let try: ParseContextAdapter = ParseContextAdapter(contextRef: context)
-        if try.hasError {
+    func onParseFinished(namidi: NAMidiProxy, context: ParseContextAdapter) {
+        if context.hasError {
             return
         }
-        self.context = try
+        self.context = context
         
         let width:CGFloat = CGFloat(self.context!.sequence.length + 240) * self.widthPerTick
         self.frame = NSMakeRect(0, 0, round(width), round((127 + 2) * self.heightPerKey))
@@ -123,14 +122,14 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
         return round(CGFloat(tick + 120) * widthPerTick)
     }
     
-    func onPlayerContextChanged(namidi: NAMidiProxy!, context: UnsafeMutablePointer<PlayerContext>, playingNotes:CFArray!) {
-        self.playerContext = context.memory
+    func onPlayerContextChanged(namidi: NAMidiProxy!, context: PlayerContextAdapter) {
+        self.playerContext = context
         
         setPlayingPosition(currentX())
         
-        var size = CFArrayGetCount(playingNotes)
+        var size = CFArrayGetCount(playerContext!.playing)
         for var i = 0; i < size; ++i {
-            var ptr = CFArrayGetValueAtIndex(playingNotes, i)
+            var ptr = CFArrayGetValueAtIndex(playerContext!.playing, i)
             if ptr == UnsafeMutablePointer<Void>.null() {
                 continue
             }

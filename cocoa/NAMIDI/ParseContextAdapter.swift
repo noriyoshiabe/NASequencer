@@ -8,7 +8,7 @@
 
 import Foundation
 
-class ParseContextAdapter {
+class ParseContextAdapter : NSObject {
     private let contextRef: UnsafeMutablePointer<ParseContext>
     private let context: ParseContext
     private let sequenceAdapter: SequenceAdapter?

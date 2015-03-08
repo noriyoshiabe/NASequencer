@@ -27,10 +27,13 @@
 - (void)backward;
 @end
 
+@class ParseContextAdapter;
+@class PlayerContextAdapter;
+
 @protocol NAMidiProxyDelegate <NSObject>
 @required
-- (void)onParseFinished:(NAMidiProxy *)namidi context:(ParseContext *)context;
-- (void)onPlayerContextChanged:(NAMidiProxy *)namidi context:(PlayerContext *)context playingNotes:(CFArrayRef)playingNotes;
+- (void)onParseFinished:(NAMidiProxy *)namidi context:(ParseContextAdapter *)context;
+- (void)onPlayerContextChanged:(NAMidiProxy *)namidi context:(PlayerContextAdapter *)context;
 @end
 
 #endif
