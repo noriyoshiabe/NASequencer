@@ -39,7 +39,7 @@ WSPACE         [[:blank:]]+
 
 BNUMBER        b{NONZERO}{DIGIT}*
 KEY            c|d|e|f|g|a|b
-NOTE_NO        {KEY}(#|b)?({DIGIT}|[+-]{DIGIT})?
+NOTE_NO        {KEY}(#|b)?({DIGIT}|[+-]{DIGIT}|<{1,4}|>{1,4})?
 LOCATION       {NONZERO}{DIGIT}{0,2}:{NONZERO}{DIGIT}?(:{DIGIT}{1,3})?|m{NONZERO}{DIGIT}*|b{NONZERO}{DIGIT}*
 MB_LENGTH      {NONZERO}{DIGIT}*m|{NONZERO}{DIGIT}*b
 

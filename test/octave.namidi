@@ -1,7 +1,7 @@
-octave +2
+octave 0
 channel 16
 velocity 127
 
 note step 120 {
-  C8
+  C C< C> C>> C D#>>
 }

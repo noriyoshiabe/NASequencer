@@ -263,8 +263,10 @@ static int noteNoString2Int(Context *context, const char *noteNoString)
         {"B", 35},
     };
 
-    char octave[4] = {0};
-    char *pOctave = octave;
+    char octaveStr[4] = {0};
+    char *pOctave = octaveStr;
+
+    int tmpOctave = 0;
 
     char noteNo[8];
     strcpy(noteNo, noteNoString);
@@ -275,6 +277,14 @@ static int noteNoString2Int(Context *context, const char *noteNoString)
             *pOctave = *pNoteNo;
             *pNoteNo = '\0';
             *(++pOctave) = '\0';
+        }
+        else if (*pNoteNo == '<') {
+            --tmpOctave;
+            *pNoteNo = '\0';
+        }
+        else if (*pNoteNo == '>') {
+            ++tmpOctave;
+            *pNoteNo = '\0';
         }
         ++pNoteNo;
     }
@@ -291,8 +301,16 @@ static int noteNoString2Int(Context *context, const char *noteNoString)
         NAPanic("Unexpected note no. noteNoString=%s", noteNoString);
     }
 
-    context->octave = '\0' != octave[0] ? atoi(octave) : context->octave;
-    return baseKey + 12 * context->octave;
+    int octave;
+    if (0 != tmpOctave) {
+        octave = context->octave + tmpOctave;
+    }
+    else {
+        octave = '\0' != octaveStr[0] ? atoi(octaveStr) : context->octave;
+        context->octave = octave;
+    }
+
+    return baseKey + 12 * octave;
 }
 
 static bool __dispatch__NOTE_NO(Expression *expression, Context *context, void *value, ParseError *error)
