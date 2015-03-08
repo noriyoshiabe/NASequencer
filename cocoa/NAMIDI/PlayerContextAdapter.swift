@@ -9,21 +9,13 @@
 import Foundation
 
 class PlayerContextAdapter : NSObject {
-    private let contextRef: UnsafeMutablePointer<PlayerContext>
     private let context: PlayerContext
     
     let playing: CFArray
     
     init (contextRef: UnsafeMutablePointer<PlayerContext>, playing: CFArray) {
-        self.contextRef = contextRef
         self.context = contextRef.memory
         self.playing = playing
-        
-        NARetain(UnsafeMutablePointer<Void>(contextRef))
-    }
-    
-    deinit {
-        NARelease(UnsafeMutablePointer<Void>(contextRef))
     }
     
     var tick: Int32 {
