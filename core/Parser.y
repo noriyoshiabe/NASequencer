@@ -388,6 +388,7 @@ location_param
 
 step
     : STEP integer { $$ = createExpression(&@$, STEP, $2, NULL); }
+    | integer { $$ = createExpression(&@$, STEP, $1, NULL); }
     ;
 
 offset
