@@ -1173,15 +1173,18 @@ ERROR_1:
 static bool __dispatch__PATTERN_EXPAND_LIST(Expression *expression, Context *context, void *value, ParseError *error)
 {
     int32_t from = context->tick;
+    int32_t tick = from;
 
     for (Expression *expr = expression->left; expr; expr = expr->right) {
         if (!parseExpression(expr, context, NULL, error)) {
             return false;
         }
 
+        tick = MAX(tick, context->tick);
         context->tick = from;
     }
 
+    context->tick = tick;
     return true;
 }
 

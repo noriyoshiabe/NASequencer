@@ -1,13 +1,14 @@
 ptn1 = {
   note step 480 {
-    C1 D1
+    C1 D E F
   }
 }
 
 ptn2 = {
   note step 480 {
-    C2 D2
+    C2 D E
   }
 }
 
 ptn1, ptn2
+ptn2
