@@ -505,8 +505,17 @@ static bool __dispatch__CHANNEL(Expression *expression, Context *context, void *
             return parseExpression(expression->left, context, value, error);
         }
     }
+    
+    if (!parseExpression(expression->left, context, &context->channel, error)) {
+        return false;
+    }
 
-    return parseExpression(expression->left, context, &context->channel, error);
+    if (context->channel < 1 || 16 < context->channel) {
+        SET_ERROR(error, PARSE_ERROR_INVALID_CHANNEL, expression, "invalid range of channel.");
+        return false;
+    }
+
+    return true;
 }
 
 static bool __dispatch__VELOCITY(Expression *expression, Context *context, void *value, ParseError *error)
@@ -514,6 +523,11 @@ static bool __dispatch__VELOCITY(Expression *expression, Context *context, void 
     int32_t val; 
 
     if (!parseExpression(expression->left, context, &val, error)) {
+        return false;
+    }
+
+    if (val < 0 || 127 < val) {
+        SET_ERROR(error, PARSE_ERROR_INVALID_VELOCITY, expression, "invalid range of velocity.");
         return false;
     }
 
