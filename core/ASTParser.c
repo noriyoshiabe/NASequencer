@@ -949,6 +949,24 @@ static bool __dispatch__GATETIME_CUTOFF(Expression *expression, Context *context
     return true;
 }
 
+static bool __dispatch__NOTE_LIST(Expression *expression, Context *context, void *value, ParseError *error)
+{
+    int32_t from = context->tick;
+    int32_t tick = from;
+
+    for (Expression *expr = expression->left; expr; expr = expr->right) {
+        if (!parseExpression(expr, context, NULL, error)) {
+            return false;
+        }
+
+        tick = MAX(tick, context->tick);
+        context->tick = from;
+    }
+
+    context->tick = tick;
+    return true;
+}
+
 static bool __dispatch__NOTE_BLOCK(Expression *expression, Context *context, void *value, ParseError *error)
 {
     int32_t step = *((int32_t *)value);
@@ -1220,6 +1238,7 @@ static void __attribute__((constructor)) initializeTable()
     SET_FUNCTION(SOUND_SELECT);
     SET_FUNCTION(INTEGER_LIST);
     SET_FUNCTION(GATETIME_CUTOFF);
+    SET_FUNCTION(NOTE_LIST);
     SET_FUNCTION(NOTE_BLOCK);
     SET_FUNCTION(NOTE_NO_LIST);
     SET_FUNCTION(PATTERN_DEFINE);

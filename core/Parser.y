@@ -81,6 +81,7 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, cons
 %token SOUND_SELECT
 %token INTEGER_LIST
 %token GATETIME_CUTOFF
+%token NOTE_LIST
 %token NOTE_BLOCK
 %token NOTE_NO_LIST
 %token PATTERN_DEFINE
@@ -111,6 +112,8 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, cons
 %type <expression> sound_select
 %type <expression> sound_select_param_list
 %type <expression> sound_select_param
+%type <expression> note_list
+%type <expression> note_list_param
 %type <expression> note
 %type <expression> note_param_list
 %type <expression> note_param
@@ -180,6 +183,7 @@ statement
     | channel
     | sound_select
     | note
+    | note_list
     | pattern_define
     | pattern_expand
     | pattern_expand_list
@@ -260,6 +264,15 @@ sound_select_param
     | from
     ;
 
+note_list
+    : note_list_param { $$ = createExpression(&@$, NOTE_LIST, $1, NULL); }
+    ;
+
+note_list_param
+    : note COMMA note { $$ = addRightExpression($1, $3); }
+    | note_list_param COMMA note { $$ = addRightExpression($1, $3); }
+    ;
+
 note
     : NOTE note_param_list { $$ = createExpression(&@$, NOTE, $2, NULL); }
     ;
@@ -295,6 +308,7 @@ pattern_statement
     | channel
     | sound_select
     | note
+    | note_list
     | pattern_define
     | pattern_expand
     | pattern_expand_list

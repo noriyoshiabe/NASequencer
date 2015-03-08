@@ -121,6 +121,7 @@ const char *tokenType2String(int tokenType)
     CASE(SOUND_SELECT);
     CASE(INTEGER_LIST);
     CASE(GATETIME_CUTOFF);
+    CASE(NOTE_LIST);
     CASE(NOTE_BLOCK);
     CASE(NOTE_NO_LIST);
     CASE(PATTERN_DEFINE);
