@@ -46,6 +46,8 @@ static void *__ContextInit(void *_self, ...)
     self->events = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
     self->patterns = CFDictionaryCreateMutable(NULL, 0, &kCFTypeDictionaryKeyCallBacks, NACFDictionaryValueCallBacks);
     self->channel = 1;
+    self->octave = 2;
+    self->velocity = 100;
 
     return self;
 }
