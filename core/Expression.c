@@ -84,6 +84,7 @@ const char *tokenType2String(int tokenType)
     CASE(NOTE_NO);
     CASE(LOCATION);
     CASE(MB_LENGTH);
+    CASE(QUANTIZE);
     CASE(RESOLUTION);
     CASE(TITLE);
     CASE(TIME);

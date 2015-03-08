@@ -35,6 +35,7 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, cons
 %token <s>NOTE_NO
 %token <s>LOCATION
 %token <s>MB_LENGTH
+%token <s>QUANTIZE
 
 %token RESOLUTION
 %token TITLE
@@ -139,6 +140,7 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, cons
 %type <expression> to
 %type <expression> location_param
 %type <expression> step
+%type <expression> quantize
 %type <expression> offset
 %type <expression> length
 %type <expression> length_param
@@ -389,6 +391,12 @@ location_param
 step
     : STEP integer { $$ = createExpression(&@$, STEP, $2, NULL); }
     | integer { $$ = createExpression(&@$, STEP, $1, NULL); }
+    | STEP quantize { $$ = createExpression(&@$, STEP, $2, NULL); }
+    | quantize { $$ = createExpression(&@$, STEP, $1, NULL); }
+    ;
+
+quantize
+    : QUANTIZE { $$ = createStringValue(&@$, QUANTIZE, $1); }
     ;
 
 offset

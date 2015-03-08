@@ -12,6 +12,7 @@
 #define IDX(type) (type - TOKEN_BEGIN - 1)
 #define SET_ERROR(error, _kind, _expression, _message) \
     (error->kind = _kind, error->location = _expression->location, error->message = _message ? CFStringCreateWithCString(NULL, _message, kCFStringEncodingUTF8) : NULL)
+#define isPowerOf2(x) ((x != 0) && ((x & (x - 1)) == 0))
 
 typedef struct _Context {
     NAType __;
@@ -419,6 +420,49 @@ static bool __dispatch__MB_LENGTH(Expression *expression, Context *context, void
     return true;
 }
 
+static bool __dispatch__QUANTIZE(Expression *expression, Context *context, void *value, ParseError *error)
+{
+    char *str = alloca(strlen(expression->v.s) + 1);
+    strcpy(str, expression->v.s);
+
+    bool dot = false;
+    bool triplet = false;
+
+    char *pch;
+    if ((pch = strrchr(str, '.'))) {
+        dot = true;
+        *pch = '\0';
+    }
+    else if ((pch = strrchr(str, '3'))) {
+        triplet = true;
+        *pch = '\0';
+    }
+
+    int denominator = atoi(str + 2);
+    if (!isPowerOf2(denominator)) {
+        SET_ERROR(error, PARSE_ERROR_INVALID_QUANTIZE, expression, "quantize denominator is not power of 2");
+        return false;
+    }
+
+    int32_t step;
+    if (1 == denominator) {
+        step = TimeTableMBLength2Tick(context->timeTable, 0, 1, 0);
+    }
+    else {
+        step = context->timeTable->resolution * 4 / denominator;
+    }
+
+    if (dot) {
+        step += step / 2;
+    }
+
+    if (triplet) {
+        step = step * 2 / 3;
+    }
+
+    *((int32_t *)value) = step;
+    return true;
+}
 
 static bool __dispatch__RESOLUTION(Expression *expression, Context *context, void *value, ParseError *error)
 {
@@ -817,9 +861,7 @@ static bool __dispatch__TIME_SIGN(Expression *expression, Context *context, void
         return false;
     }
 
-#define isPowerOf2(x) ((x != 0) && ((x & (x - 1)) == 0))
     if (!isPowerOf2(timeEvent->denominator)) {
-#undef isPowerOf2
         SET_ERROR(error, PARSE_ERROR_INVALID_TIME_SIGN, expression, "time sign denominator is not power of 2");
         return false;
     }
@@ -1139,6 +1181,7 @@ static void __attribute__((constructor)) initializeTable()
     SET_FUNCTION(NOTE_NO);
     SET_FUNCTION(LOCATION);
     SET_FUNCTION(MB_LENGTH);
+    SET_FUNCTION(QUANTIZE);
 
     SET_FUNCTION(RESOLUTION);
     SET_FUNCTION(TITLE);

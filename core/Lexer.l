@@ -42,6 +42,7 @@ KEY            c|d|e|f|g|a|b
 NOTE_NO        {KEY}(#|b)?({DIGIT}|[+-]{DIGIT}|<{1,4}|>{1,4})?
 LOCATION       {NONZERO}{DIGIT}{0,2}:{NONZERO}{DIGIT}?(:{DIGIT}{1,3})?|m{NONZERO}{DIGIT}*|b{NONZERO}{DIGIT}*
 MB_LENGTH      {NONZERO}{DIGIT}*m|{NONZERO}{DIGIT}*b
+QUANTIZE       1\/{INTEGER}({WSPACE}3|{WSPACE}?\.)?
 
 RESOLUTION     resolution
 TITLE          title
@@ -99,6 +100,7 @@ LINE_COMMENT   \/\/.*$
 {NOTE_NO}        { yylval->s = strdup(yytext); return NOTE_NO; }
 {LOCATION}       { yylval->s = strdup(yytext); return LOCATION; }
 {MB_LENGTH}      { yylval->s = strdup(yytext); return MB_LENGTH; }
+{QUANTIZE}       { yylval->s = strdup(yytext); return QUANTIZE; }
 
 {RESOLUTION}     { return RESOLUTION; }
 {TITLE}          { return TITLE; }
