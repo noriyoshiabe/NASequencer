@@ -664,6 +664,10 @@ static bool __dispatch__NOTE(Expression *expression, Context *context, void *val
             success = parseExpression(expr, context, &context->tick, error);
             break;
         case STEP:
+            if (-1 != step) {
+                SET_ERROR(error, PARSE_ERROR_NOTE_BLOCK_STEP_REDEFINED, expression, "step for note block cannot be specified twice.");
+                return false;
+            }
             success = parseExpression(expr, context, &step, error);
             break;
         case NOTE_BLOCK:
@@ -678,6 +682,11 @@ static bool __dispatch__NOTE(Expression *expression, Context *context, void *val
 
     if (!noteBlockExpr) {
         SET_ERROR(error, PARSE_ERROR_NOTE_BLOCK_MISSING, expression, "note block is missing.");
+        return false;
+    }
+
+    if (-1 == step) {
+        SET_ERROR(error, PARSE_ERROR_NOTE_BLOCK_STEP_MISSING, expression, "step for note block is not specified.");
         return false;
     }
 
