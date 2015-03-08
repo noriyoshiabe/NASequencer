@@ -320,7 +320,7 @@ pattern_expand_list
 
 pattern_expand_list_param
     : pattern_expand COMMA pattern_expand { $$ = addRightExpression($1, $3); }
-    | pattern_expand_list COMMA pattern_expand { $$ = addRightExpression($1, $3); }
+    | pattern_expand_list_param COMMA pattern_expand { $$ = addRightExpression($1, $3); }
     ;
 
 pattern_expand
