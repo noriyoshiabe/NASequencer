@@ -79,6 +79,7 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
     override func awakeFromNib() {
         playingLine = CALayer()
         playingLine!.backgroundColor = currentPositionColor.CGColor;
+        playingLine!.frame = NSMakeRect(0, 0, 1, round((127 + 2) * self.heightPerKey))
         self.layer!.addSublayer(playingLine)
     }
     
@@ -106,7 +107,6 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
         
         let width:CGFloat = CGFloat(self.context!.sequence.length + 240) * self.widthPerTick
         self.frame = NSMakeRect(0, 0, round(width), round((127 + 2) * self.heightPerKey))
-        playingLine!.frame = NSMakeRect(0, 0, 1, self.bounds.size.height)
         
         let contextPtr = NSGraphicsContext.currentContext()!.graphicsPort
         let context = unsafeBitCast(contextPtr, CGContext.self)
