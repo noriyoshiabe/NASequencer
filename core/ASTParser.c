@@ -297,26 +297,35 @@ static int noteNoString2Int(Context *context, const char *noteNoString)
 
 static bool __dispatch__NOTE_NO(Expression *expression, Context *context, void *value, ParseError *error)
 {
+    bool ret = false;
     NoteBlockContext *nbContext = value;
 
     NoteEvent *noteEvent = NATypeNew(NoteEvent, nbContext->tick);
     noteEvent->channel = context->channel;
     noteEvent->noteNo = noteNoString2Int(context, expression->v.s);
     noteEvent->velocity = context->velocity;
+
+    if (127 < noteEvent->noteNo) {
+        SET_ERROR(error, PARSE_ERROR_INVALID_NOTE_NO, expression, "invalid range of note no.");
+        goto ERROR;
+    }
     
     int32_t gatetime = 0 < context->gatetime ? context->gatetime : context->gatetime + nbContext->step;
     noteEvent->gatetime = 0 < gatetime ? gatetime : 0;
 
     for (Expression *expr = expression->left; expr; expr = expr->right) {
         if (!parseExpression(expr, context, noteEvent, error)) {
-            return false;
+            goto ERROR;
         }
     }
 
     NoteBlockContextAddEvent(nbContext, noteEvent);
-    NARelease(noteEvent);
+    
+    ret = true;
 
-    return true;
+ERROR:
+    NARelease(noteEvent);
+    return ret;
 }
 
 static bool __dispatch__LOCATION(Expression *expression, Context *context, void *value, ParseError *error)

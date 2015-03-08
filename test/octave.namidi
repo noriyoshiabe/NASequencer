@@ -1,6 +1,7 @@
 octave +2
-channel 1
+channel 16
+velocity 127
 
 note step 120 {
-  C
+  C8
 }

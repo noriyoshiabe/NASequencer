@@ -23,6 +23,7 @@ typedef enum {
     PARSE_ERROR_INVALID_CHANNEL,
     PARSE_ERROR_INVALID_VELOCITY,
     PARSE_ERROR_INVALID_OCTAVE,
+    PARSE_ERROR_INVALID_NOTE_NO,
 } ParseErrorKind;
 
 typedef struct _ParseError {
@@ -54,6 +55,7 @@ static inline const char *ParseError2String(ParseErrorKind kind)
     ERR2STR_AND_RETURN(PARSE_ERROR_INVALID_CHANNEL, kind);
     ERR2STR_AND_RETURN(PARSE_ERROR_INVALID_VELOCITY, kind);
     ERR2STR_AND_RETURN(PARSE_ERROR_INVALID_OCTAVE, kind);
+    ERR2STR_AND_RETURN(PARSE_ERROR_INVALID_NOTE_NO, kind);
 #undef ERR2STR_AND_RETURN
     return "Unknown error kind";
 }
