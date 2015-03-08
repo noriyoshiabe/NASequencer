@@ -45,6 +45,8 @@ static void *__ContextInit(void *_self, ...)
     self->timeTable = NATypeNew(TimeTable);
     self->events = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
     self->patterns = CFDictionaryCreateMutable(NULL, 0, &kCFTypeDictionaryKeyCallBacks, NACFDictionaryValueCallBacks);
+    self->channel = 1;
+
     return self;
 }
 
