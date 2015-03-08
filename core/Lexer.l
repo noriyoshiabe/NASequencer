@@ -32,6 +32,7 @@
 NONZERO        [1-9]
 DIGIT          [[:digit:]]
 INTEGER        {NONZERO}{DIGIT}*|0
+SIGNED_INT     [+-]?{INTEGER}
 FLOAT          ({NONZERO}{DIGIT}*\.?|0\.|\.{DIGIT}){DIGIT}*|0
 STRING         \"[^\"]*\"|'[^']*'
 WSPACE         [[:blank:]]+
@@ -52,6 +53,7 @@ SELECT         select
 CHANNEL        channel
 VELOCITY       velocity
 GATETIME       gatetime
+OCTAVE         octave
 CUTOFF         cutoff
 NOTE           note
 
@@ -88,6 +90,7 @@ LINE_COMMENT   \/\/.*$
 <<EOF>>          { return 0; }
 
 {INTEGER}        { yylval->i = atoi(yytext); return INTEGER; }
+{SIGNED_INT}     { yylval->i = atoi(yytext); return SIGNED_INT; }
 {FLOAT}          { yylval->f = atof(yytext); return FLOAT; }
 {STRING}         { yylval->s = strdup(yytext); return STRING; }
 {WSPACE}         { }
@@ -107,6 +110,7 @@ LINE_COMMENT   \/\/.*$
 {CHANNEL}        { return CHANNEL; }
 {VELOCITY}       { return VELOCITY; }
 {GATETIME}       { return GATETIME; }
+{OCTAVE}         { return OCTAVE; }
 {CUTOFF}         { return CUTOFF; }
 {NOTE}           { return NOTE; }
 

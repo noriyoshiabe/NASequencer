@@ -1,0 +1,6 @@
+octave +2
+channel 1
+
+note step 120 {
+  C
+}

@@ -94,6 +94,7 @@ const char *tokenType2String(int tokenType)
     CASE(CHANNEL);
     CASE(VELOCITY);
     CASE(GATETIME);
+    CASE(OCTAVE);
     CASE(CUTOFF);
     CASE(NOTE);
     CASE(STEP);

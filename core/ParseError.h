@@ -20,6 +20,7 @@ typedef enum {
     PARSE_ERROR_INVALID_MSB,
     PARSE_ERROR_INVALID_LSB,
     PARSE_ERROR_INVALID_PROGRAM_NO,
+    PARSE_ERROR_INVALID_OCTAVE,
 } ParseErrorKind;
 
 typedef struct _ParseError {
@@ -48,6 +49,7 @@ static inline const char *ParseError2String(ParseErrorKind kind)
     ERR2STR_AND_RETURN(PARSE_ERROR_INVALID_MSB, kind);
     ERR2STR_AND_RETURN(PARSE_ERROR_INVALID_LSB, kind);
     ERR2STR_AND_RETURN(PARSE_ERROR_INVALID_PROGRAM_NO, kind);
+    ERR2STR_AND_RETURN(PARSE_ERROR_INVALID_OCTAVE, kind);
 #undef ERR2STR_AND_RETURN
     return "Unknown error kind";
 }

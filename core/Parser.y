@@ -27,6 +27,7 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, cons
 %token TOKEN_BEGIN
 
 %token <i>INTEGER
+%token <i>SIGNED_INT
 %token <f>FLOAT
 %token <s>STRING
 
@@ -45,6 +46,7 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, cons
 %token CHANNEL
 %token VELOCITY
 %token GATETIME
+%token OCTAVE
 %token CUTOFF
 %token NOTE
 
@@ -103,6 +105,7 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, cons
 %type <expression> marker_param
 %type <expression> velocity
 %type <expression> gatetime
+%type <expression> octave
 %type <expression> channel
 %type <expression> sound_select
 %type <expression> sound_select_param_list
@@ -128,6 +131,7 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, cons
 %type <expression> pattern_extend_param
 %type <expression> string
 %type <expression> integer
+%type <expression> signed_int
 %type <expression> float
 %type <expression> time_sign
 %type <expression> mb_length
@@ -170,6 +174,7 @@ statement
     | marker
     | velocity
     | gatetime
+    | octave
     | channel
     | sound_select
     | note
@@ -232,6 +237,11 @@ gatetime
     | GATETIME CUTOFF integer { $$ = createExpression(&@$, GATETIME_CUTOFF, $3, NULL); }
     ;
 
+octave
+    : OCTAVE integer { $$ = createExpression(&@$, OCTAVE, $2, NULL); }
+    | OCTAVE signed_int { $$ = createExpression(&@$, OCTAVE, $2, NULL); }
+    ;
+
 channel
     : CHANNEL integer { $$ = createExpression(&@$, CHANNEL, $2, NULL); }
     ;
@@ -279,6 +289,7 @@ pattern_statement
     | marker
     | velocity
     | gatetime
+    | octave
     | channel
     | sound_select
     | note
@@ -347,6 +358,9 @@ string
     ;
 integer
     : INTEGER { $$ = createIntegerValue(&@$, INTEGER, $1); }
+    ;
+signed_int
+    : SIGNED_INT { $$ = createIntegerValue(&@$, INTEGER, $1); }
     ;
 float
     : FLOAT { $$ = createFloatValue(&@$, FLOAT, $1); }

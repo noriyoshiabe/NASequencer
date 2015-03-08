@@ -551,6 +551,20 @@ static bool __dispatch__GATETIME(Expression *expression, Context *context, void 
     return true;
 }
 
+static bool __dispatch__OCTAVE(Expression *expression, Context *context, void *value, ParseError *error)
+{
+    if (!parseExpression(expression->left, context, &context->octave, error)) {
+        return false;
+    }
+
+    if (context->octave < -2 || 8 < context->octave) {
+        SET_ERROR(error, PARSE_ERROR_INVALID_OCTAVE, expression, "invalid range of octave.");
+        return false;
+    }
+
+    return true;
+}
+
 static bool __dispatch__NOTE(Expression *expression, Context *context, void *value, ParseError *error)
 {
     int32_t step = -1;
@@ -1093,6 +1107,7 @@ static void __attribute__((constructor)) initializeTable()
     SET_FUNCTION(CHANNEL);
     SET_FUNCTION(VELOCITY);
     SET_FUNCTION(GATETIME);
+    SET_FUNCTION(OCTAVE);
     SET_FUNCTION(NOTE);
 
     SET_FUNCTION(STEP);
