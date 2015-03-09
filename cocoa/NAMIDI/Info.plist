@@ -27,6 +27,10 @@
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleHelpBookFolder</key>
+	<string>$(PRODUCT_NAME).help</string>
+	<key>CFBundleHelpBookName</key>
+	<string>$(PRODUCT_NAME) Help</string>
 	<key>CFBundleIconFile</key>
 	<string></string>
 	<key>CFBundleIdentifier</key>

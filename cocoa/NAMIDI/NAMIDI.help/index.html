@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="AppleTitle" content="NAMIDI Help">
+<title>NAMIDI Help</title>
+</head>
+<body>
+<h1>NAMIDI</h1>
+
+<h2>Table of Contents</h2>
+
+<ul>
+  <li>
+    <a href="#about-namidi">About NAMIDI</a>
+  </li>
+  <li>
+    <a href="#getting-started">Getting Started</a>
+  </li>
+  <li>
+    <a href="#syntax-reference">Syntax Reference</a>
+    <ul>
+      <li>
+        <a href="#syntax-reference-note">note</a>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="about-namidi">About NAMIDI</h2>
+<p>
+TODO
+</p>
+<h2 id="getting-started">Getting Started</h2>
+<p>
+TODO
+</p>
+<h2 id="syntax-reference">Syntax Reference</h2>
+<h3 id="syntax-reference-note">note</h3>
+
+<h4>Synopsis</h4>
+<code><b>note <i>QUANTIZE|STEP</i> [<i>OPTION</i>]... <i>NOTE BLOCK</i> [, note ...]</b></code>
+
+<h4>basics</h4>
+<h5>QUANTIZE</h5>
+<pre><code>note 1/4 {
+  C D E ~
+}</code></pre>
+<h5>STEP</h5>
+<pre><code>note 480 {
+  C D E ~
+}</code></pre>
+<h5>NOTE BLOCK</h5>
+<pre><code>note 1/8 {
+  C1  // C, octave is 1
+  C#2 // C sharp, octave is 2
+  D>  // D, octave is temporary 3
+  D<< // D, octave is temporary 0
+  Bb  // B flat, octave is last value (in this case 2) if not specified
+  ~   // extend prev note with specified QUANTIZE or STEP length
+  ^   // rest for specified QUANTIZE or STEP length
+  C,E,G // C chord
+}</code></pre>
+
+<h4>options</h4>
+<h5>from</h5>
+<pre><code>note 1/4 from 1920 { C } // by step
+note 1/4 from m2 { C }   // by measure
+note 1/4 from b2 { C }   // by beat
+note 1/4 from 2:1 { C }  // by measure and beat
+note 1/4 from 2:1:120 { C } // by measure, beat and tick</code></pre>
+
+<h4>with other note</h4>
+
+<pre><code>note 1/4 {
+  C D E ~
+},
+note 1/4 {
+  B B B B
+}</code></pre></code></pre>
+
+</body>
+</html>
