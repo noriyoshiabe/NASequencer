@@ -24,53 +24,55 @@ td {
 
 % directives.each do |dir|
 <h2 id="<%= dir['name'] %>" style="display: inline;"><%= dir['name'] %></h2><p><%= dir['synopsis'] %></p>
-% if dir['description']
+%   if dir['description']
 <pre><%= dir['description'] %></pre>
-% end
+%   end
 
-% if dir['required']
+%   if dir['required']
 <h3>Required</h3>
-% dir['required'].each do |req|
+%     dir['required'].each do |req|
 <h4><%= req['name'] %></h4>
-% if req['description']
+%       if req['description']
 <pre><%= req['description'] %></pre>
-% end
-% if req['example']
+%       end
+%
+%       if req['example']
 <h5>Example</h5>
 <table>
   <tr>
-% req['example'].each do |code|
+%         req['example'].each do |code|
     <td>
       <pre><code><%= code %></code></pre>
     </td>
-% end
+%         end
   </tr>
 </table>
-% end
-% end
-% end
+%       end
+%     end
+%   end
 
-% if dir['optional']
+%   if dir['optional']
 <h3>Optional</h3>
-% dir['optional'].each do |opt|
+%     dir['optional'].each do |opt|
 <h4><%= opt['name'] %></h4>
-% if opt['description']
+%       if opt['description']
 <pre><%= opt['description'] %></pre>
-% end
-% if opt['example']
+%       end
+%
+%       if opt['example']
 <h5>Example</h5>
 <table>
   <tr>
-% opt['example'].each do |code|
+%         opt['example'].each do |code|
     <td>
       <pre><code><%= code %></code></pre>
     </td>
-% end
+%         end
   </tr>
 </table>
-% end
-% end
-% end
+%       end
+%     end
+%   end
 % end
 
 </body>
