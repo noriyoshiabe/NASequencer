@@ -27,7 +27,9 @@ bool MidiClientOpen(MidiClient *self)
 {
     self->destPointRef = MIDIGetDestination(0);
     if (!self->destPointRef) {
+#if 0
         printf("midi output destination is not available.\n");
+#endif
         return false;
     }
 
@@ -68,6 +70,11 @@ void MidiClientClose(MidiClient *self)
 {
     MIDIPortDispose(self->outPortRef);
 	MIDIClientDispose(self->clientRef);
+}
+
+bool MidiClientIsAvailable(MidiClient *self)
+{
+    return !!self->destPointRef;
 }
 
 NADeclareVtbl(MidiClient, NAType, __MidiClientInit, __MidiClientDestroy, NULL, NULL, NULL, NULL, NULL);

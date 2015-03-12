@@ -46,6 +46,18 @@ static void __PlayerObserverOnPlayerContextChanged(Player *self)
     }
 }
 
+static void __PlayerObserverOnError(Player *self, PlayerError error)
+{
+    CFIndex count = CFArrayGetCount(self->observers);
+    for (int i = 0; i < count; ++i) {
+        void *observer = (void *)CFArrayGetValueAtIndex(self->observers, i);
+        void (*onError)(void *, Player *, PlayerError) = NAVtbl(observer, PlayerObserver)->onError;
+        if (onError) {
+            onError(observer, self, error);
+        }
+    }
+}
+
 void PlayerAddObserver(Player *self, void *observer)
 {
     Message msg = {PLAYER_MSG_ADD_OBSERVER, observer};
@@ -282,6 +294,9 @@ static void *PlayerRun(void *_self)
             switch (msg.kind) {
             case PLAYER_MSG_ADD_OBSERVER:
                 CFArrayAppendValue(self->observers, msg.arg);
+                if (!MidiClientIsAvailable(self->client)) {
+                    __PlayerObserverOnError(self, PLAYER_ERROR_MIDI_CLIENT_NOT_AVAILABLE);
+                }
                 break;
             case PLAYER_MSG_SET_SOURCE:
                 __PlayerSetSource(self, msg.arg);

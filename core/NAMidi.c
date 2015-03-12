@@ -56,6 +56,18 @@ static void __NAMidiObserverOnPlayerContextChanged(NAMidi *self, PlayerContext *
     }
 }
 
+static void __NAMidiObserverOnError(NAMidi *self, const char *typeId, uint32_t error)
+{
+    CFIndex count = CFArrayGetCount(self->observers);
+    for (int i = 0; i < count; ++i) {
+        void *observer = (void *)CFArrayGetValueAtIndex(self->observers, i);
+        void (*onError)(void *, NAMidi *sender, const char *, uint32_t) = NAVtbl(observer, NAMidiObserver)->onError;
+        if (onError) {
+            onError(observer, self, typeId, error);
+        }
+    }
+}
+
 static void __NAMidiParse(NAMidi *self)
 {
     ParseContext *context = ParseContextParse(self->filepath);
@@ -224,14 +236,19 @@ static void __NAMidiOnPlayerContextChanged(void *self, Player *sender, PlayerCon
     __NAMidiObserverOnPlayerContextChanged(self, context);
 }
 
-static void __NAMidiOnError(void *self, FSWatcher *fswatcher, int error, CFStringRef message)
+static void __NAMidiOnPlayerError(void *self, Player *sender, PlayerError error)
+{
+    __NAMidiObserverOnError(self, PlayerID, error);
+}
+
+static void __NAMidiOnFSWatcherError(void *self, FSWatcher *fswatcher, int error, CFStringRef message)
 {
     CFShow(message);
 }
 
 NADeclareVtbl(NAMidi, NAType, __NAMidiInit, __NAMidiDestroy, NULL, NULL, NULL, NULL, NULL);
-NADeclareVtbl(NAMidi, PlayerObserver, __NAMidiOnPlayerContextChanged);
-NADeclareVtbl(NAMidi, FSWatcherListener, __NAMidiOnFileChanged, __NAMidiOnError);
+NADeclareVtbl(NAMidi, PlayerObserver, __NAMidiOnPlayerContextChanged, __NAMidiOnPlayerError);
+NADeclareVtbl(NAMidi, FSWatcherListener, __NAMidiOnFileChanged, __NAMidiOnFSWatcherError);
 NADeclareClass(NAMidi, NAType, PlayerObserver, FSWatcherListener);
 
 void NAMidiAddObserver(NAMidi *self, void *observer)

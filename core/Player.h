@@ -10,6 +10,10 @@ typedef enum _PlayerState {
     PLAYER_STATE_EXIT,
 } PlayerState;
 
+typedef enum _PlayerError {
+    PLAYER_ERROR_MIDI_CLIENT_NOT_AVAILABLE
+} PlayerError;
+
 typedef struct _PlayerContext {
     PlayerState state;
     int64_t usec;
@@ -26,6 +30,7 @@ NAExportClass(Player);
 
 typedef struct _PlayerObserverVtbl {
     void (*onPlayerContextChanged)(void *self, Player *sender, PlayerContext *context);
+    void (*onError)(void *self, Player *sender, PlayerError error);
 } PlayerObserverVtbl;
 
 NAExportClass(PlayerObserver);

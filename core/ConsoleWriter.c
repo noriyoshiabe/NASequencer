@@ -217,6 +217,18 @@ void __ConsoleWriterOnPlayerContextChanged(void *self, NAMidi *sender, PlayerCon
             context->denominator);
 }
 
+void __ConsoleWriterOnError(void *self, NAMidi *sender, const char *typeId, uint32_t error)
+{
+    if (PlayerID == typeId) {
+        switch (error) {
+        case PLAYER_ERROR_MIDI_CLIENT_NOT_AVAILABLE:
+            usleep(100 * 1000); // TODO controll by main
+            printf("MIDI client is not available.\n\n");
+            break;
+        }
+    }
+}
+
 NADeclareVtbl(ConsoleWriter, NAType,
         __ConsoleWriterInit,
         __ConsoleWriterDestroy,
@@ -237,6 +249,6 @@ NADeclareVtbl(ConsoleWriter, SequenceVisitor,
         __ConsoleWriterVisitNoteEvent,
         );
 
-NADeclareVtbl(ConsoleWriter, NAMidiObserver, __ConsoleWriterOnParseFinished, __ConsoleWriterOnPlayerContextChanged);
+NADeclareVtbl(ConsoleWriter, NAMidiObserver, __ConsoleWriterOnParseFinished, __ConsoleWriterOnPlayerContextChanged, __ConsoleWriterOnError);
 
 NADeclareClass(ConsoleWriter, NAType, SequenceVisitor, NAMidiObserver);
