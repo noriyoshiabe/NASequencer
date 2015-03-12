@@ -174,7 +174,7 @@
 		02D0E9521A921FB100430C96 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0610;
+				LastUpgradeCheck = 0620;
 				TargetAttributes = {
 					02D0E9591A921FB100430C96 = {
 						CreatedOnToolsVersion = 6.1.1;
@@ -316,6 +316,7 @@
 		02D0E95F1A921FB100430C96 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				EXECUTABLE_PREFIX = lib;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -329,6 +330,7 @@
 		02D0E9601A921FB100430C96 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				EXECUTABLE_PREFIX = lib;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",

@@ -89,7 +89,7 @@
 		02B1B19B1A920E8A009D3D15 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0610;
+				LastUpgradeCheck = 0620;
 				TargetAttributes = {
 					02B1B1A21A920E8A009D3D15 = {
 						CreatedOnToolsVersion = 6.1.1;
@@ -203,6 +203,7 @@
 		02B1B1A81A920E8A009D3D15 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				EXECUTABLE_PREFIX = lib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -211,6 +212,7 @@
 		02B1B1A91A920E8A009D3D15 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				EXECUTABLE_PREFIX = lib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
