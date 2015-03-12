@@ -45,7 +45,9 @@ static void __ObserverBridgeOnParseFinished(void *_self, NAMidi *sender, ParseCo
         
         NAMidiProxy *proxy = (__bridge NAMidiProxy *)self->proxy;
         for (id<NAMidiProxyDelegate> delegate in proxy.delegates) {
-            [delegate onParseFinished:proxy context:adapter];
+            if ([delegate respondsToSelector:@selector(onParseFinished:context:)]) {
+                [delegate onParseFinished:proxy context:adapter];
+            }
         }
     });
 }
@@ -62,13 +64,32 @@ static void __ObserverBridgeOnPlayerContextChanged(void *_self, NAMidi *sender, 
         
         NAMidiProxy *proxy = (__bridge NAMidiProxy *)self->proxy;
         for (id<NAMidiProxyDelegate> delegate in proxy.delegates) {
-            [delegate onPlayerContextChanged:proxy context:adapter];
+            if ([delegate respondsToSelector:@selector(onPlayerContextChanged:context:)]) {
+                [delegate onPlayerContextChanged:proxy context:adapter];
+            }
+        }
+    });
+}
+
+static void __ObserverBridgeOnError(void *_self, NAMidi *sender, const char *typeId, uint32_t error)
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        ObserverBridge *self = _self;
+        if (self->exit) {
+            return;
+        }
+        
+        NAMidiProxy *proxy = (__bridge NAMidiProxy *)self->proxy;
+        for (id<NAMidiProxyDelegate> delegate in proxy.delegates) {
+            if ([delegate respondsToSelector:@selector(onError:typeId:error:)]) {
+                [delegate onError:proxy typeId:typeId error:error];
+            }
         }
     });
 }
 
 NADeclareVtbl(ObserverBridge, NAType, __ObserverBridgeInit, NULL, NULL, NULL, NULL, NULL, NULL);
-NADeclareVtbl(ObserverBridge, NAMidiObserver, __ObserverBridgeOnParseFinished, __ObserverBridgeOnPlayerContextChanged);
+NADeclareVtbl(ObserverBridge, NAMidiObserver, __ObserverBridgeOnParseFinished, __ObserverBridgeOnPlayerContextChanged, __ObserverBridgeOnError);
 NADeclareClass(ObserverBridge, NAType, NAMidiObserver);
 
 @implementation NAMidiProxy

@@ -31,9 +31,10 @@
 @class PlayerContextAdapter;
 
 @protocol NAMidiProxyDelegate <NSObject>
-@required
+@optional
 - (void)onParseFinished:(NAMidiProxy *)namidi context:(ParseContextAdapter *)context;
 - (void)onPlayerContextChanged:(NAMidiProxy *)namidi context:(PlayerContextAdapter *)context;
+- (void)onError:(NAMidiProxy *)namidi typeId:(const char *)typeId error:(uint32_t)error;
 @end
 
 #endif
