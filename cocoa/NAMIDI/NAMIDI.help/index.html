@@ -7,7 +7,8 @@
 <title>NAMIDI Help</title>
 </head>
 <body>
-<h1>NAMIDI</h1>
+<img src="icon.png" width="36px" height="36px">
+<h1 style="display: inline-block;">NAMIDI</h1>
 
 <h2>Table of Contents</h2>
 
@@ -17,12 +18,69 @@
   </li>
   <li>
     <a href="#getting-started">Getting Started</a>
-  </li>
-  <li>
-    <a href="#syntax-reference">Syntax Reference</a>
     <ul>
       <li>
-        <a href="#syntax-reference-note">note</a>
+        <a href="#initial-setup">Initial Setup</a>
+      </li>
+      <li>
+        <a href="#hello-namidi">Hello NAMIDI</a>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <a href="#basics">Basics</a>
+    <ul>
+      <li>
+        <a href="#quantize">Quantize</a>
+      </li>
+      <li>
+        <a href="#tie-and-rest">Tie and Rest</a>
+      </li>
+      <li>
+        <a href="#change-sound">Change Sound</a>
+      </li>
+      <li>
+        <a href="#using-channel">Using Channel</a>
+      </li>
+      <li>
+        <a href="#using-velocity">Using Velocity</a>
+      </li>
+      <li>
+        <a href="#octave-rule">Octave Rule</a>
+      </li>
+      <li>
+        <a href="#tempo-change">Tempo Change</a>
+      </li>
+      <li>
+        <a href="#time-signature">Time Signature</a>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <a href="#composing">Composing</a>
+    <ul>
+      <li>
+        <a href="#chord-and-melody-composing">Chord and Melody Composing</a>
+      </li>
+      <li>
+        <a href="#rhythm-composing">Rhythm Composing</a>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <a href="#using-pattern">Using Pattern</a>
+    <ul>
+      <li>
+        <a href="#create-pattern">Create Pattern</a>
+      </li>
+      <li>
+        <a href="#expand-pattern">Expand Pattern</a>
+      </li>
+      <li>
+        <a href="#extend-pattern">Extend Pattern</a>
+      </li>
+      <li>
+        <a href="#ensemble">Ensemble</a>
       </li>
     </ul>
   </li>
@@ -30,55 +88,125 @@
 
 <h2 id="about-namidi">About NAMIDI</h2>
 <p>
-TODO
+NAMIDI is the MIDI Player that plays DSL based music sequence.<br />
+The meaning of the name NAMIDI is abbreviation for "Noriyoshi Abe's MIDI Sequencer".<br />
+This is not a joke.  hehehe 😝
 </p>
+
 <h2 id="getting-started">Getting Started</h2>
+<h3 id="initial-setup">Initial Setup</h3>
+<i>* This step is going to be unnecessary in the future release.</i>
 <p>
-TODO
+<ol>
+  <li>IAC Driver</li>
+    <ul>
+      <li>Open [Audio Midi Setup] from /Application/Utilities/Audio Midi Setup.app</li>
+      <li>Select [Window] -> [Show MIDI Window] on the Menu</li>
+      <li>Double click [IAC Driver]</li>
+      <li>Tick the checkbox named "Device is online"</li>
+    </ul>
+  <li>Audio Units</li>
+    <ul>
+      <li>Download and install <a href="https://www.apple.com/jp/itunes/mastered-for-itunes/">AU Lab</a> unless it's already intalled</li>
+      <li>Open the bundled file "midi.trak"</li>
+    </ul>
+    <br />
+    <i>
+      Because of AU Lab setting is kind of difficult, using "midi.trak" is recommended.
+      This file is preset for DSLMusicDevice.
+      If you prefer other MIDI source or customizing, see AU Lab's help contents and find out the detail.
+    </i>
+</ol>
+
+Now, NAMIDI is ready to sound😃
+
+<h3 id="hello-namidi">Hello NAMIDI</h3>
+<p>
+NAMIDI is not a MIDI editor.  It focuses only playing and preview sequence.
+That is why, creating sequence file is needed first.
+Don't worry.  The sequence file is quite simple.
+It is just a text file with ".namidi" file extention.
 </p>
-<h2 id="syntax-reference">Syntax Reference</h2>
-<h3 id="syntax-reference-note">note</h3>
 
-<h4>Synopsis</h4>
-<code><b>note <i>QUANTIZE|STEP</i> [<i>OPTION</i>]... <i>NOTE BLOCK</i> [, note ...]</b></code>
-
-<h4>basics</h4>
-<h5>QUANTIZE</h5>
+<h4>hello.namidi</h4>
 <pre><code>note 1/4 {
-  C D E ~
-}</code></pre>
-<h5>STEP</h5>
-<pre><code>note 480 {
-  C D E ~
-}</code></pre>
-<h5>NOTE BLOCK</h5>
-<pre><code>note 1/8 {
-  C1  // C, octave is 1
-  C#2 // C sharp, octave is 2
-  D>  // D, octave is temporary 3
-  D<< // D, octave is temporary 0
-  Bb  // B flat, octave is last value (in this case 2) if not specified
-  ~   // extend prev note with specified QUANTIZE or STEP length
-  ^   // rest for specified QUANTIZE or STEP length
-  C,E,G // C chord
-}</code></pre>
+  C D E F
+}
+</code></pre>
 
-<h4>options</h4>
-<h5>from</h5>
-<pre><code>note 1/4 from 1920 { C } // by step
-note 1/4 from m2 { C }   // by measure
-note 1/4 from b2 { C }   // by beat
-note 1/4 from 2:1 { C }  // by measure and beat
-note 1/4 from 2:1:120 { C } // by measure, beat and tick</code></pre>
+The first example is that's it!<br />
+Create a text file and type above snipet. Then save it with name "hello.namidi".<br />
 
-<h4>with other note</h4>
+<h4>Open with NAMIDI.app</h4>
+
+Next, launch NAMIDI.app and open the file "hello.namidi".<br />
+As usualy, just open from file menu.<br />
+<br />
+Now, you can see the sequence like following list.
+
+<pre><code>
+   | 1               2
+========================
+   | .           x---.  
+   | .       x---    .  
+   | .               .  
+   | .   x---        .  
+   | .               .  
+C1 | x---            .  
+</code></pre>
+
+Then, press 'p' key and you can hear melody of 'C D E F'.
+
+<h4>Adding note to C2</h4>
+
+Let's edit "hello.namidi" with NAMIDI stayed running.<br />
+Adding 4 notes up to 1 octave.
 
 <pre><code>note 1/4 {
-  C D E ~
-},
-note 1/4 {
-  B B B B
-}</code></pre></code></pre>
+  C D E F G A B C&gt;
+}
+</code></pre>
 
-</body>
-</html>
+Once you open the .namidi file, it's not need to reopen nor reload again.<br />
+When the .namidi file is edited, NAMIDI reload and rebuild sequence automatically.<br />
+<br />
+
+Now, you can see the sequence like following list.
+
+<pre><code>
+   | 1               2
+========================================
+C2 | .               .           x---.
+   | .               .       x---    .
+   | .               .               .
+   | .               .   x---        .
+   | .               .               .
+   | .               x---            .
+   | .               .               .
+   | .           x---.               .
+   | .       x---    .               .
+   | .               .               .
+   | .   x---        .               .
+   | .               .               .
+C1 | x---            .               .
+</code></pre>
+
+<h3 id="basics">Basics</h3>
+<h4 id="quantize">Quantize</h4>
+<h4 id="tie-and-rest">Tie and Rest</h4>
+<h4 id="change-sound">Change Sound</h4>
+<h4 id="using-channel">Using Channel</h4>
+<h4 id="using-velocity">Using Velocity</h4>
+<h4 id="octave-rule">Octave Rule</h4>
+<h4 id="tempo-change">Tempo Change</h4>
+<h4 id="time-signature">Time Signature</h4>
+
+<h3 id="composing">Composing</h3>
+<h4 id="chord-and-melody-composing">Chord and Melody Composing</h4>
+<h4 id="rhythm-composing">Rhythm Composing</h4>
+
+<h3 id="using-pattern">Using Pattern</h3>
+<h4 id="create-pattern">Create Pattern</h4>
+<h4 id="expand-pattern">Expand Pattern</h4>
+<h4 id="extend-pattern">Extend Pattern</h4>
+<h4 id="ensemble">Ensemble</h4>
