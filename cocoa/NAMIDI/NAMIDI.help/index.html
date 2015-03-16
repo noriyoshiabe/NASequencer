@@ -191,10 +191,213 @@ C2 | .               .           x---.
 C1 | x---            .               .
 </code></pre>
 
+
 <h3 id="basics">Basics</h3>
-<h4 id="quantize">Quantize</h4>
+
+<h4 id="comment">Comment</h4>
+Text starting with "/*" is treated as a comment and ignored. The comment ends at the next "*/".<br />
+After "//" to end of the line is also treated as a comment.
+<pre><code>/*
+  This block is ignored.
+ */
+
+note 1/4 {
+  C // This is comment but C isn't
+  D /* This is comment but D and E aren't */ E
+} // Hey!! I'm ignored!!
+</code></pre>
+
+
+<h4 id="step">Step</h4>
+
+<p>
+The meaning of "Step" in this context is distance between a note and next one.
+The ways of specifying step are following paterns.
+</p>
+
+<h5>Specify with Time Signature</h5>
+<table>
+  <tr>
+    <td>
+<pre><code>// 8 beat
+note 1/8 {
+  C D E F C D E F
+}</code></pre>
+    </td>
+    <td>
+      <br /> &nbsp;&nbsp;&nbsp;&nbsp; -&gt; &nbsp;&nbsp;&nbsp;&nbsp;
+    </td>
+    <td>
+<pre><code>
+   | 1               2
+========================
+   | .     x-      x-.  
+   | .   x-      x-  .  
+   | .               .  
+   | . x-      x-    .  
+   | .               .  
+C1 | x-      x-      .  
+</code></pre>
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+<pre><code>// Dotted quarter note
+note 1/4 . {
+  C D E
+}</code></pre>
+    </td>
+    <td>
+      <br /> &nbsp;&nbsp;&nbsp;&nbsp; -&gt; &nbsp;&nbsp;&nbsp;&nbsp;
+    </td>
+    <td>
+<pre><code>
+   | 1               2
+========================
+   | .               .  
+   | .           x------  
+   | .               .  
+   | .     x-----    .  
+   | .               .  
+C1 | x-----          .  
+</code></pre>
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+<pre><code>// Triplet
+note 1/4 3 {
+  C D E C D E C D E C D E
+}</code></pre>
+    </td>
+    <td>
+      <br /> &nbsp;&nbsp;&nbsp;&nbsp; -&gt; &nbsp;&nbsp;&nbsp;&nbsp;
+    </td>
+    <td>
+<pre><code>
+   | 1                       2  
+================================
+   | .                       .
+   | .   x-    x-    x-    x-.
+   | .                       .
+   | . x-    x-    x-    x-  .
+   | .                       .
+C1 | x-    x-    x-    x-    .
+</code></pre>
+    </td>
+  </tr>
+</table>
+
+List of available Time Signature is here.
+<ul>
+  <li>1/1</li>
+  <li>1/2</li>
+  <li>1/4</li>
+  <li>1/8</li>
+  <li>1/16</li>
+  <li>1/32</li>
+  <li>1/64</li>
+  <li>and so on.<br />
+    <ul>
+      <li>Beat numerator must be 1</li>
+      <li>Beat denominator must be 1 or power of 2</li>
+      <li>Actual step length greater than 0</li>
+    </ul>
+  </li>
+</ul>
+
+<h5>Specify with Integer</h5>
+
+<table>
+  <tr>
+    <td>
+<pre><code>/*
+ * Quintuplet
+ *   * Resolution of quarter note is 480
+ */
+note 24 {
+  C D E F G
+  C D E F G
+  C D E F G
+  C D E F G
+}</code></pre>
+    </td>
+    <td>
+      <br /> &nbsp;&nbsp;&nbsp;&nbsp; -&gt; &nbsp;&nbsp;&nbsp;&nbsp;
+    </td>
+    <td>
+<pre><code>
+   | 1                   2
+============================
+   | .   x    x    x    x.
+   | .                   .
+   | .  x    x    x    x . 
+   | . x    x    x    x  .
+   | .                   .
+   | .x    x    x    x   .
+   | .                   .
+C1 | x    x    x    x    .
+</code></pre>
+    </td>
+  </tr>
+</table>
+
+
 <h4 id="tie-and-rest">Tie and Rest</h4>
+
+"~" acts as Tie.  Tie inclements step and extends previous note.<br />
+"^" acts as Rest.  Rest inclements step and does nothing.
+
+<table>
+  <tr>
+    <td>
+<pre><code>note 1/8 {
+  C^ C^ D~ E~~~
+}</code></pre>
+    </td>
+    <td>
+      <br /> &nbsp;&nbsp;&nbsp;&nbsp; -&gt; &nbsp;&nbsp;&nbsp;&nbsp;
+    </td>
+    <td>
+<pre><code>
+   | 1               2
+=========================
+   | .           x-------
+   | .               .
+   | .       x---    .    
+   | .               .
+C1 | x-  x-          .
+</code></pre>
+    </td>
+  </tr>
+</table>
+
+
 <h4 id="change-sound">Change Sound</h4>
+
+Instruments can be changed with "sound select" statement.<br />
+
+<pre><code>
+// Params are &lt;LSB&gt; &lt;MSB&gt; &lt;Program No&gt; from left.
+sound select 0 0 27 // This means Electric Guitar (jazz)
+
+note 1/4 {
+  C D E F // Play with Electric Guitar (jazz)
+}</code></pre>
+
+<p>
+Instruments depends on MIDI source.
+See Sound Set of the MIDI source.<br />
+<i>* Sound Set of DSLMusicDevice based on <a target="_blank" href="http://www.midi.org/techspecs/gm1sound.php">General MIDI Level 1 Sound Set</a></i> 
+</p>
+
+<p>
+The statment changes instruments of current channel.<br />
+See <a href="#using-channel">Using Channel<a/>
+</p>
+
 <h4 id="using-channel">Using Channel</h4>
 <h4 id="using-velocity">Using Velocity</h4>
 <h4 id="octave-rule">Octave Rule</h4>
