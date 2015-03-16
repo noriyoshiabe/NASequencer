@@ -43,6 +43,12 @@
         <a href="#using-channel">Using Channel</a>
       </li>
       <li>
+        <a href="#chord">Chord</a>
+      </li>
+      <li>
+        <a href="#polyphony">Polyphony</a>
+      </li>
+      <li>
         <a href="#using-velocity">Using Velocity</a>
       </li>
       <li>
@@ -382,10 +388,22 @@ Instruments can be changed with "sound select" statement.<br />
 <pre><code>
 // Params are &lt;LSB&gt; &lt;MSB&gt; &lt;Program No&gt; from left.
 sound select 0 0 27 // This means Electric Guitar (jazz)
+                    // Expanded MIDI Messages are
+                    //   - Bank Select&lt;MSB&gt; #0
+                    //   - Bank Select&lt;LSB&gt; #0
+                    //   - Program change&lt;&gt; #27
 
 note 1/4 {
   C D E F // Play with Electric Guitar (jazz)
-}</code></pre>
+}
+
+sound select 127 0 0 // This means Standard Kit of Drum sounds
+
+note 1/4 {
+  C // This produces Bass Drum 1 sound
+  E // This produces Electric Snare sound
+}
+</code></pre>
 
 <p>
 Instruments depends on MIDI source.
@@ -395,10 +413,57 @@ See Sound Set of the MIDI source.<br />
 
 <p>
 The statment changes instruments of current channel.<br />
-See <a href="#using-channel">Using Channel<a/>
+See <a href="#using-channel">Using Channel</a>
 </p>
 
 <h4 id="using-channel">Using Channel</h4>
+
+16 channels are supported same as General MIDI.
+
+<table>
+  <tr>
+    <td>
+<pre><code>channel 1
+
+note 1/4 {
+  C D E F
+}
+
+channel 10
+
+note 1/4 {
+  C C C C
+}
+
+</code></pre>
+    </td>
+    <td>
+      <br /> &nbsp;&nbsp;&nbsp;&nbsp; -&gt; &nbsp;&nbsp;&nbsp;&nbsp;
+    </td>
+    <td>
+<pre><code>
+   | 1               2               3
+========================================
+   | .           x---.               .
+   | .       x---    .               .
+   | .               .               .
+   | .   x---        .               .
+   | .               .               .
+C1 | x---            +---+---+---+---.
+
+                             x: channel 1
+                             +: channel 10
+</code></pre>
+    </td>
+  </tr>
+</table>
+
+Behavior of the channel 10 depends on MIDI source.<br />
+<i>* Channel 10 on DSLMusicDevice is reserved for percussion.</i> 
+
+
+<h4 id="chord">Chord</h4>
+<h4 id="polyphony">Polyphony</h4>
 <h4 id="using-velocity">Using Velocity</h4>
 <h4 id="octave-rule">Octave Rule</h4>
 <h4 id="tempo-change">Tempo Change</h4>
