@@ -31,10 +31,16 @@
     <a href="#basics">Basics</a>
     <ul>
       <li>
+        <a href="#syntax-form">Syntax Form</a>
+      </li>
+      <li>
         <a href="#quantize">Quantize</a>
       </li>
       <li>
         <a href="#tie-and-rest">Tie and Rest</a>
+      </li>
+      <li>
+        <a href="#sharp-and-flat">Sharp and Flat</a>
       </li>
       <li>
         <a href="#change-sound">Change Sound</a>
@@ -50,6 +56,9 @@
       </li>
       <li>
         <a href="#using-velocity">Using Velocity</a>
+      </li>
+      <li>
+        <a href="#using-gatetime">Using Gatetime</a>
       </li>
       <li>
         <a href="#octave-rule">Octave Rule</a>
@@ -200,7 +209,33 @@ C1 | x---            .               .
 
 <h3 id="basics">Basics</h3>
 
-<h4 id="comment">Comment</h4>
+<h4 id="syntax-form">Syntax Form</h4>
+
+NAMIDI ignores case of letters.<br />
+And source code is free-form as long as no syntax error is contained.<br />
+
+Following lists are all acceptable.
+
+<pre><code>note 1/4 {
+  c d e f
+}
+
+NOTE 1/4 {
+  C
+  D
+  E
+  F
+}
+
+Note 1/4
+{ C D E F }
+
+notE // What's this?
+1/4 {
+  C D E F
+} 
+</code></pre>
+
 Text starting with "/*" is treated as a comment and ignored. The comment ends at the next "*/".<br />
 After "//" to end of the line is also treated as a comment.
 <pre><code>/*
@@ -212,7 +247,6 @@ note 1/4 {
   D /* This is comment but D and E aren't */ E
 } // Hey!! I'm ignored!!
 </code></pre>
-
 
 <h4 id="step">Step</h4>
 
@@ -381,6 +415,43 @@ C1 | x-  x-          .
 </table>
 
 
+<h4 id="sharp-and-flat">Charp and Flat</h4>
+
+Sharp or Flat tone is simply represented by adding '#' or 'b'.
+
+<table>
+  <tr>
+    <td>
+<pre><code>note 1/4 {
+  C# D# F# Gb Ab Bb
+}
+</code></pre>
+    </td>
+    <td>
+      <br /> &nbsp;&nbsp;&nbsp;&nbsp; -&gt; &nbsp;&nbsp;&nbsp;&nbsp;
+    </td>
+    <td>
+<pre><code>
+   | 1               2  
+=============================
+B  | .               .
+   | .               .   x---
+A  | .               .
+   | .               x---
+G  | .               .
+   | .       x---x---.
+F  | .               .
+E  | .               .
+   | .   x---        .
+D  | .               .
+   | x---            .
+C1 | .               .
+</code></pre>
+    </td>
+  </tr>
+</table>
+
+
 <h4 id="change-sound">Change Sound</h4>
 
 Instruments can be changed with "sound select" statement.<br />
@@ -434,7 +505,6 @@ channel 10
 note 1/4 {
   C C C C
 }
-
 </code></pre>
     </td>
     <td>
@@ -462,9 +532,122 @@ Behavior of the channel 10 depends on MIDI source.<br />
 <i>* Channel 10 on DSLMusicDevice is reserved for percussion.</i> 
 
 
+
 <h4 id="chord">Chord</h4>
+
+Pitch name can be joined by ','.<br />
+Joined pitch names act as chord.
+
+<table>
+  <tr>
+    <td>
+<pre><code>
+note 1/2 {
+  C E,G,B
+}
+</code></pre>
+    </td>
+    <td>
+      <br /> &nbsp;&nbsp;&nbsp;&nbsp; -&gt; &nbsp;&nbsp;&nbsp;&nbsp;
+    </td>
+    <td>
+<pre><code>
+   | 1               2 
+========================
+   | .       x-------. 
+   | .               . 
+   | .               . 
+   | .               . 
+   | .       x-------. 
+   | .               . 
+   | .               . 
+   | .       x-------. 
+   | .               . 
+   | .               . 
+   | .               . 
+C1 | x-------        .
+</code></pre>
+    </td>
+  </tr>
+</table>
+
+
 <h4 id="polyphony">Polyphony</h4>
+
+'note' statement also can be joined by ','.<br />
+Those notes sound simultaneously from same position.
+
+<table>
+  <tr>
+    <td>
+<pre><code>
+note 1/4 { C~~~ },
+note 1/4 { ^E~~ },
+note 1/4 { ^^G~ },
+note 1/4 { ^^^B }
+</code></pre>
+    </td>
+    <td>
+      <br /> &nbsp;&nbsp;&nbsp;&nbsp; -&gt; &nbsp;&nbsp;&nbsp;&nbsp;
+    </td>
+    <td>
+<pre><code>
+   | 1               2 
+========================
+   | .           x---. 
+   | .               . 
+   | .               . 
+   | .               . 
+   | .       x-------. 
+   | .               . 
+   | .               . 
+   | .   x-----------. 
+   | .               . 
+   | .               . 
+   | .               . 
+C1 | x---------------.
+</code></pre>
+    </td>
+  </tr>
+</table>
+
 <h4 id="using-velocity">Using Velocity</h4>
+
+Velocity can be specified 0 to 127 same as General MIDI.<br />
+The default value is 100 and can be changed by 'velocity' statement.
+
+<pre><code>velocity 127 // After this statement, note's velocity is set with 127
+
+note 1/2 {
+  C D E F // These notes sound on loud
+}
+</code></pre>
+
+Velocity can be assigned temporarily with no effect on after notes.
+
+<pre><code>velocity 127
+
+note 1/2 {
+  C(velocity=100)     // Velocity is 100
+  D                   // Velocity is 127
+  E,F,G(velocity=100) // Velocity of E and F are 127.  Velocity of G is 100
+  A                   // Velocity is 127
+}
+</code></pre>
+
+
+<h4 id="using-gatetime">Using Gatetime</h4>
+
+Gatetime means how long note sustains, same as major DAW.<br />
+The default is equal to step.  As discussed <a href="#tie-and-rest">previously</a>, lenght of note, it means gatetime, can be extended by 'tie'.<br />
+The cases that this expression is needed are usually following 2 patterns.
+
+<h5>Rhythm Composing</h5>
+
+
+<h5>Cut off end of sound</h5>
+
+
 <h4 id="octave-rule">Octave Rule</h4>
 <h4 id="tempo-change">Tempo Change</h4>
 <h4 id="time-signature">Time Signature</h4>
