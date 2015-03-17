@@ -72,17 +72,6 @@
     </ul>
   </li>
   <li>
-    <a href="#composing">Composing</a>
-    <ul>
-      <li>
-        <a href="#chord-and-melody-composing">Chord and Melody Composing</a>
-      </li>
-      <li>
-        <a href="#rhythm-composing">Rhythm Composing</a>
-      </li>
-    </ul>
-  </li>
-  <li>
     <a href="#using-pattern">Using Pattern</a>
     <ul>
       <li>
@@ -116,7 +105,7 @@ This is not a joke.  hehehe 😝
   <li>IAC Driver</li>
     <ul>
       <li>Open [Audio Midi Setup] from /Application/Utilities/Audio Midi Setup.app</li>
-      <li>Select [Window] -> [Show MIDI Window] on the Menu</li>
+      <li>Select [Window] -&gt; [Show MIDI Window] on the Menu</li>
       <li>Double click [IAC Driver]</li>
       <li>Tick the checkbox named "Device is online"</li>
     </ul>
@@ -245,7 +234,8 @@ After "//" to end of the line is also treated as a comment.
 note 1/4 {
   C // This is comment but C isn't
   D /* This is comment but D and E aren't */ E
-} // Hey!! I'm ignored!!
+  //F Hey!! I'm ignored!!
+}
 </code></pre>
 
 <h4 id="step">Step</h4>
@@ -532,7 +522,6 @@ Behavior of the channel 10 depends on MIDI source.<br />
 <i>* Channel 10 on DSLMusicDevice is reserved for percussion.</i> 
 
 
-
 <h4 id="chord">Chord</h4>
 
 Pitch name can be joined by ','.<br />
@@ -611,6 +600,7 @@ C1 | x---------------.
   </tr>
 </table>
 
+
 <h4 id="using-velocity">Using Velocity</h4>
 
 Velocity can be specified 0 to 127 same as General MIDI.<br />
@@ -644,17 +634,109 @@ The cases that this expression is needed are usually following 2 patterns.
 
 <h5>Rhythm Composing</h5>
 
+Because length of percussive note has no meaning, displaying gatetime is unnecessary.<br />
+Setting fixed length of gatetime is useful for displaying percussive notes clearly.
+
+<table>
+  <tr>
+    <td>
+<pre><code>
+// No gatetime setting
+
+note 1/8 {
+  C ^ E ^ C C E ^
+}
+</code></pre>
+    </td>
+    <td>
+      <br /> &nbsp;&nbsp;&nbsp;&nbsp; -&gt; &nbsp;&nbsp;&nbsp;&nbsp;
+    </td>
+    <td>
+<pre><code>
+   | 1               2  
+========================
+   | .               .  
+   | .   x-      x-  .  
+   | .               .  
+   | .               .  
+   | .               .  
+C1 | x-      x-x-    .  
+</code></pre>
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+<pre><code>
+gatetime 1/16
+
+note 1/8 {
+  C ^ E ^ C C E ^
+}
+</code></pre>
+    </td>
+    <td>
+      <br /> &nbsp;&nbsp;&nbsp;&nbsp; -&gt; &nbsp;&nbsp;&nbsp;&nbsp;
+    </td>
+    <td>
+<pre><code>
+   | 1               2
+========================
+   | .               .   
+   | .   x       x   .   
+   | .               .   
+   | .               .   
+   | .               .   
+C1 | x       x x     .
+</code></pre>
+    </td>
+  </tr>
+</table>
+
 
 <h5>Cut off end of sound</h5>
+
+Sometimes, short length of note, like staccato, is preferred depending on the instrument.<br />
+However, once gatetime is set, this settings is applied until nexttime it is set.<br />
+With 'cut off' modifier, gatetime can be shortened specified value by step length.
+
+<table>
+  <tr>
+    <td>
+<pre><code>gatetime cutoff 30
+
+note 1/4 {
+  C D E ~
+},
+note 1/2 {
+  G G
+}
+</code></pre>
+    </td>
+    <td>
+      <br /> &nbsp;&nbsp;&nbsp;&nbsp; -&gt; &nbsp;&nbsp;&nbsp;&nbsp;
+    </td>
+    <td>
+<pre><code>
+   | 1               2 
+========================
+   | x------ x------ . 
+   | .               . 
+   | .               . 
+   | .       x------ . 
+   | .               . 
+   | .   x--         . 
+   | .               . 
+C1 | x--             .
+</code></pre>
+    </td>
+  </tr>
+</table>
 
 
 <h4 id="octave-rule">Octave Rule</h4>
 <h4 id="tempo-change">Tempo Change</h4>
 <h4 id="time-signature">Time Signature</h4>
-
-<h3 id="composing">Composing</h3>
-<h4 id="chord-and-melody-composing">Chord and Melody Composing</h4>
-<h4 id="rhythm-composing">Rhythm Composing</h4>
 
 <h3 id="using-pattern">Using Pattern</h3>
 <h4 id="create-pattern">Create Pattern</h4>
