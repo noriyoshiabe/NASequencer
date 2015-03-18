@@ -207,7 +207,7 @@ Now, you can see the sequence like following list.
    | .               .  
    | .   x---        .  
    | .               .  
-C1 | x---            .  
+C4 | x---            .  
 </code></pre>
 
 <p>
@@ -236,7 +236,7 @@ Now, you can see the sequence like following list.
 
 <pre><code>   | 1               2
 ========================================
-C2 | .               .           x---.
+C5 | .               .           x---.
    | .               .       x---    .
    | .               .               .
    | .               .   x---        .
@@ -248,7 +248,7 @@ C2 | .               .           x---.
    | .               .               .
    | .   x---        .               .
    | .               .               .
-C1 | x---            .               .  
+C4 | x---            .               .  
 </code></pre>
 
 
@@ -328,7 +328,7 @@ note 1/8 {
    | .               .  
    | . x-      x-    .  
    | .               .  
-C1 | x-      x-      .  
+C4 | x-      x-      .  
 </code></pre>
     </td>
   </tr>
@@ -352,7 +352,7 @@ note 1/4 . {
    | .               .  
    | .     x-----    .  
    | .               .  
-C1 | x-----          .  
+C4 | x-----          .  
 </code></pre>
     </td>
   </tr>
@@ -376,7 +376,7 @@ note 1/4 3 {
    | .                       .
    | . x-    x-    x-    x-  .
    | .                       .
-C1 | x-    x-    x-    x-    .  
+C4 | x-    x-    x-    x-    .  
 </code></pre>
     </td>
   </tr>
@@ -432,7 +432,7 @@ note 24 {
    | .                   .
    | .x    x    x    x   .
    | .                   .
-C1 | x    x    x    x    .  
+C4 | x    x    x    x    .  
 </code></pre>
     </td>
   </tr>
@@ -464,7 +464,7 @@ C1 | x    x    x    x    .
    | .               .
    | .       x---    .    
    | .               .
-C1 | x-  x-          .   
+C4 | x-  x-          .   
 </code></pre>
     </td>
   </tr>
@@ -502,7 +502,7 @@ E  | .               .
    | .   x---        .
 D  | .               .
    | x---            .
-C1 | .               .       
+C4 | .               .       
 </code></pre>
     </td>
   </tr>
@@ -578,7 +578,7 @@ note 1/4 {
    | .               .               .
    | .   x---        .               .
    | .               .               .
-C1 | x---            +---+---+---+---.
+C4 | x---            +---+---+---+---.
 
                              x: channel 1
                              +: channel 10
@@ -625,7 +625,7 @@ Joined pitch names act as chord.
    | .               . 
    | .               . 
    | .               . 
-C1 | x-------        .  
+C4 | x-------        .  
 </code></pre>
     </td>
   </tr>
@@ -665,7 +665,7 @@ note 1/4 { ^^^B }
    | .               . 
    | .               . 
    | .               . 
-C1 | x---------------.
+C4 | x---------------.
 </code></pre>
     </td>
   </tr>
@@ -737,7 +737,7 @@ note 1/8 {
    | .               .  
    | .               .  
    | .               .  
-C1 | x-      x-x-    .  
+C4 | x-      x-x-    .  
 </code></pre>
     </td>
   </tr>
@@ -762,7 +762,7 @@ note 1/8 {
    | .               .   
    | .               .   
    | .               .   
-C1 | x       x x     .
+C4 | x       x x     .
 </code></pre>
     </td>
   </tr>
@@ -803,7 +803,7 @@ note 1/2 {
    | .               . 
    | .   x--         . 
    | .               . 
-C1 | x--             .
+C4 | x--             .
 </code></pre>
     </td>
   </tr>
@@ -811,8 +811,173 @@ C1 | x--             .
 
 
 <h3 id="octave-rule">Octave Rule</h3>
+
+<p>
+Available note range is C-1 to G9 and the default octave is 4 according to ISO standard.<br />
+Octave can be specified by 'octave' statement or inline expression as pitch name followed by octave number.<br />
+These expresseion affects the octave of following notes.
+</p>
+
+<table>
+  <tr>
+    <td>
+<pre><code>octave 2 // 'octave' statement
+
+note 1/4 {
+  C D E ~
+}
+
+note 1/4 {
+  C3 D E ~  // inline expresseion
+  C2 D E ~
+}
+</code></pre>
+    </td>
+    <td>
+      &nbsp;&nbsp;&nbsp;&nbsp; -&gt; &nbsp;&nbsp;&nbsp;&nbsp;
+    </td>
+    <td>
+<pre><code>   | 1               2               3               4
+========================================================
+   | .               .       x-------.               . 
+   | .               .               .               . 
+   | .               .   x---        .               . 
+   | .               .               .               . 
+C3 | .               x---            .               . 
+   | .               .               .               .
+   | .               .               .               .
+   | .               .               .               .
+   | .               .               .               .
+   | .               .               .               .
+   | .               .               .               .
+   | .               .               .               .
+   | .       x-------.               .       x-------.
+   | .               .               .               .
+   | .   x---        .               .   x---        .
+   | .               .               .               .
+C2 | x---            .               x---            .
+</code></pre>
+    </td>
+  </tr>
+</table>
+
+<p>
+Also, octave can be specified temporarily for edge of octave number.<br />
+'&lt;' or '&gt;' can be added continuously up to 4 times.
+</p>
+
+<table>
+  <tr>
+    <td>
+<pre><code>note 1/4 {
+  C B&lt; G C&gt; C&gt;&gt; C
+
+  // Hey!! This is ridiculous isn't it?
+  // C&gt;&gt;&gt;&gt;&gt;
+}
+</code></pre>
+    </td>
+    <td>
+      &nbsp;&nbsp;&nbsp;&nbsp; -&gt; &nbsp;&nbsp;&nbsp;&nbsp;
+    </td>
+    <td>
+<pre><code>   | 1               2
+===============================
+C6 | .               x---
+   | .               .
+   | .               .
+   | .               .
+   | .               .
+   | .               .
+   | .               .
+   | .               .
+   | .               .
+   | .               .
+   | .               .
+   | .               .
+C5 | .           x---.
+   | .               .
+   | .               .
+   | .               .
+   | .               .
+   | .       x---    .
+   | .               .
+   | .               .
+   | .               .
+   | .               .
+   | .               .
+   | .               .
+C4 | x---            .   x---
+   |     x---        .
+</code></pre>
+    </td>
+  </tr>
+</table>
+
+
 <h3 id="tempo-change">Tempo Change</h3>
+
+<p>
+Available tempo range is 30.0 to 300.0 .<br />
+The default is 120.0
+</p>
+
+<pre><code>tempo 60
+
+note 1/4 {
+  C D E F
+}
+
+tempo 180.55 // Speeding up from here.
+             // Can be specified with the second decimal place.
+
+note 1/4 {
+  C D E F
+}
+
+tempo 300 // Hey!! Too fast!!
+</code></pre>
+
 <h3 id="time-signature">Time Signature</h3>
+
+<p>
+Time signature is expressed with numerator, slash and denominator.<br />
+Numerator range is 1 to 64.<br />
+Denominator range is 1 to 64 and must be power of 2 unless it is 1.<br />
+The default is 4/4.
+</p>
+
+<table>
+  <tr>
+    <td>
+<pre><code>time 3/4
+
+note 1/4 {
+  C D E
+}
+</code></pre>
+    </td>
+    <td>
+      &nbsp;&nbsp;&nbsp;&nbsp; -&gt; &nbsp;&nbsp;&nbsp;&nbsp;
+    </td>
+    <td>
+<pre><code>   | 1           2 
+====================
+   | .       x---. 
+   | .           . 
+   | .   x---    . 
+   | .           . 
+C4 | x---        .
+</code></pre>
+    </td>
+  </tr>
+</table>
+
+<p>
+Time signature affects displaying line of measures and 'location' expression(*).<br />
+<i>&nbsp;* Sorry, this is not documented yet.</i>
+</p>
+
 
 <h2 id="using-pattern">Using Pattern</h2>
 <h3 id="create-pattern">Create Pattern</h3>
