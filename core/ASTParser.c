@@ -874,7 +874,7 @@ static bool __dispatch__TIME_SIGN(Expression *expression, Context *context, void
         return false;
     }
 
-    if (0 > timeEvent->numerator) {
+    if (timeEvent->numerator < 0 || 64 < timeEvent->numerator ) {
         SET_ERROR(error, PARSE_ERROR_INVALID_TIME_SIGN, expression, "invalid range of time sign numerator");
         return false;
     }
@@ -883,7 +883,7 @@ static bool __dispatch__TIME_SIGN(Expression *expression, Context *context, void
         return false;
     }
 
-    if (!isPowerOf2(timeEvent->denominator)) {
+    if (!isPowerOf2(timeEvent->denominator) || 64 < timeEvent->denominator) {
         SET_ERROR(error, PARSE_ERROR_INVALID_TIME_SIGN, expression, "time sign denominator is not power of 2");
         return false;
     }
