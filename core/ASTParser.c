@@ -46,7 +46,7 @@ static void *__ContextInit(void *_self, ...)
     self->events = CFArrayCreateMutable(NULL, 0, NACFArrayCallBacks);
     self->patterns = CFDictionaryCreateMutable(NULL, 0, &kCFTypeDictionaryKeyCallBacks, NACFDictionaryValueCallBacks);
     self->channel = 1;
-    self->octave = 2;
+    self->octave = 4;
     self->velocity = 100;
 
     return self;
@@ -254,18 +254,18 @@ static int noteNoString2Int(Context *context, const char *noteNoString)
         char *name;
         int baseKey;
     } noteMap[] = {
-        {"C", 24},
-        {"C#", 25}, {"DB", 25},
-        {"D", 26},
-        {"D#", 27}, {"EB", 27},
-        {"E", 28},
-        {"F", 29},
-        {"F#", 30}, {"GB", 30},
-        {"G", 31},
-        {"G#", 32}, {"AB", 32},
-        {"A", 33},
-        {"A#", 34}, {"BB", 34},
-        {"B", 35},
+        {"C",  12},
+        {"C#", 13}, {"DB", 13},
+        {"D",  14},
+        {"D#", 15}, {"EB", 15},
+        {"E",  16},
+        {"F",  17},
+        {"F#", 18}, {"GB", 18},
+        {"G",  19},
+        {"G#", 20}, {"AB", 19},
+        {"A",  21},
+        {"A#", 22}, {"BB", 22},
+        {"B",  23},
     };
 
     char octaveStr[4] = {0};
