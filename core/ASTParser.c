@@ -547,10 +547,19 @@ static bool __dispatch__TEMPO(Expression *expression, Context *context, void *va
         }
     }
 
-    TimeTableAddTempoEvent(context->timeTable, event);
+    bool ret = true;
+
+    if (30.0 <= event->tempo && event->tempo <= 300.0) {
+        TimeTableAddTempoEvent(context->timeTable, event);
+    }
+    else {
+        SET_ERROR(error, PARSE_ERROR_INVALID_TEMPO, expression, "invalid range of tempo.");
+        ret = false;
+    }
+
     NARelease(event);
 
-    return true;
+    return ret;
 }
 
 static bool __dispatch__MARKER(Expression *expression, Context *context, void *value, ParseError *error)
