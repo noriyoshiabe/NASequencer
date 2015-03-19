@@ -236,8 +236,9 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
         let left:CGFloat = round(CGFloat(note.__.tick + 120) * widthPerTick) + 0.5
         let right:CGFloat = round(CGFloat(note.__.tick + 120 + note.gatetime) * widthPerTick) + 0.5
         let y:CGFloat = round(CGFloat(127 - note.noteNo + 1) * heightPerKey) + 0.5
+        let length = right - left
         
-        return NSMakeRect(left - 5, y - 5, right - left, 10)
+        return NSMakeRect(left - length / 2, y - 5, length, 10)
     }
     
     func drawNote(ctx: CGContext, note: NoteEvent) {
@@ -249,7 +250,7 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
         let by = CGRectGetMinY(rect)
         let cy = CGRectGetMidY(rect)
         let ty = CGRectGetMaxY(rect)
-        let radius:CGFloat = 5.0
+        let radius:CGFloat = min(rect.size.width / 2, 5.0)
         
         CGContextSetLineWidth(ctx, 1.0)
         
