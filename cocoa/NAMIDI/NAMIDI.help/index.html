@@ -980,7 +980,67 @@ Time signature affects displaying line of measures and 'location' expression(*).
 
 
 <h2 id="using-pattern">Using Pattern</h2>
+
+<p>
+As composing more complex song, duplicated code increase if there is only 'note' statement that expresses sequence.
+And duplicated codes make it more difficult to maintenance.<br />
+The 'pattern' statement is for reducing repetition and make codes reusable. <br />
+</p>
+
 <h3 id="create-pattern">Create Pattern</h3>
+
+<p>
+Pattern is constructed by some of basic statements and assigned to user-defined identifier.
+</p>
+
+<pre><code>i_am_a_8beat_pattern = {
+  channel 10
+  octave 2
+  velocity 127
+  gatetime 100
+
+  note 1/8 {
+    F# F# F# F# F# F# F# F#
+  },
+  note 1/4 {
+    ^     E     ^     E
+  },
+  note 1/8 {
+    C  ^  ^  ^  C  C  ^  ^
+  }
+}
+</code></pre>
+
+<h4>Available Statements</h4>
+<ul>
+  <li>note</li>
+  <li>channel</li>
+  <li>velocity</li>
+  <li>gatetime</li>
+  <li>octave</li>
+  <li>sound select</li>
+  <li>time</li>
+  <li>tempo</li>
+  <li>marker * Unimplemented</li>
+  <li>pattern</li>
+</ul>
+
+<h4>Reqirements of User-defined Identifier</h4>
+
+<ul>
+  <li>Accepted characters are alphabet, number and underscore</li>
+  <li>Not equal to statement keywords</li>
+  <li>Start with alphabet or underscore</li>
+</ul>
+
+<h4>Precautions</h4>
+
+<ul>
+  <li>Only the identifier that is defined on previous source code is visible</li>
+  <li>Can be define same identifier but it is overwritten</li>
+  <li>Nested pattern is visible only inside of the pattern to define it</li>
+</ul>
+
 <h3 id="expand-pattern">Expand Pattern</h3>
 <h3 id="extend-pattern">Extend Pattern</h3>
 <h3 id="ensemble">Ensemble</h3>
