@@ -426,20 +426,22 @@ static bool __dispatch__MB_LENGTH(Expression *expression, Context *context, void
 
 static bool __dispatch__QUANTIZE(Expression *expression, Context *context, void *value, ParseError *error)
 {
-    char *str = alloca(strlen(expression->v.s) + 1);
+    size_t len = strlen(expression->v.s);
+    char *str = alloca(len + 1);
     strcpy(str, expression->v.s);
 
     bool dot = false;
     bool triplet = false;
 
-    char *pch;
-    if ((pch = strrchr(str, '.'))) {
+    switch (str[len - 1]) {
+    case '.':
         dot = true;
-        *pch = '\0';
-    }
-    else if ((pch = strrchr(str, '3'))) {
+        str[len - 1] = '\0';
+        break;
+    case '3':
         triplet = true;
-        *pch = '\0';
+        str[len - 1] = '\0';
+        break;
     }
 
     int denominator = atoi(str + 2);
