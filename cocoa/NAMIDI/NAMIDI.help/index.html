@@ -993,7 +993,7 @@ The 'pattern' statement is for reducing repetition and make codes reusable. <br 
 Pattern is constructed by some of basic statements and assigned to user-defined identifier.
 </p>
 
-<pre><code>i_am_a_8beat_pattern = {
+<pre id="i_am_a_8beat_pattern"><code>i_am_a_8beat_pattern = {
   channel 10
   octave 2
   velocity 127
@@ -1042,5 +1042,144 @@ Pattern is constructed by some of basic statements and assigned to user-defined 
 </ul>
 
 <h3 id="expand-pattern">Expand Pattern</h3>
+
+<p>
+After pattern is created, it can be expanded with User-defined Identifier.<br />
+<i>* In this section, "i_am_a_8beat_pattern" <a href="#i_am_a_8beat_pattern">listed above</a> is already defined.</i>
+</p>
+
+<table>
+  <tr>
+    <td>
+<pre><code>i_am_a_8beat_pattern
+</code></pre>
+    </td>
+    <td>
+      &nbsp;&nbsp;&nbsp;&nbsp; -&gt; &nbsp;&nbsp;&nbsp;&nbsp;
+    </td>
+    <td>
+<pre><code>   | 1               2 
+========================
+   | .               . 
+   | .               . 
+   | .               . 
+   | x x x x x x x x . 
+   | .               . 
+   | .   x       x   . 
+   | .               . 
+   | .               . 
+   | .               . 
+C2 | x       x x     .
+</code></pre>
+    </td>
+  </tr>
+</table>
+
+<p>
+New pattern can be defined with expanding of the other pattern.
+</p>
+
+<table>
+  <tr>
+    <td>
+<pre><code>_8beat_4times = {
+  i_am_a_8beat_pattern
+  i_am_a_8beat_pattern
+  i_am_a_8beat_pattern
+  i_am_a_8beat_pattern
+}
+
+_8beat_4times
+</code></pre>
+    </td>
+    <td>
+      &nbsp;&nbsp;&nbsp;&nbsp; -&gt; &nbsp;&nbsp;&nbsp;&nbsp;
+    </td>
+    <td>
+<pre><code>   | 1               2               3               4
+========================================================================
+   | .               .               .               .               . 
+   | .               .               .               .               . 
+   | .               .               .               .               . 
+   | x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x . 
+   | .               .               .               .               . 
+   | .   x       x   .   x       x   .   x       x   .   x       x   . 
+   | .               .               .               .               . 
+   | .               .               .               .               . 
+   | .               .               .               .               . 
+C2 | x       x x     x       x x     x       x x     x       x x     .
+</code></pre>
+    </td>
+  </tr>
+</table>
+
+<p>
+Like 'note' statement, user-defined identifier also can be joined by ','.<br />
+It acts as expanding patterns simultaneously.
+</p>
+
+<table>
+  <tr>
+    <td>
+<pre><code>diatonic_chords = {
+  channel 1
+  octave 3
+  velocity 127
+  gatetime cutoff 10
+
+  note 1/2 {
+    C,E,G
+    D,F,A
+    E,G,B
+    F,A,C
+    G,B,D
+    A,C,E
+    B,D,F
+    C,E,G
+  }
+}
+
+_8beat_4times, diatonic_chords
+</code></pre>
+    </td>
+    <td>
+      &nbsp;&nbsp;&nbsp;&nbsp; -&gt; &nbsp;&nbsp;&nbsp;&nbsp;
+    </td>
+    <td>
+<pre><code>   | 1               2               3               4
+========================================================================
+   | .               x-------        x-------        x-------        . 
+   | .               .               .               .               . 
+   | .       x-------.       x-------.       x-------.               . 
+   | .               .               .               .               . 
+   | x-------        x-------        x-------        .       x-------. 
+   | .               .               .               .               . 
+   | .       x-------.       x-------.               x-------        . 
+   | x-------        x-------        .       x-------.       x-------. 
+   | .               .               .               .               . 
+   | .       x-------.               x-------        x-------        . 
+   | .               .               .               .               . 
+C3 | x-------        .       x-------.       x-------.       x-------. 
+   | .               .               .               .               . 
+   | .               .               .               .               . 
+   | .               .               .               .               . 
+   | .               .               .               .               . 
+   | .               .               .               .               . 
+   | + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + . 
+   | .               .               .               .               . 
+   | .   +       +   .   +       +   .   +       +   .   +       +   . 
+   | .               .               .               .               . 
+   | .               .               .               .               . 
+   | .               .               .               .               . 
+C2 | +       + +     +       + +     +       + +     +       + +     .
+
+                                                            x: channel 1
+                                                            +: channel 10
+</code></pre>
+    </td>
+  </tr>
+</table>
+
+
 <h3 id="extend-pattern">Extend Pattern</h3>
 <h3 id="ensemble">Ensemble</h3>
