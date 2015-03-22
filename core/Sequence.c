@@ -156,7 +156,7 @@ int32_t TimeTableLocation2Tick(TimeTable *self, int32_t measure, int16_t beat, i
         }
     }
 
-    return tickPerMeasure * measure + tickPerBeat * beat + offsetTick;
+    return tickPerMeasure * measure + tickPerBeat * beat + tick + offsetTick;
 }
 
 int32_t TimeTableMBLength2Tick(TimeTable *self, int32_t offsetTick, int32_t measure, int16_t beat)

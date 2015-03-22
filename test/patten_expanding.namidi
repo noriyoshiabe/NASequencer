@@ -1,9 +1,9 @@
-i_am_a_8beat_pattern = {
-  channel 10
-  octave 2
-  velocity 127
-  gatetime 100
+channel 10
+octave 2
+velocity 127
+gatetime 100
 
+i_am_a_8beat_pattern = {
   note 1/8 {
     F# F# F# F# F# F# F# F#
   },
@@ -22,12 +22,27 @@ _8beat_4times = {
   i_am_a_8beat_pattern
 }
 
-diatonic_chords = {
-  channel 1
-  octave 3
-  velocity 127
-  gatetime cutoff 10
+_first_emphasis_and_fill = _8beat_4times {
+  replace to 240 {
+    note 1/8 {
+      C, C#>;
+    }
+  }
 
+  mix from 4:4:240 {
+    note 1/8 {
+      E
+    }
+  }
+}
+
+
+channel 1
+octave 3
+velocity 127
+gatetime cutoff 10
+
+diatonic_chords = {
   note 1/2 {
     C,E,G
     D,F,A
@@ -40,4 +55,4 @@ diatonic_chords = {
   }
 }
 
-_8beat_4times, diatonic_chords
+_first_emphasis_and_fill, diatonic_chords
