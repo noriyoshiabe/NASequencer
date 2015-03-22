@@ -130,9 +130,6 @@ table pre {
       <li>
         <a href="#extend-pattern">Extend Pattern</a>
       </li>
-      <li>
-        <a href="#ensemble">Ensemble</a>
-      </li>
     </ol>
   </li>
 </ol>
@@ -974,8 +971,7 @@ C4 | x---        .
 </table>
 
 <p>
-Time signature affects displaying line of measures and 'location' expression(*).<br />
-<i>&nbsp;* Sorry, this is not documented yet.</i>
+Time signature affects displaying line of measures and <a href="#locaton-expresseion">'location' expression.</a><br />
 </p>
 
 
@@ -1039,6 +1035,14 @@ Pattern is constructed by some of basic statements and assigned to user-defined 
   <li>Only the identifier that is defined on previous source code is visible</li>
   <li>Can be define same identifier but it is overwritten</li>
   <li>Nested pattern is visible only inside of the pattern to define it</li>
+  <li>The default values of followings is inherited from the context to define pattern</li>
+  <ul>
+    <li>channel</li>
+    <li>velocity</li>
+    <li>gatetime</li>
+    <li>octave</li>
+    <li>time signature</li>
+  </ul>
 </ul>
 
 <h3 id="expand-pattern">Expand Pattern</h3>
@@ -1182,4 +1186,180 @@ C2 | +       + +     +       + +     +       + +     +       + +     .
 
 
 <h3 id="extend-pattern">Extend Pattern</h3>
-<h3 id="ensemble">Ensemble</h3>
+
+<p>
+Typically, musical composition is composed by several key sections and these variations.<br />
+"Extend Pattern" expresseion is for create the variations easily.
+</p>
+
+<table>
+  <tr>
+    <td>
+<pre><code>channel 10
+octave 2
+velocity 127
+gatetime 100
+
+_8beat = {
+  note 1/8 {
+    F# F# F# F# F# F# F# F#
+  },
+  note 1/4 {
+    ^     E     ^     E
+  },
+  note 1/8 {
+    C  ^  ^  ^  C  C  ^  ^
+  }
+}
+
+_8beat_4times = {
+  _8beat
+  _8beat
+  _8beat
+  _8beat
+}
+
+_8beat_4times_with_fill_in = _8beat_4times {
+  replace from 0 to 240 {
+    note 1/8 {
+      C, C#&gt;
+    }
+  }
+
+  mix from 4:4:240 {
+    note 1/8 {
+      E
+    }
+  }
+}
+
+_8beat_4times_with_fill_in
+</code></pre>
+    </td>
+    <td>
+      &nbsp;&nbsp;&nbsp;&nbsp; -&gt; &nbsp;&nbsp;&nbsp;&nbsp;
+    </td>
+    <td>
+<pre><code>   | 1               2               3               4
+========================================================================
+   | x               .               .               .               .  &lt;- Crash cymbal
+C3 | .               .               .               .               . 
+   | .               .               .               .               . 
+   | .               .               .               .               . 
+   | .               .               .               .               . 
+   | .               .               .               .               . 
+   | .               .               .               .               . 
+   | . x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x . 
+   | .               .               .               .               . 
+   | .   x       x   .   x       x   .   x       x   .   x       x x .  &lt;- Mixed last snare drum
+   | .               .               .               .               . 
+   | .               .               .               .               . 
+   | .               .               .               .               . 
+C2 | x       x x     x       x x     x       x x     x       x x     .
+</code></pre>
+    </td>
+  </tr>
+</table>
+
+<p>
+Example listed above extends "_8beat_4times" and assigns it to new pattern with "_8beat_4times_with_fill_in" identifier.<br />
+If "_8beat_4times_with_fill_in" is not need to reuse, it can be extended and expanded directly.
+</p>
+
+<pre><code>// This acts extending and expanding
+_8beat_4times {
+  replace from 0 to 240 {
+    note 1/8 {
+      C, C#&gt;
+    }
+  }
+
+  mix from 4:4:240 {
+    note 1/8 {
+      E
+    }
+  }
+}
+</code></pre>
+
+<h4>Replace Block</h4>
+<p>
+As listed above, it repalces some range of pattern.<br />
+If pattern contains multiple channels, notes that removed can be limited with specified channel.
+</p>
+
+<pre><code>
+example = {
+  channel 1
+  notes {
+    ...
+  }
+
+  channel 2
+  notes {
+    ...
+  }
+}
+
+example {
+  replace channel 1 {
+    ...
+  }
+}
+</code></pre>
+
+<h4>Mix Block</h4>
+<p>
+As listed above, it simply adds notes from specified position without removing.
+</p>
+
+<h4 id="locaton-expresseion">Location Expression</h4>
+
+<p>
+The range of replace or mix block is specified by 'from' and 'to' modifier with absolute step number or 'location' expresseion.<br />
+Following lists are variations of location pattterns.<br />
+<i>* 4/4 with Resolution 480</i>
+</p>
+
+<table>
+  <tr>
+    <th>Expression</th>
+    <th>Step value</th>
+    <th></th>
+  </tr>
+  <tr>
+    <td>1:1:0</td>
+    <td>0</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>2:1:0</td>
+    <td>1920</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>1:2:0</td>
+    <td>480</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>1:2:240</td>
+    <td>720</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>2:240</td>
+    <td>720</td>
+    <td><i>* Measure no can be ommited</i></td>
+  </tr>
+  <tr>
+    <td>2m</td>
+    <td>1920</td>
+    <td><i>* Meaning is measure 2</i></td>
+  </tr>
+  <tr>
+    <td>2b</td>
+    <td>480</td>
+    <td><i>* Meaning is beat 2</i></td>
+  </tr>
+</table>
