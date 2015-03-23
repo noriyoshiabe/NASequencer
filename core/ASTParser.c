@@ -303,7 +303,7 @@ static int noteNoString2Int(Context *context, const char *noteNoString)
     }
 
     if (-1 == baseKey) {
-        NAPanic("Unexpected note no. noteNoString=%s", noteNoString);
+        return -1;
     }
 
     int octave;
@@ -321,11 +321,18 @@ static int noteNoString2Int(Context *context, const char *noteNoString)
 static bool __dispatch__NOTE_NO(Expression *expression, Context *context, void *value, ParseError *error)
 {
     bool ret = false;
+
+    int noteNo = noteNoString2Int(context, expression->v.s);
+    if (-1 == noteNo) {
+        SET_ERROR(error, PARSE_ERROR_INVALID_NOTE_NO, expression, "invalid note expression.");
+        return ret;
+    }
+
     NoteBlockContext *nbContext = value;
 
     NoteEvent *noteEvent = NATypeNew(NoteEvent, nbContext->tick);
     noteEvent->channel = context->channel;
-    noteEvent->noteNo = noteNoString2Int(context, expression->v.s);
+    noteEvent->noteNo = noteNo;
     noteEvent->velocity = context->velocity;
 
     if (127 < noteEvent->noteNo) {
