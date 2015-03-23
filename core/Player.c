@@ -91,8 +91,21 @@ static void __PlayerSetSource(Player *self, void *source)
     }
 }
 
+static void __PlayerSendNoteOff(Player *self, const NoteEvent *event)
+{
+    uint8_t bytes[3] = {0x80 | (0x0F & (event->channel - 1)), event->noteNo, 0x00};
+    MidiClientSend(self->client, bytes, sizeof(bytes));
+}
+
 static void __PlayerSendAllNoteOff(Player *self)
 {
+    for (CFIndex i = CFArrayGetCount(self->context.playing); 0 < i; --i) {
+        CFIndex idx = i - 1;
+        const NoteEvent *event = CFArrayGetValueAtIndex(self->context.playing, idx);
+        __PlayerSendNoteOff(self, event);
+        CFArrayRemoveValueAtIndex(self->context.playing, idx);
+    }
+
     uint8_t bytes[3] = {0, 0x7B, 0x00};
     for(int i = 0; i < 16; ++i) {
         bytes[0] = 0xB0 | (0x0F & i);
@@ -132,12 +145,6 @@ static void __PlayerChangeState(Player *self, PlayerState next, bool silent)
     if (!silent && notify) {
         __PlayerObserverOnPlayerContextChanged(self);
     }
-}
-
-static void __PlayerSendNoteOff(Player *self, const NoteEvent *event)
-{
-    uint8_t bytes[3] = {0x80 | (0x0F & (event->channel - 1)), event->noteNo, 0x00};
-    MidiClientSend(self->client, bytes, sizeof(bytes));
 }
 
 static void __PlayerPlay(Player *self)
@@ -188,7 +195,6 @@ static void __PlayerPlay(Player *self)
 static void __PlayerRewind(Player *self)
 {
     __PlayerSendAllNoteOff(self);
-    CFArrayRemoveAllValues(self->context.playing);
 
     self->index = 0;
     self->offset = 0;
@@ -206,7 +212,6 @@ static void __PlayerRewind(Player *self)
 static void __PlayerForward(Player *self)
 {
     __PlayerSendAllNoteOff(self);
-    CFArrayRemoveAllValues(self->context.playing);
 
     self->context.tick = TimeTableMicroSec2Tick(self->sequence->timeTable, self->context.usec);
     self->context.location = TimeTableTick2Location(self->sequence->timeTable, self->context.tick);
@@ -237,7 +242,6 @@ static void __PlayerForward(Player *self)
 static void __PlayerBackward(Player *self)
 {
     __PlayerSendAllNoteOff(self);
-    CFArrayRemoveAllValues(self->context.playing);
 
     self->context.tick = TimeTableMicroSec2Tick(self->sequence->timeTable, self->context.usec);
     self->context.location = TimeTableTick2Location(self->sequence->timeTable, self->context.tick);
