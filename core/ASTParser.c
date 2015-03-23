@@ -262,7 +262,7 @@ static int noteNoString2Int(Context *context, const char *noteNoString)
         {"F",  17},
         {"F#", 18}, {"GB", 18},
         {"G",  19},
-        {"G#", 20}, {"AB", 19},
+        {"G#", 20}, {"AB", 20},
         {"A",  21},
         {"A#", 22}, {"BB", 22},
         {"B",  23},
