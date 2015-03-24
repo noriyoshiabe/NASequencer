@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		020C95C01AA09CEC00DA4D63 /* ParseContextAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020C95BF1AA09CEC00DA4D63 /* ParseContextAdapter.swift */; };
+		021EFCCE1AC18E1700AC924F /* Help in Resources */ = {isa = PBXBuildFile; fileRef = 021EFCCD1AC18E1700AC924F /* Help */; };
 		02225DDE1A906E610077ABCB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02225DDD1A906E610077ABCB /* AppDelegate.swift */; };
 		02225DE01A906E610077ABCB /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02225DDF1A906E610077ABCB /* Document.swift */; };
 		02225DE31A906E610077ABCB /* Document.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02225DE11A906E610077ABCB /* Document.xib */; };
@@ -21,7 +22,6 @@
 		02531BC91A99B58300AB9B37 /* StatusBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02531BC81A99B58300AB9B37 /* StatusBackgroundView.swift */; };
 		025715891AAC88DD00CD4124 /* PlayerContextAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 025715881AAC88DD00CD4124 /* PlayerContextAdapter.swift */; };
 		025F67921A90C6B600E87117 /* DocumentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 025F67911A90C6B600E87117 /* DocumentController.swift */; };
-		02AD4ABD1AADEDF1005364C5 /* NAMIDI.help in Resources */ = {isa = PBXBuildFile; fileRef = 02AD4ABC1AADEDF1005364C5 /* NAMIDI.help */; };
 		02AD4ABF1AADEE4D005364C5 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 02AD4ABE1AADEE4D005364C5 /* icon.png */; };
 		02FE8D501A923C4A00BEF62E /* libnalib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0265880A1A922B6C0030461C /* libnalib.a */; };
 		02FE8D511A923C4A00BEF62E /* libnamidi-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 026588041A922B5F0030461C /* libnamidi-core.a */; };
@@ -68,6 +68,7 @@
 
 /* Begin PBXFileReference section */
 		020C95BF1AA09CEC00DA4D63 /* ParseContextAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParseContextAdapter.swift; sourceTree = "<group>"; };
+		021EFCCD1AC18E1700AC924F /* Help */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Help; sourceTree = "<group>"; };
 		02225DD81A906E610077ABCB /* NAMIDI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NAMIDI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		02225DDC1A906E610077ABCB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		02225DDD1A906E610077ABCB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -88,7 +89,6 @@
 		026587FF1A922B5F0030461C /* namidi-core.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "namidi-core.xcodeproj"; path = "../core/namidi-core.xcodeproj"; sourceTree = "<group>"; };
 		026588051A922B6C0030461C /* nalib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = nalib.xcodeproj; path = ../nalib/nalib.xcodeproj; sourceTree = "<group>"; };
 		02AA073A1A98BB6100F413A2 /* PianoRollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PianoRollView.swift; sourceTree = "<group>"; };
-		02AD4ABC1AADEDF1005364C5 /* NAMIDI.help */ = {isa = PBXFileReference; lastKnownFileType = folder; path = NAMIDI.help; sourceTree = "<group>"; };
 		02AD4ABE1AADEE4D005364C5 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
 		02FE8D491A9237BF00BEF62E /* NAMIDI-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NAMIDI-Bridging-Header.h"; sourceTree = "<group>"; };
 		02FE8D521A923C6600BEF62E /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
@@ -139,8 +139,8 @@
 		02225DDA1A906E610077ABCB /* NAMIDI */ = {
 			isa = PBXGroup;
 			children = (
+				021EFCCD1AC18E1700AC924F /* Help */,
 				02AD4ABE1AADEE4D005364C5 /* icon.png */,
-				02AD4ABC1AADEDF1005364C5 /* NAMIDI.help */,
 				02225DDD1A906E610077ABCB /* AppDelegate.swift */,
 				02225DDF1A906E610077ABCB /* Document.swift */,
 				02225DE11A906E610077ABCB /* Document.xib */,
@@ -312,10 +312,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				02225DE31A906E610077ABCB /* Document.xib in Resources */,
+				021EFCCE1AC18E1700AC924F /* Help in Resources */,
 				02225DE51A906E610077ABCB /* Images.xcassets in Resources */,
 				02225DE81A906E610077ABCB /* MainMenu.xib in Resources */,
 				02AD4ABF1AADEE4D005364C5 /* icon.png in Resources */,
-				02AD4ABD1AADEDF1005364C5 /* NAMIDI.help in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
