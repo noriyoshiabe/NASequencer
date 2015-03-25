@@ -1,116 +1,149 @@
-channel 10
-sound select 127 0 0
-octave 2
-velocity 100
-gatetime 80
+tempo 180
 
-hihat = {
-  note 1/16 3 {
-    F# ^ F# A# ^ ^
-    F# ^ F# A# ^ ^
-    F# ^ F# A# ^ ^
-    F# ^ F# A# ^ ^
-  }
-}
-
-ride = {
-  note 1/8 {
-    D#> D#> D#> D#> D#> D#> D#> D#>
-  }
-}
-
-bass_and_snare1 = {
-  note 1/16 3 {
-    C ^ ^ ^ ^ ^
-    E(velocity=127) ^ ^ ^ ^ C
-    ^ ^ C C ^ ^ E(velocity=127) ^ ^ ^ ^ ^
-  }
-}
-
-bass_and_snare2 = bass_and_snare1 {
-  mix from 4:0 {
-    note 1/16 3 {
-      ^ ^ C ^ ^ E(velocity=127)
-    }
-  }
-}
+gatetime cutoff 100
 
 channel 1
-sound select 0 0 0
-octave 3
-gatetime cutoff 20
 
-piano1 = {
-  note 1/16 3 {
-    A< ^ A< G#,D>,G> ~ ~
-    ^  ^ A< G#,D>,G> ~ ~
-    ^  ^ A< G#,D>,G> ~ ~
-    ^  ^ A,C#>,G> ~~ A,C#>
+intro_piano_right = {
+  note 1/8   { D5,Eb,G ^ }
+  note 1/8   { ^ Db,Eb,Ab }
+  note 1/8   { ^ Db,Eb,Gb }
+  note 1/8 3 { ^ F Eb }
+
+  note 1/8   { C,D,F ^ }
+  note 1/8   { ^ D,Eb,G }
+  note 1/8   { ^ C,D,F }
+  note 1/8 3 { ^ Eb D }
+
+  note 1/8   { Bb4,C5,Eb ^ }
+  note 1/8   { ^ Bb4,C5,F }
+  note 1/8   { ^ Bb4,C5,Eb }
+  note 1/8 3 { ^ D C }
+
+  note 1/8   { A4,Bb,D5 ^ }
+  note 1/8   { G4 A }
+  note 1/8   { Bb C5 }
+  note 1/8 3 { D Eb F }
+
+  note 384 {
+    D,F
+    Eb,Ab
+    Db,Eb,Gb
+    D,F
+    C,Eb
+  }
+
+  note 384 {
+    C,D,F
+    D,Eb,G
+    D,F
+    Bb<,C,Eb
+    Bb<,C,D
+  }
+
+  note 384 {
+    Bb<,C,Eb
+    C,D,F
+    Bb<,C,Eb
+    Bb<,D
+    A<,C
+  }
+
+  note 1/8 {
+    E4,G,Bb,D G
+    ^ G
+    G A
+    Bb ^
   }
 }
-piano2 = {
-  note 1/1 {
-    D,G,B
+
+intro_piano_left = {
+  note 1/8 { ^ G3,Bb,Eb> }
+  note 1/8 { ^^ }
+  note 1/8 { ^ F,A,Eb> }
+  note 1/8 { ^^ }
+
+  note 1/8 { ^ A,Bb,D> }
+  note 1/8 { ^^ }
+  note 1/8 { ^ G,Bb,D> }
+  note 1/8 { ^^ }
+
+  note 1/8 { ^ G,A,C> }
+  note 1/8 { ^^ }
+  note 1/8 { ^ F#,A,C> }
+  note 1/8 { ^^ }
+
+  note 1/8 { ^ E,G,Bb }
+  note 1/8 { ^^ }
+  note 1/8 { ^^ }
+  note 1/8 { ^^ }
+
+  note 384 {
+    ^
+    G,Bb,Eb>
+    ^
+    F,A,Eb>
+    ^
+  }
+
+  note 384 {
+    ^
+    A,Bb,D>
+    ^
+    G,Bb,D>
+    ^
+  }
+
+  note 384 {
+    ^
+    G,A,C>
+    ^
+    F#,A,C>
+    ^
+  }
+
+  note 1/8 {
+    E,G,Bb ^
+    ^^
+    ^^
+    ^^
   }
 }
 
 channel 2
-sound select 0 0 33
-octave 1
-bass1 = {
-  note 1/8 {
-    E G A A# B A# A G
-  }
-}
-bass2 = {
-  note 1/8 {
-    E G A A# B E> D> E>
-  }
-}
+sound select 0 0 34
 octave 2
-bass3 = {
+gatetime cutoff 10
+
+intro_bass = {
   note 1/8 {
-    A< C D D# E D# D C
+    ^ C ^ ^ ^ F ^ ^
+    ^ Bb< ^ ^ ^ Eb ^ ^
+    ^ A< ^ ^ ^ D ^ ^
+    ^ G< ^ ^ ^ ^ ^ ^
   }
-}
-bass4 = {
-  note 1/8 {
-    A< C D D# E A G A
-  }
-}
-bass5 = {
-  octave 1
-  note 1/1 {
-    E
-  }
+
+  note 384 { ^ C ^ F ^ }
+  note 384 { ^ Bb< ^ Eb ^ }
+  note 384 { ^ A ^ D ^ }
+  note 1/4 { G ^ ^ ^ }
 }
 
-hihat, bass_and_snare1
-hihat, bass_and_snare2
-hihat, bass_and_snare1, bass1
-hihat, bass_and_snare2, bass2
-hihat, bass_and_snare1, bass3, piano1
-hihat, bass_and_snare2, bass4, piano1
+channel 10
+sound select 127 0 0
+octave 2
+gatetime 100
 
-ride, bass_and_snare1, bass1, piano2
-ride, bass_and_snare2, bass2
-ride, bass_and_snare1, bass3, piano1
-ride, bass_and_snare2, bass4, piano1
+intro_drums = {
 
-hihat, bass_and_snare1, bass5
-
-last = {
-  hihat, bass_and_snare2
+  note 1/8 { ^ G# ^ ^ ^ G# ^ ^ }
+  note 1/8 { ^ G# ^ ^ ^ G# ^ ^ }
+  note 1/8 { ^ G# ^ ^ ^ G# ^ ^ }
+  note 1/8 { ^ G# ^ ^ ^ ^ ^ ^ }
+  note 384 { ^ G# ^ G# ^ }
+  note 384 { ^ G# ^ G# ^ }
+  note 384 { ^ G# ^ G# ^ }
+  note 1/4 { G# ^ ^ ^ }
 }
-last {
-  replace channel 10 from b3 {
-    octave 2
-    note 1/32 {
-      E E C A G F C E
-      E(velocity=127) E
-      C ^ C C
-      E(velocity=127), A#
-      ^ G#
-    }
-  }
-}
+
+intro_piano_left, intro_piano_right, intro_bass, intro_drums
