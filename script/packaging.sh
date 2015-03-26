@@ -8,6 +8,6 @@ cp $ROOT/release/README.txt.alpha $ROOT/release/alpha/README.txt
 cp -r $ROOT/release/NAMIDI.app $ROOT/release/alpha/
 ln -s /Applications $ROOT/release/alpha/Applications
 
-rm $ROOT/release/"NAMIDI alpha.dmg" 2> /dev/null
-hdiutil create $ROOT/release/"NAMIDI alpha.dmg" -volname "NAMIDI Alpha" -fs HFS+ -srcfolder $ROOT/release/alpha
+DATETIME=`date "+%Y%m%d-%H%M"`
+hdiutil create $ROOT/release/NAMIDI-alpha-$DATETIME.dmg -volname "NAMIDI Alpha" -fs HFS+ -srcfolder $ROOT/release/alpha
 rm -r $ROOT/release/alpha
