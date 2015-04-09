@@ -1,13 +1,14 @@
 #pragma once
 
 #include <stdbool.h>
+#include "Expression.h"
 #include "AbstractSequence.h"
 
 typedef struct _ParseContext {
     const char *filepath;
     Sequence *sequence;
     int16_t resolution;
-    const char *title;
+    char *title;
     int32_t step;
     int32_t tick;
     int32_t channel;
@@ -63,4 +64,30 @@ extern void ParseErrorDestroy(ParseError *error);
 
 extern Sequence *NAMidiParserParse(const char *filepath, ParseError **error);
 
-#define isPowerOf2(x) ((x != 0) && ((x & (x - 1)) == 0))
+static inline const char *ParseError2String(ParseErrorKind kind)
+{
+#define ERR2STR_AND_RETURN(e, kind) if (e == kind) return #e
+    ERR2STR_AND_RETURN(PARSE_ERROR_FILE_NOT_FOUND, kind);
+    ERR2STR_AND_RETURN(PARSE_ERROR_INIT_ERROR, kind);
+    ERR2STR_AND_RETURN(PARSE_ERROR_SYNTAX_ERROR, kind);
+    ERR2STR_AND_RETURN(PARSE_ERROR_RESOLUTION_REDEFINED, kind);
+    ERR2STR_AND_RETURN(PARSE_ERROR_TITLE_REDEFINED, kind);
+    ERR2STR_AND_RETURN(PARSE_ERROR_NOTE_BLOCK_MISSING, kind);
+    ERR2STR_AND_RETURN(PARSE_ERROR_NOTE_BLOCK_STEP_MISSING, kind);
+    ERR2STR_AND_RETURN(PARSE_ERROR_NOTE_BLOCK_STEP_REDEFINED, kind);
+    ERR2STR_AND_RETURN(PARSE_ERROR_INVALID_RESOLUTION, kind);
+    ERR2STR_AND_RETURN(PARSE_ERROR_INVALID_STEP, kind);
+    ERR2STR_AND_RETURN(PARSE_ERROR_INVALID_TIE, kind);
+    ERR2STR_AND_RETURN(PARSE_ERROR_INVALID_TEMPO, kind);
+    ERR2STR_AND_RETURN(PARSE_ERROR_INVALID_TIME_SIGN, kind);
+    ERR2STR_AND_RETURN(PARSE_ERROR_INVALID_MSB, kind);
+    ERR2STR_AND_RETURN(PARSE_ERROR_INVALID_LSB, kind);
+    ERR2STR_AND_RETURN(PARSE_ERROR_INVALID_PROGRAM_NO, kind);
+    ERR2STR_AND_RETURN(PARSE_ERROR_INVALID_CHANNEL, kind);
+    ERR2STR_AND_RETURN(PARSE_ERROR_INVALID_VELOCITY, kind);
+    ERR2STR_AND_RETURN(PARSE_ERROR_INVALID_OCTAVE, kind);
+    ERR2STR_AND_RETURN(PARSE_ERROR_INVALID_NOTE_NO, kind);
+    ERR2STR_AND_RETURN(PARSE_ERROR_INVALID_QUANTIZE, kind);
+#undef ERR2STR_AND_RETURN
+    return "Unknown error kind";
+}

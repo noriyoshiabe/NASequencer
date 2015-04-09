@@ -3,6 +3,8 @@
 #include "Parser.h"
 #include "Lexer.h"
 
+#include <stdlib.h>
+
 #define TABLE_SIZE (TOKEN_END - TOKEN_BEGIN)
 #define IDX(type) (type - TOKEN_BEGIN - 1)
 
@@ -98,6 +100,9 @@ ParseContext *ParseContextCreateLocal(const ParseContext *from)
 
 void ParseContextDestroy(ParseContext *context)
 {
+    if (context->title) {
+        free(context->title);
+    }
     free(context);
 }
 
@@ -130,7 +135,7 @@ static bool parseExpression(Expression *expression, ParseContext *context, void 
 
     ExpressionParseFunction function = dispatchTable[IDX(expression->tokenType)];
     if (!function) {
-        printf("Dispatch function is not found. tokenType=%s", tokenType2String(expression->tokenType));
+        printf("Parse function is not found. tokenType=%s", tokenType2String(expression->tokenType));
         abort();
     }
     return function(expression, context, value, error);
@@ -156,7 +161,7 @@ ERROR:
     return ret;
 }
 
-Sequence *NAMidiParserParse(NAMIDIParser *self, const char *filepath, ParseError **error)
+Sequence *NAMidiParserParse(const char *filepath, ParseError **error)
 {
     Expression *expression;
     *error = NULL;
@@ -169,7 +174,7 @@ Sequence *NAMidiParserParse(NAMIDIParser *self, const char *filepath, ParseError
     dumpExpression(expression);
 #endif
 
-    Sequence *ret = parseAST(self, expression, filepath, error);
+    Sequence *ret = parseAST(expression, filepath, error);
     deleteExpression(expression);
     return ret;
 }
