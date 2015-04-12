@@ -4,6 +4,11 @@
 #include <stdio.h>
 #include <string.h>
 
+typedef struct _TimeSign {
+    int16_t numerator;
+    int16_t denominator;
+} TimeSign;
+
 #define isPowerOf2(x) ((x != 0) && ((x & (x - 1)) == 0))
 #define MAKE_ERROR(kind, context, expression, message) ParseErrorCreateWithError(kind, context->filepath, message, expression->location)
 
@@ -139,7 +144,14 @@ static bool __dispatch__NOTE_NO(Expression *expression, ParseContext *context, v
         }
     }
 
-    SequenceAddNoteEvent(nbContext->sequence, nbContext->tick, channel, velocity, gatetime);
+
+    NoteEvent *event = SequenceAddNoteEvent(nbContext->sequence, nbContext->tick, channel, velocity, gatetime);
+    if (ParseContextHasLastNote(nbContext)) {
+        NoteEvent *last = ParseContext
+        if (MidiEventGetTick(event) == ParseContextHasLastNote)
+    }
+
+    CFArrayAppendValue(nbCotext->lastNotes, event);
  
     return true;
 }
@@ -300,27 +312,21 @@ static bool __dispatch__TITLE(Expression *expression, ParseContext *context, voi
     return true;
 }
 
-// TODO from here
 static bool __dispatch__TIME(Expression *expression, ParseContext *context, void *value, ParseError **error)
 {
-    TimeEvent *event = NATypeNew(TimeEvent, context->tick);
+    TimeSign timeSign;
 
-    for (Expression *expr = expression->left; expr; expr = expr->right) {
-        if (!parseExpression(expr, context, event, error)) {
-            NARelease(event);
-            return false;
-        }
+    if (!parseExpression(expression->left, context, &timeSign, error)) {
+        return false;
     }
 
-    TimeTableAddTimeEvent(context->timeTable, event);
-    NARelease(event);
-
+    SequenceAddTimeEvent(context->sequence, context->tick, timeSign.numerator, timeSign.denominator);
     return true;
 }
 
 static bool __dispatch__TEMPO(Expression *expression, ParseContext *context, void *value, ParseError **error)
 {
-    TempoEvent *event = NATypeNew(TempoEvent, context->tick);
+    float tempo;
 
     for (Expression *expr = expression->left; expr; expr = expr->right) {
         bool success = true;
@@ -328,44 +334,34 @@ static bool __dispatch__TEMPO(Expression *expression, ParseContext *context, voi
 
         switch (expr->tokenType) {
         case FLOAT:
-            success = parseExpression(expr, context, &event->tempo, error);
+            success = parseExpression(expr, context, &tempo, error);
             break;
         case INTEGER:
             success = parseExpression(expr, context, &i, error);
-            event->tempo = i;
-            break;
-        default:
-            success = parseExpression(expr, context, event, error);
+            tempo = i;
             break;
         }
 
         if (!success) {
-            NARelease(event);
             return false;
         }
     }
 
-    bool ret = true;
-
-    if (30.0 <= event->tempo && event->tempo <= 300.0) {
-        TimeTableAddTempoEvent(context->timeTable, event);
+    if (30.0 <= tempo && tempo <= 300.0) {
+        SequenceAddTempoEvent(context->sequence, context->tick, tempo);
+        return true;
     }
     else {
-        MAKE_ERROR(error, PARSE_ERROR_INVALID_TEMPO, expression, "invalid range of tempo.");
-        ret = false;
+        *error = MAKE_ERROR(PARSE_ERROR_INVALID_TEMPO, expression, "invalid range of tempo.");
+        return false;
     }
-
-    NARelease(event);
-
-    return ret;
 }
 
-// TODO obsolete FROM on Parser.y
 static bool __dispatch__MARKER(Expression *expression, ParseContext *context, void *value, ParseError **error)
 {
     char *text = NULL;
 
-    if (!parseExpression(expr, context, &text, error)) {
+    if (!parseExpression(expression->left, context, &text, error)) {
         return false;
     }
 
@@ -389,7 +385,7 @@ static bool __dispatch__CHANNEL(Expression *expression, ParseContext *context, v
     }
 
     if (context->channel < 1 || 16 < context->channel) {
-        MAKE_ERROR(error, PARSE_ERROR_INVALID_CHANNEL, expression, "invalid range of channel.");
+        *error = MAKE_ERROR(PARSE_ERROR_INVALID_CHANNEL, expression, "invalid range of channel.");
         return false;
     }
 
@@ -405,7 +401,7 @@ static bool __dispatch__VELOCITY(Expression *expression, ParseContext *context, 
     }
 
     if (val < 0 || 127 < val) {
-        MAKE_ERROR(error, PARSE_ERROR_INVALID_VELOCITY, expression, "invalid range of velocity.");
+        *error = MAKE_ERROR(PARSE_ERROR_INVALID_VELOCITY, expression, "invalid range of velocity.");
         return false;
     }
 
@@ -450,7 +446,7 @@ static bool __dispatch__OCTAVE(Expression *expression, ParseContext *context, vo
     }
 
     if (context->octave < -2 || 8 < context->octave) {
-        MAKE_ERROR(error, PARSE_ERROR_INVALID_OCTAVE, expression, "invalid range of octave.");
+        *errpr = MAKE_ERROR(PARSE_ERROR_INVALID_OCTAVE, expression, "invalid range of octave.");
         return false;
     }
 
@@ -467,12 +463,9 @@ static bool __dispatch__NOTE(Expression *expression, ParseContext *context, void
         bool success = true;
 
         switch (expr->tokenType) {
-        case FROM:
-            success = parseExpression(expr, context, &context->tick, error);
-            break;
         case STEP:
             if (-1 != step) {
-                MAKE_ERROR(error, PARSE_ERROR_NOTE_BLOCK_STEP_REDEFINED, expression, "step for note block cannot be specified twice.");
+                *error = MAKE_ERROR(PARSE_ERROR_NOTE_BLOCK_STEP_REDEFINED, expression, "step for note block cannot be specified twice.");
                 return false;
             }
             success = parseExpression(expr, context, &step, error);
@@ -488,17 +481,17 @@ static bool __dispatch__NOTE(Expression *expression, ParseContext *context, void
     }
 
     if (!noteBlockExpr) {
-        MAKE_ERROR(error, PARSE_ERROR_NOTE_BLOCK_MISSING, expression, "note block is missing.");
+        *error = MAKE_ERROR(PARSE_ERROR_NOTE_BLOCK_MISSING, expression, "note block is missing.");
         return false;
     }
 
     if (-1 == step) {
-        MAKE_ERROR(error, PARSE_ERROR_NOTE_BLOCK_STEP_MISSING, expression, "step for note block is not specified.");
+        *error = MAKE_ERROR(PARSE_ERROR_NOTE_BLOCK_STEP_MISSING, expression, "step for note block is not specified.");
         return false;
     }
 
     if (1 > step) {
-        MAKE_ERROR(error, PARSE_ERROR_INVALID_STEP, expression, "step is invalid.");
+        *error = MAKE_ERROR(PARSE_ERROR_INVALID_STEP, expression, "step is invalid.");
         return false;
     }
 
@@ -509,98 +502,6 @@ static bool __dispatch__NOTE(Expression *expression, ParseContext *context, void
 static bool __dispatch__STEP(Expression *expression, ParseContext *context, void *value, ParseError **error)
 {
     return parseExpression(expression->left, context, value, error);
-}
-
-static bool __dispatch__FROM(Expression *expression, ParseContext *context, void *value, ParseError **error)
-{
-    return parseExpression(expression->left, context, value, error);
-}
-
-static bool __dispatch__TO(Expression *expression, ParseContext *context, void *value, ParseError **error)
-{
-    return parseExpression(expression->left, context, value, error);
-}
-
-static bool __dispatch__MIX_OR_REPLACE(Expression *expression, ParseContext *context, void *value, ParseError **error)
-{
-    int32_t from = 0;
-    int32_t to = INT32_MAX;
-    int32_t channel = -1;
-
-    Expression *patternBlock = NULL;
-
-    for (Expression *expr = expression->left; expr; expr = expr->right) {
-        bool success = true;
-
-        switch (expr->tokenType) {
-        case FROM:
-            success = parseExpression(expr, context, &from, error);
-            break;
-        case TO:
-            success = parseExpression(expr, context, &to, error);
-            break;
-        case CHANNEL:
-            success = parseExpression(expr, context, &channel, error);
-            context->channel = channel;
-            break;
-        case PATTERN_BLOCK:
-            patternBlock = expr;
-            break;
-        }
-
-        if (!success) {
-            return false;
-        }
-    }
-
-    if (REPLACE == expression->tokenType) {
-        CFIndex count = CFArrayGetCount(context->events);
-        for (CFIndex i = count - 1; 0 <= i; --i) {
-            MidiEvent *event = (MidiEvent *)CFArrayGetValueAtIndex(context->events, i);
-            if (from <= event->tick && event->tick < to) {
-                if (-1 == channel
-                        || (NATypeOf(event, NoteEvent) && channel == ((NoteEvent *)event)->channel)
-                        || (NATypeOf(event, SoundSelectEvent) && channel == ((SoundSelectEvent *)event)->channel)) {
-                    CFArrayRemoveValueAtIndex(context->events, i);
-                }
-            }
-        }
-    }
-
-    ParseContext *local = ParseContextCreateLocal(context);
-
-    if (!parseExpression(patternBlock, local, NULL, error)) {
-        NARelease(local);
-        return false;
-    }
-
-    CFIndex count = CFArrayGetCount(local->events);
-    for (int i = 0; i < count; ++i) {
-        const MidiEvent *event = CFArrayGetValueAtIndex(local->events, i);
-        if (event->tick + from < to) {
-            MidiEvent *copied = NACopy(event);
-            copied->tick += from;
-            ContextAddEvent(context, copied);
-            NARelease(copied);
-        }
-        else {
-            break;
-        }
-    }
-
-    NARelease(local);
-
-    return true;
-}
-
-static bool __dispatch__REPLACE(Expression *expression, ParseContext *context, void *value, ParseError **error)
-{
-    return __dispatch__MIX_OR_REPLACE(expression, context, value, error);
-}
-
-static bool __dispatch__MIX(Expression *expression, ParseContext *context, void *value, ParseError **error)
-{
-    return __dispatch__MIX_OR_REPLACE(expression, context, value, error);
 }
 
 static bool __dispatch__OFFSET(Expression *expression, ParseContext *context, void *value, ParseError **error)
@@ -621,7 +522,7 @@ static bool __dispatch__REST(Expression *expression, ParseContext *context, void
 
 static bool __dispatch__TIE(Expression *expression, ParseContext *context, void *value, ParseError **error)
 {
-    NoteBlockContext *nbContext = value;
+    ParseContext *nbContext = value;
     int32_t tick = -1;
     CFIndex count = CFArrayGetCount(nbContext->events);
     for (CFIndex i = count - 1; 0 <= i; --i) {
