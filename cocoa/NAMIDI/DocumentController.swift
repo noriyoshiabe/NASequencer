@@ -18,7 +18,7 @@ class DocumentController : NSWindowController, NAMidiProxyDelegate {
     override func awakeFromNib() {
         window?.setFrameAutosaveName("sharedWindowFrame")
         
-        let document = self.document? as Document
+        let document = self.document as! Document
         namidi = document.namidi
         namidi?.addDelegate(self);
         namidi?.addDelegate(pianoRollView!)

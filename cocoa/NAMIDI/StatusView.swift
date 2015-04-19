@@ -22,7 +22,7 @@ class StatusView : NSView, NAMidiProxyDelegate {
     func onParseFinished(namidi: NAMidiProxy, context: ParseContextAdapter) {
         if context.hasError {
             let error = context.error
-            errorKind!.stringValue = error.message.takeUnretainedValue()
+            errorKind!.stringValue = error.message.takeUnretainedValue() as String
             filename!.stringValue = (error.filepath.takeUnretainedValue() as NSString).lastPathComponent
             location!.stringValue = String(format: "Line: %d   Column: %d", error.location.firstLine, error.location.firstColumn)
             errorInfomation!.hidden = false

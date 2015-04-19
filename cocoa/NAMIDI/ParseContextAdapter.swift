@@ -11,13 +11,13 @@ import Foundation
 class ParseContextAdapter : NSObject {
     private let contextRef: UnsafeMutablePointer<ParseContext>
     private let context: ParseContext
-    private let sequenceAdapter: SequenceAdapter?
+    private var sequenceAdapter: SequenceAdapter?
     
     init (contextRef: UnsafeMutablePointer<ParseContext>) {
         self.contextRef = contextRef
         self.context = contextRef.memory
         
-        if UnsafeMutablePointer<Sequence>.null() != context.sequence {
+        if nil != context.sequence {
             self.sequenceAdapter = SequenceAdapter(sequenceRef: context.sequence)
         }
         

@@ -108,8 +108,7 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
         let width:CGFloat = CGFloat(self.context!.sequence.length + 240) * self.widthPerTick
         self.frame = NSMakeRect(0, 0, round(width), round((127 + 2) * self.heightPerKey))
         
-        let contextPtr = NSGraphicsContext.currentContext()!.graphicsPort
-        let context = unsafeBitCast(contextPtr, CGContext.self)
+        let context = NSGraphicsContext.currentContext()?.CGContext
         
         gridLayer = CGLayerCreateWithContext(context, self.bounds.size, nil)
         drawGridLayer()
@@ -125,12 +124,12 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
     func onPlayerContextChanged(namidi: NAMidiProxy!, context: PlayerContextAdapter) {
         self.playerContext = context
         
-        setPlayingPosition(currentX())
+        setPlayingPositionS(currentX())
         
         var size = CFArrayGetCount(playerContext!.playing)
         for var i = 0; i < size; ++i {
             var ptr = CFArrayGetValueAtIndex(playerContext!.playing, i)
-            if ptr == UnsafeMutablePointer<Void>.null() {
+            if ptr == nil {
                 continue
             }
             
@@ -148,7 +147,7 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
         
         let toX: CGFloat = currentX()
         
-        let parent:NSScrollView = self.superview?.superview? as NSScrollView
+        let parent:NSScrollView = self.superview?.superview as! NSScrollView
         if !parent.documentVisibleRect.intersects(CGRectMake(toX, 0, 0, self.bounds.size.height)) {
             scrolling = true
             
@@ -163,7 +162,7 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
         }
     }
     
-    func setPlayingPosition(x: CGFloat) {
+    func setPlayingPositionS(x: CGFloat) {
         if playingPosition == x {
             return
         }
