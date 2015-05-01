@@ -11,6 +11,13 @@ drums = {
     // # -> +   b -> -
     C+ B- C+ B- b-
 
+    octave -1
+    C+
+
+    key C+
+
+    b_cdefgabc^
+
     first_cymbal = { 1/8 C#2 }
     ptn * 1
     first_cymbal = { 1/8 F#2 }
