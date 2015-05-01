@@ -6,7 +6,7 @@
 
 #define LOC(location) (*(ParseLocation *)location)
 
-Expression *ExpressionCreateIntegerValue(void *location, ExpresionType type, int value)
+Expression *ExpressionCreateIntegerValue(void *location, ExpressionType type, int value)
 {
     Expression *expr = (Expression *)calloc(1, sizeof(Expression));
     expr->location = LOC(location);
@@ -16,7 +16,7 @@ Expression *ExpressionCreateIntegerValue(void *location, ExpresionType type, int
     return expr;
 }
 
-Expression *ExpressionCreateFloatValue(void *location, ExpresionType type, float value)
+Expression *ExpressionCreateFloatValue(void *location, ExpressionType type, float value)
 {
     Expression *expr = (Expression *)calloc(1, sizeof(Expression));
     expr->location = LOC(location);
@@ -26,7 +26,7 @@ Expression *ExpressionCreateFloatValue(void *location, ExpresionType type, float
     return expr;
 }
 
-Expression *ExpressionCreateStringValue(void *location, ExpresionType type, char *value)
+Expression *ExpressionCreateStringValue(void *location, ExpressionType type, char *value)
 {
     Expression *expr = (Expression *)calloc(1, sizeof(Expression));
     expr->location = LOC(location);
@@ -36,7 +36,7 @@ Expression *ExpressionCreateStringValue(void *location, ExpresionType type, char
     return expr;
 }
 
-Expression *ExpressionCreate(void *location, ExpresionType type, Expression *left, Expression *right)
+Expression *ExpressionCreate(void *location, ExpressionType type, Expression *left, Expression *right)
 {
     Expression *expr = (Expression *)calloc(1, sizeof(Expression));
     expr->location = LOC(location);

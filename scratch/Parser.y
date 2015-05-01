@@ -70,6 +70,7 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, cons
 
 %type <expression> statement_list
 %type <expression> statement
+%type <expression> note
 
 %%
  

@@ -1,21 +1,23 @@
 #include "NAMidiParser.h"
-
+#include "Expression.h"
 #include "Parser.h"
 #include "Lexer.h"
 
 #include <stdlib.h>
 
-
-static bool parseDSL(const char *filepath, Expression **expression, ParseError **error);
-
 struct _NAMidiParser {
     NAMidiParserCallbacks *callbacks;
+    void *context;
 };
 
-NAMidiParser *NAMidiParserCreate(NAMidiParserCallbacks *callbacks)
+int yyparse(void *scanner, Expression **expression);
+static bool parseDSL(NAMidiParser *self, const char *filepath, Expression **expression);
+
+NAMidiParser *NAMidiParserCreate(NAMidiParserCallbacks *callbacks, void *context)
 {
     NAMidiParser *self = calloc(1, sizeof(NAMidiParser));
     self->callbacks = callbacks;
+    self->context = context;
     return self;
 }
 
@@ -24,37 +26,37 @@ void NAMidiParserDestroy(NAMidiParser *self)
     free(self);
 }
 
-void NAMidiParserExecuteParse(NAMidiParser *self)
+bool NAMidiParserExecuteParse(NAMidiParser *self, const char *filepath)
 {
     Expression *expression;
-    *error = NULL;
 
-    if (!parseDSL(filepath, &expression, error)) {
-        return NULL;
+    if (!parseDSL(self, filepath, &expression)) {
+        return false;
     }
 
 #if 0
     dumpExpression(expression);
 #endif
+
+    return true;
 }
 
-static bool parseDSL(const char *filepath, Expression **expression, ParseError **error)
+static bool parseDSL(NAMidiParser *self, const char *filepath, Expression **expression)
 {
     bool ret = false;
     void *scanner;
     *expression = NULL;
 
-    *error = ParseErrorCreate();
-    (*error)->filepath = filepath;
+    ParseLocation location;
 
     FILE *fp = fopen(filepath, "r");
     if (!fp) {
-        error->kind = PARSE_ERROR_FILE_NOT_FOUND;
+        self->callbacks->onError(self->context, filepath, 0, 0, ParseErrorFileNotFound);
         return ret;
     }
 
-    if (yylex_init_extra(*error, &scanner)) {
-        (*error)->kind = PARSE_ERROR_INIT_ERROR;
+    if (yylex_init_extra(&location, &scanner)) {
+        self->callbacks->onError(self->context, filepath, 0, 0, ParseErrorInitError);
         goto ERROR_1;
     }
 
@@ -62,16 +64,15 @@ static bool parseDSL(const char *filepath, Expression **expression, ParseError *
     yy_switch_to_buffer(state, scanner);
 
     if (yyparse(scanner, expression)) {
-        (*error)->kind = PARSE_ERROR_SYNTAX_ERROR;
+        self->callbacks->onError(self->context, filepath, location.firstLine, location.firstColumn, ParseErrorSyntaxError);
+
         if (*expression) {
-            deleteExpression(*expression);
+            ExpressionDestroy(*expression);
             *expression = NULL;
         }
         goto ERROR_2;
     }
 
-    free(*error);
-    *error = NULL;
     ret = true;
 
 ERROR_2:
@@ -81,4 +82,11 @@ ERROR_1:
     fclose(fp);
 
     return ret;
+}
+
+int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, const char *message)
+{
+    ParseLocation *location = yyget_extra(scanner);
+    *location = *((ParseLocation *)yylloc);
+    return 0;
 }
