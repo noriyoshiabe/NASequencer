@@ -32,14 +32,12 @@
 NONZERO        [1-9]
 DIGIT          [[:digit:]]
 INTEGER        {NONZERO}{DIGIT}*|0
-SIGNED_INT     [+-]?{INTEGER}
-FLOAT          ({NONZERO}{DIGIT}*\.?|0\.|\.{DIGIT}){DIGIT}*|0
+DECIMAL        {DIGIT}+
 STRING         \"[^\"]*\"|'[^']*'
 WSPACE         [[:blank:]]+
 
-NOTE           [cdefgab][+-=]?(_|^)?
-KEY_SIGN       [cdefgab][+-]?m?
-QUANTIZE       1\/{INTEGER}({WSPACE}(3|5){WSPACE}?\.)?
+NOTE           [cdefgab][+\-=]?(_|^)?
+KEY_SIGN       [cdefgab][+\-]?m?
 OCTAVE_SHIFT   <|>
 
 KEY            key
@@ -49,6 +47,7 @@ MARKER         marker
 CHANNEL        channel
 VELOCITY       velocity
 GATETIME       gatetime
+AUTO           auto
 OCTAVE         octave
 
 REST           "r"
@@ -63,9 +62,8 @@ MINUS          "-"
 MULTIPLY       "*"
 DIVISION       "/"
 ASSIGN         "="
-
 COMMA          ","
-
+DOT            "."
 LCURLY         "{"
 RCURLY         "}"
 
@@ -80,20 +78,22 @@ LINE_COMMENT   \/\/.*$
 <<EOF>>          { return 0; }
 
 {INTEGER}        { yylval->i = atoi(yytext); return INTEGER; }
-{SIGNED_INT}     { yylval->i = atoi(yytext); return SIGNED_INT; }
-{FLOAT}          { yylval->f = atof(yytext); return FLOAT; }
+{DECIMAL}        { yylval->s = strdup(yytext); return DECIMAL; }
 {STRING}         { yylval->s = strdup(yytext); return STRING; }
 {WSPACE}         { }
 
 {NOTE}           { yylval->s = strdup(yytext); return NOTE; }
-{QUANTIZE}       { yylval->s = strdup(yytext); return QUANTIZE; }
+{KEY_SIGN}       { yylval->s = strdup(yytext); return KEY_SIGN; }
+{OCTAVE_SHIFT}   { yylval->s = strdup(yytext); return OCTAVE_SHIFT; }
 
+{KEY}            { return KEY; }
 {TIME}           { return TIME; }
 {TEMPO}          { return TEMPO; }
 {MARKER}         { return MARKER; }
 {CHANNEL}        { return CHANNEL; }
 {VELOCITY}       { return VELOCITY; }
 {GATETIME}       { return GATETIME; }
+{AUTO}           { return AUTO; }
 {OCTAVE}         { return OCTAVE; }
 
 {REST}           { return REST; }
@@ -109,7 +109,7 @@ LINE_COMMENT   \/\/.*$
 {DIVISION}       { return DIVISION; }
 {ASSIGN}         { return ASSIGN; }
 {COMMA}          { return COMMA; }
-
+{DOT}            { return DOT; }
 {LCURLY}         { return LCURLY; }
 {RCURLY}         { return RCURLY; }
 

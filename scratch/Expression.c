@@ -16,13 +16,16 @@ Expression *ExpressionCreateIntegerValue(void *location, ExpressionType type, in
     return expr;
 }
 
-Expression *ExpressionCreateFloatValue(void *location, ExpressionType type, float value)
+Expression *ExpressionCreateFloatValue(void *location, ExpressionType type, int number, const char *decimal)
 {
+    char buf[64];
+    snprintf(buf, sizeof(buf), "%d.%s", number, decimal);
+
     Expression *expr = (Expression *)calloc(1, sizeof(Expression));
     expr->location = LOC(location);
     expr->type = type;
     expr->valueType = ValueTypeFloat;
-    expr->v.f = value;
+    expr->v.f = atof(buf);
     return expr;
 }
 
@@ -33,6 +36,17 @@ Expression *ExpressionCreateStringValue(void *location, ExpressionType type, cha
     expr->type = type;
     expr->valueType = ValueTypeString;
     expr->v.s = value;
+    return expr;
+}
+
+Expression *ExpressionCreateTrimmedStringValue(void *location, ExpressionType type, char *value)
+{
+    Expression *expr = ExpressionCreateStringValue(location, type, value);
+    int len = strlen(value);
+    char *str = malloc(len - 1);
+    strncpy(str, value + 1, len - 2);
+    expr->v.s = str;
+    free(value);
     return expr;
 }
 
