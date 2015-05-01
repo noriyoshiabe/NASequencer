@@ -71,6 +71,7 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, cons
 %type <expression> statement_list
 %type <expression> statement
 %type <expression> note
+%type <expression> identifier
 
 %%
  
@@ -85,10 +86,15 @@ statement_list
 
 statement
     : note
+    | identifier
     ;
 
 note
     : NOTE { $$ = ExpressionCreateStringValue(&@$, ExpressionTypeNote, $1); }
+    ;
+
+identifier
+    : IDENTIFIER { $$ = ExpressionCreateStringValue(&@$, ExpressionTypeNote, $1); }
     ;
 
 %%

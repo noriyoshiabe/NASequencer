@@ -69,7 +69,7 @@ COMMA          ","
 LCURLY         "{"
 RCURLY         "}"
 
-IDENTIFIER     [_[:alpha:]][_[:alnum:]]*
+IDENTIFIER     $[_\-[:alnum:]]+
 
 EOL            \n
 
