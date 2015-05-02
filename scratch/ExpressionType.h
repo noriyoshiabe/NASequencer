@@ -30,6 +30,8 @@ typedef enum {
     ExpressionTypePatternExpand,
     ExpressionTypeOffset,
     ExpressionTypeLength,
+
+    ExpressionTypeSize
 } ExpressionType;
 
 static inline const char *ExpressionType2String(ExpressionType type)
@@ -65,6 +67,9 @@ static inline const char *ExpressionType2String(ExpressionType type)
     CASE(ExpressionTypePatternExpand);
     CASE(ExpressionTypeOffset);
     CASE(ExpressionTypeLength);
+
+    default:
+       break;
     }
     return "Unknown expression type";
 #undef CASE

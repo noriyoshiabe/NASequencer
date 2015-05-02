@@ -88,7 +88,8 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, cons
 %%
  
 input
-    : statement_list { *expression = $1; }
+    :
+    | statement_list { *expression = $1; }
     ;
 
 statement_list

@@ -1,3 +1,5 @@
+
+/*
 time 4/4
 key cm
 
@@ -33,3 +35,4 @@ $pattern = {
 
 $pattern
 $pattern offset 1 + 1/4 length 3
+*/
