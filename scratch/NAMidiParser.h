@@ -3,11 +3,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-typedef enum {
-    ParseErrorFileNotFound,
-    ParseErrorInitError,
-    ParseErrorSyntaxError,
-} ParseError;
+#include "ParseError.h"
 
 typedef struct _NAMidiParser NAMidiParser;
 

@@ -173,6 +173,8 @@ typedef struct _Context {
     int32_t gatetime;
     int32_t octave;
     int32_t length;
+
+    struct _Context *parent;
 } Context;
 
 static int32_t ContextGetResolution(Context *self);
@@ -209,7 +211,6 @@ static Context *ContextCreateFromContext(Context *from)
 
     TimeSign *timeSign = ContextGetTimeSignByTick(from, from->tick);
     TimeTableAddTimeSign(ret->timeTable, TimeSignCreateWithTimeSign(0, timeSign));
-
 
     return ret;
 }
@@ -248,6 +249,24 @@ static int32_t ContextGetResolution(Context *self)
     return self->timeTable->resolution;
 }
 
+static int32_t ContextGetStep(Context *self)
+{
+    if (0 == self->step) {
+        self->step = ContextGetResolution(self);
+    }
+
+    return self->step;
+}
+
+static int32_t ContextGetGlobalTick(Context *self)
+{
+    if (self->parent) {
+        return self->tick + ContextGetGlobalTick(self->parent);
+    }
+
+    return self->tick;
+}
+
 
 static bool (*functionTable[ExpressionTypeSize])(Expression *expression, Context *context, void *value) = {NULL};
 
@@ -278,4 +297,152 @@ static bool _NAMidiParserParseAST(NAMidiParser *self, Expression *expression)
 
     ContextDestroy(context);
     return true;
+}
+
+static int baseNoteNo(Context *context, char c)
+{
+    const struct {
+        char c;
+        int noteNo;
+    } noteMap[] = {
+        {'c', 12},
+        {'d', 14},
+        {'e', 16},
+        {'f', 17},
+        {'g', 19},
+        {'a', 21},
+        {'b', 23},
+    };
+
+    for (int i = 0; i < sizeof(noteMap)/sizeof(noteMap[0]); ++i) {
+        if (noteMap[i].c == c) {
+            return noteMap[i].noteNo;
+        }
+    }
+
+    return -1;
+}
+
+static bool canSharp(Context *context, char c)
+{
+    switch (c) {
+    case 'c':
+    case 'd':
+    case 'f':
+    case 'g':
+    case 'a':
+        return true;
+    }
+
+    return false;
+}
+
+static bool canFlat(Context *context, char c)
+{
+    switch (c) {
+    case 'd':
+    case 'e':
+    case 'g':
+    case 'a':
+    case 'b':
+        return true;
+    }
+
+    return false;
+}
+
+#define CALLBACK_ERROR(context, expression, error, ...) \
+    context->parser->callbacks->onError( \
+            context->parser->receiver, \
+            expression->location.filepath, \
+            expression->location.firstLine, \
+            expression->location.firstColumn, \
+            error, \
+            __VA_ARGS__)
+
+static bool parseNote(Expression *expression, Context *context, void *value)
+{
+    const char *noteString = expression->v.s;
+    int length = strlen(noteString);
+
+    int noteNo = -1;
+    char noteChar = -1;
+
+    for (int i = 0; i < length; ++i) {
+        char c = tolower(noteString[i]);
+        switch (c) {
+        case 'c':
+        case 'd':
+        case 'e':
+        case 'f':
+        case 'g':
+        case 'a':
+        case 'b':
+            noteNo = baseNoteNo(context, c) + 12 * context->octave;
+            noteChar = c;
+            break;
+
+        case '+':
+            if (canSharp(context, noteChar)) {
+                noteNo++;
+            }
+            else {
+                CALLBACK_ERROR(context, expression, ParseErrorNoteIllegalSharp, noteChar);
+                return false;
+            }
+            break;
+
+        case '-':
+            if (canFlat(context, noteChar)) {
+                noteNo--;
+            }
+            else {
+                CALLBACK_ERROR(context, expression, ParseErrorNoteIllegalFlat, noteChar);
+                return false;
+            }
+            break;
+
+        case '^':
+            noteNo += 12;
+            if (127 < noteNo) {
+                CALLBACK_ERROR(context, expression, ParseErrorNoteIllegalOctaveUp, noteNo - 12);
+                return false;
+            }
+            break;
+
+        case '_':
+            noteNo -= 12;
+            if (0 > noteNo) {
+                CALLBACK_ERROR(context, expression, ParseErrorNoteIllegalOctaveUp, noteNo + 12);
+                return false;
+            }
+            break;
+
+        default:
+            printf("Unexpected character in note string. c=%c\n", noteString[i]);
+            abort();
+            break;
+        }
+    }
+
+    uint32_t tick = ContextGetGlobalTick(context);
+    uint32_t gatetime = 0 < context->gatetime ? context->gatetime : ContextGetStep(context);
+
+    context->parser->callbacks->onParseNote(
+            context->parser,
+            tick,
+            context->channel,
+            noteNo,
+            context->velocity,
+            gatetime);
+
+    context->tick += ContextGetStep(context);
+
+    return true;
+}
+
+
+static void __attribute__((constructor)) initializeTable()
+{
+    functionTable[ExpressionTypeNote] = parseNote;
 }
