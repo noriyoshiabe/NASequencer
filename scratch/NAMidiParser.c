@@ -505,6 +505,28 @@ static bool parseQuantize(Expression *expression, Context *context, void *value)
     return true;
 }
 
+static bool parseOctaveShift(Expression *expression, Context *context, void *value)
+{
+    switch (expression->v.s[0]) {
+    case '<':
+        context->octave--;
+        if (context->octave < -2) {
+            CALLBACK_ERROR(context, expression, ParseErrorNoteIllegalOctaveShift, context->octave);
+            return false;
+        }
+        return true;
+    case '>':
+        context->octave++;
+        if (8 < context->octave) {
+            CALLBACK_ERROR(context, expression, ParseErrorNoteIllegalOctaveShift, context->octave);
+            return false;
+        }
+        return true;
+    default:
+        return false;
+    }
+}
+
 static bool parseTimeSign(Expression *expression, Context *context, void *value)
 {
     TimeSign **out = (TimeSign **)value;
@@ -532,4 +554,5 @@ static void __attribute__((constructor)) initializeTable()
     functionTable[ExpressionTypeNote] = parseNote;
     functionTable[ExpressionTypeQuantize] = parseQuantize;
     functionTable[ExpressionTypeTimeSign] = parseTimeSign;
+    functionTable[ExpressionTypeOctaveShift] = parseOctaveShift;
 }
