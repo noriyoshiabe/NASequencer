@@ -2,11 +2,12 @@
 #include "Expression.h"
 #include "Parser.h"
 #include "Lexer.h"
+#include "NoteTable.h"
 
 #include <stdlib.h>
 #include <CoreFoundation/CoreFoundation.h>
 
-#define PANIC(fmt, __VA_ARGS__) do { printf(fmt, __VA_ARGS__); abort(); } while (0)
+#define PANIC(...) do { printf(__VA_ARGS__); abort(); } while (0)
 
 struct _NAMidiParser {
     NAMidiParserCallbacks *callbacks;
@@ -168,6 +169,7 @@ static void TimeTableAddTimeSign(TimeTable *self, const TimeSign *timeSign)
 typedef struct _Context {
     NAMidiParser *parser;
     TimeTable *timeTable;
+    NoteTableKeySign key;
     int32_t tick;
     int32_t step;
     int32_t channel;
@@ -280,6 +282,7 @@ static bool parseExpression(Expression *expression, Context *context, void *valu
 
     bool (*function)(Expression *, Context *, void *) = functionTable[expression->type];
     if (!function) {
+        PANIC("aa");
         PANIC("Parse function is not found. type=%s\n", ExpressionType2String(expression->type));
     }
     return function(expression, context, value);
@@ -300,13 +303,12 @@ static bool _NAMidiParserParseAST(NAMidiParser *self, Expression *expression)
     return true;
 }
 
-#define CALLBACK_ERROR(context, expression, error, ...) \
+#define CALLBACK_ERROR(context, expression, ...) \
     context->parser->callbacks->onError( \
             context->parser->receiver, \
             expression->location.filepath, \
             expression->location.firstLine, \
             expression->location.firstColumn, \
-            error, \
             __VA_ARGS__)
 
 #define isPowerOf2(x) ((x != 0) && ((x & (x - 1)) == 0))
@@ -315,58 +317,6 @@ static bool parseInteger(Expression *expression, Context *context, void *value)
 {
     *((int32_t *)value) = expression->v.i;
     return true;
-}
-
-static int baseNoteNo(Context *context, char c)
-{
-    const struct {
-        char c;
-        int noteNo;
-    } noteMap[] = {
-        {'c', 12},
-        {'d', 14},
-        {'e', 16},
-        {'f', 17},
-        {'g', 19},
-        {'a', 21},
-        {'b', 23},
-    };
-
-    for (int i = 0; i < sizeof(noteMap)/sizeof(noteMap[0]); ++i) {
-        if (noteMap[i].c == c) {
-            return noteMap[i].noteNo;
-        }
-    }
-
-    return -1;
-}
-
-static bool canSharp(Context *context, char c)
-{
-    switch (c) {
-    case 'c':
-    case 'd':
-    case 'f':
-    case 'g':
-    case 'a':
-        return true;
-    }
-
-    return false;
-}
-
-static bool canFlat(Context *context, char c)
-{
-    switch (c) {
-    case 'd':
-    case 'e':
-    case 'g':
-    case 'a':
-    case 'b':
-        return true;
-    }
-
-    return false;
 }
 
 static bool parseNote(Expression *expression, Context *context, void *value)
@@ -387,26 +337,32 @@ static bool parseNote(Expression *expression, Context *context, void *value)
         case 'g':
         case 'a':
         case 'b':
-            noteNo = baseNoteNo(context, c) + 12 * context->octave;
+            noteNo = NoteTableGetBaseNoteNo(context->key, c) + 12 * context->octave;
             noteChar = c;
             break;
 
         case '+':
-            if (canSharp(context, noteChar)) {
-                noteNo++;
+            noteNo++;
+            if (127 < noteNo) {
+                CALLBACK_ERROR(context, expression, ParseErrorNoteIllegalSharp);
+                return false;
             }
             else {
-                CALLBACK_ERROR(context, expression, ParseErrorNoteIllegalSharp, noteChar);
-                return false;
             }
             break;
 
         case '-':
-            if (canFlat(context, noteChar)) {
-                noteNo--;
+            noteNo--;
+            if (0 > noteNo) {
+                CALLBACK_ERROR(context, expression, ParseErrorNoteIllegalFlat);
+                return false;
             }
-            else {
-                CALLBACK_ERROR(context, expression, ParseErrorNoteIllegalFlat, noteChar);
+            break;
+
+        case '=':
+            noteNo += NoteTableGetNaturalDiff(context->key, noteChar);
+            if (noteNo < 0 || 127 < noteNo) {
+                CALLBACK_ERROR(context, expression, ParseErrorNoteIllegalNatural);
                 return false;
             }
             break;
@@ -414,7 +370,7 @@ static bool parseNote(Expression *expression, Context *context, void *value)
         case '^':
             noteNo += 12;
             if (127 < noteNo) {
-                CALLBACK_ERROR(context, expression, ParseErrorNoteIllegalOctaveUp, noteNo - 12);
+                CALLBACK_ERROR(context, expression, ParseErrorNoteIllegalOctaveUp);
                 return false;
             }
             break;
@@ -422,7 +378,7 @@ static bool parseNote(Expression *expression, Context *context, void *value)
         case '_':
             noteNo -= 12;
             if (0 > noteNo) {
-                CALLBACK_ERROR(context, expression, ParseErrorNoteIllegalOctaveUp, noteNo + 12);
+                CALLBACK_ERROR(context, expression, ParseErrorNoteIllegalOctaveDown);
                 return false;
             }
             break;
@@ -527,6 +483,25 @@ static bool parseOctaveShift(Expression *expression, Context *context, void *val
     }
 }
 
+static bool parseKey(Expression *expression, Context *context, void *value)
+{
+    const char *keyString = expression->v.s;
+
+    char keyChar = keyString[0];
+    bool sharp = NULL != strchr(keyString, '+');
+    bool flat = NULL != strchr(keyString, '-');
+    bool major = NULL == strstr(keyString, "min");
+
+    NoteTableKeySign key = NoteTableGetKeySign(keyChar, sharp, flat, major);
+    if (NoteTableKeySignInvalid == key) {
+        CALLBACK_ERROR(context, expression, ParseErrorNoteInvalidKeySign);
+        return false;
+    }
+
+    context->key = key;
+    return true;
+}
+
 static bool parseTimeSign(Expression *expression, Context *context, void *value)
 {
     TimeSign **out = (TimeSign **)value;
@@ -555,4 +530,5 @@ static void __attribute__((constructor)) initializeTable()
     functionTable[ExpressionTypeQuantize] = parseQuantize;
     functionTable[ExpressionTypeTimeSign] = parseTimeSign;
     functionTable[ExpressionTypeOctaveShift] = parseOctaveShift;
+    functionTable[ExpressionTypeKey] = parseKey;
 }

@@ -36,8 +36,8 @@ DECIMAL        {DIGIT}+
 STRING         \"[^\"]*\"|'[^']*'
 WSPACE         [[:blank:]]+
 
-NOTE           [cdefgab][+\-=]?(_|^)?
-KEY_SIGN       [cdefgab][+\-]?m?
+NOTE           [cdefgab](\+{1,2}|\-{1,2}|=)?(_|^)?
+KEY_SIGN       [cdefgab](\+|\-)?(maj|min)
 OCTAVE_SHIFT   <|>
 
 KEY            key

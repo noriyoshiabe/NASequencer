@@ -7,11 +7,13 @@ typedef enum {
 
     ParseErrorNoteIllegalSharp,
     ParseErrorNoteIllegalFlat,
+    ParseErrorNoteIllegalNatural,
     ParseErrorNoteIllegalOctaveUp,
     ParseErrorNoteIllegalOctaveDown,
     ParseErrorNoteInvalidTaplet,
     ParseErrorNoteInvalidTimeSign,
     ParseErrorNoteIllegalOctaveShift,
+    ParseErrorNoteInvalidKeySign,
 } ParseError;
 
 static inline const char *ParseError2String(ParseError error)
@@ -24,11 +26,13 @@ static inline const char *ParseError2String(ParseError error)
 
     CASE(ParseErrorNoteIllegalSharp);
     CASE(ParseErrorNoteIllegalFlat);
+    CASE(ParseErrorNoteIllegalNatural);
     CASE(ParseErrorNoteIllegalOctaveUp);
     CASE(ParseErrorNoteIllegalOctaveDown);
     CASE(ParseErrorNoteInvalidTaplet);
     CASE(ParseErrorNoteInvalidTimeSign);
     CASE(ParseErrorNoteIllegalOctaveShift);
+    CASE(ParseErrorNoteInvalidKeySign);
     }
     return "Unknown error type";
 #undef CASE
