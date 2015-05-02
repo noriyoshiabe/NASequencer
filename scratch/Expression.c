@@ -1,47 +1,56 @@
 #include "Expression.h"
+#include "Parser.h"
+#include "Lexer.h"
  
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#define LOC(location) (*(ParseLocation *)location)
+static inline ParseLocation makeParseLocation(void *scanner, void *yylloc)
+{
+    ParseLocation ret;
+    ret.filepath = ((ParseLocation *)yyget_extra(scanner))->filepath;
+    ret.firstLine = ((YYLTYPE *)yylloc)->first_line;
+    ret.firstColumn = ((YYLTYPE *)yylloc)->first_column;
+    return ret;
+}
 
-Expression *ExpressionCreateIntegerValue(void *location, ExpressionType type, int value)
+Expression *ExpressionCreateIntegerValue(void *scanner, void *yylloc, ExpressionType type, int value)
 {
     Expression *expr = (Expression *)calloc(1, sizeof(Expression));
-    expr->location = LOC(location);
+    expr->location = makeParseLocation(scanner, yylloc);
     expr->type = type;
     expr->valueType = ValueTypeInteger;
     expr->v.i = value;
     return expr;
 }
 
-Expression *ExpressionCreateFloatValue(void *location, ExpressionType type, int number, const char *decimal)
+Expression *ExpressionCreateFloatValue(void *scanner, void *yylloc, ExpressionType type, int number, const char *decimal)
 {
     char buf[64];
     snprintf(buf, sizeof(buf), "%d.%s", number, decimal);
 
     Expression *expr = (Expression *)calloc(1, sizeof(Expression));
-    expr->location = LOC(location);
+    expr->location = makeParseLocation(scanner, yylloc);
     expr->type = type;
     expr->valueType = ValueTypeFloat;
     expr->v.f = atof(buf);
     return expr;
 }
 
-Expression *ExpressionCreateStringValue(void *location, ExpressionType type, char *value)
+Expression *ExpressionCreateStringValue(void *scanner, void *yylloc, ExpressionType type, char *value)
 {
     Expression *expr = (Expression *)calloc(1, sizeof(Expression));
-    expr->location = LOC(location);
+    expr->location = makeParseLocation(scanner, yylloc);
     expr->type = type;
     expr->valueType = ValueTypeString;
     expr->v.s = value;
     return expr;
 }
 
-Expression *ExpressionCreateTrimmedStringValue(void *location, ExpressionType type, char *value)
+Expression *ExpressionCreateTrimmedStringValue(void *scanner, void *yylloc, ExpressionType type, char *value)
 {
-    Expression *expr = ExpressionCreateStringValue(location, type, value);
+    Expression *expr = ExpressionCreateStringValue(scanner, yylloc, type, value);
     int len = strlen(value);
     char *str = malloc(len - 1);
     strncpy(str, value + 1, len - 2);
@@ -50,10 +59,10 @@ Expression *ExpressionCreateTrimmedStringValue(void *location, ExpressionType ty
     return expr;
 }
 
-Expression *ExpressionCreate(void *location, ExpressionType type, Expression *left, Expression *right)
+Expression *ExpressionCreate(void *scanner, void *yylloc, ExpressionType type, Expression *left, Expression *right)
 {
     Expression *expr = (Expression *)calloc(1, sizeof(Expression));
-    expr->location = LOC(location);
+    expr->location = makeParseLocation(scanner, yylloc);
     expr->type = type;
     expr->left = left;
     expr->right = right;
@@ -113,7 +122,7 @@ static void dump(Expression *expr, int depth)
 
     printf("    -- parent=[%s]", expr->parent ? ExpressionType2String(expr->parent->type) : "");
 #if 0
-    printf("    -- %d:%d - %d:%d\n", expr->location.firstLine, expr->location.firstColumn, expr->location.lastLine, expr->location.lastColumn);
+    printf("    -- %s - %d:%d\n", expr->location.filepath, expr->location.firstLine, expr->location.firstColumn);
 #else
     putc('\n', stdout);
 #endif

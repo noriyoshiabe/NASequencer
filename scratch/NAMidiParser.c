@@ -5,19 +5,32 @@
 
 #include <stdlib.h>
 
+typedef struct _Context {
+    const char *filepath;
+    int16_t resolution;
+    int32_t step;
+    int32_t tick;
+    int32_t channel;
+    int32_t velocity;
+    int32_t gatetime;
+    int32_t octave;
+    int32_t length;
+    void *option;
+} Context;
+
 struct _NAMidiParser {
     NAMidiParserCallbacks *callbacks;
-    void *context;
+    void *receiver;
 };
 
 int yyparse(void *scanner, Expression **expression);
 static bool parseDSL(NAMidiParser *self, const char *filepath, Expression **expression);
 
-NAMidiParser *NAMidiParserCreate(NAMidiParserCallbacks *callbacks, void *context)
+NAMidiParser *NAMidiParserCreate(NAMidiParserCallbacks *callbacks, void *receiver)
 {
     NAMidiParser *self = calloc(1, sizeof(NAMidiParser));
     self->callbacks = callbacks;
-    self->context = context;
+    self->receiver = receiver;
     return self;
 }
 
@@ -48,15 +61,16 @@ static bool parseDSL(NAMidiParser *self, const char *filepath, Expression **expr
     *expression = NULL;
 
     ParseLocation location;
+    location.filepath = filepath;
 
     FILE *fp = fopen(filepath, "r");
     if (!fp) {
-        self->callbacks->onError(self->context, filepath, 0, 0, ParseErrorFileNotFound);
+        self->callbacks->onError(self->receiver, filepath, 0, 0, ParseErrorFileNotFound);
         return ret;
     }
 
     if (yylex_init_extra(&location, &scanner)) {
-        self->callbacks->onError(self->context, filepath, 0, 0, ParseErrorInitError);
+        self->callbacks->onError(self->receiver, filepath, 0, 0, ParseErrorInitError);
         goto ERROR_1;
     }
 
@@ -64,7 +78,7 @@ static bool parseDSL(NAMidiParser *self, const char *filepath, Expression **expr
     yy_switch_to_buffer(state, scanner);
 
     if (yyparse(scanner, expression)) {
-        self->callbacks->onError(self->context, filepath, location.firstLine, location.firstColumn, ParseErrorSyntaxError);
+        self->callbacks->onError(self->receiver, location.filepath, location.firstLine, location.firstColumn, ParseErrorSyntaxError);
 
         if (*expression) {
             ExpressionDestroy(*expression);
@@ -87,6 +101,8 @@ ERROR_1:
 int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, const char *message)
 {
     ParseLocation *location = yyget_extra(scanner);
-    *location = *((ParseLocation *)yylloc);
+    location->firstLine = yylloc->first_line;
+    location->firstColumn = yylloc->first_column;
     return 0;
 }
+
