@@ -144,6 +144,7 @@ quantize_time_sign
 quantize
     : quantize_time_sign
     | quantize_time_sign DOT { $$ = ExpressionAddRight($1, ExpressionCreate(scanner, &@$, ExpressionTypeDot, NULL, NULL)) }
+    | quantize_time_sign integer { $$ = ExpressionAddRight($1, $2) }
     ;
 
 location_value

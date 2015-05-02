@@ -9,6 +9,8 @@ typedef enum {
     ParseErrorNoteIllegalFlat,
     ParseErrorNoteIllegalOctaveUp,
     ParseErrorNoteIllegalOctaveDown,
+    ParseErrorNoteInvalidTaplet,
+    ParseErrorNoteInvalidTimeSign,
 } ParseError;
 
 static inline const char *ParseError2String(ParseError error)
@@ -23,9 +25,8 @@ static inline const char *ParseError2String(ParseError error)
     CASE(ParseErrorNoteIllegalFlat);
     CASE(ParseErrorNoteIllegalOctaveUp);
     CASE(ParseErrorNoteIllegalOctaveDown);
-
-    default:
-       break;
+    CASE(ParseErrorNoteInvalidTaplet);
+    CASE(ParseErrorNoteInvalidTimeSign);
     }
     return "Unknown error type";
 #undef CASE

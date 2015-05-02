@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <CoreFoundation/CoreFoundation.h>
 
+#define PANIC(fmt, __VA_ARGS__) do { printf(fmt, __VA_ARGS__); abort(); } while (0)
+
 struct _NAMidiParser {
     NAMidiParserCallbacks *callbacks;
     void *receiver;
@@ -278,8 +280,7 @@ static bool parseExpression(Expression *expression, Context *context, void *valu
 
     bool (*function)(Expression *, Context *, void *) = functionTable[expression->type];
     if (!function) {
-        printf("Parse function is not found. type=%s\n", ExpressionType2String(expression->type));
-        abort();
+        PANIC("Parse function is not found. type=%s\n", ExpressionType2String(expression->type));
     }
     return function(expression, context, value);
 }
@@ -296,6 +297,23 @@ static bool _NAMidiParserParseAST(NAMidiParser *self, Expression *expression)
     }
 
     ContextDestroy(context);
+    return true;
+}
+
+#define CALLBACK_ERROR(context, expression, error, ...) \
+    context->parser->callbacks->onError( \
+            context->parser->receiver, \
+            expression->location.filepath, \
+            expression->location.firstLine, \
+            expression->location.firstColumn, \
+            error, \
+            __VA_ARGS__)
+
+#define isPowerOf2(x) ((x != 0) && ((x & (x - 1)) == 0))
+
+static bool parseInteger(Expression *expression, Context *context, void *value)
+{
+    *((int32_t *)value) = expression->v.i;
     return true;
 }
 
@@ -350,15 +368,6 @@ static bool canFlat(Context *context, char c)
 
     return false;
 }
-
-#define CALLBACK_ERROR(context, expression, error, ...) \
-    context->parser->callbacks->onError( \
-            context->parser->receiver, \
-            expression->location.filepath, \
-            expression->location.firstLine, \
-            expression->location.firstColumn, \
-            error, \
-            __VA_ARGS__)
 
 static bool parseNote(Expression *expression, Context *context, void *value)
 {
@@ -419,8 +428,7 @@ static bool parseNote(Expression *expression, Context *context, void *value)
             break;
 
         default:
-            printf("Unexpected character in note string. c=%c\n", noteString[i]);
-            abort();
+            PANIC("Unexpected character in note string. c=%c\n", noteString[i]);
             break;
         }
     }
@@ -441,8 +449,87 @@ static bool parseNote(Expression *expression, Context *context, void *value)
     return true;
 }
 
+static bool isValidTuplet(int32_t tuplet)
+{
+    switch (tuplet) {
+    case 3:
+    case 5:
+    case 7:
+    case 9:
+        return true;
+    }
+
+    return false;
+}
+
+static bool parseQuantize(Expression *expression, Context *context, void *value)
+{
+    int32_t tuplet;
+    TimeSign *timeSign = NULL;
+
+    for (Expression *expr = expression->left; expr; expr = expr->right) {
+        switch (expr->type) {
+        case ExpressionTypeTimeSign:
+            if (!parseExpression(expr, context, &timeSign)) {
+                if (timeSign) {
+                    TimeSignDestroy(timeSign);
+                }
+                return false;
+            }
+            context->step = ContextGetResolution(context) * 4 / timeSign->denominator * timeSign->numerator;
+            break;
+
+        case ExpressionTypeInteger:
+            parseExpression(expr, context, &tuplet);
+
+            if (isValidTuplet(tuplet)) {
+                context->step = context->step * 2 / tuplet;
+            }
+            else {
+                CALLBACK_ERROR(context, expression, ParseErrorNoteInvalidTaplet, tuplet);
+                return false;
+            }
+            break;
+
+        case ExpressionTypeDot:
+            context->step += context->step / 2;
+            break;
+        
+        default:
+            PANIC("Unexpected ExpressionType type=%s\n", ExpressionType2String(expr->type));
+            break;
+        }
+    }
+
+    TimeSignDestroy(timeSign);
+    return true;
+}
+
+static bool parseTimeSign(Expression *expression, Context *context, void *value)
+{
+    TimeSign **out = (TimeSign **)value;
+
+    int32_t numerator;
+    int32_t denominator;
+
+    parseExpression(expression->left, context, &numerator);
+    parseExpression(expression->left->right, context, &denominator);
+
+    if (1 > numerator || 1 > denominator || !isPowerOf2(denominator)) {
+        CALLBACK_ERROR(context, expression, ParseErrorNoteInvalidTimeSign, numerator, denominator);
+        return false;
+    }
+
+    *out = TimeSignCreate(0, numerator, denominator);
+    return true;
+}
+
+
 
 static void __attribute__((constructor)) initializeTable()
 {
+    functionTable[ExpressionTypeInteger] = parseInteger;
     functionTable[ExpressionTypeNote] = parseNote;
+    functionTable[ExpressionTypeQuantize] = parseQuantize;
+    functionTable[ExpressionTypeTimeSign] = parseTimeSign;
 }
