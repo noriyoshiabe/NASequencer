@@ -189,6 +189,7 @@ static Context *ContextCreate(NAMidiParser *parser)
     Context *ret = calloc(1, sizeof(Context));
     ret->parser = parser;
     ret->timeTable = TimeTableCreate();
+    ret->key = NoteTableKeySignCMajor;
     ret->channel = 1;
     ret->octave = 4;
     ret->velocity = 100;
@@ -205,6 +206,7 @@ static Context *ContextCreateFromContext(Context *from)
 {
     Context *ret = ContextCreate(from->parser);
 
+    ret->key = from->key;
     ret->step = from->step;
     ret->channel = from->channel;
     ret->velocity = from->velocity;
@@ -282,7 +284,6 @@ static bool parseExpression(Expression *expression, Context *context, void *valu
 
     bool (*function)(Expression *, Context *, void *) = functionTable[expression->type];
     if (!function) {
-        PANIC("aa");
         PANIC("Parse function is not found. type=%s\n", ExpressionType2String(expression->type));
     }
     return function(expression, context, value);
@@ -346,8 +347,6 @@ static bool parseNote(Expression *expression, Context *context, void *value)
             if (127 < noteNo) {
                 CALLBACK_ERROR(context, expression, ParseErrorNoteIllegalSharp);
                 return false;
-            }
-            else {
             }
             break;
 
