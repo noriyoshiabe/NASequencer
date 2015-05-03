@@ -3,10 +3,14 @@
 
 static void onParseNote(void *receiver, uint32_t tick, uint8_t channel, uint8_t noteNo, uint8_t velocity, uint32_t gatetime)
 {
-    printf("tick=%d channel=%d noteNo=%d velocity=%d gatetime=%d\n", tick, channel, noteNo, velocity, gatetime);
+    printf("[Note] tick=%d channel=%d noteNo=%d velocity=%d gatetime=%d\n", tick, channel, noteNo, velocity, gatetime);
 }
 
-static void onParseTime(void *receiver, uint32_t tick, uint8_t numerator, uint8_t denominator){ }
+static void onParseTime(void *receiver, uint32_t tick, uint8_t numerator, uint8_t denominator)
+{
+    printf("[Time] tick=%d numerator=%d denominator=%d\n", tick, numerator, denominator);
+}
+
 static void onParseTempo(void *receiver, uint32_t tick, float tempo){ }
 static void onParseMarker(void *receiver, uint32_t tick, const char *text){ }
 

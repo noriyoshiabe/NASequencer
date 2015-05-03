@@ -221,6 +221,11 @@ static Context *ContextCreateFromContext(Context *from)
     return ret;
 }
 
+static void ContextAddTimeSign(Context *self, const TimeSign *timeSign)
+{
+    TimeTableAddTimeSign(self->timeTable, timeSign);
+}
+
 static TimeSign *ContextGetTimeSignByTick(Context *self, int32_t tick)
 {
     CFIndex count = CFArrayGetCount(self->timeTable->timeSignList);
@@ -426,9 +431,6 @@ static bool parseQuantize(Expression *expression, Context *context, void *value)
         switch (expr->type) {
         case ExpressionTypeTimeSign:
             if (!parseExpression(expr, context, &timeSign)) {
-                if (timeSign) {
-                    TimeSignDestroy(timeSign);
-                }
                 return false;
             }
             context->step = ContextGetResolution(context) * 4 / timeSign->denominator * timeSign->numerator;
@@ -501,6 +503,18 @@ static bool parseKey(Expression *expression, Context *context, void *value)
     return true;
 }
 
+static bool parseTime(Expression *expression, Context *context, void *value)
+{
+    TimeSign *timeSign = NULL;
+    if (!parseExpression(expression->left, context, &timeSign)) {
+        return false;
+    }
+    
+    ContextAddTimeSign(context, timeSign);
+    context->parser->callbacks->onParseTime(context->parser->receiver, timeSign->tick, timeSign->numerator, timeSign->denominator);
+    return true;
+}
+
 static bool parseTimeSign(Expression *expression, Context *context, void *value)
 {
     TimeSign **out = (TimeSign **)value;
@@ -516,10 +530,9 @@ static bool parseTimeSign(Expression *expression, Context *context, void *value)
         return false;
     }
 
-    *out = TimeSignCreate(0, numerator, denominator);
+    *out = TimeSignCreate(context->tick, numerator, denominator);
     return true;
 }
-
 
 
 static void __attribute__((constructor)) initializeTable()
@@ -527,7 +540,8 @@ static void __attribute__((constructor)) initializeTable()
     functionTable[ExpressionTypeInteger] = parseInteger;
     functionTable[ExpressionTypeNote] = parseNote;
     functionTable[ExpressionTypeQuantize] = parseQuantize;
-    functionTable[ExpressionTypeTimeSign] = parseTimeSign;
     functionTable[ExpressionTypeOctaveShift] = parseOctaveShift;
     functionTable[ExpressionTypeKey] = parseKey;
+    functionTable[ExpressionTypeTime] = parseTime;
+    functionTable[ExpressionTypeTimeSign] = parseTimeSign;
 }
