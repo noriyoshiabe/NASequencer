@@ -1,6 +1,8 @@
 tempo 180.00
 time 4/4
 
+marker 'start'
+
 cccc
 
 time 3/4
@@ -12,6 +14,7 @@ eee
 tempo 120
 
 1/4.
+marker 'end'
 
 
 /*

@@ -568,6 +568,12 @@ static bool parseTempo(Expression *expression, Context *context, void *value)
     }
 }
 
+static bool parseMarker(Expression *expression, Context *context, void *value)
+{
+    context->parser->callbacks->onParseMarker(context->parser->receiver, ContextGetGlobalTick(context), expression->v.s);
+    return true;
+}
+
 
 static void __attribute__((constructor)) initializeTable()
 {
@@ -580,4 +586,5 @@ static void __attribute__((constructor)) initializeTable()
     functionTable[ExpressionTypeTime] = parseTime;
     functionTable[ExpressionTypeTimeSign] = parseTimeSign;
     functionTable[ExpressionTypeTempo] = parseTempo;
+    functionTable[ExpressionTypeMarker] = parseMarker;
 }

@@ -16,7 +16,10 @@ static void onParseTempo(void *receiver, uint32_t tick, float tempo)
     printf("[Tempo] tick=%d tempo=%.2f\n", tick, tempo);
 }
 
-static void onParseMarker(void *receiver, uint32_t tick, const char *text){ }
+static void onParseMarker(void *receiver, uint32_t tick, const char *text)
+{
+    printf("[Marker] tick=%d text=%s\n", tick, text);
+}
 
 static void onFinish(void *receiver, uint32_t length)
 {
