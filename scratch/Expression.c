@@ -1,4 +1,5 @@
 #include "Expression.h"
+#include "YYContext.h"
 #include "Parser.h"
 #include "Lexer.h"
  
@@ -9,7 +10,7 @@
 static inline ParseLocation makeParseLocation(void *scanner, void *yylloc)
 {
     ParseLocation ret;
-    ret.filepath = ((ParseLocation *)yyget_extra(scanner))->filepath;
+    ret.filepath = ((YYContext *)yyget_extra(scanner))->location.filepath;
     ret.firstLine = ((YYLTYPE *)yylloc)->first_line;
     ret.firstColumn = ((YYLTYPE *)yylloc)->first_column;
     return ret;

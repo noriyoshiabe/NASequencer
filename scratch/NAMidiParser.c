@@ -1,5 +1,6 @@
 #include "NAMidiParser.h"
 #include "Expression.h"
+#include "YYContext.h"
 #include "Parser.h"
 #include "Lexer.h"
 #include "NoteTable.h"
@@ -55,8 +56,8 @@ static bool _NAMidiParserParseDSL(NAMidiParser *self, const char *filepath, Expr
     void *scanner;
     *expression = NULL;
 
-    ParseLocation location;
-    location.filepath = filepath;
+    YYContext context = {0};
+    context.location.filepath = filepath;
 
     FILE *fp = fopen(filepath, "r");
     if (!fp) {
@@ -64,7 +65,7 @@ static bool _NAMidiParserParseDSL(NAMidiParser *self, const char *filepath, Expr
         return ret;
     }
 
-    if (yylex_init_extra(&location, &scanner)) {
+    if (yylex_init_extra(&context, &scanner)) {
         self->callbacks->onError(self->receiver, filepath, 0, 0, ParseErrorInitError);
         goto ERROR_1;
     }
@@ -73,7 +74,7 @@ static bool _NAMidiParserParseDSL(NAMidiParser *self, const char *filepath, Expr
     yy_switch_to_buffer(state, scanner);
 
     if (yyparse(scanner, expression)) {
-        self->callbacks->onError(self->receiver, location.filepath, location.firstLine, location.firstColumn, ParseErrorSyntaxError);
+        self->callbacks->onError(self->receiver, context.location.filepath, context.location.firstLine, context.location.firstColumn, ParseErrorSyntaxError);
 
         if (*expression) {
             ExpressionDestroy(*expression);
@@ -95,9 +96,9 @@ ERROR_1:
 
 int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, const char *message)
 {
-    ParseLocation *location = yyget_extra(scanner);
-    location->firstLine = yylloc->first_line;
-    location->firstColumn = yylloc->first_column;
+    YYContext *context = yyget_extra(scanner);
+    context->location.firstLine = yylloc->first_line;
+    context->location.firstColumn = yylloc->first_column;
     return 0;
 }
 
@@ -630,6 +631,11 @@ static bool parseRest(Expression *expression, Context *context, void *value)
     return true;
 }
 
+static bool parseEOF(Expression *expression, Context *context, void *value)
+{
+    context->parser->callbacks->onFinish(context->parser->receiver, context->length);
+    return true;
+}
 
 static void __attribute__((constructor)) initializeTable()
 {
@@ -649,4 +655,5 @@ static void __attribute__((constructor)) initializeTable()
     functionTable[ExpressionTypeGatetimeAuto] = parseGatetimeAuto;
     functionTable[ExpressionTypeOctave] = parseOctave;
     functionTable[ExpressionTypeRest] = parseRest;
+    functionTable[ExpressionTypeEOF] = parseEOF;
 }
