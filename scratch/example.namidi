@@ -1,8 +1,6 @@
-channel 16
-velocity 127
-gatetime 1
+octave -1
 C
-gatetime auto
+octave 9
 C
 
 /*

@@ -613,6 +613,17 @@ static bool parseGatetimeAuto(Expression *expression, Context *context, void *va
     return true;
 }
 
+static bool parseOctave(Expression *expression, Context *context, void *value)
+{
+    if (!isValidRange(expression->v.i, -1, 9)) {
+        CALLBACK_ERROR(context, expression, ParseErrorInvalidOctave, expression->v.i);
+        return false;
+    }
+
+    context->octave = expression->v.i;
+    return true;
+}
+
 
 static void __attribute__((constructor)) initializeTable()
 {
@@ -630,4 +641,5 @@ static void __attribute__((constructor)) initializeTable()
     functionTable[ExpressionTypeVelocity] = parseVelocity;
     functionTable[ExpressionTypeGatetime] = parseGatetime;
     functionTable[ExpressionTypeGatetimeAuto] = parseGatetimeAuto;
+    functionTable[ExpressionTypeOctave] = parseOctave;
 }
