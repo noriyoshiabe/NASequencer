@@ -167,6 +167,19 @@ static void TimeTableAddTimeSign(TimeTable *self, const TimeSign *timeSign)
     CFArraySortValues(self->timeSignList, CFRangeMake(0, CFArrayGetCount(self->timeSignList)), TimeTableTimeSignComparator, NULL);
 }
 
+typedef struct _Note {
+    uint32_t tick;
+    uint8_t noteNo;
+    uint8_t channel;
+    uint8_t velocity;
+    uint32_t gatetime;
+} Note;
+
+static void NoteReleaseCallbak(CFAllocatorRef allocator, const void *value)
+{
+    free((Note *)value);
+}
+
 typedef struct _Context {
     NAMidiParser *parser;
     TimeTable *timeTable;
@@ -179,11 +192,16 @@ typedef struct _Context {
     int32_t octave;
     int32_t length;
 
+    CFMutableArrayRef candidates;
+
     struct _Context *parent;
 } Context;
 
+const CFArrayCallBacks ContextCandidatesCallbacks = {0, NULL, NoteReleaseCallbak, NULL, NULL};
+
 static int32_t ContextGetResolution(Context *self);
 static TimeSign *ContextGetTimeSignByTick(Context *self, int32_t tick);
+static void ContextCommitNoteCandidate(Context *self);
 
 static Context *ContextCreate(NAMidiParser *parser)
 {
@@ -194,11 +212,13 @@ static Context *ContextCreate(NAMidiParser *parser)
     ret->channel = 1;
     ret->octave = 4;
     ret->velocity = 100;
+    ret->candidates = CFArrayCreateMutable(NULL, 0, &ContextCandidatesCallbacks);
     return ret;
 }
 
 static void ContextDestroy(Context *self)
 {
+    ContextCommitNoteCandidate(self);
     TimeTableDestroy(self->timeTable);
     free(self);
 }
@@ -279,11 +299,42 @@ static int32_t ContextGetGlobalTick(Context *self)
     return self->tick;
 }
 
+static void ContextAddNoteCandidate(Context *self, uint32_t tick, uint8_t channel, uint8_t noteNo, uint8_t velocity, uint32_t gatetime)
+{
+    Note *note = malloc(sizeof(Note));
+    note->tick = tick;
+    note->channel = channel;
+    note->noteNo = noteNo;
+    note->velocity = velocity;
+    note->gatetime = gatetime;
 
+    CFArrayAppendValue(self->candidates, note);
+}
+
+static void ContextCommitNoteCandidate(Context *self)
+{
+    CFIndex count = CFArrayGetCount(self->candidates);
+    for (CFIndex i = 0; i < count; ++i) {
+        Note *note = (Note *)CFArrayGetValueAtIndex(self->candidates, i);
+        self->parser->callbacks->onParseNote(
+                self->parser,
+                note->tick,
+                note->channel,
+                note->noteNo,
+                note->velocity,
+                note->gatetime);
+    }
+
+    CFArrayRemoveAllValues(self->candidates);
+}
+
+
+static void beforeParseExpression(Expression *expression, Context *context, void *value);
 static bool (*functionTable[ExpressionTypeSize])(Expression *expression, Context *context, void *value) = {NULL};
 
 static bool parseExpression(Expression *expression, Context *context, void *value)
 {
+    beforeParseExpression(expression, context, value);
 #if 0
     printf("Attempt to parse expression [%s]\n", ExpressionType2String(expression->type));
 #endif
@@ -320,6 +371,17 @@ static bool _NAMidiParserParseAST(NAMidiParser *self, Expression *expression)
 
 #define isPowerOf2(x) ((x != 0) && ((x & (x - 1)) == 0))
 #define isValidRange(v, from, to) (from <= v && v <= to)
+
+static void beforeParseExpression(Expression *expression, Context *context, void *value)
+{
+    switch (expression->type) {
+    case ExpressionTypeTie:
+        break;
+    default:
+        ContextCommitNoteCandidate(context);
+        break;
+    }
+}
 
 static bool parseInteger(Expression *expression, Context *context, void *value)
 {
@@ -403,14 +465,7 @@ static bool parseNote(Expression *expression, Context *context, void *value)
 
     uint32_t tick = ContextGetGlobalTick(context);
     uint32_t gatetime = 0 < context->gatetime ? context->gatetime : ContextGetStep(context);
-
-    context->parser->callbacks->onParseNote(
-            context->parser,
-            tick,
-            context->channel,
-            noteNo,
-            context->velocity,
-            gatetime);
+    ContextAddNoteCandidate(context, tick, context->channel, noteNo, context->velocity, gatetime);
 
     context->tick += ContextGetStep(context);
 
@@ -631,6 +686,23 @@ static bool parseRest(Expression *expression, Context *context, void *value)
     return true;
 }
 
+static bool parseTie(Expression *expression, Context *context, void *value)
+{
+    CFIndex count = CFArrayGetCount(context->candidates);
+    if (0 == count) {
+        CALLBACK_ERROR(context, expression, ParseErrorIllegalTie);
+        return false;
+    }
+
+    for (CFIndex i = 0; i < count; ++i) {
+        Note *note = (Note *)CFArrayGetValueAtIndex(context->candidates, i);
+        note->gatetime += ContextGetStep(context);
+    }
+
+    context->tick += ContextGetStep(context);
+    return true;
+}
+
 static bool parseEOF(Expression *expression, Context *context, void *value)
 {
     context->parser->callbacks->onFinish(context->parser->receiver, context->length);
@@ -655,5 +727,6 @@ static void __attribute__((constructor)) initializeTable()
     functionTable[ExpressionTypeGatetimeAuto] = parseGatetimeAuto;
     functionTable[ExpressionTypeOctave] = parseOctave;
     functionTable[ExpressionTypeRest] = parseRest;
+    functionTable[ExpressionTypeTie] = parseTie;
     functionTable[ExpressionTypeEOF] = parseEOF;
 }
