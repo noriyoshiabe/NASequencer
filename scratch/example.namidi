@@ -1,21 +1,9 @@
-tempo 180.00
-time 4/4
-
-marker 'start'
-
-cccc
-
-time 3/4
-
-ddd
-
-eee
-
-tempo 120
-
-1/4.
-marker 'end'
-
+channel 16
+velocity 127
+gatetime 1
+C
+gatetime auto
+C
 
 /*
 time 4/4

@@ -318,6 +318,7 @@ static bool _NAMidiParserParseAST(NAMidiParser *self, Expression *expression)
             __VA_ARGS__)
 
 #define isPowerOf2(x) ((x != 0) && ((x & (x - 1)) == 0))
+#define isValidRange(v, from, to) (from <= v && v <= to)
 
 static bool parseInteger(Expression *expression, Context *context, void *value)
 {
@@ -558,19 +559,57 @@ static bool parseTempo(Expression *expression, Context *context, void *value)
         break;
     }
 
-    if (30.0 <= tempo && tempo <= 300.0) {
-        context->parser->callbacks->onParseTempo(context->parser->receiver, ContextGetGlobalTick(context), tempo);
-        return true;
-    }
-    else {
+    if (!isValidRange(tempo, 30.0, 300.0)) {
         CALLBACK_ERROR(context, expression, ParseErrorInvalidTempo, tempo);
         return false;
     }
+
+    context->parser->callbacks->onParseTempo(context->parser->receiver, ContextGetGlobalTick(context), tempo);
+    return true;
 }
 
 static bool parseMarker(Expression *expression, Context *context, void *value)
 {
     context->parser->callbacks->onParseMarker(context->parser->receiver, ContextGetGlobalTick(context), expression->v.s);
+    return true;
+}
+
+static bool parseChannel(Expression *expression, Context *context, void *value)
+{
+    if (!isValidRange(expression->v.i, 1, 16)) {
+        CALLBACK_ERROR(context, expression, ParseErrorInvalidChannel, expression->v.i);
+        return false;
+    }
+
+    context->channel = expression->v.i;
+    return true;
+}
+
+static bool parseVelocity(Expression *expression, Context *context, void *value)
+{
+    if (!isValidRange(expression->v.i, 0, 127)) {
+        CALLBACK_ERROR(context, expression, ParseErrorInvalidVelociy, expression->v.i);
+        return false;
+    }
+
+    context->velocity = expression->v.i;
+    return true;
+}
+
+static bool parseGatetime(Expression *expression, Context *context, void *value)
+{
+    if (!isValidRange(expression->v.i, 1, 65535)) {
+        CALLBACK_ERROR(context, expression, ParseErrorInvalidGatetime, expression->v.i);
+        return false;
+    }
+
+    context->gatetime = expression->v.i;
+    return true;
+}
+
+static bool parseGatetimeAuto(Expression *expression, Context *context, void *value)
+{
+    context->gatetime = 0;
     return true;
 }
 
@@ -587,4 +626,8 @@ static void __attribute__((constructor)) initializeTable()
     functionTable[ExpressionTypeTimeSign] = parseTimeSign;
     functionTable[ExpressionTypeTempo] = parseTempo;
     functionTable[ExpressionTypeMarker] = parseMarker;
+    functionTable[ExpressionTypeChannel] = parseChannel;
+    functionTable[ExpressionTypeVelocity] = parseVelocity;
+    functionTable[ExpressionTypeGatetime] = parseGatetime;
+    functionTable[ExpressionTypeGatetimeAuto] = parseGatetimeAuto;
 }
