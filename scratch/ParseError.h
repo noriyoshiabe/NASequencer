@@ -10,11 +10,11 @@ typedef enum {
     ParseErrorNoteIllegalNatural,
     ParseErrorNoteIllegalOctaveUp,
     ParseErrorNoteIllegalOctaveDown,
-    ParseErrorNoteInvalidTaplet,
-    ParseErrorNoteInvalidTimeSign,
-    ParseErrorNoteIllegalOctaveShift,
-    ParseErrorNoteInvalidKeySign,
-    ParseErrorNoteInvalidTempo,
+    ParseErrorQuantizeInvalidTaplet,
+    ParseErrorInvalidTimeSign,
+    ParseErrorIllegalOctaveShift,
+    ParseErrorInvalidKeySign,
+    ParseErrorInvalidTempo,
 } ParseError;
 
 static inline const char *ParseError2String(ParseError error)
@@ -30,11 +30,11 @@ static inline const char *ParseError2String(ParseError error)
     CASE(ParseErrorNoteIllegalNatural);
     CASE(ParseErrorNoteIllegalOctaveUp);
     CASE(ParseErrorNoteIllegalOctaveDown);
-    CASE(ParseErrorNoteInvalidTaplet);
-    CASE(ParseErrorNoteInvalidTimeSign);
-    CASE(ParseErrorNoteIllegalOctaveShift);
-    CASE(ParseErrorNoteInvalidKeySign);
-    CASE(ParseErrorNoteInvalidTempo);
+    CASE(ParseErrorQuantizeInvalidTaplet);
+    CASE(ParseErrorInvalidTimeSign);
+    CASE(ParseErrorIllegalOctaveShift);
+    CASE(ParseErrorInvalidKeySign);
+    CASE(ParseErrorInvalidTempo);
     }
     return "Unknown error type";
 #undef CASE

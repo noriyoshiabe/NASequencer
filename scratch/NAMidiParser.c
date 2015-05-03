@@ -449,7 +449,7 @@ static bool parseQuantize(Expression *expression, Context *context, void *value)
                 context->step = context->step * 2 / tuplet;
             }
             else {
-                CALLBACK_ERROR(context, expression, ParseErrorNoteInvalidTaplet, tuplet);
+                CALLBACK_ERROR(context, expression, ParseErrorQuantizeInvalidTaplet, tuplet);
                 return false;
             }
             break;
@@ -474,14 +474,14 @@ static bool parseOctaveShift(Expression *expression, Context *context, void *val
     case '<':
         context->octave--;
         if (context->octave < -2) {
-            CALLBACK_ERROR(context, expression, ParseErrorNoteIllegalOctaveShift, context->octave);
+            CALLBACK_ERROR(context, expression, ParseErrorIllegalOctaveShift, context->octave);
             return false;
         }
         return true;
     case '>':
         context->octave++;
         if (8 < context->octave) {
-            CALLBACK_ERROR(context, expression, ParseErrorNoteIllegalOctaveShift, context->octave);
+            CALLBACK_ERROR(context, expression, ParseErrorIllegalOctaveShift, context->octave);
             return false;
         }
         return true;
@@ -501,7 +501,7 @@ static bool parseKey(Expression *expression, Context *context, void *value)
 
     NoteTableKeySign key = NoteTableGetKeySign(keyChar, sharp, flat, major);
     if (NoteTableKeySignInvalid == key) {
-        CALLBACK_ERROR(context, expression, ParseErrorNoteInvalidKeySign);
+        CALLBACK_ERROR(context, expression, ParseErrorInvalidKeySign);
         return false;
     }
 
@@ -532,7 +532,7 @@ static bool parseTimeSign(Expression *expression, Context *context, void *value)
     parseExpression(expression->left->right, context, &denominator);
 
     if (1 > numerator || 1 > denominator || !isPowerOf2(denominator)) {
-        CALLBACK_ERROR(context, expression, ParseErrorNoteInvalidTimeSign, numerator, denominator);
+        CALLBACK_ERROR(context, expression, ParseErrorInvalidTimeSign, numerator, denominator);
         return false;
     }
 
@@ -563,7 +563,7 @@ static bool parseTempo(Expression *expression, Context *context, void *value)
         return true;
     }
     else {
-        CALLBACK_ERROR(context, expression, ParseErrorNoteInvalidTempo, tempo);
+        CALLBACK_ERROR(context, expression, ParseErrorInvalidTempo, tempo);
         return false;
     }
 }
