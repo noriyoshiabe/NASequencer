@@ -624,6 +624,12 @@ static bool parseOctave(Expression *expression, Context *context, void *value)
     return true;
 }
 
+static bool parseRest(Expression *expression, Context *context, void *value)
+{
+    context->tick += ContextGetStep(context);
+    return true;
+}
+
 
 static void __attribute__((constructor)) initializeTable()
 {
@@ -642,4 +648,5 @@ static void __attribute__((constructor)) initializeTable()
     functionTable[ExpressionTypeGatetime] = parseGatetime;
     functionTable[ExpressionTypeGatetimeAuto] = parseGatetimeAuto;
     functionTable[ExpressionTypeOctave] = parseOctave;
+    functionTable[ExpressionTypeRest] = parseRest;
 }
