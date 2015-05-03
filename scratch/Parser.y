@@ -147,7 +147,7 @@ quantize
     ;
 
 location_value
-    : integer
+    : INTEGER                             { $$ = ExpressionCreateIntegerValue(scanner, &@$, ExpressionTypeMeasure, $1); }
     | time_sign
     | location_value PLUS location_value  { $$ = ExpressionCreate(scanner, &@$, ExpressionTypePlus, ExpressionAddRight($1, $3), NULL); }
     | location_value MINUS location_value { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeMinus, ExpressionAddRight($1, $3), NULL); }

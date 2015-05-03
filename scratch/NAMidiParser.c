@@ -167,6 +167,30 @@ static void TimeTableAddTimeSign(TimeTable *self, const TimeSign *timeSign)
     CFArraySortValues(self->timeSignList, CFRangeMake(0, CFArrayGetCount(self->timeSignList)), TimeTableTimeSignComparator, NULL);
 }
 
+static int32_t TimeTableGetTickByMeasure(TimeTable *self, int32_t measure)
+{
+    int32_t offsetTick = 0;
+    int32_t tickPerMeasure = self->resolution * 4;
+
+    measure -= 1;
+
+    CFIndex count = CFArrayGetCount(self->timeSignList);
+    for (int i = 0; i < count; ++i) {
+        const TimeSign *timeSign = CFArrayGetValueAtIndex(self->timeSignList, i);
+
+        int32_t tick = tickPerMeasure * measure + offsetTick;
+        if (tick < timeSign->tick) {
+            break;
+        }
+
+        measure -= timeSign->tick / tickPerMeasure;
+        tickPerMeasure = self->resolution * 4 / timeSign->denominator * timeSign->numerator;
+        offsetTick = timeSign->tick;
+    }
+
+    return tickPerMeasure * measure + offsetTick;
+}
+
 typedef struct _Note {
     uint32_t tick;
     uint8_t noteNo;
@@ -201,6 +225,7 @@ const CFArrayCallBacks ContextCandidatesCallbacks = {0, NULL, NoteReleaseCallbak
 
 static int32_t ContextGetResolution(Context *self);
 static TimeSign *ContextGetTimeSignByTick(Context *self, int32_t tick);
+static int32_t ContextGetTickByMeasure(Context *self, int32_t measure);
 static void ContextCommitNoteCandidate(Context *self);
 
 static Context *ContextCreate(NAMidiParser *parser)
@@ -268,6 +293,20 @@ static TimeSign *ContextGetTimeSignByTick(Context *self, int32_t tick)
     }
 
     return target;
+}
+
+static int32_t ContextGetTickByMeasure(Context *self, int32_t measure)
+{
+    CFIndex count = CFArrayGetCount(self->timeTable->timeSignList);
+    if (0 == count) {
+        TimeSign *timeSign = TimeSignCreate(0, 4, 4);
+        self->parser->callbacks->onParseTime(self->parser->receiver, 0, 4, 4);
+        TimeTableAddTimeSign(self->timeTable, timeSign);
+    }
+
+    ContextGetResolution(self);
+
+    return TimeTableGetTickByMeasure(self->timeTable, measure);
 }
 
 static int32_t ContextGetResolution(Context *self)
@@ -488,15 +527,15 @@ static bool isValidTuplet(int32_t tuplet)
 static bool parseQuantize(Expression *expression, Context *context, void *value)
 {
     int32_t tuplet;
-    TimeSign *timeSign = NULL;
+    int32_t step;
 
     for (Expression *expr = expression->left; expr; expr = expr->right) {
         switch (expr->type) {
         case ExpressionTypeTimeSign:
-            if (!parseExpression(expr, context, &timeSign)) {
+            if (!parseExpression(expr, context, &step)) {
                 return false;
             }
-            context->step = ContextGetResolution(context) * 4 / timeSign->denominator * timeSign->numerator;
+            context->step = step;
             break;
 
         case ExpressionTypeInteger:
@@ -521,7 +560,6 @@ static bool parseQuantize(Expression *expression, Context *context, void *value)
         }
     }
 
-    TimeSignDestroy(timeSign);
     return true;
 }
 
@@ -580,8 +618,6 @@ static bool parseTime(Expression *expression, Context *context, void *value)
 
 static bool parseTimeSign(Expression *expression, Context *context, void *value)
 {
-    TimeSign **out = (TimeSign **)value;
-
     int32_t numerator;
     int32_t denominator;
 
@@ -593,7 +629,13 @@ static bool parseTimeSign(Expression *expression, Context *context, void *value)
         return false;
     }
 
-    *out = TimeSignCreate(context->tick, numerator, denominator);
+    if (ExpressionTypeTime == expression->parent->type) {
+        *((TimeSign **)value) = TimeSignCreate(context->tick, numerator, denominator);
+    }
+    else {
+        *((int32_t *)value) = ContextGetResolution(context) * 4 / denominator * numerator;
+    }
+    
     return true;
 }
 
@@ -703,6 +745,25 @@ static bool parseTie(Expression *expression, Context *context, void *value)
     return true;
 }
 
+static bool parseLocation(Expression *expression, Context *context, void *value)
+{
+    if (!parseExpression(expression->left, context, &context->tick)) {
+        return false;
+    }
+    return true;
+}
+
+static bool parseMeasure(Expression *expression, Context *context, void *value)
+{
+    if (1 > expression->v.i) {
+        CALLBACK_ERROR(context, expression, ParseErrorInvalidMeasure);
+        return false;
+    }
+
+    *((int32_t *)value) = ContextGetTickByMeasure(context, expression->v.i);
+    return true;
+}
+
 static bool parseEOF(Expression *expression, Context *context, void *value)
 {
     context->parser->callbacks->onFinish(context->parser->receiver, context->length);
@@ -728,5 +789,7 @@ static void __attribute__((constructor)) initializeTable()
     functionTable[ExpressionTypeOctave] = parseOctave;
     functionTable[ExpressionTypeRest] = parseRest;
     functionTable[ExpressionTypeTie] = parseTie;
+    functionTable[ExpressionTypeLocation] = parseLocation;
+    functionTable[ExpressionTypeMeasure] = parseMeasure;
     functionTable[ExpressionTypeEOF] = parseEOF;
 }
