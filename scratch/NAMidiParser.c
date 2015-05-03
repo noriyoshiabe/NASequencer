@@ -325,6 +325,12 @@ static bool parseInteger(Expression *expression, Context *context, void *value)
     return true;
 }
 
+static bool parseFloat(Expression *expression, Context *context, void *value)
+{
+    *((float *)value) = expression->v.f;
+    return true;
+}
+
 static bool parseNote(Expression *expression, Context *context, void *value)
 {
     const char *noteString = expression->v.s;
@@ -511,7 +517,7 @@ static bool parseTime(Expression *expression, Context *context, void *value)
     }
     
     ContextAddTimeSign(context, timeSign);
-    context->parser->callbacks->onParseTime(context->parser->receiver, timeSign->tick, timeSign->numerator, timeSign->denominator);
+    context->parser->callbacks->onParseTime(context->parser->receiver, ContextGetGlobalTick(context), timeSign->numerator, timeSign->denominator);
     return true;
 }
 
@@ -534,14 +540,44 @@ static bool parseTimeSign(Expression *expression, Context *context, void *value)
     return true;
 }
 
+static bool parseTempo(Expression *expression, Context *context, void *value)
+{
+    float tempo;
+    int _int;
+
+    switch (expression->left->type) {
+    case ExpressionTypeInteger:
+        parseExpression(expression->left, context, &_int);
+        tempo = _int;
+        break;
+    case ExpressionTypeFloat:
+        parseExpression(expression->left, context, &tempo);
+        break;
+    default:
+        PANIC("Unexpected ExpressionType type=%s\n", ExpressionType2String(expression->left->type));
+        break;
+    }
+
+    if (30.0 <= tempo && tempo <= 300.0) {
+        context->parser->callbacks->onParseTempo(context->parser->receiver, ContextGetGlobalTick(context), tempo);
+        return true;
+    }
+    else {
+        CALLBACK_ERROR(context, expression, ParseErrorNoteInvalidTempo, tempo);
+        return false;
+    }
+}
+
 
 static void __attribute__((constructor)) initializeTable()
 {
     functionTable[ExpressionTypeInteger] = parseInteger;
+    functionTable[ExpressionTypeFloat] = parseFloat;
     functionTable[ExpressionTypeNote] = parseNote;
     functionTable[ExpressionTypeQuantize] = parseQuantize;
     functionTable[ExpressionTypeOctaveShift] = parseOctaveShift;
     functionTable[ExpressionTypeKey] = parseKey;
     functionTable[ExpressionTypeTime] = parseTime;
     functionTable[ExpressionTypeTimeSign] = parseTimeSign;
+    functionTable[ExpressionTypeTempo] = parseTempo;
 }

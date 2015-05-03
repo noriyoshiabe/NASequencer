@@ -11,7 +11,11 @@ static void onParseTime(void *receiver, uint32_t tick, uint8_t numerator, uint8_
     printf("[Time] tick=%d numerator=%d denominator=%d\n", tick, numerator, denominator);
 }
 
-static void onParseTempo(void *receiver, uint32_t tick, float tempo){ }
+static void onParseTempo(void *receiver, uint32_t tick, float tempo)
+{
+    printf("[Tempo] tick=%d tempo=%.2f\n", tick, tempo);
+}
+
 static void onParseMarker(void *receiver, uint32_t tick, const char *text){ }
 
 static void onFinish(void *receiver, uint32_t length)

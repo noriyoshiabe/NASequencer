@@ -34,7 +34,7 @@ typedef struct _Expression {
 } Expression;
  
 extern Expression *ExpressionCreateIntegerValue(void *scanner, void *yylloc, ExpressionType type, int value);
-extern Expression *ExpressionCreateFloatValue(void *scanner, void *yylloc, ExpressionType type, int number, const char *decimal);
+extern Expression *ExpressionCreateFloatValue(void *scanner, void *yylloc, ExpressionType type, float value);
 extern Expression *ExpressionCreateStringValue(void *scanner, void *yylloc, ExpressionType type, char *value);
 extern Expression *ExpressionCreateTrimmedStringValue(void *scanner, void *yylloc, ExpressionType type, char *value);
 extern Expression *ExpressionCreate(void *scanner, void *yylloc, ExpressionType type, Expression *left, Expression *right);

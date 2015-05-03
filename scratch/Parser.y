@@ -19,6 +19,7 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, cons
 
 %union {
     int i;
+    float f;
     char *s;
     Expression *expression;
 }
@@ -26,7 +27,7 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, cons
 %token TOKEN_BEGIN
 
 %token <i>INTEGER
-%token <s>DECIMAL
+%token <f>FLOAT
 %token <s>STRING
 
 %token <s>NOTE
@@ -129,7 +130,7 @@ integer
     ;
 
 float
-    : INTEGER DOT DECIMAL { $$ = ExpressionCreateFloatValue(scanner, &@$, ExpressionTypeFloat, $1, $3); }
+    : FLOAT { $$ = ExpressionCreateFloatValue(scanner, &@$, ExpressionTypeFloat, $1); }
     ;
 
 time_sign

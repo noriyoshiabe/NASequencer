@@ -32,7 +32,7 @@
 NONZERO        [1-9]
 DIGIT          [[:digit:]]
 INTEGER        {NONZERO}{DIGIT}*|0
-DECIMAL        {DIGIT}+
+FLOAT          ({NONZERO}{DIGIT}*|0)\.{DIGIT}+
 STRING         \"[^\"]*\"|'[^']*'
 WSPACE         [[:blank:]]+
 
@@ -78,7 +78,7 @@ LINE_COMMENT   \/\/.*$
 <<EOF>>          { return 0; }
 
 {INTEGER}        { yylval->i = atoi(yytext); return INTEGER; }
-{DECIMAL}        { yylval->s = strdup(yytext); return DECIMAL; }
+{FLOAT}          { yylval->f = atof(yytext); return FLOAT; }
 {STRING}         { yylval->s = strdup(yytext); return STRING; }
 {WSPACE}         { }
 

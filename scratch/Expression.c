@@ -25,16 +25,13 @@ Expression *ExpressionCreateIntegerValue(void *scanner, void *yylloc, Expression
     return expr;
 }
 
-Expression *ExpressionCreateFloatValue(void *scanner, void *yylloc, ExpressionType type, int number, const char *decimal)
+Expression *ExpressionCreateFloatValue(void *scanner, void *yylloc, ExpressionType type, float value)
 {
-    char buf[64];
-    snprintf(buf, sizeof(buf), "%d.%s", number, decimal);
-
     Expression *expr = (Expression *)calloc(1, sizeof(Expression));
     expr->location = makeParseLocation(scanner, yylloc);
     expr->type = type;
     expr->valueType = ValueTypeFloat;
-    expr->v.f = atof(buf);
+    expr->v.f = value;
     return expr;
 }
 

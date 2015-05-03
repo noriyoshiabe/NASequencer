@@ -1,3 +1,4 @@
+tempo 180.00
 time 4/4
 
 cccc
@@ -7,6 +8,10 @@ time 3/4
 ddd
 
 eee
+
+tempo 120
+
+1/4.
 
 
 /*
