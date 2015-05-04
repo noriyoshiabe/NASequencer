@@ -114,7 +114,7 @@ statement
     | REST              { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeRest, NULL); }
     | TIE               { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeTie, NULL); }
     | LOCATION location_value    { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeLocation, $2); }
-    | statement MULTIPLY INTEGER { $$ = ExpressionAddChild($1, ExpressionCreateIntegerValue(scanner, &@$, ExpressionTypeRepeat, $3)); }
+    | statement MULTIPLY INTEGER { $$ = ExpressionAddChild(ExpressionCreateIntegerValue(scanner, &@$, ExpressionTypeRepeat, $3), $1); }
     | statement COMMA statement  { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeParallel, ExpressionAddSibling($1, $3)); }
     | block
     | identifier ASSIGN block { $$ = ExpressionCreate(scanner, &@$, ExpressionTypePatternDefine, ExpressionAddSibling($1, $3)); }

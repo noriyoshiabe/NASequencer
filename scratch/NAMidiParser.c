@@ -798,6 +798,16 @@ static bool parseMinus(Expression *expression, Context *context, void *value)
     return true;
 }
 
+static bool parseRepeat(Expression *expression, Context *context, void *value)
+{
+    for (int i = 0; i < expression->v.i; ++i) {
+        if (!parseExpression(expression->child, context, NULL)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 static bool parseEOF(Expression *expression, Context *context, void *value)
 {
     context->parser->callbacks->onFinish(context->parser->receiver, context->length);
@@ -827,5 +837,6 @@ static void __attribute__((constructor)) initializeTable()
     functionTable[ExpressionTypeMeasure] = parseMeasure;
     functionTable[ExpressionTypePlus] = parsePlus;
     functionTable[ExpressionTypeMinus] = parseMinus;
+    functionTable[ExpressionTypeRepeat] = parseRepeat;
     functionTable[ExpressionTypeEOF] = parseEOF;
 }
