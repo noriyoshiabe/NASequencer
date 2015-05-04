@@ -204,6 +204,8 @@ typedef struct _Context {
     int32_t octave;
     int32_t length;
 
+    CFMutableDictionaryRef patterns;
+
     struct _Context *parent;
 } Context;
 
@@ -226,12 +228,14 @@ static Context *ContextCreate(NAMidiParser *parser)
     ret->channel = 1;
     ret->octave = 4;
     ret->velocity = 100;
+    ret->patterns = CFDictionaryCreateMutable(NULL, 0, &kCFTypeDictionaryKeyCallBacks, NULL);
     return ret;
 }
 
 static void ContextDestroy(Context *self)
 {
     TimeTableDestroy(self->timeTable);
+    CFRelease(self->patterns);
     free(self);
 }
 
@@ -252,6 +256,8 @@ static Context *ContextCreateFromContext(Context *from)
 
     TimeSign *timeSign = ContextGetTimeSignByTick(from, from->tick);
     TimeTableAddTimeSign(ret->timeTable, TimeSignCreateWithTimeSign(0, timeSign));
+
+    ret->patterns = CFDictionaryCreateMutableCopy(NULL, 0, from->patterns);
 
     return ret;
 }
@@ -904,6 +910,14 @@ static bool parseParallel(Expression *expression, Context *context, void *value)
     return true;
 }
 
+static bool parsePatternDefine(Expression *expression, Context *context, void *value)
+{
+    CFStringRef identifier = CFStringCreateWithCString(NULL, expression->child->v.s, kCFStringEncodingUTF8);
+    CFDictionarySetValue(context->patterns, identifier, expression->child->next);
+    CFRelease(identifier);
+    return true;
+}
+
 
 static void __attribute__((constructor)) initializeTable()
 {
@@ -933,4 +947,5 @@ static void __attribute__((constructor)) initializeTable()
     functionTable[ExpressionTypeRepeat] = parseRepeat;
     functionTable[ExpressionTypeBlock] = parseBlock;
     functionTable[ExpressionTypeParallel] = parseParallel;
+    functionTable[ExpressionTypePatternDefine] = parsePatternDefine;
 }

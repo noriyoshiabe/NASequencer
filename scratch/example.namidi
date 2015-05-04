@@ -1,10 +1,10 @@
-time 4/4
-cdef
-{
-  time 3/4
-  location 2
-  c
+$test = {
+  a a a
+  $hoge = {
+    cc
+  }
 }
+
 
 /*
 time 4/4
