@@ -346,11 +346,10 @@ static void ContextOnParseNote(Context *self, uint32_t tick, uint8_t channel, ui
 static void ContextOnParseTime(Context *self, uint32_t tick, uint8_t numerator, uint8_t denominator)
 {
     if (self->parent) {
-        ContextOnParseTime(self->parent, ContextGetTickInParent(self, tick), numerator, denominator);
+        return;
     }
-    else {
-        self->parser->callbacks->onParseTime(self->parser->receiver, tick, numerator, denominator);
-    }
+
+    self->parser->callbacks->onParseTime(self->parser->receiver, tick, numerator, denominator);
 }
 
 static void ContextOnParseTempo(Context *self, uint32_t tick, float tempo)
