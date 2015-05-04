@@ -203,7 +203,10 @@ pattern_expand_param
     ;
 
 length_value
-    : location_value
+    : INTEGER                         { $$ = ExpressionCreateIntegerValue(scanner, &@$, ExpressionTypeLengthValue, $1); }
+    | time_sign
+    | length_value PLUS length_value  { $$ = ExpressionCreate(scanner, &@$, ExpressionTypePlus, ExpressionAddSibling($1, $3)); }
+    | length_value MINUS length_value { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeMinus, ExpressionAddSibling($1, $3)); }
     ;
 
 %%

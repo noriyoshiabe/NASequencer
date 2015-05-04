@@ -22,6 +22,8 @@ typedef enum {
     ParseErrorInvalidLocation,
     ParseErrorInvalidMeasure,
     ParseErrorPatternMissing,
+    ParseErrorInvalidOffset,
+    ParseErrorInvalidLength,
 } ParseError;
 
 static inline const char *ParseError2String(ParseError error)
@@ -49,6 +51,8 @@ static inline const char *ParseError2String(ParseError error)
     CASE(ParseErrorInvalidLocation);
     CASE(ParseErrorInvalidMeasure);
     CASE(ParseErrorPatternMissing);
+    CASE(ParseErrorInvalidOffset);
+    CASE(ParseErrorInvalidLength);
     }
     return "Unknown error type";
 #undef CASE

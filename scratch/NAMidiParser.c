@@ -206,6 +206,7 @@ typedef struct _Context {
     int32_t length;
 
     int32_t largestTick;
+    Expression *offsetLength;
 
     CFMutableDictionaryRef patterns;
 
@@ -217,10 +218,12 @@ static TimeSign *ContextGetTimeSignByTick(Context *self, int32_t tick);
 static int32_t ContextGetTickByMeasure(Context *self, int32_t measure);
 
 static void ContextOnParseResolution(Context *self, uint32_t resolution);
-static void ContextOnParseNote(Context *self, uint32_t tick, uint8_t channel, uint8_t noteNo, uint8_t velocity, uint32_t gatetime);
-static void ContextOnParseTime(Context *self, uint32_t tick, uint8_t numerator, uint8_t denominator);
-static void ContextOnParseTempo(Context *self, uint32_t tick, float tempo);
-static void ContextOnParseMarker(Context *self, uint32_t tick, const char *text);
+static bool ContextOnParseNote(Context *self, int32_t tick, uint8_t channel, uint8_t noteNo, uint8_t velocity, uint32_t gatetime);
+static bool ContextOnParseTime(Context *self, int32_t tick, uint8_t numerator, uint8_t denominator);
+static bool ContextOnParseTempo(Context *self, int32_t tick, float tempo);
+static bool ContextOnParseMarker(Context *self, int32_t tick, const char *text);
+
+static bool parseExpression(Expression *expression, Context *context, void *value);
 
 static Context *ContextCreate(NAMidiParser *parser)
 {
@@ -338,10 +341,42 @@ static void ContextForwardTick(Context *self)
     self->largestTick = MAX(self->largestTick, self->tick);
 }
 
+static bool ContextCalcOffset(Context *self, int32_t *offset)
+{
+    *offset = 0;
+
+    for (Expression *expr = self->offsetLength; expr; expr = expr->next) {
+        if (ExpressionTypeOffset == expr->type) {
+            if (!parseExpression(expr, self, offset)) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+static bool ContextCalcLength(Context *self, int32_t *length)
+{
+    *length = -1;
+
+    for (Expression *expr = self->offsetLength; expr; expr = expr->next) {
+        if (ExpressionTypeLength == expr->type) {
+            if (!parseExpression(expr, self, length)) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
 static void ContextForwardTickWithContext(Context *self, Context *local)
 {
-    ContextPrepareTimeTable(self);
-    self->tick += local->largestTick;
+    int32_t length;
+    ContextCalcLength(local, &length);
+
+    self->tick += -1 != length ? length : local->largestTick;
     self->largestTick = MAX(self->largestTick, self->tick);
 }
 
@@ -361,44 +396,71 @@ static void ContextOnParseResolution(Context *self, uint32_t resolution)
     //self->parser->callbacks->onParseResolution(self->parser->receiver, resolution);
 }
 
-static void ContextOnParseNote(Context *self, uint32_t tick, uint8_t channel, uint8_t noteNo, uint8_t velocity, uint32_t gatetime)
+#define ContextFilterOffsetLength \
+    int32_t offset, length; \
+    if (!ContextCalcOffset(self, &offset) || !ContextCalcLength(self, &length)) { \
+        return false; \
+    } \
+    tick -= offset;\
+    if (tick < 0 || (-1 != length && length <= tick)) { \
+        return true; \
+    }
+
+
+static bool ContextOnParseNote(Context *self, int32_t tick, uint8_t channel, uint8_t noteNo, uint8_t velocity, uint32_t gatetime)
 {
+    ContextFilterOffsetLength;
+
     if (self->parent) {
         ContextOnParseNote(self->parent, ContextGetTickInParent(self, tick), channel, noteNo, velocity, gatetime);
     }
     else {
         self->parser->callbacks->onParseNote(self->parser, tick, channel, noteNo, velocity, gatetime);
     }
+
+    return true;
 }
 
-static void ContextOnParseTime(Context *self, uint32_t tick, uint8_t numerator, uint8_t denominator)
+static bool ContextOnParseTime(Context *self, int32_t tick, uint8_t numerator, uint8_t denominator)
 {
+    ContextFilterOffsetLength;
+
     if (self->parent) {
         ContextOnParseTime(self->parent, ContextGetTickInParent(self, tick), numerator, denominator);
     }
     else {
         self->parser->callbacks->onParseTime(self->parser->receiver, tick, numerator, denominator);
     }
+
+    return true;
 }
 
-static void ContextOnParseTempo(Context *self, uint32_t tick, float tempo)
+static bool ContextOnParseTempo(Context *self, int32_t tick, float tempo)
 {
+    ContextFilterOffsetLength;
+
     if (self->parent) {
         ContextOnParseTempo(self->parent, ContextGetTickInParent(self, tick), tempo);
     }
     else {
         self->parser->callbacks->onParseTempo(self->parser->receiver, tick, tempo);
     }
+
+    return true;
 }
 
-static void ContextOnParseMarker(Context *self, uint32_t tick, const char *text)
+static bool ContextOnParseMarker(Context *self, int32_t tick, const char *text)
 {
+    ContextFilterOffsetLength;
+
     if (self->parent) {
         ContextOnParseMarker(self->parent, ContextGetTickInParent(self, tick), text);
     }
     else {
         self->parser->callbacks->onParseMarker(self->parser->receiver, tick, text);
     }
+
+    return true;
 }
 
 
@@ -493,15 +555,21 @@ static bool parseNoteBlock(Expression *expression, Context *context, void *value
         }
     }
 
-    for (Note *note = noteList; note; ) {
-        ContextOnParseNote(context, note->tick, note->channel, note->noteNo, note->velocity, note->gatetime);
+    bool success = true;
+    for (Note *note = noteList; note; note = note->next) {
+        success = ContextOnParseNote(context, note->tick, note->channel, note->noteNo, note->velocity, note->gatetime);
+        if (!success) {
+            break;
+        }
+    }
 
+    for (Note *note = noteList; note; ) {
         Note *willFree = note;
         note = note->next;
         free(willFree);
     }
 
-    return true;
+    return success;
 }
 
 static bool parseNoteList(Expression *expression, Context *context, void *value)
@@ -720,8 +788,7 @@ static bool parseTime(Expression *expression, Context *context, void *value)
     }
     
     ContextAddTimeSign(context, timeSign);
-    ContextOnParseTime(context, context->tick, timeSign->numerator, timeSign->denominator);
-    return true;
+    return ContextOnParseTime(context, context->tick, timeSign->numerator, timeSign->denominator);
 }
 
 static bool parseTimeSign(Expression *expression, Context *context, void *value)
@@ -770,14 +837,12 @@ static bool parseTempo(Expression *expression, Context *context, void *value)
         return false;
     }
 
-    ContextOnParseTempo(context, context->tick, tempo);
-    return true;
+    return ContextOnParseTempo(context, context->tick, tempo);
 }
 
 static bool parseMarker(Expression *expression, Context *context, void *value)
 {
-    ContextOnParseMarker(context, context->tick, expression->v.s);
-    return true;
+    return ContextOnParseMarker(context, context->tick, expression->v.s);
 }
 
 static bool parseChannel(Expression *expression, Context *context, void *value)
@@ -896,6 +961,10 @@ static bool parseRepeat(Expression *expression, Context *context, void *value)
 static bool parseBlock(Expression *expression, Context *context, void *value)
 {
     Context *local = ContextCreateFromContext(context);
+    if (value) {
+        local->offsetLength = value;
+    }
+
     for (Expression *expr = expression->child; expr; expr = expr->next) {
         if (!parseExpression(expr, local, NULL)) {
             return false;
@@ -946,11 +1015,51 @@ static bool parsePatternExpand(Expression *expression, Context *context, void *v
         goto ERROR;
     }
 
-    ret = parseExpression(pattern, context, NULL);
+    ret = parseExpression(pattern, context, expression->child->next);
 
 ERROR:
     CFRelease(identifier);
     return ret;
+}
+
+static bool parseOffset(Expression *expression, Context *context, void *value)
+{
+    int32_t tick;
+
+    if (!parseExpression(expression->child, context, &tick)) {
+        return false;
+    }
+
+    if (0 > tick) {
+        CALLBACK_ERROR(context, expression, ParseErrorInvalidOffset);
+        return false;
+    }
+
+    *((int32_t *)value) = tick;
+    return true;
+}
+
+static bool parseLength(Expression *expression, Context *context, void *value)
+{
+    int32_t tick;
+
+    if (!parseExpression(expression->child, context, &tick)) {
+        return false;
+    }
+
+    if (0 > tick) {
+        CALLBACK_ERROR(context, expression, ParseErrorInvalidLength);
+        return false;
+    }
+
+    *((int32_t *)value) = tick;
+    return true;
+}
+
+static bool parseLengthValue(Expression *expression, Context *context, void *value)
+{
+    *((int32_t *)value) = ContextGetTickByMeasure(context, expression->v.i + 1);
+    return true;
 }
 
 
@@ -984,4 +1093,7 @@ static void __attribute__((constructor)) initializeTable()
     functionTable[ExpressionTypeParallel] = parseParallel;
     functionTable[ExpressionTypePatternDefine] = parsePatternDefine;
     functionTable[ExpressionTypePatternExpand] = parsePatternExpand;
+    functionTable[ExpressionTypeOffset] = parseOffset;
+    functionTable[ExpressionTypeLength] = parseLength;
+    functionTable[ExpressionTypeLengthValue] = parseLengthValue;
 }
