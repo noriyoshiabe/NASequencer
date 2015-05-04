@@ -78,6 +78,7 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, cons
 %type <expression> block
 %type <expression> parallel
 %type <expression> parallel_list
+%type <expression> parallelable
 %type <expression> pattern_expand_param
 %type <expression> pattern_expand_param_list
 %type <expression> length_value
@@ -143,8 +144,8 @@ note_list
     ;
 
 note
-    : NOTE            { $$ = ExpressionCreateStringValue(scanner, &@$, ExpressionTypeNote, $1); }
-    | note COMMA NOTE { $$ = ExpressionAddSibling($1, ExpressionCreateStringValue(scanner, &@$, ExpressionTypeNote, $3)); }
+    : NOTE               { $$ = ExpressionCreateStringValue(scanner, &@$, ExpressionTypeNote, $1); }
+    | note DIVISION NOTE { $$ = ExpressionAddSibling($1, ExpressionCreateStringValue(scanner, &@$, ExpressionTypeNote, $3)); }
     ;
 
 time_sign
@@ -182,9 +183,14 @@ parallel
     ;
 
 parallel_list
-    : block COMMA block { $$ = ExpressionAddSibling($1, $3); }
-    | parallel_list COMMA block  { $$ = ExpressionAddSibling($1, $3); }
+    : parallelable COMMA parallelable  { $$ = ExpressionAddSibling($1, $3); }
+    | parallel_list COMMA parallelable  { $$ = ExpressionAddSibling($1, $3); }
     ;
+
+parallelable
+    : note_block
+    | block
+    ; 
 
 pattern_expand_param_list
     : pattern_expand_param
