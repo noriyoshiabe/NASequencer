@@ -211,6 +211,7 @@ typedef struct _Context {
     int32_t blockLength;
 
     CFMutableDictionaryRef patterns;
+    CFMutableSetRef expandingPattens;
 
     struct _Context *parent;
 } Context;
@@ -237,6 +238,7 @@ static Context *ContextCreate(NAMidiParser *parser)
     ret->octave = 4;
     ret->velocity = 100;
     ret->patterns = CFDictionaryCreateMutable(NULL, 0, &kCFTypeDictionaryKeyCallBacks, NULL);
+    ret->expandingPattens = CFSetCreateMutable(NULL, 0, &kCFTypeSetCallBacks);
     ret->blockLength = -1;
     return ret;
 }
@@ -245,6 +247,7 @@ static void ContextDestroy(Context *self)
 {
     TimeTableDestroy(self->timeTable);
     CFRelease(self->patterns);
+    CFRelease(self->expandingPattens);
     free(self);
 }
 
@@ -267,6 +270,7 @@ static Context *ContextCreateFromContext(Context *from)
     TimeTableAddTimeSign(ret->timeTable, TimeSignCreateWithTimeSign(0, timeSign));
 
     ret->patterns = CFDictionaryCreateMutableCopy(NULL, 0, from->patterns);
+    ret->expandingPattens = CFSetCreateMutableCopy(NULL, 0, from->expandingPattens);
 
     return ret;
 }
@@ -1008,18 +1012,25 @@ static bool parsePatternExpand(Expression *expression, Context *context, void *v
 {
     bool ret = false;
     CFStringRef identifier = CFStringCreateWithCString(NULL, expression->child->v.s, kCFStringEncodingUTF8);
+    CFIndex size = CFStringGetLength(identifier) + 1;
+    char *cstring = alloca(size);
+    CFStringGetCString(identifier, cstring, size, kCFStringEncodingUTF8);
+    
+    if (CFSetContainsValue(context->expandingPattens, identifier)) {
+        CALLBACK_ERROR(context, expression, ParseErrorPatternCircularReference, cstring);
+        goto ERROR;
+    }
 
     Expression *pattern = (Expression *)CFDictionaryGetValue(context->patterns, identifier);
 
     if (!pattern) {
-        CFIndex size = CFStringGetLength(identifier) + 1;
-        char *buffer = alloca(size);
-        CFStringGetCString(identifier, buffer, size, kCFStringEncodingUTF8);
-        CALLBACK_ERROR(context, expression, ParseErrorPatternMissing, buffer);
+        CALLBACK_ERROR(context, expression, ParseErrorPatternMissing, cstring);
         goto ERROR;
     }
 
+    CFSetSetValue(context->expandingPattens, identifier);
     ret = parseExpression(pattern, context, expression->child->next);
+    CFSetRemoveValue(context->expandingPattens, identifier);
 
 ERROR:
     CFRelease(identifier);

@@ -2,6 +2,7 @@ $test = {
   CCCC
   DEFG~
   CCCC
+  $test
 }
 
 $test offset 1 length 1

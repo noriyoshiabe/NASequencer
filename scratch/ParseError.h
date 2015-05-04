@@ -22,6 +22,7 @@ typedef enum {
     ParseErrorInvalidLocation,
     ParseErrorInvalidMeasure,
     ParseErrorPatternMissing,
+    ParseErrorPatternCircularReference,
     ParseErrorInvalidOffset,
     ParseErrorInvalidLength,
 } ParseError;
@@ -51,6 +52,7 @@ static inline const char *ParseError2String(ParseError error)
     CASE(ParseErrorInvalidLocation);
     CASE(ParseErrorInvalidMeasure);
     CASE(ParseErrorPatternMissing);
+    CASE(ParseErrorPatternCircularReference);
     CASE(ParseErrorInvalidOffset);
     CASE(ParseErrorInvalidLength);
     }
