@@ -750,6 +750,12 @@ static bool parseLocation(Expression *expression, Context *context, void *value)
     if (!parseExpression(expression->left, context, &context->tick)) {
         return false;
     }
+
+    if (0 > context->tick) {
+        CALLBACK_ERROR(context, expression, ParseErrorInvalidLocation);
+        return false;
+    }
+
     return true;
 }
 
@@ -761,6 +767,34 @@ static bool parseMeasure(Expression *expression, Context *context, void *value)
     }
 
     *((int32_t *)value) = ContextGetTickByMeasure(context, expression->v.i);
+    return true;
+}
+
+static bool parsePlus(Expression *expression, Context *context, void *value)
+{
+    int32_t left, right;
+    if (!parseExpression(expression->left, context, &left)) {
+        return false;
+    }
+    if (!parseExpression(expression->left->right, context, &right)) {
+        return false;
+    }
+
+    *((int32_t *)value) = left + right;
+    return true;
+}
+
+static bool parseMinus(Expression *expression, Context *context, void *value)
+{
+    int32_t left, right;
+    if (!parseExpression(expression->left, context, &left)) {
+        return false;
+    }
+    if (!parseExpression(expression->left->right, context, &right)) {
+        return false;
+    }
+
+    *((int32_t *)value) = left - right;
     return true;
 }
 
@@ -791,5 +825,7 @@ static void __attribute__((constructor)) initializeTable()
     functionTable[ExpressionTypeTie] = parseTie;
     functionTable[ExpressionTypeLocation] = parseLocation;
     functionTable[ExpressionTypeMeasure] = parseMeasure;
+    functionTable[ExpressionTypePlus] = parsePlus;
+    functionTable[ExpressionTypeMinus] = parseMinus;
     functionTable[ExpressionTypeEOF] = parseEOF;
 }
