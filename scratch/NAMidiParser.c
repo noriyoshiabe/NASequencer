@@ -44,10 +44,10 @@ bool NAMidiParserExecuteParse(NAMidiParser *self, const char *filepath)
     ExpressionDump(expression);
 #endif
 
-    _NAMidiParserParseAST(self, expression);
+    bool success = _NAMidiParserParseAST(self, expression);
     ExpressionDestroy(expression);
 
-    return true;
+    return success;
 }
 
 static bool _NAMidiParserParseDSL(NAMidiParser *self, const char *filepath, Expression **expression)
@@ -345,6 +345,7 @@ static bool _NAMidiParserParseAST(NAMidiParser *self, Expression *expression)
         }
     }
 
+    context->parser->callbacks->onFinish(context->parser->receiver, context->length);
     ContextDestroy(context);
     return true;
 }
@@ -811,11 +812,6 @@ static bool parseRepeat(Expression *expression, Context *context, void *value)
     return true;
 }
 
-static bool parseEOF(Expression *expression, Context *context, void *value)
-{
-    context->parser->callbacks->onFinish(context->parser->receiver, context->length);
-    return true;
-}
 
 static void __attribute__((constructor)) initializeTable()
 {
@@ -843,5 +839,4 @@ static void __attribute__((constructor)) initializeTable()
     functionTable[ExpressionTypePlus] = parsePlus;
     functionTable[ExpressionTypeMinus] = parseMinus;
     functionTable[ExpressionTypeRepeat] = parseRepeat;
-    functionTable[ExpressionTypeEOF] = parseEOF;
 }

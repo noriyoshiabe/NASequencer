@@ -1,7 +1,6 @@
 %{
   
 #include "Expression.h"
-#include "YYContext.h"
 #include "Parser.h"
 #include <string.h>
 
@@ -76,15 +75,7 @@ LINE_COMMENT   \/\/.*$
 
 %%
 
-<<EOF>>          {
-                   YYContext *context = yyget_extra(yyscanner);
-                   if (context->eofReached) {
-                     return 0;
-                   } else {
-                     context->eofReached = true;
-                     return __EOF__;
-                   }
-                 }
+<<EOF>>          { return 0; }
 
 {INTEGER}        { yylval->i = atoi(yytext); return INTEGER; }
 {FLOAT}          { yylval->f = atof(yytext); return FLOAT; }

@@ -4,6 +4,5 @@
 #include <stdbool.h>
 
 typedef struct _YYContext {
-    bool eofReached;
     ParseLocation location;
 } YYContext;

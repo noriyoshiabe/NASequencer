@@ -62,7 +62,6 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, cons
 %token <s>IDENTIFIER
 
 %token EOL
-%token __EOF__
 
 %type <expression> statement_list
 %type <expression> statement
@@ -122,7 +121,6 @@ statement
     | identifier ASSIGN block { $$ = ExpressionCreate(scanner, &@$, ExpressionTypePatternDefine, ExpressionAddSibling($1, $3)); }
     | identifier                            { $$ = ExpressionCreate(scanner, &@$, ExpressionTypePatternExpand, $1); }
     | identifier pattern_expand_param_list  { $$ = ExpressionCreate(scanner, &@$, ExpressionTypePatternExpand, ExpressionAddSibling($1, $2)); }
-    | __EOF__ { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeEOF, NULL); }
     ;
 
 integer
