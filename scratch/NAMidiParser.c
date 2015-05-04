@@ -397,6 +397,8 @@ static bool ContextOnParseNote(Context *self, int32_t tick, uint8_t channel, uin
         return true;
     }
 
+    gatetime = MIN(gatetime, self->blockLength - tick);
+
     if (self->parent) {
         ContextOnParseNote(self->parent, ContextGetTickInParent(self, tick), channel, noteNo, velocity, gatetime);
     }
