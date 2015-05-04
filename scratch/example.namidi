@@ -1,10 +1,21 @@
+$test = {
+  CCCC
+  DEFG
+  CCCC
+}
+
+$test offset 1 length 1
+
+AA
+
+/*
 time 4/4
-key cmaj
+key cm
 
 1/4. c+d >>< e^f_
 
-1/4 3
-/4.
+1/6
+/6.
 
 tempo 180.05
 marker 'hoge'
@@ -14,7 +25,7 @@ gatetime 480
 gatetime auto
 octave -1
 r
-a~
+~
 
 location 1
 location 3/4
@@ -33,3 +44,4 @@ $pattern = {
 
 $pattern
 $pattern offset 1 + 1/4 length 3
+*/

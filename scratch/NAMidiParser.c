@@ -207,6 +207,8 @@ typedef struct _Context {
 
     int32_t largestTick;
     Expression *offsetLength;
+    int32_t blockOffset;
+    int32_t blockLength;
 
     CFMutableDictionaryRef patterns;
 
@@ -235,6 +237,7 @@ static Context *ContextCreate(NAMidiParser *parser)
     ret->octave = 4;
     ret->velocity = 100;
     ret->patterns = CFDictionaryCreateMutable(NULL, 0, &kCFTypeDictionaryKeyCallBacks, NULL);
+    ret->blockLength = -1;
     return ret;
 }
 
@@ -341,30 +344,22 @@ static void ContextForwardTick(Context *self)
     self->largestTick = MAX(self->largestTick, self->tick);
 }
 
-static bool ContextCalcOffset(Context *self, int32_t *offset)
+static bool ContextCalcOffsetLength(Context *self)
 {
-    *offset = 0;
-
     for (Expression *expr = self->offsetLength; expr; expr = expr->next) {
-        if (ExpressionTypeOffset == expr->type) {
-            if (!parseExpression(expr, self, offset)) {
+        switch (expr->type) {
+        case ExpressionTypeOffset:
+            if (!parseExpression(expr, self, &self->blockOffset)) {
                 return false;
             }
-        }
-    }
-
-    return true;
-}
-
-static bool ContextCalcLength(Context *self, int32_t *length)
-{
-    *length = -1;
-
-    for (Expression *expr = self->offsetLength; expr; expr = expr->next) {
-        if (ExpressionTypeLength == expr->type) {
-            if (!parseExpression(expr, self, length)) {
+            break;
+        case ExpressionTypeLength:
+            if (!parseExpression(expr, self, &self->blockLength)) {
                 return false;
             }
+            break;
+        default:
+            break;
         }
     }
 
@@ -373,10 +368,7 @@ static bool ContextCalcLength(Context *self, int32_t *length)
 
 static void ContextForwardTickWithContext(Context *self, Context *local)
 {
-    int32_t length;
-    ContextCalcLength(local, &length);
-
-    self->tick += -1 != length ? length : local->largestTick;
+    self->tick += -1 != local->blockLength ? local->blockLength : local->largestTick;
     self->largestTick = MAX(self->largestTick, self->tick);
 }
 
@@ -396,20 +388,14 @@ static void ContextOnParseResolution(Context *self, uint32_t resolution)
     //self->parser->callbacks->onParseResolution(self->parser->receiver, resolution);
 }
 
-#define ContextFilterOffsetLength \
-    int32_t offset, length; \
-    if (!ContextCalcOffset(self, &offset) || !ContextCalcLength(self, &length)) { \
-        return false; \
-    } \
-    tick -= offset;\
-    if (tick < 0 || (-1 != length && length <= tick)) { \
-        return true; \
-    }
-
+#define isInsideOffsetLength(context, tick) (0 <= tick && (-1 == context->blockLength || tick < context->blockLength))
 
 static bool ContextOnParseNote(Context *self, int32_t tick, uint8_t channel, uint8_t noteNo, uint8_t velocity, uint32_t gatetime)
 {
-    ContextFilterOffsetLength;
+    tick -= self->blockOffset;
+    if (!isInsideOffsetLength(self, tick)) {
+        return true;
+    }
 
     if (self->parent) {
         ContextOnParseNote(self->parent, ContextGetTickInParent(self, tick), channel, noteNo, velocity, gatetime);
@@ -423,7 +409,14 @@ static bool ContextOnParseNote(Context *self, int32_t tick, uint8_t channel, uin
 
 static bool ContextOnParseTime(Context *self, int32_t tick, uint8_t numerator, uint8_t denominator)
 {
-    ContextFilterOffsetLength;
+    if (!ContextCalcOffsetLength(self)) {
+        return false;
+    }
+
+    tick -= self->blockOffset;
+    if (!isInsideOffsetLength(self, tick)) {
+        return true;
+    }
 
     if (self->parent) {
         ContextOnParseTime(self->parent, ContextGetTickInParent(self, tick), numerator, denominator);
@@ -437,7 +430,10 @@ static bool ContextOnParseTime(Context *self, int32_t tick, uint8_t numerator, u
 
 static bool ContextOnParseTempo(Context *self, int32_t tick, float tempo)
 {
-    ContextFilterOffsetLength;
+    tick -= self->blockOffset;
+    if (!isInsideOffsetLength(self, tick)) {
+        return true;
+    }
 
     if (self->parent) {
         ContextOnParseTempo(self->parent, ContextGetTickInParent(self, tick), tempo);
@@ -451,7 +447,10 @@ static bool ContextOnParseTempo(Context *self, int32_t tick, float tempo)
 
 static bool ContextOnParseMarker(Context *self, int32_t tick, const char *text)
 {
-    ContextFilterOffsetLength;
+    tick -= self->blockOffset;
+    if (!isInsideOffsetLength(self, tick)) {
+        return true;
+    }
 
     if (self->parent) {
         ContextOnParseMarker(self->parent, ContextGetTickInParent(self, tick), text);
@@ -963,6 +962,9 @@ static bool parseBlock(Expression *expression, Context *context, void *value)
     Context *local = ContextCreateFromContext(context);
     if (value) {
         local->offsetLength = value;
+        if (!ContextCalcOffsetLength(local)) {
+            return false;
+        }
     }
 
     for (Expression *expr = expression->child; expr; expr = expr->next) {
