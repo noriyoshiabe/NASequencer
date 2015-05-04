@@ -256,22 +256,39 @@ static Context *ContextCreateFromContext(Context *from)
     return ret;
 }
 
-static void ContextAddTimeSign(Context *self, const TimeSign *timeSign)
+static void ContextPrepareResolution(Context *self)
 {
-    TimeTableAddTimeSign(self->timeTable, timeSign);
+    if (0 == self->timeTable->resolution) {
+        ContextOnParseResolution(self, 480);
+        self->timeTable->resolution = 480;
+    }
 }
 
-static TimeSign *ContextGetTimeSignByTick(Context *self, int32_t tick)
+static void ContextPrepareTimeTable(Context *self)
 {
+    ContextPrepareResolution(self);
+
     CFIndex count = CFArrayGetCount(self->timeTable->timeSignList);
     if (0 == count) {
         TimeSign *timeSign = TimeSignCreate(0, 4, 4);
         ContextOnParseTime(self, 0, 4, 4);
         TimeTableAddTimeSign(self->timeTable, timeSign);
-        return timeSign;
     }
+}
+
+static void ContextAddTimeSign(Context *self, const TimeSign *timeSign)
+{
+    ContextPrepareResolution(self);
+    TimeTableAddTimeSign(self->timeTable, timeSign);
+}
+
+static TimeSign *ContextGetTimeSignByTick(Context *self, int32_t tick)
+{
+    ContextPrepareTimeTable(self);
 
     TimeSign *target = NULL;
+
+    CFIndex count = CFArrayGetCount(self->timeTable->timeSignList);
     for (CFIndex i = 0; i < count; ++i) {
         TimeSign *test = (TimeSign *)CFArrayGetValueAtIndex(self->timeTable->timeSignList, i);
         if (tick < test->tick) {
@@ -286,25 +303,13 @@ static TimeSign *ContextGetTimeSignByTick(Context *self, int32_t tick)
 
 static int32_t ContextGetTickByMeasure(Context *self, int32_t measure)
 {
-    CFIndex count = CFArrayGetCount(self->timeTable->timeSignList);
-    if (0 == count) {
-        TimeSign *timeSign = TimeSignCreate(0, 4, 4);
-        ContextOnParseTime(self, 0, 4, 4);
-        TimeTableAddTimeSign(self->timeTable, timeSign);
-    }
-
-    ContextGetResolution(self);
-
+    ContextPrepareTimeTable(self);
     return TimeTableGetTickByMeasure(self->timeTable, measure);
 }
 
 static int32_t ContextGetResolution(Context *self)
 {
-    if (0 == self->timeTable->resolution) {
-        ContextOnParseResolution(self, 480);
-        self->timeTable->resolution = 480;
-    }
-
+    ContextPrepareTimeTable(self);
     return self->timeTable->resolution;
 }
 
@@ -315,6 +320,12 @@ static int32_t ContextGetStep(Context *self)
     }
 
     return self->step;
+}
+
+static void ContextForwardTick(Context *self)
+{
+    ContextPrepareTimeTable(self);
+    self->tick += ContextGetStep(self);
 }
 
 static uint32_t ContextGetTickInParent(Context *self, uint32_t tick)
@@ -346,10 +357,11 @@ static void ContextOnParseNote(Context *self, uint32_t tick, uint8_t channel, ui
 static void ContextOnParseTime(Context *self, uint32_t tick, uint8_t numerator, uint8_t denominator)
 {
     if (self->parent) {
-        return;
+        ContextOnParseTime(self->parent, ContextGetTickInParent(self, tick), numerator, denominator);
     }
-
-    self->parser->callbacks->onParseTime(self->parser->receiver, tick, numerator, denominator);
+    else {
+        self->parser->callbacks->onParseTime(self->parser->receiver, tick, numerator, denominator);
+    }
 }
 
 static void ContextOnParseTempo(Context *self, uint32_t tick, float tempo)
@@ -497,7 +509,7 @@ static bool parseNoteList(Expression *expression, Context *context, void *value)
     }
 
     *((Note **)value) = head;
-    context->tick += ContextGetStep(context);
+    ContextForwardTick(context);
     return true;
 }
 
@@ -580,13 +592,13 @@ static bool parseTie(Expression *expression, Context *context, void *value)
         note->gatetime += ContextGetStep(context);
     }
 
-    context->tick += ContextGetStep(context);
+    ContextForwardTick(context);
     return true;
 }
 
 static bool parseRest(Expression *expression, Context *context, void *value)
 {
-    context->tick += ContextGetStep(context);
+    ContextForwardTick(context);
     return true;
 }
 
