@@ -211,6 +211,12 @@ static int32_t ContextGetResolution(Context *self);
 static TimeSign *ContextGetTimeSignByTick(Context *self, int32_t tick);
 static int32_t ContextGetTickByMeasure(Context *self, int32_t measure);
 
+static void ContextOnParseResolution(Context *self, uint32_t resolution);
+static void ContextOnParseNote(Context *self, uint32_t tick, uint8_t channel, uint8_t noteNo, uint8_t velocity, uint32_t gatetime);
+static void ContextOnParseTime(Context *self, uint32_t tick, uint8_t numerator, uint8_t denominator);
+static void ContextOnParseTempo(Context *self, uint32_t tick, float tempo);
+static void ContextOnParseMarker(Context *self, uint32_t tick, const char *text);
+
 static Context *ContextCreate(NAMidiParser *parser)
 {
     Context *ret = calloc(1, sizeof(Context));
@@ -258,7 +264,7 @@ static TimeSign *ContextGetTimeSignByTick(Context *self, int32_t tick)
     CFIndex count = CFArrayGetCount(self->timeTable->timeSignList);
     if (0 == count) {
         TimeSign *timeSign = TimeSignCreate(0, 4, 4);
-        self->parser->callbacks->onParseTime(self->parser->receiver, 0, 4, 4);
+        ContextOnParseTime(self, tick, 4, 4);
         TimeTableAddTimeSign(self->timeTable, timeSign);
         return timeSign;
     }
@@ -281,7 +287,7 @@ static int32_t ContextGetTickByMeasure(Context *self, int32_t measure)
     CFIndex count = CFArrayGetCount(self->timeTable->timeSignList);
     if (0 == count) {
         TimeSign *timeSign = TimeSignCreate(0, 4, 4);
-        self->parser->callbacks->onParseTime(self->parser->receiver, 0, 4, 4);
+        ContextOnParseTime(self, 0, 4, 4);
         TimeTableAddTimeSign(self->timeTable, timeSign);
     }
 
@@ -293,8 +299,7 @@ static int32_t ContextGetTickByMeasure(Context *self, int32_t measure)
 static int32_t ContextGetResolution(Context *self)
 {
     if (0 == self->timeTable->resolution) {
-        // TODO
-        //self->parser->callbacks->onParseResolution(self->parser->receiver, 480);
+        ContextOnParseResolution(self, 480);
         self->timeTable->resolution = 480;
     }
 
@@ -310,13 +315,60 @@ static int32_t ContextGetStep(Context *self)
     return self->step;
 }
 
-static int32_t ContextGetGlobalTick(Context *self)
+static uint32_t ContextGetTickInParent(Context *self, uint32_t tick)
+{
+    return tick + self->parent->tick;
+}
+
+static void ContextOnParseResolution(Context *self, uint32_t resolution)
 {
     if (self->parent) {
-        return self->tick + ContextGetGlobalTick(self->parent);
+        ContextOnParseResolution(self->parent, resolution);
+        return;
     }
 
-    return self->tick;
+    // TODO
+    //self->parser->callbacks->onParseResolution(self->parser->receiver, resolution);
+}
+
+static void ContextOnParseNote(Context *self, uint32_t tick, uint8_t channel, uint8_t noteNo, uint8_t velocity, uint32_t gatetime)
+{
+    if (self->parent) {
+        ContextOnParseNote(self->parent, ContextGetTickInParent(self, tick), channel, noteNo, velocity, gatetime);
+    }
+    else {
+        self->parser->callbacks->onParseNote(self->parser, tick, channel, noteNo, velocity, gatetime);
+    }
+}
+
+static void ContextOnParseTime(Context *self, uint32_t tick, uint8_t numerator, uint8_t denominator)
+{
+    if (self->parent) {
+        ContextOnParseTime(self->parent, ContextGetTickInParent(self, tick), numerator, denominator);
+    }
+    else {
+        self->parser->callbacks->onParseTime(self->parser->receiver, tick, numerator, denominator);
+    }
+}
+
+static void ContextOnParseTempo(Context *self, uint32_t tick, float tempo)
+{
+    if (self->parent) {
+        ContextOnParseTempo(self->parent, ContextGetTickInParent(self, tick), tempo);
+    }
+    else {
+        self->parser->callbacks->onParseTempo(self->parser->receiver, tick, tempo);
+    }
+}
+
+static void ContextOnParseMarker(Context *self, uint32_t tick, const char *text)
+{
+    if (self->parent) {
+        ContextOnParseMarker(self->parent, ContextGetTickInParent(self, tick), text);
+    }
+    else {
+        self->parser->callbacks->onParseMarker(self->parser->receiver, tick, text);
+    }
 }
 
 
@@ -412,8 +464,7 @@ static bool parseNoteBlock(Expression *expression, Context *context, void *value
     }
 
     for (Note *note = noteList; note; ) {
-        context->parser->callbacks->onParseNote(
-                context->parser, note->tick, note->channel, note->noteNo, note->velocity, note->gatetime);
+        ContextOnParseNote(context, note->tick, note->channel, note->noteNo, note->velocity, note->gatetime);
 
         Note *willFree = note;
         note = note->next;
@@ -517,9 +568,8 @@ static bool parseNote(Expression *expression, Context *context, void *value)
         }
     }
 
-    uint32_t tick = ContextGetGlobalTick(context);
     uint32_t gatetime = 0 < context->gatetime ? context->gatetime : ContextGetStep(context);
-    *((Note **)value) = NoteCreate(tick, context->channel, noteNo, context->velocity, gatetime);
+    *((Note **)value) = NoteCreate(context->tick, context->channel, noteNo, context->velocity, gatetime);
     return true;
 }
 
@@ -640,7 +690,7 @@ static bool parseTime(Expression *expression, Context *context, void *value)
     }
     
     ContextAddTimeSign(context, timeSign);
-    context->parser->callbacks->onParseTime(context->parser->receiver, ContextGetGlobalTick(context), timeSign->numerator, timeSign->denominator);
+    ContextOnParseTime(context, context->tick, timeSign->numerator, timeSign->denominator);
     return true;
 }
 
@@ -690,13 +740,13 @@ static bool parseTempo(Expression *expression, Context *context, void *value)
         return false;
     }
 
-    context->parser->callbacks->onParseTempo(context->parser->receiver, ContextGetGlobalTick(context), tempo);
+    ContextOnParseTempo(context, context->tick, tempo);
     return true;
 }
 
 static bool parseMarker(Expression *expression, Context *context, void *value)
 {
-    context->parser->callbacks->onParseMarker(context->parser->receiver, ContextGetGlobalTick(context), expression->v.s);
+    ContextOnParseMarker(context, context->tick, expression->v.s);
     return true;
 }
 
