@@ -1,10 +1,19 @@
 $test = {
   a a a
-  $hoge = {
-    cc
-  }
+  $hoge
 }
 
+$hoge = {
+  c
+}
+
+$test
+
+$hoge = {
+  d
+}
+
+$test
 
 /*
 time 4/4

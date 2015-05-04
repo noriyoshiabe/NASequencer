@@ -7,6 +7,7 @@
 
 #include <stdlib.h>
 #include <sys/param.h>
+#include <alloca.h>
 #include <CoreFoundation/CoreFoundation.h>
 
 #define PANIC(...) do { printf(__VA_ARGS__); abort(); } while (0)
@@ -204,6 +205,8 @@ typedef struct _Context {
     int32_t octave;
     int32_t length;
 
+    int32_t largestTick;
+
     CFMutableDictionaryRef patterns;
 
     struct _Context *parent;
@@ -332,6 +335,14 @@ static void ContextForwardTick(Context *self)
 {
     ContextPrepareTimeTable(self);
     self->tick += ContextGetStep(self);
+    self->largestTick = MAX(self->largestTick, self->tick);
+}
+
+static void ContextForwardTickWithContext(Context *self, Context *local)
+{
+    ContextPrepareTimeTable(self);
+    self->tick += local->largestTick;
+    self->largestTick = MAX(self->largestTick, self->tick);
 }
 
 static uint32_t ContextGetTickInParent(Context *self, uint32_t tick)
@@ -890,6 +901,8 @@ static bool parseBlock(Expression *expression, Context *context, void *value)
             return false;
         }
     }
+
+    ContextForwardTickWithContext(context, local);
     return true;
 }
 
@@ -916,6 +929,28 @@ static bool parsePatternDefine(Expression *expression, Context *context, void *v
     CFDictionarySetValue(context->patterns, identifier, expression->child->next);
     CFRelease(identifier);
     return true;
+}
+
+static bool parsePatternExpand(Expression *expression, Context *context, void *value)
+{
+    bool ret = false;
+    CFStringRef identifier = CFStringCreateWithCString(NULL, expression->child->v.s, kCFStringEncodingUTF8);
+
+    Expression *pattern = (Expression *)CFDictionaryGetValue(context->patterns, identifier);
+
+    if (!pattern) {
+        CFIndex size = CFStringGetLength(identifier) + 1;
+        char *buffer = alloca(size);
+        CFStringGetCString(identifier, buffer, size, kCFStringEncodingUTF8);
+        CALLBACK_ERROR(context, expression, ParseErrorPatternMissing, buffer);
+        goto ERROR;
+    }
+
+    ret = parseExpression(pattern, context, NULL);
+
+ERROR:
+    CFRelease(identifier);
+    return ret;
 }
 
 
@@ -948,4 +983,5 @@ static void __attribute__((constructor)) initializeTable()
     functionTable[ExpressionTypeBlock] = parseBlock;
     functionTable[ExpressionTypeParallel] = parseParallel;
     functionTable[ExpressionTypePatternDefine] = parsePatternDefine;
+    functionTable[ExpressionTypePatternExpand] = parsePatternExpand;
 }
