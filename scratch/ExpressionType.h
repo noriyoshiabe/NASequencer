@@ -4,7 +4,11 @@ typedef enum {
     ExpressionTypeInteger,
     ExpressionTypeFloat,
     ExpressionTypeString,
+    ExpressionTypeNoteBlock,
+    ExpressionTypeNoteList,
     ExpressionTypeNote,
+    ExpressionTypeRest,
+    ExpressionTypeTie,
     ExpressionTypeQuantize,
     ExpressionTypeDot,
     ExpressionTypeOctaveShift,
@@ -18,8 +22,6 @@ typedef enum {
     ExpressionTypeGatetime,
     ExpressionTypeGatetimeAuto,
     ExpressionTypeOctave,
-    ExpressionTypeRest,
-    ExpressionTypeTie,
     ExpressionTypeLocation,
     ExpressionTypeMeasure,
     ExpressionTypePlus,
@@ -43,7 +45,11 @@ static inline const char *ExpressionType2String(ExpressionType type)
     CASE(ExpressionTypeInteger);
     CASE(ExpressionTypeFloat);
     CASE(ExpressionTypeString);
+    CASE(ExpressionTypeNoteBlock);
+    CASE(ExpressionTypeNoteList);
     CASE(ExpressionTypeNote);
+    CASE(ExpressionTypeRest);
+    CASE(ExpressionTypeTie);
     CASE(ExpressionTypeQuantize);
     CASE(ExpressionTypeDot);
     CASE(ExpressionTypeOctaveShift);
@@ -57,8 +63,6 @@ static inline const char *ExpressionType2String(ExpressionType type)
     CASE(ExpressionTypeGatetime);
     CASE(ExpressionTypeGatetimeAuto);
     CASE(ExpressionTypeOctave);
-    CASE(ExpressionTypeRest);
-    CASE(ExpressionTypeTie);
     CASE(ExpressionTypeLocation);
     CASE(ExpressionTypeMeasure);
     CASE(ExpressionTypePlus);

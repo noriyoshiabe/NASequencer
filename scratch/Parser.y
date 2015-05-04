@@ -68,6 +68,9 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, cons
 %type <expression> statement
 %type <expression> integer
 %type <expression> float
+%type <expression> note_block
+%type <expression> note_list
+%type <expression> note
 %type <expression> time_sign
 %type <expression> quantize_time_sign
 %type <expression> quantize
@@ -96,7 +99,8 @@ statement_list
     ;
 
 statement
-    : NOTE              { $$ = ExpressionCreateStringValue(scanner, &@$, ExpressionTypeNote, $1); }
+    : note_block
+    | REST              { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeRest, NULL); }
     | quantize          { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeQuantize, $1); }
     | OCTAVE_SHIFT      { $$ = ExpressionCreateStringValue(scanner, &@$, ExpressionTypeOctaveShift, $1); }
     | KEY KEY_SIGN      { $$ = ExpressionCreateStringValue(scanner, &@$, ExpressionTypeKey, $2); }
@@ -111,8 +115,6 @@ statement
     | OCTAVE INTEGER    { $$ = ExpressionCreateIntegerValue(scanner, &@$, ExpressionTypeOctave, $2); }
     | OCTAVE PLUS INTEGER  { $$ = ExpressionCreateIntegerValue(scanner, &@$, ExpressionTypeOctave, $3); }
     | OCTAVE MINUS INTEGER { $$ = ExpressionCreateIntegerValue(scanner, &@$, ExpressionTypeOctave, -$3); }
-    | REST              { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeRest, NULL); }
-    | TIE               { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeTie, NULL); }
     | LOCATION location_value    { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeLocation, $2); }
     | statement MULTIPLY INTEGER { $$ = ExpressionAddChild(ExpressionCreateIntegerValue(scanner, &@$, ExpressionTypeRepeat, $3), $1); }
     | statement COMMA statement  { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeParallel, ExpressionAddSibling($1, $3)); }
@@ -129,6 +131,20 @@ integer
 
 float
     : FLOAT { $$ = ExpressionCreateFloatValue(scanner, &@$, ExpressionTypeFloat, $1); }
+    ;
+
+note_block
+    : note_list { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeNoteBlock, $1); }
+    ;
+
+note_list
+    : note { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeNoteList, $1); }
+    | note_list TIE { $$ = ExpressionAddSibling($1, ExpressionCreate(scanner, &@$, ExpressionTypeTie, NULL)); }
+    ;
+
+note
+    : NOTE            { $$ = ExpressionCreateStringValue(scanner, &@$, ExpressionTypeNote, $1); }
+    | note COMMA NOTE { $$ = ExpressionAddSibling($1, ExpressionCreateStringValue(scanner, &@$, ExpressionTypeNote, $3)); }
     ;
 
 time_sign
