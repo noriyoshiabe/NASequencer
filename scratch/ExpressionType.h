@@ -27,8 +27,8 @@ typedef enum {
     ExpressionTypePlus,
     ExpressionTypeMinus,
     ExpressionTypeRepeat,
-    ExpressionTypeParallel,
     ExpressionTypeBlock,
+    ExpressionTypeParallel,
     ExpressionTypePatternDefine,
     ExpressionTypePatternExpand,
     ExpressionTypeOffset,
@@ -67,8 +67,8 @@ static inline const char *ExpressionType2String(ExpressionType type)
     CASE(ExpressionTypePlus);
     CASE(ExpressionTypeMinus);
     CASE(ExpressionTypeRepeat);
-    CASE(ExpressionTypeParallel);
     CASE(ExpressionTypeBlock);
+    CASE(ExpressionTypeParallel);
     CASE(ExpressionTypePatternDefine);
     CASE(ExpressionTypePatternExpand);
     CASE(ExpressionTypeOffset);
