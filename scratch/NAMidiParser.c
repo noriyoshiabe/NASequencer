@@ -6,6 +6,7 @@
 #include "NoteTable.h"
 
 #include <stdlib.h>
+#include <sys/param.h>
 #include <CoreFoundation/CoreFoundation.h>
 
 #define PANIC(...) do { printf(__VA_ARGS__); abort(); } while (0)
@@ -384,7 +385,7 @@ typedef struct _Note {
 
 static Note *NoteCreate(uint32_t tick, uint8_t channel, uint8_t noteNo, uint8_t velocity, uint32_t gatetime)
 {
-    Note *ret = malloc(sizeof(Note));
+    Note *ret = calloc(1, sizeof(Note));
     ret->tick = tick;
     ret->channel = channel;
     ret->noteNo = noteNo;
@@ -812,6 +813,33 @@ static bool parseRepeat(Expression *expression, Context *context, void *value)
     return true;
 }
 
+static bool parseBlock(Expression *expression, Context *context, void *value)
+{
+    for (Expression *expr = expression->child; expr; expr = expr->next) {
+        if (!parseExpression(expr, context, NULL)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+static bool parseParallel(Expression *expression, Context *context, void *value)
+{
+    int32_t tick = context->tick;
+    int32_t resultTick = tick;
+
+    for (Expression *expr = expression->child; expr; expr = expr->next) {
+        if (!parseExpression(expr, context, NULL)) {
+            return false;
+        }
+        resultTick = MAX(resultTick, context->tick);
+        context->tick = tick;
+    }
+
+    context->tick = resultTick;
+    return true;
+}
+
 
 static void __attribute__((constructor)) initializeTable()
 {
@@ -839,4 +867,6 @@ static void __attribute__((constructor)) initializeTable()
     functionTable[ExpressionTypePlus] = parsePlus;
     functionTable[ExpressionTypeMinus] = parseMinus;
     functionTable[ExpressionTypeRepeat] = parseRepeat;
+    functionTable[ExpressionTypeBlock] = parseBlock;
+    functionTable[ExpressionTypeParallel] = parseParallel;
 }

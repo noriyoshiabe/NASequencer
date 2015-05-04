@@ -76,6 +76,8 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, cons
 %type <expression> location_value
 %type <expression> identifier
 %type <expression> block
+%type <expression> parallel
+%type <expression> parallel_list
 %type <expression> pattern_expand_param
 %type <expression> pattern_expand_param_list
 %type <expression> length_value
@@ -117,9 +119,7 @@ statement
     | LOCATION location_value    { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeLocation, $2); }
     | statement MULTIPLY INTEGER { $$ = ExpressionAddChild(ExpressionCreateIntegerValue(scanner, &@$, ExpressionTypeRepeat, $3), $1); }
     | block
-    | note_block COMMA block { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeParallel, ExpressionAddSibling($1, $3)); }
-    | block COMMA note_block { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeParallel, ExpressionAddSibling($1, $3)); }
-    | block COMMA block { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeParallel, ExpressionAddSibling($1, $3)); }
+    | parallel 
     | identifier ASSIGN block { $$ = ExpressionCreate(scanner, &@$, ExpressionTypePatternDefine, ExpressionAddSibling($1, $3)); }
     | identifier                            { $$ = ExpressionCreate(scanner, &@$, ExpressionTypePatternExpand, $1); }
     | identifier pattern_expand_param_list  { $$ = ExpressionCreate(scanner, &@$, ExpressionTypePatternExpand, ExpressionAddSibling($1, $2)); }
@@ -175,6 +175,15 @@ identifier
 
 block
     : LCURLY statement_list RCURLY { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeBlock, $2); }
+    ;
+
+parallel
+    : parallel_list { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeParallel, $1); }
+    ;
+
+parallel_list
+    : block COMMA block { $$ = ExpressionAddSibling($1, $3); }
+    | parallel_list COMMA block  { $$ = ExpressionAddSibling($1, $3); }
     ;
 
 pattern_expand_param_list
