@@ -57,36 +57,35 @@ Expression *ExpressionCreateTrimmedStringValue(void *scanner, void *yylloc, Expr
     return expr;
 }
 
-Expression *ExpressionCreate(void *scanner, void *yylloc, ExpressionType type, Expression *left, Expression *right)
+Expression *ExpressionCreate(void *scanner, void *yylloc, ExpressionType type, Expression *child)
 {
     Expression *expr = (Expression *)calloc(1, sizeof(Expression));
     expr->location = makeParseLocation(scanner, yylloc);
     expr->type = type;
-    expr->left = left;
-    expr->right = right;
+    expr->child = child;
 
-    while (left) {
-        left->parent = expr;
-        left = left->right;
+    while (child) {
+        child->parent = expr;
+        child = child->next;
     }
 
     return expr;
 }
 
-Expression *ExpressionAddLeft(Expression *expr, Expression *left)
+Expression *ExpressionAddChild(Expression *expr, Expression *child)
 {
-    expr->left = left;
-    left->parent = expr;
+    expr->child = child;
+    child->parent = expr;
     return expr;
 }
 
-Expression *ExpressionAddRight(Expression *expr, Expression *right)
+Expression *ExpressionAddSibling(Expression *expr, Expression *sibling)
 {
-    if (expr->rightLast) {
-        expr->rightLast->right = right;
-        expr->rightLast = right;
+    if (expr->last) {
+        expr->last->next = sibling;
+        expr->last = sibling;
     } else {
-        expr->right = expr->rightLast = right;
+        expr->next = expr->last = sibling;
     }
 
     return expr;
@@ -125,8 +124,8 @@ static void dump(Expression *expr, int depth)
     putc('\n', stdout);
 #endif
 
-    dump(expr->left, depth + 1);
-    dump(expr->right, depth);
+    dump(expr->child, depth + 1);
+    dump(expr->next, depth);
 }
 
 void ExpressionDump(Expression *expr)
@@ -140,8 +139,8 @@ void ExpressionDestroy(Expression *expr)
         return;
     }
  
-    ExpressionDestroy(expr->left);
-    ExpressionDestroy(expr->right);
+    ExpressionDestroy(expr->child);
+    ExpressionDestroy(expr->next);
  
     if (ValueTypeString == expr->valueType) {
         free(expr->v.s);

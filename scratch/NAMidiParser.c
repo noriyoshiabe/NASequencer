@@ -389,7 +389,7 @@ static bool _NAMidiParserParseAST(NAMidiParser *self, Expression *expression)
 {
     Context *context = ContextCreate(self);
 
-    for (Expression *expr = expression; expr; expr = expr->right) {
+    for (Expression *expr = expression; expr; expr = expr->next) {
         if (!parseExpression(expr, context, NULL)) {
             ContextDestroy(context);
             return false;
@@ -529,7 +529,7 @@ static bool parseQuantize(Expression *expression, Context *context, void *value)
     int32_t tuplet;
     int32_t step;
 
-    for (Expression *expr = expression->left; expr; expr = expr->right) {
+    for (Expression *expr = expression->child; expr; expr = expr->next) {
         switch (expr->type) {
         case ExpressionTypeTimeSign:
             if (!parseExpression(expr, context, &step)) {
@@ -607,7 +607,7 @@ static bool parseKey(Expression *expression, Context *context, void *value)
 static bool parseTime(Expression *expression, Context *context, void *value)
 {
     TimeSign *timeSign = NULL;
-    if (!parseExpression(expression->left, context, &timeSign)) {
+    if (!parseExpression(expression->child, context, &timeSign)) {
         return false;
     }
     
@@ -621,8 +621,8 @@ static bool parseTimeSign(Expression *expression, Context *context, void *value)
     int32_t numerator;
     int32_t denominator;
 
-    parseExpression(expression->left, context, &numerator);
-    parseExpression(expression->left->right, context, &denominator);
+    parseExpression(expression->child, context, &numerator);
+    parseExpression(expression->child->next, context, &denominator);
 
     if (1 > numerator || 1 > denominator || !isPowerOf2(denominator)) {
         CALLBACK_ERROR(context, expression, ParseErrorInvalidTimeSign, numerator, denominator);
@@ -644,16 +644,16 @@ static bool parseTempo(Expression *expression, Context *context, void *value)
     float tempo;
     int _int;
 
-    switch (expression->left->type) {
+    switch (expression->child->type) {
     case ExpressionTypeInteger:
-        parseExpression(expression->left, context, &_int);
+        parseExpression(expression->child, context, &_int);
         tempo = _int;
         break;
     case ExpressionTypeFloat:
-        parseExpression(expression->left, context, &tempo);
+        parseExpression(expression->child, context, &tempo);
         break;
     default:
-        PANIC("Unexpected ExpressionType type=%s\n", ExpressionType2String(expression->left->type));
+        PANIC("Unexpected ExpressionType type=%s\n", ExpressionType2String(expression->child->type));
         break;
     }
 
@@ -747,7 +747,7 @@ static bool parseTie(Expression *expression, Context *context, void *value)
 
 static bool parseLocation(Expression *expression, Context *context, void *value)
 {
-    if (!parseExpression(expression->left, context, &context->tick)) {
+    if (!parseExpression(expression->child, context, &context->tick)) {
         return false;
     }
 
@@ -773,10 +773,10 @@ static bool parseMeasure(Expression *expression, Context *context, void *value)
 static bool parsePlus(Expression *expression, Context *context, void *value)
 {
     int32_t left, right;
-    if (!parseExpression(expression->left, context, &left)) {
+    if (!parseExpression(expression->child, context, &left)) {
         return false;
     }
-    if (!parseExpression(expression->left->right, context, &right)) {
+    if (!parseExpression(expression->child->next, context, &right)) {
         return false;
     }
 
@@ -787,10 +787,10 @@ static bool parsePlus(Expression *expression, Context *context, void *value)
 static bool parseMinus(Expression *expression, Context *context, void *value)
 {
     int32_t left, right;
-    if (!parseExpression(expression->left, context, &left)) {
+    if (!parseExpression(expression->child, context, &left)) {
         return false;
     }
-    if (!parseExpression(expression->left->right, context, &right)) {
+    if (!parseExpression(expression->child->next, context, &right)) {
         return false;
     }
 

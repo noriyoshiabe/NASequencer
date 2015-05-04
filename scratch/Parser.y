@@ -92,35 +92,35 @@ input
 
 statement_list
     : statement
-    | statement_list statement { $$ = ExpressionAddRight($1, $2); }
+    | statement_list statement { $$ = ExpressionAddSibling($1, $2); }
     ;
 
 statement
     : NOTE              { $$ = ExpressionCreateStringValue(scanner, &@$, ExpressionTypeNote, $1); }
-    | quantize          { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeQuantize, $1, NULL); }
+    | quantize          { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeQuantize, $1); }
     | OCTAVE_SHIFT      { $$ = ExpressionCreateStringValue(scanner, &@$, ExpressionTypeOctaveShift, $1); }
     | KEY KEY_SIGN      { $$ = ExpressionCreateStringValue(scanner, &@$, ExpressionTypeKey, $2); }
-    | TIME time_sign    { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeTime, $2, NULL); }
-    | TEMPO integer     { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeTempo, $2, NULL); }
-    | TEMPO float       { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeTempo, $2, NULL); }
+    | TIME time_sign    { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeTime, $2); }
+    | TEMPO integer     { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeTempo, $2); }
+    | TEMPO float       { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeTempo, $2); }
     | MARKER STRING     { $$ = ExpressionCreateTrimmedStringValue(scanner, &@$, ExpressionTypeMarker, $2); }
     | CHANNEL INTEGER   { $$ = ExpressionCreateIntegerValue(scanner, &@$, ExpressionTypeChannel, $2); }
     | VELOCITY INTEGER  { $$ = ExpressionCreateIntegerValue(scanner, &@$, ExpressionTypeVelocity, $2); }
     | GATETIME INTEGER  { $$ = ExpressionCreateIntegerValue(scanner, &@$, ExpressionTypeGatetime, $2); }
-    | GATETIME AUTO     { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeGatetimeAuto, NULL, NULL); }
+    | GATETIME AUTO     { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeGatetimeAuto, NULL); }
     | OCTAVE INTEGER    { $$ = ExpressionCreateIntegerValue(scanner, &@$, ExpressionTypeOctave, $2); }
     | OCTAVE PLUS INTEGER  { $$ = ExpressionCreateIntegerValue(scanner, &@$, ExpressionTypeOctave, $3); }
     | OCTAVE MINUS INTEGER { $$ = ExpressionCreateIntegerValue(scanner, &@$, ExpressionTypeOctave, -$3); }
-    | REST              { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeRest, NULL, NULL); }
-    | TIE               { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeTie, NULL, NULL); }
-    | LOCATION location_value    { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeLocation, $2, NULL); }
-    | statement MULTIPLY INTEGER { $$ = ExpressionAddLeft($1, ExpressionCreateIntegerValue(scanner, &@$, ExpressionTypeRepeat, $3)); }
-    | statement COMMA statement  { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeParallel, ExpressionAddRight($1, $3), NULL); }
+    | REST              { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeRest, NULL); }
+    | TIE               { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeTie, NULL); }
+    | LOCATION location_value    { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeLocation, $2); }
+    | statement MULTIPLY INTEGER { $$ = ExpressionAddChild($1, ExpressionCreateIntegerValue(scanner, &@$, ExpressionTypeRepeat, $3)); }
+    | statement COMMA statement  { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeParallel, ExpressionAddSibling($1, $3)); }
     | block
-    | identifier ASSIGN block { $$ = ExpressionCreate(scanner, &@$, ExpressionTypePatternDefine, ExpressionAddRight($1, $3), NULL); }
-    | identifier                            { $$ = ExpressionCreate(scanner, &@$, ExpressionTypePatternExpand, $1, NULL); }
-    | identifier pattern_expand_param_list  { $$ = ExpressionCreate(scanner, &@$, ExpressionTypePatternExpand, ExpressionAddRight($1, $2), NULL); }
-    | __EOF__ { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeEOF, NULL, NULL); }
+    | identifier ASSIGN block { $$ = ExpressionCreate(scanner, &@$, ExpressionTypePatternDefine, ExpressionAddSibling($1, $3)); }
+    | identifier                            { $$ = ExpressionCreate(scanner, &@$, ExpressionTypePatternExpand, $1); }
+    | identifier pattern_expand_param_list  { $$ = ExpressionCreate(scanner, &@$, ExpressionTypePatternExpand, ExpressionAddSibling($1, $2)); }
+    | __EOF__ { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeEOF, NULL); }
     ;
 
 integer
@@ -132,25 +132,25 @@ float
     ;
 
 time_sign
-    : integer DIVISION integer { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeTimeSign, ExpressionAddRight($1, $3), NULL); }
+    : integer DIVISION integer { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeTimeSign, ExpressionAddSibling($1, $3)); }
     ;
 
 quantize_time_sign
-    : integer DIVISION integer { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeTimeSign, ExpressionAddRight($1, $3), NULL); }
-    | DIVISION integer { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeTimeSign, ExpressionAddRight(ExpressionCreateIntegerValue(scanner, &@$, ExpressionTypeInteger, 1), $2), NULL); }
+    : integer DIVISION integer { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeTimeSign, ExpressionAddSibling($1, $3)); }
+    | DIVISION integer { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeTimeSign, ExpressionAddSibling(ExpressionCreateIntegerValue(scanner, &@$, ExpressionTypeInteger, 1), $2)); }
     ;
 
 quantize
     : quantize_time_sign
-    | quantize_time_sign DOT { $$ = ExpressionAddRight($1, ExpressionCreate(scanner, &@$, ExpressionTypeDot, NULL, NULL)) }
-    | quantize_time_sign integer { $$ = ExpressionAddRight($1, $2) }
+    | quantize_time_sign DOT { $$ = ExpressionAddSibling($1, ExpressionCreate(scanner, &@$, ExpressionTypeDot, NULL)) }
+    | quantize_time_sign integer { $$ = ExpressionAddSibling($1, $2) }
     ;
 
 location_value
     : INTEGER                             { $$ = ExpressionCreateIntegerValue(scanner, &@$, ExpressionTypeMeasure, $1); }
     | time_sign
-    | location_value PLUS location_value  { $$ = ExpressionCreate(scanner, &@$, ExpressionTypePlus, ExpressionAddRight($1, $3), NULL); }
-    | location_value MINUS location_value { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeMinus, ExpressionAddRight($1, $3), NULL); }
+    | location_value PLUS location_value  { $$ = ExpressionCreate(scanner, &@$, ExpressionTypePlus, ExpressionAddSibling($1, $3)); }
+    | location_value MINUS location_value { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeMinus, ExpressionAddSibling($1, $3)); }
     ;
 
 identifier
@@ -158,17 +158,17 @@ identifier
     ;
 
 block
-    : LCURLY statement_list RCURLY { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeBlock, $2, NULL); }
+    : LCURLY statement_list RCURLY { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeBlock, $2); }
     ;
 
 pattern_expand_param_list
     : pattern_expand_param
-    | pattern_expand_param_list pattern_expand_param { $$ = ExpressionAddRight($1, $2) }
+    | pattern_expand_param_list pattern_expand_param { $$ = ExpressionAddSibling($1, $2) }
     ;
 
 pattern_expand_param
-    : OFFSET length_value { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeOffset, $2, NULL); }
-    | LENGTH length_value { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeLength, $2, NULL); }
+    : OFFSET length_value { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeOffset, $2); }
+    | LENGTH length_value { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeLength, $2); }
     ;
 
 length_value

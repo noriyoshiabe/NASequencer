@@ -28,18 +28,18 @@ typedef struct _Expression {
     } v;
 
     struct _Expression *parent;
-    struct _Expression *left;
-    struct _Expression *right;
-    struct _Expression *rightLast;
+    struct _Expression *child;
+    struct _Expression *next;
+    struct _Expression *last;
 } Expression;
  
 extern Expression *ExpressionCreateIntegerValue(void *scanner, void *yylloc, ExpressionType type, int value);
 extern Expression *ExpressionCreateFloatValue(void *scanner, void *yylloc, ExpressionType type, float value);
 extern Expression *ExpressionCreateStringValue(void *scanner, void *yylloc, ExpressionType type, char *value);
 extern Expression *ExpressionCreateTrimmedStringValue(void *scanner, void *yylloc, ExpressionType type, char *value);
-extern Expression *ExpressionCreate(void *scanner, void *yylloc, ExpressionType type, Expression *left, Expression *right);
-extern Expression *ExpressionAddLeft(Expression *expr, Expression *left);
-extern Expression *ExpressionAddRight(Expression *expr, Expression *right);
+extern Expression *ExpressionCreate(void *scanner, void *yylloc, ExpressionType type, Expression *child);
+extern Expression *ExpressionAddChild(Expression *expr, Expression *child);
+extern Expression *ExpressionAddSibling(Expression *expr, Expression *sibling);
  
 extern void ExpressionDump(Expression *expr);
 extern void ExpressionDestroy(Expression *expr);
