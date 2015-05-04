@@ -239,6 +239,8 @@ static Context *ContextCreateFromContext(Context *from)
 {
     Context *ret = ContextCreate(from->parser);
 
+    ret->parent = from;
+
     ret->key = from->key;
     ret->step = from->step;
     ret->channel = from->channel;
@@ -264,7 +266,7 @@ static TimeSign *ContextGetTimeSignByTick(Context *self, int32_t tick)
     CFIndex count = CFArrayGetCount(self->timeTable->timeSignList);
     if (0 == count) {
         TimeSign *timeSign = TimeSignCreate(0, 4, 4);
-        ContextOnParseTime(self, tick, 4, 4);
+        ContextOnParseTime(self, 0, 4, 4);
         TimeTableAddTimeSign(self->timeTable, timeSign);
         return timeSign;
     }
@@ -865,8 +867,9 @@ static bool parseRepeat(Expression *expression, Context *context, void *value)
 
 static bool parseBlock(Expression *expression, Context *context, void *value)
 {
+    Context *local = ContextCreateFromContext(context);
     for (Expression *expr = expression->child; expr; expr = expr->next) {
-        if (!parseExpression(expr, context, NULL)) {
+        if (!parseExpression(expr, local, NULL)) {
             return false;
         }
     }

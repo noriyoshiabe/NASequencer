@@ -1,11 +1,9 @@
-c def
-
-time 4/4
-a
-tempo 120
-a
-marker 'hoge'
-
+cdef
+{
+  time 4/4
+  location 2
+  c
+}
 
 /*
 time 4/4
