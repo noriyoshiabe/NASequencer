@@ -1,10 +1,13 @@
 $test = {
+  time 3/4
+  tempo 122.0
+
   CCCC
   DEFG~
   CCCC
 }
 
-$test offset 1 length 1
+$test
 
 AA
 

@@ -202,12 +202,23 @@ static void ContextPrepareTimeTable(Context *self)
         TimeSign timeSign = {4, 4};
         TimeTableAddTimeSign(self->timeTable, 0, timeSign);
     }
+
+    if (!TimeTableHasTempo(self->timeTable)) {
+        ContextOnParseTempo(self, 0, 120.0);
+        TimeTableAddTempo(self->timeTable, 0, 120.0);
+    }
 }
 
 static void ContextAddTimeSign(Context *self, TimeSign timeSign)
 {
     ContextPrepareResolution(self);
     TimeTableAddTimeSign(self->timeTable, self->tick, timeSign);
+}
+
+static void ContextAddTempo(Context *self, float tempo)
+{
+    ContextPrepareResolution(self);
+    TimeTableAddTempo(self->timeTable, self->tick, tempo);
 }
 
 static int32_t ContextTickByMeasure(Context *self, int32_t measure)
@@ -736,6 +747,7 @@ static bool parseTempo(Expression *expression, Context *context, void *value)
         return false;
     }
 
+    ContextAddTempo(context, tempo);
     return ContextOnParseTempo(context, context->tick, tempo);
 }
 
