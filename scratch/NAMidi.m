@@ -1,9 +1,13 @@
 #import "NAMidi.h"
 #import "NAMidiParser.h"
+#import "SequenceBuilder.h"
 
 @interface NAMidi() {
     NAMidiParser *parser;
 }
+
+@property (nonatomic, strong) Sequence *sequence;
+@property (nonatomic, strong) SequenceBuilder *sequenceBuilder;
 
 @end
 
@@ -77,7 +81,9 @@ static NAMidiParserCallbacks callbacks = {
 
 - (void)execute:(const char *)filepath
 {
+    self.sequenceBuilder = [[SequenceBuilder alloc] init];
     NAMidiParserExecuteParse(parser, filepath);
+    self.sequenceBuilder = nil;
 }
 
 - (void)parser:(NAMidiParser *)parser onParseResolution:(uint32_t)resolution
@@ -88,27 +94,33 @@ static NAMidiParserCallbacks callbacks = {
 - (void)parser:(NAMidiParser *)parser onParseNote:(uint32_t)tick channel:(uint8_t)channel noteNo:(uint8_t)noteNo velocity:(uint8_t)velocity gatetime:(uint32_t)gatetime
 {
     printf("[Note] tick=%d channel=%d noteNo=%d velocity=%d gatetime=%d\n", tick, channel, noteNo, velocity, gatetime);
+    [self.sequenceBuilder addNote:tick channel:channel noteNo:noteNo velocity:velocity gatetime:gatetime];
 }
 
 - (void)parser:(NAMidiParser *)parser onParseTime:(uint32_t)tick numerator:(uint8_t)numerator denominator:(uint8_t)denominator
 {
     printf("[Time] tick=%d numerator=%d denominator=%d\n", tick, numerator, denominator);
+    [self.sequenceBuilder addTime:tick numerator:numerator denominator:denominator];
 }
 
 - (void)parser:(NAMidiParser *)parser onParseTempo:(uint32_t)tick tempo:(float)tempo
 {
     printf("[Tempo] tick=%d tempo=%.2f\n", tick, tempo);
+    [self.sequenceBuilder addTempo:tick tempo:tempo];
 }
 
 - (void)parser:(NAMidiParser *)parser onParseMarker:(uint32_t)tick text:(const char *)text
 {
     printf("[Marker] tick=%d text=%s\n", tick, text);
+    [self.sequenceBuilder addMarker:tick text:text];
 }
 
 - (void)parser:(NAMidiParser *)parser onFinish:(TimeTable *)timeTable
 {
     printf("onFinish()\n");
     TimeTableDump(timeTable);
+    [self.sequenceBuilder setTimeTable:timeTable];
+    self.sequence = [self.sequenceBuilder build];
 }
 
 - (void)parser:(NAMidiParser *)parser onError:(const char *)filepath line:(int)line column:(int)column error:(ParseError)error info:(const void *)info
