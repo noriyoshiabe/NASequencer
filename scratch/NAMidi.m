@@ -1,5 +1,13 @@
-#include "NAMidiParser.h"
-#include <stdio.h>
+#import "NAMidi.h"
+#import "NAMidiParser.h"
+
+@interface NAMidi() {
+    NAMidiParser *parser;
+}
+
+@end
+
+@implementation NAMidi
 
 static void onParseNote(void *receiver, uint32_t tick, uint8_t channel, uint8_t noteNo, uint8_t velocity, uint32_t gatetime)
 {
@@ -31,20 +39,32 @@ static void onError(void *receiver, const char *filepath, int line, int column, 
     printf("onError() filepath=%s line=%d column=%d error=%s\n", filepath, line, column, ParseError2String(error));
 }
 
-int main(int argc, char **argv)
+static NAMidiParserCallbacks callbacks = {
+    onParseNote,
+    onParseTime,
+    onParseTempo,
+    onParseMarker,
+
+    onFinish,
+    onError,
+};
+
+- (id)init
 {
-    NAMidiParserCallbacks callbacks = {
-        onParseNote,
-        onParseTime,
-        onParseTempo,
-        onParseMarker,
-
-        onFinish,
-        onError,
-    };
-
-    NAMidiParser *parser = NAMidiParserCreate(&callbacks, NULL);
-    NAMidiParserExecuteParse(parser, argv[1]);
-    NAMidiParserDestroy(parser);
-    return 0;
+    if (self = [super init]) {
+        parser = NAMidiParserCreate(&callbacks, (__bridge void *)self);
+    }
+    return self;
 }
+
+- (void)dealloc
+{
+    NAMidiParserDestroy(parser);
+}
+
+- (void)execute:(const char *)filepath
+{
+    NAMidiParserExecuteParse(parser, filepath);
+}
+
+@end
