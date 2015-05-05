@@ -3,6 +3,7 @@
 #include "YYContext.h"
 #include "Parser.h"
 #include "Lexer.h"
+#include "TimeTable.h"
 #include "NoteTable.h"
 
 #include <stdlib.h>
@@ -104,95 +105,6 @@ int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, const char 
     return 0;
 }
 
-
-typedef struct _TimeSign {
-    int32_t tick;
-    int16_t numerator;
-    int16_t denominator;
-} TimeSign;
-
-static TimeSign *TimeSignCreate(int32_t tick, int16_t numerator, int16_t denominator)
-{
-    TimeSign *ret = calloc(1, sizeof(TimeSign));
-    ret->tick = tick;
-    ret->numerator = numerator;
-    ret->denominator = denominator;
-    return ret;
-}
-
-static TimeSign *TimeSignCreateWithTimeSign(int32_t tick, const TimeSign *from)
-{
-    TimeSign *ret = calloc(1, sizeof(TimeSign));
-    ret->tick = tick;
-    ret->numerator = from->numerator;
-    ret->denominator = from->denominator;
-    return ret;
-}
-
-static void TimeSignDestroy(TimeSign *self)
-{
-    free(self);
-}
-
-typedef struct _TimeTable {
-    int32_t resolution;
-    CFMutableArrayRef timeSignList;
-} TimeTable;
-
-static void TimeSignReleaseCallbak(CFAllocatorRef allocator, const void *value)
-{
-    TimeSignDestroy((TimeSign *)value);
-}
-const CFArrayCallBacks TimeTableTimeSignListCallbacks = {0, NULL, TimeSignReleaseCallbak, NULL, NULL};
-
-static TimeTable *TimeTableCreate()
-{
-    TimeTable *ret = calloc(1, sizeof(TimeTable));
-    ret->timeSignList = CFArrayCreateMutable(NULL, 0, &TimeTableTimeSignListCallbacks);
-    return ret;
-}
-
-static void TimeTableDestroy(TimeTable *self)
-{
-    CFRelease(self->timeSignList);
-    free(self);
-}
-
-CFComparisonResult TimeTableTimeSignComparator(const void *val1, const void *val2, void *context)
-{
-    return ((TimeSign *)val1)->tick - ((TimeSign *)val2)->tick;
-}
-
-static void TimeTableAddTimeSign(TimeTable *self, const TimeSign *timeSign)
-{
-    CFArrayAppendValue(self->timeSignList, timeSign);
-    CFArraySortValues(self->timeSignList, CFRangeMake(0, CFArrayGetCount(self->timeSignList)), TimeTableTimeSignComparator, NULL);
-}
-
-static int32_t TimeTableGetTickByMeasure(TimeTable *self, int32_t measure)
-{
-    int32_t offsetTick = 0;
-    int32_t tickPerMeasure = self->resolution * 4;
-
-    measure -= 1;
-
-    CFIndex count = CFArrayGetCount(self->timeSignList);
-    for (int i = 0; i < count; ++i) {
-        const TimeSign *timeSign = CFArrayGetValueAtIndex(self->timeSignList, i);
-
-        int32_t tick = tickPerMeasure * measure + offsetTick;
-        if (tick < timeSign->tick) {
-            break;
-        }
-
-        measure -= timeSign->tick / tickPerMeasure;
-        tickPerMeasure = self->resolution * 4 / timeSign->denominator * timeSign->numerator;
-        offsetTick = timeSign->tick;
-    }
-
-    return tickPerMeasure * measure + offsetTick;
-}
-
 typedef struct _Context {
     NAMidiParser *parser;
     TimeTable *timeTable;
@@ -217,8 +129,8 @@ typedef struct _Context {
 } Context;
 
 static int32_t ContextGetResolution(Context *self);
-static TimeSign *ContextGetTimeSignByTick(Context *self, int32_t tick);
-static int32_t ContextGetTickByMeasure(Context *self, int32_t measure);
+static TimeSign *ContextTimeSignOnTick(Context *self, int32_t tick);
+static int32_t ContextTickByMeasure(Context *self, int32_t measure);
 
 static void ContextOnParseResolution(Context *self, uint32_t resolution);
 static bool ContextOnParseNote(Context *self, int32_t tick, uint8_t channel, uint8_t noteNo, uint8_t velocity, uint32_t gatetime);
@@ -264,9 +176,9 @@ static Context *ContextCreateFromContext(Context *from)
     ret->gatetime = from->gatetime;
     ret->octave = from->octave;
 
-    ret->timeTable->resolution = ContextGetResolution(from);
+    TimeTableSetResolution(ret->timeTable, ContextGetResolution(from));
 
-    TimeSign *timeSign = ContextGetTimeSignByTick(from, from->tick);
+    TimeSign *timeSign = ContextTimeSignOnTick(from, from->tick);
     TimeTableAddTimeSign(ret->timeTable, TimeSignCreateWithTimeSign(0, timeSign));
 
     ret->patterns = CFDictionaryCreateMutableCopy(NULL, 0, from->patterns);
@@ -277,9 +189,9 @@ static Context *ContextCreateFromContext(Context *from)
 
 static void ContextPrepareResolution(Context *self)
 {
-    if (0 == self->timeTable->resolution) {
+    if (!TimeTableHasResolution(self->timeTable)) {
         ContextOnParseResolution(self, 480);
-        self->timeTable->resolution = 480;
+        TimeTableSetResolution(self->timeTable, 480);
     }
 }
 
@@ -287,8 +199,7 @@ static void ContextPrepareTimeTable(Context *self)
 {
     ContextPrepareResolution(self);
 
-    CFIndex count = CFArrayGetCount(self->timeTable->timeSignList);
-    if (0 == count) {
+    if (!TimeTableHasTimeSign(self->timeTable)) {
         TimeSign *timeSign = TimeSignCreate(0, 4, 4);
         ContextOnParseTime(self, 0, 4, 4);
         TimeTableAddTimeSign(self->timeTable, timeSign);
@@ -301,35 +212,22 @@ static void ContextAddTimeSign(Context *self, const TimeSign *timeSign)
     TimeTableAddTimeSign(self->timeTable, timeSign);
 }
 
-static TimeSign *ContextGetTimeSignByTick(Context *self, int32_t tick)
+static TimeSign *ContextTimeSignOnTick(Context *self, int32_t tick)
 {
     ContextPrepareTimeTable(self);
-
-    TimeSign *target = NULL;
-
-    CFIndex count = CFArrayGetCount(self->timeTable->timeSignList);
-    for (CFIndex i = 0; i < count; ++i) {
-        TimeSign *test = (TimeSign *)CFArrayGetValueAtIndex(self->timeTable->timeSignList, i);
-        if (tick < test->tick) {
-            break;
-        }
-
-        target = test;
-    }
-
-    return target;
+    return TimeTableTimeSignOnTick(self->timeTable, tick);
 }
 
-static int32_t ContextGetTickByMeasure(Context *self, int32_t measure)
+static int32_t ContextTickByMeasure(Context *self, int32_t measure)
 {
     ContextPrepareTimeTable(self);
-    return TimeTableGetTickByMeasure(self->timeTable, measure);
+    return TimeTableTickByMeasure(self->timeTable, measure);
 }
 
 static int32_t ContextGetResolution(Context *self)
 {
     ContextPrepareTimeTable(self);
-    return self->timeTable->resolution;
+    return TimeTableResolution(self->timeTable);
 }
 
 static int32_t ContextGetStep(Context *self)
@@ -806,8 +704,8 @@ static bool parseTimeSign(Expression *expression, Context *context, void *value)
     parseExpression(expression->child->next, context, &denominator);
 
     if (1 > numerator || 1 > denominator || !isPowerOf2(denominator)) {
-        int16_t info[] = {numerator, denominator};
-        CALLBACK_ERROR(context, expression, ParseErrorInvalidTimeSign, info);
+        TimeSign timeSign = {context->tick, numerator, denominator};
+        CALLBACK_ERROR(context, expression, ParseErrorInvalidTimeSign, &timeSign);
         return false;
     }
 
@@ -923,7 +821,7 @@ static bool parseMeasure(Expression *expression, Context *context, void *value)
         return false;
     }
 
-    *((int32_t *)value) = ContextGetTickByMeasure(context, expression->v.i);
+    *((int32_t *)value) = ContextTickByMeasure(context, expression->v.i);
     return true;
 }
 
@@ -1075,7 +973,7 @@ static bool parseLength(Expression *expression, Context *context, void *value)
 
 static bool parseLengthValue(Expression *expression, Context *context, void *value)
 {
-    *((int32_t *)value) = ContextGetTickByMeasure(context, expression->v.i + 1);
+    *((int32_t *)value) = ContextTickByMeasure(context, expression->v.i + 1);
     return true;
 }
 
