@@ -32,6 +32,7 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, cons
 %token <s>KEY_SIGN
 %token <s>OCTAVE_SHIFT
 
+%token RESOLUTION
 %token KEY
 %token TIME
 %token TEMPO
@@ -101,7 +102,8 @@ statement_list
     ;
 
 statement
-    : note_block
+    : RESOLUTION INTEGER { $$ = ExpressionCreateIntegerValue(scanner, &@$, ExpressionTypeResolution, $2); }
+    | note_block
     | REST              { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeRest, NULL); }
     | quantize          { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeQuantize, $1); }
     | OCTAVE_SHIFT      { $$ = ExpressionCreateStringValue(scanner, &@$, ExpressionTypeOctaveShift, $1); }

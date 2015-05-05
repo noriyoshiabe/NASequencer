@@ -40,6 +40,7 @@ NOTE           [cdefgab](\+{1,2}|\-{1,2}|=)?(_|^)?
 KEY_SIGN       [cdefgab](\+|\-)?(maj|min)
 OCTAVE_SHIFT   <|>
 
+RESOLUTION     resolution
 KEY            key
 TIME           time
 TEMPO          tempo
@@ -86,6 +87,7 @@ LINE_COMMENT   \/\/.*$
 {KEY_SIGN}       { yylval->s = strdup(yytext); return KEY_SIGN; }
 {OCTAVE_SHIFT}   { yylval->s = strdup(yytext); return OCTAVE_SHIFT; }
 
+{RESOLUTION}     { return RESOLUTION; }
 {KEY}            { return KEY; }
 {TIME}           { return TIME; }
 {TEMPO}          { return TEMPO; }

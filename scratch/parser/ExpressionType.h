@@ -4,6 +4,7 @@ typedef enum {
     ExpressionTypeInteger,
     ExpressionTypeFloat,
     ExpressionTypeString,
+    ExpressionTypeResolution,
     ExpressionTypeNoteBlock,
     ExpressionTypeNoteList,
     ExpressionTypeNote,
@@ -45,6 +46,7 @@ static inline const char *ExpressionType2String(ExpressionType type)
     CASE(ExpressionTypeInteger);
     CASE(ExpressionTypeFloat);
     CASE(ExpressionTypeString);
+    CASE(ExpressionTypeResolution);
     CASE(ExpressionTypeNoteBlock);
     CASE(ExpressionTypeNoteList);
     CASE(ExpressionTypeNote);

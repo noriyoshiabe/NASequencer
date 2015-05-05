@@ -9,6 +9,12 @@
 
 @implementation NAMidi
 
+static void _NAMidiParserOnParseResolution(void *receiver, uint32_t resolution)
+{
+    NAMidi *self = (__bridge NAMidi *)receiver;
+    [self parser:self->parser onParseResolution:resolution];
+}
+
 static void _NAMidiParserOnParseNote(void *receiver, uint32_t tick, uint8_t channel, uint8_t noteNo, uint8_t velocity, uint32_t gatetime)
 {
     NAMidi *self = (__bridge NAMidi *)receiver;
@@ -46,6 +52,7 @@ static void _NAMidiParserOnError(void *receiver, const char *filepath, int line,
 }
 
 static NAMidiParserCallbacks callbacks = {
+    _NAMidiParserOnParseResolution,
     _NAMidiParserOnParseNote,
     _NAMidiParserOnParseTime,
     _NAMidiParserOnParseTempo,
@@ -71,6 +78,11 @@ static NAMidiParserCallbacks callbacks = {
 - (void)execute:(const char *)filepath
 {
     NAMidiParserExecuteParse(parser, filepath);
+}
+
+- (void)parser:(NAMidiParser *)parser onParseResolution:(uint32_t)resolution
+{
+    printf("[Resolution] resolution=%d\n", resolution);
 }
 
 - (void)parser:(NAMidiParser *)parser onParseNote:(uint32_t)tick channel:(uint8_t)channel noteNo:(uint8_t)noteNo velocity:(uint8_t)velocity gatetime:(uint32_t)gatetime

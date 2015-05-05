@@ -5,6 +5,7 @@
 
 struct _TimeTable {
     int32_t resolution;
+    bool resolutionChanged;
     CFMutableArrayRef timeList;
     CFMutableArrayRef tempoList;
 };
@@ -181,6 +182,21 @@ float TimeTableTempoOnTick(TimeTable *self, int32_t tick)
     }
 
     return ret;
+}
+
+bool TimeTableSetResolution(TimeTable *self, int32_t resolution)
+{
+    if (self->resolutionChanged) {
+        return false;
+    }
+
+    if (resolution < 1 || 9600 < resolution) {
+        return false;
+    }
+
+    self->resolution = resolution;
+    self->resolutionChanged = true;
+    return true;
 }
 
 size_t TimeTableGetTimeSignCount(TimeTable *self)

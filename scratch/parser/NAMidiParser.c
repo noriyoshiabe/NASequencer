@@ -289,7 +289,7 @@ static bool _NAMidiParserParseAST(NAMidiParser *self, Expression *expression)
         }
     }
 
-    //context->parser->callbacks->onParseResolution(context->parser->receiver, TimeTableResolution(context->timeTable));
+    context->parser->callbacks->onParseResolution(context->parser->receiver, TimeTableResolution(context->timeTable));
 
     size_t count, i;
 
@@ -332,6 +332,21 @@ static bool parseInteger(Expression *expression, Context *context, void *value)
 static bool parseFloat(Expression *expression, Context *context, void *value)
 {
     *((float *)value) = expression->v.f;
+    return true;
+}
+
+static bool parseResolution(Expression *expression, Context *context, void *value)
+{
+    if (context->parent || 0 < context->tick) {
+        CALLBACK_ERROR(context, expression, ParseErrorNoteIllegalResolution, NULL);
+        return false;
+    }
+
+    if (!TimeTableSetResolution(context->timeTable, expression->v.i)) {
+        CALLBACK_ERROR(context, expression, ParseErrorNoteIllegalResolution, &expression->v.i);
+        return false;
+    }
+
     return true;
 }
 
@@ -897,6 +912,7 @@ static void __attribute__((constructor)) initializeTable()
 {
     functionTable[ExpressionTypeInteger] = parseInteger;
     functionTable[ExpressionTypeFloat] = parseFloat;
+    functionTable[ExpressionTypeResolution] = parseResolution;
     functionTable[ExpressionTypeNoteBlock] = parseNoteBlock;
     functionTable[ExpressionTypeNoteList] = parseNoteList;
     functionTable[ExpressionTypeNote] = parseNote;

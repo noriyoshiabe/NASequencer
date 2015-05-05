@@ -35,6 +35,8 @@ int32_t TimeTableTickByMeasure(TimeTable *self, int32_t measure);
 TimeSign TimeTableTimeSignOnTick(TimeTable *self, int32_t tick);
 float TimeTableTempoOnTick(TimeTable *self, int32_t tick);
 
+bool TimeTableSetResolution(TimeTable *self, int32_t resolution);
+
 size_t TimeTableGetTimeSignCount(TimeTable *self);
 size_t TimeTableGetTempoCount(TimeTable *self);
 
