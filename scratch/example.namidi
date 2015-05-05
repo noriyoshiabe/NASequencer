@@ -1,8 +1,11 @@
+time 2/4
+tempo 140.0
 location 2
 time 3/4
 location 3
 A
 
+tempo 180.0
 
 /*
 time 4/4

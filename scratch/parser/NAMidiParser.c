@@ -129,8 +129,6 @@ typedef struct _Context {
 } Context;
 
 static bool ContextOnParseNote(Context *self, int32_t tick, uint8_t channel, uint8_t noteNo, uint8_t velocity, uint32_t gatetime);
-static bool ContextOnParseTime(Context *self, int32_t tick, TimeSign timeSign);
-static bool ContextOnParseTempo(Context *self, int32_t tick, float tempo);
 static bool ContextOnParseMarker(Context *self, int32_t tick, const char *text);
 
 static bool parseExpression(Expression *expression, Context *context, void *value);
@@ -247,42 +245,6 @@ static bool ContextOnParseNote(Context *self, int32_t tick, uint8_t channel, uin
     return true;
 }
 
-static bool ContextOnParseTime(Context *self, int32_t tick, TimeSign timeSign)
-{
-    TimeTableAddTimeSign(self->timeTable, tick, timeSign);
-
-    if (!ContextCalcOffsetLength(self)) {
-        return false;
-    }
-
-    tick -= self->blockOffset;
-    if (!isInsideOffsetLength(self, tick)) {
-        return true;
-    }
-
-    if (!self->parent) {
-        self->parser->callbacks->onParseTime(self->parser->receiver, tick, timeSign.numerator, timeSign.denominator);
-    }
-
-    return true;
-}
-
-static bool ContextOnParseTempo(Context *self, int32_t tick, float tempo)
-{
-    TimeTableAddTempo(self->timeTable, tick, tempo);
-
-    tick -= self->blockOffset;
-    if (!isInsideOffsetLength(self, tick)) {
-        return true;
-    }
-
-    if (!self->parent) {
-        self->parser->callbacks->onParseTempo(self->parser->receiver, tick, tempo);
-    }
-
-    return true;
-}
-
 static bool ContextOnParseMarker(Context *self, int32_t tick, const char *text)
 {
     tick -= self->blockOffset;
@@ -325,6 +287,22 @@ static bool _NAMidiParserParseAST(NAMidiParser *self, Expression *expression)
             ContextDestroy(context);
             return false;
         }
+    }
+
+    //context->parser->callbacks->onParseResolution(context->parser->receiver, TimeTableResolution(context->timeTable));
+
+    size_t count, i;
+
+    count = TimeTableGetTimeSignCount(context->timeTable);
+    TimeEvent **timeEvents = alloca(count * sizeof(TimeEvent *));
+    for (i = 0; i < count; ++i) {
+        context->parser->callbacks->onParseTime(context->parser->receiver, timeEvents[i]->tick, timeEvents[i]->timeSign.numerator, timeEvents[i]->timeSign.denominator);
+    }
+
+    count = TimeTableGetTempoCount(context->timeTable);
+    TempoEvent **tempoEvents = alloca(count * sizeof(TempoEvent *));
+    for (i = 0; i < count; ++i) {
+        context->parser->callbacks->onParseTempo(context->parser->receiver, tempoEvents[i]->tick, tempoEvents[i]->tempo);
     }
 
     context->parser->callbacks->onFinish(context->parser->receiver, context->timeTable);
@@ -625,8 +603,9 @@ static bool parseTime(Expression *expression, Context *context, void *value)
     if (!parseExpression(expression->child, context, &timeSign)) {
         return false;
     }
-    
-    return ContextOnParseTime(context, context->tick, timeSign);
+
+    TimeTableAddTimeSign(context->timeTable, context->tick, timeSign);
+    return true;
 }
 
 static bool parseTimeSign(Expression *expression, Context *context, void *value)
@@ -677,7 +656,8 @@ static bool parseTempo(Expression *expression, Context *context, void *value)
         return false;
     }
 
-    return ContextOnParseTempo(context, context->tick, tempo);
+    TimeTableAddTempo(context->timeTable, context->tick, tempo);
+    return true;
 }
 
 static bool parseMarker(Expression *expression, Context *context, void *value)

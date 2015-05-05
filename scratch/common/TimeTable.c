@@ -3,24 +3,17 @@
 #include <stdlib.h>
 #include <CoreFoundation/CoreFoundation.h>
 
-typedef struct _Event {
-    int32_t tick;
-} Event;
+struct _TimeTable {
+    int32_t resolution;
+    CFMutableArrayRef timeList;
+    CFMutableArrayRef tempoList;
+};
 
-typedef struct _TimeEvent {
-    Event _;
-    TimeSign timeSign;
-} TimeEvent;
-
-typedef struct _TempoEvent {
-    Event _;
-    float tempo;
-} TempoEvent;
 
 static TimeEvent *TimeEventCreate(int32_t tick, TimeSign timeSign)
 {
     TimeEvent *ret = calloc(1, sizeof(TimeEvent));
-    ret->_.tick = tick;
+    ret->tick = tick;
     ret->timeSign = timeSign;
     return ret;
 }
@@ -28,27 +21,22 @@ static TimeEvent *TimeEventCreate(int32_t tick, TimeSign timeSign)
 static TempoEvent *TempoEventCreate(int32_t tick, float tempo)
 {
     TempoEvent *ret = calloc(1, sizeof(TempoEvent));
-    ret->_.tick = tick;
+    ret->tick = tick;
     ret->tempo = tempo;
     return ret;
 }
 
 
-struct _TimeTable {
-    int32_t resolution;
-    CFMutableArrayRef timeList;
-    CFMutableArrayRef tempoList;
-};
-
 static void TimeTableEventReleaseCallbak(CFAllocatorRef allocator, const void *value)
 {
-    free((Event *)value);
+    free((void *)value);
 }
+
 static const CFArrayCallBacks TimeTableEventListCallbacks = {0, NULL, TimeTableEventReleaseCallbak, NULL, NULL};
 
 static CFComparisonResult TimeTableEventComparator(const void *val1, const void *val2, void *context)
 {
-    return ((Event *)val1)->tick - ((Event *)val2)->tick;
+    return *((int32_t *)val1) - *((int32_t *)val2);
 }
 
 TimeTable *TimeTableCreate()
@@ -57,6 +45,10 @@ TimeTable *TimeTableCreate()
     ret->resolution = 480;
     ret->timeList = CFArrayCreateMutable(NULL, 0, &TimeTableEventListCallbacks);
     ret->tempoList = CFArrayCreateMutable(NULL, 0, &TimeTableEventListCallbacks);
+
+    TimeSign timeSign = {4, 4};
+    TimeTableAddTimeSign(ret, 0, timeSign);
+    TimeTableAddTempo(ret, 0, 120.0);
     return ret;
 }
 
@@ -88,13 +80,13 @@ void TimeTableDump(TimeTable *self)
     count = CFArrayGetCount(self->timeList);
     for (CFIndex i = 0; i < count; ++i) {
         const TimeEvent *timeEvent = CFArrayGetValueAtIndex(self->timeList, i);
-        printf("[TimeSign] tick=%d numerator=%d denominator=%d\n", timeEvent->_.tick, timeEvent->timeSign.numerator, timeEvent->timeSign.denominator);
+        printf("[TimeSign] tick=%d numerator=%d denominator=%d\n", timeEvent->tick, timeEvent->timeSign.numerator, timeEvent->timeSign.denominator);
     }
 
     count = CFArrayGetCount(self->tempoList);
     for (CFIndex i = 0; i < count; ++i) {
         const TempoEvent *tempoEvent = CFArrayGetValueAtIndex(self->tempoList, i);
-        printf("[Tempo] tick=%d tempo=%.2f\n", tempoEvent->_.tick, tempoEvent->tempo);
+        printf("[Tempo] tick=%d tempo=%.2f\n", tempoEvent->tick, tempoEvent->tempo);
     }
 
     printf("----- time table -----\n");
@@ -102,13 +94,29 @@ void TimeTableDump(TimeTable *self)
 
 void TimeTableAddTimeSign(TimeTable *self, int32_t tick, TimeSign timeSign)
 {
-    CFArrayAppendValue(self->timeList, TimeEventCreate(tick, timeSign));
+    TimeEvent *event = TimeEventCreate(tick, timeSign);
+
+    CFIndex count = CFArrayGetCount(self->timeList);
+    CFIndex index = CFArrayBSearchValues(self->timeList, CFRangeMake(0, count), event, TimeTableEventComparator, NULL);
+    if (index < count) {
+        CFArrayRemoveValueAtIndex(self->timeList, index);
+    }
+
+    CFArrayAppendValue(self->timeList, event);
     CFArraySortValues(self->timeList, CFRangeMake(0, CFArrayGetCount(self->timeList)), TimeTableEventComparator, NULL);
 }
 
 void TimeTableAddTempo(TimeTable *self, int32_t tick, float tempo)
 {
-    CFArrayAppendValue(self->tempoList, TempoEventCreate(tick, tempo));
+    TempoEvent *event = TempoEventCreate(tick, tempo);
+
+    CFIndex count = CFArrayGetCount(self->tempoList);
+    CFIndex index = CFArrayBSearchValues(self->tempoList, CFRangeMake(0, count), event, TimeTableEventComparator, NULL);
+    if (index < count) {
+        CFArrayRemoveValueAtIndex(self->tempoList, index);
+    }
+
+    CFArrayAppendValue(self->tempoList, event);
     CFArraySortValues(self->tempoList, CFRangeMake(0, CFArrayGetCount(self->tempoList)), TimeTableEventComparator, NULL);
 }
 
@@ -129,13 +137,13 @@ int32_t TimeTableTickByMeasure(TimeTable *self, int32_t measure)
         const TimeEvent *timeEvent = CFArrayGetValueAtIndex(self->timeList, i);
 
         int32_t tick = tickPerMeasure * measure + offsetTick;
-        if (tick < timeEvent->_.tick) {
+        if (tick < timeEvent->tick) {
             break;
         }
 
-        measure -= timeEvent->_.tick / tickPerMeasure;
+        measure -= timeEvent->tick / tickPerMeasure;
         tickPerMeasure = self->resolution * 4 / timeEvent->timeSign.denominator * timeEvent->timeSign.numerator;
-        offsetTick = timeEvent->_.tick;
+        offsetTick = timeEvent->tick;
     }
 
     return tickPerMeasure * measure + offsetTick;
@@ -148,7 +156,7 @@ TimeSign TimeTableTimeSignOnTick(TimeTable *self, int32_t tick)
     CFIndex count = CFArrayGetCount(self->timeList);
     for (CFIndex i = 0; i < count; ++i) {
         TimeEvent *test = (TimeEvent *)CFArrayGetValueAtIndex(self->timeList, i);
-        if (tick < test->_.tick) {
+        if (tick < test->tick) {
             break;
         }
 
@@ -165,7 +173,7 @@ float TimeTableTempoOnTick(TimeTable *self, int32_t tick)
     CFIndex count = CFArrayGetCount(self->tempoList);
     for (CFIndex i = 0; i < count; ++i) {
         TempoEvent *test = (TempoEvent *)CFArrayGetValueAtIndex(self->tempoList, i);
-        if (tick < test->_.tick) {
+        if (tick < test->tick) {
             break;
         }
 
@@ -175,12 +183,22 @@ float TimeTableTempoOnTick(TimeTable *self, int32_t tick)
     return ret;
 }
 
-bool TimeTableHasTimeSign(TimeTable *self)
+size_t TimeTableGetTimeSignCount(TimeTable *self)
 {
-    return 0 < CFArrayGetCount(self->timeList);
+    return CFArrayGetCount(self->timeList);
 }
 
-bool TimeTableHasTempo(TimeTable *self)
+size_t TimeTableGetTempoCount(TimeTable *self)
 {
-    return 0 < CFArrayGetCount(self->tempoList);
+    return CFArrayGetCount(self->tempoList);
+}
+
+void TimeTableGetTimeSignValues(TimeTable *self, TimeEvent **values)
+{
+    CFArrayGetValues(self->timeList, CFRangeMake(0, CFArrayGetCount(self->timeList)), (const void **)values);
+}
+
+void TimeTableGetTempoValues(TimeTable *self, TempoEvent **values)
+{
+    CFArrayGetValues(self->tempoList, CFRangeMake(0, CFArrayGetCount(self->tempoList)), (const void **)values);
 }
