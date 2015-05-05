@@ -150,9 +150,7 @@ static Context *ContextCreate(NAMidiParser *parser, TimeTable *timeTable)
 
 static void ContextDestroy(Context *self)
 {
-    if (self->timeTable) {
-        TimeTableDestroy(self->timeTable);
-    }
+    TimeTableRelease(self->timeTable);
     CFRelease(self->patterns);
     CFRelease(self->expandingPattens);
     free(self);
@@ -308,7 +306,6 @@ static bool _NAMidiParserParseAST(NAMidiParser *self, Expression *expression)
     }
 
     context->parser->callbacks->onFinish(context->parser->receiver, context->timeTable);
-    context->timeTable = NULL;
     ContextDestroy(context);
     return true;
 }

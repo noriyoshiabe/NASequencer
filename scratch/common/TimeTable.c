@@ -4,6 +4,7 @@
 #include <CoreFoundation/CoreFoundation.h>
 
 struct _TimeTable {
+    int refCount;
     int32_t resolution;
     bool resolutionChanged;
     CFMutableArrayRef timeList;
@@ -43,6 +44,7 @@ static CFComparisonResult TimeTableEventComparator(const void *val1, const void 
 TimeTable *TimeTableCreate()
 {
     TimeTable *ret = calloc(1, sizeof(TimeTable));
+    ret->refCount = 1;
     ret->resolution = 480;
     ret->timeList = CFArrayCreateMutable(NULL, 0, &TimeTableEventListCallbacks);
     ret->tempoList = CFArrayCreateMutable(NULL, 0, &TimeTableEventListCallbacks);
@@ -65,11 +67,19 @@ TimeTable *TimeTableCreateFromTimeTable(TimeTable *from, int32_t tick)
     return ret;
 }
 
-void TimeTableDestroy(TimeTable *self)
+TimeTable *TimeTableRetain(TimeTable *self)
 {
-    CFRelease(self->timeList);
-    CFRelease(self->tempoList);
-    free(self);
+    ++self->refCount;
+    return self;
+}
+
+void TimeTableRelease(TimeTable *self)
+{
+    if (0 == --self->refCount) {
+        CFRelease(self->timeList);
+        CFRelease(self->tempoList);
+        free(self);
+    }
 }
 
 void TimeTableDump(TimeTable *self)

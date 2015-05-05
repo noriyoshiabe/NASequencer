@@ -30,7 +30,8 @@ typedef struct _TimeTable TimeTable;
 
 TimeTable *TimeTableCreate();
 TimeTable *TimeTableCreateFromTimeTable(TimeTable *from, int32_t tick);
-void TimeTableDestroy(TimeTable *self);
+TimeTable *TimeTableRetain(TimeTable *self);
+void TimeTableRelease(TimeTable *self);
 void TimeTableDump(TimeTable *self);
 
 void TimeTableAddTimeSign(TimeTable *self, int32_t tick, TimeSign timeSign);
