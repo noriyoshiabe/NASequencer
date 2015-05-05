@@ -20,6 +20,7 @@ set(SOURCES
   NoteTable.c
   TimeTable.c
   NAMidiParser.c
+  PlayerClockSource.c
 )
 
 add_library(${PROJECT_NAME} ${SOURCES} ${BISON_Parser_OUTPUTS} ${FLEX_Lexer_OUTPUTS})

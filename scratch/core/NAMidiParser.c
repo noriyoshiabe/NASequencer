@@ -4,6 +4,7 @@
 #include "Parser.h"
 #include "Lexer.h"
 #include "TimeTable.h"
+#include "TimeTable_internal.h"
 #include "NoteTable.h"
 
 #include <stdlib.h>

@@ -5,7 +5,6 @@
 }
 
 @property (nonatomic, readwrite) NSArray *events;
-@property (nonatomic, strong) NSMutableArray *buffer;
 
 @end
 
@@ -36,7 +35,7 @@
 - (NSArray *)events:(int32_t)tickFrom tickTo:(int32_t)tickTo
 {
     // TODO
-    return [NSArray array];
+    return self.events;
 }
 
 - (id)initWithEvents:(NSArray *)events timeTable:(TimeTable *)timeTable
@@ -51,6 +50,13 @@
 - (void)dealloc
 {
     TimeTableRelease(_timeTable);
+}
+
+- (NSString *)description
+{
+    char *buffer = alloca(2048);
+    TimeTableDumpToBuffer(_timeTable, buffer, 2048);
+    return [NSString stringWithFormat:@"<%@\ntimeTable=%s\nevents=%@>", [self.class description], buffer, self.events];
 }
 
 @end

@@ -1,6 +1,8 @@
 #include "TimeTable.h"
+#include "TimeTable_internal.h"
 
 #include <stdlib.h>
+#include <string.h>
 #include <CoreFoundation/CoreFoundation.h>
 
 struct _TimeTable {
@@ -86,7 +88,8 @@ void TimeTableDump(TimeTable *self)
 {
     CFIndex count;
 
-    printf("----- time table -----\n");
+    printf("\n----- time table -----\n");
+    printf("[Resolution] %d\n", self->resolution);
 
     count = CFArrayGetCount(self->timeList);
     for (CFIndex i = 0; i < count; ++i) {
@@ -101,6 +104,32 @@ void TimeTableDump(TimeTable *self)
     }
 
     printf("----- time table -----\n");
+}
+
+void TimeTableDumpToBuffer(TimeTable *self, char *buffer, size_t size)
+{
+    CFMutableStringRef cfString = CFStringCreateMutable(NULL, 0);
+
+    CFIndex count;
+
+    CFStringAppendFormat(cfString, NULL, CFSTR("\n----- time table -----\n"));
+    CFStringAppendFormat(cfString, NULL, CFSTR("[Resolution] %d\n"), self->resolution);
+
+    count = CFArrayGetCount(self->timeList);
+    for (CFIndex i = 0; i < count; ++i) {
+        const TimeEvent *timeEvent = CFArrayGetValueAtIndex(self->timeList, i);
+        CFStringAppendFormat(cfString, NULL, CFSTR("[TimeSign] tick=%d numerator=%d denominator=%d\n"), timeEvent->tick, timeEvent->timeSign.numerator, timeEvent->timeSign.denominator);
+    }
+
+    count = CFArrayGetCount(self->tempoList);
+    for (CFIndex i = 0; i < count; ++i) {
+        const TempoEvent *tempoEvent = CFArrayGetValueAtIndex(self->tempoList, i);
+        CFStringAppendFormat(cfString, NULL, CFSTR("[Tempo] tick=%d tempo=%.2f\n"), tempoEvent->tick, tempoEvent->tempo);
+    }
+
+    CFStringAppendFormat(cfString, NULL, CFSTR("----- time table -----\n"));
+    CFStringGetCString(cfString, buffer, size, kCFStringEncodingUTF8);
+    CFRelease(cfString);
 }
 
 void TimeTableAddTimeSign(TimeTable *self, int32_t tick, TimeSign timeSign)

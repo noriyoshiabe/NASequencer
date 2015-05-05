@@ -25,7 +25,7 @@ static void _PlayerClockSourceOnNotifyEvent(void *receiver, PlayerClockSourceEve
     [self playerClockSource:self->clockSorce onNotifyEvent:event];
 }
 
-static PlayerClockSourceCallbacks callbacks {
+static PlayerClockSourceCallbacks callbacks = {
     _PlayerClockSourceOnSupplyClock,
     _PlayerClockSourceOnNotifyEvent,
 };
@@ -58,12 +58,12 @@ static PlayerClockSourceCallbacks callbacks {
     return _location;
 }
 
-- (void)playerClockSource:(PlayerClockSourceCreate *)clockSource onSupplyClock:(int64_t)usec tick:(uint32_t)tick location:(Location)location
+- (void)playerClockSource:(PlayerClockSource *)clockSource onSupplyClock:(int64_t)usec tick:(uint32_t)tick location:(Location)location
 {
-    printf("onSupplyClock() usec=%d tick=%d location=%d:%d:%d\n", usec, tick, location.m, location.b, location.t);
+    printf("onSupplyClock() usec=%lld tick=%d location=%d:%d:%d\n", usec, tick, location.m, location.b, location.t);
 }
 
-- (void)playerClockSource:(PlayerClockSourceCreate *)clockSource onNotifyEvent:(PlayerClockSourceEvent)event
+- (void)playerClockSource:(PlayerClockSource *)clockSource onNotifyEvent:(PlayerClockSourceEvent)event
 {
     printf("onNotifyEvent() event=%s\n", PlayerClockSourceEvent2String(event));
 }
