@@ -294,15 +294,17 @@ static bool _NAMidiParserParseAST(NAMidiParser *self, Expression *expression)
     size_t count, i;
 
     count = TimeTableGetTimeSignCount(context->timeTable);
-    TimeEvent **timeEvents = alloca(count * sizeof(TimeEvent *));
+    TimeEvent *timeEvents = alloca(count * sizeof(TimeEvent *));
+    TimeTableGetTimeSignValues(context->timeTable, &timeEvents);
     for (i = 0; i < count; ++i) {
-        context->parser->callbacks->onParseTime(context->parser->receiver, timeEvents[i]->tick, timeEvents[i]->timeSign.numerator, timeEvents[i]->timeSign.denominator);
+        context->parser->callbacks->onParseTime(context->parser->receiver, timeEvents[i].tick, timeEvents[i].timeSign.numerator, timeEvents[i].timeSign.denominator);
     }
 
     count = TimeTableGetTempoCount(context->timeTable);
-    TempoEvent **tempoEvents = alloca(count * sizeof(TempoEvent *));
+    TempoEvent *tempoEvents = alloca(count * sizeof(TempoEvent *));
+    TimeTableGetTempoValues(context->timeTable, &tempoEvents);
     for (i = 0; i < count; ++i) {
-        context->parser->callbacks->onParseTempo(context->parser->receiver, tempoEvents[i]->tick, tempoEvents[i]->tempo);
+        context->parser->callbacks->onParseTempo(context->parser->receiver, tempoEvents[i].tick, tempoEvents[i].tempo);
     }
 
     context->parser->callbacks->onFinish(context->parser->receiver, context->timeTable);
