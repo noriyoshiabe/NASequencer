@@ -4,6 +4,12 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+typedef struct _Location {
+    int32_t m;
+    int16_t b;
+    int16_t t;
+} Location;
+
 typedef struct _TimeSign {
     int16_t numerator;
     int16_t denominator;
