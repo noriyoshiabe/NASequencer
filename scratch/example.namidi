@@ -1,15 +1,8 @@
-$test = {
-  time 3/4
-  tempo 122.0
+location 2
+time 3/4
+location 3
+A
 
-  CCCC
-  DEFG~
-  CCCC
-}
-
-$test
-
-AA
 
 /*
 time 4/4

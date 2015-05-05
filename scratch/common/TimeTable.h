@@ -23,8 +23,5 @@ int32_t TimeTableTickByMeasure(TimeTable *self, int32_t measure);
 TimeSign TimeTableTimeSignOnTick(TimeTable *self, int32_t tick);
 float TimeTableTempoOnTick(TimeTable *self, int32_t tick);
 
-bool TimeTableHasResolution(TimeTable *self);
 bool TimeTableHasTimeSign(TimeTable *self);
 bool TimeTableHasTempo(TimeTable *self);
-
-void TimeTableSetResolution(TimeTable *self, int32_t resolution);

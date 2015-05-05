@@ -54,6 +54,7 @@ static CFComparisonResult TimeTableEventComparator(const void *val1, const void 
 TimeTable *TimeTableCreate()
 {
     TimeTable *ret = calloc(1, sizeof(TimeTable));
+    ret->resolution = 480;
     ret->timeList = CFArrayCreateMutable(NULL, 0, &TimeTableEventListCallbacks);
     ret->tempoList = CFArrayCreateMutable(NULL, 0, &TimeTableEventListCallbacks);
     return ret;
@@ -174,11 +175,6 @@ float TimeTableTempoOnTick(TimeTable *self, int32_t tick)
     return ret;
 }
 
-bool TimeTableHasResolution(TimeTable *self)
-{
-    return 0 != self->resolution;
-}
-
 bool TimeTableHasTimeSign(TimeTable *self)
 {
     return 0 < CFArrayGetCount(self->timeList);
@@ -187,9 +183,4 @@ bool TimeTableHasTimeSign(TimeTable *self)
 bool TimeTableHasTempo(TimeTable *self)
 {
     return 0 < CFArrayGetCount(self->tempoList);
-}
-
-void TimeTableSetResolution(TimeTable *self, int32_t resolution)
-{
-    self->resolution = resolution;
 }

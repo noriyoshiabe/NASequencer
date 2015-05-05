@@ -128,13 +128,8 @@ typedef struct _Context {
     struct _Context *parent;
 } Context;
 
-static void ContextPrepareTimeTable(Context *self);
-static int32_t ContextGetResolution(Context *self);
-static int32_t ContextTickByMeasure(Context *self, int32_t measure);
-
-static void ContextOnParseResolution(Context *self, uint32_t resolution);
 static bool ContextOnParseNote(Context *self, int32_t tick, uint8_t channel, uint8_t noteNo, uint8_t velocity, uint32_t gatetime);
-static bool ContextOnParseTime(Context *self, int32_t tick, uint8_t numerator, uint8_t denominator);
+static bool ContextOnParseTime(Context *self, int32_t tick, TimeSign timeSign);
 static bool ContextOnParseTempo(Context *self, int32_t tick, float tempo);
 static bool ContextOnParseMarker(Context *self, int32_t tick, const char *text);
 
@@ -167,8 +162,6 @@ static void ContextDestroy(Context *self)
 
 static Context *ContextCreateFromContext(Context *from)
 {
-    ContextPrepareTimeTable(from);
-
     Context *ret = ContextCreate(from->parser, TimeTableCreateFromTimeTable(from->timeTable, from->tick));
     ret->parent = from;
 
@@ -185,58 +178,10 @@ static Context *ContextCreateFromContext(Context *from)
     return ret;
 }
 
-static void ContextPrepareResolution(Context *self)
-{
-    if (!TimeTableHasResolution(self->timeTable)) {
-        ContextOnParseResolution(self, 480);
-        TimeTableSetResolution(self->timeTable, 480);
-    }
-}
-
-static void ContextPrepareTimeTable(Context *self)
-{
-    ContextPrepareResolution(self);
-
-    if (!TimeTableHasTimeSign(self->timeTable)) {
-        ContextOnParseTime(self, 0, 4, 4);
-        TimeSign timeSign = {4, 4};
-        TimeTableAddTimeSign(self->timeTable, 0, timeSign);
-    }
-
-    if (!TimeTableHasTempo(self->timeTable)) {
-        ContextOnParseTempo(self, 0, 120.0);
-        TimeTableAddTempo(self->timeTable, 0, 120.0);
-    }
-}
-
-static void ContextAddTimeSign(Context *self, TimeSign timeSign)
-{
-    ContextPrepareResolution(self);
-    TimeTableAddTimeSign(self->timeTable, self->tick, timeSign);
-}
-
-static void ContextAddTempo(Context *self, float tempo)
-{
-    ContextPrepareResolution(self);
-    TimeTableAddTempo(self->timeTable, self->tick, tempo);
-}
-
-static int32_t ContextTickByMeasure(Context *self, int32_t measure)
-{
-    ContextPrepareTimeTable(self);
-    return TimeTableTickByMeasure(self->timeTable, measure);
-}
-
-static int32_t ContextGetResolution(Context *self)
-{
-    ContextPrepareTimeTable(self);
-    return TimeTableResolution(self->timeTable);
-}
-
 static int32_t ContextGetStep(Context *self)
 {
     if (0 == self->step) {
-        self->step = ContextGetResolution(self);
+        self->step = TimeTableResolution(self->timeTable);
     }
 
     return self->step;
@@ -244,7 +189,6 @@ static int32_t ContextGetStep(Context *self)
 
 static void ContextForwardTick(Context *self)
 {
-    ContextPrepareTimeTable(self);
     self->tick += ContextGetStep(self);
     self->largestTick = MAX(self->largestTick, self->tick);
 }
@@ -282,17 +226,6 @@ static uint32_t ContextGetTickInParent(Context *self, uint32_t tick)
     return tick + self->parent->tick;
 }
 
-static void ContextOnParseResolution(Context *self, uint32_t resolution)
-{
-    if (self->parent) {
-        ContextOnParseResolution(self->parent, resolution);
-        return;
-    }
-
-    // TODO
-    //self->parser->callbacks->onParseResolution(self->parser->receiver, resolution);
-}
-
 #define isInsideOffsetLength(context, tick) (0 <= tick && (-1 == context->blockLength || tick < context->blockLength))
 
 static bool ContextOnParseNote(Context *self, int32_t tick, uint8_t channel, uint8_t noteNo, uint8_t velocity, uint32_t gatetime)
@@ -314,8 +247,10 @@ static bool ContextOnParseNote(Context *self, int32_t tick, uint8_t channel, uin
     return true;
 }
 
-static bool ContextOnParseTime(Context *self, int32_t tick, uint8_t numerator, uint8_t denominator)
+static bool ContextOnParseTime(Context *self, int32_t tick, TimeSign timeSign)
 {
+    TimeTableAddTimeSign(self->timeTable, tick, timeSign);
+
     if (!ContextCalcOffsetLength(self)) {
         return false;
     }
@@ -325,11 +260,8 @@ static bool ContextOnParseTime(Context *self, int32_t tick, uint8_t numerator, u
         return true;
     }
 
-    if (self->parent) {
-        ContextOnParseTime(self->parent, ContextGetTickInParent(self, tick), numerator, denominator);
-    }
-    else {
-        self->parser->callbacks->onParseTime(self->parser->receiver, tick, numerator, denominator);
+    if (!self->parent) {
+        self->parser->callbacks->onParseTime(self->parser->receiver, tick, timeSign.numerator, timeSign.denominator);
     }
 
     return true;
@@ -337,15 +269,14 @@ static bool ContextOnParseTime(Context *self, int32_t tick, uint8_t numerator, u
 
 static bool ContextOnParseTempo(Context *self, int32_t tick, float tempo)
 {
+    TimeTableAddTempo(self->timeTable, tick, tempo);
+
     tick -= self->blockOffset;
     if (!isInsideOffsetLength(self, tick)) {
         return true;
     }
 
-    if (self->parent) {
-        ContextOnParseTempo(self->parent, ContextGetTickInParent(self, tick), tempo);
-    }
-    else {
+    if (!self->parent) {
         self->parser->callbacks->onParseTempo(self->parser->receiver, tick, tempo);
     }
 
@@ -695,8 +626,7 @@ static bool parseTime(Expression *expression, Context *context, void *value)
         return false;
     }
     
-    ContextAddTimeSign(context, timeSign);
-    return ContextOnParseTime(context, context->tick, timeSign.numerator, timeSign.denominator);
+    return ContextOnParseTime(context, context->tick, timeSign);
 }
 
 static bool parseTimeSign(Expression *expression, Context *context, void *value)
@@ -718,7 +648,7 @@ static bool parseTimeSign(Expression *expression, Context *context, void *value)
         ((TimeSign *)value)->denominator = denominator;
     }
     else {
-        *((int32_t *)value) = ContextGetResolution(context) * 4 / denominator * numerator;
+        *((int32_t *)value) = TimeTableResolution(context->timeTable) * 4 / denominator * numerator;
     }
     
     return true;
@@ -747,7 +677,6 @@ static bool parseTempo(Expression *expression, Context *context, void *value)
         return false;
     }
 
-    ContextAddTempo(context, tempo);
     return ContextOnParseTempo(context, context->tick, tempo);
 }
 
@@ -827,7 +756,7 @@ static bool parseMeasure(Expression *expression, Context *context, void *value)
         return false;
     }
 
-    *((int32_t *)value) = ContextTickByMeasure(context, expression->v.i);
+    *((int32_t *)value) = TimeTableTickByMeasure(context->timeTable, expression->v.i);
     return true;
 }
 
@@ -979,7 +908,7 @@ static bool parseLength(Expression *expression, Context *context, void *value)
 
 static bool parseLengthValue(Expression *expression, Context *context, void *value)
 {
-    *((int32_t *)value) = ContextTickByMeasure(context, expression->v.i + 1);
+    *((int32_t *)value) = TimeTableTickByMeasure(context->timeTable, expression->v.i + 1);
     return true;
 }
 
