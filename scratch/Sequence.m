@@ -1,7 +1,7 @@
 #import "Sequence.h"
 
 @interface Sequence() {
-    TimeTable *timeTable;
+    TimeTable *_timeTable;
 }
 
 @property (nonatomic, readwrite) NSArray *events;
@@ -11,40 +11,46 @@
 
 @implementation Sequence
 
+- (int32_t)resolution
+{
+    return TimeTableResolution(_timeTable);
+}
+
 - (TimeSign)timeSign:(int32_t)tick
 {
-    TimeSign s = {4,4};
-    return s;
+    return TimeTableTimeSignOnTick(_timeTable, tick);
 }
 
 - (Location)location:(int32_t)tick
 {
+    // TODO
     Location l = {0,0,0};
     return l;
 }
 
-- (void)addNote:(uint32_t)tick channel:(uint8_t)channel noteNo:(uint8_t)noteNo velocity:(uint8_t)velocity gatetime:(uint32_t)gatetime
+- (TimeTable *)timeTable
 {
+    return _timeTable;
 }
 
-- (void)addTime:(uint32_t)tick numerator:(uint8_t)numerator denominator:(uint8_t)denominator
+- (NSArray *)events:(int32_t)tickFrom tickTo:(int32_t)tickTo
 {
+    // TODO
+    return [NSArray array];
 }
 
-- (void)addTempo:(uint32_t)tick tempo:(float)tempo
+- (id)initWithEvents:(NSArray *)events timeTable:(TimeTable *)timeTable
 {
+    if (self = [super init]) {
+        self.events = events;
+        _timeTable = TimeTableRetain(timeTable);
+    }
+    return self;
 }
 
-- (void)addMarker:(uint32_t)tick text:(const char *)text
+- (void)dealloc
 {
-}
-
-- (void)setTimeTable:(TimeTable *)timeTable
-{
-}
-
-- (void)build
-{
+    TimeTableRelease(_timeTable);
 }
 
 @end
