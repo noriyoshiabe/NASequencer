@@ -33,10 +33,10 @@ static void _NAMidiParserOnParseMarker(void *receiver, uint32_t tick, const char
     [self parser:self->parser onParseMarker:tick text:text];
 }
 
-static void _NAMidiParserOnFinish(void *receiver, uint32_t length)
+static void _NAMidiParserOnFinish(void *receiver, TimeTable *timeTable)
 {
     NAMidi *self = (__bridge NAMidi *)receiver;
-    [self parser:self->parser onFinish:length];
+    [self parser:self->parser onFinish:timeTable];
 }
 
 static void _NAMidiParserOnError(void *receiver, const char *filepath, int line, int column, ParseError error, const void *info)
@@ -93,9 +93,10 @@ static NAMidiParserCallbacks callbacks = {
     printf("[Marker] tick=%d text=%s\n", tick, text);
 }
 
-- (void)parser:(NAMidiParser *)parser onFinish:(uint32_t)length
+- (void)parser:(NAMidiParser *)parser onFinish:(TimeTable *)timeTable
 {
-    printf("onFinish() length=%d\n", length);
+    printf("onFinish()\n");
+    TimeTableDump(timeTable);
 }
 
 - (void)parser:(NAMidiParser *)parser onError:(const char *)filepath line:(int)line column:(int)column error:(ParseError)error info:(const void *)info

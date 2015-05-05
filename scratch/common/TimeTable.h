@@ -13,6 +13,7 @@ typedef struct _TimeTable TimeTable;
 TimeTable *TimeTableCreate();
 TimeTable *TimeTableCreateFromTimeTable(TimeTable *from, int32_t tick);
 void TimeTableDestroy(TimeTable *self);
+void TimeTableDump(TimeTable *self);
 void TimeTableAddTimeSign(TimeTable *self, int32_t tick, TimeSign timeSign);
 
 int32_t TimeTableResolution(TimeTable *self);

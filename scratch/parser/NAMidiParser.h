@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "TimeTable.h"
 #include "ParseError.h"
 
 typedef struct _NAMidiParser NAMidiParser;
@@ -13,7 +14,7 @@ typedef struct {
     void (*onParseTempo)(void *receiver, uint32_t tick, float tempo);
     void (*onParseMarker)(void *receiver, uint32_t tick, const char *text);
 
-    void (*onFinish)(void *receiver, uint32_t length);
+    void (*onFinish)(void *receiver, TimeTable *timeTable);
     void (*onError)(void *receiver, const char *filepath, int line, int column, ParseError error, const void *info);
 } NAMidiParserCallbacks;
 

@@ -61,6 +61,19 @@ void TimeTableDestroy(TimeTable *self)
     free(self);
 }
 
+void TimeTableDump(TimeTable *self)
+{
+    printf("----- time table -----\n");
+
+    CFIndex count = CFArrayGetCount(self->timeList);
+    for (CFIndex i = 0; i < count; ++i) {
+        const TimeEvent *timeEvent = CFArrayGetValueAtIndex(self->timeList, i);
+        printf("[TimeSign] tick=%d numerator=%d denominator=%d\n", timeEvent->tick, timeEvent->timeSign.numerator, timeEvent->timeSign.denominator);
+    }
+
+    printf("----- time table -----\n");
+}
+
 void TimeTableAddTimeSign(TimeTable *self, int32_t tick, TimeSign timeSign)
 {
     CFArrayAppendValue(self->timeList, TimeEventCreate(tick, timeSign));
