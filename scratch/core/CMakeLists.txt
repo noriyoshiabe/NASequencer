@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(namidi-parser)
-
-add_subdirectory (../common ${CMAKE_CURRENT_BINARY_DIR}/common)
+project(namidi-core)
 
 find_package(BISON)
 find_package(FLEX)
@@ -15,14 +13,14 @@ ADD_FLEX_BISON_DEPENDENCY(Lexer Parser)
 
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}
-  ../common
 )
 
 set(SOURCES
   Expression.c
   NoteTable.c
+  TimeTable.c
   NAMidiParser.c
 )
 
 add_library(${PROJECT_NAME} ${SOURCES} ${BISON_Parser_OUTPUTS} ${FLEX_Lexer_OUTPUTS})
-target_link_libraries(${PROJECT_NAME} ${CF} namidi-common)
+target_link_libraries(${PROJECT_NAME} ${CF})
