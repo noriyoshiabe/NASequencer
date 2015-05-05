@@ -297,7 +297,7 @@ static bool ContextOnParseNote(Context *self, int32_t tick, uint8_t channel, uin
         ContextOnParseNote(self->parent, ContextGetTickInParent(self, tick), channel, noteNo, velocity, gatetime);
     }
     else {
-        self->parser->callbacks->onParseNote(self->parser, tick, channel, noteNo, velocity, gatetime);
+        self->parser->callbacks->onParseNote(self->parser->receiver, tick, channel, noteNo, velocity, gatetime);
     }
 
     return true;
