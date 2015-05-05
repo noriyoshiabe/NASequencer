@@ -3,63 +3,68 @@
 #include <stdlib.h>
 #include <CoreFoundation/CoreFoundation.h>
 
-struct _TimeTable {
-    int32_t resolution;
-    CFMutableArrayRef timeSignList;
-};
+typedef struct _TimeEvent {
+    int32_t tick;
+    TimeSign timeSign;
+} TimeEvent;
 
-TimeSign *TimeSignCreate(int32_t tick, int16_t numerator, int16_t denominator)
+static TimeEvent *TimeEventCreate(int32_t tick, TimeSign timeSign)
 {
-    TimeSign *ret = calloc(1, sizeof(TimeSign));
+    TimeEvent *ret = calloc(1, sizeof(TimeEvent));
     ret->tick = tick;
-    ret->numerator = numerator;
-    ret->denominator = denominator;
+    ret->timeSign = timeSign;
     return ret;
 }
 
-TimeSign *TimeSignCreateWithTimeSign(int32_t tick, const TimeSign *from)
-{
-    TimeSign *ret = calloc(1, sizeof(TimeSign));
-    ret->tick = tick;
-    ret->numerator = from->numerator;
-    ret->denominator = from->denominator;
-    return ret;
-}
-
-void TimeSignDestroy(TimeSign *self)
+static void TimeEventDestroy(TimeEvent *self)
 {
     free(self);
 }
 
 
-static void TimeSignReleaseCallbak(CFAllocatorRef allocator, const void *value)
-{
-    TimeSignDestroy((TimeSign *)value);
-}
-static const CFArrayCallBacks TimeTableTimeSignListCallbacks = {0, NULL, TimeSignReleaseCallbak, NULL, NULL};
+struct _TimeTable {
+    int32_t resolution;
+    CFMutableArrayRef timeList;
+};
 
-static CFComparisonResult TimeTableTimeSignComparator(const void *val1, const void *val2, void *context)
+static void TimeEventReleaseCallbak(CFAllocatorRef allocator, const void *value)
 {
-    return ((TimeSign *)val1)->tick - ((TimeSign *)val2)->tick;
+    TimeEventDestroy((TimeEvent *)value);
+}
+static const CFArrayCallBacks TimeTableTimeListCallbacks = {0, NULL, TimeEventReleaseCallbak, NULL, NULL};
+
+static CFComparisonResult TimeTableTimeEventComparator(const void *val1, const void *val2, void *context)
+{
+    return ((TimeEvent *)val1)->tick - ((TimeEvent *)val2)->tick;
 }
 
 TimeTable *TimeTableCreate()
 {
     TimeTable *ret = calloc(1, sizeof(TimeTable));
-    ret->timeSignList = CFArrayCreateMutable(NULL, 0, &TimeTableTimeSignListCallbacks);
+    ret->timeList = CFArrayCreateMutable(NULL, 0, &TimeTableTimeListCallbacks);
+    return ret;
+}
+
+TimeTable *TimeTableCreateFromTimeTable(TimeTable *from, int32_t tick)
+{
+    TimeTable *ret = TimeTableCreate();
+    ret->resolution = from->resolution;
+
+    TimeSign timeSign = TimeTableTimeSignOnTick(from, tick);
+    TimeTableAddTimeSign(ret, 0, timeSign);
     return ret;
 }
 
 void TimeTableDestroy(TimeTable *self)
 {
-    CFRelease(self->timeSignList);
+    CFRelease(self->timeList);
     free(self);
 }
 
-void TimeTableAddTimeSign(TimeTable *self, const TimeSign *timeSign)
+void TimeTableAddTimeSign(TimeTable *self, int32_t tick, TimeSign timeSign)
 {
-    CFArrayAppendValue(self->timeSignList, timeSign);
-    CFArraySortValues(self->timeSignList, CFRangeMake(0, CFArrayGetCount(self->timeSignList)), TimeTableTimeSignComparator, NULL);
+    CFArrayAppendValue(self->timeList, TimeEventCreate(tick, timeSign));
+    CFArraySortValues(self->timeList, CFRangeMake(0, CFArrayGetCount(self->timeList)), TimeTableTimeEventComparator, NULL);
 }
 
 int32_t TimeTableResolution(TimeTable *self)
@@ -74,38 +79,38 @@ int32_t TimeTableTickByMeasure(TimeTable *self, int32_t measure)
 
     measure -= 1;
 
-    CFIndex count = CFArrayGetCount(self->timeSignList);
+    CFIndex count = CFArrayGetCount(self->timeList);
     for (int i = 0; i < count; ++i) {
-        const TimeSign *timeSign = CFArrayGetValueAtIndex(self->timeSignList, i);
+        const TimeEvent *timeEvent = CFArrayGetValueAtIndex(self->timeList, i);
 
         int32_t tick = tickPerMeasure * measure + offsetTick;
-        if (tick < timeSign->tick) {
+        if (tick < timeEvent->tick) {
             break;
         }
 
-        measure -= timeSign->tick / tickPerMeasure;
-        tickPerMeasure = self->resolution * 4 / timeSign->denominator * timeSign->numerator;
-        offsetTick = timeSign->tick;
+        measure -= timeEvent->tick / tickPerMeasure;
+        tickPerMeasure = self->resolution * 4 / timeEvent->timeSign.denominator * timeEvent->timeSign.numerator;
+        offsetTick = timeEvent->tick;
     }
 
     return tickPerMeasure * measure + offsetTick;
 }
 
-TimeSign *TimeTableTimeSignOnTick(TimeTable *self, int32_t tick)
+TimeSign TimeTableTimeSignOnTick(TimeTable *self, int32_t tick)
 {
-    TimeSign *target = NULL;
+    TimeSign ret = {4, 4};
 
-    CFIndex count = CFArrayGetCount(self->timeSignList);
+    CFIndex count = CFArrayGetCount(self->timeList);
     for (CFIndex i = 0; i < count; ++i) {
-        TimeSign *test = (TimeSign *)CFArrayGetValueAtIndex(self->timeSignList, i);
+        TimeEvent *test = (TimeEvent *)CFArrayGetValueAtIndex(self->timeList, i);
         if (tick < test->tick) {
             break;
         }
 
-        target = test;
+        ret = test->timeSign;
     }
 
-    return target;
+    return ret;
 }
 
 bool TimeTableHasResolution(TimeTable *self)
@@ -115,7 +120,7 @@ bool TimeTableHasResolution(TimeTable *self)
 
 bool TimeTableHasTimeSign(TimeTable *self)
 {
-    return 0 < CFArrayGetCount(self->timeSignList);
+    return 0 < CFArrayGetCount(self->timeList);
 }
 
 void TimeTableSetResolution(TimeTable *self, int32_t resolution)

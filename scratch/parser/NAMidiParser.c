@@ -128,8 +128,8 @@ typedef struct _Context {
     struct _Context *parent;
 } Context;
 
+static void ContextPrepareTimeTable(Context *self);
 static int32_t ContextGetResolution(Context *self);
-static TimeSign *ContextTimeSignOnTick(Context *self, int32_t tick);
 static int32_t ContextTickByMeasure(Context *self, int32_t measure);
 
 static void ContextOnParseResolution(Context *self, uint32_t resolution);
@@ -140,11 +140,11 @@ static bool ContextOnParseMarker(Context *self, int32_t tick, const char *text);
 
 static bool parseExpression(Expression *expression, Context *context, void *value);
 
-static Context *ContextCreate(NAMidiParser *parser)
+static Context *ContextCreate(NAMidiParser *parser, TimeTable *timeTable)
 {
     Context *ret = calloc(1, sizeof(Context));
     ret->parser = parser;
-    ret->timeTable = TimeTableCreate();
+    ret->timeTable = timeTable;
     ret->key = NoteTableKeySignCMajor;
     ret->channel = 1;
     ret->octave = 4;
@@ -165,8 +165,9 @@ static void ContextDestroy(Context *self)
 
 static Context *ContextCreateFromContext(Context *from)
 {
-    Context *ret = ContextCreate(from->parser);
+    ContextPrepareTimeTable(from);
 
+    Context *ret = ContextCreate(from->parser, TimeTableCreateFromTimeTable(from->timeTable, from->tick));
     ret->parent = from;
 
     ret->key = from->key;
@@ -175,11 +176,6 @@ static Context *ContextCreateFromContext(Context *from)
     ret->velocity = from->velocity;
     ret->gatetime = from->gatetime;
     ret->octave = from->octave;
-
-    TimeTableSetResolution(ret->timeTable, ContextGetResolution(from));
-
-    TimeSign *timeSign = ContextTimeSignOnTick(from, from->tick);
-    TimeTableAddTimeSign(ret->timeTable, TimeSignCreateWithTimeSign(0, timeSign));
 
     ret->patterns = CFDictionaryCreateMutableCopy(NULL, 0, from->patterns);
     ret->expandingPattens = CFSetCreateMutableCopy(NULL, 0, from->expandingPattens);
@@ -200,22 +196,16 @@ static void ContextPrepareTimeTable(Context *self)
     ContextPrepareResolution(self);
 
     if (!TimeTableHasTimeSign(self->timeTable)) {
-        TimeSign *timeSign = TimeSignCreate(0, 4, 4);
         ContextOnParseTime(self, 0, 4, 4);
-        TimeTableAddTimeSign(self->timeTable, timeSign);
+        TimeSign timeSign = {4, 4};
+        TimeTableAddTimeSign(self->timeTable, 0, timeSign);
     }
 }
 
-static void ContextAddTimeSign(Context *self, const TimeSign *timeSign)
+static void ContextAddTimeSign(Context *self, TimeSign timeSign)
 {
     ContextPrepareResolution(self);
-    TimeTableAddTimeSign(self->timeTable, timeSign);
-}
-
-static TimeSign *ContextTimeSignOnTick(Context *self, int32_t tick)
-{
-    ContextPrepareTimeTable(self);
-    return TimeTableTimeSignOnTick(self->timeTable, tick);
+    TimeTableAddTimeSign(self->timeTable, self->tick, timeSign);
 }
 
 static int32_t ContextTickByMeasure(Context *self, int32_t measure)
@@ -384,7 +374,7 @@ static bool parseExpression(Expression *expression, Context *context, void *valu
 
 static bool _NAMidiParserParseAST(NAMidiParser *self, Expression *expression)
 {
-    Context *context = ContextCreate(self);
+    Context *context = ContextCreate(self, TimeTableCreate());
 
     for (Expression *expr = expression; expr; expr = expr->next) {
         if (!parseExpression(expr, context, NULL)) {
@@ -686,13 +676,13 @@ static bool parseKey(Expression *expression, Context *context, void *value)
 
 static bool parseTime(Expression *expression, Context *context, void *value)
 {
-    TimeSign *timeSign = NULL;
+    TimeSign timeSign;
     if (!parseExpression(expression->child, context, &timeSign)) {
         return false;
     }
     
     ContextAddTimeSign(context, timeSign);
-    return ContextOnParseTime(context, context->tick, timeSign->numerator, timeSign->denominator);
+    return ContextOnParseTime(context, context->tick, timeSign.numerator, timeSign.denominator);
 }
 
 static bool parseTimeSign(Expression *expression, Context *context, void *value)
@@ -704,13 +694,14 @@ static bool parseTimeSign(Expression *expression, Context *context, void *value)
     parseExpression(expression->child->next, context, &denominator);
 
     if (1 > numerator || 1 > denominator || !isPowerOf2(denominator)) {
-        TimeSign timeSign = {context->tick, numerator, denominator};
+        TimeSign timeSign = {numerator, denominator};
         CALLBACK_ERROR(context, expression, ParseErrorInvalidTimeSign, &timeSign);
         return false;
     }
 
     if (ExpressionTypeTime == expression->parent->type) {
-        *((TimeSign **)value) = TimeSignCreate(context->tick, numerator, denominator);
+        ((TimeSign *)value)->numerator = numerator;
+        ((TimeSign *)value)->denominator = denominator;
     }
     else {
         *((int32_t *)value) = ContextGetResolution(context) * 4 / denominator * numerator;
