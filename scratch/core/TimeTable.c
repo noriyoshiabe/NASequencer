@@ -11,6 +11,7 @@ struct _TimeTable {
     bool resolutionChanged;
     CFMutableArrayRef timeList;
     CFMutableArrayRef tempoList;
+    int32_t length;
 };
 
 
@@ -89,7 +90,7 @@ void TimeTableDump(TimeTable *self)
     CFIndex count;
 
     printf("\n----- time table -----\n");
-    printf("[Resolution] %d\n", self->resolution);
+    printf("resolution=%d length=%d\n", self->resolution, self->length);
 
     count = CFArrayGetCount(self->timeList);
     for (CFIndex i = 0; i < count; ++i) {
@@ -113,7 +114,7 @@ void TimeTableDumpToBuffer(TimeTable *self, char *buffer, size_t size)
     CFIndex count;
 
     CFStringAppendFormat(cfString, NULL, CFSTR("\n----- time table -----\n"));
-    CFStringAppendFormat(cfString, NULL, CFSTR("[Resolution] %d\n"), self->resolution);
+    CFStringAppendFormat(cfString, NULL, CFSTR("resolution=%d length=%d\n"), self->resolution, self->length);
 
     count = CFArrayGetCount(self->timeList);
     for (CFIndex i = 0; i < count; ++i) {
@@ -163,6 +164,11 @@ void TimeTableAddTempo(TimeTable *self, int32_t tick, float tempo)
 int32_t TimeTableResolution(TimeTable *self)
 {
     return self->resolution;
+}
+
+int32_t TimeTableLength(TimeTable *self)
+{
+    return self->length;
 }
 
 int32_t TimeTableTickByMeasure(TimeTable *self, int32_t measure)
@@ -236,6 +242,11 @@ bool TimeTableSetResolution(TimeTable *self, int32_t resolution)
     self->resolution = resolution;
     self->resolutionChanged = true;
     return true;
+}
+
+void TimeTableSetLength(TimeTable *self, int32_t length)
+{
+    self->length = length;
 }
 
 size_t TimeTableGetTimeSignCount(TimeTable *self)

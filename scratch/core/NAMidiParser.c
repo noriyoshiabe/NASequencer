@@ -306,6 +306,8 @@ static bool _NAMidiParserParseAST(NAMidiParser *self, Expression *expression)
         context->parser->callbacks->onParseTempo(context->parser->receiver, tempoEvents[i].tick, tempoEvents[i].tempo);
     }
 
+    TimeTableSetLength(context->timeTable, context->largestTick);
+
     context->parser->callbacks->onFinish(context->parser->receiver, context->timeTable);
     ContextDestroy(context);
     return true;

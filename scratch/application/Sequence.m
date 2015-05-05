@@ -15,6 +15,11 @@
     return TimeTableResolution(_timeTable);
 }
 
+- (int32_t)length
+{
+    return TimeTableLength(_timeTable);
+}
+
 - (TimeSign)timeSign:(int32_t)tick
 {
     return TimeTableTimeSignOnTick(_timeTable, tick);

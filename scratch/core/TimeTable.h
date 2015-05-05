@@ -28,8 +28,7 @@ void TimeTableAddTimeSign(TimeTable *self, int32_t tick, TimeSign timeSign);
 void TimeTableAddTempo(TimeTable *self, int32_t tick, float tempo);
 
 int32_t TimeTableResolution(TimeTable *self);
+int32_t TimeTableLength(TimeTable *self);
 int32_t TimeTableTickByMeasure(TimeTable *self, int32_t measure);
 TimeSign TimeTableTimeSignOnTick(TimeTable *self, int32_t tick);
 float TimeTableTempoOnTick(TimeTable *self, int32_t tick);
-
-bool TimeTableSetResolution(TimeTable *self, int32_t resolution);

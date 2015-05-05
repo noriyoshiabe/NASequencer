@@ -17,3 +17,6 @@ size_t TimeTableGetTempoCount(TimeTable *self);
 
 void TimeTableGetTimeSignValues(TimeTable *self, TimeEvent **values);
 void TimeTableGetTempoValues(TimeTable *self, TempoEvent **values);
+
+bool TimeTableSetResolution(TimeTable *self, int32_t resolution);
+void TimeTableSetLength(TimeTable *self, int32_t length);
