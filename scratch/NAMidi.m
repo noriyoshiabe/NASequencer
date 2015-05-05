@@ -39,10 +39,10 @@ static void _NAMidiParserOnFinish(void *receiver, uint32_t length)
     [self parser:self->parser onFinish:length];
 }
 
-static void _NAMidiParserOnError(void *receiver, const char *filepath, int line, int column, ParseError error, ...)
+static void _NAMidiParserOnError(void *receiver, const char *filepath, int line, int column, ParseError error, const void *info)
 {
     NAMidi *self = (__bridge NAMidi *)receiver;
-    [self parser:self->parser onError:filepath line:line column:column error:error];
+    [self parser:self->parser onError:filepath line:line column:column error:error info:info];
 }
 
 static NAMidiParserCallbacks callbacks = {
@@ -98,7 +98,7 @@ static NAMidiParserCallbacks callbacks = {
     printf("onFinish() length=%d\n", length);
 }
 
-- (void)parser:(NAMidiParser *)parser onError:(const char *)filepath line:(int)line column:(int)column error:(ParseError)error
+- (void)parser:(NAMidiParser *)parser onError:(const char *)filepath line:(int)line column:(int)column error:(ParseError)error info:(const void *)info
 {
     printf("onError() filepath=%s line=%d column=%d error=%s\n", filepath, line, column, ParseError2String(error));
 }

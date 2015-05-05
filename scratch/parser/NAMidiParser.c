@@ -63,12 +63,12 @@ static bool _NAMidiParserParseDSL(NAMidiParser *self, const char *filepath, Expr
 
     FILE *fp = fopen(filepath, "r");
     if (!fp) {
-        self->callbacks->onError(self->receiver, filepath, 0, 0, ParseErrorFileNotFound);
+        self->callbacks->onError(self->receiver, filepath, 0, 0, ParseErrorFileNotFound, NULL);
         return ret;
     }
 
     if (yylex_init_extra(&context, &scanner)) {
-        self->callbacks->onError(self->receiver, filepath, 0, 0, ParseErrorInitError);
+        self->callbacks->onError(self->receiver, filepath, 0, 0, ParseErrorInitError, NULL);
         goto ERROR_1;
     }
 
@@ -76,7 +76,7 @@ static bool _NAMidiParserParseDSL(NAMidiParser *self, const char *filepath, Expr
     yy_switch_to_buffer(state, scanner);
 
     if (yyparse(scanner, expression)) {
-        self->callbacks->onError(self->receiver, context.location.filepath, context.location.firstLine, context.location.firstColumn, ParseErrorSyntaxError);
+        self->callbacks->onError(self->receiver, context.location.filepath, context.location.firstLine, context.location.firstColumn, ParseErrorSyntaxError, NULL);
 
         if (*expression) {
             ExpressionDestroy(*expression);
@@ -500,13 +500,14 @@ static bool _NAMidiParserParseAST(NAMidiParser *self, Expression *expression)
     return true;
 }
 
-#define CALLBACK_ERROR(context, expression, ...) \
+#define CALLBACK_ERROR(context, expression, error, info) \
     context->parser->callbacks->onError( \
             context->parser->receiver, \
             expression->location.filepath, \
             expression->location.firstLine, \
             expression->location.firstColumn, \
-            __VA_ARGS__)
+            error, \
+            info)
 
 #define isPowerOf2(x) ((x != 0) && ((x & (x - 1)) == 0))
 #define isValidRange(v, from, to) (from <= v && v <= to)
@@ -628,7 +629,7 @@ static bool parseNote(Expression *expression, Context *context, void *value)
         case '+':
             noteNo++;
             if (127 < noteNo) {
-                CALLBACK_ERROR(context, expression, ParseErrorNoteIllegalSharp);
+                CALLBACK_ERROR(context, expression, ParseErrorNoteIllegalSharp, &noteChar);
                 return false;
             }
             break;
@@ -636,7 +637,7 @@ static bool parseNote(Expression *expression, Context *context, void *value)
         case '-':
             noteNo--;
             if (0 > noteNo) {
-                CALLBACK_ERROR(context, expression, ParseErrorNoteIllegalFlat);
+                CALLBACK_ERROR(context, expression, ParseErrorNoteIllegalFlat, &noteChar);
                 return false;
             }
             break;
@@ -644,7 +645,7 @@ static bool parseNote(Expression *expression, Context *context, void *value)
         case '=':
             noteNo += NoteTableGetNaturalDiff(context->key, noteChar);
             if (noteNo < 0 || 127 < noteNo) {
-                CALLBACK_ERROR(context, expression, ParseErrorNoteIllegalNatural);
+                CALLBACK_ERROR(context, expression, ParseErrorNoteIllegalNatural, &noteChar);
                 return false;
             }
             break;
@@ -652,7 +653,7 @@ static bool parseNote(Expression *expression, Context *context, void *value)
         case '^':
             noteNo += 12;
             if (127 < noteNo) {
-                CALLBACK_ERROR(context, expression, ParseErrorNoteIllegalOctaveUp);
+                CALLBACK_ERROR(context, expression, ParseErrorNoteIllegalOctaveUp, &noteChar);
                 return false;
             }
             break;
@@ -660,7 +661,7 @@ static bool parseNote(Expression *expression, Context *context, void *value)
         case '_':
             noteNo -= 12;
             if (0 > noteNo) {
-                CALLBACK_ERROR(context, expression, ParseErrorNoteIllegalOctaveDown);
+                CALLBACK_ERROR(context, expression, ParseErrorNoteIllegalOctaveDown, &noteChar);
                 return false;
             }
             break;
@@ -726,7 +727,7 @@ static bool parseQuantize(Expression *expression, Context *context, void *value)
                 context->step = context->step * 2 / tuplet;
             }
             else {
-                CALLBACK_ERROR(context, expression, ParseErrorQuantizeInvalidTaplet, tuplet);
+                CALLBACK_ERROR(context, expression, ParseErrorQuantizeInvalidTaplet, &tuplet);
                 return false;
             }
             break;
@@ -750,14 +751,14 @@ static bool parseOctaveShift(Expression *expression, Context *context, void *val
     case '<':
         context->octave--;
         if (context->octave < -2) {
-            CALLBACK_ERROR(context, expression, ParseErrorIllegalOctaveShift, context->octave);
+            CALLBACK_ERROR(context, expression, ParseErrorIllegalOctaveShift, &context->octave);
             return false;
         }
         return true;
     case '>':
         context->octave++;
         if (8 < context->octave) {
-            CALLBACK_ERROR(context, expression, ParseErrorIllegalOctaveShift, context->octave);
+            CALLBACK_ERROR(context, expression, ParseErrorIllegalOctaveShift, &context->octave);
             return false;
         }
         return true;
@@ -777,7 +778,7 @@ static bool parseKey(Expression *expression, Context *context, void *value)
 
     NoteTableKeySign key = NoteTableGetKeySign(keyChar, sharp, flat, major);
     if (NoteTableKeySignInvalid == key) {
-        CALLBACK_ERROR(context, expression, ParseErrorInvalidKeySign);
+        CALLBACK_ERROR(context, expression, ParseErrorInvalidKeySign, keyString);
         return false;
     }
 
@@ -805,7 +806,8 @@ static bool parseTimeSign(Expression *expression, Context *context, void *value)
     parseExpression(expression->child->next, context, &denominator);
 
     if (1 > numerator || 1 > denominator || !isPowerOf2(denominator)) {
-        CALLBACK_ERROR(context, expression, ParseErrorInvalidTimeSign, numerator, denominator);
+        int16_t info[] = {numerator, denominator};
+        CALLBACK_ERROR(context, expression, ParseErrorInvalidTimeSign, info);
         return false;
     }
 
@@ -838,7 +840,7 @@ static bool parseTempo(Expression *expression, Context *context, void *value)
     }
 
     if (!isValidRange(tempo, 30.0, 300.0)) {
-        CALLBACK_ERROR(context, expression, ParseErrorInvalidTempo, tempo);
+        CALLBACK_ERROR(context, expression, ParseErrorInvalidTempo, &tempo);
         return false;
     }
 
@@ -853,7 +855,7 @@ static bool parseMarker(Expression *expression, Context *context, void *value)
 static bool parseChannel(Expression *expression, Context *context, void *value)
 {
     if (!isValidRange(expression->v.i, 1, 16)) {
-        CALLBACK_ERROR(context, expression, ParseErrorInvalidChannel, expression->v.i);
+        CALLBACK_ERROR(context, expression, ParseErrorInvalidChannel, &expression->v.i);
         return false;
     }
 
@@ -864,7 +866,7 @@ static bool parseChannel(Expression *expression, Context *context, void *value)
 static bool parseVelocity(Expression *expression, Context *context, void *value)
 {
     if (!isValidRange(expression->v.i, 0, 127)) {
-        CALLBACK_ERROR(context, expression, ParseErrorInvalidVelociy, expression->v.i);
+        CALLBACK_ERROR(context, expression, ParseErrorInvalidVelociy, &expression->v.i);
         return false;
     }
 
@@ -875,7 +877,7 @@ static bool parseVelocity(Expression *expression, Context *context, void *value)
 static bool parseGatetime(Expression *expression, Context *context, void *value)
 {
     if (!isValidRange(expression->v.i, 1, 65535)) {
-        CALLBACK_ERROR(context, expression, ParseErrorInvalidGatetime, expression->v.i);
+        CALLBACK_ERROR(context, expression, ParseErrorInvalidGatetime, &expression->v.i);
         return false;
     }
 
@@ -892,7 +894,7 @@ static bool parseGatetimeAuto(Expression *expression, Context *context, void *va
 static bool parseOctave(Expression *expression, Context *context, void *value)
 {
     if (!isValidRange(expression->v.i, -1, 9)) {
-        CALLBACK_ERROR(context, expression, ParseErrorInvalidOctave, expression->v.i);
+        CALLBACK_ERROR(context, expression, ParseErrorInvalidOctave, &expression->v.i);
         return false;
     }
 
@@ -907,7 +909,7 @@ static bool parseLocation(Expression *expression, Context *context, void *value)
     }
 
     if (0 > context->tick) {
-        CALLBACK_ERROR(context, expression, ParseErrorInvalidLocation);
+        CALLBACK_ERROR(context, expression, ParseErrorInvalidLocation, NULL);
         return false;
     }
 
@@ -917,7 +919,7 @@ static bool parseLocation(Expression *expression, Context *context, void *value)
 static bool parseMeasure(Expression *expression, Context *context, void *value)
 {
     if (1 > expression->v.i) {
-        CALLBACK_ERROR(context, expression, ParseErrorInvalidMeasure);
+        CALLBACK_ERROR(context, expression, ParseErrorInvalidMeasure, NULL);
         return false;
     }
 
@@ -1046,7 +1048,7 @@ static bool parseOffset(Expression *expression, Context *context, void *value)
     }
 
     if (0 > tick) {
-        CALLBACK_ERROR(context, expression, ParseErrorInvalidOffset);
+        CALLBACK_ERROR(context, expression, ParseErrorInvalidOffset, NULL);
         return false;
     }
 
@@ -1063,7 +1065,7 @@ static bool parseLength(Expression *expression, Context *context, void *value)
     }
 
     if (0 > tick) {
-        CALLBACK_ERROR(context, expression, ParseErrorInvalidLength);
+        CALLBACK_ERROR(context, expression, ParseErrorInvalidLength, NULL);
         return false;
     }
 

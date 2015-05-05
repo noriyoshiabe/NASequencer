@@ -14,7 +14,7 @@ typedef struct {
     void (*onParseMarker)(void *receiver, uint32_t tick, const char *text);
 
     void (*onFinish)(void *receiver, uint32_t length);
-    void (*onError)(void *receiver, const char *filepath, int line, int column, ParseError error, ...);
+    void (*onError)(void *receiver, const char *filepath, int line, int column, ParseError error, const void *info);
 } NAMidiParserCallbacks;
 
 extern NAMidiParser *NAMidiParserCreate(NAMidiParserCallbacks *callbacks, void *receiver);
