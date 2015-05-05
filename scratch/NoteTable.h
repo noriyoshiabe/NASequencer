@@ -7,7 +7,6 @@ typedef enum {
 
     NoteTableKeySignCMajor,
     NoteTableKeySignGMajor,
-    /* // TODO
     NoteTableKeySignDMajor,
     NoteTableKeySignAMajor,
     NoteTableKeySignEMajor,
@@ -36,7 +35,6 @@ typedef enum {
     NoteTableKeySignEFlatMinor,
 
     NoteTableKeySignDSharpMinor,
-    */
 
     NoteTableKeySignSize
 } NoteTableKeySign;
