@@ -34,6 +34,8 @@ typedef NS_ENUM (NSUInteger, PlayerEvent) {
 - (void)forward;
 - (void)backward;
 
++ (NSString *)playerEvent2String:(PlayerEvent)playerEvent;
+
 @end
 
 @protocol PlayerDelegate <NSObject>

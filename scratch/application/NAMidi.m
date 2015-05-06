@@ -6,8 +6,11 @@
     NAMidiParser *parser;
 }
 
-@property (nonatomic, strong) Sequence *sequence;
+@property (nonatomic, readwrite) Sequence *sequence;
+@property (nonatomic, readwrite) Player *player;
 @property (nonatomic, strong) SequenceBuilder *sequenceBuilder;
+
+@property (nonatomic, strong) NSHashTable *observers;
 
 @end
 
@@ -70,6 +73,8 @@ static NAMidiParserCallbacks callbacks = {
 {
     if (self = [super init]) {
         parser = NAMidiParserCreate(&callbacks, (__bridge void *)self);
+        self.player = [[Player alloc] init];
+        self.observers = [NSHashTable weakObjectsHashTable];
     }
     return self;
 }
@@ -77,12 +82,25 @@ static NAMidiParserCallbacks callbacks = {
 - (void)dealloc
 {
     NAMidiParserDestroy(parser);
+    self.sequence = nil;
+    self.player = nil;
+    self.sequenceBuilder = nil;
 }
 
-- (void)execute:(const char *)filepath
+- (void)addObserver:(id<NAMidiObserver>)observer
+{
+    [self.observers addObject:observer];
+}
+
+- (void)removeObserver:(id<NAMidiObserver>)observer
+{
+    [self.observers removeObject:observer];
+}
+
+- (void)parse:(NSString *)filepath
 {
     self.sequenceBuilder = [[SequenceBuilder alloc] init];
-    NAMidiParserExecuteParse(parser, filepath);
+    NAMidiParserExecuteParse(parser, [filepath UTF8String]);
     self.sequenceBuilder = nil;
 }
 
@@ -114,12 +132,48 @@ static NAMidiParserCallbacks callbacks = {
 {
     [self.sequenceBuilder setTimeTable:timeTable];
     self.sequence = [self.sequenceBuilder build];
-    NSLog(@"%@", self.sequence);
+
+    for (id<NAMidiObserver> observer in self.observers) {
+        if ([observer respondsToSelector:@selector(namidi:onParseFinish:)]) {
+            [observer namidi:self onParseFinish:self.sequence];
+        }
+    }
 }
 
 - (void)parser:(NAMidiParser *)parser onError:(const char *)filepath line:(int)line column:(int)column error:(ParseError)error info:(const void *)info
 {
-    printf("onError() filepath=%s line=%d column=%d error=%s\n", filepath, line, column, ParseError2String(error));
+    for (id<NAMidiObserver> observer in self.observers) {
+        if ([observer respondsToSelector:@selector(namidi:onParseError:line:column:error:info:)]) {
+            [observer namidi:self onParseError:[NSString stringWithUTF8String:filepath] line:line column:column error:error info:info];
+        }
+    }
+}
+
+- (void)player:(Player *)player notifyEvent:(PlayerEvent)playerEvent
+{
+    for (id<NAMidiObserver> observer in self.observers) {
+        if ([observer respondsToSelector:@selector(namidi:player:notifyEvent:)]) {
+            [observer namidi:self player:player notifyEvent:playerEvent];
+        }
+    }
+}
+
+- (void)player:(Player *)player didSendNoteOn:(NoteEvent *)noteEvent
+{
+    for (id<NAMidiObserver> observer in self.observers) {
+        if ([observer respondsToSelector:@selector(namidi:player:didSendNoteOn:)]) {
+            [observer namidi:self player:player didSendNoteOn:noteEvent];
+        }
+    }
+}
+
+- (void)player:(Player *)player didSendNoteOff:(NoteEvent *)noteEvent
+{
+    for (id<NAMidiObserver> observer in self.observers) {
+        if ([observer respondsToSelector:@selector(namidi:player:didSendNoteOff:)]) {
+            [observer namidi:self player:player didSendNoteOff:noteEvent];
+        }
+    }
 }
 
 @end

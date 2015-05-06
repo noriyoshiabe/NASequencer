@@ -14,6 +14,8 @@ set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} -fobjc-arc)
 
 set(SOURCES
   main.m
+  Controller.m
+  View.m
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

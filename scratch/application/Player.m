@@ -110,8 +110,6 @@ static PlayerClockSourceCallbacks callbacks = {
 
 - (void)playerClockSource:(PlayerClockSource *)clockSource onNotifyEvent:(PlayerClockSourceEvent)event
 {
-    printf("onNotifyEvent() event=%s\n", PlayerClockSourceEvent2String(event));
-
     switch (event) {
     case PlayerClockSourceEventStop:
         _playing = NO;
@@ -133,7 +131,9 @@ static PlayerClockSourceCallbacks callbacks = {
 
     PlayerEvent playerEvent = [self playerEvent:event];
     if (PlayerEventUnknown != event) {
-        [self.delegate player:self notifyEvent:playerEvent];
+        if ([self.delegate respondsToSelector:@selector(player:notifyEvent:)]) {
+            [self.delegate player:self notifyEvent:playerEvent];
+        }
     }
 }
 
@@ -155,6 +155,21 @@ static PlayerClockSourceCallbacks callbacks = {
     default:
         return PlayerEventUnknown;
     }
+}
+
++ (NSString *)playerEvent2String:(PlayerEvent)playerEvent
+{
+#define CASE(event) case event: return @#event
+    switch (playerEvent) {
+    CASE(PlayerEventStop);
+    CASE(PlayerEventPlay);
+    CASE(PlayerEventRewind);
+    CASE(PlayerEventForward);
+    CASE(PlayerEventBackward);
+    CASE(PlayerClockSourceEventReachEnd);
+    }
+    return @"Unknown player event";
+#undef CASE
 }
 
 @end
