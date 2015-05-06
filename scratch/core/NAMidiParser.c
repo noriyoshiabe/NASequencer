@@ -44,7 +44,7 @@ bool NAMidiParserExecuteParse(NAMidiParser *self, const char *filepath)
         return false;
     }
 
-#if 1
+#if 0
     ExpressionDump(expression);
 #endif
 
