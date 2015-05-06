@@ -12,10 +12,11 @@
 
 @property (nonatomic, readonly) Sequence *sequence;
 @property (nonatomic, readonly) Player *player;
+@property (nonatomic, strong) NSString *filepath;
 
 - (void)addObserver:(id<NAMidiObserver>)observer;
 - (void)removeObserver:(id<NAMidiObserver>)observer;
-- (void)parse:(NSString *)filepath;
+- (void)parse;
 - (void)stop;
 - (void)play;
 - (void)playPause;
