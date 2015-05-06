@@ -14,6 +14,8 @@ struct _TimeTable {
     int32_t length;
 };
 
+const Location LocationZero = {1, 1, 0};
+
 
 static TimeEvent *TimeEventCreate(int32_t tick, TimeSign timeSign)
 {
@@ -227,6 +229,84 @@ float TimeTableTempoOnTick(TimeTable *self, int32_t tick)
     }
 
     return ret;
+}
+
+Location TimeTableTick2Location(TimeTable *self, int32_t tick)
+{
+    Location ret = {0};
+    TimeSign timeSign = {4, 4};
+
+    int32_t offsetTick = 0;
+    int32_t measure = 1;
+
+    CFIndex count = CFArrayGetCount(self->timeList);
+    for (int i = 0; i < count; ++i) {
+        const TimeEvent *event = CFArrayGetValueAtIndex(self->timeList, i);
+        if (tick <= event->tick) {
+            break;
+        }
+
+        int32_t resolution = self->resolution * 4 / timeSign.denominator;
+        int32_t measureLength = resolution * timeSign.numerator;
+
+        measure += (event->tick - offsetTick) / measureLength;
+        offsetTick = event->tick;
+
+        timeSign = event->timeSign;
+    }
+
+    tick -= offsetTick;
+
+    int32_t resolution = self->resolution * 4 / timeSign.denominator;
+    int32_t measureLength = resolution * timeSign.numerator;
+    
+    ret.m = measure + tick / measureLength;
+    ret.b = (tick % measureLength) / resolution + 1;
+    ret.t = tick % resolution;
+
+    return ret;
+}
+
+int64_t TimeTableTick2MicroSec(TimeTable *self, int32_t tick)
+{
+    float offsetTick = 0;
+    float usecPerTick = 60 * 1000 * 1000 / 120.0f / self->resolution;
+    float usec = 0;
+
+    CFIndex count = CFArrayGetCount(self->tempoList);
+    for (int i = 0; i < count; ++i) {
+        const TempoEvent *event = CFArrayGetValueAtIndex(self->tempoList, i);
+        if (tick < event->tick) {
+            break;
+        }
+
+        usec += (event->tick - offsetTick) * usecPerTick;
+        usecPerTick = 60 * 1000 * 1000 / event->tempo / self->resolution;
+        offsetTick = event->tick;
+    }
+
+    return roundf(usec + (tick - offsetTick) * usecPerTick);
+}
+
+int32_t TimeTableMicroSec2Tick(TimeTable *self, int64_t usec)
+{
+    float offsetTick = 0;
+    float usecPerTick = 60 * 1000 * 1000 / 120.0f / self->resolution;
+
+    CFIndex count = CFArrayGetCount(self->tempoList);
+    for (int i = 0; i < count; ++i) {
+        const TempoEvent *event = CFArrayGetValueAtIndex(self->tempoList, i);
+        float tick = offsetTick + usec / usecPerTick;
+        if (tick < event->tick) {
+            break;
+        }
+
+        usec -= (event->tick - offsetTick) * usecPerTick;
+        usecPerTick = 60 * 1000 * 1000 / event->tempo / self->resolution;
+        offsetTick = event->tick;
+    }
+
+    return roundf(offsetTick + usec / usecPerTick);
 }
 
 bool TimeTableSetResolution(TimeTable *self, int32_t resolution)

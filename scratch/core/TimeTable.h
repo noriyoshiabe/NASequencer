@@ -36,4 +36,4 @@ extern Location TimeTableTick2Location(TimeTable *self, int32_t tick);
 extern int64_t TimeTableTick2MicroSec(TimeTable *self, int32_t tick);
 extern int32_t TimeTableMicroSec2Tick(TimeTable *self, int64_t usec);
 
-extern Location LocationZero;
+extern const Location LocationZero;
