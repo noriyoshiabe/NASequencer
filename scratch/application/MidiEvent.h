@@ -2,8 +2,16 @@
 
 #import <Foundation/Foundation.h>
 
+typedef NS_ENUM (NSUInteger, MidiEventType) {
+    MidiEventTypeNote,
+    MidiEventTypeTime,
+    MidiEventTypeTempo,
+    MidiEventTypeMarker,
+};
+
 @interface MidiEvent : NSObject
 
+@property (nonatomic, readonly) MidiEventType type;
 @property (nonatomic, readonly) int32_t tick;
 
 - (id)initWithTick:(int32_t)tick;

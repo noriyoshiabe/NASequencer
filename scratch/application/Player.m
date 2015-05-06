@@ -116,19 +116,40 @@ static PlayerClockSourceCallbacks callbacks = {
     }
 }
 
+- (void)sendNoteOn:(NoteEvent *)event
+{
+    // TODO send to Mixer
+
+    if ([self.delegate respondsToSelector:@selector(player:didSendNoteOn:)]) {
+        [self.delegate player:self didSendNoteOn:event];
+    }
+}
+
+- (void)sendNoteOff:(NoteEvent *)event
+{
+    // TODO send to Mixer
+}
+
+- (void)sendAllNoteOff:(NoteEvent *)event
+{
+    // TODO send to Mixer
+}
+
 - (void)playerClockSource:(PlayerClockSource *)clockSource onNotifyClock:(uint32_t)tick prevTick:(int32_t)prevTick usec:(int64_t)usec location:(Location)location
 {
-#if 0
-    printf("onNotifyClock() tick=%d prevTick=%d usec=%lld location=%d:%d:%d\n", tick, prevTick, usec, location.m, location.b, location.t);
-#endif
-
     _tick = tick;
     _usec = usec;
     _location = location;
 
-    if (_playing) {
+    if (_playing && prevTick < tick) {
         for (MidiEvent *event in [self.sequence eventsFrom:prevTick to:tick]) {
-            // TODO
+            switch (event.type) {
+            case MidiEventTypeNote:
+                [self sendNoteOn:(NoteEvent *)event];
+                break;
+            default:
+                break;
+            }
         }
     }
 }

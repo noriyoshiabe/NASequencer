@@ -41,6 +41,11 @@
     return self;
 }
 
+- (MidiEventType)type
+{
+    return MidiEventTypeNote;
+}
+
 - (NSString *)description
 {
     return [NSString stringWithFormat:@"%@ tick=%d channel=%d noteNo=%d velocity=%d gatetime=%d", self.class.description, self.tick, self.channel, self.noteNo, self.velocity, self.gatetime];
@@ -65,6 +70,11 @@
     return self;
 }
 
+- (MidiEventType)type
+{
+    return MidiEventTypeTime;
+}
+
 - (NSString *)description
 {
     return [NSString stringWithFormat:@"%@ tick=%d numerator=%d denominator=%d", self.class.description, self.tick, self.numerator, self.denominator];
@@ -87,6 +97,11 @@
     return self;
 }
 
+- (MidiEventType)type
+{
+    return MidiEventTypeTempo;
+}
+
 - (NSString *)description
 {
     return [NSString stringWithFormat:@"%@ tick=%d tempo=%.2f", self.class.description, self.tick, self.tempo];
@@ -107,6 +122,11 @@
         self.text = [NSString stringWithCString:text encoding:NSUTF8StringEncoding];
     }
     return self;
+}
+
+- (MidiEventType)type
+{
+    return MidiEventTypeMarker;
 }
 
 - (NSString *)description

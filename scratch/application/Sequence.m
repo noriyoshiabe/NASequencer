@@ -27,9 +27,7 @@
 
 - (Location)location:(int32_t)tick
 {
-    // TODO
-    Location l = {0,0,0};
-    return l;
+    return TimeTableTick2Location(_timeTable, tick);
 }
 
 - (TimeTable *)timeTable
@@ -39,7 +37,7 @@
 
 - (NSArray *)eventsFrom:(int32_t)from to:(int32_t)to
 {
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"tick BETWEEN {%d, %d}", from, to];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%d <= tick AND tick < %d", from, to];
     return [self.events filteredArrayUsingPredicate:predicate];
 }
 
