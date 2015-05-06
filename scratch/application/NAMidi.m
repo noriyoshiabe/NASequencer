@@ -73,8 +73,9 @@ static NAMidiParserCallbacks callbacks = {
 {
     if (self = [super init]) {
         parser = NAMidiParserCreate(&callbacks, (__bridge void *)self);
-        self.player = [[Player alloc] init];
         self.observers = [NSHashTable weakObjectsHashTable];
+        self.player = [[Player alloc] init];
+        self.player.delegate = self;
     }
     return self;
 }
@@ -102,6 +103,36 @@ static NAMidiParserCallbacks callbacks = {
     self.sequenceBuilder = [[SequenceBuilder alloc] init];
     NAMidiParserExecuteParse(parser, [filepath UTF8String]);
     self.sequenceBuilder = nil;
+}
+
+- (void)stop
+{
+    [self.player stop];
+}
+
+- (void)play
+{
+    [self.player play];
+}
+
+- (void)playPause
+{
+    [self.player playPause];
+}
+
+- (void)rewind
+{
+    [self.player rewind];
+}
+
+- (void)forward
+{
+    [self.player forward];
+}
+
+- (void)backward
+{
+    [self.player backward];
 }
 
 - (void)parser:(NAMidiParser *)parser onParseResolution:(uint32_t)resolution
@@ -132,6 +163,7 @@ static NAMidiParserCallbacks callbacks = {
 {
     [self.sequenceBuilder setTimeTable:timeTable];
     self.sequence = [self.sequenceBuilder build];
+    self.player.sequence = self.sequence;
 
     for (id<NAMidiObserver> observer in self.observers) {
         if ([observer respondsToSelector:@selector(namidi:onParseFinish:)]) {

@@ -71,32 +71,57 @@ static PlayerClockSourceCallbacks callbacks = {
 
 - (void)stop
 {
-    PlayerClockSourceStop(clockSorce);
+    if (self.sequence) {
+        PlayerClockSourceStop(clockSorce);
+    }
 }
 
 - (void)play
 {
-    PlayerClockSourcePlay(clockSorce);
+    if (self.sequence) {
+        PlayerClockSourcePlay(clockSorce);
+    }
+}
+
+- (void)playPause
+{
+    if (self.sequence) {
+        if (self.playing) {
+            [self stop];
+        }
+        else {
+            [self play];
+        }
+    }
 }
 
 - (void)rewind
 {
-    PlayerClockSourceRewind(clockSorce);
+    if (self.sequence) {
+        PlayerClockSourceRewind(clockSorce);
+    }
 }
 
 - (void)forward
 {
-    PlayerClockSourceFoward(clockSorce);
+    if (self.sequence) {
+        PlayerClockSourceFoward(clockSorce);
+    }
 }
 
 - (void)backward
 {
-    PlayerClockSourceBackword(clockSorce);
+    if (self.sequence) {
+        PlayerClockSourceBackword(clockSorce);
+    }
 }
 
 - (void)playerClockSource:(PlayerClockSource *)clockSource onNotifyClock:(uint32_t)tick prevTick:(int32_t)prevTick usec:(int64_t)usec location:(Location)location
 {
+#if 0
     printf("onNotifyClock() tick=%d prevTick=%d usec=%lld location=%d:%d:%d\n", tick, prevTick, usec, location.m, location.b, location.t);
+#endif
+
     _tick = tick;
     _usec = usec;
     _location = location;
@@ -130,10 +155,8 @@ static PlayerClockSourceCallbacks callbacks = {
     }
 
     PlayerEvent playerEvent = [self playerEvent:event];
-    if (PlayerEventUnknown != event) {
-        if ([self.delegate respondsToSelector:@selector(player:notifyEvent:)]) {
-            [self.delegate player:self notifyEvent:playerEvent];
-        }
+    if ([self.delegate respondsToSelector:@selector(player:notifyEvent:)]) {
+        [self.delegate player:self notifyEvent:playerEvent];
     }
 }
 
@@ -150,10 +173,8 @@ static PlayerClockSourceCallbacks callbacks = {
         return PlayerEventForward;
     case PlayerClockSourceEventBackward:
         return PlayerEventBackward;
-
     case PlayerClockSourceEventReachEnd:
-    default:
-        return PlayerEventUnknown;
+        return PlayerEventReachEnd;
     }
 }
 
@@ -166,7 +187,7 @@ static PlayerClockSourceCallbacks callbacks = {
     CASE(PlayerEventRewind);
     CASE(PlayerEventForward);
     CASE(PlayerEventBackward);
-    CASE(PlayerClockSourceEventReachEnd);
+    CASE(PlayerEventReachEnd);
     }
     return @"Unknown player event";
 #undef CASE

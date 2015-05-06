@@ -16,6 +16,12 @@
 - (void)addObserver:(id<NAMidiObserver>)observer;
 - (void)removeObserver:(id<NAMidiObserver>)observer;
 - (void)parse:(NSString *)filepath;
+- (void)stop;
+- (void)play;
+- (void)playPause;
+- (void)rewind;
+- (void)forward;
+- (void)backward;
 
 @end
 

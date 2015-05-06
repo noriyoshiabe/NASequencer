@@ -12,8 +12,7 @@ typedef NS_ENUM (NSUInteger, PlayerEvent) {
     PlayerEventRewind,
     PlayerEventForward,
     PlayerEventBackward,
-
-    PlayerEventUnknown,
+    PlayerEventReachEnd,
 };
 
 @protocol PlayerDelegate;
@@ -30,6 +29,7 @@ typedef NS_ENUM (NSUInteger, PlayerEvent) {
 
 - (void)stop;
 - (void)play;
+- (void)playPause;
 - (void)rewind;
 - (void)forward;
 - (void)backward;
