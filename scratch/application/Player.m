@@ -13,10 +13,10 @@
 
 @implementation Player
 
-static void _PlayerClockSourceOnSupplyClock(void *receiver, uint32_t tick, uint32_t prevTick, int64_t usec, Location location)
+static void _PlayerClockSourceOnNotifyClock(void *receiver, int32_t tick, int32_t prevTick, int64_t usec, Location location)
 {
     Player *self = (__bridge Player *)receiver;
-    [self playerClockSource:self->clockSorce onSupplyClock:tick prevTick:prevTick usec:usec location:location];
+    [self playerClockSource:self->clockSorce onNotifyClock:tick prevTick:prevTick usec:usec location:location];
 }
 
 static void _PlayerClockSourceOnNotifyEvent(void *receiver, PlayerClockSourceEvent event)
@@ -26,14 +26,14 @@ static void _PlayerClockSourceOnNotifyEvent(void *receiver, PlayerClockSourceEve
 }
 
 static PlayerClockSourceCallbacks callbacks = {
-    _PlayerClockSourceOnSupplyClock,
+    _PlayerClockSourceOnNotifyClock,
     _PlayerClockSourceOnNotifyEvent,
 };
 
 - (id)init
 {
     if (self = [super init]) {
-        clockSorce = PlayerClockSourceCreate(&callbacks);
+        clockSorce = PlayerClockSourceCreate(&callbacks, (__bridge void *)self);
     }
     return self;
 }
@@ -94,9 +94,9 @@ static PlayerClockSourceCallbacks callbacks = {
     PlayerClockSourceBackword(clockSorce);
 }
 
-- (void)playerClockSource:(PlayerClockSource *)clockSource onSupplyClock:(uint32_t)tick prevTick:(int32_t)prevTick usec:(int64_t)usec location:(Location)location
+- (void)playerClockSource:(PlayerClockSource *)clockSource onNotifyClock:(uint32_t)tick prevTick:(int32_t)prevTick usec:(int64_t)usec location:(Location)location
 {
-    printf("onSupplyClock() tick=%d prevTick=%d usec=%lld location=%d:%d:%d\n", tick, prevTick, usec, location.m, location.b, location.t);
+    printf("onNotifyClock() tick=%d prevTick=%d usec=%lld location=%d:%d:%d\n", tick, prevTick, usec, location.m, location.b, location.t);
     _tick = tick;
     _usec = usec;
     _location = location;

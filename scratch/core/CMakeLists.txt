@@ -21,6 +21,7 @@ set(SOURCES
   TimeTable.c
   NAMidiParser.c
   PlayerClockSource.c
+  MessageQueue.c
 )
 
 add_library(${PROJECT_NAME} ${SOURCES} ${BISON_Parser_OUTPUTS} ${FLEX_Lexer_OUTPUTS})

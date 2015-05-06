@@ -17,18 +17,23 @@ typedef struct _TimeSign {
 
 typedef struct _TimeTable TimeTable;
 
-TimeTable *TimeTableCreate();
-TimeTable *TimeTableCreateFromTimeTable(TimeTable *from, int32_t tick);
-TimeTable *TimeTableRetain(TimeTable *self);
-void TimeTableRelease(TimeTable *self);
-void TimeTableDump(TimeTable *self);
-void TimeTableDumpToBuffer(TimeTable *self, char *buffer, size_t size);
+extern TimeTable *TimeTableCreate();
+extern TimeTable *TimeTableCreateFromTimeTable(TimeTable *from, int32_t tick);
+extern TimeTable *TimeTableRetain(TimeTable *self);
+extern void TimeTableRelease(TimeTable *self);
+extern void TimeTableDump(TimeTable *self);
+extern void TimeTableDumpToBuffer(TimeTable *self, char *buffer, size_t size);
 
-void TimeTableAddTimeSign(TimeTable *self, int32_t tick, TimeSign timeSign);
-void TimeTableAddTempo(TimeTable *self, int32_t tick, float tempo);
+extern void TimeTableAddTimeSign(TimeTable *self, int32_t tick, TimeSign timeSign);
+extern void TimeTableAddTempo(TimeTable *self, int32_t tick, float tempo);
 
-int32_t TimeTableResolution(TimeTable *self);
-int32_t TimeTableLength(TimeTable *self);
-int32_t TimeTableTickByMeasure(TimeTable *self, int32_t measure);
-TimeSign TimeTableTimeSignOnTick(TimeTable *self, int32_t tick);
-float TimeTableTempoOnTick(TimeTable *self, int32_t tick);
+extern int32_t TimeTableResolution(TimeTable *self);
+extern int32_t TimeTableLength(TimeTable *self);
+extern int32_t TimeTableTickByMeasure(TimeTable *self, int32_t measure);
+extern TimeSign TimeTableTimeSignOnTick(TimeTable *self, int32_t tick);
+extern float TimeTableTempoOnTick(TimeTable *self, int32_t tick);
+extern Location TimeTableTick2Location(TimeTable *self, int32_t tick);
+extern int64_t TimeTableTick2MicroSec(TimeTable *self, int32_t tick);
+extern int32_t TimeTableMicroSec2Tick(TimeTable *self, int64_t usec);
+
+extern Location LocationZero;

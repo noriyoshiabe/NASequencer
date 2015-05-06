@@ -14,11 +14,11 @@ typedef enum {
 typedef struct _PlayerClockSource PlayerClockSource;
 
 typedef struct _PlayerClockSourceCallbacks {
-    void (*onSupplyClock)(void *receiver, uint32_t tick, uint32_t prevTick, int64_t usec, Location location);
+    void (*onNotifyClock)(void *receiver, int32_t tick, int32_t prevTick, int64_t usec, Location location);
     void (*onNotifyEvent)(void *receiver, PlayerClockSourceEvent event);
 } PlayerClockSourceCallbacks;
 
-extern PlayerClockSource *PlayerClockSourceCreate(PlayerClockSourceCallbacks *callbacks);
+extern PlayerClockSource *PlayerClockSourceCreate(PlayerClockSourceCallbacks *callbacks, void *receiver);
 extern void PlayerClockSourceDestroy(PlayerClockSource *self);
 extern void PlayerClockSourceSetTimeTable(PlayerClockSource *self, TimeTable *timeTable);
 extern void PlayerClockSourceStop(PlayerClockSource *self);
