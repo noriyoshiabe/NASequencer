@@ -13,10 +13,10 @@
 
 @implementation Player
 
-static void _PlayerClockSourceOnSupplyClock(void *receiver, int64_t usec, uint32_t tick, Location location)
+static void _PlayerClockSourceOnSupplyClock(void *receiver, uint32_t tick, uint32_t prevTick, int64_t usec, Location location)
 {
     Player *self = (__bridge Player *)receiver;
-    [self playerClockSource:self->clockSorce onSupplyClock:usec tick:tick location:location];
+    [self playerClockSource:self->clockSorce onSupplyClock:tick prevTick:prevTick usec:usec location:location];
 }
 
 static void _PlayerClockSourceOnNotifyEvent(void *receiver, PlayerClockSourceEvent event)
@@ -36,6 +36,11 @@ static PlayerClockSourceCallbacks callbacks = {
         clockSorce = PlayerClockSourceCreate(&callbacks);
     }
     return self;
+}
+
+- (void)dealloc
+{
+    PlayerClockSourceDestroy(clockSorce);
 }
 
 - (bool)playing
@@ -58,14 +63,98 @@ static PlayerClockSourceCallbacks callbacks = {
     return _location;
 }
 
-- (void)playerClockSource:(PlayerClockSource *)clockSource onSupplyClock:(int64_t)usec tick:(uint32_t)tick location:(Location)location
+- (void)setSequence:(Sequence *)newSequence
 {
-    printf("onSupplyClock() usec=%lld tick=%d location=%d:%d:%d\n", usec, tick, location.m, location.b, location.t);
+    _sequence = newSequence;
+    PlayerClockSourceSetTimeTable(clockSorce, _sequence.timeTable);
+}
+
+- (void)stop
+{
+    PlayerClockSourceStop(clockSorce);
+}
+
+- (void)play
+{
+    PlayerClockSourcePlay(clockSorce);
+}
+
+- (void)rewind
+{
+    PlayerClockSourceRewind(clockSorce);
+}
+
+- (void)forward
+{
+    PlayerClockSourceFoward(clockSorce);
+}
+
+- (void)backward
+{
+    PlayerClockSourceBackword(clockSorce);
+}
+
+- (void)playerClockSource:(PlayerClockSource *)clockSource onSupplyClock:(uint32_t)tick prevTick:(int32_t)prevTick usec:(int64_t)usec location:(Location)location
+{
+    printf("onSupplyClock() tick=%d prevTick=%d usec=%lld location=%d:%d:%d\n", tick, prevTick, usec, location.m, location.b, location.t);
+    _tick = tick;
+    _usec = usec;
+    _location = location;
+
+    if (_playing) {
+        for (MidiEvent *event in [self.sequence eventsFrom:prevTick to:tick]) {
+            // TODO
+        }
+    }
 }
 
 - (void)playerClockSource:(PlayerClockSource *)clockSource onNotifyEvent:(PlayerClockSourceEvent)event
 {
     printf("onNotifyEvent() event=%s\n", PlayerClockSourceEvent2String(event));
+
+    switch (event) {
+    case PlayerClockSourceEventStop:
+        _playing = NO;
+        break;
+    case PlayerClockSourceEventPlay:
+        _playing = YES;
+        break;
+    case PlayerClockSourceEventRewind:
+        break;
+    case PlayerClockSourceEventForward:
+        break;
+    case PlayerClockSourceEventBackward:
+        break;
+    case PlayerClockSourceEventReachEnd:
+        [self stop];
+        [self rewind];
+        break;
+    }
+
+    PlayerEvent playerEvent = [self playerEvent:event];
+    if (PlayerEventUnknown != event) {
+        [self.delegate player:self notifyEvent:playerEvent];
+    }
+}
+
+- (PlayerEvent)playerEvent:(PlayerClockSourceEvent)event
+{
+    switch (event) {
+    case PlayerClockSourceEventStop:
+        return PlayerEventStop;
+    case PlayerClockSourceEventPlay:
+        return PlayerEventPlay;
+    case PlayerClockSourceEventRewind:
+        return PlayerEventRewind;
+    case PlayerClockSourceEventForward:
+        return PlayerEventForward;
+    case PlayerClockSourceEventBackward:
+        return PlayerEventBackward;
+
+    case PlayerClockSourceEventReachEnd:
+    default:
+        return PlayerEventUnknown;
+    }
 }
 
 @end

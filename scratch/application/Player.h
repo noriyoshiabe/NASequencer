@@ -12,6 +12,8 @@ typedef NS_ENUM (NSUInteger, PlayerEvent) {
     PlayerEventRewind,
     PlayerEventForward,
     PlayerEventBackward,
+
+    PlayerEventUnknown,
 };
 
 @protocol PlayerDelegate;
@@ -25,6 +27,12 @@ typedef NS_ENUM (NSUInteger, PlayerEvent) {
 
 @property (nonatomic, strong) Sequence *sequence;
 @property (nonatomic, weak) id<PlayerDelegate> delegate;
+
+- (void)stop;
+- (void)play;
+- (void)rewind;
+- (void)forward;
+- (void)backward;
 
 @end
 

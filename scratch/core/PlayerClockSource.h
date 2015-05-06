@@ -14,7 +14,7 @@ typedef enum {
 typedef struct _PlayerClockSource PlayerClockSource;
 
 typedef struct _PlayerClockSourceCallbacks {
-    void (*onSupplyClock)(void *receiver, int64_t usec, uint32_t tick, Location location);
+    void (*onSupplyClock)(void *receiver, uint32_t tick, uint32_t prevTick, int64_t usec, Location location);
     void (*onNotifyEvent)(void *receiver, PlayerClockSourceEvent event);
 } PlayerClockSourceCallbacks;
 
