@@ -14,6 +14,11 @@
     return self;
 }
 
+- (NSComparisonResult)compare:(MidiEvent *)event
+{
+    return self.tick - event.tick;
+}
+
 @end
 
 @interface NoteEvent()

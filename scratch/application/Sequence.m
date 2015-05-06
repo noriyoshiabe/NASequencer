@@ -37,10 +37,10 @@
     return _timeTable;
 }
 
-- (NSArray *)events:(int32_t)tickFrom tickTo:(int32_t)tickTo
+- (NSArray *)eventsFrom:(int32_t)from to:(int32_t)to
 {
-    // TODO
-    return self.events;
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"tick BETWEEN {%d, %d}", from, to];
+    return [self.events filteredArrayUsingPredicate:predicate];
 }
 
 - (id)initWithEvents:(NSArray *)events timeTable:(TimeTable *)timeTable

@@ -46,7 +46,7 @@
 
 - (Sequence *)build
 {
-    Sequence *ret = [[Sequence alloc] initWithEvents:[self.events sortedArrayUsingSelector:@selector(tick)] timeTable:_timeTable];
+    Sequence *ret = [[Sequence alloc] initWithEvents:[self.events sortedArrayUsingSelector:@selector(compare:)] timeTable:_timeTable];
     self.events = nil;
     return ret;
 }
