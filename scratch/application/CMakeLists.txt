@@ -17,6 +17,7 @@ set(SOURCES
   Sequence.m
   SequenceBuilder.m
   MidiEvent.m
+  Mixer.m
 )
 
 add_library(${PROJECT_NAME} ${SOURCES})

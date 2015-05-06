@@ -1,9 +1,12 @@
 #import "NAMidi.h"
+#import "Mixer.h"
 #import "Controller.h"
 #import "View.h"
 
 int main(int argc, char **argv)
 {
+    [[Mixer sharedInstance] initialize];
+
     NAMidi *namidi = [[NAMidi alloc] init];
     Controller *controller = [[Controller alloc] init];
     controller.namidi = namidi;

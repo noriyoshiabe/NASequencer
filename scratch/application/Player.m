@@ -1,5 +1,6 @@
 #import "Player.h"
 #import "PlayerClockSource.h"
+#import "Mixer.h"
 
 @interface Player() {
     PlayerClockSource *clockSorce;
@@ -120,7 +121,7 @@ static PlayerClockSourceCallbacks callbacks = {
 
 - (void)sendNoteOn:(NoteEvent *)event
 {
-    // TODO send to Mixer
+    [[Mixer sharedInstance] sendNoteOn:event];
 
     [_playingNoteEvents addObject:event];
 
@@ -131,7 +132,7 @@ static PlayerClockSourceCallbacks callbacks = {
 
 - (void)sendNoteOff:(NoteEvent *)event
 {
-    // TODO send to Mixer
+    [[Mixer sharedInstance] sendNoteOff:event];
 
     [_playingNoteEvents removeObject:event];
 
@@ -146,7 +147,7 @@ static PlayerClockSourceCallbacks callbacks = {
         [self sendNoteOff:event];
     }
 
-    // TODO send all note off event to Mixer
+    [[Mixer sharedInstance] sendAllNoteOff];
 }
 
 - (void)scanNoteOffFrom:(int32_t)from to:(int32_t)to
