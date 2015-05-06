@@ -23,6 +23,7 @@ typedef NS_ENUM (NSUInteger, PlayerEvent) {
 @property (nonatomic, readonly) int64_t usec;
 @property (nonatomic, readonly) int32_t tick;
 @property (nonatomic, readonly) Location location;
+@property (nonatomic, readonly) NSSet *playingNoteEvents;
 
 @property (nonatomic, strong) Sequence *sequence;
 @property (nonatomic, weak) id<PlayerDelegate> delegate;

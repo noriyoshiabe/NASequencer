@@ -7,6 +7,7 @@
     int64_t _usec;
     int32_t _tick;
     Location _location;
+    NSMutableSet *_playingNoteEvents;
 }
 
 @end
@@ -34,6 +35,7 @@ static PlayerClockSourceCallbacks callbacks = {
 {
     if (self = [super init]) {
         clockSorce = PlayerClockSourceCreate(&callbacks, (__bridge void *)self);
+        _playingNoteEvents = [NSMutableSet set];
     }
     return self;
 }
@@ -120,6 +122,8 @@ static PlayerClockSourceCallbacks callbacks = {
 {
     // TODO send to Mixer
 
+    [_playingNoteEvents addObject:event];
+
     if ([self.delegate respondsToSelector:@selector(player:didSendNoteOn:)]) {
         [self.delegate player:self didSendNoteOn:event];
     }
@@ -128,11 +132,30 @@ static PlayerClockSourceCallbacks callbacks = {
 - (void)sendNoteOff:(NoteEvent *)event
 {
     // TODO send to Mixer
+
+    [_playingNoteEvents removeObject:event];
+
+    if ([self.delegate respondsToSelector:@selector(player:didSendNoteOff:)]) {
+        [self.delegate player:self didSendNoteOff:event];
+    }
 }
 
-- (void)sendAllNoteOff:(NoteEvent *)event
+- (void)sendAllNoteOff
 {
-    // TODO send to Mixer
+    for (NoteEvent *event in [self.playingNoteEvents allObjects]) {
+        [self sendNoteOff:event];
+    }
+
+    // TODO send all note off event to Mixer
+}
+
+- (void)scanNoteOffFrom:(int32_t)from to:(int32_t)to
+{
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%d <= offTick AND offTick < %d", from, to];
+
+    for (NoteEvent *event in [self.playingNoteEvents filteredSetUsingPredicate:predicate]) {
+        [self sendNoteOff:event];
+    }
 }
 
 - (void)playerClockSource:(PlayerClockSource *)clockSource onNotifyClock:(uint32_t)tick prevTick:(int32_t)prevTick usec:(int64_t)usec location:(Location)location
@@ -142,6 +165,8 @@ static PlayerClockSourceCallbacks callbacks = {
     _location = location;
 
     if (_playing && prevTick < tick) {
+        [self scanNoteOffFrom:prevTick to:tick];
+
         for (MidiEvent *event in [self.sequence eventsFrom:prevTick to:tick]) {
             switch (event.type) {
             case MidiEventTypeNote:
@@ -158,16 +183,20 @@ static PlayerClockSourceCallbacks callbacks = {
 {
     switch (event) {
     case PlayerClockSourceEventStop:
+        [self sendAllNoteOff];
         _playing = NO;
         break;
     case PlayerClockSourceEventPlay:
         _playing = YES;
         break;
     case PlayerClockSourceEventRewind:
+        [self sendAllNoteOff];
         break;
     case PlayerClockSourceEventForward:
+        [self sendAllNoteOff];
         break;
     case PlayerClockSourceEventBackward:
+        [self sendAllNoteOff];
         break;
     case PlayerClockSourceEventReachEnd:
         [self stop];
