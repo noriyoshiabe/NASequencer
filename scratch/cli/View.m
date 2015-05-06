@@ -10,7 +10,20 @@
 
 - (void)namidi:(NAMidi *)namidi onParseFinish:(Sequence *)sequence
 {
-    NSLog(@"onParseFinish: %@", sequence);
+    printf("\n");
+    printf("Sequence\n");
+    printf("============================================\n");
+    printf("resolution: %d\n", [sequence resolution]);
+    printf("length: %d\n", [sequence length]);
+    printf("\n");
+    printf("Events\n");
+    printf("--------------------------------------------\n");
+
+    for (MidiEvent *event in sequence.events) {
+        printf("%s\n", [[event description] UTF8String]);
+    }
+
+    printf("\n");
 }
 
 - (void)namidi:(NAMidi *)namidi onParseError:(NSString *)filepath line:(int)line column:(int)column error:(ParseError)error info:(const void *)info
