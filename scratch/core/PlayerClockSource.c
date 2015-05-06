@@ -43,7 +43,7 @@ PlayerClockSource *PlayerClockSourceCreate(PlayerClockSourceCallbacks *callbacks
     PlayerClockSource *self = calloc(1, sizeof(PlayerClockSource));
     self->callbacks = callbacks;
     self->receiver = receiver;
-
+    self->msgQ = MessageQueueCreate();
     pthread_create(&self->thread, NULL, _PlayerClockSourceRun, self);
     return self;
 }
