@@ -54,4 +54,23 @@ static Mixer *_sharedInstance = nil;
     }
 }
 
+- (void)sendSound:(SoundEvent *)event
+{
+    uint8_t bytes[3];
+    MidiClient *client = clients[event.channel - 1];
+
+    bytes[0] = 0xB0 | (0x0F & (event.channel - 1));
+    bytes[1] = 0x00;
+    bytes[2] = event.msb;
+    client->send(client, bytes, sizeof(bytes));
+
+    bytes[1] = 0x20;
+    bytes[2] = event.lsb;
+    client->send(client, bytes, sizeof(bytes));
+
+    bytes[0] = 0xC0 | (0x0F & (event.channel - 1));
+    bytes[1] = event.programNo;
+    client->send(client, bytes, sizeof(bytes));
+}
+
 @end

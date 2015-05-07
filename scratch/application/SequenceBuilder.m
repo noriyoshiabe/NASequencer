@@ -34,6 +34,11 @@
     [self.events addObject:[[TempoEvent alloc] initWithTick:tick tempo:tempo]];
 }
 
+- (void)addSound:(uint32_t)tick channel:(uint8_t)channel msb:(uint8_t)msb lsb:(uint8_t)lsb programNo:(uint8_t)programNo
+{
+    [self.events addObject:[[SoundEvent alloc] initWithTick:tick channel:channel msb:msb lsb:lsb programNo:programNo]];
+}
+
 - (void)addMarker:(uint32_t)tick text:(const char *)text
 {
     [self.events addObject:[[MarkerEvent alloc] initWithTick:tick text:text]];

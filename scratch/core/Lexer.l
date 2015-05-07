@@ -44,6 +44,7 @@ RESOLUTION     resolution
 KEY            key
 TIME           time
 TEMPO          tempo
+SOUND          sound
 MARKER         marker
 CHANNEL        channel
 VELOCITY       velocity
@@ -91,6 +92,7 @@ LINE_COMMENT   \/\/.*$
 {KEY}            { return KEY; }
 {TIME}           { return TIME; }
 {TEMPO}          { return TEMPO; }
+{SOUND}          { return SOUND; }
 {MARKER}         { return MARKER; }
 {CHANNEL}        { return CHANNEL; }
 {VELOCITY}       { return VELOCITY; }

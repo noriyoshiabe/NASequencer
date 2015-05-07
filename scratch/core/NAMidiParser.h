@@ -13,6 +13,7 @@ typedef struct {
     void (*onParseNote)(void *receiver, uint32_t tick, uint8_t channel, uint8_t noteNo, uint8_t velocity, uint32_t gatetime);
     void (*onParseTime)(void *receiver, uint32_t tick, uint8_t numerator, uint8_t denominator);
     void (*onParseTempo)(void *receiver, uint32_t tick, float tempo);
+    void (*onParseSound)(void *receiver, uint32_t tick, uint8_t channel, uint8_t msb, uint8_t lsb, uint8_t programNo);
     void (*onParseMarker)(void *receiver, uint32_t tick, const char *text);
 
     void (*onFinish)(void *receiver, TimeTable *timeTable);

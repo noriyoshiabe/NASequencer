@@ -115,6 +115,39 @@
 @end
 
 
+@interface SoundEvent()
+@property (nonatomic, readwrite) uint8_t channel;
+@property (nonatomic, readwrite) uint8_t msb;
+@property (nonatomic, readwrite) uint8_t lsb;
+@property (nonatomic, readwrite) uint8_t programNo;
+@end
+
+@implementation SoundEvent
+
+- (id)initWithTick:(int32_t)tick channel:(uint8_t)channel msb:(uint8_t)msb lsb:(uint8_t)lsb programNo:(uint8_t)programNo;
+{
+    if (self = [super initWithTick:tick]) {
+        self.channel = channel;
+        self.msb = msb;
+        self.lsb = lsb;
+        self.programNo = programNo;
+    }
+    return self;
+}
+
+- (MidiEventType)type
+{
+    return MidiEventTypeSound;
+}
+
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"%@ tick=%d channel=%d msb=%d lsb=%d programNo=%d", self.class.description, self.tick, self.channel, self.msb, self.lsb, self.programNo];
+}
+
+@end
+
+
 @interface MarkerEvent()
 @property (nonatomic, readwrite) NSString *text;
 @end

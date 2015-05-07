@@ -17,6 +17,7 @@ typedef enum {
     ExpressionTypeTime,
     ExpressionTypeTimeSign,
     ExpressionTypeTempo,
+    ExpressionTypeSound,
     ExpressionTypeMarker,
     ExpressionTypeChannel,
     ExpressionTypeVelocity,
@@ -59,6 +60,7 @@ static inline const char *ExpressionType2String(ExpressionType type)
     CASE(ExpressionTypeTime);
     CASE(ExpressionTypeTimeSign);
     CASE(ExpressionTypeTempo);
+    CASE(ExpressionTypeSound);
     CASE(ExpressionTypeMarker);
     CASE(ExpressionTypeChannel);
     CASE(ExpressionTypeVelocity);

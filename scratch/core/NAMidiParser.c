@@ -130,6 +130,7 @@ typedef struct _Context {
 } Context;
 
 static bool ContextOnParseNote(Context *self, int32_t tick, uint8_t channel, uint8_t noteNo, uint8_t velocity, uint32_t gatetime);
+static bool ContextOnParseSound(Context *self, int32_t tick, uint8_t channel, int *params);
 static bool ContextOnParseMarker(Context *self, int32_t tick, const char *text);
 
 static bool parseExpression(Expression *expression, Context *context, void *value);
@@ -239,6 +240,23 @@ static bool ContextOnParseNote(Context *self, int32_t tick, uint8_t channel, uin
     }
     else {
         self->parser->callbacks->onParseNote(self->parser->receiver, tick, channel, noteNo, velocity, gatetime);
+    }
+
+    return true;
+}
+
+static bool ContextOnParseSound(Context *self, int32_t tick, uint8_t channel, int *params)
+{
+    tick -= self->blockOffset;
+    if (!isInsideOffsetLength(self, tick)) {
+        return true;
+    }
+
+    if (self->parent) {
+        ContextOnParseSound(self->parent, ContextGetTickInParent(self, tick), channel, params);
+    }
+    else {
+        self->parser->callbacks->onParseSound(self->parser->receiver, tick, channel, params[0], params[1], params[2]);
     }
 
     return true;
@@ -677,6 +695,27 @@ static bool parseTempo(Expression *expression, Context *context, void *value)
     return true;
 }
 
+static bool parseSound(Expression *expression, Context *context, void *value)
+{
+    int32_t params[3] = {-1, -1, -1};
+    int32_t *p = params;
+
+    for (Expression *expr = expression->child; expr; expr = expr->next) {
+        parseExpression(expr, context, p++);
+    }
+
+    for (int i = 0; i < 3; ++i) {
+        if (!isValidRange(params[i], 0, 127)) {
+            int index = i + 1;
+            CALLBACK_ERROR(context, expression, ParseErrorInvalidSound, &index);
+            return false;
+        }
+    }
+
+    ContextOnParseSound(context, context->tick, context->channel, params);
+    return true;
+}
+
 static bool parseMarker(Expression *expression, Context *context, void *value)
 {
     return ContextOnParseMarker(context, context->tick, expression->v.s);
@@ -926,6 +965,7 @@ static void __attribute__((constructor)) initializeTable()
     functionTable[ExpressionTypeTime] = parseTime;
     functionTable[ExpressionTypeTimeSign] = parseTimeSign;
     functionTable[ExpressionTypeTempo] = parseTempo;
+    functionTable[ExpressionTypeSound] = parseSound;
     functionTable[ExpressionTypeMarker] = parseMarker;
     functionTable[ExpressionTypeChannel] = parseChannel;
     functionTable[ExpressionTypeVelocity] = parseVelocity;

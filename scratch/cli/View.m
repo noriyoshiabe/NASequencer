@@ -46,5 +46,10 @@
     NSLog(@"player:didSendNoteOff: noteEvent=%@\n", noteEvent);
 }
 
+- (void)namidi:(NAMidi *)namidi player:(Player *)player didSendSound:(SoundEvent *)soundEvent
+{
+    NSLog(@"player:didSendSound: soundEvent=%@\n", soundEvent);
+}
+
 @end
 

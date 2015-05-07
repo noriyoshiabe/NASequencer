@@ -20,6 +20,7 @@ typedef enum {
     ParseErrorInvalidVelociy,
     ParseErrorInvalidGatetime,
     ParseErrorInvalidOctave,
+    ParseErrorInvalidSound,
     ParseErrorInvalidLocation,
     ParseErrorInvalidMeasure,
     ParseErrorPatternMissing,
@@ -51,6 +52,7 @@ static inline const char *ParseError2String(ParseError error)
     CASE(ParseErrorInvalidVelociy);
     CASE(ParseErrorInvalidGatetime);
     CASE(ParseErrorInvalidOctave);
+    CASE(ParseErrorInvalidSound);
     CASE(ParseErrorInvalidLocation);
     CASE(ParseErrorInvalidMeasure);
     CASE(ParseErrorPatternMissing);

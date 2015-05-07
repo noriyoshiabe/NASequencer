@@ -36,6 +36,7 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, cons
 %token KEY
 %token TIME
 %token TEMPO
+%token SOUND
 %token MARKER
 %token CHANNEL
 %token VELOCITY
@@ -67,6 +68,7 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, cons
 %type <expression> statement_list
 %type <expression> statement
 %type <expression> integer
+%type <expression> integer_list
 %type <expression> float
 %type <expression> note_block
 %type <expression> note_list
@@ -111,6 +113,7 @@ statement
     | TIME time_sign    { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeTime, $2); }
     | TEMPO integer     { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeTempo, $2); }
     | TEMPO float       { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeTempo, $2); }
+    | SOUND integer_list { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeSound, $2); }
     | MARKER STRING     { $$ = ExpressionCreateTrimmedStringValue(scanner, &@$, ExpressionTypeMarker, $2); }
     | CHANNEL INTEGER   { $$ = ExpressionCreateIntegerValue(scanner, &@$, ExpressionTypeChannel, $2); }
     | VELOCITY INTEGER  { $$ = ExpressionCreateIntegerValue(scanner, &@$, ExpressionTypeVelocity, $2); }
@@ -130,6 +133,11 @@ statement
 
 integer
     : INTEGER { $$ = ExpressionCreateIntegerValue(scanner, &@$, ExpressionTypeInteger, $1); }
+    ;
+
+integer_list
+    : integer
+    | integer_list integer { $$ = ExpressionAddSibling($1, $2); }
     ;
 
 float

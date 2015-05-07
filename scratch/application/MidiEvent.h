@@ -6,6 +6,7 @@ typedef NS_ENUM (NSUInteger, MidiEventType) {
     MidiEventTypeNote,
     MidiEventTypeTime,
     MidiEventTypeTempo,
+    MidiEventTypeSound,
     MidiEventTypeMarker,
 };
 
@@ -46,6 +47,17 @@ typedef NS_ENUM (NSUInteger, MidiEventType) {
 @property (nonatomic, readonly) float tempo;
 
 - (id)initWithTick:(int32_t)tick tempo:(float)tempo;
+
+@end
+
+@interface SoundEvent : MidiEvent
+
+@property (nonatomic, readonly) uint8_t channel;
+@property (nonatomic, readonly) uint8_t msb;
+@property (nonatomic, readonly) uint8_t lsb;
+@property (nonatomic, readonly) uint8_t programNo;
+
+- (id)initWithTick:(int32_t)tick channel:(uint8_t)channel msb:(uint8_t)msb lsb:(uint8_t)lsb programNo:(uint8_t)programNo;
 
 @end
 

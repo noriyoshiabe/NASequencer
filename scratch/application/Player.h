@@ -44,5 +44,6 @@ typedef NS_ENUM (NSUInteger, PlayerEvent) {
 - (void)player:(Player *)player notifyEvent:(PlayerEvent)playerEvent;
 - (void)player:(Player *)player didSendNoteOn:(NoteEvent *)noteEvent;
 - (void)player:(Player *)player didSendNoteOff:(NoteEvent *)noteEvent;
+- (void)player:(Player *)player didSendSound:(SoundEvent *)soundEvent;
 @end
 

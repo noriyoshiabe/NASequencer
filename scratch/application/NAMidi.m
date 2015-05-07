@@ -42,6 +42,12 @@ static void _NAMidiParserOnParseTempo(void *receiver, uint32_t tick, float tempo
     [self parser:self->parser onParseTempo:tick tempo:tempo];
 }
 
+static void _NAMidiParserOnParseSound(void *receiver, uint32_t tick, uint8_t channel, uint8_t msb, uint8_t lsb, uint8_t programNo)
+{
+    NAMidi *self = (__bridge NAMidi *)receiver;
+    [self parser:self->parser onParseSound:tick channel:channel msb:msb lsb:lsb programNo:programNo];
+}
+
 static void _NAMidiParserOnParseMarker(void *receiver, uint32_t tick, const char *text)
 {
     NAMidi *self = (__bridge NAMidi *)receiver;
@@ -65,6 +71,7 @@ static NAMidiParserCallbacks parserCallbacks = {
     _NAMidiParserOnParseNote,
     _NAMidiParserOnParseTime,
     _NAMidiParserOnParseTempo,
+    _NAMidiParserOnParseSound,
     _NAMidiParserOnParseMarker,
 
     _NAMidiParserOnFinish,
@@ -183,6 +190,11 @@ static FSWatcherCallbacks watcherCallbacks = {
 - (void)parser:(NAMidiParser *)parser onParseTempo:(uint32_t)tick tempo:(float)tempo
 {
     [self.sequenceBuilder addTempo:tick tempo:tempo];
+}
+
+- (void)parser:(NAMidiParser *)parser onParseSound:(uint32_t)tick channel:(uint8_t)channel msb:(uint8_t)msb lsb:(uint8_t)lsb programNo:(uint8_t)programNo
+{
+    [self.sequenceBuilder addSound:tick channel:channel msb:msb lsb:lsb programNo:programNo];
 }
 
 - (void)parser:(NAMidiParser *)parser onParseMarker:(uint32_t)tick text:(const char *)text

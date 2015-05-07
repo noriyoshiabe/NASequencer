@@ -1,8 +1,13 @@
+channel 1
+sound 127 0 0
+
 resolution 240
 
 CCCC
-EEEE
-FFF
+
+sound 0 0 0
+
+CCCC
 
 
 /*

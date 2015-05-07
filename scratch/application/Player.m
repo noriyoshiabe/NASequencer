@@ -159,6 +159,15 @@ static PlayerClockSourceCallbacks callbacks = {
     }
 }
 
+- (void)sendSound:(SoundEvent *)event
+{
+    [[Mixer sharedInstance] sendSound:event];
+
+    if ([self.delegate respondsToSelector:@selector(player:didSendSound:)]) {
+        [self.delegate player:self didSendSound:event];
+    }
+}
+
 - (void)playerClockSource:(PlayerClockSource *)clockSource onNotifyClock:(uint32_t)tick prevTick:(int32_t)prevTick usec:(int64_t)usec location:(Location)location
 {
     _tick = tick;
@@ -172,6 +181,9 @@ static PlayerClockSourceCallbacks callbacks = {
             switch (event.type) {
             case MidiEventTypeNote:
                 [self sendNoteOn:(NoteEvent *)event];
+                break;
+            case MidiEventTypeSound:
+                [self sendSound:(SoundEvent *)event];
                 break;
             default:
                 break;

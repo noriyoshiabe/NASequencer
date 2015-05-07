@@ -10,4 +10,5 @@
 - (void)sendNoteOn:(NoteEvent *)event;
 - (void)sendNoteOff:(NoteEvent *)event;
 - (void)sendAllNoteOff;
+- (void)sendSound:(SoundEvent *)event;
 @end
