@@ -68,7 +68,6 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, cons
 %type <expression> statement_list
 %type <expression> statement
 %type <expression> integer
-%type <expression> integer_list
 %type <expression> float
 %type <expression> note_block
 %type <expression> note_list
@@ -76,6 +75,7 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, Expression **expression, cons
 %type <expression> time_sign
 %type <expression> quantize_time_sign
 %type <expression> quantize
+%type <expression> sound_param
 %type <expression> location_value
 %type <expression> identifier
 %type <expression> block
@@ -113,7 +113,7 @@ statement
     | TIME time_sign    { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeTime, $2); }
     | TEMPO integer     { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeTempo, $2); }
     | TEMPO float       { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeTempo, $2); }
-    | SOUND integer_list { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeSound, $2); }
+    | SOUND sound_param { $$ = ExpressionCreate(scanner, &@$, ExpressionTypeSound, $2); }
     | MARKER STRING     { $$ = ExpressionCreateTrimmedStringValue(scanner, &@$, ExpressionTypeMarker, $2); }
     | CHANNEL INTEGER   { $$ = ExpressionCreateIntegerValue(scanner, &@$, ExpressionTypeChannel, $2); }
     | VELOCITY INTEGER  { $$ = ExpressionCreateIntegerValue(scanner, &@$, ExpressionTypeVelocity, $2); }
@@ -135,9 +135,8 @@ integer
     : INTEGER { $$ = ExpressionCreateIntegerValue(scanner, &@$, ExpressionTypeInteger, $1); }
     ;
 
-integer_list
-    : integer
-    | integer_list integer { $$ = ExpressionAddSibling($1, $2); }
+sound_param
+    : integer integer integer { $$ = ExpressionAddSibling(ExpressionAddSibling($1, $2), $3); }
     ;
 
 float
