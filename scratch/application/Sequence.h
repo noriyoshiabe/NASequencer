@@ -3,6 +3,7 @@
 #import <Foundation/Foundation.h>
 
 #import "TimeTable.h"
+#import "MidiEvent.h"
 
 @interface Sequence : NSObject
 

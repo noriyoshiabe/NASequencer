@@ -152,7 +152,10 @@ static PlayerClockSourceCallbacks callbacks = {
 
 - (void)scanNoteOffFrom:(int32_t)from to:(int32_t)to
 {
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%d <= offTick AND offTick < %d", from, to];
+    NSPredicate *predicate = [NSPredicate predicateWithBlock:^BOOL(id object, NSDictionary *bindings) {
+        NoteEvent *event = (NoteEvent *)object;
+        return from <= event.offTick && event.offTick < to;
+    }];
 
     for (NoteEvent *event in [self.playingNoteEvents filteredSetUsingPredicate:predicate]) {
         [self sendNoteOff:event];

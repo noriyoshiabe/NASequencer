@@ -37,7 +37,11 @@
 
 - (NSArray *)eventsFrom:(int32_t)from to:(int32_t)to
 {
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%d <= tick AND tick < %d", from, to];
+    NSPredicate *predicate = [NSPredicate predicateWithBlock:^BOOL(id object, NSDictionary *bindings) {
+        MidiEvent *event = (MidiEvent *)object;
+        return from <= event.tick && event.tick < to;
+    }];
+
     return [self.events filteredArrayUsingPredicate:predicate];
 }
 

@@ -26,6 +26,7 @@ typedef NS_ENUM (NSUInteger, MidiEventType) {
 @property (nonatomic, readonly) uint8_t noteNo;
 @property (nonatomic, readonly) uint8_t velocity;
 @property (nonatomic, readonly) uint32_t gatetime;
+@property (nonatomic, readonly) uint32_t offTick;
 
 - (id)initWithTick:(int32_t)tick channel:(uint8_t)channel noteNo:(uint8_t)noteNo velocity:(uint8_t)velocity gatetime:(uint32_t)gatetime;
 

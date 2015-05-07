@@ -51,7 +51,7 @@
     return [NSString stringWithFormat:@"%@ tick=%d channel=%d noteNo=%d velocity=%d gatetime=%d", self.class.description, self.tick, self.channel, self.noteNo, self.velocity, self.gatetime];
 }
 
-- (int32_t)offTick
+- (uint32_t)offTick
 {
     return self.tick + self.gatetime;
 }
