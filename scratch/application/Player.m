@@ -9,6 +9,8 @@
     int32_t _tick;
     Location _location;
     NSMutableSet *_playingNoteEvents;
+
+    int _index;
 }
 
 @end
@@ -152,13 +154,10 @@ static PlayerClockSourceCallbacks callbacks = {
 
 - (void)scanNoteOffFrom:(int32_t)from to:(int32_t)to
 {
-    NSPredicate *predicate = [NSPredicate predicateWithBlock:^BOOL(id object, NSDictionary *bindings) {
-        NoteEvent *event = (NoteEvent *)object;
-        return from <= event.offTick && event.offTick < to;
-    }];
-
-    for (NoteEvent *event in [self.playingNoteEvents filteredSetUsingPredicate:predicate]) {
-        [self sendNoteOff:event];
+    for (NoteEvent *event in [self.playingNoteEvents allObjects]) {
+        if (from <= event.offTick && event.offTick < to) {
+            [self sendNoteOff:event];
+        }
     }
 }
 
@@ -180,17 +179,51 @@ static PlayerClockSourceCallbacks callbacks = {
     if (_playing && prevTick < tick) {
         [self scanNoteOffFrom:prevTick to:tick];
 
-        for (MidiEvent *event in [self.sequence eventsFrom:prevTick to:tick]) {
-            switch (event.type) {
-            case MidiEventTypeNote:
-                [self sendNoteOn:(NoteEvent *)event];
-                break;
-            case MidiEventTypeSound:
-                [self sendSound:(SoundEvent *)event];
-                break;
-            default:
+        NSArray *events = self.sequence.events;
+        int count = [events count];
+        for (; _index < count; ++_index) {
+            MidiEvent *event = [events objectAtIndex:_index];
+            if (prevTick <= event.tick && event.tick < tick) {
+                switch (event.type) {
+                case MidiEventTypeNote:
+                    [self sendNoteOn:(NoteEvent *)event];
+                    break;
+                case MidiEventTypeSound:
+                    [self sendSound:(SoundEvent *)event];
+                    break;
+                default:
+                    break;
+                }
+            }
+            else if (tick <= event.tick) {
                 break;
             }
+        }
+    }
+}
+
+- (void)seekIndexForward
+{
+    NSArray *events = self.sequence.events;
+    int count = [events count];
+
+    for (; _index < count; ++_index) {
+        MidiEvent *event = [events objectAtIndex:_index];
+        if (_tick <= event.tick) {
+            break;
+        }
+    }
+}
+
+- (void)seekIndexBackward
+{
+    NSArray *events = self.sequence.events;
+    int count = [events count];
+
+    for (_index = MIN(MAX(0, _index - 1), count - 1); 0 < _index; --_index) {
+        MidiEvent *event = [events objectAtIndex:_index];
+        if (_tick >= event.tick) {
+            break;
         }
     }
 }
@@ -207,12 +240,15 @@ static PlayerClockSourceCallbacks callbacks = {
         break;
     case PlayerClockSourceEventRewind:
         [self sendAllNoteOff];
+        _index = 0;
         break;
     case PlayerClockSourceEventForward:
         [self sendAllNoteOff];
+        [self seekIndexForward];
         break;
     case PlayerClockSourceEventBackward:
         [self sendAllNoteOff];
+        [self seekIndexBackward];
         break;
     case PlayerClockSourceEventReachEnd:
         [self stop];

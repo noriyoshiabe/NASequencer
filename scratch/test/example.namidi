@@ -1,14 +1,12 @@
 channel 1
-sound 127 0 0
 
 resolution 240
 
-CCCC
-
 sound 0 0 0
 
-CCCC
-
+{  1/4 C * 200000 },
+{  1/8 G * 200000 },
+{  1/4 E * 200000 }
 
 /*
 time 4/4

@@ -35,16 +35,6 @@
     return _timeTable;
 }
 
-- (NSArray *)eventsFrom:(int32_t)from to:(int32_t)to
-{
-    NSPredicate *predicate = [NSPredicate predicateWithBlock:^BOOL(id object, NSDictionary *bindings) {
-        MidiEvent *event = (MidiEvent *)object;
-        return from <= event.tick && event.tick < to;
-    }];
-
-    return [self.events filteredArrayUsingPredicate:predicate];
-}
-
 - (id)initWithEvents:(NSArray *)events timeTable:(TimeTable *)timeTable
 {
     if (self = [super init]) {
