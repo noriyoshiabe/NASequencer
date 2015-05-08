@@ -26,6 +26,7 @@ set(SOURCES
   MessageQueue.c
   CoreMidiClient.c
   FSWatcher.c
+  SMFWriter.c
 )
 
 add_library(${PROJECT_NAME} ${SOURCES} ${BISON_Parser_OUTPUTS} ${FLEX_Lexer_OUTPUTS})
