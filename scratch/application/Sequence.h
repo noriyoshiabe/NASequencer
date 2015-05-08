@@ -17,4 +17,6 @@
 
 - (id)initWithEvents:(NSArray *)events timeTable:(TimeTable *)timeTable;
 
+- (BOOL)serialize:(NSString *)filepath;
+
 @end
