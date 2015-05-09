@@ -2,20 +2,23 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdarg.h>
 
 #include "TimeTable.h"
 #include "ParseError.h"
 
+typedef enum {
+    NAMidiParserEventTypeNote,
+    NAMidiParserEventTypeTime,
+    NAMidiParserEventTypeTempo,
+    NAMidiParserEventTypeSound,
+    NAMidiParserEventTypeMarker,
+} NAMidiParserEventType;
+
 typedef struct _NAMidiParser NAMidiParser;
 
 typedef struct {
-    void (*onParseResolution)(void *receiver, uint16_t resolution);
-    void (*onParseNote)(void *receiver, uint32_t tick, uint8_t channel, uint8_t noteNo, uint8_t velocity, uint32_t gatetime);
-    void (*onParseTime)(void *receiver, uint32_t tick, uint8_t numerator, uint8_t denominator);
-    void (*onParseTempo)(void *receiver, uint32_t tick, float tempo);
-    void (*onParseSound)(void *receiver, uint32_t tick, uint8_t channel, uint8_t msb, uint8_t lsb, uint8_t programNo);
-    void (*onParseMarker)(void *receiver, uint32_t tick, const char *text);
-
+    void (*onParseEvent)(void *receiver, NAMidiParserEventType type, ...);
     void (*onFinish)(void *receiver, TimeTable *timeTable);
     void (*onError)(void *receiver, const char *filepath, int line, int column, ParseError error, const void *info);
 } NAMidiParserCallbacks;

@@ -18,40 +18,16 @@
 
 @implementation NAMidi
 
-static void _NAMidiParserOnParseResolution(void *receiver, uint16_t resolution)
+static void _NAMidiParserOnParseEvent(void *receiver, NAMidiParserEventType type, ...)
 {
     NAMidi *self = (__bridge NAMidi *)receiver;
-    [self parser:self->parser onParseResolution:resolution];
-}
 
-static void _NAMidiParserOnParseNote(void *receiver, uint32_t tick, uint8_t channel, uint8_t noteNo, uint8_t velocity, uint32_t gatetime)
-{
-    NAMidi *self = (__bridge NAMidi *)receiver;
-    [self parser:self->parser onParseNote:tick channel:channel noteNo:noteNo velocity:velocity gatetime:gatetime];
-}
+    va_list argList;
+    va_start(argList, type);
 
-static void _NAMidiParserOnParseTime(void *receiver, uint32_t tick, uint8_t numerator, uint8_t denominator)
-{
-    NAMidi *self = (__bridge NAMidi *)receiver;
-    [self parser:self->parser onParseTime:tick numerator:numerator denominator:denominator];
-}
+    [self parser:self->parser onParseEvent:type argList:argList];
 
-static void _NAMidiParserOnParseTempo(void *receiver, uint32_t tick, float tempo)
-{
-    NAMidi *self = (__bridge NAMidi *)receiver;
-    [self parser:self->parser onParseTempo:tick tempo:tempo];
-}
-
-static void _NAMidiParserOnParseSound(void *receiver, uint32_t tick, uint8_t channel, uint8_t msb, uint8_t lsb, uint8_t programNo)
-{
-    NAMidi *self = (__bridge NAMidi *)receiver;
-    [self parser:self->parser onParseSound:tick channel:channel msb:msb lsb:lsb programNo:programNo];
-}
-
-static void _NAMidiParserOnParseMarker(void *receiver, uint32_t tick, const char *text)
-{
-    NAMidi *self = (__bridge NAMidi *)receiver;
-    [self parser:self->parser onParseMarker:tick text:text];
+    va_end(argList);
 }
 
 static void _NAMidiParserOnFinish(void *receiver, TimeTable *timeTable)
@@ -67,13 +43,7 @@ static void _NAMidiParserOnError(void *receiver, const char *filepath, int line,
 }
 
 static NAMidiParserCallbacks parserCallbacks = {
-    _NAMidiParserOnParseResolution,
-    _NAMidiParserOnParseNote,
-    _NAMidiParserOnParseTime,
-    _NAMidiParserOnParseTempo,
-    _NAMidiParserOnParseSound,
-    _NAMidiParserOnParseMarker,
-
+    _NAMidiParserOnParseEvent,
     _NAMidiParserOnFinish,
     _NAMidiParserOnError,
 };
@@ -173,33 +143,49 @@ static FSWatcherCallbacks watcherCallbacks = {
     [self.player backward];
 }
 
-- (void)parser:(NAMidiParser *)parser onParseResolution:(uint16_t)resolution
+- (void)parser:(NAMidiParser *)parser onParseEvent:(NAMidiParserEventType)type argList:(va_list)argList
 {
-}
+    int32_t tick = va_arg(argList, int);
 
-- (void)parser:(NAMidiParser *)parser onParseNote:(uint32_t)tick channel:(uint8_t)channel noteNo:(uint8_t)noteNo velocity:(uint8_t)velocity gatetime:(uint32_t)gatetime
-{
-    [self.sequenceBuilder addNote:tick channel:channel noteNo:noteNo velocity:velocity gatetime:gatetime];
-}
-
-- (void)parser:(NAMidiParser *)parser onParseTime:(uint32_t)tick numerator:(uint8_t)numerator denominator:(uint8_t)denominator
-{
-    [self.sequenceBuilder addTime:tick numerator:numerator denominator:denominator];
-}
-
-- (void)parser:(NAMidiParser *)parser onParseTempo:(uint32_t)tick tempo:(float)tempo
-{
-    [self.sequenceBuilder addTempo:tick tempo:tempo];
-}
-
-- (void)parser:(NAMidiParser *)parser onParseSound:(uint32_t)tick channel:(uint8_t)channel msb:(uint8_t)msb lsb:(uint8_t)lsb programNo:(uint8_t)programNo
-{
-    [self.sequenceBuilder addSound:tick channel:channel msb:msb lsb:lsb programNo:programNo];
-}
-
-- (void)parser:(NAMidiParser *)parser onParseMarker:(uint32_t)tick text:(const char *)text
-{
-    [self.sequenceBuilder addMarker:tick text:text];
+    switch (type) {
+    case NAMidiParserEventTypeNote:
+        {
+            uint8_t channel = va_arg(argList, int);
+            uint8_t noteNo = va_arg(argList, int);
+            uint8_t velocity = va_arg(argList, int);
+            uint32_t gatetime = va_arg(argList, int);
+            [self.sequenceBuilder addNote:tick channel:channel noteNo:noteNo velocity:velocity gatetime:gatetime];
+        }
+        break;
+    case NAMidiParserEventTypeTime:
+        {
+            uint8_t numerator = va_arg(argList, int);
+            uint8_t denominator = va_arg(argList, int);
+            [self.sequenceBuilder addTime:tick numerator:numerator denominator:denominator];
+        }
+        break;
+    case NAMidiParserEventTypeTempo:
+        {
+            float tempo = va_arg(argList, double);
+            [self.sequenceBuilder addTempo:tick tempo:tempo];
+        }
+        break;
+    case NAMidiParserEventTypeSound:
+        {
+            uint8_t channel = va_arg(argList, int);
+            uint8_t msb = va_arg(argList, int);
+            uint8_t lsb = va_arg(argList, int);
+            uint8_t programNo = va_arg(argList, int);
+            [self.sequenceBuilder addSound:tick channel:channel msb:msb lsb:lsb programNo:programNo];
+        }
+        break;
+    case NAMidiParserEventTypeMarker:
+        {
+            const char *text = va_arg(argList, const char *);
+            [self.sequenceBuilder addMarker:tick text:text];
+        }
+        break;
+    }
 }
 
 - (void)parser:(NAMidiParser *)parser onFinish:(TimeTable *)timeTable

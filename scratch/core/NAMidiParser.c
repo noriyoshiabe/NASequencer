@@ -239,7 +239,8 @@ static bool ContextOnParseNote(Context *self, int32_t tick, uint8_t channel, uin
         ContextOnParseNote(self->parent, ContextGetTickInParent(self, tick), channel, noteNo, velocity, gatetime);
     }
     else {
-        self->parser->callbacks->onParseNote(self->parser->receiver, tick, channel, noteNo, velocity, gatetime);
+        self->parser->callbacks->onParseEvent(self->parser->receiver,
+                NAMidiParserEventTypeNote, tick, channel, noteNo, velocity, gatetime);
     }
 
     return true;
@@ -256,7 +257,8 @@ static bool ContextOnParseSound(Context *self, int32_t tick, uint8_t channel, in
         ContextOnParseSound(self->parent, ContextGetTickInParent(self, tick), channel, params);
     }
     else {
-        self->parser->callbacks->onParseSound(self->parser->receiver, tick, channel, params[0], params[1], params[2]);
+        self->parser->callbacks->onParseEvent(self->parser->receiver,
+                NAMidiParserEventTypeSound, tick, channel, params[0], params[1], params[2]);
     }
 
     return true;
@@ -273,7 +275,8 @@ static bool ContextOnParseMarker(Context *self, int32_t tick, const char *text)
         ContextOnParseMarker(self->parent, ContextGetTickInParent(self, tick), text);
     }
     else {
-        self->parser->callbacks->onParseMarker(self->parser->receiver, tick, text);
+        self->parser->callbacks->onParseEvent(self->parser->receiver,
+                NAMidiParserEventTypeMarker, tick, text);
     }
 
     return true;
@@ -306,22 +309,22 @@ static bool _NAMidiParserParseAST(NAMidiParser *self, Expression *expression)
         }
     }
 
-    context->parser->callbacks->onParseResolution(context->parser->receiver, TimeTableResolution(context->timeTable));
-
     size_t count, i;
 
     count = TimeTableGetTimeSignCount(context->timeTable);
     TimeEvent *timeEvents = alloca(count * sizeof(TimeEvent *));
     TimeTableGetTimeSignValues(context->timeTable, &timeEvents);
     for (i = 0; i < count; ++i) {
-        context->parser->callbacks->onParseTime(context->parser->receiver, timeEvents[i].tick, timeEvents[i].timeSign.numerator, timeEvents[i].timeSign.denominator);
+        context->parser->callbacks->onParseEvent(context->parser->receiver,
+                NAMidiParserEventTypeTime, timeEvents[i].tick, timeEvents[i].timeSign.numerator, timeEvents[i].timeSign.denominator);
     }
 
     count = TimeTableGetTempoCount(context->timeTable);
     TempoEvent *tempoEvents = alloca(count * sizeof(TempoEvent *));
     TimeTableGetTempoValues(context->timeTable, &tempoEvents);
     for (i = 0; i < count; ++i) {
-        context->parser->callbacks->onParseTempo(context->parser->receiver, tempoEvents[i].tick, tempoEvents[i].tempo);
+        context->parser->callbacks->onParseEvent(context->parser->receiver,
+                NAMidiParserEventTypeTempo, tempoEvents[i].tick, tempoEvents[i].tempo);
     }
 
     TimeTableSetLength(context->timeTable, context->largestTick);
