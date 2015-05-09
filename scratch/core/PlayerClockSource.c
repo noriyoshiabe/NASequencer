@@ -105,7 +105,9 @@ static void *_PlayerClockSourceRun(void *_self)
         }
     }
 
+    MessageQueueDestroy(self->msgQ);
     free(self);
+
     return NULL;
 }
 
