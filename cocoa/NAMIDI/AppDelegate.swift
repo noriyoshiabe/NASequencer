@@ -13,6 +13,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, DocumentViewDelegate {
 
     func applicationDidFinishLaunching(aNotification: NSNotification) {
         // Insert code here to initialize your application
+        Mixer.sharedInstance().initialize()
     }
 
     func applicationWillTerminate(aNotification: NSNotification) {

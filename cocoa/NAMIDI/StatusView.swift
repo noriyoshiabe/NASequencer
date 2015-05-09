@@ -8,49 +8,54 @@
 
 import Cocoa
 
-class StatusView : NSView, NAMidiProxyDelegate {
+class StatusView : NSView, NAMidiObserver {
     
-    @IBOutlet var errorInfomation: NSView?
-    @IBOutlet var errorKind: NSTextField?
-    @IBOutlet var filename: NSTextField?
-    @IBOutlet var location: NSTextField?
+    @IBOutlet var errorInfomation: NSView!
+    @IBOutlet var errorKind: NSTextField!
+    @IBOutlet var filename: NSTextField!
+    @IBOutlet var location: NSTextField!
 
-    @IBOutlet var playing: NSTextField?
+    @IBOutlet var playing: NSTextField!
+    
+    var namidi: NAMidi! {
+        didSet {
+            namidi.addObserver(self)
+        }
+    }
     
     var lastUsec: Int64 = 0
     
-    func onParseFinished(namidi: NAMidiProxy, context: ParseContextAdapter) {
-        if context.hasError {
-            let error = context.error
-            errorKind!.stringValue = error.message.takeUnretainedValue() as String
-            filename!.stringValue = (error.filepath.takeUnretainedValue() as NSString).lastPathComponent
-            location!.stringValue = String(format: "Line: %d   Column: %d", error.location.firstLine, error.location.firstColumn)
-            errorInfomation!.hidden = false
-        }
-        else {
-            errorInfomation!.hidden = true
-        }
-        
+    func namidi(namidi: NAMidi!, onParseFinish sequence: Sequence!) {
+        errorInfomation.hidden = true
     }
     
-    func onPlayerContextChanged(namidi: NAMidiProxy, context: PlayerContextAdapter) {
-        if 10000 > abs(context.usec - lastUsec) {
-            return
+    func namidi(namidi: NAMidi!, onParseError filepath: String!, line: Int32, column: Int32, error: ParseError, info: UnsafePointer<Void>) {
+        errorKind.stringValue = "TODO"
+        filename.stringValue = filepath.lastPathComponent
+        location.stringValue = "Line: \(line)   Column: \(column)"
+        errorInfomation.hidden = false
+    }
+    
+    func namidi(namidi: NAMidi!, player: Player!, notifyEvent playerEvent: PlayerEvent) {
+        dispatch_async(dispatch_get_main_queue()) {
+            self.needsDisplay = true
         }
+    }
+    
+    override func drawRect(dirtyRect: NSRect) {
+        let player = namidi.player
+        let usec = player.usec
+        let location = player.location
         
-        let min:Int = Int(context.usec / (1000 * 1000 * 60))
-        let sec:Int = Int(context.usec / (1000 * 1000))
-        let msec:Int = Int((context.usec / 1000) % 1000)
+        let min:Int = Int(usec / (1000 * 1000 * 60))
+        let sec:Int = Int(usec / (1000 * 1000))
+        let msec:Int = Int((usec / 1000) % 1000)
         
-        playing!.stringValue = String(format: "%02d:%02d:%03d   %03d:%02d:%03d",
-            min,
-            sec,
-            msec,
-            context.location.m,
-            context.location.b,
-            context.location.t
-        )
+        playing.stringValue = String(format: "%02d:%02d:%03d   %03d:%02d:%03d",
+            min, sec, msec, location.m, location.b, location.t)
         
-        lastUsec = context.usec
+        if (player.playing) {
+            setNeedsDisplayInRect(playing.frame)
+        }
     }
 }

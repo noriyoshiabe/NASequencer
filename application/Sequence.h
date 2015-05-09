@@ -14,6 +14,7 @@
 
 - (TimeSign)timeSign:(int32_t)tick;
 - (Location)location:(int32_t)tick;
+- (int32_t)tick:(Location)location;
 
 - (id)initWithEvents:(NSArray *)events timeTable:(TimeTable *)timeTable;
 

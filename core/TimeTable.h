@@ -30,6 +30,7 @@ extern void TimeTableAddTempo(TimeTable *self, int32_t tick, float tempo);
 extern int32_t TimeTableResolution(TimeTable *self);
 extern int32_t TimeTableLength(TimeTable *self);
 extern int32_t TimeTableTickByMeasure(TimeTable *self, int32_t measure);
+extern int32_t TimeTableTickByLocation(TimeTable *self, Location location);
 extern TimeSign TimeTableTimeSignOnTick(TimeTable *self, int32_t tick);
 extern float TimeTableTempoOnTick(TimeTable *self, int32_t tick);
 extern Location TimeTableTick2Location(TimeTable *self, int32_t tick);

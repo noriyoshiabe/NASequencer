@@ -197,6 +197,38 @@ int32_t TimeTableTickByMeasure(TimeTable *self, int32_t measure)
     return tickPerMeasure * measure + offsetTick;
 }
 
+extern int32_t TimeTableTickByLocation(TimeTable *self, Location location)
+{
+    int32_t offsetTick = 0;
+    
+    int32_t tickPerBeat = self->resolution * 4 / 4;
+    int32_t tickPerMeasure = tickPerBeat * 4;
+
+    location.m -= 1;
+    location.b -= 1;
+
+    CFIndex count = CFArrayGetCount(self->timeList);
+    for (int i = 0; i < count; ++i) {
+        const TimeEvent *timeEvent = CFArrayGetValueAtIndex(self->timeList, i);
+
+        int32_t tick = tickPerMeasure * location.m + tickPerBeat * location.b + location.t + offsetTick;
+        if (timeEvent->tick <= tick) {
+            location.t -= timeEvent->tick % tickPerBeat;
+            location.m -= timeEvent->tick / tickPerMeasure;
+            location.b -= (timeEvent->tick % tickPerMeasure) / tickPerBeat;
+
+            tickPerBeat = self->resolution * 4 / timeEvent->timeSign.denominator;
+            tickPerMeasure = tickPerBeat * timeEvent->timeSign.numerator;
+            offsetTick = timeEvent->tick;
+        }
+        else {
+            break;
+        }
+    }
+
+    return tickPerMeasure * location.m + tickPerBeat * location.b + location.t + offsetTick;
+}
+
 TimeSign TimeTableTimeSignOnTick(TimeTable *self, int32_t tick)
 {
     TimeSign ret = {4, 4};

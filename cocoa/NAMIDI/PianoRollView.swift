@@ -9,7 +9,7 @@
 import Cocoa
 import QuartzCore
 
-class PianoRollView : NSView, NAMidiProxyDelegate {
+class PianoRollView : NSView, NAMidiObserver {
     
     let widthPerTick: CGFloat = 50.0 / 480.0
     let heightPerKey: CGFloat = 10.0
@@ -59,18 +59,21 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
     
     let currentPositionColor: NSColor = NSColor(red: 0.75, green: 0.75, blue: 0, alpha: 1)
 
-    var context: ParseContextAdapter?
-    var playerContext: PlayerContextAdapter?
+    var namidi: NAMidi! {
+        didSet {
+            namidi.addObserver(self)
+        }
+    }
     
     var gridLayer: CGLayer?
     
-    var playingPosition:CGFloat = 0
+    var playingPosition: CGFloat = 0
     var playingLine: CALayer?
     
-    var scrolling:Bool = false
+    var scrolling: Bool = false
     
-    var time:CFAbsoluteTime = CFAbsoluteTimeGetCurrent()
-    var drawCount:Int = 0;
+    var time: CFAbsoluteTime = CFAbsoluteTimeGetCurrent()
+    var drawCount: Int = 0;
     
     override var flipped: Bool {
         return true
@@ -92,52 +95,54 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
             CGContextDrawLayerAtPoint(context, CGPointZero, gridLayer)
         }
         
-        if nil != self.context {
+        if nil != namidi.sequence {
             drawNotes(context, dirtyRect: dirtyRect)
+        }
+        
+        setPlayingPositionS(currentX())
+        autoScroll()
+        
+        if (namidi.player.playing) {
+            dispatch_async(dispatch_get_main_queue()) {
+                self.needsDisplay = true
+            }
         }
         
         calcFPS();
     }
     
-    func onParseFinished(namidi: NAMidiProxy, context: ParseContextAdapter) {
-        if context.hasError {
-            return
+    func namidi(namidi: NAMidi!, onParseFinish sequence: Sequence!) {
+        dispatch_async(dispatch_get_main_queue()) {
+            let width = CGFloat(namidi.sequence.length + 240) * self.widthPerTick
+            self.frame = NSMakeRect(0, 0, round(width), round((127 + 2) * self.heightPerKey))
+            
+            let context = NSGraphicsContext.currentContext()?.CGContext
+            
+            self.gridLayer = CGLayerCreateWithContext(context, self.bounds.size, nil)
+            self.drawGridLayer()
+            
+            self.needsDisplay = true
         }
-        self.context = context
-        
-        let width:CGFloat = CGFloat(self.context!.sequence.length + 240) * self.widthPerTick
-        self.frame = NSMakeRect(0, 0, round(width), round((127 + 2) * self.heightPerKey))
-        
-        let context = NSGraphicsContext.currentContext()?.CGContext
-        
-        gridLayer = CGLayerCreateWithContext(context, self.bounds.size, nil)
-        drawGridLayer()
-        
-        setNeedsDisplayInRect(self.bounds)
     }
     
     func currentX() -> CGFloat {
-        let tick = nil != self.playerContext ? self.playerContext!.tick : 0
-        return round(CGFloat(tick + 120) * widthPerTick)
+        return round(CGFloat(namidi.player.tick + 120) * widthPerTick)
     }
     
-    func onPlayerContextChanged(namidi: NAMidiProxy!, context: PlayerContextAdapter) {
-        self.playerContext = context
-        
-        setPlayingPositionS(currentX())
-        
-        var size = CFArrayGetCount(playerContext!.playing)
-        for var i = 0; i < size; ++i {
-            var ptr = CFArrayGetValueAtIndex(playerContext!.playing, i)
-            if ptr == nil {
-                continue
-            }
-            
-            var note:NoteEvent = unsafeBitCast(ptr, UnsafeMutablePointer<NoteEvent>.self).memory
-            setNeedsDisplayInRect(noteRect(note))
+    func namidi(namidi: NAMidi!, player: Player!, notifyEvent playerEvent: PlayerEvent) {
+        needsDisplay = true
+    }
+    
+    func namidi(namidi: NAMidi!, player: Player!, didSendNoteOn noteEvent: NoteEvent!) {
+        dispatch_async(dispatch_get_main_queue()) {
+            self.setNeedsDisplayInRect(self.noteRect(noteEvent))
         }
-        
-        autoScroll()
+    }
+    
+    func namidi(namidi: NAMidi!, player: Player!, didSendNoteOff noteEvent: NoteEvent!) {
+        dispatch_async(dispatch_get_main_queue()) {
+            self.setNeedsDisplayInRect(self.noteRect(noteEvent))
+        }
     }
     
     func autoScroll() {
@@ -145,20 +150,22 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
             return
         }
         
-        let toX: CGFloat = currentX()
+        let toX = currentX()
         
-        let parent:NSScrollView = self.superview?.superview as! NSScrollView
+        let parent: NSScrollView = self.superview?.superview as! NSScrollView
         if !parent.documentVisibleRect.intersects(CGRectMake(toX, 0, 0, self.bounds.size.height)) {
             scrolling = true
             
-            NSAnimationContext.runAnimationGroup({ (context:NSAnimationContext!) -> Void in
-                context.duration = 0.5
-                parent.contentView.animator().setBoundsOrigin(CGPointMake(toX - round(120 * self.widthPerTick), parent.documentVisibleRect.origin.y))
+            NSAnimationContext.runAnimationGroup(
+                { (context:NSAnimationContext!) -> Void in
+                    context.duration = 0.5
+                    parent.contentView.animator().setBoundsOrigin(CGPointMake(toX - round(120 * self.widthPerTick), parent.documentVisibleRect.origin.y))
                 },
                 completionHandler: {
                     self.scrolling = false
                     self.autoScroll()
-            })
+                }
+            )
         }
     }
     
@@ -176,30 +183,32 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
     }
     
     func drawGridLayer() {
-        let ctx:CGContext = CGLayerGetContext(gridLayer)
+        let ctx = CGLayerGetContext(gridLayer)
         
         CGContextSetLineWidth(ctx, 1.0)
         
         for i in 0...127 {
             let y = round(heightPerKey * CGFloat(i + 1)) + 0.5
-            let color:CGColor = (0 == (127 - i) % 12 ? gridColorCKey : gridColorKey).CGColor
+            let color = (0 == (127 - i) % 12 ? gridColorCKey : gridColorKey).CGColor
             CGContextSetStrokeColorWithColor(ctx, color)
             CGContextMoveToPoint(ctx, 0, y)
             CGContextAddLineToPoint(ctx, self.bounds.size.width, y)
             CGContextStrokePath(ctx)
         }
         
+        let sequence = namidi.sequence
+        
         var tick = Int32(0 / widthPerTick)
         var tickTo =  Int32(self.bounds.size.width / widthPerTick)
         
-        var location: Location = context!.sequence.location(tick)
+        var location: Location = namidi.sequence.location(tick)
         location.t = 0
         
-        tick = context!.sequence.tick(location)
-        var timeSign = context!.sequence.timeSign(tick)
+        tick = sequence.tick(location)
+        var timeSign = sequence.timeSign(tick)
         
         while tick <= tickTo {
-            let color:CGColor = (1 == location.b ? gridColorMeasure : gridColorBeat).CGColor
+            let color = (1 == location.b ? gridColorMeasure : gridColorBeat).CGColor
             let x = round(CGFloat(tick + 120) * widthPerTick) + 0.5
             
             CGContextSetStrokeColorWithColor(ctx, color)
@@ -210,18 +219,18 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
             if timeSign.numerator < ++location.b {
                 location.b = 1
                 ++location.m
-                timeSign = context!.sequence.timeSign(tick)
+                timeSign = sequence.timeSign(tick)
             }
             
-            tick = context!.sequence.tick(location)
+            tick = sequence.tick(location)
         }
     }
     
     func drawNotes(ctx: CGContext, dirtyRect: NSRect) {
-        for event in self.context!.sequence.events {
-            switch event.memory.__.clazz.memory.typeID {
-            case NoteEventClass.typeID:
-                let note:NoteEvent = unsafeBitCast(event, UnsafePointer<NoteEvent>.self).memory
+        for event in namidi.sequence.events {
+            switch event {
+            case is NoteEvent:
+                let note: NoteEvent = event as! NoteEvent
                 if dirtyRect.intersects(noteRect(note)) {
                     drawNote(ctx, note: note)
                 }
@@ -232,9 +241,9 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
     }
     
     func noteRect(note: NoteEvent) -> CGRect {
-        let left:CGFloat = round(CGFloat(note.__.tick + 120) * widthPerTick) + 0.5
-        let right:CGFloat = round(CGFloat(note.__.tick + 120 + note.gatetime) * widthPerTick) + 0.5
-        let y:CGFloat = round(CGFloat(127 - note.noteNo + 1) * heightPerKey) + 0.5
+        let left = round(CGFloat(note.tick + 120) * widthPerTick) + 0.5
+        let right = round(CGFloat(note.tick + 120 + Int(note.gatetime)) * widthPerTick) + 0.5
+        let y = round(CGFloat(127 - note.noteNo + 1) * heightPerKey) + 0.5
         let length = right - left
         
         return NSMakeRect(left - min(5, length / 2), y - 5, length, 10)
@@ -253,11 +262,7 @@ class PianoRollView : NSView, NAMidiProxyDelegate {
         
         CGContextSetLineWidth(ctx, 1.0)
         
-        var active:Bool = nil != playerContext
-            && PLAYER_STATE_PLAYING.value == playerContext!.state.value
-            && noteRect(note).intersects(CGRectMake(currentX() + 0.5, 0, 0, self.bounds.size.height))
-        
-        if active {
+        if namidi.player.playingNoteEvents.contains(note) {
             CGContextMoveToPoint(ctx, lx, cy)
             CGContextAddArcToPoint(ctx, lx, by, cx, by, radius)
             CGContextAddArcToPoint(ctx, rx, by, rx, cy, radius)

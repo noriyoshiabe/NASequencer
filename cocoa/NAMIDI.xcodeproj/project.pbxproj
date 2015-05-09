@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		020C95C01AA09CEC00DA4D63 /* ParseContextAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020C95BF1AA09CEC00DA4D63 /* ParseContextAdapter.swift */; };
 		021EFCCE1AC18E1700AC924F /* Help in Resources */ = {isa = PBXBuildFile; fileRef = 021EFCCD1AC18E1700AC924F /* Help */; };
 		02225DDE1A906E610077ABCB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02225DDD1A906E610077ABCB /* AppDelegate.swift */; };
 		02225DE01A906E610077ABCB /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02225DDF1A906E610077ABCB /* Document.swift */; };
@@ -16,14 +15,13 @@
 		02225DE81A906E610077ABCB /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02225DE61A906E610077ABCB /* MainMenu.xib */; };
 		02225DF41A906E610077ABCB /* NAMIDITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02225DF31A906E610077ABCB /* NAMIDITests.swift */; };
 		02225E001A9096100077ABCB /* DocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02225DFF1A9096100077ABCB /* DocumentView.swift */; };
-		0222A9DF1A9F46CF00DA92B9 /* NAMidiProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 0222A9DE1A9F46CF00DA92B9 /* NAMidiProxy.m */; };
 		024040631A98CE0900858340 /* PianoRollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02AA073A1A98BB6100F413A2 /* PianoRollView.swift */; };
 		02531BC71A99B45500AB9B37 /* StatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02531BC61A99B45500AB9B37 /* StatusView.swift */; };
 		02531BC91A99B58300AB9B37 /* StatusBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02531BC81A99B58300AB9B37 /* StatusBackgroundView.swift */; };
-		025715891AAC88DD00CD4124 /* PlayerContextAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 025715881AAC88DD00CD4124 /* PlayerContextAdapter.swift */; };
 		025F67921A90C6B600E87117 /* DocumentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 025F67911A90C6B600E87117 /* DocumentController.swift */; };
 		02AD4ABF1AADEE4D005364C5 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 02AD4ABE1AADEE4D005364C5 /* icon.png */; };
-		02FE8D511A923C4A00BEF62E /* libnamidi-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 026588041A922B5F0030461C /* libnamidi-core.a */; };
+		02CAE4541AFE1371007D4D27 /* libnamidi-application.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 02EB35DF1AFE106C00EFBE27 /* libnamidi-application.a */; };
+		02CAE4551AFE1371007D4D27 /* libnamidi-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 02EB35E51AFE107700EFBE27 /* libnamidi-core.a */; };
 		02FE8D531A923C6600BEF62E /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FE8D521A923C6600BEF62E /* CoreMIDI.framework */; };
 /* End PBXBuildFile section */
 
@@ -35,31 +33,37 @@
 			remoteGlobalIDString = 02225DD71A906E610077ABCB;
 			remoteInfo = NAMIDI;
 		};
-		026588031A922B5F0030461C /* PBXContainerItemProxy */ = {
+		02EB35DE1AFE106C00EFBE27 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 026587FF1A922B5F0030461C /* namidi-core.xcodeproj */;
+			containerPortal = 02EB35DA1AFE106C00EFBE27 /* namidi-application.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 02D0E95A1A921FB100430C96;
+			remoteGlobalIDString = 02EB35851AFDF6EB00EFBE27;
+			remoteInfo = "namidi-application";
+		};
+		02EB35E41AFE107700EFBE27 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 02EB35E01AFE107700EFBE27 /* namidi-core.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 02EB35391AFDF49400EFBE27;
 			remoteInfo = "namidi-core";
 		};
-		0265880D1A922C920030461C /* PBXContainerItemProxy */ = {
+		02EB35E61AFE108C00EFBE27 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 026587FF1A922B5F0030461C /* namidi-core.xcodeproj */;
+			containerPortal = 02EB35E01AFE107700EFBE27 /* namidi-core.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 02EB35381AFDF49400EFBE27;
 			remoteInfo = "namidi-core";
 		};
-		02EB35D61AFDFBE500EFBE27 /* PBXContainerItemProxy */ = {
+		02EB35E81AFE108C00EFBE27 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 02EB35D21AFDFBE400EFBE27 /* namidi-application.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 02EB35851AFDF6EB00EFBE27;
+			containerPortal = 02EB35DA1AFE106C00EFBE27 /* namidi-application.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 02EB35841AFDF6EB00EFBE27;
 			remoteInfo = "namidi-application";
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		020C95BF1AA09CEC00DA4D63 /* ParseContextAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParseContextAdapter.swift; sourceTree = "<group>"; };
 		021EFCCD1AC18E1700AC924F /* Help */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Help; sourceTree = "<group>"; };
 		02225DD81A906E610077ABCB /* NAMIDI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NAMIDI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		02225DDC1A906E610077ABCB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -72,16 +76,13 @@
 		02225DF21A906E610077ABCB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		02225DF31A906E610077ABCB /* NAMIDITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NAMIDITests.swift; sourceTree = "<group>"; };
 		02225DFF1A9096100077ABCB /* DocumentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentView.swift; sourceTree = "<group>"; };
-		0222A9DD1A9F3A7400DA92B9 /* NAMidiProxy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NAMidiProxy.h; sourceTree = "<group>"; };
-		0222A9DE1A9F46CF00DA92B9 /* NAMidiProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NAMidiProxy.m; sourceTree = "<group>"; };
 		02531BC61A99B45500AB9B37 /* StatusView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusView.swift; sourceTree = "<group>"; };
 		02531BC81A99B58300AB9B37 /* StatusBackgroundView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusBackgroundView.swift; sourceTree = "<group>"; };
-		025715881AAC88DD00CD4124 /* PlayerContextAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayerContextAdapter.swift; sourceTree = "<group>"; };
 		025F67911A90C6B600E87117 /* DocumentController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentController.swift; sourceTree = "<group>"; };
-		026587FF1A922B5F0030461C /* namidi-core.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "namidi-core.xcodeproj"; path = "../core/namidi-core.xcodeproj"; sourceTree = "<group>"; };
 		02AA073A1A98BB6100F413A2 /* PianoRollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PianoRollView.swift; sourceTree = "<group>"; };
 		02AD4ABE1AADEE4D005364C5 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
-		02EB35D21AFDFBE400EFBE27 /* namidi-application.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "namidi-application.xcodeproj"; path = "../application/namidi-application.xcodeproj"; sourceTree = "<group>"; };
+		02EB35DA1AFE106C00EFBE27 /* namidi-application.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "namidi-application.xcodeproj"; path = "../application/namidi-application.xcodeproj"; sourceTree = "<group>"; };
+		02EB35E01AFE107700EFBE27 /* namidi-core.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "namidi-core.xcodeproj"; path = "../core/namidi-core.xcodeproj"; sourceTree = "<group>"; };
 		02FE8D491A9237BF00BEF62E /* NAMIDI-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NAMIDI-Bridging-Header.h"; sourceTree = "<group>"; };
 		02FE8D521A923C6600BEF62E /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -91,8 +92,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02CAE4541AFE1371007D4D27 /* libnamidi-application.a in Frameworks */,
+				02CAE4551AFE1371007D4D27 /* libnamidi-core.a in Frameworks */,
 				02FE8D531A923C6600BEF62E /* CoreMIDI.framework in Frameworks */,
-				02FE8D511A923C4A00BEF62E /* libnamidi-core.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -109,8 +111,8 @@
 		02225DCF1A906E610077ABCB = {
 			isa = PBXGroup;
 			children = (
-				02EB35D21AFDFBE400EFBE27 /* namidi-application.xcodeproj */,
-				026587FF1A922B5F0030461C /* namidi-core.xcodeproj */,
+				02EB35E01AFE107700EFBE27 /* namidi-core.xcodeproj */,
+				02EB35DA1AFE106C00EFBE27 /* namidi-application.xcodeproj */,
 				02FE8D521A923C6600BEF62E /* CoreMIDI.framework */,
 				02225DDA1A906E610077ABCB /* NAMIDI */,
 				02225DF01A906E610077ABCB /* NAMIDITests */,
@@ -141,10 +143,6 @@
 				02225DFF1A9096100077ABCB /* DocumentView.swift */,
 				025F67911A90C6B600E87117 /* DocumentController.swift */,
 				02FE8D491A9237BF00BEF62E /* NAMIDI-Bridging-Header.h */,
-				0222A9DD1A9F3A7400DA92B9 /* NAMidiProxy.h */,
-				0222A9DE1A9F46CF00DA92B9 /* NAMidiProxy.m */,
-				020C95BF1AA09CEC00DA4D63 /* ParseContextAdapter.swift */,
-				025715881AAC88DD00CD4124 /* PlayerContextAdapter.swift */,
 				02AA073A1A98BB6100F413A2 /* PianoRollView.swift */,
 				02531BC61A99B45500AB9B37 /* StatusView.swift */,
 				02531BC81A99B58300AB9B37 /* StatusBackgroundView.swift */,
@@ -177,18 +175,18 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		026588001A922B5F0030461C /* Products */ = {
+		02EB35DB1AFE106C00EFBE27 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				026588041A922B5F0030461C /* libnamidi-core.a */,
+				02EB35DF1AFE106C00EFBE27 /* libnamidi-application.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		02EB35D31AFDFBE400EFBE27 /* Products */ = {
+		02EB35E11AFE107700EFBE27 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				02EB35D71AFDFBE500EFBE27 /* libnamidi-application.a */,
+				02EB35E51AFE107700EFBE27 /* libnamidi-core.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -207,7 +205,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				0265880E1A922C920030461C /* PBXTargetDependency */,
+				02EB35E71AFE108C00EFBE27 /* PBXTargetDependency */,
+				02EB35E91AFE108C00EFBE27 /* PBXTargetDependency */,
 			);
 			name = NAMIDI;
 			productName = NAMIDI;
@@ -263,12 +262,12 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 02EB35D31AFDFBE400EFBE27 /* Products */;
-					ProjectRef = 02EB35D21AFDFBE400EFBE27 /* namidi-application.xcodeproj */;
+					ProductGroup = 02EB35DB1AFE106C00EFBE27 /* Products */;
+					ProjectRef = 02EB35DA1AFE106C00EFBE27 /* namidi-application.xcodeproj */;
 				},
 				{
-					ProductGroup = 026588001A922B5F0030461C /* Products */;
-					ProjectRef = 026587FF1A922B5F0030461C /* namidi-core.xcodeproj */;
+					ProductGroup = 02EB35E11AFE107700EFBE27 /* Products */;
+					ProjectRef = 02EB35E01AFE107700EFBE27 /* namidi-core.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -280,18 +279,18 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		026588041A922B5F0030461C /* libnamidi-core.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = "libnamidi-core.a";
-			remoteRef = 026588031A922B5F0030461C /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		02EB35D71AFDFBE500EFBE27 /* libnamidi-application.a */ = {
+		02EB35DF1AFE106C00EFBE27 /* libnamidi-application.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = "libnamidi-application.a";
-			remoteRef = 02EB35D61AFDFBE500EFBE27 /* PBXContainerItemProxy */;
+			remoteRef = 02EB35DE1AFE106C00EFBE27 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		02EB35E51AFE107700EFBE27 /* libnamidi-core.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libnamidi-core.a";
+			remoteRef = 02EB35E41AFE107700EFBE27 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -323,16 +322,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0222A9DF1A9F46CF00DA92B9 /* NAMidiProxy.m in Sources */,
 				02225DE01A906E610077ABCB /* Document.swift in Sources */,
-				025715891AAC88DD00CD4124 /* PlayerContextAdapter.swift in Sources */,
 				02225E001A9096100077ABCB /* DocumentView.swift in Sources */,
 				02531BC71A99B45500AB9B37 /* StatusView.swift in Sources */,
 				025F67921A90C6B600E87117 /* DocumentController.swift in Sources */,
 				02531BC91A99B58300AB9B37 /* StatusBackgroundView.swift in Sources */,
 				02225DDE1A906E610077ABCB /* AppDelegate.swift in Sources */,
 				024040631A98CE0900858340 /* PianoRollView.swift in Sources */,
-				020C95C01AA09CEC00DA4D63 /* ParseContextAdapter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -352,10 +348,15 @@
 			target = 02225DD71A906E610077ABCB /* NAMIDI */;
 			targetProxy = 02225DEE1A906E610077ABCB /* PBXContainerItemProxy */;
 		};
-		0265880E1A922C920030461C /* PBXTargetDependency */ = {
+		02EB35E71AFE108C00EFBE27 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "namidi-core";
-			targetProxy = 0265880D1A922C920030461C /* PBXContainerItemProxy */;
+			targetProxy = 02EB35E61AFE108C00EFBE27 /* PBXContainerItemProxy */;
+		};
+		02EB35E91AFE108C00EFBE27 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "namidi-application";
+			targetProxy = 02EB35E81AFE108C00EFBE27 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

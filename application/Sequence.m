@@ -39,6 +39,11 @@
     return TimeTableTick2Location(_timeTable, tick);
 }
 
+- (int32_t)tick:(Location)location
+{
+    return TimeTableTickByLocation(_timeTable, location);
+}
+
 - (TimeTable *)timeTable
 {
     return _timeTable;

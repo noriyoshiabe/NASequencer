@@ -10,15 +10,16 @@ import Cocoa
 
 class Document: NSDocument {
 
-    let namidi: NAMidiProxy
+    let namidi: NAMidi
+    var fileUrl: NSURL?
     
     override init() {
-        namidi = NAMidiProxy()
+        namidi = NAMidi()
         super.init()
     }
     
     override func readFromURL(url: NSURL, ofType typeName: String, error outError: NSErrorPointer) -> Bool {
-        namidi.setFile(url)
+        fileUrl = url
         return true
     }
 
