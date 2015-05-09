@@ -230,7 +230,7 @@ static PlayerClockSourceCallbacks callbacks = {
 
     for (_index = MAX(0, MIN(_index - 1, (int)count - 1)); 0 < _index; --_index) {
         MidiEvent *event = [events objectAtIndex:_index];
-        if (_tick >= event.tick) {
+        if (_tick > event.tick) {
             break;
         }
     }
