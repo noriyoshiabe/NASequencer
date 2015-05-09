@@ -157,6 +157,7 @@ static FSWatcherCallbacks watcherCallbacks = {
             [self.sequenceBuilder addNote:tick channel:channel noteNo:noteNo velocity:velocity gatetime:gatetime];
         }
         break;
+
     case NAMidiParserEventTypeTime:
         {
             uint8_t numerator = va_arg(argList, int);
@@ -164,12 +165,14 @@ static FSWatcherCallbacks watcherCallbacks = {
             [self.sequenceBuilder addTime:tick numerator:numerator denominator:denominator];
         }
         break;
+
     case NAMidiParserEventTypeTempo:
         {
             float tempo = va_arg(argList, double);
             [self.sequenceBuilder addTempo:tick tempo:tempo];
         }
         break;
+
     case NAMidiParserEventTypeSound:
         {
             uint8_t channel = va_arg(argList, int);
@@ -179,6 +182,7 @@ static FSWatcherCallbacks watcherCallbacks = {
             [self.sequenceBuilder addSound:tick channel:channel msb:msb lsb:lsb programNo:programNo];
         }
         break;
+
     case NAMidiParserEventTypeMarker:
         {
             const char *text = va_arg(argList, const char *);

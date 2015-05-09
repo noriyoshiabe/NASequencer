@@ -94,24 +94,28 @@
                 }
             }
             break;
+
         case MidiEventTypeTime:
             {
                 TimeEvent *time = (TimeEvent *)event;
                 SMFWriterAppendTime(writer, time.tick, time.numerator, time.denominator);
             }
             break;
+
         case MidiEventTypeTempo:
             {
                 TempoEvent *tempo = (TempoEvent *)event;
                 SMFWriterAppendTempo(writer, tempo.tick, tempo.tempo);
             }
             break;
+
         case MidiEventTypeMarker:
             {
                 MarkerEvent *marker = (MarkerEvent *)event;
                 SMFWriterAppendMarker(writer, marker.tick, [marker.text UTF8String]);
             }
             break;
+
         case MidiEventTypeSound:
             {
                 SoundEvent *sound = (SoundEvent *)event;

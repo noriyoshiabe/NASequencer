@@ -235,21 +235,26 @@ static PlayerClockSourceCallbacks callbacks = {
         [self sendAllNoteOff];
         _playing = NO;
         break;
+
     case PlayerClockSourceEventPlay:
         _playing = YES;
         break;
+
     case PlayerClockSourceEventRewind:
         [self sendAllNoteOff];
         _index = 0;
         break;
+
     case PlayerClockSourceEventForward:
         [self sendAllNoteOff];
         [self seekIndexForward];
         break;
+
     case PlayerClockSourceEventBackward:
         [self sendAllNoteOff];
         [self seekIndexBackward];
         break;
+
     case PlayerClockSourceEventReachEnd:
         [self stop];
         [self rewind];
