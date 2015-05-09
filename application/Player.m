@@ -180,7 +180,7 @@ static PlayerClockSourceCallbacks callbacks = {
         [self scanNoteOffFrom:prevTick to:tick];
 
         NSArray *events = self.sequence.events;
-        int count = [events count];
+        NSUInteger count = [events count];
         for (; _index < count; ++_index) {
             MidiEvent *event = [events objectAtIndex:_index];
             if (prevTick <= event.tick && event.tick < tick) {
@@ -205,7 +205,7 @@ static PlayerClockSourceCallbacks callbacks = {
 - (void)seekIndexForward
 {
     NSArray *events = self.sequence.events;
-    int count = [events count];
+    NSUInteger count = [events count];
 
     for (; _index < count; ++_index) {
         MidiEvent *event = [events objectAtIndex:_index];
@@ -218,9 +218,9 @@ static PlayerClockSourceCallbacks callbacks = {
 - (void)seekIndexBackward
 {
     NSArray *events = self.sequence.events;
-    int count = [events count];
+    NSUInteger count = [events count];
 
-    for (_index = MIN(MAX(0, _index - 1), count - 1); 0 < _index; --_index) {
+    for (_index = MAX(0, MIN(_index - 1, (int)count - 1)); 0 < _index; --_index) {
         MidiEvent *event = [events objectAtIndex:_index];
         if (_tick >= event.tick) {
             break;

@@ -1,0 +1,289 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		02EB35981AFDF70C00EFBE27 /* MidiEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02EB358C1AFDF70C00EFBE27 /* MidiEvent.h */; };
+		02EB35991AFDF70C00EFBE27 /* MidiEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 02EB358D1AFDF70C00EFBE27 /* MidiEvent.m */; };
+		02EB359A1AFDF70C00EFBE27 /* Mixer.h in Headers */ = {isa = PBXBuildFile; fileRef = 02EB358E1AFDF70C00EFBE27 /* Mixer.h */; };
+		02EB359B1AFDF70C00EFBE27 /* Mixer.m in Sources */ = {isa = PBXBuildFile; fileRef = 02EB358F1AFDF70C00EFBE27 /* Mixer.m */; };
+		02EB359C1AFDF70C00EFBE27 /* NAMidi.h in Headers */ = {isa = PBXBuildFile; fileRef = 02EB35901AFDF70C00EFBE27 /* NAMidi.h */; };
+		02EB359D1AFDF70C00EFBE27 /* NAMidi.m in Sources */ = {isa = PBXBuildFile; fileRef = 02EB35911AFDF70C00EFBE27 /* NAMidi.m */; };
+		02EB359E1AFDF70C00EFBE27 /* Player.h in Headers */ = {isa = PBXBuildFile; fileRef = 02EB35921AFDF70C00EFBE27 /* Player.h */; };
+		02EB359F1AFDF70C00EFBE27 /* Player.m in Sources */ = {isa = PBXBuildFile; fileRef = 02EB35931AFDF70C00EFBE27 /* Player.m */; };
+		02EB35A01AFDF70C00EFBE27 /* Sequence.h in Headers */ = {isa = PBXBuildFile; fileRef = 02EB35941AFDF70C00EFBE27 /* Sequence.h */; };
+		02EB35A11AFDF70C00EFBE27 /* Sequence.m in Sources */ = {isa = PBXBuildFile; fileRef = 02EB35951AFDF70C00EFBE27 /* Sequence.m */; };
+		02EB35A21AFDF70C00EFBE27 /* SequenceBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = 02EB35961AFDF70C00EFBE27 /* SequenceBuilder.h */; };
+		02EB35A31AFDF70C00EFBE27 /* SequenceBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 02EB35971AFDF70C00EFBE27 /* SequenceBuilder.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		02EB35851AFDF6EB00EFBE27 /* libnamidi-application.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libnamidi-application.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		02EB358C1AFDF70C00EFBE27 /* MidiEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiEvent.h; sourceTree = "<group>"; };
+		02EB358D1AFDF70C00EFBE27 /* MidiEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MidiEvent.m; sourceTree = "<group>"; };
+		02EB358E1AFDF70C00EFBE27 /* Mixer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mixer.h; sourceTree = "<group>"; };
+		02EB358F1AFDF70C00EFBE27 /* Mixer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Mixer.m; sourceTree = "<group>"; };
+		02EB35901AFDF70C00EFBE27 /* NAMidi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NAMidi.h; sourceTree = "<group>"; };
+		02EB35911AFDF70C00EFBE27 /* NAMidi.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NAMidi.m; sourceTree = "<group>"; };
+		02EB35921AFDF70C00EFBE27 /* Player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Player.h; sourceTree = "<group>"; };
+		02EB35931AFDF70C00EFBE27 /* Player.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Player.m; sourceTree = "<group>"; };
+		02EB35941AFDF70C00EFBE27 /* Sequence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sequence.h; sourceTree = "<group>"; };
+		02EB35951AFDF70C00EFBE27 /* Sequence.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Sequence.m; sourceTree = "<group>"; };
+		02EB35961AFDF70C00EFBE27 /* SequenceBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SequenceBuilder.h; sourceTree = "<group>"; };
+		02EB35971AFDF70C00EFBE27 /* SequenceBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SequenceBuilder.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		02EB35821AFDF6EB00EFBE27 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		02EB357C1AFDF6EB00EFBE27 = {
+			isa = PBXGroup;
+			children = (
+				02EB358C1AFDF70C00EFBE27 /* MidiEvent.h */,
+				02EB358D1AFDF70C00EFBE27 /* MidiEvent.m */,
+				02EB358E1AFDF70C00EFBE27 /* Mixer.h */,
+				02EB358F1AFDF70C00EFBE27 /* Mixer.m */,
+				02EB35901AFDF70C00EFBE27 /* NAMidi.h */,
+				02EB35911AFDF70C00EFBE27 /* NAMidi.m */,
+				02EB35921AFDF70C00EFBE27 /* Player.h */,
+				02EB35931AFDF70C00EFBE27 /* Player.m */,
+				02EB35941AFDF70C00EFBE27 /* Sequence.h */,
+				02EB35951AFDF70C00EFBE27 /* Sequence.m */,
+				02EB35961AFDF70C00EFBE27 /* SequenceBuilder.h */,
+				02EB35971AFDF70C00EFBE27 /* SequenceBuilder.m */,
+				02EB35861AFDF6EB00EFBE27 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		02EB35861AFDF6EB00EFBE27 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				02EB35851AFDF6EB00EFBE27 /* libnamidi-application.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		02EB35831AFDF6EB00EFBE27 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				02EB359A1AFDF70C00EFBE27 /* Mixer.h in Headers */,
+				02EB35981AFDF70C00EFBE27 /* MidiEvent.h in Headers */,
+				02EB35A01AFDF70C00EFBE27 /* Sequence.h in Headers */,
+				02EB359C1AFDF70C00EFBE27 /* NAMidi.h in Headers */,
+				02EB359E1AFDF70C00EFBE27 /* Player.h in Headers */,
+				02EB35A21AFDF70C00EFBE27 /* SequenceBuilder.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		02EB35841AFDF6EB00EFBE27 /* namidi-application */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 02EB35891AFDF6EB00EFBE27 /* Build configuration list for PBXNativeTarget "namidi-application" */;
+			buildPhases = (
+				02EB35811AFDF6EB00EFBE27 /* Sources */,
+				02EB35821AFDF6EB00EFBE27 /* Frameworks */,
+				02EB35831AFDF6EB00EFBE27 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "namidi-application";
+			productName = "namidi-application";
+			productReference = 02EB35851AFDF6EB00EFBE27 /* libnamidi-application.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		02EB357D1AFDF6EB00EFBE27 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0630;
+				ORGANIZATIONNAME = abechan;
+				TargetAttributes = {
+					02EB35841AFDF6EB00EFBE27 = {
+						CreatedOnToolsVersion = 6.3;
+					};
+				};
+			};
+			buildConfigurationList = 02EB35801AFDF6EB00EFBE27 /* Build configuration list for PBXProject "namidi-application" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 02EB357C1AFDF6EB00EFBE27;
+			productRefGroup = 02EB35861AFDF6EB00EFBE27 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				02EB35841AFDF6EB00EFBE27 /* namidi-application */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		02EB35811AFDF6EB00EFBE27 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				02EB359F1AFDF70C00EFBE27 /* Player.m in Sources */,
+				02EB359D1AFDF70C00EFBE27 /* NAMidi.m in Sources */,
+				02EB35A31AFDF70C00EFBE27 /* SequenceBuilder.m in Sources */,
+				02EB35A11AFDF70C00EFBE27 /* Sequence.m in Sources */,
+				02EB35991AFDF70C00EFBE27 /* MidiEvent.m in Sources */,
+				02EB359B1AFDF70C00EFBE27 /* Mixer.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		02EB35871AFDF6EB00EFBE27 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					../core,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		02EB35881AFDF6EB00EFBE27 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					../core,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		02EB358A1AFDF6EB00EFBE27 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		02EB358B1AFDF6EB00EFBE27 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		02EB35801AFDF6EB00EFBE27 /* Build configuration list for PBXProject "namidi-application" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				02EB35871AFDF6EB00EFBE27 /* Debug */,
+				02EB35881AFDF6EB00EFBE27 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		02EB35891AFDF6EB00EFBE27 /* Build configuration list for PBXNativeTarget "namidi-application" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				02EB358A1AFDF6EB00EFBE27 /* Debug */,
+				02EB358B1AFDF6EB00EFBE27 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 02EB357D1AFDF6EB00EFBE27 /* Project object */;
+}
