@@ -32,7 +32,7 @@ class StatusView : NSView, NAMidiObserver {
     }
     
     func namidi(namidi: NAMidi!, onParseError filepath: String!, line: Int32, column: Int32, error: ParseError, info: UnsafePointer<Void>) {
-        errorKind.stringValue = "TODO"
+        errorKind.stringValue = ErrorMessage.parseError(error, info: info)
         filename.stringValue = filepath.lastPathComponent
         location.stringValue = "Line: \(line)   Column: \(column)"
         errorInfomation.hidden = false

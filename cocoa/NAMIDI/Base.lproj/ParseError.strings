@@ -1,0 +1,26 @@
+﻿"FileNotFound" = "File not found.";
+"InitError" = "Initialization faild.";
+"SyntaxError" = "Syntax Error.";
+
+"IllegalResolution" = "Illegal Resolution.";
+"NoteIllegalSharp" = "Illegal Note Sharp.";
+"NoteIllegalFlat" = "Illegal Note Flat.";
+"NoteIllegalNatural" = "Illegal Note Natural.";
+"NoteIllegalOctaveUp" = "Illegal Octave Up.";
+"NoteIllegalOctaveDown" = "Illegal Octave Down.";
+"QuantizeInvalidTaplet" = "Invalid Taplet.";
+"InvalidTimeSign" = "Invalid Time Signature.";
+"IllegalOctaveShift" = "Illegal Octave Shift.";
+"InvalidKeySign" = "Invalid Key Signature.";
+"InvalidTempo" = "Invalid Tempo Value.";
+"InvalidChannel" = "Invalid Channel Number.";
+"InvalidVelociy" = "Invalid Velocity Value.";
+"InvalidGatetime" = "Invalid Gatetime Value.";
+"InvalidOctave" = "Invalid Octave Value.";
+"InvalidSound" = "Invalid Sound Parmaters.";
+"InvalidLocation" = "Invalid Location.";
+"InvalidMeasure" = "Invalid Measure.";
+"PatternMissing" = "Pattern Missing.";
+"PatternCircularReference" = "Pattern Circular Reference.";
+"InvalidOffset" = "Invalid Offset Value.";
+"InvalidLength" = "Invalid Length Value.";

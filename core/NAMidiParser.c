@@ -355,12 +355,12 @@ static bool parseFloat(Expression *expression, Context *context, void *value)
 static bool parseResolution(Expression *expression, Context *context, void *value)
 {
     if (context->parent || 0 < context->tick) {
-        ContextOnParseError(context, expression, ParseErrorNoteIllegalResolution, NULL);
+        ContextOnParseError(context, expression, ParseErrorIllegalResolution, NULL);
         return false;
     }
 
     if (!TimeTableSetResolution(context->timeTable, expression->v.i)) {
-        ContextOnParseError(context, expression, ParseErrorNoteIllegalResolution, &expression->v.i);
+        ContextOnParseError(context, expression, ParseErrorIllegalResolution, &expression->v.i);
         return false;
     }
 

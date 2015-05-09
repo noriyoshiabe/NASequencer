@@ -22,6 +22,8 @@
 		02AD4ABF1AADEE4D005364C5 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 02AD4ABE1AADEE4D005364C5 /* icon.png */; };
 		02CAE4541AFE1371007D4D27 /* libnamidi-application.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 02EB35DF1AFE106C00EFBE27 /* libnamidi-application.a */; };
 		02CAE4551AFE1371007D4D27 /* libnamidi-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 02EB35E51AFE107700EFBE27 /* libnamidi-core.a */; };
+		02CAE4571AFE33F4007D4D27 /* ErrorMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CAE4561AFE33F4007D4D27 /* ErrorMessage.m */; };
+		02CAE4611AFE40F3007D4D27 /* ParseError.strings in Resources */ = {isa = PBXBuildFile; fileRef = 02CAE45F1AFE40F3007D4D27 /* ParseError.strings */; };
 		02FE8D531A923C6600BEF62E /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FE8D521A923C6600BEF62E /* CoreMIDI.framework */; };
 /* End PBXBuildFile section */
 
@@ -81,6 +83,9 @@
 		025F67911A90C6B600E87117 /* DocumentController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentController.swift; sourceTree = "<group>"; };
 		02AA073A1A98BB6100F413A2 /* PianoRollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PianoRollView.swift; sourceTree = "<group>"; };
 		02AD4ABE1AADEE4D005364C5 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
+		02CAE4561AFE33F4007D4D27 /* ErrorMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ErrorMessage.m; sourceTree = "<group>"; };
+		02CAE4581AFE3414007D4D27 /* ErrorMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ErrorMessage.h; sourceTree = "<group>"; };
+		02CAE4601AFE40F3007D4D27 /* Base */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/ParseError.strings; sourceTree = "<group>"; };
 		02EB35DA1AFE106C00EFBE27 /* namidi-application.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "namidi-application.xcodeproj"; path = "../application/namidi-application.xcodeproj"; sourceTree = "<group>"; };
 		02EB35E01AFE107700EFBE27 /* namidi-core.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "namidi-core.xcodeproj"; path = "../core/namidi-core.xcodeproj"; sourceTree = "<group>"; };
 		02FE8D491A9237BF00BEF62E /* NAMIDI-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NAMIDI-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -146,6 +151,8 @@
 				02AA073A1A98BB6100F413A2 /* PianoRollView.swift */,
 				02531BC61A99B45500AB9B37 /* StatusView.swift */,
 				02531BC81A99B58300AB9B37 /* StatusBackgroundView.swift */,
+				02CAE4561AFE33F4007D4D27 /* ErrorMessage.m */,
+				02CAE4581AFE3414007D4D27 /* ErrorMessage.h */,
 			);
 			path = NAMIDI;
 			sourceTree = "<group>";
@@ -153,6 +160,7 @@
 		02225DDB1A906E610077ABCB /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				02CAE45F1AFE40F3007D4D27 /* ParseError.strings */,
 				02225DDC1A906E610077ABCB /* Info.plist */,
 			);
 			name = "Supporting Files";
@@ -305,6 +313,7 @@
 				02225DE51A906E610077ABCB /* Images.xcassets in Resources */,
 				02225DE81A906E610077ABCB /* MainMenu.xib in Resources */,
 				02AD4ABF1AADEE4D005364C5 /* icon.png in Resources */,
+				02CAE4611AFE40F3007D4D27 /* ParseError.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -322,6 +331,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02CAE4571AFE33F4007D4D27 /* ErrorMessage.m in Sources */,
 				02225DE01A906E610077ABCB /* Document.swift in Sources */,
 				02225E001A9096100077ABCB /* DocumentView.swift in Sources */,
 				02531BC71A99B45500AB9B37 /* StatusView.swift in Sources */,
@@ -375,6 +385,14 @@
 				02225DE71A906E610077ABCB /* Base */,
 			);
 			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+		02CAE45F1AFE40F3007D4D27 /* ParseError.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				02CAE4601AFE40F3007D4D27 /* Base */,
+			);
+			name = ParseError.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

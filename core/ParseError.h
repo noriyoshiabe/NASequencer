@@ -5,7 +5,7 @@ typedef enum {
     ParseErrorInitError,
     ParseErrorSyntaxError,
 
-    ParseErrorNoteIllegalResolution,
+    ParseErrorIllegalResolution,
     ParseErrorNoteIllegalSharp,
     ParseErrorNoteIllegalFlat,
     ParseErrorNoteIllegalNatural,
@@ -37,7 +37,7 @@ static inline const char *ParseError2String(ParseError error)
     CASE(ParseErrorInitError);
     CASE(ParseErrorSyntaxError);
 
-    CASE(ParseErrorNoteIllegalResolution);
+    CASE(ParseErrorIllegalResolution);
     CASE(ParseErrorNoteIllegalSharp);
     CASE(ParseErrorNoteIllegalFlat);
     CASE(ParseErrorNoteIllegalNatural);

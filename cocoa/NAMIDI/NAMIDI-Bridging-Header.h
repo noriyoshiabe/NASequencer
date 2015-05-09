@@ -4,3 +4,4 @@
 
 #import "NAMidi.h"
 #import "Mixer.h"
+#import "ErrorMessage.h"
