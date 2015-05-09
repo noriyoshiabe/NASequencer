@@ -7,7 +7,7 @@
 
 @interface Sequence : NSObject
 
-@property (nonatomic, readonly) int32_t resolution;
+@property (nonatomic, readonly) uint16_t resolution;
 @property (nonatomic, readonly) int32_t length;
 @property (nonatomic, readonly) NSArray *events;
 @property (nonatomic, readonly) TimeTable *timeTable;

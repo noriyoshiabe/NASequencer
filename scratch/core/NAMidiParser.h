@@ -9,7 +9,7 @@
 typedef struct _NAMidiParser NAMidiParser;
 
 typedef struct {
-    void (*onParseResolution)(void *receiver, uint32_t resolution);
+    void (*onParseResolution)(void *receiver, uint16_t resolution);
     void (*onParseNote)(void *receiver, uint32_t tick, uint8_t channel, uint8_t noteNo, uint8_t velocity, uint32_t gatetime);
     void (*onParseTime)(void *receiver, uint32_t tick, uint8_t numerator, uint8_t denominator);
     void (*onParseTempo)(void *receiver, uint32_t tick, float tempo);

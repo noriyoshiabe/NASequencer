@@ -19,7 +19,7 @@
 
 @implementation Sequence
 
-- (int32_t)resolution
+- (uint16_t)resolution
 {
     return TimeTableResolution(_timeTable);
 }

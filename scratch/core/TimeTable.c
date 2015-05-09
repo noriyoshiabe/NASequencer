@@ -7,7 +7,7 @@
 
 struct _TimeTable {
     int refCount;
-    int32_t resolution;
+    uint16_t resolution;
     bool resolutionChanged;
     CFMutableArrayRef timeList;
     CFMutableArrayRef tempoList;

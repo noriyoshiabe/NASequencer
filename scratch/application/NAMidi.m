@@ -18,7 +18,7 @@
 
 @implementation NAMidi
 
-static void _NAMidiParserOnParseResolution(void *receiver, uint32_t resolution)
+static void _NAMidiParserOnParseResolution(void *receiver, uint16_t resolution)
 {
     NAMidi *self = (__bridge NAMidi *)receiver;
     [self parser:self->parser onParseResolution:resolution];
@@ -173,7 +173,7 @@ static FSWatcherCallbacks watcherCallbacks = {
     [self.player backward];
 }
 
-- (void)parser:(NAMidiParser *)parser onParseResolution:(uint32_t)resolution
+- (void)parser:(NAMidiParser *)parser onParseResolution:(uint16_t)resolution
 {
 }
 
