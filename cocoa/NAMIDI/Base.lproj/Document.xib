@@ -19,7 +19,7 @@
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="133" y="235" width="507" height="413"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1440" height="878"/>
-            <value key="minSize" type="size" width="94" height="86"/>
+            <value key="minSize" type="size" width="480" height="360"/>
             <view key="contentView" id="gIp-Ho-8D9" customClass="DocumentView" customModule="NAMIDI" customModuleProvider="target">
                 <rect key="frame" x="0.0" y="0.0" width="507" height="413"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -65,12 +65,12 @@
                                     </textField>
                                 </subviews>
                             </customView>
-                            <customView hidden="YES" id="527-ba-AvD" customClass="StatusBackgroundView" customModule="NAMIDI" customModuleProvider="target">
-                                <rect key="frame" x="20" y="150" width="467" height="113"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                            <customView id="527-ba-AvD" customClass="StatusBackgroundView" customModule="NAMIDI" customModuleProvider="target">
+                                <rect key="frame" x="73" y="150" width="360" height="113"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                 <subviews>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="LXq-lO-RRe">
-                                        <rect key="frame" x="18" y="38" width="431" height="18"/>
+                                        <rect key="frame" x="18" y="38" width="324" height="18"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="example.namidi" id="Pu0-PK-b14">
                                             <font key="font" metaFont="system" size="14"/>
@@ -79,7 +79,7 @@
                                         </textFieldCell>
                                     </textField>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Hfi-NG-7Ne">
-                                        <rect key="frame" x="18" y="20" width="431" height="18"/>
+                                        <rect key="frame" x="18" y="20" width="324" height="18"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Line: 100   column: 12" id="NDA-9M-K1z">
                                             <font key="font" metaFont="system"/>
@@ -88,7 +88,7 @@
                                         </textFieldCell>
                                     </textField>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="hDV-9v-gkV">
-                                        <rect key="frame" x="8" y="57" width="451" height="36"/>
+                                        <rect key="frame" x="8" y="57" width="344" height="36"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="center" title="Syntax Error" id="Ln7-Ys-vJh">
                                             <font key="font" metaFont="system" size="30"/>

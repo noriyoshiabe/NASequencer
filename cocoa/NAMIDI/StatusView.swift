@@ -23,6 +23,10 @@ class StatusView : NSView, NAMidiObserver {
         }
     }
     
+    override func awakeFromNib() {
+        errorInfomation.hidden = true
+    }
+    
     func namidi(namidi: NAMidi!, onParseFinish sequence: Sequence!) {
         errorInfomation.hidden = true
     }
