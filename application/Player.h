@@ -42,6 +42,7 @@ typedef NS_ENUM (NSUInteger, PlayerEvent) {
 @protocol PlayerDelegate <NSObject>
 @optional
 - (void)player:(Player *)player notifyEvent:(PlayerEvent)playerEvent;
+- (void)player:(Player *)player onClock:(uint32_t)tick usec:(int64_t)usec location:(Location)location;
 - (void)player:(Player *)player didSendNoteOn:(NoteEvent *)noteEvent;
 - (void)player:(Player *)player didSendNoteOff:(NoteEvent *)noteEvent;
 - (void)player:(Player *)player didSendSound:(SoundEvent *)soundEvent;

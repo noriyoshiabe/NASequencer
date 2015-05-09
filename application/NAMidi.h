@@ -32,6 +32,7 @@
 - (void)namidi:(NAMidi *)namidi onParseFinish:(Sequence *)sequence;
 - (void)namidi:(NAMidi *)namidi onParseError:(NSString *)filepath line:(int)line column:(int)column error:(ParseError)error info:(const void *)info;
 - (void)namidi:(NAMidi *)namidi player:(Player *)player notifyEvent:(PlayerEvent)playerEvent;
+- (void)namidi:(NAMidi *)namidi player:(Player *)player onClock:(uint32_t)tick usec:(int64_t)usec location:(Location)location;
 - (void)namidi:(NAMidi *)namidi player:(Player *)player didSendNoteOn:(NoteEvent *)noteEvent;
 - (void)namidi:(NAMidi *)namidi player:(Player *)player didSendNoteOff:(NoteEvent *)noteEvent;
 @end

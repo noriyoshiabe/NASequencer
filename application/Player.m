@@ -172,6 +172,8 @@ static PlayerClockSourceCallbacks callbacks = {
 
 - (void)playerClockSource:(PlayerClockSource *)clockSource onNotifyClock:(uint32_t)tick prevTick:(int32_t)prevTick usec:(int64_t)usec location:(Location)location
 {
+    BOOL notify = !!memcmp(&_location, &location, sizeof(Location));
+
     _tick = tick;
     _usec = usec;
     _location = location;
@@ -198,6 +200,12 @@ static PlayerClockSourceCallbacks callbacks = {
             else if (tick <= event.tick) {
                 break;
             }
+        }
+    }
+
+    if (notify) {
+        if ([self.delegate respondsToSelector:@selector(player:onClock:usec:location:)]) {
+            [self.delegate player:self onClock:tick usec:usec location:location];
         }
     }
 }

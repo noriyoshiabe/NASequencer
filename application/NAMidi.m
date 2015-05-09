@@ -218,6 +218,15 @@ static FSWatcherCallbacks watcherCallbacks = {
     }
 }
 
+- (void)player:(Player *)player onClock:(uint32_t)tick usec:(int64_t)usec location:(Location)location
+{
+    for (id<NAMidiObserver> observer in self.observers) {
+        if ([observer respondsToSelector:@selector(namidi:player:onClock:usec:location:)]) {
+            [observer namidi:self player:player onClock:tick usec:usec location:location];
+        }
+    }
+}
+
 - (void)player:(Player *)player didSendNoteOn:(NoteEvent *)noteEvent
 {
     for (id<NAMidiObserver> observer in self.observers) {
