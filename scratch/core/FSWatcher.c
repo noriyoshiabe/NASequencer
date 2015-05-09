@@ -32,20 +32,26 @@ FSWatcher *FSWatcherCreate(FSWatcherCallbacks *callbacks, void *receiver)
 
 void FSWatcherDestroy(FSWatcher *self)
 {
-    pthread_join(self->thread, NULL);
+    self->receiver = NULL;
 
     CFRelease(self->files);
     CFRelease(self->dirPaths);
+
+    CFRunLoopStop(self->runloop);
 }
 
 static void onFileChanged(FSWatcher *self, const char *changedFile)
 {
-    self->callbacks->onFileChanged(self->receiver, changedFile);
+    if (self->receiver) {
+        self->callbacks->onFileChanged(self->receiver, changedFile);
+    }
 }
 
 static void onError(FSWatcher *self)
 {
-    self->callbacks->onError(self->receiver, errno, strerror(errno));
+    if (self->receiver) {
+        self->callbacks->onError(self->receiver, errno, strerror(errno));
+    }
 }
 
 static struct tm*getModifiedTime(const char *filepath)
@@ -144,19 +150,16 @@ static void *run(void *_self)
 
     CFRunLoopRun();
 
+    FSEventStreamStop(self->stream);
+    FSEventStreamInvalidate(self->stream);
+    FSEventStreamRelease(self->stream);
+
+    free(self);
+
     return NULL;
 }
 
 void FSWatcherStart(FSWatcher *self)
 {
     pthread_create(&self->thread, NULL, run, self);
-}
-
-void FSWatcherFinish(FSWatcher *self)
-{
-    FSEventStreamStop(self->stream);
-    FSEventStreamInvalidate(self->stream);
-    FSEventStreamRelease(self->stream);
-
-    CFRunLoopStop(self->runloop);
 }

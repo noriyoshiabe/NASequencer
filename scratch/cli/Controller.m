@@ -30,8 +30,8 @@ typedef enum {
 
 - (void)run:(const char *)filepath repeat:(BOOL)repeat
 {
-    self.namidi.filepath = [NSString stringWithUTF8String:filepath];
-    [self.namidi parse];
+    [self.namidi parse:[NSString stringWithUTF8String:filepath]];
+    self.namidi.watch = YES;
 
     bool exit = false;
 
@@ -60,8 +60,7 @@ typedef enum {
 
 - (void)write:(const char *)filepath outfile:(const char *)outfile
 {
-    self.namidi.filepath = [NSString stringWithUTF8String:filepath];
-    [self.namidi parse];
+    [self.namidi parse:[NSString stringWithUTF8String:filepath]];
 
     Message msg;
     MessageQueueWait(msgQ, &msg);

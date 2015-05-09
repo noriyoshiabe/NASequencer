@@ -6,13 +6,17 @@
 @interface NAMidi() {
     NAMidiParser *parser;
     FSWatcher *watcher;
+    BOOL _watch;
 }
 
 @property (nonatomic, readwrite) Sequence *sequence;
 @property (nonatomic, readwrite) Player *player;
-@property (nonatomic, strong) SequenceBuilder *sequenceBuilder;
+@property (nonatomic, readwrite) NSString *filepath;
 
+@property (nonatomic, strong) SequenceBuilder *sequenceBuilder;
 @property (nonatomic, strong) NSHashTable *observers;
+
+- (void)parse;
 
 @end
 
@@ -69,7 +73,6 @@ static FSWatcherCallbacks watcherCallbacks = {
 {
     if (self = [super init]) {
         parser = NAMidiParserCreate(&parserCallbacks, (__bridge void *)self);
-        watcher = FSWatcherCreate(&watcherCallbacks, (__bridge void *)self);
 
         self.observers = [NSHashTable weakObjectsHashTable];
         self.player = [[Player alloc] init];
@@ -80,8 +83,10 @@ static FSWatcherCallbacks watcherCallbacks = {
 
 - (void)dealloc
 {
-    FSWatcherFinish(watcher);
-    FSWatcherDestroy(watcher);
+    if (watcher) {
+        FSWatcherDestroy(watcher);
+    }
+
     NAMidiParserDestroy(parser);
 
     self.sequence = nil;
@@ -99,11 +104,10 @@ static FSWatcherCallbacks watcherCallbacks = {
     [self.observers removeObject:observer];
 }
 
-- (void)setFilepath:(NSString *)filepath
+- (void)parse:(NSString *)filepath
 {
     _filepath = filepath;
-    FSWatcherRegisterFilepath(self->watcher, [_filepath UTF8String]);
-    FSWatcherStart(self->watcher);
+    [self parse];
 }
 
 - (void)parse
@@ -111,6 +115,27 @@ static FSWatcherCallbacks watcherCallbacks = {
     self.sequenceBuilder = [[SequenceBuilder alloc] init];
     NAMidiParserExecuteParse(parser, [self.filepath UTF8String]);
     self.sequenceBuilder = nil;
+}
+
+- (void)setWatch:(BOOL)watch
+{
+    _watch = watch;
+    [self watchFileChange];
+}
+
+- (void)watchFileChange
+{
+    if (watcher) {
+        FSWatcherDestroy(watcher);
+    }
+
+    if (!self.watch) {
+        return;
+    }
+
+    watcher = FSWatcherCreate(&watcherCallbacks, (__bridge void *)self);
+    FSWatcherRegisterFilepath(self->watcher, [_filepath UTF8String]);
+    FSWatcherStart(self->watcher);
 }
 
 - (void)stop
@@ -159,6 +184,8 @@ static FSWatcherCallbacks watcherCallbacks = {
             [observer namidi:self onParseFinish:self.sequence];
         }
     }
+
+    [self watchFileChange];
 }
 
 - (void)parser:(NAMidiParser *)parser onError:(const char *)filepath line:(int)line column:(int)column error:(ParseError)error info:(const void *)info
@@ -168,11 +195,12 @@ static FSWatcherCallbacks watcherCallbacks = {
             [observer namidi:self onParseError:[NSString stringWithUTF8String:filepath] line:line column:column error:error info:info];
         }
     }
+
+    [self watchFileChange];
 }
 
 - (void)watcher:(FSWatcher *)watcher onFileChanged:(const char *)changedFile
 {
-    // TODO post to main thread
     [self parse];
 }
 
