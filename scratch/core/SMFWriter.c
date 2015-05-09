@@ -56,7 +56,7 @@ static void writeToTrack(SMFWriter *self, uint8_t channel, const uint8_t *bytes,
         track->buffer = realloc(track->buffer, ALLOCATE_UNIT * ++track->allocatedCount);
     }
 
-    memcpy(track->buffer, bytes, size);
+    memcpy(track->buffer + track->length, bytes, size);
     track->length += size;
 }
 
