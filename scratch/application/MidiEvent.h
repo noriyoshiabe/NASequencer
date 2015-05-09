@@ -35,10 +35,10 @@ typedef NS_ENUM (NSUInteger, MidiEventType) {
 
 @interface TimeEvent : MidiEvent
 
-@property (nonatomic, readonly) uint16_t numerator;
-@property (nonatomic, readonly) uint16_t denominator;
+@property (nonatomic, readonly) uint8_t numerator;
+@property (nonatomic, readonly) uint8_t denominator;
 
-- (id)initWithTick:(int32_t)tick numerator:(uint16_t)numerator denominator:(uint16_t)denominator;
+- (id)initWithTick:(int32_t)tick numerator:(uint8_t)numerator denominator:(uint8_t)denominator;
 
 @end
 

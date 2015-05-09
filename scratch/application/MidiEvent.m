@@ -60,13 +60,13 @@
 
 
 @interface TimeEvent()
-@property (nonatomic, readwrite) uint16_t numerator;
-@property (nonatomic, readwrite) uint16_t denominator;
+@property (nonatomic, readwrite) uint8_t numerator;
+@property (nonatomic, readwrite) uint8_t denominator;
 @end
 
 @implementation TimeEvent
 
-- (id)initWithTick:(int32_t)tick numerator:(uint16_t)numerator denominator:(uint16_t)denominator
+- (id)initWithTick:(int32_t)tick numerator:(uint8_t)numerator denominator:(uint8_t)denominator
 {
     if (self = [super initWithTick:tick]) {
         self.numerator = numerator;
