@@ -145,51 +145,7 @@ static FSWatcherCallbacks watcherCallbacks = {
 
 - (void)parser:(NAMidiParser *)parser onParseEvent:(NAMidiParserEventType)type argList:(va_list)argList
 {
-    int32_t tick = va_arg(argList, int);
-
-    switch (type) {
-    case NAMidiParserEventTypeNote:
-        {
-            uint8_t channel = va_arg(argList, int);
-            uint8_t noteNo = va_arg(argList, int);
-            uint8_t velocity = va_arg(argList, int);
-            uint32_t gatetime = va_arg(argList, int);
-            [self.sequenceBuilder addNote:tick channel:channel noteNo:noteNo velocity:velocity gatetime:gatetime];
-        }
-        break;
-
-    case NAMidiParserEventTypeTime:
-        {
-            uint8_t numerator = va_arg(argList, int);
-            uint8_t denominator = va_arg(argList, int);
-            [self.sequenceBuilder addTime:tick numerator:numerator denominator:denominator];
-        }
-        break;
-
-    case NAMidiParserEventTypeTempo:
-        {
-            float tempo = va_arg(argList, double);
-            [self.sequenceBuilder addTempo:tick tempo:tempo];
-        }
-        break;
-
-    case NAMidiParserEventTypeSound:
-        {
-            uint8_t channel = va_arg(argList, int);
-            uint8_t msb = va_arg(argList, int);
-            uint8_t lsb = va_arg(argList, int);
-            uint8_t programNo = va_arg(argList, int);
-            [self.sequenceBuilder addSound:tick channel:channel msb:msb lsb:lsb programNo:programNo];
-        }
-        break;
-
-    case NAMidiParserEventTypeMarker:
-        {
-            const char *text = va_arg(argList, const char *);
-            [self.sequenceBuilder addMarker:tick text:text];
-        }
-        break;
-    }
+    [self.sequenceBuilder addEvent:type argList:argList];
 }
 
 - (void)parser:(NAMidiParser *)parser onFinish:(TimeTable *)timeTable

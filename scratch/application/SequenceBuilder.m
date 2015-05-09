@@ -19,29 +19,53 @@
     return self;
 }
 
-- (void)addNote:(uint32_t)tick channel:(uint8_t)channel noteNo:(uint8_t)noteNo velocity:(uint8_t)velocity gatetime:(uint32_t)gatetime
+- (void)addEvent:(NAMidiParserEventType)type argList:(va_list)argList
 {
-    [self.events addObject:[[NoteEvent alloc] initWithTick:tick channel:channel noteNo:noteNo velocity:velocity gatetime:gatetime]];
-}
+    int32_t tick = va_arg(argList, int);
 
-- (void)addTime:(uint32_t)tick numerator:(uint8_t)numerator denominator:(uint8_t)denominator
-{
-    [self.events addObject:[[TimeEvent alloc] initWithTick:tick numerator:numerator denominator:denominator]];
-}
+    switch (type) {
+    case NAMidiParserEventTypeNote:
+        {
+            uint8_t channel = va_arg(argList, int);
+            uint8_t noteNo = va_arg(argList, int);
+            uint8_t velocity = va_arg(argList, int);
+            uint32_t gatetime = va_arg(argList, int);
+            [self.events addObject:[[NoteEvent alloc] initWithTick:tick channel:channel noteNo:noteNo velocity:velocity gatetime:gatetime]];
+        }
+        break;
 
-- (void)addTempo:(uint32_t)tick tempo:(float)tempo
-{
-    [self.events addObject:[[TempoEvent alloc] initWithTick:tick tempo:tempo]];
-}
+    case NAMidiParserEventTypeTime:
+        {
+            uint8_t numerator = va_arg(argList, int);
+            uint8_t denominator = va_arg(argList, int);
+            [self.events addObject:[[TimeEvent alloc] initWithTick:tick numerator:numerator denominator:denominator]];
+        }
+        break;
 
-- (void)addSound:(uint32_t)tick channel:(uint8_t)channel msb:(uint8_t)msb lsb:(uint8_t)lsb programNo:(uint8_t)programNo
-{
-    [self.events addObject:[[SoundEvent alloc] initWithTick:tick channel:channel msb:msb lsb:lsb programNo:programNo]];
-}
+    case NAMidiParserEventTypeTempo:
+        {
+            float tempo = va_arg(argList, double);
+            [self.events addObject:[[TempoEvent alloc] initWithTick:tick tempo:tempo]];
+        }
+        break;
 
-- (void)addMarker:(uint32_t)tick text:(const char *)text
-{
-    [self.events addObject:[[MarkerEvent alloc] initWithTick:tick text:text]];
+    case NAMidiParserEventTypeSound:
+        {
+            uint8_t channel = va_arg(argList, int);
+            uint8_t msb = va_arg(argList, int);
+            uint8_t lsb = va_arg(argList, int);
+            uint8_t programNo = va_arg(argList, int);
+            [self.events addObject:[[SoundEvent alloc] initWithTick:tick channel:channel msb:msb lsb:lsb programNo:programNo]];
+        }
+        break;
+
+    case NAMidiParserEventTypeMarker:
+        {
+            const char *text = va_arg(argList, const char *);
+            [self.events addObject:[[MarkerEvent alloc] initWithTick:tick text:text]];
+        }
+        break;
+    }
 }
 
 - (void)setTimeTable:(TimeTable *)timeTable
