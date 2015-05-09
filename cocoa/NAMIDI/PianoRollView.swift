@@ -65,15 +65,12 @@ class PianoRollView : NSView, NAMidiObserver {
         }
     }
     
-    var gridLayer: CGLayer?
+    var gridLayer: CGLayer!
+    var noteLayer: CGLayer!
     
-    var playingPosition: CGFloat = 0
-    var playingLine: CALayer?
+    var playingLine: CALayer!
     
     var scrolling: Bool = false
-    
-    var time: CFAbsoluteTime = CFAbsoluteTimeGetCurrent()
-    var drawCount: Int = 0;
     
     override var flipped: Bool {
         return true
@@ -81,34 +78,25 @@ class PianoRollView : NSView, NAMidiObserver {
 
     override func awakeFromNib() {
         playingLine = CALayer()
-        playingLine!.backgroundColor = currentPositionColor.CGColor;
-        playingLine!.frame = NSMakeRect(0, 0, 1, round((127 + 2) * self.heightPerKey))
+        playingLine.backgroundColor = currentPositionColor.CGColor;
+        playingLine.frame = NSMakeRect(0, 0, 1, round((127 + 2) * self.heightPerKey))
+        playingLine.hidden = true
         self.layer!.addSublayer(playingLine)
     }
     
     override func drawRect(dirtyRect: NSRect) {
         let contextPtr = NSGraphicsContext.currentContext()!.graphicsPort
         let context = unsafeBitCast(contextPtr, CGContext.self)
+        
         CGContextClipToRect(context, dirtyRect)
         
         if nil != gridLayer {
             CGContextDrawLayerAtPoint(context, CGPointZero, gridLayer)
         }
         
-        if nil != namidi.sequence {
-            drawNotes(context, dirtyRect: dirtyRect)
+        if nil != noteLayer {
+            CGContextDrawLayerAtPoint(context, CGPointZero, noteLayer)
         }
-        
-        setPlayingPositionS(currentX())
-        autoScroll()
-        
-        if (namidi.player.playing) {
-            dispatch_async(dispatch_get_main_queue()) {
-                self.needsDisplay = true
-            }
-        }
-        
-        calcFPS();
     }
     
     func namidi(namidi: NAMidi!, onParseFinish sequence: Sequence!) {
@@ -120,6 +108,11 @@ class PianoRollView : NSView, NAMidiObserver {
             
             self.gridLayer = CGLayerCreateWithContext(context, self.bounds.size, nil)
             self.drawGridLayer()
+            self.noteLayer = CGLayerCreateWithContext(context, self.bounds.size, nil)
+            self.drawNoteLayer()
+            
+            self.updatePlayingPosition()
+            self.playingLine.hidden = false
             
             self.needsDisplay = true
         }
@@ -130,18 +123,33 @@ class PianoRollView : NSView, NAMidiObserver {
     }
     
     func namidi(namidi: NAMidi!, player: Player!, notifyEvent playerEvent: PlayerEvent) {
-        needsDisplay = true
+        dispatch_async(dispatch_get_main_queue()) {
+            self.updatePlayingPosition()
+            self.autoScroll()
+        }
     }
     
     func namidi(namidi: NAMidi!, player: Player!, didSendNoteOn noteEvent: NoteEvent!) {
         dispatch_async(dispatch_get_main_queue()) {
-            self.setNeedsDisplayInRect(self.noteRect(noteEvent))
+            let ctx = CGLayerGetContext(self.noteLayer)
+            self.drawNote(ctx, note:noteEvent, active: true)
         }
     }
     
     func namidi(namidi: NAMidi!, player: Player!, didSendNoteOff noteEvent: NoteEvent!) {
         dispatch_async(dispatch_get_main_queue()) {
-            self.setNeedsDisplayInRect(self.noteRect(noteEvent))
+            let ctx = CGLayerGetContext(self.noteLayer)
+            self.drawNote(ctx, note:noteEvent, active: false)
+        }
+    }
+    
+    func namidi(namidi: NAMidi!, player: Player!, onClock tick: UInt32, usec: Int64, location: Location) {
+        dispatch_async(dispatch_get_main_queue()) {
+            self.updatePlayingPosition()
+            
+            if namidi.player.playing {
+                self.autoScroll()
+            }
         }
     }
     
@@ -169,21 +177,16 @@ class PianoRollView : NSView, NAMidiObserver {
         }
     }
     
-    func setPlayingPositionS(x: CGFloat) {
-        if playingPosition == x {
-            return
-        }
-        
+    func updatePlayingPosition() {
         CATransaction.begin()
         CATransaction.setValue(kCFBooleanTrue, forKey: kCATransactionDisableActions)
-        playingLine!.transform = CATransform3DMakeTranslation(x, 0, 0)
+        playingLine!.transform = CATransform3DMakeTranslation(currentX(), 0, 0)
         CATransaction.commit()
-        
-        playingPosition = x
     }
     
     func drawGridLayer() {
         let ctx = CGLayerGetContext(gridLayer)
+        CGContextClearRect(ctx, self.bounds)
         
         CGContextSetLineWidth(ctx, 1.0)
         
@@ -196,7 +199,6 @@ class PianoRollView : NSView, NAMidiObserver {
             CGContextStrokePath(ctx)
         }
         
-        let sequence = namidi.sequence
         
         var tick = Int32(0 / widthPerTick)
         var tickTo =  Int32(self.bounds.size.width / widthPerTick)
@@ -204,8 +206,8 @@ class PianoRollView : NSView, NAMidiObserver {
         var location: Location = namidi.sequence.location(tick)
         location.t = 0
         
-        tick = sequence.tick(location)
-        var timeSign = sequence.timeSign(tick)
+        tick = namidi.sequence.tick(location)
+        var timeSign = namidi.sequence.timeSign(tick)
         
         while tick <= tickTo {
             let color = (1 == location.b ? gridColorMeasure : gridColorBeat).CGColor
@@ -219,21 +221,22 @@ class PianoRollView : NSView, NAMidiObserver {
             if timeSign.numerator < ++location.b {
                 location.b = 1
                 ++location.m
-                timeSign = sequence.timeSign(tick)
+                timeSign = namidi.sequence.timeSign(tick)
             }
             
-            tick = sequence.tick(location)
+            tick = namidi.sequence.tick(location)
         }
     }
     
-    func drawNotes(ctx: CGContext, dirtyRect: NSRect) {
+    func drawNoteLayer() {
+        let ctx = CGLayerGetContext(noteLayer)
+        CGContextClearRect(ctx, self.bounds)
+        
         for event in namidi.sequence.events {
             switch event {
             case is NoteEvent:
                 let note: NoteEvent = event as! NoteEvent
-                if dirtyRect.intersects(noteRect(note)) {
-                    drawNote(ctx, note: note)
-                }
+                drawNote(ctx, note: note, active: false)
             default:
                 break
             }
@@ -249,8 +252,10 @@ class PianoRollView : NSView, NAMidiObserver {
         return NSMakeRect(left - min(5, length / 2), y - 5, length, 10)
     }
     
-    func drawNote(ctx: CGContext, note: NoteEvent) {
+    func drawNote(ctx: CGContext, note: NoteEvent, active: Bool) {
         let rect:CGRect = noteRect(note)
+        
+        CGContextClearRect(ctx, rect)
         
         let lx = CGRectGetMinX(rect)
         let cx = CGRectGetMidX(rect)
@@ -262,7 +267,7 @@ class PianoRollView : NSView, NAMidiObserver {
         
         CGContextSetLineWidth(ctx, 1.0)
         
-        if namidi.player.playingNoteEvents.contains(note) {
+        if active {
             CGContextMoveToPoint(ctx, lx, cy)
             CGContextAddArcToPoint(ctx, lx, by, cx, by, radius)
             CGContextAddArcToPoint(ctx, rx, by, rx, cy, radius)
@@ -294,15 +299,7 @@ class PianoRollView : NSView, NAMidiObserver {
             CGContextSetStrokeColorWithColor(ctx, noteBorderColors[Int(note.channel - 1)].CGColor)
             CGContextStrokePath(ctx)
         }
-    }
-    
-    func calcFPS() {
-        ++drawCount;
-        var _time = CFAbsoluteTimeGetCurrent()
-        if 1.0 < _time - time {
-            println(String(format: "-FPS: %d", drawCount))
-            time = _time
-            drawCount = 0;
-        }
+        
+        self.setNeedsDisplayInRect(rect)
     }
 }

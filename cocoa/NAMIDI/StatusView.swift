@@ -23,8 +23,6 @@ class StatusView : NSView, NAMidiObserver {
         }
     }
     
-    var lastUsec: Int64 = 0
-    
     func namidi(namidi: NAMidi!, onParseFinish sequence: Sequence!) {
         errorInfomation.hidden = true
     }
@@ -38,11 +36,17 @@ class StatusView : NSView, NAMidiObserver {
     
     func namidi(namidi: NAMidi!, player: Player!, notifyEvent playerEvent: PlayerEvent) {
         dispatch_async(dispatch_get_main_queue()) {
-            self.needsDisplay = true
+            self.updateLocation()
         }
     }
     
-    override func drawRect(dirtyRect: NSRect) {
+    func namidi(namidi: NAMidi!, player: Player!, onClock tick: UInt32, usec: Int64, location: Location) {
+        dispatch_async(dispatch_get_main_queue()) {
+            self.updateLocation()
+        }
+    }
+    
+    func updateLocation() {
         let player = namidi.player
         let usec = player.usec
         let location = player.location
@@ -53,9 +57,5 @@ class StatusView : NSView, NAMidiObserver {
         
         playing.stringValue = String(format: "%02d:%02d:%03d   %03d:%02d:%03d",
             min, sec, msec, location.m, location.b, location.t)
-        
-        if (player.playing) {
-            setNeedsDisplayInRect(playing.frame)
-        }
     }
 }
