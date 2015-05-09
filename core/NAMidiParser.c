@@ -450,7 +450,7 @@ static bool parseNoteList(Expression *expression, Context *context, void *value)
 static bool parseNote(Expression *expression, Context *context, void *value)
 {
     const char *noteString = expression->v.s;
-    int length = strlen(noteString);
+    size_t length = strlen(noteString);
 
     int noteNo = -1;
     char noteChar = -1;

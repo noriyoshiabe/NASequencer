@@ -49,7 +49,7 @@ Expression *ExpressionCreateStringValue(void *scanner, void *yylloc, ExpressionT
 Expression *ExpressionCreateTrimmedStringValue(void *scanner, void *yylloc, ExpressionType type, char *value)
 {
     Expression *expr = ExpressionCreateStringValue(scanner, yylloc, type, value);
-    int len = strlen(value);
+    size_t len = strlen(value);
     char *str = malloc(len - 1);
     strncpy(str, value + 1, len - 2);
     expr->v.s = str;

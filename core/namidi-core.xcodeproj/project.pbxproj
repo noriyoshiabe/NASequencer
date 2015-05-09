@@ -1,0 +1,356 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		02EB355E1AFDF4F000EFBE27 /* CoreMidiClient.c in Sources */ = {isa = PBXBuildFile; fileRef = 02EB35411AFDF4F000EFBE27 /* CoreMidiClient.c */; };
+		02EB355F1AFDF4F000EFBE27 /* CoreMidiClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 02EB35421AFDF4F000EFBE27 /* CoreMidiClient.h */; };
+		02EB35601AFDF4F000EFBE27 /* Expression.c in Sources */ = {isa = PBXBuildFile; fileRef = 02EB35431AFDF4F000EFBE27 /* Expression.c */; };
+		02EB35611AFDF4F000EFBE27 /* Expression.h in Headers */ = {isa = PBXBuildFile; fileRef = 02EB35441AFDF4F000EFBE27 /* Expression.h */; };
+		02EB35621AFDF4F000EFBE27 /* ExpressionType.h in Headers */ = {isa = PBXBuildFile; fileRef = 02EB35451AFDF4F000EFBE27 /* ExpressionType.h */; };
+		02EB35631AFDF4F000EFBE27 /* FSWatcher.c in Sources */ = {isa = PBXBuildFile; fileRef = 02EB35461AFDF4F000EFBE27 /* FSWatcher.c */; };
+		02EB35641AFDF4F000EFBE27 /* FSWatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 02EB35471AFDF4F000EFBE27 /* FSWatcher.h */; };
+		02EB35651AFDF4F000EFBE27 /* Lexer.c in Sources */ = {isa = PBXBuildFile; fileRef = 02EB35481AFDF4F000EFBE27 /* Lexer.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		02EB35661AFDF4F000EFBE27 /* Lexer.h in Headers */ = {isa = PBXBuildFile; fileRef = 02EB35491AFDF4F000EFBE27 /* Lexer.h */; };
+		02EB35681AFDF4F000EFBE27 /* MessageQueue.c in Sources */ = {isa = PBXBuildFile; fileRef = 02EB354B1AFDF4F000EFBE27 /* MessageQueue.c */; };
+		02EB35691AFDF4F000EFBE27 /* MessageQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 02EB354C1AFDF4F000EFBE27 /* MessageQueue.h */; };
+		02EB356A1AFDF4F000EFBE27 /* MidiClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 02EB354D1AFDF4F000EFBE27 /* MidiClient.h */; };
+		02EB356B1AFDF4F000EFBE27 /* NAMidiParser.c in Sources */ = {isa = PBXBuildFile; fileRef = 02EB354E1AFDF4F000EFBE27 /* NAMidiParser.c */; };
+		02EB356C1AFDF4F000EFBE27 /* NAMidiParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 02EB354F1AFDF4F000EFBE27 /* NAMidiParser.h */; };
+		02EB356D1AFDF4F000EFBE27 /* NoteTable.c in Sources */ = {isa = PBXBuildFile; fileRef = 02EB35501AFDF4F000EFBE27 /* NoteTable.c */; };
+		02EB356E1AFDF4F000EFBE27 /* NoteTable.h in Headers */ = {isa = PBXBuildFile; fileRef = 02EB35511AFDF4F000EFBE27 /* NoteTable.h */; };
+		02EB356F1AFDF4F000EFBE27 /* ParseError.h in Headers */ = {isa = PBXBuildFile; fileRef = 02EB35521AFDF4F000EFBE27 /* ParseError.h */; };
+		02EB35701AFDF4F000EFBE27 /* Parser.c in Sources */ = {isa = PBXBuildFile; fileRef = 02EB35531AFDF4F000EFBE27 /* Parser.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		02EB35711AFDF4F000EFBE27 /* Parser.h in Headers */ = {isa = PBXBuildFile; fileRef = 02EB35541AFDF4F000EFBE27 /* Parser.h */; };
+		02EB35731AFDF4F000EFBE27 /* PlayerClockSource.c in Sources */ = {isa = PBXBuildFile; fileRef = 02EB35561AFDF4F000EFBE27 /* PlayerClockSource.c */; };
+		02EB35741AFDF4F000EFBE27 /* PlayerClockSource.h in Headers */ = {isa = PBXBuildFile; fileRef = 02EB35571AFDF4F000EFBE27 /* PlayerClockSource.h */; };
+		02EB35751AFDF4F000EFBE27 /* SMFWriter.c in Sources */ = {isa = PBXBuildFile; fileRef = 02EB35581AFDF4F000EFBE27 /* SMFWriter.c */; };
+		02EB35761AFDF4F000EFBE27 /* SMFWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 02EB35591AFDF4F000EFBE27 /* SMFWriter.h */; };
+		02EB35771AFDF4F000EFBE27 /* TimeTable_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 02EB355A1AFDF4F000EFBE27 /* TimeTable_internal.h */; };
+		02EB35781AFDF4F000EFBE27 /* TimeTable.c in Sources */ = {isa = PBXBuildFile; fileRef = 02EB355B1AFDF4F000EFBE27 /* TimeTable.c */; };
+		02EB35791AFDF4F000EFBE27 /* TimeTable.h in Headers */ = {isa = PBXBuildFile; fileRef = 02EB355C1AFDF4F000EFBE27 /* TimeTable.h */; };
+		02EB357A1AFDF4F000EFBE27 /* YYContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 02EB355D1AFDF4F000EFBE27 /* YYContext.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		02EB35391AFDF49400EFBE27 /* libnamidi-core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libnamidi-core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		02EB35411AFDF4F000EFBE27 /* CoreMidiClient.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = CoreMidiClient.c; sourceTree = "<group>"; };
+		02EB35421AFDF4F000EFBE27 /* CoreMidiClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreMidiClient.h; sourceTree = "<group>"; };
+		02EB35431AFDF4F000EFBE27 /* Expression.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Expression.c; sourceTree = "<group>"; };
+		02EB35441AFDF4F000EFBE27 /* Expression.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Expression.h; sourceTree = "<group>"; };
+		02EB35451AFDF4F000EFBE27 /* ExpressionType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExpressionType.h; sourceTree = "<group>"; };
+		02EB35461AFDF4F000EFBE27 /* FSWatcher.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = FSWatcher.c; sourceTree = "<group>"; };
+		02EB35471AFDF4F000EFBE27 /* FSWatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSWatcher.h; sourceTree = "<group>"; };
+		02EB35481AFDF4F000EFBE27 /* Lexer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Lexer.c; sourceTree = "<group>"; };
+		02EB35491AFDF4F000EFBE27 /* Lexer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lexer.h; sourceTree = "<group>"; };
+		02EB354B1AFDF4F000EFBE27 /* MessageQueue.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = MessageQueue.c; sourceTree = "<group>"; };
+		02EB354C1AFDF4F000EFBE27 /* MessageQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageQueue.h; sourceTree = "<group>"; };
+		02EB354D1AFDF4F000EFBE27 /* MidiClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiClient.h; sourceTree = "<group>"; };
+		02EB354E1AFDF4F000EFBE27 /* NAMidiParser.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = NAMidiParser.c; sourceTree = "<group>"; };
+		02EB354F1AFDF4F000EFBE27 /* NAMidiParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NAMidiParser.h; sourceTree = "<group>"; };
+		02EB35501AFDF4F000EFBE27 /* NoteTable.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = NoteTable.c; sourceTree = "<group>"; };
+		02EB35511AFDF4F000EFBE27 /* NoteTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NoteTable.h; sourceTree = "<group>"; };
+		02EB35521AFDF4F000EFBE27 /* ParseError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParseError.h; sourceTree = "<group>"; };
+		02EB35531AFDF4F000EFBE27 /* Parser.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Parser.c; sourceTree = "<group>"; };
+		02EB35541AFDF4F000EFBE27 /* Parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Parser.h; sourceTree = "<group>"; };
+		02EB35561AFDF4F000EFBE27 /* PlayerClockSource.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = PlayerClockSource.c; sourceTree = "<group>"; };
+		02EB35571AFDF4F000EFBE27 /* PlayerClockSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerClockSource.h; sourceTree = "<group>"; };
+		02EB35581AFDF4F000EFBE27 /* SMFWriter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SMFWriter.c; sourceTree = "<group>"; };
+		02EB35591AFDF4F000EFBE27 /* SMFWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMFWriter.h; sourceTree = "<group>"; };
+		02EB355A1AFDF4F000EFBE27 /* TimeTable_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimeTable_internal.h; sourceTree = "<group>"; };
+		02EB355B1AFDF4F000EFBE27 /* TimeTable.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = TimeTable.c; sourceTree = "<group>"; };
+		02EB355C1AFDF4F000EFBE27 /* TimeTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimeTable.h; sourceTree = "<group>"; };
+		02EB355D1AFDF4F000EFBE27 /* YYContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YYContext.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		02EB35361AFDF49400EFBE27 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		02EB35301AFDF49400EFBE27 = {
+			isa = PBXGroup;
+			children = (
+				02EB35411AFDF4F000EFBE27 /* CoreMidiClient.c */,
+				02EB35421AFDF4F000EFBE27 /* CoreMidiClient.h */,
+				02EB35431AFDF4F000EFBE27 /* Expression.c */,
+				02EB35441AFDF4F000EFBE27 /* Expression.h */,
+				02EB35451AFDF4F000EFBE27 /* ExpressionType.h */,
+				02EB35461AFDF4F000EFBE27 /* FSWatcher.c */,
+				02EB35471AFDF4F000EFBE27 /* FSWatcher.h */,
+				02EB35481AFDF4F000EFBE27 /* Lexer.c */,
+				02EB35491AFDF4F000EFBE27 /* Lexer.h */,
+				02EB354B1AFDF4F000EFBE27 /* MessageQueue.c */,
+				02EB354C1AFDF4F000EFBE27 /* MessageQueue.h */,
+				02EB354D1AFDF4F000EFBE27 /* MidiClient.h */,
+				02EB354E1AFDF4F000EFBE27 /* NAMidiParser.c */,
+				02EB354F1AFDF4F000EFBE27 /* NAMidiParser.h */,
+				02EB35501AFDF4F000EFBE27 /* NoteTable.c */,
+				02EB35511AFDF4F000EFBE27 /* NoteTable.h */,
+				02EB35521AFDF4F000EFBE27 /* ParseError.h */,
+				02EB35531AFDF4F000EFBE27 /* Parser.c */,
+				02EB35541AFDF4F000EFBE27 /* Parser.h */,
+				02EB35561AFDF4F000EFBE27 /* PlayerClockSource.c */,
+				02EB35571AFDF4F000EFBE27 /* PlayerClockSource.h */,
+				02EB35581AFDF4F000EFBE27 /* SMFWriter.c */,
+				02EB35591AFDF4F000EFBE27 /* SMFWriter.h */,
+				02EB355A1AFDF4F000EFBE27 /* TimeTable_internal.h */,
+				02EB355B1AFDF4F000EFBE27 /* TimeTable.c */,
+				02EB355C1AFDF4F000EFBE27 /* TimeTable.h */,
+				02EB355D1AFDF4F000EFBE27 /* YYContext.h */,
+				02EB353A1AFDF49400EFBE27 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		02EB353A1AFDF49400EFBE27 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				02EB35391AFDF49400EFBE27 /* libnamidi-core.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		02EB35371AFDF49400EFBE27 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				02EB35641AFDF4F000EFBE27 /* FSWatcher.h in Headers */,
+				02EB35761AFDF4F000EFBE27 /* SMFWriter.h in Headers */,
+				02EB35621AFDF4F000EFBE27 /* ExpressionType.h in Headers */,
+				02EB35771AFDF4F000EFBE27 /* TimeTable_internal.h in Headers */,
+				02EB35711AFDF4F000EFBE27 /* Parser.h in Headers */,
+				02EB35691AFDF4F000EFBE27 /* MessageQueue.h in Headers */,
+				02EB356F1AFDF4F000EFBE27 /* ParseError.h in Headers */,
+				02EB35791AFDF4F000EFBE27 /* TimeTable.h in Headers */,
+				02EB357A1AFDF4F000EFBE27 /* YYContext.h in Headers */,
+				02EB356E1AFDF4F000EFBE27 /* NoteTable.h in Headers */,
+				02EB356C1AFDF4F000EFBE27 /* NAMidiParser.h in Headers */,
+				02EB35611AFDF4F000EFBE27 /* Expression.h in Headers */,
+				02EB356A1AFDF4F000EFBE27 /* MidiClient.h in Headers */,
+				02EB355F1AFDF4F000EFBE27 /* CoreMidiClient.h in Headers */,
+				02EB35661AFDF4F000EFBE27 /* Lexer.h in Headers */,
+				02EB35741AFDF4F000EFBE27 /* PlayerClockSource.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		02EB35381AFDF49400EFBE27 /* namidi-core */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 02EB353D1AFDF49400EFBE27 /* Build configuration list for PBXNativeTarget "namidi-core" */;
+			buildPhases = (
+				02EB357B1AFDF56000EFBE27 /* ShellScript */,
+				02EB35351AFDF49400EFBE27 /* Sources */,
+				02EB35361AFDF49400EFBE27 /* Frameworks */,
+				02EB35371AFDF49400EFBE27 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "namidi-core";
+			productName = "namidi-core";
+			productReference = 02EB35391AFDF49400EFBE27 /* libnamidi-core.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		02EB35311AFDF49400EFBE27 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0630;
+				ORGANIZATIONNAME = abechan;
+				TargetAttributes = {
+					02EB35381AFDF49400EFBE27 = {
+						CreatedOnToolsVersion = 6.3;
+					};
+				};
+			};
+			buildConfigurationList = 02EB35341AFDF49400EFBE27 /* Build configuration list for PBXProject "namidi-core" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 02EB35301AFDF49400EFBE27;
+			productRefGroup = 02EB353A1AFDF49400EFBE27 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				02EB35381AFDF49400EFBE27 /* namidi-core */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		02EB357B1AFDF56000EFBE27 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "bison Parser.y\nflex Lexer.l";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		02EB35351AFDF49400EFBE27 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				02EB35731AFDF4F000EFBE27 /* PlayerClockSource.c in Sources */,
+				02EB35681AFDF4F000EFBE27 /* MessageQueue.c in Sources */,
+				02EB35701AFDF4F000EFBE27 /* Parser.c in Sources */,
+				02EB356D1AFDF4F000EFBE27 /* NoteTable.c in Sources */,
+				02EB356B1AFDF4F000EFBE27 /* NAMidiParser.c in Sources */,
+				02EB35651AFDF4F000EFBE27 /* Lexer.c in Sources */,
+				02EB35631AFDF4F000EFBE27 /* FSWatcher.c in Sources */,
+				02EB355E1AFDF4F000EFBE27 /* CoreMidiClient.c in Sources */,
+				02EB35781AFDF4F000EFBE27 /* TimeTable.c in Sources */,
+				02EB35601AFDF4F000EFBE27 /* Expression.c in Sources */,
+				02EB35751AFDF4F000EFBE27 /* SMFWriter.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		02EB353B1AFDF49400EFBE27 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		02EB353C1AFDF49400EFBE27 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		02EB353E1AFDF49400EFBE27 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		02EB353F1AFDF49400EFBE27 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		02EB35341AFDF49400EFBE27 /* Build configuration list for PBXProject "namidi-core" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				02EB353B1AFDF49400EFBE27 /* Debug */,
+				02EB353C1AFDF49400EFBE27 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		02EB353D1AFDF49400EFBE27 /* Build configuration list for PBXNativeTarget "namidi-core" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				02EB353E1AFDF49400EFBE27 /* Debug */,
+				02EB353F1AFDF49400EFBE27 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 02EB35311AFDF49400EFBE27 /* Project object */;
+}

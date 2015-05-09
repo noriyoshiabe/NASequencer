@@ -60,7 +60,7 @@ static void writeToTrack(SMFWriter *self, uint8_t channel, const uint8_t *bytes,
     track->length += size;
 }
 
-static void flexibleLength(uint32_t length, uint8_t *bytes, size_t *size)
+static void flexibleLength(size_t length, uint8_t *bytes, size_t *size)
 {
     if (0x1FFFFF < length) {
       bytes[0] = (0x80 | (0x000000FF & (length >> 21)));
