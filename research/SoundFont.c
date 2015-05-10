@@ -113,8 +113,8 @@ void SoundFontDestroy(SoundFont *self)
     free_if(self->ICOP);
     free_if(self->ICMT);
     free_if(self->ISFT);
-    free_if(self->smpl.buffer);
-    free_if(self->sm24.buffer);
+    free_if(self->smpl);
+    free_if(self->sm24);
     free_if(self->phdr);
 #undef free_if
 
@@ -249,13 +249,13 @@ static bool process_smpl_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
 {
     volatile const int __is_little_endian__ = 1;
 
-    self->smpl.buffer = malloc(size);
-    self->smpl.length = size / 2;
-    bool ret = 1 == fread(self->smpl.buffer, size, 1, fp);
+    self->smpl = malloc(size);
+    self->smplLength = size / 2;
+    bool ret = 1 == fread(self->smpl, size, 1, fp);
 
     if (!*((uint8_t *)&__is_little_endian__)) {
         for (int i = 0; i < size; ++i) {
-            self->smpl.buffer[i] = WARD_FROM_LE(self->smpl.buffer[i]);
+            self->smpl[i] = WARD_FROM_LE(self->smpl[i]);
         }
     }
 
@@ -264,7 +264,7 @@ static bool process_smpl_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
 
 static bool process_sm24_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
 {
-    if (self->smpl.length != size || 4 > self->ifil.wMinor) {
+    if (self->smplLength != size || 4 > self->ifil.wMinor) {
         /*
          * If the smpl Sub-chunk is not present, the sm24 sub-chunk should be ignored.
          * If the ifil version of the format is less than that which represents 2.04, the sm24 sub-chunk should be ignored.
@@ -275,16 +275,16 @@ static bool process_sm24_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
         return true;
     }
 
-    self->sm24.buffer = malloc(size);
-    self->sm24.length = size;
-    return 1 == fread(self->sm24.buffer, size, 1, fp);
+    self->sm24 = malloc(size);
+    self->sm24Length = size;
+    return 1 == fread(self->sm24, size, 1, fp);
 }
 
 static bool process_phdr_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
 {
     int num = size / 38;
     self->phdr = calloc(num, sizeof(PresetHeader));
-    self->phdr_length = num;
+    self->phdrLength = num;
 
     for (int i = 0; i < num; ++i) {
         bool error = false;
@@ -367,10 +367,10 @@ void SoundFontDump(SoundFont *self)
     printf("ICOP: %s\n", self->ICOP);
     printf("ICMT: %s\n", self->ICMT);
     printf("ISFT: %s\n", self->ISFT);
-    printf("smpl: num of sample=%u\n", self->smpl.length);
-    printf("sm24: num of sample=%u\n", self->sm24.length);
-    printf("phdr: num of preset header=%u\n", self->phdr_length);
-    for (int i = 0; i < self->phdr_length; ++i) {
+    printf("smpl: num of sample=%u\n", self->smplLength);
+    printf("sm24: num of sample=%u\n", self->sm24Length);
+    printf("phdr: num of preset header=%u\n", self->phdrLength);
+    for (int i = 0; i < self->phdrLength; ++i) {
         printf("    ");
         printf("achPresetName=%s ", self->phdr[i].achPresetName);
         printf("wPreset=%u ", self->phdr[i].wPreset);

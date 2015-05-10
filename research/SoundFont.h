@@ -23,17 +23,14 @@ typedef struct _SoundFont {
     char *ICMT;
     char *ISFT;
 
-    struct {
-        uint16_t *buffer;
-        uint32_t length;
-    } smpl;
-    struct {
-        uint8_t *buffer;
-        uint32_t length;
-    } sm24;
+    uint16_t *smpl;
+    uint32_t smplLength;
+
+    uint8_t *sm24;
+    uint32_t sm24Length;
 
     PresetHeader *phdr;
-    uint32_t phdr_length;
+    uint32_t phdrLength;
 } SoundFont;
 
 struct _PresetHeader {
