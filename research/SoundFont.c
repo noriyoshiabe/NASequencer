@@ -254,8 +254,7 @@ static bool process_smpl_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
 
     if (!*((uint8_t *)&__is_little_endian__)) {
         for (int i = 0; i < size; ++i) {
-            uint8_t *sample = (uint8_t *)&self->smpl.buffer[i];
-            self->smpl.buffer[i] = sample[0] | sample[1] << 8;
+            self->smpl.buffer[i] = WARD_FROM_LE(self->smpl.buffer[i]);
         }
     }
 
