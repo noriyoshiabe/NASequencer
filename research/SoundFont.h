@@ -2,6 +2,8 @@
 
 #include <stdint.h>
 
+typedef struct _PresetHeader PresetHeader;
+
 typedef struct _SoundFont {
     struct {
         uint16_t wMajor;
@@ -20,15 +22,29 @@ typedef struct _SoundFont {
     char *ICOP;
     char *ICMT;
     char *ISFT;
+
     struct {
         uint16_t *buffer;
-        uint32_t lenght;
+        uint32_t length;
     } smpl;
     struct {
         uint8_t *buffer;
-        uint32_t lenght;
+        uint32_t length;
     } sm24;
+
+    PresetHeader *phdr;
+    uint32_t phdr_length;
 } SoundFont;
+
+struct _PresetHeader {
+    char achPresetName[20];
+    uint16_t wPreset;
+    uint16_t wBank;
+    uint16_t wPresetBagNdx;
+    uint32_t dwLibrary;
+    uint32_t dwGenre;
+    uint32_t dwMorphology;
+};
 
 typedef enum {
     SoundFontErrorFileNotFound,

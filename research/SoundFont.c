@@ -115,6 +115,7 @@ void SoundFontDestroy(SoundFont *self)
     free_if(self->ISFT);
     free_if(self->smpl.buffer);
     free_if(self->sm24.buffer);
+    free_if(self->phdr);
 #undef free_if
 
     free(self);
@@ -249,7 +250,7 @@ static bool process_smpl_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
     volatile const int __is_little_endian__ = 1;
 
     self->smpl.buffer = malloc(size);
-    self->smpl.lenght = size / 2;
+    self->smpl.length = size / 2;
     bool ret = 1 == fread(self->smpl.buffer, size, 1, fp);
 
     if (!*((uint8_t *)&__is_little_endian__)) {
@@ -263,7 +264,7 @@ static bool process_smpl_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
 
 static bool process_sm24_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
 {
-    if (self->smpl.lenght != size || 4 > self->ifil.wMinor) {
+    if (self->smpl.length != size || 4 > self->ifil.wMinor) {
         /*
          * If the smpl Sub-chunk is not present, the sm24 sub-chunk should be ignored.
          * If the ifil version of the format is less than that which represents 2.04, the sm24 sub-chunk should be ignored.
@@ -275,8 +276,41 @@ static bool process_sm24_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
     }
 
     self->sm24.buffer = malloc(size);
-    self->sm24.lenght = size;
+    self->sm24.length = size;
     return 1 == fread(self->sm24.buffer, size, 1, fp);
+}
+
+static bool process_phdr_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
+{
+    int num = size / 38;
+    self->phdr = calloc(num, sizeof(PresetHeader));
+    self->phdr_length = num;
+
+    for (int i = 0; i < num; ++i) {
+        bool error = false;
+
+        error |= 1 != fread(self->phdr[i].achPresetName, sizeof(self->phdr[i].achPresetName), 1, fp);
+        error |= 1 != fread(&self->phdr[i].wPreset, sizeof(self->phdr[i].wPreset), 1, fp);
+        error |= 1 != fread(&self->phdr[i].wBank, sizeof(self->phdr[i].wBank), 1, fp);
+        error |= 1 != fread(&self->phdr[i].wPresetBagNdx, sizeof(self->phdr[i].wPresetBagNdx), 1, fp);
+        error |= 1 != fread(&self->phdr[i].dwLibrary, sizeof(self->phdr[i].dwLibrary), 1, fp);
+        error |= 1 != fread(&self->phdr[i].dwGenre, sizeof(self->phdr[i].dwGenre), 1, fp);
+        error |= 1 != fread(&self->phdr[i].dwMorphology, sizeof(self->phdr[i].dwMorphology), 1, fp);
+
+        if (error) {
+            return false;
+        }
+
+        self->phdr[i].wPreset = WARD_FROM_LE(self->phdr[i].wPreset);
+        self->phdr[i].wBank = WARD_FROM_LE(self->phdr[i].wBank);
+        self->phdr[i].wPresetBagNdx = WARD_FROM_LE(self->phdr[i].wPresetBagNdx);
+
+        self->phdr[i].dwLibrary = DWARD_FROM_LE(self->phdr[i].dwLibrary);
+        self->phdr[i].dwGenre = DWARD_FROM_LE(self->phdr[i].dwGenre);
+        self->phdr[i].dwMorphology = DWARD_FROM_LE(self->phdr[i].dwMorphology);
+    }
+
+    return true;
 }
 
 static const struct {
@@ -296,6 +330,7 @@ static const struct {
     {ChunkID_ISFT, process_ISFT_Chunk},
     {ChunkID_smpl, process_smpl_Chunk},
     {ChunkID_sm24, process_sm24_Chunk},
+    {ChunkID_phdr, process_phdr_Chunk},
 };
 
 static bool processUnimplementedChunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
@@ -321,19 +356,31 @@ void SoundFontDump(SoundFont *self)
     printf("\n");
     printf("sf2 dump\n");
     printf("---------------------\n");
-    printf("ifil: %d.%d\n", self->ifil.wMajor, self->ifil.wMinor);
+    printf("ifil: %u.%u\n", self->ifil.wMajor, self->ifil.wMinor);
     printf("isng: %s\n", self->isng);
     printf("INAM: %s\n", self->INAM);
     printf("irom: %s\n", self->irom);
-    printf("iver: %d.%d\n", self->iver.wMajor, self->iver.wMinor);
+    printf("iver: %u.%u\n", self->iver.wMajor, self->iver.wMinor);
     printf("ICRD: %s\n", self->ICRD);
     printf("IENG: %s\n", self->IENG);
     printf("IPRD: %s\n", self->IPRD);
     printf("ICOP: %s\n", self->ICOP);
     printf("ICMT: %s\n", self->ICMT);
     printf("ISFT: %s\n", self->ISFT);
-    printf("smpl: num of sample=%d\n", self->smpl.lenght);
-    printf("sm24: num of sample=%d\n", self->sm24.lenght);
+    printf("smpl: num of sample=%u\n", self->smpl.length);
+    printf("sm24: num of sample=%u\n", self->sm24.length);
+    printf("phdr: num of preset header=%u\n", self->phdr_length);
+    for (int i = 0; i < self->phdr_length; ++i) {
+        printf("    ");
+        printf("achPresetName=%s ", self->phdr[i].achPresetName);
+        printf("wPreset=%u ", self->phdr[i].wPreset);
+        printf("wBank=%u ", self->phdr[i].wBank);
+        printf("wPresetBagNdx=%u ", self->phdr[i].wPresetBagNdx);
+        printf("dwLibrary=%u ", self->phdr[i].dwLibrary);
+        printf("dwGenre=%u ", self->phdr[i].dwGenre);
+        printf("dwMorphology=%u", self->phdr[i].dwMorphology);
+        printf("\n");
+    }
 }
 
 
