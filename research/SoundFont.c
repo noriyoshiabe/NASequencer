@@ -8,9 +8,11 @@
 #define UCHAR2DWARD(c1,c2,c3,c4) (c1|c2<<8|c3<<16|c4<<24)
 #define DWARD_FROM_LE(v) UCHAR2DWARD(((uint8_t *)&v)[0],((uint8_t *)&v)[1],((uint8_t *)&v)[2],((uint8_t *)&v)[3])
 
+// RIFF
 #define RIFF UCHAR2DWARD('R','I','F','F')
 #define LIST UCHAR2DWARD('L','I','S','T')
 
+// INFO
 #define ifil UCHAR2DWARD('i','f','i','l')
 #define isng UCHAR2DWARD('i','s','n','g')
 #define INAM UCHAR2DWARD('I','N','A','M')
@@ -24,10 +26,12 @@
 #define ISFT UCHAR2DWARD('I','S','F','T')
 
 // sdta
-//? #define snam UCHAR2DWARD('s','n','a','m')
+// #define snam UCHAR2DWARD('s','n','a','m') 
+//   -> FluidSynth has this but sf2 specification doesn't
 #define smpl UCHAR2DWARD('s','m','p','l')
 #define sm24 UCHAR2DWARD('s','m','2','4')
 
+// pdta
 #define pdta UCHAR2DWARD('p','d','t','a')
 #define phdr UCHAR2DWARD('p','h','d','r')
 #define pbag UCHAR2DWARD('p','b','a','g')
@@ -39,6 +43,8 @@
 #define igen UCHAR2DWARD('i','g','e','n')
 #define shdr UCHAR2DWARD('s','h','d','r')
 
+// type of RIFF or LIST chunk
+#define sfbk UCHAR2DWARD('s','f','b','k')
 #define INFO UCHAR2DWARD('I','N','F','O')
 #define sdta UCHAR2DWARD('s','d','t','a')
 #define pdta UCHAR2DWARD('p','d','t','a')
@@ -64,7 +70,7 @@ const char *ChunkID2String(uint32_t id)
     CASE(ISFT);
 
     // sdta
-    //? CASE(snam);
+    // CASE(snam);
     CASE(smpl);
     CASE(sm24);
 
@@ -89,110 +95,130 @@ typedef struct {
     uint32_t size;
 } ChunkHeader;
 
-static void dumpf(int level, const char *format, ...)
-{
-    static char indent[128];
-    memset(indent, ' ', level * 2);
-    indent[level * 2] = '\0';
-    printf("%s", indent);
+typedef struct _SoundFont {
+} SoundFont;
 
-    va_list arg;
-    va_start(arg, format);
-    vprintf(format, arg);
-    va_end(arg);
+typedef enum {
+    SoundFontErrorFileNotFound,
+    SoundFontErrorInvalidFileFormat,
+} SoundFontError;
+
+static SoundFont *SoundFontCreate()
+{
+    SoundFont *self = calloc(1, sizeof(SoundFont));
+    return self;
 }
 
-static bool readRIFFChunk(FILE *file, uint32_t size, int level, size_t *readLength);
-static bool readLISTChunk(FILE *file, uint32_t size, int level, size_t *readLength);
-
-static bool readChunk(FILE *file, int level, size_t *readLength)
+void SoundFontDestroy(SoundFont *self)
 {
-    ChunkHeader header;
-    if (1 != fread(&header, sizeof(ChunkHeader), 1, file)) {
-        return false;
-    }
+    free(self);
+}
 
-    if (readLength) {
-        *readLength += sizeof(ChunkHeader);
-    }
-
-    header.id = DWARD_FROM_LE(header.id);
-    header.size = DWARD_FROM_LE(header.size);
-
-    dumpf(level, "[%s] size=%d\n", ChunkID2String(header.id), header.size);
-
-    switch (header.id) {
-    case RIFF:
-        if (!readRIFFChunk(file, header.size, level, readLength)) {
-            return false;
-        }
-        break;
-
-    case LIST:
-        if (!readLISTChunk(file, header.size, level, readLength)) {
-            return false;
-        }
-        break;
-
-    default:
-        fseek(file, header.size, SEEK_CUR);
-        break;
-    }
-
-    if (readLength) {
-        *readLength += header.size;
-    }
-
+static bool processUnimplementedChunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
+{
+    printf("processUnimplementedChunk() id=%s\n", ChunkID2String(chunkId));
+    fseek(fp, size, SEEK_CUR);
     return true;
 }
 
-static bool readRIFFChunk(FILE *file, uint32_t size, int level, size_t *readLength)
+typedef bool (*Processer)(SoundFont *, FILE *, uint32_t, uint32_t);
+
+static const struct {
+    uint32_t chunkID;
+    Processer processer;
+} processerTable[] = {
+};
+
+static Processer findProcesser(uint32_t chunkID)
 {
-    char form[5] = {0};
-    if (1 != fread(form, 4, 1, file)) {
-        return false;
-    }
-
-    dumpf(level, "form=%s\n", form);
-
-    while (!feof(file)) {
-        if (!readChunk(file, level + 1, readLength)) {
-            return false;
+    for (int i = 0; i < sizeof(processerTable)/sizeof(processerTable[0]); ++i) {
+        if (processerTable[i].chunkID == chunkID) {
+            return processerTable[i].processer;
         }
     }
 
-    return true;
+    return processUnimplementedChunk;
 }
 
-static bool readLISTChunk(FILE *file, uint32_t size, int level, size_t *readLength)
+SoundFont *SoundFontRead(const char *filepath, SoundFontError *error)
 {
-    char type[5] = {0};
-    if (1 != fread(type, 4, 1, file)) {
-        return false;
+    const uint32_t ListTypes[] = {INFO, sdta, pdta};
+    int listIndex = 0;
+
+    SoundFontError _error;
+    SoundFont *self = SoundFontCreate();
+
+    FILE *fp = fopen(filepath, "rb");
+    if (!fp)  {
+        _error = SoundFontErrorFileNotFound;
+        goto ERROR_1;
     }
 
-    size -= 4;
+    while (!feof(fp)) {
+        ChunkHeader header;
+        uint32_t type;
+        Processer processer;
 
-    dumpf(level, "type=%s\n", type);
+        if (1 != fread(&header, sizeof(ChunkHeader), 1, fp)) {
+            _error = SoundFontErrorInvalidFileFormat;
+            goto ERROR_2;
+        }
 
-    size_t _readLength = 0;
+        header.id = DWARD_FROM_LE(header.id);
+        header.size = DWARD_FROM_LE(header.size);
 
-    while (_readLength < size) {
-        if (!readChunk(file, level + 1, &_readLength)) {
-            return false;
+#if 0
+        printf("[%s] size=%d\n", ChunkID2String(header.id), header.size);
+#endif
+
+        switch (header.id) {
+        case RIFF:
+            if (1 != fread(&type, sizeof(type), 1, fp)
+                    || sfbk != DWARD_FROM_LE(type)) {
+                _error = SoundFontErrorInvalidFileFormat;
+                goto ERROR_2;
+            }
+            break;
+
+        case LIST:
+            if (1 != fread(&type, sizeof(type), 1, fp)
+                    || sizeof(ListTypes)/sizeof(ListTypes[0]) <= listIndex
+                    || ListTypes[listIndex] != DWARD_FROM_LE(type)) {
+                _error = SoundFontErrorInvalidFileFormat;
+                goto ERROR_2;
+            }
+            ++listIndex;
+            break;
+
+        default:
+            processer = findProcesser(header.id);
+            if (!processer(self, fp, header.id, header.size)) {
+                _error = SoundFontErrorInvalidFileFormat;
+                goto ERROR_2;
+            }
+            break;
         }
     }
 
-    return true;
-}
+    fclose(fp);
+    return self;
 
+ERROR_2:
+    fclose(fp);
+
+ERROR_1:
+    SoundFontDestroy(self);
+    
+    if (error) {
+        *error = _error;
+    }
+
+    return NULL;
+}
 
 
 int main(int argc, char **argv)
 {
-    FILE *file = fopen(argv[1], "rb");
-    readChunk(file, 0 , NULL);
-    fclose(file);
-
+    SoundFontRead(argv[1], NULL);
     return 0;
 }
