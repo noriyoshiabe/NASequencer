@@ -282,22 +282,14 @@ static bool process_sm24_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
 
 static bool process_phdr_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
 {
-    int num = size / 38;
-    self->phdr = calloc(num, sizeof(PresetHeader));
+    const int PresetHeaderSize = 38; // Care of alignment
+
+    int num = size / PresetHeaderSize;
+    self->phdr = calloc(num, sizeof(PresetHeader)); // Size including alignment is 40
     self->phdrLength = num;
 
     for (int i = 0; i < num; ++i) {
-        bool error = false;
-
-        error |= 1 != fread(self->phdr[i].achPresetName, sizeof(self->phdr[i].achPresetName), 1, fp);
-        error |= 1 != fread(&self->phdr[i].wPreset, sizeof(self->phdr[i].wPreset), 1, fp);
-        error |= 1 != fread(&self->phdr[i].wBank, sizeof(self->phdr[i].wBank), 1, fp);
-        error |= 1 != fread(&self->phdr[i].wPresetBagNdx, sizeof(self->phdr[i].wPresetBagNdx), 1, fp);
-        error |= 1 != fread(&self->phdr[i].dwLibrary, sizeof(self->phdr[i].dwLibrary), 1, fp);
-        error |= 1 != fread(&self->phdr[i].dwGenre, sizeof(self->phdr[i].dwGenre), 1, fp);
-        error |= 1 != fread(&self->phdr[i].dwMorphology, sizeof(self->phdr[i].dwMorphology), 1, fp);
-
-        if (error) {
+        if (1 != fread(&self->phdr[i], PresetHeaderSize, 1, fp)) {
             return false;
         }
 
