@@ -1,12 +1,13 @@
+#include "SoundFont.h"
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <stdint.h>
 #include <stdbool.h>
-#include <stdarg.h>
 
 #define UCHAR2DWARD(c1,c2,c3,c4) (c1|c2<<8|c3<<16|c4<<24)
+#define UCHAR2WARD(c1,c2) (c1|c2<<8)
 #define DWARD_FROM_LE(v) UCHAR2DWARD(((uint8_t *)&v)[0],((uint8_t *)&v)[1],((uint8_t *)&v)[2],((uint8_t *)&v)[3])
+#define WARD_FROM_LE(v) UCHAR2WARD(((uint8_t *)&v)[0],((uint8_t *)&v)[1])
 
 // RIFF
 #define RIFF UCHAR2DWARD('R','I','F','F')
@@ -49,7 +50,7 @@
 #define sdta UCHAR2DWARD('s','d','t','a')
 #define pdta UCHAR2DWARD('p','d','t','a')
 
-const char *ChunkID2String(uint32_t id)
+static const char *ChunkID2String(uint32_t id)
 {
 #define CASE(id) case id: return #id;
     switch (id) {
@@ -89,19 +90,10 @@ const char *ChunkID2String(uint32_t id)
     return "Unknown";
 };
 
-
 typedef struct {
     uint32_t id;
     uint32_t size;
 } ChunkHeader;
-
-typedef struct _SoundFont {
-} SoundFont;
-
-typedef enum {
-    SoundFontErrorFileNotFound,
-    SoundFontErrorInvalidFileFormat,
-} SoundFontError;
 
 static SoundFont *SoundFontCreate()
 {
@@ -114,31 +106,8 @@ void SoundFontDestroy(SoundFont *self)
     free(self);
 }
 
-static bool processUnimplementedChunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
-{
-    printf("processUnimplementedChunk() id=%s\n", ChunkID2String(chunkId));
-    fseek(fp, size, SEEK_CUR);
-    return true;
-}
-
 typedef bool (*Processer)(SoundFont *, FILE *, uint32_t, uint32_t);
-
-static const struct {
-    uint32_t chunkID;
-    Processer processer;
-} processerTable[] = {
-};
-
-static Processer findProcesser(uint32_t chunkID)
-{
-    for (int i = 0; i < sizeof(processerTable)/sizeof(processerTable[0]); ++i) {
-        if (processerTable[i].chunkID == chunkID) {
-            return processerTable[i].processer;
-        }
-    }
-
-    return processUnimplementedChunk;
-}
+static Processer findProcesser(uint32_t chunkID);
 
 SoundFont *SoundFontRead(const char *filepath, SoundFontError *error)
 {
@@ -154,12 +123,16 @@ SoundFont *SoundFontRead(const char *filepath, SoundFontError *error)
         goto ERROR_1;
     }
 
-    while (!feof(fp)) {
+    for (;;) {
         ChunkHeader header;
         uint32_t type;
         Processer processer;
 
         if (1 != fread(&header, sizeof(ChunkHeader), 1, fp)) {
+            if (feof(fp)) {
+                break;
+            }
+
             _error = SoundFontErrorInvalidFileFormat;
             goto ERROR_2;
         }
@@ -167,7 +140,7 @@ SoundFont *SoundFontRead(const char *filepath, SoundFontError *error)
         header.id = DWARD_FROM_LE(header.id);
         header.size = DWARD_FROM_LE(header.size);
 
-#if 0
+#if 1
         printf("[%s] size=%d\n", ChunkID2String(header.id), header.size);
 #endif
 
@@ -216,9 +189,59 @@ ERROR_1:
     return NULL;
 }
 
+static bool process_ifil_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
+{
+    bool ret = 1 == fread(&self->version, sizeof(ifil), 1, fp);
+    self->version.major = WARD_FROM_LE(self->version.major);
+    self->version.minor = WARD_FROM_LE(self->version.minor);
+    return ret;
+}
+
+static const struct {
+    uint32_t chunkID;
+    Processer processer;
+} processerTable[] = {
+    {ifil, process_ifil_Chunk},
+};
+
+static bool processUnimplementedChunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
+{
+    printf("processUnimplementedChunk() id=%s size=%d\n", ChunkID2String(chunkId), size);
+    fseek(fp, size, SEEK_CUR);
+    return true;
+}
+
+static Processer findProcesser(uint32_t chunkID)
+{
+    for (int i = 0; i < sizeof(processerTable)/sizeof(processerTable[0]); ++i) {
+        if (processerTable[i].chunkID == chunkID) {
+            return processerTable[i].processer;
+        }
+    }
+
+    return processUnimplementedChunk;
+}
+
+void SoundFontDump(SoundFont *self)
+{
+    printf("\n");
+    printf("sf2 dump\n");
+    printf("---------------------\n");
+    printf("version: %d.%d\n", self->version.major, self->version.minor);
+}
+
 
 int main(int argc, char **argv)
 {
-    SoundFontRead(argv[1], NULL);
+    SoundFontError error;
+
+    SoundFont *sf = SoundFontRead(argv[1], &error);
+    if (!sf) {
+        printf("error read sf2 error=%s\n", SoundFontError2String(error));
+        return 1;
+    }
+
+    SoundFontDump(sf);
+    SoundFontDestroy(sf);
     return 0;
 }
