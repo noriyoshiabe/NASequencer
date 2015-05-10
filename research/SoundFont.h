@@ -20,10 +20,19 @@ typedef struct _SoundFont {
     char *ICOP;
     char *ICMT;
     char *ISFT;
+    struct {
+        uint16_t *buffer;
+        uint32_t lenght;
+    } smpl;
+    struct {
+        uint8_t *buffer;
+        uint32_t lenght;
+    } sm24;
 } SoundFont;
 
 typedef enum {
     SoundFontErrorFileNotFound,
+    SoundFontErrorUnsupportedVersion,
     SoundFontErrorInvalidFileFormat,
 } SoundFontError;
 
@@ -36,6 +45,7 @@ const char *SoundFontError2String(SoundFontError error)
 #define CASE(error) case error: return &(#error[14]);
     switch (error) {
     CASE(SoundFontErrorFileNotFound);
+    CASE(SoundFontErrorUnsupportedVersion);
     CASE(SoundFontErrorInvalidFileFormat);
     }
 #undef CASE

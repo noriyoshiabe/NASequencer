@@ -113,6 +113,8 @@ void SoundFontDestroy(SoundFont *self)
     free_if(self->ICOP);
     free_if(self->ICMT);
     free_if(self->ISFT);
+    free_if(self->smpl.buffer);
+    free_if(self->sm24.buffer);
 #undef free_if
 
     free(self);
@@ -181,6 +183,13 @@ SoundFont *SoundFontRead(const char *filepath, SoundFontError *error)
                 _error = SoundFontErrorInvalidFileFormat;
                 goto ERROR_2;
             }
+
+            if (ChunkID_ifil == header.id) {
+                if (2 > self->ifil.wMajor) {
+                    _error = SoundFontErrorUnsupportedVersion;
+                    goto ERROR_2;
+                }
+            }
             break;
         }
     }
@@ -212,10 +221,8 @@ static bool process_ifil_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
 #define DeclareProcessInfoTextChunk(id) \
     static bool process_##id##_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size) \
     { \
-        char *string = malloc(size); \
-        bool ret = 1 == fread(string, size, 1, fp); \
-        self->id = string; \
-        return ret; \
+        self->id = malloc(size); \
+        return 1 == fread(self->id, size, 1, fp); \
     }
 
 DeclareProcessInfoTextChunk(isng);
@@ -237,6 +244,42 @@ DeclareProcessInfoTextChunk(ICOP);
 DeclareProcessInfoTextChunk(ICMT);
 DeclareProcessInfoTextChunk(ISFT);
 
+static bool process_smpl_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
+{
+    volatile const int __is_little_endian__ = 1;
+
+    self->smpl.buffer = malloc(size);
+    self->smpl.lenght = size / 2;
+    bool ret = 1 == fread(self->smpl.buffer, size, 1, fp);
+
+    if (!*((uint8_t *)&__is_little_endian__)) {
+        for (int i = 0; i < size; ++i) {
+            uint8_t *sample = (uint8_t *)&self->smpl.buffer[i];
+            self->smpl.buffer[i] = sample[0] | sample[1] << 8;
+        }
+    }
+
+    return ret;
+}
+
+static bool process_sm24_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
+{
+    if (self->smpl.lenght != size || 4 > self->ifil.wMinor) {
+        /*
+         * If the smpl Sub-chunk is not present, the sm24 sub-chunk should be ignored.
+         * If the ifil version of the format is less than that which represents 2.04, the sm24 sub-chunk should be ignored.
+         * If the size of the sm24 chunk is not exactly equal to the 1/2 the size of the smpl chunk (+ 1 byte in the case that 1/2 the size of smpl chunk is an odd value), the sm24 sub-chunk should be ignored.
+         *
+         * (Quote from SoundFont Technical Specification Version 2.04)
+         */
+        return true;
+    }
+
+    self->sm24.buffer = malloc(size);
+    self->sm24.lenght = size;
+    return 1 == fread(self->sm24.buffer, size, 1, fp);
+}
+
 static const struct {
     uint32_t chunkID;
     Processer processer;
@@ -252,6 +295,8 @@ static const struct {
     {ChunkID_ICOP, process_ICOP_Chunk},
     {ChunkID_ICMT, process_ICMT_Chunk},
     {ChunkID_ISFT, process_ISFT_Chunk},
+    {ChunkID_smpl, process_smpl_Chunk},
+    {ChunkID_sm24, process_sm24_Chunk},
 };
 
 static bool processUnimplementedChunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
@@ -288,6 +333,8 @@ void SoundFontDump(SoundFont *self)
     printf("ICOP: %s\n", self->ICOP);
     printf("ICMT: %s\n", self->ICMT);
     printf("ISFT: %s\n", self->ISFT);
+    printf("smpl: num of sample=%d\n", self->smpl.lenght);
+    printf("sm24: num of sample=%d\n", self->sm24.lenght);
 }
 
 
