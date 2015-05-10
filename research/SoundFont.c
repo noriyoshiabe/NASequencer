@@ -10,81 +10,81 @@
 #define WARD_FROM_LE(v) UCHAR2WARD(((uint8_t *)&v)[0],((uint8_t *)&v)[1])
 
 // RIFF
-#define RIFF UCHAR2DWARD('R','I','F','F')
-#define LIST UCHAR2DWARD('L','I','S','T')
+#define ChunkID_RIFF UCHAR2DWARD('R','I','F','F')
+#define ChunkID_LIST UCHAR2DWARD('L','I','S','T')
 
 // INFO
-#define ifil UCHAR2DWARD('i','f','i','l')
-#define isng UCHAR2DWARD('i','s','n','g')
-#define INAM UCHAR2DWARD('I','N','A','M')
-#define irom UCHAR2DWARD('i','r','o','m')
-#define iver UCHAR2DWARD('i','v','e','r')
-#define ICRD UCHAR2DWARD('I','C','R','D')
-#define IENG UCHAR2DWARD('I','E','N','G')
-#define IPRD UCHAR2DWARD('I','P','R','D')
-#define ICOP UCHAR2DWARD('I','C','O','P')
-#define ICMT UCHAR2DWARD('I','C','M','T')
-#define ISFT UCHAR2DWARD('I','S','F','T')
+#define ChunkID_ifil UCHAR2DWARD('i','f','i','l')
+#define ChunkID_isng UCHAR2DWARD('i','s','n','g')
+#define ChunkID_INAM UCHAR2DWARD('I','N','A','M')
+#define ChunkID_irom UCHAR2DWARD('i','r','o','m')
+#define ChunkID_iver UCHAR2DWARD('i','v','e','r')
+#define ChunkID_ICRD UCHAR2DWARD('I','C','R','D')
+#define ChunkID_IENG UCHAR2DWARD('I','E','N','G')
+#define ChunkID_IPRD UCHAR2DWARD('I','P','R','D')
+#define ChunkID_ICOP UCHAR2DWARD('I','C','O','P')
+#define ChunkID_ICMT UCHAR2DWARD('I','C','M','T')
+#define ChunkID_ISFT UCHAR2DWARD('I','S','F','T')
 
 // sdta
 // #define snam UCHAR2DWARD('s','n','a','m') 
 //   -> FluidSynth has this but sf2 specification doesn't
-#define smpl UCHAR2DWARD('s','m','p','l')
-#define sm24 UCHAR2DWARD('s','m','2','4')
+#define ChunkID_smpl UCHAR2DWARD('s','m','p','l')
+#define ChunkID_sm24 UCHAR2DWARD('s','m','2','4')
 
 // pdta
-#define pdta UCHAR2DWARD('p','d','t','a')
-#define phdr UCHAR2DWARD('p','h','d','r')
-#define pbag UCHAR2DWARD('p','b','a','g')
-#define pmod UCHAR2DWARD('p','m','o','d')
-#define pgen UCHAR2DWARD('p','g','e','n')
-#define inst UCHAR2DWARD('i','n','s','t')
-#define ibag UCHAR2DWARD('i','b','a','g')
-#define imod UCHAR2DWARD('i','m','o','d')
-#define igen UCHAR2DWARD('i','g','e','n')
-#define shdr UCHAR2DWARD('s','h','d','r')
+#define ChunkID_pdta UCHAR2DWARD('p','d','t','a')
+#define ChunkID_phdr UCHAR2DWARD('p','h','d','r')
+#define ChunkID_pbag UCHAR2DWARD('p','b','a','g')
+#define ChunkID_pmod UCHAR2DWARD('p','m','o','d')
+#define ChunkID_pgen UCHAR2DWARD('p','g','e','n')
+#define ChunkID_inst UCHAR2DWARD('i','n','s','t')
+#define ChunkID_ibag UCHAR2DWARD('i','b','a','g')
+#define ChunkID_imod UCHAR2DWARD('i','m','o','d')
+#define ChunkID_igen UCHAR2DWARD('i','g','e','n')
+#define ChunkID_shdr UCHAR2DWARD('s','h','d','r')
 
 // type of RIFF or LIST chunk
-#define sfbk UCHAR2DWARD('s','f','b','k')
-#define INFO UCHAR2DWARD('I','N','F','O')
-#define sdta UCHAR2DWARD('s','d','t','a')
-#define pdta UCHAR2DWARD('p','d','t','a')
+#define TypeID_sfbk UCHAR2DWARD('s','f','b','k')
+#define TypeID_INFO UCHAR2DWARD('I','N','F','O')
+#define TypeID_sdta UCHAR2DWARD('s','d','t','a')
+#define TypeID_pdta UCHAR2DWARD('p','d','t','a')
 
 static const char *ChunkID2String(uint32_t id)
 {
-#define CASE(id) case id: return #id;
+#define CASE(id) case id: return &(#id[8]);
     switch (id) {
-    CASE(RIFF);
-    CASE(LIST);
+    CASE(ChunkID_RIFF);
+    CASE(ChunkID_LIST);
 
     // INFO
-    CASE(ifil);
-    CASE(isng);
-    CASE(INAM);
-    CASE(irom);
-    CASE(iver);
-    CASE(ICRD);
-    CASE(IENG);
-    CASE(IPRD);
-    CASE(ICOP);
-    CASE(ICMT);
-    CASE(ISFT);
+    CASE(ChunkID_ifil);
+    CASE(ChunkID_isng);
+    CASE(ChunkID_INAM);
+    CASE(ChunkID_irom);
+    CASE(ChunkID_iver);
+    CASE(ChunkID_ICRD);
+    CASE(ChunkID_IENG);
+    CASE(ChunkID_IPRD);
+    CASE(ChunkID_ICOP);
+    CASE(ChunkID_ICMT);
+    CASE(ChunkID_ISFT);
 
     // sdta
-    // CASE(snam);
-    CASE(smpl);
-    CASE(sm24);
+    // CASE(ChunkID_snam);
+    CASE(ChunkID_smpl);
+    CASE(ChunkID_sm24);
 
     // pdta
-    CASE(phdr);
-    CASE(pbag);
-    CASE(pmod);
-    CASE(pgen);
-    CASE(inst);
-    CASE(ibag);
-    CASE(imod);
-    CASE(igen);
-    CASE(shdr);
+    CASE(ChunkID_phdr);
+    CASE(ChunkID_pbag);
+    CASE(ChunkID_pmod);
+    CASE(ChunkID_pgen);
+    CASE(ChunkID_inst);
+    CASE(ChunkID_ibag);
+    CASE(ChunkID_imod);
+    CASE(ChunkID_igen);
+    CASE(ChunkID_shdr);
     }
 #undef CASE
     return "Unknown";
@@ -103,6 +103,18 @@ static SoundFont *SoundFontCreate()
 
 void SoundFontDestroy(SoundFont *self)
 {
+#define free_if(p) do { if (p) free(p); } while (0)
+    free_if(self->isng);
+    free_if(self->INAM);
+    free_if(self->irom);
+    free_if(self->ICRD);
+    free_if(self->IENG);
+    free_if(self->IPRD);
+    free_if(self->ICOP);
+    free_if(self->ICMT);
+    free_if(self->ISFT);
+#undef free_if
+
     free(self);
 }
 
@@ -111,7 +123,7 @@ static Processer findProcesser(uint32_t chunkID);
 
 SoundFont *SoundFontRead(const char *filepath, SoundFontError *error)
 {
-    const uint32_t ListTypes[] = {INFO, sdta, pdta};
+    const uint32_t ListTypes[] = {TypeID_INFO, TypeID_sdta, TypeID_pdta};
     int listIndex = 0;
 
     SoundFontError _error;
@@ -145,15 +157,15 @@ SoundFont *SoundFontRead(const char *filepath, SoundFontError *error)
 #endif
 
         switch (header.id) {
-        case RIFF:
+        case ChunkID_RIFF:
             if (1 != fread(&type, sizeof(type), 1, fp)
-                    || sfbk != DWARD_FROM_LE(type)) {
+                    || TypeID_sfbk != DWARD_FROM_LE(type)) {
                 _error = SoundFontErrorInvalidFileFormat;
                 goto ERROR_2;
             }
             break;
 
-        case LIST:
+        case ChunkID_LIST:
             if (1 != fread(&type, sizeof(type), 1, fp)
                     || sizeof(ListTypes)/sizeof(ListTypes[0]) <= listIndex
                     || ListTypes[listIndex] != DWARD_FROM_LE(type)) {
@@ -191,17 +203,55 @@ ERROR_1:
 
 static bool process_ifil_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
 {
-    bool ret = 1 == fread(&self->version, sizeof(ifil), 1, fp);
-    self->version.major = WARD_FROM_LE(self->version.major);
-    self->version.minor = WARD_FROM_LE(self->version.minor);
+    bool ret = 1 == fread(&self->ifil, sizeof(self->ifil), 1, fp);
+    self->ifil.wMajor = WARD_FROM_LE(self->ifil.wMajor);
+    self->ifil.wMinor = WARD_FROM_LE(self->ifil.wMinor);
     return ret;
 }
+
+#define DeclareProcessInfoTextChunk(id) \
+    static bool process_##id##_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size) \
+    { \
+        char *string = malloc(size); \
+        bool ret = 1 == fread(string, size, 1, fp); \
+        self->id = string; \
+        return ret; \
+    }
+
+DeclareProcessInfoTextChunk(isng);
+DeclareProcessInfoTextChunk(INAM);
+DeclareProcessInfoTextChunk(irom);
+
+static bool process_iver_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
+{
+    bool ret = 1 == fread(&self->iver, sizeof(self->iver), 1, fp);
+    self->iver.wMajor = WARD_FROM_LE(self->iver.wMajor);
+    self->iver.wMinor = WARD_FROM_LE(self->iver.wMinor);
+    return ret;
+}
+
+DeclareProcessInfoTextChunk(ICRD);
+DeclareProcessInfoTextChunk(IENG);
+DeclareProcessInfoTextChunk(IPRD);
+DeclareProcessInfoTextChunk(ICOP);
+DeclareProcessInfoTextChunk(ICMT);
+DeclareProcessInfoTextChunk(ISFT);
 
 static const struct {
     uint32_t chunkID;
     Processer processer;
 } processerTable[] = {
-    {ifil, process_ifil_Chunk},
+    {ChunkID_ifil, process_ifil_Chunk},
+    {ChunkID_isng, process_isng_Chunk},
+    {ChunkID_INAM, process_INAM_Chunk},
+    {ChunkID_irom, process_irom_Chunk},
+    {ChunkID_iver, process_iver_Chunk},
+    {ChunkID_ICRD, process_ICRD_Chunk},
+    {ChunkID_IENG, process_IENG_Chunk},
+    {ChunkID_IPRD, process_IPRD_Chunk},
+    {ChunkID_ICOP, process_ICOP_Chunk},
+    {ChunkID_ICMT, process_ICMT_Chunk},
+    {ChunkID_ISFT, process_ISFT_Chunk},
 };
 
 static bool processUnimplementedChunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
@@ -227,7 +277,17 @@ void SoundFontDump(SoundFont *self)
     printf("\n");
     printf("sf2 dump\n");
     printf("---------------------\n");
-    printf("version: %d.%d\n", self->version.major, self->version.minor);
+    printf("ifil: %d.%d\n", self->ifil.wMajor, self->ifil.wMinor);
+    printf("isng: %s\n", self->isng);
+    printf("INAM: %s\n", self->INAM);
+    printf("irom: %s\n", self->irom);
+    printf("iver: %d.%d\n", self->iver.wMajor, self->iver.wMinor);
+    printf("ICRD: %s\n", self->ICRD);
+    printf("IENG: %s\n", self->IENG);
+    printf("IPRD: %s\n", self->IPRD);
+    printf("ICOP: %s\n", self->ICOP);
+    printf("ICMT: %s\n", self->ICMT);
+    printf("ISFT: %s\n", self->ISFT);
 }
 
 

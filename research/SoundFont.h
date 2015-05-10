@@ -4,9 +4,22 @@
 
 typedef struct _SoundFont {
     struct {
-        uint16_t major;
-        uint16_t minor;
-    } version;
+        uint16_t wMajor;
+        uint16_t wMinor;
+    } ifil;
+    char *isng;
+    char *INAM;
+    char *irom;
+    struct {
+        uint16_t wMajor;
+        uint16_t wMinor;
+    } iver;
+    char *ICRD;
+    char *IENG;
+    char *IPRD;
+    char *ICOP;
+    char *ICMT;
+    char *ISFT;
 } SoundFont;
 
 typedef enum {
@@ -20,7 +33,7 @@ extern void SoundFontDump(SoundFont *self);
 
 const char *SoundFontError2String(SoundFontError error)
 {
-#define CASE(error) case error: return #error;
+#define CASE(error) case error: return &(#error[14]);
     switch (error) {
     CASE(SoundFontErrorFileNotFound);
     CASE(SoundFontErrorInvalidFileFormat);
