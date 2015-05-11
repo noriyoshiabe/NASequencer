@@ -8,6 +8,7 @@
 #define UCHAR2WARD(c1,c2) (c1|c2<<8)
 #define DWARD_FROM_LE(v) UCHAR2DWARD(((uint8_t *)&v)[0],((uint8_t *)&v)[1],((uint8_t *)&v)[2],((uint8_t *)&v)[3])
 #define WARD_FROM_LE(v) UCHAR2WARD(((uint8_t *)&v)[0],((uint8_t *)&v)[1])
+#define SHORT_FROM_LE(v) UCHAR2WARD(((int8_t *)&v)[0],((int8_t *)&v)[1])
 
 // RIFF
 #define ChunkID_RIFF UCHAR2DWARD('R','I','F','F')
@@ -334,7 +335,38 @@ static bool process_pmod_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
             return false;
         }
 
-        self->pmod[i].modAmount = WARD_FROM_LE(self->pmod[i].modAmount);
+        self->pmod[i].sfModDestOper = WARD_FROM_LE(self->pmod[i].sfModDestOper);
+        self->pmod[i].modAmount = SHORT_FROM_LE(self->pmod[i].modAmount);
+        self->pmod[i].sfModTransOper = WARD_FROM_LE(self->pmod[i].sfModTransOper);
+    }
+
+    return true;
+}
+
+static bool process_pgen_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
+{
+    int num = size / sizeof(ModList);
+    self->pgen = calloc(num, sizeof(ModList));
+    self->pgenLength = num;
+
+    for (int i = 0; i < num; ++i) {
+        if (1 != fread(&self->pgen[i], sizeof(ModList), 1, fp)) {
+            return false;
+        }
+
+        self->pgen[i].sfGenOper = WARD_FROM_LE(self->pgen[i].sfGenOper);
+
+        switch (self->pgen[i].sfGenOper) {
+        case GeneratorType_keyRange:
+        case GeneratorType_velRange:
+            break;
+        case GeneratorType_instrument:
+            self->pgen[i].genAmount.wAmount = WARD_FROM_LE(self->pgen[i].genAmount.wAmount);
+            break;
+        define:
+            self->pgen[i].genAmount.shAmount = SHORT_FROM_LE(self->pgen[i].genAmount.shAmount);
+            break;
+        }
     }
 
     return true;
@@ -361,6 +393,7 @@ static const struct {
     {ChunkID_phdr, process_phdr_Chunk},
     {ChunkID_pbag, process_pbag_Chunk},
     {ChunkID_pmod, process_pmod_Chunk},
+    {ChunkID_pgen, process_pgen_Chunk},
 };
 
 static bool processUnimplementedChunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
@@ -431,7 +464,7 @@ void SoundFontDump(SoundFont *self)
         printf("CC=%u ", self->pmod[i].sfModSrcOper.CC);
         printf("Index=%u] ", self->pmod[i].sfModSrcOper.Index);
         printf("sfModDestOper=%d ", self->pmod[i].sfModDestOper);
-        printf("modAmount=%u ", self->pmod[i].modAmount);
+        printf("modAmount=%d ", self->pmod[i].modAmount);
         printf("sfModAmtSrcOper[");
         printf("Type=%u ", self->pmod[i].sfModAmtSrcOper.Type);
         printf("P=%u ", self->pmod[i].sfModAmtSrcOper.P);
@@ -439,6 +472,26 @@ void SoundFontDump(SoundFont *self)
         printf("CC=%u ", self->pmod[i].sfModAmtSrcOper.CC);
         printf("Index=%u] ", self->pmod[i].sfModAmtSrcOper.Index);
         printf("sfModTransOper=%u", self->pmod[i].sfModTransOper);
+        printf("\n");
+    }
+    printf("pgen: num of gen list=%u\n", self->pmodLength);
+    for (int i = 0; i < self->pgenLength; ++i) {
+        printf("    ");
+        printf("pgen[%d]: ", i);
+        printf("sfGenOper=%u ", self->pgen[i].sfGenOper);
+        switch (self->pgen[i].sfGenOper) {
+        case GeneratorType_keyRange:
+        case GeneratorType_velRange:
+            printf("genAmount.ranges.byLo=%u ", self->pgen[i].genAmount.ranges.byLo);
+            printf("genAmount.ranges.byHi=%u ", self->pgen[i].genAmount.ranges.byHi);
+            break;
+        case GeneratorType_instrument:
+            printf("genAmount.wAmount=%u", self->pgen[i].genAmount.wAmount);
+            break;
+        default:
+            printf("genAmount.shAmount=%d", self->pgen[i].genAmount.shAmount);
+            break;
+        }
         printf("\n");
     }
 }

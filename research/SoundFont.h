@@ -127,6 +127,20 @@ typedef struct _ModList {
     SFTransform sfModTransOper;
 } ModList;
 
+typedef union _AmoutType {
+    struct {
+        uint8_t byLo;
+        uint8_t byHi;
+    } ranges;
+    int16_t shAmount;
+    uint16_t wAmount;
+} __attribute__((__packed__)) AmoutType;
+
+typedef struct _GenList {
+    SFGenerator sfGenOper;
+    AmoutType genAmount;
+} __attribute__((__packed__)) GenList;
+
 typedef struct _SoundFont {
     Version ifil;
     char *isng;
@@ -152,6 +166,8 @@ typedef struct _SoundFont {
     uint32_t pbagLength;
     ModList *pmod;
     uint32_t pmodLength;
+    GenList *pgen;
+    uint32_t pgenLength;
 } SoundFont;
 
 typedef enum {
