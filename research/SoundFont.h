@@ -151,6 +151,8 @@ typedef struct _InstBag {
     uint16_t wInstModNdx;
 } InstBag;
 
+typedef GenList InstGenList;
+
 typedef struct _SoundFont {
     Version ifil;
     char *isng;
@@ -182,6 +184,10 @@ typedef struct _SoundFont {
     uint32_t instLength;
     InstBag *ibag;
     uint32_t ibagLength;
+    ModList *imod;
+    uint32_t imodLength;
+    InstGenList *igen;
+    uint32_t igenLength;
 } SoundFont;
 
 typedef enum {

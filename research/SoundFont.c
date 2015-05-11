@@ -122,6 +122,8 @@ void SoundFontDestroy(SoundFont *self)
     free_if(self->pgen);
     free_if(self->inst);
     free_if(self->ibag);
+    free_if(self->imod);
+    free_if(self->igen);
 #undef free_if
 
     free(self);
@@ -410,6 +412,54 @@ static bool process_ibag_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
     return true;
 }
 
+static bool process_imod_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
+{
+    int num = size / sizeof(ModList);
+    self->imod = calloc(num, sizeof(ModList));
+    self->imodLength = num;
+
+    for (int i = 0; i < num; ++i) {
+        if (1 != fread(&self->imod[i], sizeof(ModList), 1, fp)) {
+            return false;
+        }
+
+        self->imod[i].sfModDestOper = WARD_FROM_LE(self->imod[i].sfModDestOper);
+        self->imod[i].modAmount = SHORT_FROM_LE(self->imod[i].modAmount);
+        self->imod[i].sfModTransOper = WARD_FROM_LE(self->imod[i].sfModTransOper);
+    }
+
+    return true;
+}
+
+static bool process_igen_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
+{
+    int num = size / sizeof(InstGenList);
+    self->igen = calloc(num, sizeof(InstGenList));
+    self->igenLength = num;
+
+    for (int i = 0; i < num; ++i) {
+        if (1 != fread(&self->igen[i], sizeof(InstGenList), 1, fp)) {
+            return false;
+        }
+
+        self->igen[i].sfGenOper = WARD_FROM_LE(self->igen[i].sfGenOper);
+
+        switch (self->igen[i].sfGenOper) {
+        case GeneratorType_keyRange:
+        case GeneratorType_velRange:
+            break;
+        case GeneratorType_instrument:
+            self->igen[i].genAmount.wAmount = WARD_FROM_LE(self->igen[i].genAmount.wAmount);
+            break;
+        define:
+            self->igen[i].genAmount.shAmount = SHORT_FROM_LE(self->igen[i].genAmount.shAmount);
+            break;
+        }
+    }
+
+    return true;
+}
+
 
 static const struct {
     uint32_t chunkID;
@@ -434,6 +484,8 @@ static const struct {
     {ChunkID_pgen, process_pgen_Chunk},
     {ChunkID_inst, process_inst_Chunk},
     {ChunkID_ibag, process_ibag_Chunk},
+    {ChunkID_imod, process_imod_Chunk},
+    {ChunkID_igen, process_igen_Chunk},
 };
 
 static bool processUnimplementedChunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
@@ -514,7 +566,7 @@ void SoundFontDump(SoundFont *self)
         printf("sfModTransOper=%u", self->pmod[i].sfModTransOper);
         printf("\n");
     }
-    printf("pgen: num of gen list=%u\n", self->pmodLength);
+    printf("pgen: num of gen list=%u\n", self->pgenLength);
     for (int i = 0; i < self->pgenLength; ++i) {
         printf("    ");
         printf("pgen[%d]: ", i);
@@ -548,6 +600,47 @@ void SoundFontDump(SoundFont *self)
         printf("ibag[%d]: ", i);
         printf("wInstGenNdx=%u ", self->ibag[i].wInstGenNdx);
         printf("wInstModNdx=%u", self->ibag[i].wInstModNdx);
+        printf("\n");
+    }
+    printf("imod: num of mod list=%u\n", self->imodLength);
+    for (int i = 0; i < self->imodLength; ++i) {
+        printf("    ");
+        printf("imod[%d]: ", i);
+        printf("sfModSrcOper[");
+        printf("Type=%u ", self->imod[i].sfModSrcOper.Type);
+        printf("P=%u ", self->imod[i].sfModSrcOper.P);
+        printf("D=%u ", self->imod[i].sfModSrcOper.D);
+        printf("CC=%u ", self->imod[i].sfModSrcOper.CC);
+        printf("Index=%u] ", self->imod[i].sfModSrcOper.Index);
+        printf("sfModDestOper=%d ", self->imod[i].sfModDestOper);
+        printf("modAmount=%d ", self->imod[i].modAmount);
+        printf("sfModAmtSrcOper[");
+        printf("Type=%u ", self->imod[i].sfModAmtSrcOper.Type);
+        printf("P=%u ", self->imod[i].sfModAmtSrcOper.P);
+        printf("D=%u ", self->imod[i].sfModAmtSrcOper.D);
+        printf("CC=%u ", self->imod[i].sfModAmtSrcOper.CC);
+        printf("Index=%u] ", self->imod[i].sfModAmtSrcOper.Index);
+        printf("sfModTransOper=%u", self->imod[i].sfModTransOper);
+        printf("\n");
+    }
+    printf("igen: num of gen list=%u\n", self->igenLength);
+    for (int i = 0; i < self->igenLength; ++i) {
+        printf("    ");
+        printf("igen[%d]: ", i);
+        printf("sfGenOper=%u ", self->igen[i].sfGenOper);
+        switch (self->igen[i].sfGenOper) {
+        case GeneratorType_keyRange:
+        case GeneratorType_velRange:
+            printf("genAmount.ranges.byLo=%u ", self->igen[i].genAmount.ranges.byLo);
+            printf("genAmount.ranges.byHi=%u ", self->igen[i].genAmount.ranges.byHi);
+            break;
+        case GeneratorType_instrument:
+            printf("genAmount.wAmount=%u", self->igen[i].genAmount.wAmount);
+            break;
+        default:
+            printf("genAmount.shAmount=%d", self->igen[i].genAmount.shAmount);
+            break;
+        }
         printf("\n");
     }
 }
