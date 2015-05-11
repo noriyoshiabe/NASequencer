@@ -348,12 +348,12 @@ static bool process_pmod_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
 
 static bool process_pgen_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
 {
-    int num = size / sizeof(ModList);
-    self->pgen = calloc(num, sizeof(ModList));
+    int num = size / sizeof(GenList);
+    self->pgen = calloc(num, sizeof(GenList));
     self->pgenLength = num;
 
     for (int i = 0; i < num; ++i) {
-        if (1 != fread(&self->pgen[i], sizeof(ModList), 1, fp)) {
+        if (1 != fread(&self->pgen[i], sizeof(GenList), 1, fp)) {
             return false;
         }
 
