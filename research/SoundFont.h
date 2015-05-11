@@ -2,20 +2,32 @@
 
 #include <stdint.h>
 
-typedef struct _PresetHeader PresetHeader;
+typedef struct _Version {
+    uint16_t wMajor;
+    uint16_t wMinor;
+} Version;
+
+typedef struct _PresetHeader {
+    char achPresetName[20];
+    uint16_t wPreset;
+    uint16_t wBank;
+    uint16_t wPresetBagNdx;
+    uint32_t dwLibrary;
+    uint32_t dwGenre;
+    uint32_t dwMorphology;
+} PresetHeader;
+
+typedef struct _PresetBag {
+    uint16_t wGenNdx;
+    uint16_t wModNdx;
+} PresetBag;
 
 typedef struct _SoundFont {
-    struct {
-        uint16_t wMajor;
-        uint16_t wMinor;
-    } ifil;
+    Version ifil;
     char *isng;
     char *INAM;
     char *irom;
-    struct {
-        uint16_t wMajor;
-        uint16_t wMinor;
-    } iver;
+    Version iver;
     char *ICRD;
     char *IENG;
     char *IPRD;
@@ -31,17 +43,9 @@ typedef struct _SoundFont {
 
     PresetHeader *phdr;
     uint32_t phdrLength;
+    PresetBag *pbag;
+    uint32_t pbagLength;
 } SoundFont;
-
-struct _PresetHeader {
-    char achPresetName[20];
-    uint16_t wPreset;
-    uint16_t wBank;
-    uint16_t wPresetBagNdx;
-    uint32_t dwLibrary;
-    uint32_t dwGenre;
-    uint32_t dwMorphology;
-};
 
 typedef enum {
     SoundFontErrorFileNotFound,
