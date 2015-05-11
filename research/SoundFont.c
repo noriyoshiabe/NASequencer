@@ -4,52 +4,52 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#define UCHAR2DWARD(c1,c2,c3,c4) (c1|c2<<8|c3<<16|c4<<24)
-#define UCHAR2WARD(c1,c2) (c1|c2<<8)
-#define DWARD_FROM_LE(v) UCHAR2DWARD(((uint8_t *)&v)[0],((uint8_t *)&v)[1],((uint8_t *)&v)[2],((uint8_t *)&v)[3])
-#define WARD_FROM_LE(v) UCHAR2WARD(((uint8_t *)&v)[0],((uint8_t *)&v)[1])
-#define SHORT_FROM_LE(v) UCHAR2WARD(((int8_t *)&v)[0],((int8_t *)&v)[1])
+#define UCHAR2DWORD(c1,c2,c3,c4) (c1|c2<<8|c3<<16|c4<<24)
+#define UCHAR2WORD(c1,c2) (c1|c2<<8)
+#define DWORD_FROM_LE(v) UCHAR2DWORD(((uint8_t *)&v)[0],((uint8_t *)&v)[1],((uint8_t *)&v)[2],((uint8_t *)&v)[3])
+#define WORD_FROM_LE(v) UCHAR2WORD(((uint8_t *)&v)[0],((uint8_t *)&v)[1])
+#define SHORT_FROM_LE(v) UCHAR2WORD(((int8_t *)&v)[0],((int8_t *)&v)[1])
 
 // RIFF
-#define ChunkID_RIFF UCHAR2DWARD('R','I','F','F')
-#define ChunkID_LIST UCHAR2DWARD('L','I','S','T')
+#define ChunkID_RIFF UCHAR2DWORD('R','I','F','F')
+#define ChunkID_LIST UCHAR2DWORD('L','I','S','T')
 
 // INFO
-#define ChunkID_ifil UCHAR2DWARD('i','f','i','l')
-#define ChunkID_isng UCHAR2DWARD('i','s','n','g')
-#define ChunkID_INAM UCHAR2DWARD('I','N','A','M')
-#define ChunkID_irom UCHAR2DWARD('i','r','o','m')
-#define ChunkID_iver UCHAR2DWARD('i','v','e','r')
-#define ChunkID_ICRD UCHAR2DWARD('I','C','R','D')
-#define ChunkID_IENG UCHAR2DWARD('I','E','N','G')
-#define ChunkID_IPRD UCHAR2DWARD('I','P','R','D')
-#define ChunkID_ICOP UCHAR2DWARD('I','C','O','P')
-#define ChunkID_ICMT UCHAR2DWARD('I','C','M','T')
-#define ChunkID_ISFT UCHAR2DWARD('I','S','F','T')
+#define ChunkID_ifil UCHAR2DWORD('i','f','i','l')
+#define ChunkID_isng UCHAR2DWORD('i','s','n','g')
+#define ChunkID_INAM UCHAR2DWORD('I','N','A','M')
+#define ChunkID_irom UCHAR2DWORD('i','r','o','m')
+#define ChunkID_iver UCHAR2DWORD('i','v','e','r')
+#define ChunkID_ICRD UCHAR2DWORD('I','C','R','D')
+#define ChunkID_IENG UCHAR2DWORD('I','E','N','G')
+#define ChunkID_IPRD UCHAR2DWORD('I','P','R','D')
+#define ChunkID_ICOP UCHAR2DWORD('I','C','O','P')
+#define ChunkID_ICMT UCHAR2DWORD('I','C','M','T')
+#define ChunkID_ISFT UCHAR2DWORD('I','S','F','T')
 
 // sdta
-// #define snam UCHAR2DWARD('s','n','a','m') 
+// #define snam UCHAR2DWORD('s','n','a','m') 
 //   -> FluidSynth has this but sf2 specification doesn't
-#define ChunkID_smpl UCHAR2DWARD('s','m','p','l')
-#define ChunkID_sm24 UCHAR2DWARD('s','m','2','4')
+#define ChunkID_smpl UCHAR2DWORD('s','m','p','l')
+#define ChunkID_sm24 UCHAR2DWORD('s','m','2','4')
 
 // pdta
-#define ChunkID_pdta UCHAR2DWARD('p','d','t','a')
-#define ChunkID_phdr UCHAR2DWARD('p','h','d','r')
-#define ChunkID_pbag UCHAR2DWARD('p','b','a','g')
-#define ChunkID_pmod UCHAR2DWARD('p','m','o','d')
-#define ChunkID_pgen UCHAR2DWARD('p','g','e','n')
-#define ChunkID_inst UCHAR2DWARD('i','n','s','t')
-#define ChunkID_ibag UCHAR2DWARD('i','b','a','g')
-#define ChunkID_imod UCHAR2DWARD('i','m','o','d')
-#define ChunkID_igen UCHAR2DWARD('i','g','e','n')
-#define ChunkID_shdr UCHAR2DWARD('s','h','d','r')
+#define ChunkID_pdta UCHAR2DWORD('p','d','t','a')
+#define ChunkID_phdr UCHAR2DWORD('p','h','d','r')
+#define ChunkID_pbag UCHAR2DWORD('p','b','a','g')
+#define ChunkID_pmod UCHAR2DWORD('p','m','o','d')
+#define ChunkID_pgen UCHAR2DWORD('p','g','e','n')
+#define ChunkID_inst UCHAR2DWORD('i','n','s','t')
+#define ChunkID_ibag UCHAR2DWORD('i','b','a','g')
+#define ChunkID_imod UCHAR2DWORD('i','m','o','d')
+#define ChunkID_igen UCHAR2DWORD('i','g','e','n')
+#define ChunkID_shdr UCHAR2DWORD('s','h','d','r')
 
 // type of RIFF or LIST chunk
-#define TypeID_sfbk UCHAR2DWARD('s','f','b','k')
-#define TypeID_INFO UCHAR2DWARD('I','N','F','O')
-#define TypeID_sdta UCHAR2DWARD('s','d','t','a')
-#define TypeID_pdta UCHAR2DWARD('p','d','t','a')
+#define TypeID_sfbk UCHAR2DWORD('s','f','b','k')
+#define TypeID_INFO UCHAR2DWORD('I','N','F','O')
+#define TypeID_sdta UCHAR2DWORD('s','d','t','a')
+#define TypeID_pdta UCHAR2DWORD('p','d','t','a')
 
 static const char *ChunkID2String(uint32_t id)
 {
@@ -160,8 +160,8 @@ SoundFont *SoundFontRead(const char *filepath, SoundFontError *error)
             goto ERROR_2;
         }
 
-        header.id = DWARD_FROM_LE(header.id);
-        header.size = DWARD_FROM_LE(header.size);
+        header.id = DWORD_FROM_LE(header.id);
+        header.size = DWORD_FROM_LE(header.size);
 
 #if 1
         printf("[%s] size=%d\n", ChunkID2String(header.id), header.size);
@@ -170,7 +170,7 @@ SoundFont *SoundFontRead(const char *filepath, SoundFontError *error)
         switch (header.id) {
         case ChunkID_RIFF:
             if (1 != fread(&type, sizeof(type), 1, fp)
-                    || TypeID_sfbk != DWARD_FROM_LE(type)) {
+                    || TypeID_sfbk != DWORD_FROM_LE(type)) {
                 _error = SoundFontErrorInvalidFileFormat;
                 goto ERROR_2;
             }
@@ -179,7 +179,7 @@ SoundFont *SoundFontRead(const char *filepath, SoundFontError *error)
         case ChunkID_LIST:
             if (1 != fread(&type, sizeof(type), 1, fp)
                     || sizeof(ListTypes)/sizeof(ListTypes[0]) <= listIndex
-                    || ListTypes[listIndex] != DWARD_FROM_LE(type)) {
+                    || ListTypes[listIndex] != DWORD_FROM_LE(type)) {
                 _error = SoundFontErrorInvalidFileFormat;
                 goto ERROR_2;
             }
@@ -222,8 +222,8 @@ ERROR_1:
 static bool process_ifil_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
 {
     bool ret = 1 == fread(&self->ifil, sizeof(self->ifil), 1, fp);
-    self->ifil.wMajor = WARD_FROM_LE(self->ifil.wMajor);
-    self->ifil.wMinor = WARD_FROM_LE(self->ifil.wMinor);
+    self->ifil.wMajor = WORD_FROM_LE(self->ifil.wMajor);
+    self->ifil.wMinor = WORD_FROM_LE(self->ifil.wMinor);
     return ret;
 }
 
@@ -241,8 +241,8 @@ DeclareProcessInfoTextChunk(irom);
 static bool process_iver_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
 {
     bool ret = 1 == fread(&self->iver, sizeof(self->iver), 1, fp);
-    self->iver.wMajor = WARD_FROM_LE(self->iver.wMajor);
-    self->iver.wMinor = WARD_FROM_LE(self->iver.wMinor);
+    self->iver.wMajor = WORD_FROM_LE(self->iver.wMajor);
+    self->iver.wMinor = WORD_FROM_LE(self->iver.wMinor);
     return ret;
 }
 
@@ -263,7 +263,7 @@ static bool process_smpl_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
 
     if (!*((uint8_t *)&__is_little_endian__)) {
         for (int i = 0; i < size; ++i) {
-            self->smpl[i] = WARD_FROM_LE(self->smpl[i]);
+            self->smpl[i] = WORD_FROM_LE(self->smpl[i]);
         }
     }
 
@@ -299,13 +299,13 @@ static bool process_phdr_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
             return false;
         }
 
-        self->phdr[i].wPreset = WARD_FROM_LE(self->phdr[i].wPreset);
-        self->phdr[i].wBank = WARD_FROM_LE(self->phdr[i].wBank);
-        self->phdr[i].wPresetBagNdx = WARD_FROM_LE(self->phdr[i].wPresetBagNdx);
+        self->phdr[i].wPreset = WORD_FROM_LE(self->phdr[i].wPreset);
+        self->phdr[i].wBank = WORD_FROM_LE(self->phdr[i].wBank);
+        self->phdr[i].wPresetBagNdx = WORD_FROM_LE(self->phdr[i].wPresetBagNdx);
 
-        self->phdr[i].dwLibrary = DWARD_FROM_LE(self->phdr[i].dwLibrary);
-        self->phdr[i].dwGenre = DWARD_FROM_LE(self->phdr[i].dwGenre);
-        self->phdr[i].dwMorphology = DWARD_FROM_LE(self->phdr[i].dwMorphology);
+        self->phdr[i].dwLibrary = DWORD_FROM_LE(self->phdr[i].dwLibrary);
+        self->phdr[i].dwGenre = DWORD_FROM_LE(self->phdr[i].dwGenre);
+        self->phdr[i].dwMorphology = DWORD_FROM_LE(self->phdr[i].dwMorphology);
     }
 
     return true;
@@ -322,8 +322,8 @@ static bool process_pbag_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
             return false;
         }
 
-        self->pbag[i].wGenNdx = WARD_FROM_LE(self->pbag[i].wGenNdx);
-        self->pbag[i].wModNdx = WARD_FROM_LE(self->pbag[i].wModNdx);
+        self->pbag[i].wGenNdx = WORD_FROM_LE(self->pbag[i].wGenNdx);
+        self->pbag[i].wModNdx = WORD_FROM_LE(self->pbag[i].wModNdx);
     }
 
     return true;
@@ -340,9 +340,9 @@ static bool process_pmod_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
             return false;
         }
 
-        self->pmod[i].sfModDestOper = WARD_FROM_LE(self->pmod[i].sfModDestOper);
+        self->pmod[i].sfModDestOper = WORD_FROM_LE(self->pmod[i].sfModDestOper);
         self->pmod[i].modAmount = SHORT_FROM_LE(self->pmod[i].modAmount);
-        self->pmod[i].sfModTransOper = WARD_FROM_LE(self->pmod[i].sfModTransOper);
+        self->pmod[i].sfModTransOper = WORD_FROM_LE(self->pmod[i].sfModTransOper);
     }
 
     return true;
@@ -359,14 +359,14 @@ static bool process_pgen_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
             return false;
         }
 
-        self->pgen[i].sfGenOper = WARD_FROM_LE(self->pgen[i].sfGenOper);
+        self->pgen[i].sfGenOper = WORD_FROM_LE(self->pgen[i].sfGenOper);
 
         switch (self->pgen[i].sfGenOper) {
         case GeneratorType_keyRange:
         case GeneratorType_velRange:
             break;
         case GeneratorType_instrument:
-            self->pgen[i].genAmount.wAmount = WARD_FROM_LE(self->pgen[i].genAmount.wAmount);
+            self->pgen[i].genAmount.wAmount = WORD_FROM_LE(self->pgen[i].genAmount.wAmount);
             break;
         define:
             self->pgen[i].genAmount.shAmount = SHORT_FROM_LE(self->pgen[i].genAmount.shAmount);
@@ -388,7 +388,7 @@ static bool process_inst_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
             return false;
         }
 
-        self->inst[i].wInstBagNdx = WARD_FROM_LE(self->inst[i].wInstBagNdx);
+        self->inst[i].wInstBagNdx = WORD_FROM_LE(self->inst[i].wInstBagNdx);
     }
 
     return true;
@@ -405,8 +405,8 @@ static bool process_ibag_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
             return false;
         }
 
-        self->ibag[i].wInstGenNdx = WARD_FROM_LE(self->ibag[i].wInstGenNdx);
-        self->ibag[i].wInstModNdx = WARD_FROM_LE(self->ibag[i].wInstModNdx);
+        self->ibag[i].wInstGenNdx = WORD_FROM_LE(self->ibag[i].wInstGenNdx);
+        self->ibag[i].wInstModNdx = WORD_FROM_LE(self->ibag[i].wInstModNdx);
     }
 
     return true;
@@ -423,9 +423,9 @@ static bool process_imod_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
             return false;
         }
 
-        self->imod[i].sfModDestOper = WARD_FROM_LE(self->imod[i].sfModDestOper);
+        self->imod[i].sfModDestOper = WORD_FROM_LE(self->imod[i].sfModDestOper);
         self->imod[i].modAmount = SHORT_FROM_LE(self->imod[i].modAmount);
-        self->imod[i].sfModTransOper = WARD_FROM_LE(self->imod[i].sfModTransOper);
+        self->imod[i].sfModTransOper = WORD_FROM_LE(self->imod[i].sfModTransOper);
     }
 
     return true;
@@ -442,14 +442,14 @@ static bool process_igen_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
             return false;
         }
 
-        self->igen[i].sfGenOper = WARD_FROM_LE(self->igen[i].sfGenOper);
+        self->igen[i].sfGenOper = WORD_FROM_LE(self->igen[i].sfGenOper);
 
         switch (self->igen[i].sfGenOper) {
         case GeneratorType_keyRange:
         case GeneratorType_velRange:
             break;
         case GeneratorType_instrument:
-            self->igen[i].genAmount.wAmount = WARD_FROM_LE(self->igen[i].genAmount.wAmount);
+            self->igen[i].genAmount.wAmount = WORD_FROM_LE(self->igen[i].genAmount.wAmount);
             break;
         define:
             self->igen[i].genAmount.shAmount = SHORT_FROM_LE(self->igen[i].genAmount.shAmount);
