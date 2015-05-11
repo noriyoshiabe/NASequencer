@@ -151,6 +151,7 @@ typedef struct _InstBag {
     uint16_t wInstModNdx;
 } InstBag;
 
+typedef uint16_t SFSampleLink;
 typedef enum {
     SampleLink_monoSample = 1,
     SampleLink_rightSample = 2,
@@ -172,7 +173,7 @@ typedef struct _SampleHeader {
     uint8_t byOriginalPitch;
     char chPitchCorrection;
     uint16_t wSampleLink;
-    uint16_t sfSampleType;
+    SFSampleLink sfSampleType;
 } __attribute__((__packed__)) SampleHeader;
 
 typedef GenList InstGenList;
