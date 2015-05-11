@@ -121,6 +121,7 @@ void SoundFontDestroy(SoundFont *self)
     free_if(self->pmod);
     free_if(self->pgen);
     free_if(self->inst);
+    free_if(self->ibag);
 #undef free_if
 
     free(self);
@@ -391,6 +392,24 @@ static bool process_inst_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
     return true;
 }
 
+static bool process_ibag_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
+{
+    int num = size / sizeof(InstBag);
+    self->ibag = calloc(num, sizeof(InstBag));
+    self->ibagLength = num;
+
+    for (int i = 0; i < num; ++i) {
+        if (1 != fread(&self->ibag[i], sizeof(InstBag), 1, fp)) {
+            return false;
+        }
+
+        self->ibag[i].wInstGenNdx = WARD_FROM_LE(self->ibag[i].wInstGenNdx);
+        self->ibag[i].wInstModNdx = WARD_FROM_LE(self->ibag[i].wInstModNdx);
+    }
+
+    return true;
+}
+
 
 static const struct {
     uint32_t chunkID;
@@ -414,6 +433,7 @@ static const struct {
     {ChunkID_pmod, process_pmod_Chunk},
     {ChunkID_pgen, process_pgen_Chunk},
     {ChunkID_inst, process_inst_Chunk},
+    {ChunkID_ibag, process_ibag_Chunk},
 };
 
 static bool processUnimplementedChunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
@@ -520,6 +540,14 @@ void SoundFontDump(SoundFont *self)
         printf("inst[%d]: ", i);
         printf("achInstName=%s ", self->inst[i].achInstName);
         printf("wInstBagNdx=%u ", self->inst[i].wInstBagNdx);
+        printf("\n");
+    }
+    printf("ibag: num of inst bag=%u\n", self->ibagLength);
+    for (int i = 0; i < self->ibagLength; ++i) {
+        printf("    ");
+        printf("ibag[%d]: ", i);
+        printf("wInstGenNdx=%u ", self->ibag[i].wInstGenNdx);
+        printf("wInstModNdx=%u", self->ibag[i].wInstModNdx);
         printf("\n");
     }
 }
