@@ -141,6 +141,11 @@ typedef struct _GenList {
     AmoutType genAmount;
 } __attribute__((__packed__)) GenList;
 
+typedef struct _Inst {
+    char achInstName[20];
+    uint16_t wInstBagNdx;
+} Inst;
+
 typedef struct _SoundFont {
     Version ifil;
     char *isng;
@@ -168,6 +173,8 @@ typedef struct _SoundFont {
     uint32_t pmodLength;
     GenList *pgen;
     uint32_t pgenLength;
+    Inst *inst;
+    uint32_t instLength;
 } SoundFont;
 
 typedef enum {

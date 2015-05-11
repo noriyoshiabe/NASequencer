@@ -119,6 +119,8 @@ void SoundFontDestroy(SoundFont *self)
     free_if(self->phdr);
     free_if(self->pbag);
     free_if(self->pmod);
+    free_if(self->pgen);
+    free_if(self->inst);
 #undef free_if
 
     free(self);
@@ -372,6 +374,23 @@ static bool process_pgen_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
     return true;
 }
 
+static bool process_inst_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
+{
+    int num = size / sizeof(Inst);
+    self->inst = calloc(num, sizeof(Inst));
+    self->instLength = num;
+
+    for (int i = 0; i < num; ++i) {
+        if (1 != fread(&self->inst[i], sizeof(Inst), 1, fp)) {
+            return false;
+        }
+
+        self->inst[i].wInstBagNdx = WARD_FROM_LE(self->inst[i].wInstBagNdx);
+    }
+
+    return true;
+}
+
 
 static const struct {
     uint32_t chunkID;
@@ -394,6 +413,7 @@ static const struct {
     {ChunkID_pbag, process_pbag_Chunk},
     {ChunkID_pmod, process_pmod_Chunk},
     {ChunkID_pgen, process_pgen_Chunk},
+    {ChunkID_inst, process_inst_Chunk},
 };
 
 static bool processUnimplementedChunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
@@ -492,6 +512,14 @@ void SoundFontDump(SoundFont *self)
             printf("genAmount.shAmount=%d", self->pgen[i].genAmount.shAmount);
             break;
         }
+        printf("\n");
+    }
+    printf("inst: num of instruments list=%u\n", self->instLength);
+    for (int i = 0; i < self->instLength; ++i) {
+        printf("    ");
+        printf("inst[%d]: ", i);
+        printf("achInstName=%s ", self->inst[i].achInstName);
+        printf("wInstBagNdx=%u ", self->inst[i].wInstBagNdx);
         printf("\n");
     }
 }
