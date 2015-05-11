@@ -2,12 +2,12 @@
 
 #include <stdint.h>
 
-typedef struct _Version {
+typedef struct _SFVersion {
     uint16_t wMajor;
     uint16_t wMinor;
-} Version;
+} SFVersion;
 
-typedef struct _PresetHeader {
+typedef struct _SFPresetHeader {
     char achPresetName[20];
     uint16_t wPreset;
     uint16_t wBank;
@@ -15,12 +15,12 @@ typedef struct _PresetHeader {
     uint32_t dwLibrary;
     uint32_t dwGenre;
     uint32_t dwMorphology;
-} __attribute__((__packed__)) PresetHeader;
+} __attribute__((__packed__)) SFPresetHeader;
 
-typedef struct _PresetBag {
+typedef struct _SFPresetBag {
     uint16_t wGenNdx;
     uint16_t wModNdx;
-} PresetBag;
+} SFPresetBag;
 
 typedef struct _SFModulator {
     unsigned Type:6;
@@ -31,139 +31,141 @@ typedef struct _SFModulator {
 } __attribute__((__packed__)) SFModulator;
 
 typedef enum {
-    GeneralControllerPaletteNoController = 0,
-    GeneralControllerPaletteNoteOnVelocity = 2,
-    GeneralControllerPaletteNoteOnKeyNumber = 3,
-    GeneralControllerPalettePolyPressure = 10,
-    GeneralControllerPaletteChannelPressure = 13,
-    GeneralControllerPalettePitchWheel = 14,
-    GeneralControllerPalettePitchWheelSensitivity = 16,
-    GeneralControllerPaletteLink = 127,
-} GeneralControllerPalette;
+    SFGeneralControllerPalette_NoController = 0,
+    SFGeneralControllerPalette_NoteOnVelocity = 2,
+    SFGeneralControllerPalette_NoteOnKeyNumber = 3,
+    SFGeneralControllerPalette_PolyPressure = 10,
+    SFGeneralControllerPalette_ChannelPressure = 13,
+    SFGeneralControllerPalette_PitchWheel = 14,
+    SFGeneralControllerPalette_PitchWheelSensitivity = 16,
+    SFGeneralControllerPalette_Link = 127,
+} SFGeneralControllerPalette;
 
 typedef enum {
-    SourceTypeLinear,
-    SourceTypeConcave,
-    SourceTypeConvex,
-    SourceTypeSwitch,
-} SourceType;
+    SFSourceType_Linear,
+    SFSourceType_Concave,
+    SFSourceType_Convex,
+    SFSourceType_Switch,
+} SFSourceType;
 
 typedef uint16_t SFGenerator;
 typedef enum {
-    GeneratorType_startAddrsOffset,
-    GeneratorType_endAddrsOffset,
-    GeneratorType_startloopAddrsOffset,
-    GeneratorType_endloopAddrsOffset,
-    GeneratorType_startAddrsCoarseOffset,
-    GeneratorType_modLfoToPitch,
-    GeneratorType_vibLfoToPitch,
-    GeneratorType_modEnvToPitch,
-    GeneratorType_initialFilterFc,
-    GeneratorType_initialFilterQ,
-    GeneratorType_modLfoToFilterFc,
-    GeneratorType_modEnvToFilterFc,
-    GeneratorType_endAddrsCoarseOffset,
-    GeneratorType_modLfoToVolume,
-    GeneratorType_unused1,
-    GeneratorType_chorusEffectsSend,
-    GeneratorType_reverbEffectsSend,
-    GeneratorType_pan,
-    GeneratorType_unused2,
-    GeneratorType_unused3,
-    GeneratorType_unused4,
-    GeneratorType_delayModLFO,
-    GeneratorType_freqModLFO,
-    GeneratorType_delayVibLFO,
-    GeneratorType_freqVibLFO,
-    GeneratorType_delayModEnv,
-    GeneratorType_attackModEnv,
-    GeneratorType_holdModEnv,
-    GeneratorType_decayModEnv,
-    GeneratorType_sustainModEnv,
-    GeneratorType_releaseModEnv,
-    GeneratorType_keynumToModEnvHold,
-    GeneratorType_keynumToModEnvDecay,
-    GeneratorType_delayVolEnv,
-    GeneratorType_attackVolEnv,
-    GeneratorType_holdVolEnv,
-    GeneratorType_decayVolEnv,
-    GeneratorType_sustainVolEnv,
-    GeneratorType_releaseVolEnv,
-    GeneratorType_keynumToVolEnvHold,
-    GeneratorType_keynumToVolEnvDecay,
-    GeneratorType_instrument,
-    GeneratorType_reserved1,
-    GeneratorType_keyRange,
-    GeneratorType_velRange,
-    GeneratorType_startloopAddrsCoarseOffset,
-    GeneratorType_keynum,
-    GeneratorType_velocity,
-    GeneratorType_initialAttenuation,
-    GeneratorType_reserved2,
-    GeneratorType_endloopAddrsCoarseOffset,
-    GeneratorType_coarseTune,
-    GeneratorType_fineTune,
-    GeneratorType_sampleID,
-    GeneratorType_sampleModes,
-    GeneratorType_reserved3,
-    GeneratorType_scaleTuning,
-    GeneratorType_exclusiveClass,
-    GeneratorType_overridingRootKey,
-    GeneratorType_unused5,
-    GeneratorType_endOper,
-} GeneratorType;
+    SFGeneratorType_startAddrsOffset,
+    SFGeneratorType_endAddrsOffset,
+    SFGeneratorType_startloopAddrsOffset,
+    SFGeneratorType_endloopAddrsOffset,
+    SFGeneratorType_startAddrsCoarseOffset,
+    SFGeneratorType_modLfoToPitch,
+    SFGeneratorType_vibLfoToPitch,
+    SFGeneratorType_modEnvToPitch,
+    SFGeneratorType_initialFilterFc,
+    SFGeneratorType_initialFilterQ,
+    SFGeneratorType_modLfoToFilterFc,
+    SFGeneratorType_modEnvToFilterFc,
+    SFGeneratorType_endAddrsCoarseOffset,
+    SFGeneratorType_modLfoToVolume,
+    SFGeneratorType_unused1,
+    SFGeneratorType_chorusEffectsSend,
+    SFGeneratorType_reverbEffectsSend,
+    SFGeneratorType_pan,
+    SFGeneratorType_unused2,
+    SFGeneratorType_unused3,
+    SFGeneratorType_unused4,
+    SFGeneratorType_delayModLFO,
+    SFGeneratorType_freqModLFO,
+    SFGeneratorType_delayVibLFO,
+    SFGeneratorType_freqVibLFO,
+    SFGeneratorType_delayModEnv,
+    SFGeneratorType_attackModEnv,
+    SFGeneratorType_holdModEnv,
+    SFGeneratorType_decayModEnv,
+    SFGeneratorType_sustainModEnv,
+    SFGeneratorType_releaseModEnv,
+    SFGeneratorType_keynumToModEnvHold,
+    SFGeneratorType_keynumToModEnvDecay,
+    SFGeneratorType_delayVolEnv,
+    SFGeneratorType_attackVolEnv,
+    SFGeneratorType_holdVolEnv,
+    SFGeneratorType_decayVolEnv,
+    SFGeneratorType_sustainVolEnv,
+    SFGeneratorType_releaseVolEnv,
+    SFGeneratorType_keynumToVolEnvHold,
+    SFGeneratorType_keynumToVolEnvDecay,
+    SFGeneratorType_instrument,
+    SFGeneratorType_reserved1,
+    SFGeneratorType_keyRange,
+    SFGeneratorType_velRange,
+    SFGeneratorType_startloopAddrsCoarseOffset,
+    SFGeneratorType_keynum,
+    SFGeneratorType_velocity,
+    SFGeneratorType_initialAttenuation,
+    SFGeneratorType_reserved2,
+    SFGeneratorType_endloopAddrsCoarseOffset,
+    SFGeneratorType_coarseTune,
+    SFGeneratorType_fineTune,
+    SFGeneratorType_sampleID,
+    SFGeneratorType_sampleModes,
+    SFGeneratorType_reserved3,
+    SFGeneratorType_scaleTuning,
+    SFGeneratorType_exclusiveClass,
+    SFGeneratorType_overridingRootKey,
+    SFGeneratorType_unused5,
+    SFGeneratorType_endOper,
+} SFGeneratorType;
 
 typedef uint16_t SFTransform;
 typedef enum {
-    TransformTypeLinear,
-    TransformTypeAbsoluteValue,
-} TransformType;
+    SFTransformType_Linear,
+    SFTransformType_AbsoluteValue,
+} SFTransformType;
 
-typedef struct _ModList {
+typedef struct _SFModList {
     SFModulator sfModSrcOper;
     SFGenerator sfModDestOper;
     int16_t modAmount;
     SFModulator sfModAmtSrcOper;
     SFTransform sfModTransOper;
-} ModList;
+} SFModList;
 
-typedef union _AmoutType {
+typedef union _SFGenAmoutType {
     struct {
         uint8_t byLo;
         uint8_t byHi;
     } ranges;
     int16_t shAmount;
     uint16_t wAmount;
-} __attribute__((__packed__)) AmoutType;
+} __attribute__((__packed__)) SFGenAmoutType;
 
-typedef struct _GenList {
+typedef struct _SFGenList {
     SFGenerator sfGenOper;
-    AmoutType genAmount;
-} __attribute__((__packed__)) GenList;
+    SFGenAmoutType genAmount;
+} __attribute__((__packed__)) SFGenList;
 
-typedef struct _Inst {
+typedef struct _SFInst {
     char achInstName[20];
     uint16_t wInstBagNdx;
-} Inst;
+} SFInst;
 
-typedef struct _InstBag {
+typedef struct _SFInstBag {
     uint16_t wInstGenNdx;
     uint16_t wInstModNdx;
-} InstBag;
+} SFInstBag;
+
+typedef SFGenList SFInstGenList;
 
 typedef uint16_t SFSampleLink;
 typedef enum {
-    SampleLink_monoSample = 1,
-    SampleLink_rightSample = 2,
-    SampleLink_leftSample = 4,
-    SampleLink_linkedSample = 8,
-    SampleLink_RomMonoSample = 0x8001,
-    SampleLink_RomRightSample = 0x8002,
-    SampleLink_RomLeftSample = 0x8004,
-    SampleLink_RomLinkedSample = 0x8008
-} SampleLink;
+    SFSampleLinkType_monoSample = 1,
+    SFSampleLinkType_rightSample = 2,
+    SFSampleLinkType_leftSample = 4,
+    SFSampleLinkType_linkedSample = 8,
+    SFSampleLinkType_RomMonoSample = 0x8001,
+    SFSampleLinkType_RomRightSample = 0x8002,
+    SFSampleLinkType_RomLeftSample = 0x8004,
+    SFSampleLinkType_RomLinkedSample = 0x8008
+} SFSampleLinkType;
 
-typedef struct _SampleHeader {
+typedef struct _SFSampleHeader {
     char achSampleName[20];
     uint32_t dwStart;
     uint32_t dwEnd;
@@ -174,16 +176,14 @@ typedef struct _SampleHeader {
     char chPitchCorrection;
     uint16_t wSampleLink;
     SFSampleLink sfSampleType;
-} __attribute__((__packed__)) SampleHeader;
-
-typedef GenList InstGenList;
+} __attribute__((__packed__)) SFSampleHeader;
 
 typedef struct _SoundFont {
-    Version ifil;
+    SFVersion ifil;
     char *isng;
     char *INAM;
     char *irom;
-    Version iver;
+    SFVersion iver;
     char *ICRD;
     char *IENG;
     char *IPRD;
@@ -197,23 +197,23 @@ typedef struct _SoundFont {
     uint8_t *sm24;
     uint32_t sm24Length;
 
-    PresetHeader *phdr;
+    SFPresetHeader *phdr;
     uint32_t phdrLength;
-    PresetBag *pbag;
+    SFPresetBag *pbag;
     uint32_t pbagLength;
-    ModList *pmod;
+    SFModList *pmod;
     uint32_t pmodLength;
-    GenList *pgen;
+    SFGenList *pgen;
     uint32_t pgenLength;
-    Inst *inst;
+    SFInst *inst;
     uint32_t instLength;
-    InstBag *ibag;
+    SFInstBag *ibag;
     uint32_t ibagLength;
-    ModList *imod;
+    SFModList *imod;
     uint32_t imodLength;
-    InstGenList *igen;
+    SFInstGenList *igen;
     uint32_t igenLength;
-    SampleHeader *shdr;
+    SFSampleHeader *shdr;
     uint32_t shdrLength;
 } SoundFont;
 

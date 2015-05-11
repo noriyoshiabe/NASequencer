@@ -291,12 +291,12 @@ static bool process_sm24_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
 
 static bool process_phdr_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
 {
-    int num = size / sizeof(PresetHeader);
-    self->phdr = calloc(num, sizeof(PresetHeader));
+    int num = size / sizeof(SFPresetHeader);
+    self->phdr = calloc(num, sizeof(SFPresetHeader));
     self->phdrLength = num;
 
     for (int i = 0; i < num; ++i) {
-        if (1 != fread(&self->phdr[i], sizeof(PresetHeader), 1, fp)) {
+        if (1 != fread(&self->phdr[i], sizeof(SFPresetHeader), 1, fp)) {
             return false;
         }
 
@@ -314,12 +314,12 @@ static bool process_phdr_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
 
 static bool process_pbag_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
 {
-    int num = size / sizeof(PresetBag);
-    self->pbag = calloc(num, sizeof(PresetBag));
+    int num = size / sizeof(SFPresetBag);
+    self->pbag = calloc(num, sizeof(SFPresetBag));
     self->pbagLength = num;
 
     for (int i = 0; i < num; ++i) {
-        if (1 != fread(&self->pbag[i], sizeof(PresetBag), 1, fp)) {
+        if (1 != fread(&self->pbag[i], sizeof(SFPresetBag), 1, fp)) {
             return false;
         }
 
@@ -332,12 +332,12 @@ static bool process_pbag_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
 
 static bool process_pmod_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
 {
-    int num = size / sizeof(ModList);
-    self->pmod = calloc(num, sizeof(ModList));
+    int num = size / sizeof(SFModList);
+    self->pmod = calloc(num, sizeof(SFModList));
     self->pmodLength = num;
 
     for (int i = 0; i < num; ++i) {
-        if (1 != fread(&self->pmod[i], sizeof(ModList), 1, fp)) {
+        if (1 != fread(&self->pmod[i], sizeof(SFModList), 1, fp)) {
             return false;
         }
 
@@ -351,22 +351,22 @@ static bool process_pmod_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
 
 static bool process_pgen_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
 {
-    int num = size / sizeof(GenList);
-    self->pgen = calloc(num, sizeof(GenList));
+    int num = size / sizeof(SFGenList);
+    self->pgen = calloc(num, sizeof(SFGenList));
     self->pgenLength = num;
 
     for (int i = 0; i < num; ++i) {
-        if (1 != fread(&self->pgen[i], sizeof(GenList), 1, fp)) {
+        if (1 != fread(&self->pgen[i], sizeof(SFGenList), 1, fp)) {
             return false;
         }
 
         self->pgen[i].sfGenOper = WORD_FROM_LE(self->pgen[i].sfGenOper);
 
         switch (self->pgen[i].sfGenOper) {
-        case GeneratorType_keyRange:
-        case GeneratorType_velRange:
+        case SFGeneratorType_keyRange:
+        case SFGeneratorType_velRange:
             break;
-        case GeneratorType_instrument:
+        case SFGeneratorType_instrument:
             self->pgen[i].genAmount.wAmount = WORD_FROM_LE(self->pgen[i].genAmount.wAmount);
             break;
         define:
@@ -380,12 +380,12 @@ static bool process_pgen_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
 
 static bool process_inst_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
 {
-    int num = size / sizeof(Inst);
-    self->inst = calloc(num, sizeof(Inst));
+    int num = size / sizeof(SFInst);
+    self->inst = calloc(num, sizeof(SFInst));
     self->instLength = num;
 
     for (int i = 0; i < num; ++i) {
-        if (1 != fread(&self->inst[i], sizeof(Inst), 1, fp)) {
+        if (1 != fread(&self->inst[i], sizeof(SFInst), 1, fp)) {
             return false;
         }
 
@@ -397,12 +397,12 @@ static bool process_inst_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
 
 static bool process_ibag_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
 {
-    int num = size / sizeof(InstBag);
-    self->ibag = calloc(num, sizeof(InstBag));
+    int num = size / sizeof(SFInstBag);
+    self->ibag = calloc(num, sizeof(SFInstBag));
     self->ibagLength = num;
 
     for (int i = 0; i < num; ++i) {
-        if (1 != fread(&self->ibag[i], sizeof(InstBag), 1, fp)) {
+        if (1 != fread(&self->ibag[i], sizeof(SFInstBag), 1, fp)) {
             return false;
         }
 
@@ -415,12 +415,12 @@ static bool process_ibag_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
 
 static bool process_imod_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
 {
-    int num = size / sizeof(ModList);
-    self->imod = calloc(num, sizeof(ModList));
+    int num = size / sizeof(SFModList);
+    self->imod = calloc(num, sizeof(SFModList));
     self->imodLength = num;
 
     for (int i = 0; i < num; ++i) {
-        if (1 != fread(&self->imod[i], sizeof(ModList), 1, fp)) {
+        if (1 != fread(&self->imod[i], sizeof(SFModList), 1, fp)) {
             return false;
         }
 
@@ -434,22 +434,22 @@ static bool process_imod_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
 
 static bool process_igen_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
 {
-    int num = size / sizeof(InstGenList);
-    self->igen = calloc(num, sizeof(InstGenList));
+    int num = size / sizeof(SFInstGenList);
+    self->igen = calloc(num, sizeof(SFInstGenList));
     self->igenLength = num;
 
     for (int i = 0; i < num; ++i) {
-        if (1 != fread(&self->igen[i], sizeof(InstGenList), 1, fp)) {
+        if (1 != fread(&self->igen[i], sizeof(SFInstGenList), 1, fp)) {
             return false;
         }
 
         self->igen[i].sfGenOper = WORD_FROM_LE(self->igen[i].sfGenOper);
 
         switch (self->igen[i].sfGenOper) {
-        case GeneratorType_keyRange:
-        case GeneratorType_velRange:
+        case SFGeneratorType_keyRange:
+        case SFGeneratorType_velRange:
             break;
-        case GeneratorType_instrument:
+        case SFGeneratorType_instrument:
             self->igen[i].genAmount.wAmount = WORD_FROM_LE(self->igen[i].genAmount.wAmount);
             break;
         define:
@@ -463,12 +463,12 @@ static bool process_igen_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
 
 static bool process_shdr_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
 {
-    int num = size / sizeof(SampleHeader);
-    self->shdr = calloc(num, sizeof(SampleHeader));
+    int num = size / sizeof(SFSampleHeader);
+    self->shdr = calloc(num, sizeof(SFSampleHeader));
     self->shdrLength = num;
 
     for (int i = 0; i < num; ++i) {
-        if (1 != fread(&self->shdr[i], sizeof(SampleHeader), 1, fp)) {
+        if (1 != fread(&self->shdr[i], sizeof(SFSampleHeader), 1, fp)) {
             return false;
         }
 
@@ -598,12 +598,12 @@ void SoundFontDump(SoundFont *self)
         printf("pgen[%d]: ", i);
         printf("sfGenOper=%u ", self->pgen[i].sfGenOper);
         switch (self->pgen[i].sfGenOper) {
-        case GeneratorType_keyRange:
-        case GeneratorType_velRange:
+        case SFGeneratorType_keyRange:
+        case SFGeneratorType_velRange:
             printf("genAmount.ranges.byLo=%u ", self->pgen[i].genAmount.ranges.byLo);
             printf("genAmount.ranges.byHi=%u ", self->pgen[i].genAmount.ranges.byHi);
             break;
-        case GeneratorType_instrument:
+        case SFGeneratorType_instrument:
             printf("genAmount.wAmount=%u", self->pgen[i].genAmount.wAmount);
             break;
         default:
@@ -655,12 +655,12 @@ void SoundFontDump(SoundFont *self)
         printf("igen[%d]: ", i);
         printf("sfGenOper=%u ", self->igen[i].sfGenOper);
         switch (self->igen[i].sfGenOper) {
-        case GeneratorType_keyRange:
-        case GeneratorType_velRange:
+        case SFGeneratorType_keyRange:
+        case SFGeneratorType_velRange:
             printf("genAmount.ranges.byLo=%u ", self->igen[i].genAmount.ranges.byLo);
             printf("genAmount.ranges.byHi=%u ", self->igen[i].genAmount.ranges.byHi);
             break;
-        case GeneratorType_instrument:
+        case SFGeneratorType_instrument:
             printf("genAmount.wAmount=%u", self->igen[i].genAmount.wAmount);
             break;
         default:
