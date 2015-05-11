@@ -117,6 +117,7 @@ void SoundFontDestroy(SoundFont *self)
     free_if(self->sm24);
     free_if(self->phdr);
     free_if(self->pbag);
+    free_if(self->pmod);
 #undef free_if
 
     free(self);
@@ -283,14 +284,12 @@ static bool process_sm24_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
 
 static bool process_phdr_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
 {
-    const int PresetHeaderSize = 38; // Care of alignment
-
-    int num = size / PresetHeaderSize;
-    self->phdr = calloc(num, sizeof(PresetHeader)); // Size including alignment is 40
+    int num = size / sizeof(PresetHeader);
+    self->phdr = calloc(num, sizeof(PresetHeader));
     self->phdrLength = num;
 
     for (int i = 0; i < num; ++i) {
-        if (1 != fread(&self->phdr[i], PresetHeaderSize, 1, fp)) {
+        if (1 != fread(&self->phdr[i], sizeof(PresetHeader), 1, fp)) {
             return false;
         }
 
@@ -324,6 +323,24 @@ static bool process_pbag_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
     return true;
 }
 
+static bool process_pmod_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
+{
+    int num = size / sizeof(ModList);
+    self->pmod = calloc(num, sizeof(ModList));
+    self->pmodLength = num;
+
+    for (int i = 0; i < num; ++i) {
+        if (1 != fread(&self->pmod[i], sizeof(ModList), 1, fp)) {
+            return false;
+        }
+
+        self->pmod[i].modAmount = WARD_FROM_LE(self->pmod[i].modAmount);
+    }
+
+    return true;
+}
+
+
 static const struct {
     uint32_t chunkID;
     Processer processer;
@@ -343,6 +360,7 @@ static const struct {
     {ChunkID_sm24, process_sm24_Chunk},
     {ChunkID_phdr, process_phdr_Chunk},
     {ChunkID_pbag, process_pbag_Chunk},
+    {ChunkID_pmod, process_pmod_Chunk},
 };
 
 static bool processUnimplementedChunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
@@ -384,6 +402,8 @@ void SoundFontDump(SoundFont *self)
     printf("phdr: num of preset header=%u\n", self->phdrLength);
     for (int i = 0; i < self->phdrLength; ++i) {
         printf("    ");
+        printf("phdr[%d]:\n", i);
+        printf("        ");
         printf("achPresetName=%s ", self->phdr[i].achPresetName);
         printf("wPreset=%u ", self->phdr[i].wPreset);
         printf("wBank=%u ", self->phdr[i].wBank);
@@ -396,12 +416,48 @@ void SoundFontDump(SoundFont *self)
     printf("pbag: num of preset bag=%u\n", self->pbagLength);
     for (int i = 0; i < self->pbagLength; ++i) {
         printf("    ");
+        printf("pbag[%d]:\n", i);
+        printf("        ");
         printf("wGenNdx=%u ", self->pbag[i].wGenNdx);
         printf("wModNdx=%u", self->pbag[i].wModNdx);
         printf("\n");
     }
+    printf("pmod: num of mod list=%u\n", self->pmodLength);
+    for (int i = 0; i < self->pmodLength; ++i) {
+        printf("    ");
+        printf("pmod[%d]:\n", i);
+        printf("        ");
+        printf("sfModSrcOper: ");
+        printf("Type=%u ", self->pmod[i].sfModSrcOper.Type);
+        printf("P=%u ", self->pmod[i].sfModSrcOper.P);
+        printf("D=%u ", self->pmod[i].sfModSrcOper.D);
+        printf("CC=%u ", self->pmod[i].sfModSrcOper.CC);
+        printf("Index=%u\n", self->pmod[i].sfModSrcOper.Index);
+        printf("        ");
+        printf("sfModDestOper: ");
+        printf("Type=%u ", self->pmod[i].sfModDestOper.Type);
+        printf("P=%u ", self->pmod[i].sfModDestOper.P);
+        printf("D=%u ", self->pmod[i].sfModDestOper.D);
+        printf("CC=%u ", self->pmod[i].sfModDestOper.CC);
+        printf("Index=%u\n", self->pmod[i].sfModDestOper.Index);
+        printf("        ");
+        printf("modAmount=%u\n", self->pmod[i].modAmount);
+        printf("        ");
+        printf("sfModAmtSrcOper: ");
+        printf("Type=%u ", self->pmod[i].sfModAmtSrcOper.Type);
+        printf("P=%u ", self->pmod[i].sfModAmtSrcOper.P);
+        printf("D=%u ", self->pmod[i].sfModAmtSrcOper.D);
+        printf("CC=%u ", self->pmod[i].sfModAmtSrcOper.CC);
+        printf("Index=%u\n", self->pmod[i].sfModAmtSrcOper.Index);
+        printf("        ");
+        printf("sfModTransOper: ");
+        printf("Type=%u ", self->pmod[i].sfModTransOper.Type);
+        printf("P=%u ", self->pmod[i].sfModTransOper.P);
+        printf("D=%u ", self->pmod[i].sfModTransOper.D);
+        printf("CC=%u ", self->pmod[i].sfModTransOper.CC);
+        printf("Index=%u\n", self->pmod[i].sfModTransOper.Index);
+    }
 }
-
 
 int main(int argc, char **argv)
 {

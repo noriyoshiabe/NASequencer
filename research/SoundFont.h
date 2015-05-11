@@ -15,12 +15,32 @@ typedef struct _PresetHeader {
     uint32_t dwLibrary;
     uint32_t dwGenre;
     uint32_t dwMorphology;
-} PresetHeader;
+} __attribute__((__packed__)) PresetHeader;
 
 typedef struct _PresetBag {
     uint16_t wGenNdx;
     uint16_t wModNdx;
 } PresetBag;
+
+typedef struct _EnumerationType {
+    unsigned Type:6;
+    unsigned P:1;
+    unsigned D:1;
+    unsigned CC:1;
+    unsigned Index:7;
+} __attribute__((__packed__)) EnumerationType;
+
+typedef struct _EnumerationType SFModulator;
+typedef struct _EnumerationType SFGenerator;
+typedef struct _EnumerationType SFTransform;
+
+typedef struct _ModList {
+    SFModulator sfModSrcOper;
+    SFGenerator sfModDestOper;
+    int16_t modAmount;
+    SFModulator sfModAmtSrcOper;
+    SFTransform sfModTransOper;
+} ModList;
 
 typedef struct _SoundFont {
     Version ifil;
@@ -45,6 +65,8 @@ typedef struct _SoundFont {
     uint32_t phdrLength;
     PresetBag *pbag;
     uint32_t pbagLength;
+    ModList *pmod;
+    uint32_t pmodLength;
 } SoundFont;
 
 typedef enum {
