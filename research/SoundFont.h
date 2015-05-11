@@ -151,6 +151,30 @@ typedef struct _InstBag {
     uint16_t wInstModNdx;
 } InstBag;
 
+typedef enum {
+    SampleLink_monoSample = 1,
+    SampleLink_rightSample = 2,
+    SampleLink_leftSample = 4,
+    SampleLink_linkedSample = 8,
+    SampleLink_RomMonoSample = 0x8001,
+    SampleLink_RomRightSample = 0x8002,
+    SampleLink_RomLeftSample = 0x8004,
+    SampleLink_RomLinkedSample = 0x8008
+} SampleLink;
+
+typedef struct _SampleHeader {
+    char achSampleName[20];
+    uint32_t dwStart;
+    uint32_t dwEnd;
+    uint32_t dwStartloop;
+    uint32_t dwEndloop;
+    uint32_t dwSampleRate;
+    uint8_t byOriginalPitch;
+    char chPitchCorrection;
+    uint16_t wSampleLink;
+    uint16_t sfSampleType;
+} __attribute__((__packed__)) SampleHeader;
+
 typedef GenList InstGenList;
 
 typedef struct _SoundFont {
@@ -188,6 +212,8 @@ typedef struct _SoundFont {
     uint32_t imodLength;
     InstGenList *igen;
     uint32_t igenLength;
+    SampleHeader *shdr;
+    uint32_t shdrLength;
 } SoundFont;
 
 typedef enum {

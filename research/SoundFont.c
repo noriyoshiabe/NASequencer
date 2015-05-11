@@ -124,6 +124,7 @@ void SoundFontDestroy(SoundFont *self)
     free_if(self->ibag);
     free_if(self->imod);
     free_if(self->igen);
+    free_if(self->shdr);
 #undef free_if
 
     free(self);
@@ -460,6 +461,30 @@ static bool process_igen_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
     return true;
 }
 
+static bool process_shdr_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
+{
+    int num = size / sizeof(SampleHeader);
+    self->shdr = calloc(num, sizeof(SampleHeader));
+    self->shdrLength = num;
+
+    for (int i = 0; i < num; ++i) {
+        if (1 != fread(&self->shdr[i], sizeof(SampleHeader), 1, fp)) {
+            return false;
+        }
+
+        self->shdr[i].dwStart = DWORD_FROM_LE(self->shdr[i].dwStart);
+        self->shdr[i].dwEnd = DWORD_FROM_LE(self->shdr[i].dwEnd);
+        self->shdr[i].dwStartloop = DWORD_FROM_LE(self->shdr[i].dwStartloop);
+        self->shdr[i].dwEndloop = DWORD_FROM_LE(self->shdr[i].dwEndloop);
+        self->shdr[i].dwSampleRate = DWORD_FROM_LE(self->shdr[i].dwSampleRate);
+
+        self->shdr[i].wSampleLink = WORD_FROM_LE(self->shdr[i].wSampleLink);
+        self->shdr[i].sfSampleType = WORD_FROM_LE(self->shdr[i].sfSampleType);
+    }
+
+    return true;
+}
+
 
 static const struct {
     uint32_t chunkID;
@@ -486,6 +511,7 @@ static const struct {
     {ChunkID_ibag, process_ibag_Chunk},
     {ChunkID_imod, process_imod_Chunk},
     {ChunkID_igen, process_igen_Chunk},
+    {ChunkID_shdr, process_shdr_Chunk},
 };
 
 static bool processUnimplementedChunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
@@ -641,6 +667,25 @@ void SoundFontDump(SoundFont *self)
             printf("genAmount.shAmount=%d", self->igen[i].genAmount.shAmount);
             break;
         }
+        printf("\n");
+    }
+    printf("shdr: num of sample header=%u\n", self->shdrLength);
+    for (int i = 0; i < self->shdrLength; ++i) {
+        printf("    ");
+        printf("shdr[%d]:\n", i);
+        printf("        ");
+        printf("achSampleName=%s ", self->shdr[i].achSampleName);
+        printf("dwStart=%u ", self->shdr[i].dwStart);
+        printf("dwEnd=%u ", self->shdr[i].dwEnd);
+        printf("dwStartloop=%u ", self->shdr[i].dwStartloop);
+        printf("dwEndloop=%u ", self->shdr[i].dwEndloop);
+        printf("dwSampleRate=%u", self->shdr[i].dwSampleRate);
+        printf("\n");
+        printf("        ");
+        printf("byOriginalPitch=%u ", self->shdr[i].byOriginalPitch);
+        printf("chPitchCorrection=%u ", self->shdr[i].chPitchCorrection);
+        printf("wSampleLink=%u ", self->shdr[i].wSampleLink);
+        printf("sfSampleType=%u", self->shdr[i].sfSampleType);
         printf("\n");
     }
 }
