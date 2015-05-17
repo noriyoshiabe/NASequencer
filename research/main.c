@@ -1,4 +1,5 @@
 #include "AudioOut.h"
+#include "Synthesizer.h"
 #include <unistd.h>
 #include <math.h>
 
@@ -19,6 +20,15 @@ static void _AudioCallback(void *receiver, uint32_t sampleRate, AudioSample *buf
     }
 }
 
+int main(int argc, char **argv)
+{
+    Synthesizer *synth = SynthesizerCreate(argv[1]);
+    SynthesizerDestroy(synth);
+    return 0;
+}
+
+
+#if 0
 int main(int argc, char **argv)
 {
     AudioOut *audioOut = AudioOutSharedInstance();
@@ -42,3 +52,4 @@ int main(int argc, char **argv)
 
     return 0;
 }
+#endif

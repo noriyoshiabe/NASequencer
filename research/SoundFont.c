@@ -690,6 +690,7 @@ void SoundFontDump(SoundFont *self)
     }
 }
 
+#if 0
 int main(int argc, char **argv)
 {
     SoundFontError error;
@@ -704,3 +705,4 @@ int main(int argc, char **argv)
     SoundFontDestroy(sf);
     return 0;
 }
+#endif

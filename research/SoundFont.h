@@ -227,7 +227,7 @@ extern SoundFont *SoundFontRead(const char *filepath, SoundFontError *error);
 extern void SoundFontDestroy(SoundFont *self);
 extern void SoundFontDump(SoundFont *self);
 
-const char *SoundFontError2String(SoundFontError error)
+inline const char *SoundFontError2String(SoundFontError error)
 {
 #define CASE(error) case error: return &(#error[14]);
     switch (error) {
