@@ -9,7 +9,6 @@ typedef struct _CoreMidiClient {
     MIDIClientRef clientRef;
     MIDIPortRef outPortRef;
     MIDIEndpointRef destPointRef;
-    MIDIPacketList *packetListPtr;
 } CoreMidiClient;
 
 static void _CoreMidiClientOpen(CoreMidiClient *self)
@@ -40,10 +39,11 @@ static void _CoreMidiClientOpen(CoreMidiClient *self)
 static void _CoreMidiClientSend(void *_self, uint8_t *bytes, size_t length)
 {
     CoreMidiClient *self = _self;
+    MIDIPacketList packetList[PACKET_LIST_SIZE];
 
-    MIDIPacket *packet = MIDIPacketListInit(self->packetListPtr);
-    MIDIPacketListAdd(self->packetListPtr, PACKET_LIST_SIZE, packet, 0, length, bytes);
-    MIDISend(self->outPortRef, self->destPointRef, self->packetListPtr);
+    MIDIPacket *packet = MIDIPacketListInit(packetList);
+    MIDIPacketListAdd(packetList, PACKET_LIST_SIZE, packet, 0, length, bytes);
+    MIDISend(self->outPortRef, self->destPointRef, packetList);
 #if 0
     char buf[256] = {0};
     for (int i = 0; i < length; ++i) {
@@ -79,8 +79,6 @@ static void _CoreMidiClientGetProperty(void *self, const char *name, void *value
 }
 
 static CoreMidiClient *_sharedInstance = NULL;
-static MIDIPacketList _packetList[PACKET_LIST_SIZE] = {0};
-
 static void _CoreMidiClientAtExit(void)
 {
     if (_sharedInstance) {
@@ -97,7 +95,6 @@ MidiClient *CoreMidiClientSharedInstance()
 {
     if (!_sharedInstance) {
         _sharedInstance = calloc(1, sizeof(CoreMidiClient));
-        _sharedInstance->packetListPtr = _packetList;
 
         _sharedInstance->vtbl.send = _CoreMidiClientSend;
         _sharedInstance->vtbl.destroy = _CoreMidiClientDestroy;

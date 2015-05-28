@@ -1,4 +1,4 @@
-channel 1
+channel 10
 
 sound 127 0 0
 
@@ -6,8 +6,10 @@ sound 127 0 0
 octave 2
 
 {
-  { F+*8  },
-  { CrErCCEr }
+  //{ 1/8  F+*7A+  }
+  { 1/8  F+A+F+A+F+A+F+A+  }
+  //{ 1/16 rrrrErrErErrErrr },
+  //{ 1/8  CrrCCCrr }
 } * 20
 
 
