@@ -10,11 +10,9 @@ import Cocoa
 
 class StatusBackgroundView : NSView {
     
-    let color: NSColor = NSColor(red: 0, green: 0, blue: 0, alpha: 0.5)
-    
-    override func drawRect(dirtyRect: NSRect) {
-        var path:NSBezierPath = NSBezierPath(roundedRect: self.bounds, xRadius: 20, yRadius: 20)
-        color.set()
-        path.fill()
+    override func awakeFromNib() {
+        layer!.backgroundColor = CGColorCreateGenericRGB(0, 0, 0, 0.5)
+        layer!.cornerRadius = 20
+        layer!.masksToBounds = true
     }
 }
