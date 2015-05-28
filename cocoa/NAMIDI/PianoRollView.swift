@@ -82,6 +82,9 @@ class PianoRollView : NSView, NAMidiObserver {
         playingLine.frame = NSMakeRect(0, 0, 1, round((127 + 2) * self.heightPerKey))
         playingLine.hidden = true
         self.layer!.addSublayer(playingLine)
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("onStartScroll"), name: NSScrollViewWillStartLiveScrollNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("onEndScroll"), name: NSScrollViewDidEndLiveScrollNotification, object: nil)
     }
     
     override func drawRect(dirtyRect: NSRect) {
@@ -151,6 +154,14 @@ class PianoRollView : NSView, NAMidiObserver {
                 self.autoScroll()
             }
         }
+    }
+    
+    func onStartScroll() {
+        scrolling = true
+    }
+    
+    func onEndScroll() {
+        scrolling = false
     }
     
     func autoScroll() {
