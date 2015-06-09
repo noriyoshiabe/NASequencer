@@ -13,7 +13,7 @@ typedef struct _Voice Voice;
 
 struct _Preset {
     const char *name;
-    uint16_t midiPresetNumber;
+    uint16_t midiPresetNo;
     uint16_t bankNo;
 
     Generator generator;
@@ -262,7 +262,7 @@ static bool SynthesizerParsePresets(Synthesizer *self)
 
         Preset *preset = calloc(1, sizeof(Preset));
         preset->name = phdr->achPresetName;
-        preset->midiPresetNumber = phdr->wPreset;
+        preset->midiPresetNo = phdr->wPreset;
         preset->bankNo = phdr->wPreset;
         
         if (!PresetParseGenerator(preset, self->sf, pbag, pbagNext)) {
