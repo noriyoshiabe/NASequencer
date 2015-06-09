@@ -113,6 +113,13 @@ typedef enum {
     SFGeneratorType_endOper,
 } SFGeneratorType;
 
+typedef enum {
+    SFSampleModeType_NoLoop = 0,
+    SFSampleModeType_Continuously = 1,
+    SFSampleModeType_Unused = 2,
+    SFSampleModeType_KeyDepression = 3,
+} SFSampleMode;
+
 typedef uint16_t SFTransform;
 typedef enum {
     SFTransformType_Linear,
