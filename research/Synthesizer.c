@@ -7,58 +7,62 @@
 
 typedef struct _Preset Preset;
 typedef struct _Instrument Instrument;
+typedef struct _Generator Generator;
+typedef struct _Sample Sample;
 typedef struct _Voice Voice;
 
 struct _Preset {
     const char *name;
     uint16_t midiPresetNumber;
-    uint16_t bankNumber;
+    uint16_t bankNo;
 
-    uint16_t chorusEffectsSend;
-    uint16_t reverbEffectsSend;
+    Generator generator;
 
-    int16_t pan;
-
-    Instrument *instruments[128];
+    Instrument *instruments;
+    int instrumentsCount;
 };
 
 struct _Instrument {
     const char *name;
+    Generator generator;
 
-    uint16_t chorusEffectsSend;
-    uint16_t reverbEffectsSend;
-
-    int16_t pan;
-
-    int8_t highestVelocity;
-    int8_t lowestVelocity;
-    int8_t fixedVelocity;
-
-    int8_t fixedKeyNumber;
-    
     struct {
-        const char *name;
-
-        uint32_t startLoop;
-        uint32_t endLoop;
-        uint32_t end;
-
-        uint32_t sampleRate;
-        uint8_t originalPitch;
-        int8_t pitchCorrection;
-
-        int16_t *L;
-        int16_t *R;
-        int8_t *L24;
-        int8_t *R24;
+        Sample L;
+        Sample R;
     } sample;
+
+    Preset *preset;
+};
+
+struct _Generator {
+    struct {
+        uint8_t low;
+        uint8_t high;
+    } keyRange;
+
+    struct {
+        uint8_t low;
+        uint8_t high;
+    } velocityRange;
+};
+
+struct _Sample {
+    const char *name;
+    uint32_t start;
+    uint32_t startLoop;
+    uint32_t endLoop;
+    uint32_t end;
+    uint32_t sampleRate;
+    uint8_t originalPitch;
+    int8_t pitchCorrection;
 };
 
 struct _Voice {
-    Preset *preset;
-    int8_t keyNumber;
-    float currentSamplePoint;
+    Instrument *instrument;
+    int64_t startedAt;
+    uint8_t noteNo;
 };
+
 
 
 struct _Synthesizer {
