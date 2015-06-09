@@ -2,6 +2,7 @@
 #include "MidiSource.h"
 #include "SoundFont.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -10,34 +11,6 @@ typedef struct _Instrument Instrument;
 typedef struct _Generator Generator;
 typedef struct _Sample Sample;
 typedef struct _Voice Voice;
-
-struct _Preset {
-    const char *name;
-    uint16_t midiPresetNo;
-    uint16_t bankNo;
-
-    Generator generator;
-
-    Instrument *instruments;
-    int instrumentsCount;
-};
-
-struct _Instrument {
-    const char *name;
-    Generator generator;
-
-    struct {
-        Sample L;
-        Sample R;
-    } sample;
-
-    struct {
-        bool loop;
-        bool depression;
-    } sampleMode;
-
-    Preset *preset;
-};
 
 struct _Generator {
     struct {
@@ -49,6 +22,34 @@ struct _Generator {
         uint8_t low;
         uint8_t high;
     } velocityRange;
+};
+
+struct _Preset {
+    const char *name;
+    uint16_t midiPresetNo;
+    uint16_t bankNo;
+
+    Generator generator;
+
+    Instrument **instruments;
+    int instrumentsCount;
+};
+
+struct _Instrument {
+    const char *name;
+    Generator generator;
+
+    struct {
+        Sample *L;
+        Sample *R;
+    } sample;
+
+    struct {
+        bool loop;
+        bool depression;
+    } sampleMode;
+
+    Preset *preset;
 };
 
 struct _Sample {
@@ -74,7 +75,7 @@ struct _Synthesizer {
     MidiSource srcVtbl;
     char *filepath;
     SoundFont *sf;
-    Preset *presets;
+    Preset **presets;
     int presetsCount;
 };
 
@@ -107,6 +108,16 @@ static Instrument *InstrumentCreate()
 
 static void InstrumentDestroy(Instrument *self)
 {
+    if (self->sample.L != self->sample.R) {
+        if (self->sample.R) {
+            free(self->sample.R);
+        }
+    }
+
+    if (self->sample.L) {
+        free(self->sample.L);
+    }
+
     free(self);
 }
 
@@ -127,10 +138,88 @@ static void PresetDestroy(Preset *self)
 
 #define isValidRange(idx, length) (0 <= idx && idx < length)
 #define isValidRange2(idx1, idx2, length) (0 <= idx1 && idx1 < idx2 && idx2 < length)
+#define isRomSample(sampleType) (0 != (sampleType & 0x8000))
+
+static bool SampleFromSampleHeader(SFSampleHeader *shdr, Sample **sample)
+{
+    if (*sample) {
+        return false;
+    }
+
+    Sample *self = calloc(1, sizeof(Sample));
+    self->name = shdr->achSampleName;
+    self->start = shdr->dwStart;
+    self->startLoop = shdr->dwStartloop;
+    self->endLoop = shdr->dwEndloop;
+    self->end = shdr->dwEnd;
+    self->sampleRate = shdr->dwSampleRate;
+    self->originalPitch = shdr->byOriginalPitch;
+    self->pitchCorrection = shdr->chPitchCorrection;
+
+    *sample = self;
+    return true;
+}
+
+static void SampleDestroy(Sample *self)
+{
+    free(self);
+}
+
+static bool InstrumentAdjustSampleOffset(Instrument *self, Sample *sample)
+{
+    // TODO add Generator's sample offset
+    return true;
+}
 
 static bool InstrumentParseSample(Instrument *self, SoundFont *sf, int shdrIdx)
 {
-    // TODO
+    if (!isValidRange(shdrIdx, sf->shdrLength)) {
+        return false;
+    }
+
+    SFSampleHeader *shdr = &sf->shdr[shdrIdx];
+    if (isRomSample(shdr->sfSampleType)) {
+        return false;
+    }
+
+    switch (shdr->sfSampleType) {
+    case SFSampleLinkType_monoSample:
+        if (!SampleFromSampleHeader(shdr, &self->sample.L)) {
+            return false;
+        }
+        if (!InstrumentAdjustSampleOffset(self, self->sample.L)) {
+            return false;
+        }
+        if (self->sample.R) {
+            return false;
+        }
+        self->sample.R = self->sample.L;
+        break;
+    case SFSampleLinkType_rightSample:
+        if (!SampleFromSampleHeader(shdr, &self->sample.R)) {
+            return false;
+        }
+        if (!InstrumentAdjustSampleOffset(self, self->sample.R)) {
+            return false;
+        }
+        if (!self->sample.L) {
+            return InstrumentParseSample(self, sf, shdr->wSampleLink);
+        }
+        break;
+    case SFSampleLinkType_leftSample:
+        if (!SampleFromSampleHeader(shdr, &self->sample.L)) {
+            return false;
+        }
+        if (!InstrumentAdjustSampleOffset(self, self->sample.L)) {
+            return false;
+        }
+        if (!self->sample.R) {
+            return InstrumentParseSample(self, sf, shdr->wSampleLink);
+        }
+        break;
+    }
+
+    return true;
 }
 
 static bool InstrumentParseGenerator(Instrument *self, SoundFont *sf, SFInstBag *ibag, SFInstBag *ibagNext)
@@ -139,7 +228,7 @@ static bool InstrumentParseGenerator(Instrument *self, SoundFont *sf, SFInstBag 
         return false;
     }
 
-    for (int i = ibag->wInstGen; i < ibagNext->wInstGenNdx; ++i) {
+    for (int i = ibag->wInstGenNdx; i < ibagNext->wInstGenNdx; ++i) {
         SFInstGenList *igen = &sf->igen[i];
         switch (igen->sfGenOper) {
         case SFGeneratorType_keyRange:
@@ -154,9 +243,13 @@ static bool InstrumentParseGenerator(Instrument *self, SoundFont *sf, SFInstBag 
             if (!InstrumentParseSample(self, sf, igen->genAmount.wAmount)) {
                 return false;
             }
-            break;
+
+            // 8.1.2 Generator Enumerators Defined
+            // The sampleID enumerator is the terminal generator for IGEN zones.
+            return true;
+
         case SFGeneratorType_sampleModes:
-            switch (igen->sampleMode) {
+            switch (igen->genAmount.wAmount) {
             case SFSampleModeType_Continuously:
                 self->sampleMode.loop = true;
                 break;
@@ -174,10 +267,10 @@ static bool InstrumentParseGenerator(Instrument *self, SoundFont *sf, SFInstBag 
     return true;
 }
 
-static void PresetAddInstrument(Preset *self, Instrument *preset)
+static void PresetAddInstrument(Preset *self, Instrument *instrument)
 {
     self->instruments = realloc(self->instruments, sizeof(Instrument *) * self->instrumentsCount + 1);
-    self->instruments[self->instrumentsCount];
+    self->instruments[self->instrumentsCount] = instrument;
     ++self->instrumentsCount;
 }
 
@@ -231,7 +324,11 @@ static bool PresetParseGenerator(Preset *self, SoundFont *sf, SFPresetBag *pbag,
             if (!PresetParseInstrument(self, sf, pgen->genAmount.wAmount)) {
                 return false;
             }
-            break;
+
+            // 8.1.2 Generator Enumerators Defined
+            // The instrument enumerator is the terminal generator for PGEN zones.
+            return true;
+
         default:
             break;
         }
@@ -276,6 +373,23 @@ static bool SynthesizerParsePresets(Synthesizer *self)
     return true;
 }
 
+static void SynthesizerDumpPresets(Synthesizer *self)
+{
+    for (int i = 0; i < self->presetsCount; ++i) {
+        Preset *preset = self->presets[i];
+        printf("[Preset]\n");
+        printf("----------------------\n");
+        printf("name: %s\n", preset->name);
+        printf("midiPresetNo: %d\n", preset->midiPresetNo);
+        printf("bankNo: %d\n", preset->bankNo);
+        // TODO other
+    }
+
+    // TODO other
+
+    printf("\n");
+}
+
 Synthesizer *SynthesizerCreate(const char *filepath)
 {
     Synthesizer *self = calloc(1, sizeof(Synthesizer));
@@ -290,6 +404,7 @@ Synthesizer *SynthesizerCreate(const char *filepath)
     self->sf = SoundFontRead(filepath, NULL);
 
     SynthesizerParsePresets(self);
+    SynthesizerDumpPresets(self);
 
     return self;
 }
