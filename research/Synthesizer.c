@@ -101,9 +101,19 @@ static void getProperty(void *self, const char *name, void *value)
 {
 }
 
+static void GeneratorInitialize(Generator *self)
+{
+    self->keyRange.low = 0;
+    self->keyRange.high = 127;
+    self->velocityRange.low = 0;
+    self->velocityRange.high = 127;
+}
+
 static Instrument *InstrumentCreate()
 {
-    return calloc(1, sizeof(Instrument));
+    Instrument *self = calloc(1, sizeof(Instrument));
+    GeneratorInitialize(&self->generator);
+    return self;
 }
 
 static void InstrumentDestroy(Instrument *self)
@@ -123,7 +133,9 @@ static void InstrumentDestroy(Instrument *self)
 
 static Preset *PresetCreate()
 {
-    return calloc(1, sizeof(Preset));
+    Preset *self = calloc(1, sizeof(Preset));
+    GeneratorInitialize(&self->generator);
+    return self;
 }
 
 static void PresetDestroy(Preset *self)
@@ -305,9 +317,11 @@ static bool PresetParseInstrument(Preset *self, SoundFont *sf, int instIdx)
 
 static bool PresetParseGenerator(Preset *self, SoundFont *sf, SFPresetBag *pbag, SFPresetBag *pbagNext)
 {
+# if 0 // TODO global zone?
     if (!isValidRange2(pbag->wGenNdx, pbagNext->wGenNdx, sf->pgenLength)) {
         return false;
     }
+#endif
 
     for (int i = pbag->wGenNdx; i < pbagNext->wGenNdx; ++i) {
         SFGenList *pgen = &sf->pgen[i];
@@ -361,13 +375,18 @@ static bool SynthesizerParsePresets(Synthesizer *self)
         preset->name = phdr->achPresetName;
         preset->midiPresetNo = phdr->wPreset;
         preset->bankNo = phdr->wPreset;
-        
-        if (!PresetParseGenerator(preset, self->sf, pbag, pbagNext)) {
-            PresetDestroy(preset);
+
+        for (SFPresetBag *ite = pbag; ite != pbagNext; ++ite) {
+            if (!PresetParseGenerator(preset, self->sf, ite, ite + 1)) {
+                goto SKIP;
+            }
         }
-        else {
-            SynthesizerAddPreset(self, preset);
-        }
+    
+        SynthesizerAddPreset(self, preset);
+        continue;
+
+SKIP:
+        PresetDestroy(preset);
     }
 
     return true;
@@ -375,6 +394,8 @@ static bool SynthesizerParsePresets(Synthesizer *self)
 
 static void SynthesizerDumpPresets(Synthesizer *self)
 {
+#define iprintf(indent, ...) do { for (int __i = 0; __i < indent; ++__i) putc(' ', stdout); printf(__VA_ARGS__); } while (0)
+
     for (int i = 0; i < self->presetsCount; ++i) {
         Preset *preset = self->presets[i];
         printf("[Preset]\n");
@@ -382,12 +403,61 @@ static void SynthesizerDumpPresets(Synthesizer *self)
         printf("name: %s\n", preset->name);
         printf("midiPresetNo: %d\n", preset->midiPresetNo);
         printf("bankNo: %d\n", preset->bankNo);
-        // TODO other
+        printf("generator.keyRange.low: %d\n", preset->generator.keyRange.low);
+        printf("generator.keyRange.high: %d\n", preset->generator.keyRange.high);
+        printf("generator.velocityRange.low: %d\n", preset->generator.velocityRange.low);
+        printf("generator.velocityRange.high: %d\n", preset->generator.velocityRange.high);
+
+        for (int j = 0; j < preset->instrumentsCount; ++j) {
+            Instrument *instrument = preset->instruments[j];
+            iprintf(2, "[Instrument]\n");
+            iprintf(2, "----------------------\n");
+            iprintf(2, "name: %s\n", instrument->name);
+            iprintf(2, "generator.keyRange.low: %d\n", instrument->generator.keyRange.low);
+            iprintf(2, "generator.keyRange.high: %d\n", instrument->generator.keyRange.high);
+            iprintf(2, "generator.velocityRange.low: %d\n", instrument->generator.velocityRange.low);
+            iprintf(2, "generator.velocityRange.high: %d\n", instrument->generator.velocityRange.high);
+            iprintf(2, "sampleMode.loop: %s\n", instrument->sampleMode.loop ? "true" : "false");
+            iprintf(2, "sampleMode.depression: %s\n", instrument->sampleMode.depression ? "true" : "false");
+
+#if 0
+            bool mono = instrument->sample.L == instrument->sample.R;
+            if (mono) {
+                iprintf(4, "[Sample MONO]\n");
+            }
+            else {
+                iprintf(4, "[Sample L]\n");
+            }
+
+            iprintf(4, "----------------------\n");
+            iprintf(4, "name: %s\n", instrument->sample.L->name);
+            iprintf(4, "start: %d\n", instrument->sample.L->start);
+            iprintf(4, "startLoop: %d\n", instrument->sample.L->startLoop);
+            iprintf(4, "endLoop: %d\n", instrument->sample.L->endLoop);
+            iprintf(4, "end: %d\n", instrument->sample.L->end);
+            iprintf(4, "sampleRate: %d\n", instrument->sample.L->sampleRate);
+            iprintf(4, "originalPitch: %d\n", instrument->sample.L->originalPitch);
+            iprintf(4, "pitchCorrection: %d\n", instrument->sample.L->pitchCorrection);
+
+            if (!mono) {
+                iprintf(6, "[Sample R]\n");
+                iprintf(6, "----------------------\n");
+                iprintf(6, "name: %s\n", instrument->sample.R->name);
+                iprintf(6, "start: %d\n", instrument->sample.R->start);
+                iprintf(6, "startLoop: %d\n", instrument->sample.R->startLoop);
+                iprintf(6, "endLoop: %d\n", instrument->sample.R->endLoop);
+                iprintf(6, "end: %d\n", instrument->sample.R->end);
+                iprintf(6, "sampleRate: %d\n", instrument->sample.R->sampleRate);
+                iprintf(6, "originalPitch: %d\n", instrument->sample.R->originalPitch);
+                iprintf(6, "pitchCorrection: %d\n", instrument->sample.R->pitchCorrection);
+            }
+#endif
+        }
     }
 
-    // TODO other
-
     printf("\n");
+
+#undef iprintf
 }
 
 Synthesizer *SynthesizerCreate(const char *filepath)
