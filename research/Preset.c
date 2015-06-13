@@ -19,6 +19,7 @@ static void InstrumentDestroy(Instrument *self);
 static bool ParseSample(SoundFont *sf, int shdrIdx, Sample **resultL, Sample **resultR);
 static void ParseSampleHeader(SFSampleHeader *shdr, Sample **sample);
 static void SampleDestroy(Sample *self);
+static void SampleDump(Sample *sample);
 
 bool ParsePresets(SoundFont *sf, Preset ***results, int *resultsCount)
 {
@@ -519,8 +520,21 @@ static void InstrumentZoneDump(Zone *zone)
         iprintf(8, "depression: %s\n", zone->sample.depression ? "true" : "false");
         iprintf(8, "stereo: %s\n", zone->sample.L != zone->sample.R ? "true" : "false");
         iprintf(8, "%s: %s\n", zone->sample.L != zone->sample.R ? "L" : "MONO", zone->sample.L->name);
+        SampleDump(zone->sample.L);
         if (zone->sample.L != zone->sample.R) {
             iprintf(8, "R: %s\n", zone->sample.R->name);
+            SampleDump(zone->sample.R);
         }
     }
+}
+
+static void SampleDump(Sample *sample)
+{
+    iprintf(10, "start: %d\n", sample->start);
+    iprintf(10, "startLoop: %d\n", sample->startLoop);
+    iprintf(10, "endLoop: %d\n", sample->endLoop);
+    iprintf(10, "end: %d\n", sample->end);
+    iprintf(10, "sampleRate: %d\n", sample->sampleRate);
+    iprintf(10, "originalPitch: %d\n", sample->originalPitch);
+    iprintf(10, "pitchCorrection: %d\n", sample->pitchCorrection);
 }
