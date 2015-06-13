@@ -158,8 +158,6 @@ typedef struct _SFInstBag {
     uint16_t wInstModNdx;
 } SFInstBag;
 
-typedef SFGenList SFInstGenList;
-
 typedef uint16_t SFSampleLink;
 typedef enum {
     SFSampleLinkType_monoSample = 1,
@@ -218,7 +216,7 @@ typedef struct _SoundFont {
     uint32_t ibagLength;
     SFModList *imod;
     uint32_t imodLength;
-    SFInstGenList *igen;
+    SFGenList *igen;
     uint32_t igenLength;
     SFSampleHeader *shdr;
     uint32_t shdrLength;

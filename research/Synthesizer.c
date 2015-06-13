@@ -1,82 +1,23 @@
 #include "Synthesizer.h"
 #include "MidiSource.h"
 #include "SoundFont.h"
+#include "Preset.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct _Preset Preset;
-typedef struct _Instrument Instrument;
-typedef struct _Generator Generator;
-typedef struct _Sample Sample;
-typedef struct _Voice Voice;
-
-struct _Generator {
-    struct {
-        uint8_t low;
-        uint8_t high;
-    } keyRange;
-
-    struct {
-        uint8_t low;
-        uint8_t high;
-    } velocityRange;
-};
-
-struct _Preset {
-    const char *name;
-    uint16_t midiPresetNo;
-    uint16_t bankNo;
-
-    Generator generator;
-
-    Instrument **instruments;
-    int instrumentsCount;
-};
-
-struct _Instrument {
-    const char *name;
-    Generator generator;
-
-    struct {
-        Sample *L;
-        Sample *R;
-    } sample;
-
-    struct {
-        bool loop;
-        bool depression;
-    } sampleMode;
-
-    Preset *preset;
-};
-
-struct _Sample {
-    const char *name;
-    uint32_t start;
-    uint32_t startLoop;
-    uint32_t endLoop;
-    uint32_t end;
-    uint32_t sampleRate;
-    uint8_t originalPitch;
-    int8_t pitchCorrection;
-};
-
-struct _Voice {
-    Instrument *instrument;
+typedef struct _Voice {
     int64_t startedAt;
     uint8_t noteNo;
-};
-
-
+} Voice;
 
 struct _Synthesizer {
     MidiSource srcVtbl;
     char *filepath;
     SoundFont *sf;
     Preset **presets;
-    int presetsCount;
+    int presetCount;
 };
 
 static void send(void *self, uint8_t *bytes, size_t length)
@@ -147,10 +88,6 @@ static void PresetDestroy(Preset *self)
 
     free(self);
 }
-
-#define isValidRange(idx, length) (0 <= idx && idx < length)
-#define isValidRange2(idx1, idx2, length) (0 <= idx1 && idx1 < idx2 && idx2 < length)
-#define isRomSample(sampleType) (0 != (sampleType & 0x8000))
 
 static bool SampleFromSampleHeader(SFSampleHeader *shdr, Sample **sample)
 {

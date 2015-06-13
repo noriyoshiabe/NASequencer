@@ -434,12 +434,12 @@ static bool process_imod_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
 
 static bool process_igen_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint32_t size)
 {
-    int num = size / sizeof(SFInstGenList);
-    self->igen = calloc(num, sizeof(SFInstGenList));
+    int num = size / sizeof(SFGenList);
+    self->igen = calloc(num, sizeof(SFGenList));
     self->igenLength = num;
 
     for (int i = 0; i < num; ++i) {
-        if (1 != fread(&self->igen[i], sizeof(SFInstGenList), 1, fp)) {
+        if (1 != fread(&self->igen[i], sizeof(SFGenList), 1, fp)) {
             return false;
         }
 
