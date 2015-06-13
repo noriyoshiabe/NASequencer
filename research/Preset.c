@@ -1,11 +1,14 @@
 #include "Preset.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+
 #define isValidRange(idx, length) (0 <= idx && idx < length)
-#define isValidRange2(idx1, idx2, length) (0 <= idx1 && idx1 < idx2 && idx2 < length)
+#define isValidRangeWithAsc(idx1, idx2, length) (0 <= idx1 && idx1 < idx2 && idx2 < length)
 #define isRomSample(sampleType) (0 != (sampleType & 0x8000))
 
 static bool ParsePreset(SoundFont *sf, int presetIdx, Preset **result);
-static void PresetDestroy(Preset *self);
+static Zone *ZoneCreate();
 static void ZoneDestroy(Zone *self);
 static void PresetZoneDestroy(Zone *self);
 static void InstrumentZoneDestroy(Zone *self);
@@ -13,8 +16,9 @@ static bool ZoneParseGenerator(Zone *self, SoundFont *sf, SFGenList *generators,
 static bool ZoneParseModulator(Zone *self, SoundFont *sf, SFModList *modulators, int modulatorCount);
 static bool ParseInstrument(SoundFont *sf, int instIdx, Instrument **result);
 static void InstrumentDestroy(Instrument *self);
-static bool ParseSampleInfo(SoundFont *sf, int shdrIdx, SampleInfo **result);
-static void InstrumentDestroy(Instrument *self);
+static bool ParseSample(SoundFont *sf, int shdrIdx, Sample **resultL, Sample **resultR);
+static void ParseSampleHeader(SFSampleHeader *shdr, Sample **sample);
+static void SampleDestroy(Sample *self);
 
 bool ParsePresets(SoundFont *sf, Preset ***results, int *resultsCount)
 {
@@ -60,7 +64,7 @@ static bool ParsePreset(SoundFont *sf, int presetIdx, Preset **result)
     // If the preset bag indices are non-monotonic or
     // if the terminal preset’s wPresetBagNdx does not match the PBAG sub- chunk size,
     // the file is structurally defective and should be rejected at load time.
-    if (!isValidRange2(phdr->wPresetBagNdx, phdrNext->wPresetBagNdx, sf->pbagLength)) {
+    if (!isValidRangeWithAsc(phdr->wPresetBagNdx, phdrNext->wPresetBagNdx, sf->pbagLength)) {
         return false;
     }
 
@@ -88,7 +92,7 @@ static bool ParsePreset(SoundFont *sf, int presetIdx, Preset **result)
             goto ERROR;
         }
 
-        Zone *zone = calloc(1, sizeof(Zone));
+        Zone *zone = ZoneCreate();
         if (!ZoneParseGenerator(zone, sf, pgen, generatorCount)) {
             PresetZoneDestroy(zone);
             goto ERROR;
@@ -104,7 +108,7 @@ static bool ParsePreset(SoundFont *sf, int presetIdx, Preset **result)
             // If a zone other than the first zone lacks an Instrument generator as its last generator, that zone should be ignored.
             // A global zone with no modulators and no generators should also be ignored.
             
-            if (i = 0) {
+            if (0 == i) {
                 if (0 < generatorCount || 0 < modulatorCount) {
                     preset->globalZone = zone;
                 }
@@ -140,8 +144,7 @@ ERROR:
     return false;
 }
 
-
-static void PresetDestroy(Preset *self)
+void PresetDestroy(Preset *self)
 {
     if (self->globalZone) {
         ZoneDestroy(self->globalZone);
@@ -155,9 +158,21 @@ static void PresetDestroy(Preset *self)
     free(self);
 }
 
+static Zone *ZoneCreate()
+{
+    Zone *self = calloc(1, sizeof(Zone));
+
+    self->keyRange.low = 0;
+    self->keyRange.high = 127;
+    self->velocityRange.low = 0;
+    self->velocityRange.high = 127;
+
+    return self;
+}
+
 static void ZoneDestroy(Zone *self)
 {
-    free(zone);
+    free(self);
 }
 
 static void PresetZoneDestroy(Zone *self)
@@ -171,8 +186,12 @@ static void PresetZoneDestroy(Zone *self)
 
 static void InstrumentZoneDestroy(Zone *self)
 {
-    if (self->sampleInfo) {
-        SampleInfoDestroy(self->sampleInfo);
+    if (self->sample.L) {
+        bool stereo = self->sample.L != self->sample.R;
+        SampleDestroy(self->sample.L);
+        if (stereo) {
+            SampleDestroy(self->sample.R);
+        }
     }
 
     ZoneDestroy(self);
@@ -198,12 +217,23 @@ static bool ZoneParseGenerator(Zone *self, SoundFont *sf, SFGenList *generators,
             }
             break;
         case SFGeneratorType_sampleID:
-            if (!ParseSampleInfo(sf, gen->genAmount.wAmount, &self->sampleInfo)) {
+            if (!ParseSample(sf, gen->genAmount.wAmount, &self->sample.L, &self->sample.R)) {
                 return false;
             }
             break;
+        case SFGeneratorType_sampleModes:
+            switch (gen->genAmount.wAmount) {
+            case SFSampleModeType_Continuously:
+                self->sample.loop = true;
+                break;
+            case SFSampleModeType_KeyDepression:
+                self->sample.loop = true;
+                self->sample.depression = true;
+                break;
+            }
+            break;
         default:
-            // TODO other articulations
+            // TODO other articulations and generators
             break;
         }
     }
@@ -217,7 +247,7 @@ static bool ZoneParseModulator(Zone *self, SoundFont *sf, SFModList *modulators,
     return true;
 }
 
-static bool ParseInstrument(SoundFont *sf, int instIdx, Instrument **result);
+static bool ParseInstrument(SoundFont *sf, int instIdx, Instrument **result)
 {
     // 8.1.2 Generator Enumerators Defined - 41 instrument
     // The value should never exceed two less than the size of the instrument list. 
@@ -232,7 +262,7 @@ static bool ParseInstrument(SoundFont *sf, int instIdx, Instrument **result);
     // If the instrument bag indices are non-monotonic or
     // if the terminal instrument’s wInstBagNdx does not match the IBAG sub-chunk size,
     // the file is structurally defective and should be rejected at load time.
-    if (!isValidRange2(inst->wInstBagNdx, instNext->wInstBagNdx, sf->ibagLength)) {
+    if (!isValidRangeWithAsc(inst->wInstBagNdx, instNext->wInstBagNdx, sf->ibagLength)) {
         return false;
     }
 
@@ -258,6 +288,7 @@ static bool ParseInstrument(SoundFont *sf, int instIdx, Instrument **result);
             goto ERROR;
         }
 
+        Zone *zone = ZoneCreate();
         if (!ZoneParseGenerator(zone, sf, igen, generatorCount)) {
             PresetZoneDestroy(zone);
             goto ERROR;
@@ -268,12 +299,12 @@ static bool ParseInstrument(SoundFont *sf, int instIdx, Instrument **result);
             goto ERROR;
         }
 
-        if (!zone->sampleInfo) {
+        if (!zone->sample.L) {
             // 7.7 The IBAG Sub-chunk
             // If a zone other than the first zone lacks a sampleID generator as its last generator, that zone should be ignored.
             // A global zone with no modulators and no generators should also be ignored.
 
-            if (i = 0) {
+            if (0 == i) {
                 if (0 < generatorCount || 0 < modulatorCount) {
                     instrument->globalZone = zone;
                 }
@@ -292,7 +323,7 @@ static bool ParseInstrument(SoundFont *sf, int instIdx, Instrument **result);
         }
     }
 
-    if (!instrument->globalZone && 1 > instrument->zonesCount) {
+    if (!instrument->globalZone && 1 > instrument->zoneCount) {
         // 7.6 The INST Sub-chunk
         // All instruments except the terminal instrument must have at least one zone;
         // any preset with no zones should be ignored.
@@ -321,4 +352,175 @@ static void InstrumentDestroy(Instrument *self)
 
     free(self->zones);
     free(self);
+}
+
+static bool ParseSample(SoundFont *sf, int shdrIdx, Sample **resultL, Sample **resultR)
+{
+    // 8.1.2 Generator Enumerators Defined - 53 sampleID
+    // The value should never exceed two less than the size of the sample list.
+    // 7.10 The SHDR Sub-chunk
+    // The terminal sample record is never referenced, ... That's why -1
+    if (!isValidRange(shdrIdx, sf->shdrLength - 1)) {
+        return false;
+    }
+
+    SFSampleHeader *shdr = &sf->shdr[shdrIdx];
+
+    // Ignore ROM sample.
+    if (isRomSample(shdr->sfSampleType)) {
+        return true;
+    }
+
+    Sample *L = NULL;
+    Sample *R = NULL;
+
+    switch (shdr->sfSampleType) {
+    case SFSampleLinkType_monoSample:
+        ParseSampleHeader(shdr, &L);
+        R = L;
+        break;
+    case SFSampleLinkType_rightSample:
+        ParseSampleHeader(shdr, &R);
+        if (!isValidRange(shdr->wSampleLink, sf->shdrLength)) {
+            goto ERROR;
+        }
+        else {
+            SFSampleHeader *shdrL = &sf->shdr[shdr->wSampleLink];
+            if (isRomSample(shdrL->sfSampleType)) {
+                goto ERROR;
+            }
+
+            ParseSampleHeader(shdrL, &L);
+        }
+        break;
+    case SFSampleLinkType_leftSample:
+        ParseSampleHeader(shdr, &L);
+        if (!isValidRange(shdr->wSampleLink, sf->shdrLength)) {
+            goto ERROR;
+        }
+        else {
+            SFSampleHeader *shdrR = &sf->shdr[shdr->wSampleLink];
+            if (isRomSample(shdrR->sfSampleType)) {
+                goto ERROR;
+            }
+
+            ParseSampleHeader(shdrR, &R);
+        }
+        break;
+    case SFSampleLinkType_linkedSample:
+        // 7.10 The SHDR Sub-chunk
+        // The linked sample type is not currently fully defined in the SoundFont 2 specification,
+        // but will ultimately support a circularly linked list of samples using wSampleLink.
+        break;
+    }
+
+    *resultL = L;
+    *resultR = R;
+
+    return true;
+
+ERROR:
+    if (L) {
+        SampleDestroy(L);
+    }
+
+    if (R) {
+        SampleDestroy(R);
+    }
+
+    return false;
+}
+
+static void ParseSampleHeader(SFSampleHeader *shdr, Sample **result)
+{
+    Sample *sample = calloc(1, sizeof(Sample));
+    sample->name = shdr->achSampleName;
+    sample->start = shdr->dwStart;
+    sample->startLoop = shdr->dwStartloop;
+    sample->endLoop = shdr->dwEndloop;
+    sample->end = shdr->dwEnd;
+    sample->sampleRate = shdr->dwSampleRate;
+    sample->originalPitch = shdr->byOriginalPitch;
+    sample->pitchCorrection = shdr->chPitchCorrection;
+
+    *result = sample;
+}
+
+static void SampleDestroy(Sample *self)
+{
+    free(self);
+}
+
+#define iprintf(indent, ...) do { for (int __i = 0; __i < indent; ++__i) putc(' ', stdout); printf(__VA_ARGS__); } while (0)
+
+static void PresetZoneDump(Zone *zone);
+static void ZoneDump(Zone *zone, int indent);
+static void InstrumentDump(Instrument *instrument);
+static void InstrumentZoneDump(Zone *zone);
+
+void PresetDump(Preset *preset)
+{
+    printf("[Preset] %s\n", preset->name);
+    printf("------------------------------------------------------------------------------\n");
+    printf("name: %s\n", preset->name);
+    printf("midiPresetNo: %d\n", preset->midiPresetNo);
+    printf("bankNo: %d\n", preset->bankNo);
+    printf("globalZone:\n");
+
+    if (preset->globalZone) {
+        PresetZoneDump(preset->globalZone);
+    }
+
+    printf("zones: zoneCount=%d\n", preset->zoneCount);
+    for (int i = 0; i < preset->zoneCount; ++i) {
+        PresetZoneDump(preset->zones[i]);
+    }
+
+    printf("\n");
+}
+
+static void PresetZoneDump(Zone *zone)
+{
+    ZoneDump(zone, 2);
+    if (zone->instrument) {
+        iprintf(2, "instrument:\n");
+        InstrumentDump(zone->instrument);
+    }
+}
+
+static void ZoneDump(Zone *zone, int indent)
+{
+    iprintf(indent, "------------------------\n");
+    iprintf(indent, "keyRange: %d-%d\n", zone->keyRange.low, zone->keyRange.high);
+    iprintf(indent, "velocityRange: %d-%d\n", zone->velocityRange.low, zone->velocityRange.high);
+}
+
+static void InstrumentDump(Instrument *instrument)
+{
+    iprintf(4, "name: %s\n", instrument->name);
+    iprintf(4, "globalZone:\n");
+
+    if (instrument->globalZone) {
+        InstrumentZoneDump(instrument->globalZone);
+    }
+
+    iprintf(4, "zones: zoneCount=%d\n", instrument->zoneCount);
+    for (int i = 0; i < instrument->zoneCount; ++i) {
+        InstrumentZoneDump(instrument->zones[i]);
+    }
+}
+
+static void InstrumentZoneDump(Zone *zone)
+{
+    ZoneDump(zone, 6);
+    if (zone->sample.L) {
+        iprintf(6, "sample:\n");
+        iprintf(8, "loop: %s\n", zone->sample.loop ? "true" : "false");
+        iprintf(8, "depression: %s\n", zone->sample.depression ? "true" : "false");
+        iprintf(8, "stereo: %s\n", zone->sample.L != zone->sample.R ? "true" : "false");
+        iprintf(8, "%s: %s\n", zone->sample.L != zone->sample.R ? "L" : "MONO", zone->sample.L->name);
+        if (zone->sample.L != zone->sample.R) {
+            iprintf(8, "R: %s\n", zone->sample.R->name);
+        }
+    }
 }

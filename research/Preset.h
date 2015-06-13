@@ -1,12 +1,12 @@
 #pragma once
 
 #include "SoundFont.h"
+#include <stdbool.h>
 
 typedef struct _Preset Preset;
 typedef struct _Instrument Instrument;
 typedef struct _Zone Zone;
 typedef struct _Range Range;
-typedef struct _SampleInfo SampleInfo;
 typedef struct _Sample Sample;
 
 struct _Preset {
@@ -36,18 +36,15 @@ struct _Zone {
     Range keyRange;
     Range velocityRange;
 
-    union {
-        Instrument *instrument;
-        SampleInfo *sampleInfo;
-    };
-};
+    Instrument *instrument;
 
-struct _SampleInfo {
-    bool loop;
-    bool depression;
+    struct {
+        bool loop;
+        bool depression;
 
-    Sample *L;
-    Sample *R;
+        Sample *L;
+        Sample *R;
+    } sample;
 };
 
 struct _Sample {
@@ -62,6 +59,6 @@ struct _Sample {
     int8_t pitchCorrection;
 };
 
-bool ParsePresets(SoundFont *sf, Preset ***results, int *resultsCount);
-void PresetsDump(Preset **presets);
-void PresetDump(Preset *preset);
+extern bool ParsePresets(SoundFont *sf, Preset ***results, int *resultsCount);
+extern void PresetDestroy(Preset *self);
+extern void PresetDump(Preset *preset);
