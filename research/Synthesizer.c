@@ -70,15 +70,19 @@ Synthesizer *SynthesizerCreate(const char *filepath)
 #endif
 
 #if 1
-    Preset *preset = SynthesizerFindPreset(self, 25, 128);
+    //Preset *preset = SynthesizerFindPreset(self, 25, 128);
+    Preset *preset = self->presets[0];
     PresetDump(preset);
-#if 0
+
     for (int i = 0; i < preset->zoneCount; ++i) {
         InstrumentDump(preset->zones[i]->instrument);
     }
-#endif
-    InstrumentDump(preset->zones[0]->instrument);
-    SampleDump(preset->zones[0]->instrument->zones[0]->sample);
+
+    for (int i = 0; i < preset->zoneCount; ++i) {
+        for (int j = 0; j < preset->zones[i]->instrument->zoneCount; ++j) {
+            SampleDump(preset->zones[i]->instrument->zones[j]->sample);
+        }
+    }
 #endif
 
     return self;

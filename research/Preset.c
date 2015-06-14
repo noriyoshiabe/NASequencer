@@ -345,12 +345,9 @@ static bool ZoneParseGenerator(Zone *self, SoundFont *sf, SFGenList *generators,
                 return false;
             }
             break;
-
-        default:
-            self->gen.array[gen->sfGenOper] = gen->genAmount.shAmount;
-            break;
         }
 
+        self->gen.array[gen->sfGenOper] = gen->genAmount.shAmount;
         self->gen.flags |= (1 << gen->sfGenOper);
     }
 
@@ -485,23 +482,88 @@ void InstrumentDump(Instrument *instrument)
 
 static void ZoneDump(Zone *zone)
 {
-    if (ZoneHasGenerator(zone, SFGeneratorType_keyRange))
-        iprintf(2, "gen.keyRange: %d-%d\n", zone->gen.keyRange.low, zone->gen.keyRange.high);
-    if (ZoneHasGenerator(zone, SFGeneratorType_velRange))
-        iprintf(2, "gen.velRange: %d-%d\n", zone->gen.velRange.low, zone->gen.velRange.high);
+#define DumpShortGen(zone, type) \
+    if (ZoneHasGenerator(zone, SFGeneratorType_##type)) \
+      iprintf(2, #type ": %d\n", zone->gen.type)
+
+    DumpShortGen(zone, startAddrsOffset);
+    DumpShortGen(zone, endAddrsOffset);
+    DumpShortGen(zone, startloopAddrsOffset);
+    DumpShortGen(zone, endloopAddrsOffset);
+    DumpShortGen(zone, startAddrsCoarseOffset);
+    DumpShortGen(zone, modLfoToPitch);
+    DumpShortGen(zone, vibLfoToPitch);
+    DumpShortGen(zone, modEnvToPitch);
+    DumpShortGen(zone, initialFilterFc);
+    DumpShortGen(zone, initialFilterQ);
+    DumpShortGen(zone, modLfoToFilterFc);
+    DumpShortGen(zone, modEnvToFilterFc);
+    DumpShortGen(zone, endAddrsCoarseOffset);
+    DumpShortGen(zone, modLfoToVolume);
+    DumpShortGen(zone, unused1);
+    DumpShortGen(zone, chorusEffectsSend);
+    DumpShortGen(zone, reverbEffectsSend);
+    DumpShortGen(zone, pan);
+    DumpShortGen(zone, unused2);
+    DumpShortGen(zone, unused3);
+    DumpShortGen(zone, unused4);
+    DumpShortGen(zone, delayModLFO);
+    DumpShortGen(zone, freqModLFO);
+    DumpShortGen(zone, delayVibLFO);
+    DumpShortGen(zone, freqVibLFO);
+    DumpShortGen(zone, delayModEnv);
+    DumpShortGen(zone, attackModEnv);
+    DumpShortGen(zone, holdModEnv);
+    DumpShortGen(zone, decayModEnv);
+    DumpShortGen(zone, sustainModEnv);
+    DumpShortGen(zone, releaseModEnv);
+    DumpShortGen(zone, keynumToModEnvHold);
+    DumpShortGen(zone, keynumToModEnvDecay);
+    DumpShortGen(zone, delayVolEnv);
+    DumpShortGen(zone, attackVolEnv);
+    DumpShortGen(zone, holdVolEnv);
+    DumpShortGen(zone, decayVolEnv);
+    DumpShortGen(zone, sustainVolEnv);
+    DumpShortGen(zone, releaseVolEnv);
+    DumpShortGen(zone, keynumToVolEnvHold);
+    DumpShortGen(zone, keynumToVolEnvDecay);
 
     if (zone->instrument)
-        iprintf(2, "instrument: %s\n", zone->instrument->name);
+        iprintf(2, "instrument: %d - %s\n", zone->gen.instrument, zone->instrument->name);
 
-    if (zone->sample) {
-        if (ZoneHasGenerator(zone, SFGeneratorType_sampleModes))
-            iprintf(2, "gen.sampleModes: %d - %s\n", zone->gen.sampleModes,
-                    zone->gen.sampleModes == 1 ? "loops continuously" :
-                    zone->gen.sampleModes == 3 ? "loops for the duration of key depression then proceeds to play the remainder of the sample." :
-                    "no loop");
+    DumpShortGen(zone, reserved1);
 
-        iprintf(2, "sample: %s\n", zone->sample->name);
-    }
+    if (ZoneHasGenerator(zone, SFGeneratorType_keyRange))
+        iprintf(2, "keyRange: %d-%d\n", zone->gen.keyRange.low, zone->gen.keyRange.high);
+    if (ZoneHasGenerator(zone, SFGeneratorType_velRange))
+        iprintf(2, "velRange: %d-%d\n", zone->gen.velRange.low, zone->gen.velRange.high);
+
+    DumpShortGen(zone, startloopAddrsCoarseOffset);
+    DumpShortGen(zone, keynum);
+    DumpShortGen(zone, velocity);
+    DumpShortGen(zone, initialAttenuation);
+    DumpShortGen(zone, reserved2);
+    DumpShortGen(zone, endloopAddrsCoarseOffset);
+    DumpShortGen(zone, coarseTune);
+    DumpShortGen(zone, fineTune);
+
+    if (zone->sample)
+        iprintf(2, "sample: %d - %s\n", zone->gen.sampleID, zone->sample->name);
+
+    if (ZoneHasGenerator(zone, SFGeneratorType_sampleModes))
+        iprintf(2, "sampleModes: %d - %s\n", zone->gen.sampleModes,
+                zone->gen.sampleModes == 1 ? "loops continuously" :
+                zone->gen.sampleModes == 3 ? "loops for the duration of key depression then proceeds to play the remainder of the sample." :
+                "no loop");
+
+    DumpShortGen(zone, reserved3);
+    DumpShortGen(zone, scaleTuning);
+    DumpShortGen(zone, exclusiveClass);
+    DumpShortGen(zone, overridingRootKey);
+    DumpShortGen(zone, unused5);
+
+
+#undef DumpShortGen
 }
 
 void SampleDump(Sample *sample)
