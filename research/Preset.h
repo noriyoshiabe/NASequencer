@@ -129,3 +129,5 @@ struct _Zone {
 extern bool ParsePresets(SoundFont *sf, Preset ***results, int *resultsCount);
 extern void PresetDestroy(Preset *self);
 extern void PresetDump(Preset *preset);
+extern void InstrumentDump(Instrument *instrument);
+extern void SampleDump(Sample *sample);

@@ -17,7 +17,6 @@ static void InstrumentDestroy(Instrument *self);
 static bool ParseSample(SoundFont *sf, int shdrIdx, Sample **resultL, Sample **resultR);
 static void ParseSampleHeader(SFSampleHeader *shdr, Sample **sample);
 static void SampleDestroy(Sample *self);
-static void SampleDump(Sample *sample);
 
 bool ParsePresets(SoundFont *sf, Preset ***results, int *resultsCount)
 {
@@ -532,12 +531,9 @@ static bool ZoneParseModulator(Zone *self, SoundFont *sf, SFModList *modulators,
     return true;
 }
 
-#define iprintf(indent, ...) do { for (int __i = 0; __i < indent; ++__i) putc(' ', stdout); printf(__VA_ARGS__); } while (0)
+static void ZoneDump(Zone *zone);
 
-static void PresetZoneDump(Zone *zone);
-static void ZoneDump(Zone *zone, int indent);
-static void InstrumentDump(Instrument *instrument);
-static void InstrumentZoneDump(Zone *zone);
+#define iprintf(indent, ...) do { for (int __i = 0; __i < indent; ++__i) putc(' ', stdout); printf(__VA_ARGS__); } while (0)
 
 void PresetDump(Preset *preset)
 {
@@ -547,74 +543,66 @@ void PresetDump(Preset *preset)
     printf("midiPresetNo: %d\n", preset->midiPresetNo);
     printf("bankNo: %d\n", preset->bankNo);
     printf("globalZone:\n");
-
     if (preset->globalZone) {
-        PresetZoneDump(preset->globalZone);
+        ZoneDump(preset->globalZone);
     }
-
     printf("zones: zoneCount=%d\n", preset->zoneCount);
     for (int i = 0; i < preset->zoneCount; ++i) {
-        PresetZoneDump(preset->zones[i]);
+        ZoneDump(preset->zones[i]);
+        if (i + 1 < preset->zoneCount) {
+            iprintf(2, "-----------------------------\n");
+        }
     }
-
     printf("\n");
 }
 
-static void PresetZoneDump(Zone *zone)
+void InstrumentDump(Instrument *instrument)
 {
-    ZoneDump(zone, 2);
-    if (zone->instrument) {
-        iprintf(2, "instrument:\n");
-        InstrumentDump(zone->instrument);
-    }
-}
-
-static void ZoneDump(Zone *zone, int indent)
-{
-    iprintf(indent, "------------------------\n");
-    iprintf(indent, "range.key: %d-%d\n", zone->range.key.low, zone->range.key.high);
-    iprintf(indent, "range.velocity: %d-%d\n", zone->range.velocity.low, zone->range.velocity.high);
-}
-
-static void InstrumentDump(Instrument *instrument)
-{
-    iprintf(4, "name: %s\n", instrument->name);
-    iprintf(4, "globalZone:\n");
-
+    printf("[Instrument] %s\n", instrument->name);
+    printf("------------------------------------------------------------------------------\n");
+    printf("globalZone:\n");
     if (instrument->globalZone) {
-        InstrumentZoneDump(instrument->globalZone);
+        ZoneDump(instrument->globalZone);
     }
-
-    iprintf(4, "zones: zoneCount=%d\n", instrument->zoneCount);
+    printf("zones: zoneCount=%d\n", instrument->zoneCount);
     for (int i = 0; i < instrument->zoneCount; ++i) {
-        InstrumentZoneDump(instrument->zones[i]);
+        ZoneDump(instrument->zones[i]);
+        if (i + 1 < instrument->zoneCount) {
+            iprintf(2, "-----------------------------\n");
+        }
     }
+    printf("\n");
 }
 
-static void InstrumentZoneDump(Zone *zone)
+static void ZoneDump(Zone *zone)
 {
-    ZoneDump(zone, 6);
+    iprintf(2, "range.key: %d-%d\n", zone->range.key.low, zone->range.key.high);
+    iprintf(2, "range.velocity: %d-%d\n", zone->range.velocity.low, zone->range.velocity.high);
+
+    if (zone->instrument) {
+        iprintf(2, "instrument: %s\n", zone->instrument->name);
+    }
+
     if (zone->sample.L) {
-        iprintf(6, "sample:\n");
-        iprintf(8, "loop: %s\n", zone->sample.loop ? "true" : "false");
-        iprintf(8, "untilRelease: %s\n", zone->sample.untilRelease ? "true" : "false");
-        iprintf(8, "stereo: %s\n", zone->sample.L != zone->sample.R ? "true" : "false");
-        iprintf(8, "%s: %s\n", zone->sample.L != zone->sample.R ? "L" : "MONO", zone->sample.L->name);
-        SampleDump(zone->sample.L);
+        iprintf(2, "%s: %s\n", zone->sample.L != zone->sample.R ? "L" : "MONO", zone->sample.L->name);
+        iprintf(2, "sample.loop: %s\n", zone->sample.loop ? "true" : "false");
+        iprintf(2, "sample.untilRelease: %s\n", zone->sample.untilRelease ? "true" : "false");
         if (zone->sample.L != zone->sample.R) {
-            iprintf(8, "R: %s\n", zone->sample.R->name);
-            SampleDump(zone->sample.R);
+            iprintf(2, "R: %s\n", zone->sample.R->name);
         }
     }
 }
 
-static void SampleDump(Sample *sample)
+void SampleDump(Sample *sample)
 {
-    iprintf(10, "start: %d\n", sample->start);
-    iprintf(10, "startLoop: %d\n", sample->startLoop);
-    iprintf(10, "endLoop: %d\n", sample->endLoop);
-    iprintf(10, "end: %d\n", sample->end);
-    iprintf(10, "sampleRate: %d\n", sample->sampleRate);
-    iprintf(10, "originalPitch: %d\n", sample->originalPitch);
-    iprintf(10, "pitchCorrection: %d\n", sample->pitchCorrection);
+    printf("[Sample] %s\n", sample->name);
+    printf("------------------------------------------------------------------------------\n");
+    printf("start: %d\n", sample->start);
+    printf("startLoop: %d\n", sample->startLoop);
+    printf("endLoop: %d\n", sample->endLoop);
+    printf("end: %d\n", sample->end);
+    printf("sampleRate: %d\n", sample->sampleRate);
+    printf("originalPitch: %d\n", sample->originalPitch);
+    printf("pitchCorrection: %d\n", sample->pitchCorrection);
+    printf("\n");
 }
