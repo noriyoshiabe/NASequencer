@@ -67,7 +67,10 @@ Synthesizer *SynthesizerCreate(const char *filepath)
 #endif
 
 #if 1
-    PresetDump(SynthesizerFindPreset(self, 25, 128));
+    Preset *preset = SynthesizerFindPreset(self, 25, 128);
+    PresetDump(preset);
+    InstrumentDump(preset->zones[0]->instrument);
+    SampleDump(preset->zones[0]->instrument->zones[0]->sample);
 #endif
 
 

@@ -40,6 +40,8 @@ struct _Sample {
     uint32_t sampleRate;
     uint8_t originalPitch;
     int8_t pitchCorrection;
+
+    uint16_t sampleType;
 };
 
 struct _RangeGenerator {
@@ -74,9 +76,6 @@ struct _SampleGenerator {
 
     bool loop;
     bool untilRelease;
-
-    Sample *L;
-    Sample *R;
 };
 
 struct _ValueGenerator {
@@ -118,12 +117,15 @@ struct _ValueGenerator {
 };
 
 struct _Zone {
-    RangeGenerator range;
-    SubstitutionGenerator substitution;
-    ValueGenerator value;
+    struct {
+        RangeGenerator range;
+        SubstitutionGenerator substitution;
+        ValueGenerator value;
+        SampleGenerator sample;
+    } gen;
 
     Instrument *instrument;
-    SampleGenerator sample;
+    Sample *sample;
 };
 
 extern bool ParsePresets(SoundFont *sf, Preset ***results, int *resultsCount);

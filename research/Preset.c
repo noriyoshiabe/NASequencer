@@ -14,8 +14,7 @@ static bool ZoneParseGenerator(Zone *self, SoundFont *sf, SFGenList *generators,
 static bool ZoneParseModulator(Zone *self, SoundFont *sf, SFModList *modulators, int modulatorCount);
 static bool ParseInstrument(SoundFont *sf, int instIdx, Instrument **result);
 static void InstrumentDestroy(Instrument *self);
-static bool ParseSample(SoundFont *sf, int shdrIdx, Sample **resultL, Sample **resultR);
-static void ParseSampleHeader(SFSampleHeader *shdr, Sample **sample);
+static bool ParseSample(SoundFont *sf, int shdrIdx, Sample **result);
 static void SampleDestroy(Sample *self);
 
 bool ParsePresets(SoundFont *sf, Preset ***results, int *resultsCount)
@@ -208,7 +207,7 @@ static bool ParseInstrument(SoundFont *sf, int instIdx, Instrument **result)
             goto ERROR;
         }
 
-        if (!zone->sample.L) {
+        if (!zone->sample) {
             // 7.7 The IBAG Sub-chunk
             // If a zone other than the first zone lacks a sampleID generator as its last generator, that zone should be ignored.
             // A global zone with no modulators and no generators should also be ignored.
@@ -263,7 +262,7 @@ static void InstrumentDestroy(Instrument *self)
     free(self);
 }
 
-static bool ParseSample(SoundFont *sf, int shdrIdx, Sample **resultL, Sample **resultR)
+static bool ParseSample(SoundFont *sf, int shdrIdx, Sample **result)
 {
     // 8.1.2 Generator Enumerators Defined - 53 sampleID
     // The value should never exceed two less than the size of the sample list.
@@ -280,68 +279,6 @@ static bool ParseSample(SoundFont *sf, int shdrIdx, Sample **resultL, Sample **r
         return true;
     }
 
-    Sample *L = NULL;
-    Sample *R = NULL;
-
-    switch (shdr->sfSampleType) {
-    case SFSampleLinkType_monoSample:
-        ParseSampleHeader(shdr, &L);
-        R = L;
-        break;
-    case SFSampleLinkType_rightSample:
-        ParseSampleHeader(shdr, &R);
-        if (!isValidRange(shdr->wSampleLink, sf->shdrLength)) {
-            goto ERROR;
-        }
-        else {
-            SFSampleHeader *shdrL = &sf->shdr[shdr->wSampleLink];
-            if (isRomSample(shdrL->sfSampleType)) {
-                goto ERROR;
-            }
-
-            ParseSampleHeader(shdrL, &L);
-        }
-        break;
-    case SFSampleLinkType_leftSample:
-        ParseSampleHeader(shdr, &L);
-        if (!isValidRange(shdr->wSampleLink, sf->shdrLength)) {
-            goto ERROR;
-        }
-        else {
-            SFSampleHeader *shdrR = &sf->shdr[shdr->wSampleLink];
-            if (isRomSample(shdrR->sfSampleType)) {
-                goto ERROR;
-            }
-
-            ParseSampleHeader(shdrR, &R);
-        }
-        break;
-    case SFSampleLinkType_linkedSample:
-        // 7.10 The SHDR Sub-chunk
-        // The linked sample type is not currently fully defined in the SoundFont 2 specification,
-        // but will ultimately support a circularly linked list of samples using wSampleLink.
-        break;
-    }
-
-    *resultL = L;
-    *resultR = R;
-
-    return true;
-
-ERROR:
-    if (L) {
-        SampleDestroy(L);
-    }
-
-    if (R) {
-        SampleDestroy(R);
-    }
-
-    return false;
-}
-
-static void ParseSampleHeader(SFSampleHeader *shdr, Sample **result)
-{
     Sample *sample = calloc(1, sizeof(Sample));
     sample->name = shdr->achSampleName;
     sample->start = shdr->dwStart;
@@ -352,7 +289,20 @@ static void ParseSampleHeader(SFSampleHeader *shdr, Sample **result)
     sample->originalPitch = shdr->byOriginalPitch;
     sample->pitchCorrection = shdr->chPitchCorrection;
 
+    // Both fludesynth and timidity++ does not use wSampleLink, also sfSampleType for left or right.
+    // I cannot understand this sentence excerpted 7.10 The SHDR Sub-chunk.
+    //
+    // Both samples should be played entirely syncrhonously,
+    // with their pitch controlled by the right sample’s generators.
+    //
+    // The word 'right' means appropriate?
+    // Even if 'right' means right sample, `their pitch controlled
+    // by the right sample’s generators.` is much more complicated.
+    
+    sample->sampleType = shdr->sfSampleType; // This is only for dump
+
     *result = sample;
+    return true;
 }
 
 static void SampleDestroy(Sample *self)
@@ -364,15 +314,15 @@ static Zone *ZoneCreate()
 {
     Zone *self = calloc(1, sizeof(Zone));
 
-    self->range.key.low = 0;
-    self->range.key.high = 127;
-    self->range.velocity.low = 0;
-    self->range.velocity.high = 127;
+    self->gen.range.key.low = 0;
+    self->gen.range.key.high = 127;
+    self->gen.range.velocity.low = 0;
+    self->gen.range.velocity.high = 127;
     
-    self->substitution.keynum = -1;
-    self->substitution.velocity = -1;
+    self->gen.substitution.keynum = -1;
+    self->gen.substitution.velocity = -1;
 
-    self->sample.overridingRootKey = -1;
+    self->gen.sample.overridingRootKey = -1;
 
     return self;
 }
@@ -383,12 +333,8 @@ static void ZoneDestroy(Zone *self)
         InstrumentDestroy(self->instrument);
     }
 
-    if (self->sample.L) {
-        bool stereo = self->sample.L != self->sample.R;
-        SampleDestroy(self->sample.L);
-        if (stereo) {
-            SampleDestroy(self->sample.R);
-        }
+    if (self->sample) {
+        SampleDestroy(self->sample);
     }
 
     free(self);
@@ -464,13 +410,13 @@ static bool ZoneParseGenerator(Zone *self, SoundFont *sf, SFGenList *generators,
             break;
 
         case SFGeneratorType_keyRange:
-            self->range.key.low = gen->genAmount.ranges.byLo;
-            self->range.key.high = gen->genAmount.ranges.byHi;
+            self->gen.range.key.low = gen->genAmount.ranges.byLo;
+            self->gen.range.key.high = gen->genAmount.ranges.byHi;
             break;
 
         case SFGeneratorType_velRange:
-            self->range.velocity.low = gen->genAmount.ranges.byLo;
-            self->range.velocity.high = gen->genAmount.ranges.byHi;
+            self->gen.range.velocity.low = gen->genAmount.ranges.byLo;
+            self->gen.range.velocity.high = gen->genAmount.ranges.byHi;
             break;
 
         case SFGeneratorType_startloopAddrsCoarseOffset:
@@ -490,7 +436,7 @@ static bool ZoneParseGenerator(Zone *self, SoundFont *sf, SFGenList *generators,
             break;
 
         case SFGeneratorType_sampleID:
-            if (!ParseSample(sf, gen->genAmount.wAmount, &self->sample.L, &self->sample.R)) {
+            if (!ParseSample(sf, gen->genAmount.wAmount, &self->sample)) {
                 return false;
             }
             break;
@@ -498,11 +444,11 @@ static bool ZoneParseGenerator(Zone *self, SoundFont *sf, SFGenList *generators,
         case SFGeneratorType_sampleModes:
             switch (gen->genAmount.wAmount) {
             case SFSampleModeType_Continuously:
-                self->sample.loop = true;
+                self->gen.sample.loop = true;
                 break;
             case SFSampleModeType_UntilRelease:
-                self->sample.loop = true;
-                self->sample.untilRelease = true;
+                self->gen.sample.loop = true;
+                self->gen.sample.untilRelease = true;
                 break;
             }
             break;
@@ -576,20 +522,17 @@ void InstrumentDump(Instrument *instrument)
 
 static void ZoneDump(Zone *zone)
 {
-    iprintf(2, "range.key: %d-%d\n", zone->range.key.low, zone->range.key.high);
-    iprintf(2, "range.velocity: %d-%d\n", zone->range.velocity.low, zone->range.velocity.high);
+    iprintf(2, "gen.range.key: %d-%d\n", zone->gen.range.key.low, zone->gen.range.key.high);
+    iprintf(2, "gen.range.velocity: %d-%d\n", zone->gen.range.velocity.low, zone->gen.range.velocity.high);
 
     if (zone->instrument) {
         iprintf(2, "instrument: %s\n", zone->instrument->name);
     }
 
-    if (zone->sample.L) {
-        iprintf(2, "%s: %s\n", zone->sample.L != zone->sample.R ? "L" : "MONO", zone->sample.L->name);
-        iprintf(2, "sample.loop: %s\n", zone->sample.loop ? "true" : "false");
-        iprintf(2, "sample.untilRelease: %s\n", zone->sample.untilRelease ? "true" : "false");
-        if (zone->sample.L != zone->sample.R) {
-            iprintf(2, "R: %s\n", zone->sample.R->name);
-        }
+    if (zone->sample) {
+        iprintf(2, "gen.sample.loop: %s\n", zone->gen.sample.loop ? "true" : "false");
+        iprintf(2, "gen.sample.untilRelease: %s\n", zone->gen.sample.untilRelease ? "true" : "false");
+        iprintf(2, "sample: %s\n", zone->sample->name);
     }
 }
 
@@ -604,5 +547,11 @@ void SampleDump(Sample *sample)
     printf("sampleRate: %d\n", sample->sampleRate);
     printf("originalPitch: %d\n", sample->originalPitch);
     printf("pitchCorrection: %d\n", sample->pitchCorrection);
+    printf("sampleType: %s %04X\n",
+            sample->sampleType == 1 ? "MONO" :
+            sample->sampleType == 2 ? "R" :
+            sample->sampleType == 4 ? "L" :
+            "Unsuported",
+            sample->sampleType);
     printf("\n");
 }
