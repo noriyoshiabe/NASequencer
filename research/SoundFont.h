@@ -117,7 +117,7 @@ typedef enum {
     SFSampleModeType_NoLoop = 0,
     SFSampleModeType_Continuously = 1,
     SFSampleModeType_Unused = 2,
-    SFSampleModeType_KeyDepression = 3,
+    SFSampleModeType_UntilRelease = 3,
 } SFSampleMode;
 
 typedef uint16_t SFTransform;
