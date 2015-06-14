@@ -23,7 +23,6 @@ static void _AudioCallback(void *receiver, uint32_t sampleRate, AudioSample *buf
 int main(int argc, char **argv)
 {
     Synthesizer *synth = SynthesizerCreate(argv[1]);
-    SynthesizerDump(synth);
     SynthesizerDestroy(synth);
     return 0;
 }

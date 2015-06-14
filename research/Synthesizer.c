@@ -19,6 +19,9 @@ struct _Synthesizer {
     int presetCount;
 };
 
+static Preset *SynthesizerFindPreset(Synthesizer *self, uint16_t midiPresetNo, uint16_t bankNo);
+static int PresetComparator(const void *preset1, const void *preset2);
+
 static void send(void *self, uint8_t *bytes, size_t length)
 {
 }
@@ -55,6 +58,18 @@ Synthesizer *SynthesizerCreate(const char *filepath)
     self->sf = SoundFontRead(filepath, NULL);
 
     ParsePresets(self->sf, &self->presets, &self->presetCount);
+    qsort(self->presets, self->presetCount, sizeof(Preset *), PresetComparator);
+
+#if 0
+    for (int i = 0; i < self->presetCount; ++i) {
+        PresetDump(self->presets[i]);
+    }
+#endif
+
+#if 1
+    PresetDump(SynthesizerFindPreset(self, 25, 128));
+#endif
+
 
     return self;
 }
@@ -75,9 +90,18 @@ void SynthesizerDestroy(Synthesizer *self)
     free(self);
 }
 
-void SynthesizerDump(Synthesizer *self)
+static Preset *SynthesizerFindPreset(Synthesizer *self, uint16_t midiPresetNo, uint16_t bankNo)
 {
-    for (int i = 0; i < self->presetCount; ++i) {
-        PresetDump(self->presets[i]);
-    }
+    Preset preset = { .midiPresetNo = midiPresetNo, .bankNo = bankNo };
+    Preset *key = &preset;
+    Preset **result = bsearch(&key, self->presets, self->presetCount, sizeof(Preset *), PresetComparator);
+    return result ? *result : NULL;
+}
+
+static int PresetComparator(const void *_preset1, const void *_preset2)
+{
+    const Preset **preset1 = (const Preset **)_preset1;
+    const Preset **preset2 = (const Preset **)_preset2;
+
+    return (((*preset1)->bankNo << 16) | (*preset1)->midiPresetNo) - (((*preset2)->bankNo << 16) | (*preset2)->midiPresetNo);
 }

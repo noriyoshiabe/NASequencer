@@ -164,7 +164,7 @@ SoundFont *SoundFontRead(const char *filepath, SoundFontError *error)
         header.id = DWORD_FROM_LE(header.id);
         header.size = DWORD_FROM_LE(header.size);
 
-#if 1
+#if 0
         printf("[%s] size=%d\n", ChunkID2String(header.id), header.size);
 #endif
 
