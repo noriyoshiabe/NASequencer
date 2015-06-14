@@ -348,7 +348,7 @@ static bool ZoneParseGenerator(Zone *self, SoundFont *sf, SFGenList *generators,
         }
 
         self->gen.array[gen->sfGenOper] = gen->genAmount.shAmount;
-        self->gen.flags |= (1 << gen->sfGenOper);
+        self->gen.flags |= (1ull << gen->sfGenOper);
     }
 
     return true;
@@ -362,7 +362,7 @@ static bool ZoneParseModulator(Zone *self, SoundFont *sf, SFModList *modulators,
 
 bool ZoneHasGenerator(Zone *zone, SFGeneratorType generatorType)
 {
-    return zone->gen.flags & (1 << generatorType);
+    return zone->gen.flags & (1ull << generatorType);
 }
 
 int GeneratorDefaultValue(SFGeneratorType generatorType)

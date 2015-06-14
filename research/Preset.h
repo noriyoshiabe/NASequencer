@@ -48,7 +48,7 @@ struct _Range {
 } __attribute__((__packed__));
 
 struct _Generator {
-    int64_t flags;
+    uint64_t flags;
 
     union {
         int16_t array[SFGeneratorType_endOper];
