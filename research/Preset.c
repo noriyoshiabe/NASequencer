@@ -365,6 +365,19 @@ bool ZoneHasGenerator(Zone *zone, SFGeneratorType generatorType)
     return zone->gen.flags & (1ull << generatorType);
 }
 
+int16_t ZoneGeneratorShortValue(Zone *zone, SFGeneratorType generatorType)
+{
+    return zone->gen.array[generatorType];
+}
+
+bool ZoneIsInsideRange(Zone *zone, uint8_t key, uint8_t velocity)
+{
+    return (!ZoneHasGenerator(zone, SFGeneratorType_keyRange)
+            || (zone->gen.keyRange.low <= key && key <= zone->gen.keyRange.high))
+        && (!ZoneHasGenerator(zone, SFGeneratorType_velRange)
+                || (zone->gen.velRange.low <= velocity && velocity <= zone->gen.velRange.high));
+}
+
 int GeneratorDefaultValue(SFGeneratorType generatorType)
 {
     const int16_t None = -1;
@@ -437,8 +450,6 @@ int GeneratorDefaultValue(SFGeneratorType generatorType)
     return defaults[generatorType];
 }
 
-static void ZoneDump(Zone *zone);
-
 #define iprintf(indent, ...) do { for (int __i = 0; __i < indent; ++__i) putc(' ', stdout); printf(__VA_ARGS__); } while (0)
 
 void PresetDump(Preset *preset)
@@ -480,7 +491,7 @@ void InstrumentDump(Instrument *instrument)
     printf("\n");
 }
 
-static void ZoneDump(Zone *zone)
+void ZoneDump(Zone *zone)
 {
 #define DumpShortGen(zone, type) \
     if (ZoneHasGenerator(zone, SFGeneratorType_##type)) \
