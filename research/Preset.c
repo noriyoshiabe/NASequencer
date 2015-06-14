@@ -70,7 +70,7 @@ static bool ParsePreset(SoundFont *sf, int presetIdx, Preset **result)
     Preset *preset = calloc(1, sizeof(Preset));
     preset->name = phdr->achPresetName;
     preset->midiPresetNo = phdr->wPreset;
-    preset->bankNo = phdr->wPreset;
+    preset->bankNo = phdr->wBank;
 
     SFPresetBag *pbag = &sf->pbag[phdr->wPresetBagNdx];
     int zoneCount = phdrNext->wPresetBagNdx - phdr->wPresetBagNdx;
