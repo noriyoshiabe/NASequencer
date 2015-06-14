@@ -312,19 +312,7 @@ static void SampleDestroy(Sample *self)
 
 static Zone *ZoneCreate()
 {
-    Zone *self = calloc(1, sizeof(Zone));
-
-    self->gen.range.key.low = 0;
-    self->gen.range.key.high = 127;
-    self->gen.range.velocity.low = 0;
-    self->gen.range.velocity.high = 127;
-    
-    self->gen.substitution.keynum = -1;
-    self->gen.substitution.velocity = -1;
-
-    self->gen.sample.overridingRootKey = -1;
-
-    return self;
+    return calloc(1, sizeof(Zone));
 }
 
 static void ZoneDestroy(Zone *self)
@@ -346,93 +334,10 @@ static bool ZoneParseGenerator(Zone *self, SoundFont *sf, SFGenList *generators,
         SFGenList *gen = &generators[i];
 
         switch (gen->sfGenOper) {
-        case SFGeneratorType_startAddrsOffset:
-        case SFGeneratorType_endAddrsOffset:
-        case SFGeneratorType_startloopAddrsOffset:
-        case SFGeneratorType_endloopAddrsOffset:
-        case SFGeneratorType_startAddrsCoarseOffset:
-        case SFGeneratorType_modLfoToPitch:
-        case SFGeneratorType_vibLfoToPitch:
-        case SFGeneratorType_modEnvToPitch:
-        case SFGeneratorType_initialFilterFc:
-        case SFGeneratorType_initialFilterQ:
-        case SFGeneratorType_modLfoToFilterFc:
-        case SFGeneratorType_modEnvToFilterFc:
-        case SFGeneratorType_endAddrsCoarseOffset:
-        case SFGeneratorType_modLfoToVolume:
-            // TODO
-            break;
-
-        case SFGeneratorType_unused1:
-            break;
-
-        case SFGeneratorType_chorusEffectsSend:
-        case SFGeneratorType_reverbEffectsSend:
-        case SFGeneratorType_pan:
-            // TODO
-            break;
-
-        case SFGeneratorType_unused2:
-        case SFGeneratorType_unused3:
-        case SFGeneratorType_unused4:
-            break;
-
-        case SFGeneratorType_delayModLFO:
-        case SFGeneratorType_freqModLFO:
-        case SFGeneratorType_delayVibLFO:
-        case SFGeneratorType_freqVibLFO:
-        case SFGeneratorType_delayModEnv:
-        case SFGeneratorType_attackModEnv:
-        case SFGeneratorType_holdModEnv:
-        case SFGeneratorType_decayModEnv:
-        case SFGeneratorType_sustainModEnv:
-        case SFGeneratorType_releaseModEnv:
-        case SFGeneratorType_keynumToModEnvHold:
-        case SFGeneratorType_keynumToModEnvDecay:
-        case SFGeneratorType_delayVolEnv:
-        case SFGeneratorType_attackVolEnv:
-        case SFGeneratorType_holdVolEnv:
-        case SFGeneratorType_decayVolEnv:
-        case SFGeneratorType_sustainVolEnv:
-        case SFGeneratorType_releaseVolEnv:
-        case SFGeneratorType_keynumToVolEnvHold:
-        case SFGeneratorType_keynumToVolEnvDecay:
-            // TODO
-            break;
-
         case SFGeneratorType_instrument:
             if (!ParseInstrument(sf, gen->genAmount.wAmount, &self->instrument)) {
                 return false;
             }
-            break;
-
-        case SFGeneratorType_reserved1:
-            break;
-
-        case SFGeneratorType_keyRange:
-            self->gen.range.key.low = gen->genAmount.ranges.byLo;
-            self->gen.range.key.high = gen->genAmount.ranges.byHi;
-            break;
-
-        case SFGeneratorType_velRange:
-            self->gen.range.velocity.low = gen->genAmount.ranges.byLo;
-            self->gen.range.velocity.high = gen->genAmount.ranges.byHi;
-            break;
-
-        case SFGeneratorType_startloopAddrsCoarseOffset:
-        case SFGeneratorType_keynum:
-        case SFGeneratorType_velocity:
-        case SFGeneratorType_initialAttenuation:
-            // TODO
-            break;
-
-        case SFGeneratorType_reserved2:
-            break;
-
-        case SFGeneratorType_endloopAddrsCoarseOffset:
-        case SFGeneratorType_coarseTune:
-        case SFGeneratorType_fineTune:
-            // TODO
             break;
 
         case SFGeneratorType_sampleID:
@@ -441,31 +346,12 @@ static bool ZoneParseGenerator(Zone *self, SoundFont *sf, SFGenList *generators,
             }
             break;
 
-        case SFGeneratorType_sampleModes:
-            switch (gen->genAmount.wAmount) {
-            case SFSampleModeType_Continuously:
-                self->gen.sample.loop = true;
-                break;
-            case SFSampleModeType_UntilRelease:
-                self->gen.sample.loop = true;
-                self->gen.sample.untilRelease = true;
-                break;
-            }
-            break;
-
-        case SFGeneratorType_reserved3:
-            break;
-
-        case SFGeneratorType_scaleTuning:
-        case SFGeneratorType_exclusiveClass:
-        case SFGeneratorType_overridingRootKey:
-            // TODO
-            break;
-
-        case SFGeneratorType_unused5:
-        case SFGeneratorType_endOper:
+        default:
+            self->gen.array[gen->sfGenOper] = gen->genAmount.shAmount;
             break;
         }
+
+        self->gen.flags |= (1 << gen->sfGenOper);
     }
 
     return true;
@@ -475,6 +361,83 @@ static bool ZoneParseModulator(Zone *self, SoundFont *sf, SFModList *modulators,
 {
     // TODO
     return true;
+}
+
+bool ZoneHasGenerator(Zone *zone, SFGeneratorType generatorType)
+{
+    return zone->gen.flags & (1 << generatorType);
+}
+
+int GeneratorDefaultValue(SFGeneratorType generatorType)
+{
+    const int16_t None = -1;
+    const Range _DefRange = {0, 127};
+    const int16_t DefRange = *((int16_t *)&_DefRange);
+
+    const int16_t defaults[SFGeneratorType_endOper] = {
+        0,        // SFGeneratorType_startAddrsOffset
+        0,        // SFGeneratorType_endAddrsOffset
+        0,        // SFGeneratorType_startloopAddrsOffset
+        0,        // SFGeneratorType_endloopAddrsOffset
+        0,        // SFGeneratorType_startAddrsCoarseOffset
+        0,        // SFGeneratorType_modLfoToPitch
+        0,        // SFGeneratorType_vibLfoToPitch
+        0,        // SFGeneratorType_modEnvToPitch
+        13500,    // SFGeneratorType_initialFilterFc
+        0,        // SFGeneratorType_initialFilterQ
+        0,        // SFGeneratorType_modLfoToFilterFc
+        0,        // SFGeneratorType_modEnvToFilterFc
+        0,        // SFGeneratorType_endAddrsCoarseOffset
+        0,        // SFGeneratorType_modLfoToVolume
+        None,     // SFGeneratorType_unused1
+        0,        // SFGeneratorType_chorusEffectsSend
+        0,        // SFGeneratorType_reverbEffectsSend
+        0,        // SFGeneratorType_pan
+        None,     // SFGeneratorType_unused2
+        None,     // SFGeneratorType_unused3
+        None,     // SFGeneratorType_unused4
+        -12000,   // SFGeneratorType_delayModLFO
+        0,        // SFGeneratorType_freqModLFO
+        -12000,   // SFGeneratorType_delayVibLFO
+        0,        // SFGeneratorType_freqVibLFO
+        -12000,   // SFGeneratorType_delayModEnv
+        -12000,   // SFGeneratorType_attackModEnv
+        -12000,   // SFGeneratorType_holdModEnv
+        -12000,   // SFGeneratorType_decayModEnv
+        0,        // SFGeneratorType_sustainModEnv
+        -12000,   // SFGeneratorType_releaseModEnv
+        0,        // SFGeneratorType_keynumToModEnvHold
+        0,        // SFGeneratorType_keynumToModEnvDecay
+        -12000,   // SFGeneratorType_delayVolEnv
+        -12000,   // SFGeneratorType_attackVolEnv
+        -12000,   // SFGeneratorType_holdVolEnv
+        -12000,   // SFGeneratorType_decayVolEnv
+        0,        // SFGeneratorType_sustainVolEnv
+        -12000,   // SFGeneratorType_releaseVolEnv
+        0,        // SFGeneratorType_keynumToVolEnvHold
+        0,        // SFGeneratorType_keynumToVolEnvDecay
+        None,     // SFGeneratorType_instrument
+        None,     // SFGeneratorType_reserved1
+        DefRange, // SFGeneratorType_keyRange
+        DefRange, // SFGeneratorType_velRange
+        0,        // SFGeneratorType_startloopAddrsCoarseOffset
+        None,     // SFGeneratorType_keynum
+        None,     // SFGeneratorType_velocity
+        0,        // SFGeneratorType_initialAttenuation
+        None,     // SFGeneratorType_reserved2
+        0,        // SFGeneratorType_endloopAddrsCoarseOffset
+        0,        // SFGeneratorType_coarseTune
+        0,        // SFGeneratorType_fineTune
+        None,     // SFGeneratorType_sampleID
+        100,      // SFGeneratorType_sampleModes
+        None,     // SFGeneratorType_reserved3
+        0,        // SFGeneratorType_scaleTuning
+        0,        // SFGeneratorType_exclusiveClass
+        0,        // SFGeneratorType_overridingRootKey
+        None,     // SFGeneratorType_unused5
+    };
+
+    return defaults[generatorType];
 }
 
 static void ZoneDump(Zone *zone);
@@ -522,16 +485,21 @@ void InstrumentDump(Instrument *instrument)
 
 static void ZoneDump(Zone *zone)
 {
-    iprintf(2, "gen.range.key: %d-%d\n", zone->gen.range.key.low, zone->gen.range.key.high);
-    iprintf(2, "gen.range.velocity: %d-%d\n", zone->gen.range.velocity.low, zone->gen.range.velocity.high);
+    if (ZoneHasGenerator(zone, SFGeneratorType_keyRange))
+        iprintf(2, "gen.keyRange: %d-%d\n", zone->gen.keyRange.low, zone->gen.keyRange.high);
+    if (ZoneHasGenerator(zone, SFGeneratorType_velRange))
+        iprintf(2, "gen.velRange: %d-%d\n", zone->gen.velRange.low, zone->gen.velRange.high);
 
-    if (zone->instrument) {
+    if (zone->instrument)
         iprintf(2, "instrument: %s\n", zone->instrument->name);
-    }
 
     if (zone->sample) {
-        iprintf(2, "gen.sample.loop: %s\n", zone->gen.sample.loop ? "true" : "false");
-        iprintf(2, "gen.sample.untilRelease: %s\n", zone->gen.sample.untilRelease ? "true" : "false");
+        if (ZoneHasGenerator(zone, SFGeneratorType_sampleModes))
+            iprintf(2, "gen.sampleModes: %d - %s\n", zone->gen.sampleModes,
+                    zone->gen.sampleModes == 1 ? "loops continuously" :
+                    zone->gen.sampleModes == 3 ? "loops for the duration of key depression then proceeds to play the remainder of the sample." :
+                    "no loop");
+
         iprintf(2, "sample: %s\n", zone->sample->name);
     }
 }
@@ -547,11 +515,10 @@ void SampleDump(Sample *sample)
     printf("sampleRate: %d\n", sample->sampleRate);
     printf("originalPitch: %d\n", sample->originalPitch);
     printf("pitchCorrection: %d\n", sample->pitchCorrection);
-    printf("sampleType: %s %04X\n",
+    printf("sampleType: %d - %s\n", sample->sampleType,
             sample->sampleType == 1 ? "MONO" :
             sample->sampleType == 2 ? "R" :
             sample->sampleType == 4 ? "L" :
-            "Unsuported",
-            sample->sampleType);
+            "Unsuported");
     printf("\n");
 }

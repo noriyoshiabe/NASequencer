@@ -8,7 +8,10 @@
 
 typedef struct _Voice {
     int64_t startedAt;
-    uint8_t noteNo;
+    Zone *presetGlobalZone;
+    Zone *presetZone;
+    Zone *instrumentGlobalZone;
+    Zone *instrumentZone;
 } Voice;
 
 struct _Synthesizer {
@@ -69,10 +72,14 @@ Synthesizer *SynthesizerCreate(const char *filepath)
 #if 1
     Preset *preset = SynthesizerFindPreset(self, 25, 128);
     PresetDump(preset);
+#if 0
+    for (int i = 0; i < preset->zoneCount; ++i) {
+        InstrumentDump(preset->zones[i]->instrument);
+    }
+#endif
     InstrumentDump(preset->zones[0]->instrument);
     SampleDump(preset->zones[0]->instrument->zones[0]->sample);
 #endif
-
 
     return self;
 }
