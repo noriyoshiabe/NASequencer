@@ -10,6 +10,7 @@ set(SOURCES
   Synthesizer.c
   SoundFont.c
   Preset.c
+  Voice.c
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
