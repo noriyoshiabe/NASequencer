@@ -450,6 +450,28 @@ int GeneratorDefaultValue(SFGeneratorType generatorType)
     return defaults[generatorType];
 }
 
+bool GeneratorIsInstrumentOnly(SFGeneratorType generatorType)
+{
+    switch (generatorType) {
+    case SFGeneratorType_startAddrsOffset:
+    case SFGeneratorType_endAddrsOffset:
+    case SFGeneratorType_startloopAddrsOffset:
+    case SFGeneratorType_endloopAddrsOffset:
+    case SFGeneratorType_startAddrsCoarseOffset:
+    case SFGeneratorType_endAddrsCoarseOffset:
+    case SFGeneratorType_startloopAddrsCoarseOffset:
+    case SFGeneratorType_keynum:
+    case SFGeneratorType_velocity:
+    case SFGeneratorType_endloopAddrsCoarseOffset:
+    case SFGeneratorType_sampleModes:
+    case SFGeneratorType_exclusiveClass:
+    case SFGeneratorType_overridingRootKey:
+        return true;
+    default:
+        return false;
+    }
+}
+
 #define iprintf(indent, ...) do { for (int __i = 0; __i < indent; ++__i) putc(' ', stdout); printf(__VA_ARGS__); } while (0)
 
 void PresetDump(Preset *preset)
