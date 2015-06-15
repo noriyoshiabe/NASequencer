@@ -131,6 +131,10 @@ void VoicePoolDeallocVoice(VoicePool *self, Voice *voice)
         voice->next->prev = voice->prev;
     }
 
+    if (self->voiceList == voice) {
+        self->voiceList = voice->next;
+    }
+
     voice->prev = NULL;
     voice->next = self->voiceFreeList;
     self->voiceFreeList = voice;
