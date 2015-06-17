@@ -23,8 +23,8 @@ static int16_t VoiceGeneratorShortValue(Voice *self, SFGeneratorType generatorTy
     //   or to a generator in a global instrument zone supersedes or replaces that generator.
 
     int16_t value =
-        ZoneHasGenerator(self->instrumentZone, generatorType) ? self->instrumentZone->gen.array[generatorType] :
-        ZoneHasGenerator(self->instrumentGlobalZone, generatorType) ? self->instrumentGlobalZone->gen.array[generatorType] :
+        self->instrumentZone && ZoneHasGenerator(self->instrumentZone, generatorType) ? self->instrumentZone->gen.array[generatorType] :
+        self->instrumentGlobalZone && ZoneHasGenerator(self->instrumentGlobalZone, generatorType) ? self->instrumentGlobalZone->gen.array[generatorType] :
         GeneratorDefaultValue(generatorType);
 
     // 8.5 Precedence and Absolute and Relative values.
@@ -55,8 +55,8 @@ static int16_t VoiceGeneratorShortValue(Voice *self, SFGeneratorType generatorTy
         //   supersedes or replaces that generator in the global preset zone.
         //   That generator then has its effects added to the destination-summing node of all zones in the given instrument.
         value += 
-            ZoneHasGenerator(self->presetZone, generatorType) ? self->presetZone->gen.array[generatorType] :
-            ZoneHasGenerator(self->presetGlobalZone, generatorType) ? self->presetGlobalZone->gen.array[generatorType] :
+            self->presetZone && ZoneHasGenerator(self->presetZone, generatorType) ? self->presetZone->gen.array[generatorType] :
+            self->presetGlobalZone && ZoneHasGenerator(self->presetGlobalZone, generatorType) ? self->presetGlobalZone->gen.array[generatorType] :
             0;
     }
 
