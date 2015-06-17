@@ -28,6 +28,11 @@ typedef struct _VoicePool {
     Voice *freeList;
 } VoicePool;
 
+uint32_t VoiceSampleStart(Voice *self);
+uint32_t VoiceSampleEnd(Voice *self);
+uint32_t VoiceSampleStartLoop(Voice *self);
+uint32_t VoiceSampleEndLoop(Voice *self);
+
 extern void VoiceDump(Voice *voice);
 
 extern VoicePool *VoicePoolCreate();

@@ -1,5 +1,6 @@
 #include "AudioOut.h"
 #include "Synthesizer.h"
+#include "MidiSource.h"
 #include <unistd.h>
 #include <math.h>
 
@@ -8,6 +9,7 @@ typedef struct _SineWave {
     float phase;
 } SineWave;
 
+#if 0
 static void _AudioCallback(void *receiver, uint32_t sampleRate, AudioSample *buffer, uint32_t length)
 {
     SineWave *signWave = receiver;
@@ -20,15 +22,37 @@ static void _AudioCallback(void *receiver, uint32_t sampleRate, AudioSample *buf
     }
 }
 
+#else
+
+static void _AudioCallback(void *receiver, uint32_t sampleRate, AudioSample *buffer, uint32_t count)
+{
+    Synthesizer *synth = receiver;
+    SynthesizerComputeAudioSample(synth, sampleRate, buffer, count);
+}
+#endif
+
+#if 1
 int main(int argc, char **argv)
 {
     Synthesizer *synth = SynthesizerCreate(argv[1]);
+
+    AudioOut *audioOut = AudioOutSharedInstance();
+    AudioOutRegisterCallback(audioOut, _AudioCallback, synth);
+
+    MidiSource *midiSrc = (MidiSource *)synth;
+    midiSrc->send(midiSrc, NULL, 0);
+
+    while (SynthesizerVoicingCount(synth)) {
+        usleep(100);
+    }
+
+    AudioOutUnregisterCallback(audioOut, _AudioCallback, synth);
     SynthesizerDestroy(synth);
     return 0;
 }
 
+#else
 
-#if 0
 int main(int argc, char **argv)
 {
     AudioOut *audioOut = AudioOutSharedInstance();

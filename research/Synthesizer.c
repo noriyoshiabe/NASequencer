@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 
 struct _Synthesizer {
     MidiSource srcVtbl;
@@ -21,6 +22,7 @@ struct _Synthesizer {
 
     VoicePool *voicePool;
     Voice *voiceList;
+    int voicingCount;
 };
 
 static Preset *SynthesizerFindPreset(Synthesizer *self, uint16_t midiPresetNo, uint16_t bankNo);
@@ -31,6 +33,9 @@ static void SynthesizerRemoveVoice(Synthesizer *self, Voice *voice);
 
 static void send(void *self, uint8_t *bytes, size_t length)
 {
+#if 1
+    SynthesizerNoteOn(self, 0, 64, 127);
+#endif
 }
 
 static bool isAvailable(void *self)
@@ -91,7 +96,7 @@ Synthesizer *SynthesizerCreate(const char *filepath)
     }
 #endif
 
-#if 1
+#if 0
     SynthesizerNoteOn(self, 0, 64, 127);
     for (Voice *voice = self->voiceList; NULL != voice; voice = voice->next) {
         VoiceDump(voice);
@@ -192,6 +197,7 @@ static void SynthesizerAddVoice(Synthesizer *self, Voice *voice)
 
     voice->next = self->voiceList;
     self->voiceList = voice;
+    ++self->voicingCount;
 }
 
 static void SynthesizerRemoveVoice(Synthesizer *self, Voice *voice)
@@ -210,20 +216,13 @@ static void SynthesizerRemoveVoice(Synthesizer *self, Voice *voice)
 
     voice->prev = NULL;
     voice->next = NULL;
+
+    --self->voicingCount;
 }
 
 void SynthesizerComputeAudioSample(Synthesizer *self, uint32_t sampleRate, AudioSample *buffer, uint32_t count)
 {
-    // 7.10 The SHDR Sub-chunk
-    // The values of dwStart, dwEnd, dwStartloop, and dwEndloop
-    // must all be within the range of the sample data field
-    // included in the SoundFont compatible bank or referenced in the sound ROM.
-    // Also, to allow a variety of hardware platforms to be able to reproduce the data,
-    // the samples have a minimum length of 48 data points,a minimum loop size of 32 data points
-    // and a minimum of 8 valid points prior to dwStartloop and after dwEndloop.
-    // Thus dwStart must be less than dwStartloop-7,
-
-    for (Voice *voice = self->voiceList; NULL != voice; voice = voice->next) {
+    for (Voice *voice = self->voiceList; NULL != voice;) {
         uint32_t sampleStart = VoiceSampleStart(voice);
         uint32_t sampleEnd = VoiceSampleEnd(voice);
         // TODO looping
@@ -235,19 +234,27 @@ void SynthesizerComputeAudioSample(Synthesizer *self, uint32_t sampleRate, Audio
 
             // TODO pan
             // TODO 24bit sample
-            buffer->L = (float)self->sf->smpl[current] / (float)SHRT_MAX;
-            buffer->R = (float)self->sf->smpl[current] / (float)SHRT_MAX;
+            buffer[i].L += (float)self->sf->smpl[current] / (float)SHRT_MAX;
+            buffer[i].R += (float)self->sf->smpl[current] / (float)SHRT_MAX;
 
-            // `<` insted of `<=` beacause, `a minimum of 8 valid points prior to dwStartloop and after dwEndloop.`
-            if (sampleEnd - sampleStart < current) {
+            if (sampleEnd < current) {
                 Voice *toFree = voice;
                 voice = voice->next;
                 SynthesizerRemoveVoice(self, toFree);
                 VoicePoolDeallocVoice(self->voicePool, toFree);
-                break;
+                goto NEXT;
             }
         }
+
+        voice = voice->next;
+NEXT:
+        ;
     }
 
     self->tick += count;
+}
+
+int SynthesizerVoicingCount(Synthesizer *self)
+{
+    return self->voicingCount;
 }

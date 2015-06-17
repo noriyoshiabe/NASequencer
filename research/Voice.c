@@ -6,7 +6,7 @@
 
 static int16_t VoiceGeneratorShortValue(Voice *self, SFGeneratorType generatorType);
 
-static uint32_t VoiceSampleStart(Voice *self)
+uint32_t VoiceSampleStart(Voice *self)
 {
     uint32_t ret = self->instrumentZone->sample->start;
     ret += VoiceGeneratorShortValue(self, SFGeneratorType_startAddrsOffset);
@@ -14,7 +14,7 @@ static uint32_t VoiceSampleStart(Voice *self)
     return ret;
 }
 
-static uint32_t VoiceSampleEnd(Voice *self)
+uint32_t VoiceSampleEnd(Voice *self)
 {
     uint32_t ret = self->instrumentZone->sample->end;
     ret += VoiceGeneratorShortValue(self, SFGeneratorType_endAddrsOffset);
@@ -22,7 +22,7 @@ static uint32_t VoiceSampleEnd(Voice *self)
     return ret;
 }
 
-static uint32_t VoiceSampleStartLoop(Voice *self)
+uint32_t VoiceSampleStartLoop(Voice *self)
 {
     uint32_t ret = self->instrumentZone->sample->startLoop;
     ret += VoiceGeneratorShortValue(self, SFGeneratorType_startloopAddrsOffset);
@@ -30,7 +30,7 @@ static uint32_t VoiceSampleStartLoop(Voice *self)
     return ret;
 }
 
-static uint32_t VoiceSampleEndLoop(Voice *self)
+uint32_t VoiceSampleEndLoop(Voice *self)
 {
     uint32_t ret = self->instrumentZone->sample->endLoop;
     ret += VoiceGeneratorShortValue(self, SFGeneratorType_endloopAddrsOffset);
