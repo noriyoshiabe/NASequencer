@@ -14,6 +14,30 @@ static uint32_t VoiceSampleStart(Voice *self)
     return ret;
 }
 
+static uint32_t VoiceSampleEnd(Voice *self)
+{
+    uint32_t ret = self->instrumentZone->sample->end;
+    ret += VoiceGeneratorShortValue(self, SFGeneratorType_endAddrsOffset);
+    ret += VoiceGeneratorShortValue(self, SFGeneratorType_endAddrsCoarseOffset) << 15; // * 32768
+    return ret;
+}
+
+static uint32_t VoiceSampleStartLoop(Voice *self)
+{
+    uint32_t ret = self->instrumentZone->sample->startLoop;
+    ret += VoiceGeneratorShortValue(self, SFGeneratorType_startloopAddrsOffset);
+    ret += VoiceGeneratorShortValue(self, SFGeneratorType_startloopAddrsCoarseOffset) << 15; // * 32768
+    return ret;
+}
+
+static uint32_t VoiceSampleEndLoop(Voice *self)
+{
+    uint32_t ret = self->instrumentZone->sample->endLoop;
+    ret += VoiceGeneratorShortValue(self, SFGeneratorType_endloopAddrsOffset);
+    ret += VoiceGeneratorShortValue(self, SFGeneratorType_endloopAddrsCoarseOffset) << 15; // * 32768
+    return ret;
+}
+
 static int16_t VoiceGeneratorShortValue(Voice *self, SFGeneratorType generatorType)
 {
     // 9.4 The SoundFont Generator Model
@@ -167,6 +191,9 @@ void VoiceDump(Voice *voice)
 
     printf("generatorValue:\n");
     printf("  start: %d\n", VoiceSampleStart(voice));
+    printf("  end: %d\n", VoiceSampleEnd(voice));
+    printf("  startLoop: %d\n", VoiceSampleStartLoop(voice));
+    printf("  endLoop: %d\n", VoiceSampleEndLoop(voice));
     printf("  attackVolEnv: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_attackVolEnv));
 
     printf("\n");
