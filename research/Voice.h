@@ -10,7 +10,7 @@ typedef struct _Voice {
     uint8_t key;
     uint8_t velocity;
 
-    int64_t startedAt;
+    uint32_t startTick;
 
     Zone *presetGlobalZone;
     Zone *presetZone;
@@ -25,8 +25,7 @@ typedef struct _Voice {
 
 typedef struct _VoicePool {
     Voice *buffer;
-    Voice *voiceList;
-    Voice *voiceFreeList;
+    Voice *freeList;
 } VoicePool;
 
 extern void VoiceDump(Voice *voice);
@@ -35,4 +34,3 @@ extern VoicePool *VoicePoolCreate();
 extern void VoicePoolDestroy(VoicePool *self);
 extern Voice* VoicePoolAllocVoice(VoicePool *self);
 extern void VoicePoolDeallocVoice(VoicePool *self, Voice *voice);
-extern void VoicePoolDump(VoicePool *self);

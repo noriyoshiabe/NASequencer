@@ -17,12 +17,17 @@ struct _Synthesizer {
     Preset **presets;
     int presetCount;
 
+    uint32_t tick;
+
     VoicePool *voicePool;
+    Voice *voiceList;
 };
 
 static Preset *SynthesizerFindPreset(Synthesizer *self, uint16_t midiPresetNo, uint16_t bankNo);
 static int PresetComparator(const void *preset1, const void *preset2);
 static int SynthesizerNoteOn(Synthesizer *self, uint8_t channel, uint8_t noteNo, uint8_t velocity);
+static void SynthesizerAddVoice(Synthesizer *self, Voice *voice);
+static void SynthesizerRemoveVoice(Synthesizer *self, Voice *voice);
 
 static void send(void *self, uint8_t *bytes, size_t length)
 {
@@ -88,7 +93,9 @@ Synthesizer *SynthesizerCreate(const char *filepath)
 
 #if 1
     SynthesizerNoteOn(self, 0, 64, 127);
-    VoicePoolDump(self->voicePool);
+    for (Voice *voice = self->voiceList; NULL != voice; voice = voice->next) {
+        VoiceDump(voice);
+    }
 #endif
 
     return self;
@@ -131,7 +138,8 @@ static int SynthesizerNoteOn(Synthesizer *self, uint8_t channel, uint8_t noteNo,
 {
     int voicedCount = 0;
 
-    Preset *preset = self->presets[0]; // TODO from channel map
+    Preset *preset = SynthesizerFindPreset(self, 29, 0);
+    //Preset *preset = self->presets[0]; // TODO from channel map
     
     for (int i = 0; i < preset->zoneCount; ++i) {
         Zone *presetZone = preset->zones[i];
@@ -164,7 +172,9 @@ static int SynthesizerNoteOn(Synthesizer *self, uint8_t channel, uint8_t noteNo,
 
             voice->sf = self->sf;
 
-            // TODO record current time to startedAt
+            voice->startTick = self->tick;
+
+            SynthesizerAddVoice(self, voice);
 
             ++voicedCount;
         }
@@ -172,4 +182,72 @@ static int SynthesizerNoteOn(Synthesizer *self, uint8_t channel, uint8_t noteNo,
 
 END:
     return voicedCount;
+}
+
+static void SynthesizerAddVoice(Synthesizer *self, Voice *voice)
+{
+    if (self->voiceList) {
+        self->voiceList->prev = voice;
+    }
+
+    voice->next = self->voiceList;
+    self->voiceList = voice;
+}
+
+static void SynthesizerRemoveVoice(Synthesizer *self, Voice *voice)
+{
+    if (voice->prev) {
+        voice->prev->next = voice->next;
+    }
+
+    if (voice->next) {
+        voice->next->prev = voice->prev;
+    }
+
+    if (self->voiceList == voice) {
+        self->voiceList = voice->next;
+    }
+
+    voice->prev = NULL;
+    voice->next = NULL;
+}
+
+void SynthesizerComputeAudioSample(Synthesizer *self, uint32_t sampleRate, AudioSample *buffer, uint32_t count)
+{
+    // 7.10 The SHDR Sub-chunk
+    // The values of dwStart, dwEnd, dwStartloop, and dwEndloop
+    // must all be within the range of the sample data field
+    // included in the SoundFont compatible bank or referenced in the sound ROM.
+    // Also, to allow a variety of hardware platforms to be able to reproduce the data,
+    // the samples have a minimum length of 48 data points,a minimum loop size of 32 data points
+    // and a minimum of 8 valid points prior to dwStartloop and after dwEndloop.
+    // Thus dwStart must be less than dwStartloop-7,
+
+    for (Voice *voice = self->voiceList; NULL != voice; voice = voice->next) {
+        uint32_t sampleStart = VoiceSampleStart(voice);
+        uint32_t sampleEnd = VoiceSampleEnd(voice);
+        // TODO looping
+        //uint32_t sampleStartLoop = VoiceSampleStartLoop(voice);
+        //uint32_t sampleEndLoop = VoiceSampleEndLoop(voice);
+        
+        for (int i = 0; i < count; ++i) {
+            uint32_t current = sampleStart + (self->tick - voice->startTick) + i;
+
+            // TODO pan
+            // TODO 24bit sample
+            buffer->L = (float)self->sf->smpl[current] / (float)SHRT_MAX;
+            buffer->R = (float)self->sf->smpl[current] / (float)SHRT_MAX;
+
+            // `<` insted of `<=` beacause, `a minimum of 8 valid points prior to dwStartloop and after dwEndloop.`
+            if (sampleEnd - sampleStart < current) {
+                Voice *toFree = voice;
+                voice = voice->next;
+                SynthesizerRemoveVoice(self, toFree);
+                VoicePoolDeallocVoice(self->voicePool, toFree);
+                break;
+            }
+        }
+    }
+
+    self->tick += count;
 }

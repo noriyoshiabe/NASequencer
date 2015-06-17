@@ -99,7 +99,7 @@ VoicePool *VoicePoolCreate()
     VoicePool *self = calloc(1, sizeof(VoicePool));
 
     self->buffer = calloc(MAX_POLYPHONY, sizeof(Voice));
-    self->voiceFreeList = &self->buffer[0];
+    self->freeList = &self->buffer[0];
 
     Voice *prev = NULL;
 
@@ -125,43 +125,22 @@ void VoicePoolDestroy(VoicePool *self)
 
 Voice* VoicePoolAllocVoice(VoicePool *self)
 {
-    if (!self->voiceFreeList) {
+    if (!self->freeList) {
         return NULL;
     }
 
-    Voice *ret = self->voiceFreeList;
-    self->voiceFreeList = ret->next;
+    Voice *ret = self->freeList;
+    self->freeList = ret->next;
 
     memset(ret, 0, sizeof(Voice));
-
-    if (self->voiceList) {
-        self->voiceList->prev = ret;
-    }
-
-    ret->next = self->voiceList;
-    ret->prev = NULL;
-    self->voiceList = ret;
-
     return ret;
 }
 
 void VoicePoolDeallocVoice(VoicePool *self, Voice *voice)
 {
-    if (voice->prev) {
-        voice->prev->next = voice->next;
-    }
-
-    if (voice->next) {
-        voice->next->prev = voice->prev;
-    }
-
-    if (self->voiceList == voice) {
-        self->voiceList = voice->next;
-    }
-
     voice->prev = NULL;
-    voice->next = self->voiceFreeList;
-    self->voiceFreeList = voice;
+    voice->next = self->freeList;
+    self->freeList = voice;
 }
 
 void VoiceDump(Voice *voice)
@@ -171,7 +150,7 @@ void VoiceDump(Voice *voice)
     printf("channel: %d\n", voice->channel);
     printf("key: %d\n", voice->key);
     printf("velocity: %d\n", voice->velocity);
-    printf("startedAt: %lld\n", voice->startedAt);
+    printf("startTick: %d\n", voice->startTick);
 
     if (voice->presetGlobalZone) {
         printf("presetGlobalZone:\n");
@@ -197,11 +176,4 @@ void VoiceDump(Voice *voice)
     printf("  attackVolEnv: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_attackVolEnv));
 
     printf("\n");
-}
-
-void VoicePoolDump(VoicePool *self)
-{
-    for (Voice *voice = self->voiceList; NULL != voice; voice = voice->next) {
-        VoiceDump(voice);
-    }
 }

@@ -1,15 +1,11 @@
 #pragma once
 
 #include <stdint.h>
-
-typedef struct _AudioSample {
-    float L;
-    float R;
-} AudioSample;
+#include "AudioSample.h"
 
 typedef struct _AudioOut AudioOut;
 
-typedef void (*AudioCallback)(void *receiver, uint32_t sampleRate, AudioSample *buffer, uint32_t length);
+typedef void (*AudioCallback)(void *receiver, uint32_t sampleRate, AudioSample *buffer, uint32_t count);
 
 AudioOut *AudioOutSharedInstance();
 void AudioOutRegisterCallback(AudioOut *self, AudioCallback function, void *receiver);
