@@ -5,12 +5,28 @@
 
 #define MAX_POLYPHONY 64
 
+typedef enum {
+    VolEnvPhaseDelay,
+    VolEnvPhaseAttack,
+    VolEnvPhaseHold,
+    VolEnvPhaseDecay,
+    VolEnvPhaseSustain,
+    VolEnvPhaseRelase,
+} VolEnvPhase;
+
 typedef struct _Voice {
     uint8_t channel;
     uint8_t key;
     uint8_t velocity;
 
-    uint32_t startTick;
+    uint32_t tick;
+    float time;
+    uint32_t sampleIndex;
+
+    VolEnvPhase phase;
+    float startPhaseTime;
+    float volEnv;
+    float releasedVolEnv;
 
     Zone *presetGlobalZone;
     Zone *presetZone;
@@ -28,10 +44,16 @@ typedef struct _VoicePool {
     Voice *freeList;
 } VoicePool;
 
-uint32_t VoiceSampleStart(Voice *self);
-uint32_t VoiceSampleEnd(Voice *self);
-uint32_t VoiceSampleStartLoop(Voice *self);
-uint32_t VoiceSampleEndLoop(Voice *self);
+extern uint32_t VoiceSampleStart(Voice *self);
+extern uint32_t VoiceSampleEnd(Voice *self);
+extern uint32_t VoiceSampleStartLoop(Voice *self);
+extern uint32_t VoiceSampleEndLoop(Voice *self);
+
+extern void VoiceUpdate(Voice *self, uint32_t sampleRate);
+extern void VoiceRelease(Voice *self);
+extern bool VoiceIsReleased(Voice *self);
+
+extern int16_t VoiceGeneratorShortValue(Voice *self, SFGeneratorType generatorType);
 
 extern void VoiceDump(Voice *voice);
 

@@ -3,8 +3,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
+#include <sys/param.h>
 
-static int16_t VoiceGeneratorShortValue(Voice *self, SFGeneratorType generatorType);
+#define Timecent2Sec(tc) (pow(2.0, (double)tc / 1200.0))
 
 uint32_t VoiceSampleStart(Voice *self)
 {
@@ -38,7 +40,95 @@ uint32_t VoiceSampleEndLoop(Voice *self)
     return ret;
 }
 
-static int16_t VoiceGeneratorShortValue(Voice *self, SFGeneratorType generatorType)
+void VoiceUpdate(Voice *self, uint32_t sampleRate)
+{
+    double duration;
+    double endTime;
+    int count;
+    float sustainLevel;
+
+    switch (self->phase) {
+    case VolEnvPhaseDelay:
+        endTime = Timecent2Sec(VoiceGeneratorShortValue(self, SFGeneratorType_delayVolEnv));
+        self->volEnv = 0.0f;
+        break;
+    case VolEnvPhaseAttack:
+        endTime = Timecent2Sec(VoiceGeneratorShortValue(self, SFGeneratorType_attackVolEnv)) + self->startPhaseTime;
+        count = MIN(1, round((endTime - self->time) * (double)sampleRate));
+        self->volEnv = 1.0f / (float)count;
+        break;
+    case VolEnvPhaseHold:
+        endTime = Timecent2Sec(VoiceGeneratorShortValue(self, SFGeneratorType_holdVolEnv)) + self->startPhaseTime;
+        self->volEnv = 1.0f;
+        break;
+    case VolEnvPhaseDecay:
+        duration = Timecent2Sec(VoiceGeneratorShortValue(self, SFGeneratorType_decayVolEnv));
+        endTime = self->startPhaseTime + duration;
+        sustainLevel = 1.0f - 0.001f * (float)VoiceGeneratorShortValue(self, SFGeneratorType_sustainVolEnv);
+        self->volEnv = 0.0 < duration
+            ? MAX(0.0f, ((self->time - self->startPhaseTime) + (endTime - self->time) * sustainLevel) / duration)
+            : sustainLevel;
+        break;
+    case VolEnvPhaseSustain:
+        sustainLevel = 1.0f - 0.001f * (float)VoiceGeneratorShortValue(self, SFGeneratorType_sustainVolEnv);
+        self->volEnv = sustainLevel;
+        break;
+    case VolEnvPhaseRelase:
+        duration = Timecent2Sec(VoiceGeneratorShortValue(self, SFGeneratorType_releaseVolEnv));
+        endTime = self->startPhaseTime + duration;
+        self->volEnv = 0.0 < duration
+            ? MAX(0.0f, ((endTime - self->time) * self->releasedVolEnv) / duration)
+            : 0.0f;
+        break;
+    }
+
+    ++self->tick;
+    self->time = (float)self->tick / (float)sampleRate;
+
+    switch (self->phase) {
+    case VolEnvPhaseDelay:
+        if (self->time >= endTime) {
+            self->phase = VolEnvPhaseAttack;
+            self->startPhaseTime = self->time;
+        }
+        break;
+    case VolEnvPhaseAttack:
+        if (self->time >= endTime) {
+            self->phase = VolEnvPhaseHold;
+            self->startPhaseTime = self->time;
+        }
+        break;
+    case VolEnvPhaseHold:
+        if (self->time >= endTime) {
+            self->phase = VolEnvPhaseDecay;
+            self->startPhaseTime = self->time;
+        }
+        break;
+    case VolEnvPhaseDecay:
+        if (self->time >= endTime) {
+            self->phase = VolEnvPhaseSustain;
+            self->startPhaseTime = self->time;
+        }
+        break;
+    case VolEnvPhaseSustain:
+    case VolEnvPhaseRelase:
+        break;
+    }
+}
+
+void VoiceRelease(Voice *self)
+{
+    self->phase = VolEnvPhaseRelase;
+    self->startPhaseTime = self->time;
+    self->releasedVolEnv = self->volEnv;
+}
+
+bool VoiceIsReleased(Voice *self)
+{
+    return self->phase == VolEnvPhaseRelase && 0.0f >= self->volEnv;
+}
+
+int16_t VoiceGeneratorShortValue(Voice *self, SFGeneratorType generatorType)
 {
     // 9.4 The SoundFont Generator Model
     // - A generator in a global instrument zone that is identical to a default generator
@@ -132,7 +222,6 @@ Voice* VoicePoolAllocVoice(VoicePool *self)
     Voice *ret = self->freeList;
     self->freeList = ret->next;
 
-    memset(ret, 0, sizeof(Voice));
     return ret;
 }
 
@@ -150,7 +239,13 @@ void VoiceDump(Voice *voice)
     printf("channel: %d\n", voice->channel);
     printf("key: %d\n", voice->key);
     printf("velocity: %d\n", voice->velocity);
-    printf("startTick: %d\n", voice->startTick);
+    printf("tick: %d\n", voice->tick);
+    printf("time: %f\n", voice->time);
+    printf("sampleIndex: %d\n", voice->sampleIndex);
+    printf("phase: %d\n", voice->phase);
+    printf("startPhaseTime: %f\n", voice->startPhaseTime);
+    printf("volEnv: %f\n", voice->volEnv);
+    printf("releasedVolEnv: %f\n", voice->releasedVolEnv);
 
     if (voice->presetGlobalZone) {
         printf("presetGlobalZone:\n");
@@ -173,7 +268,12 @@ void VoiceDump(Voice *voice)
     printf("  end: %d\n", VoiceSampleEnd(voice));
     printf("  startLoop: %d\n", VoiceSampleStartLoop(voice));
     printf("  endLoop: %d\n", VoiceSampleEndLoop(voice));
+    printf("  delayVolEnv: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_delayVolEnv));
     printf("  attackVolEnv: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_attackVolEnv));
+    printf("  holdVolEnv: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_holdVolEnv));
+    printf("  decayVolEnv: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_decayVolEnv));
+    printf("  sustainVolEnv: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_sustainVolEnv));
+    printf("  releaseVolEnv: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_releaseVolEnv));
 
     printf("\n");
 }

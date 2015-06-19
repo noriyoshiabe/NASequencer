@@ -42,6 +42,10 @@ int main(int argc, char **argv)
     MidiSource *midiSrc = (MidiSource *)synth;
     midiSrc->send(midiSrc, NULL, 0);
 
+    sleep(1);
+
+    midiSrc->send(midiSrc, NULL, 1);
+
     while (SynthesizerVoicingCount(synth)) {
         usleep(100);
     }

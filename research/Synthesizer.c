@@ -28,13 +28,19 @@ struct _Synthesizer {
 static Preset *SynthesizerFindPreset(Synthesizer *self, uint16_t midiPresetNo, uint16_t bankNo);
 static int PresetComparator(const void *preset1, const void *preset2);
 static int SynthesizerNoteOn(Synthesizer *self, uint8_t channel, uint8_t noteNo, uint8_t velocity);
+static void SynthesizerNoteOff(Synthesizer *self, uint8_t channel, uint8_t noteNo);
 static void SynthesizerAddVoice(Synthesizer *self, Voice *voice);
 static void SynthesizerRemoveVoice(Synthesizer *self, Voice *voice);
 
 static void send(void *self, uint8_t *bytes, size_t length)
 {
 #if 1
-    SynthesizerNoteOn(self, 0, 64, 127);
+    if (0 == length) {
+        SynthesizerNoteOn(self, 0, 64, 127);
+    }
+    else {
+        SynthesizerNoteOff(self, 0, 64);
+    }
 #endif
 }
 
@@ -177,7 +183,14 @@ static int SynthesizerNoteOn(Synthesizer *self, uint8_t channel, uint8_t noteNo,
 
             voice->sf = self->sf;
 
-            voice->startTick = self->tick;
+            voice->tick = 0;
+            voice->time = 0.0f;
+            voice->sampleIndex = VoiceSampleStart(voice);
+
+            voice->phase = VolEnvPhaseDelay;
+            voice->startPhaseTime = 0.0f;
+            voice->volEnv = 0.0f;
+            voice->releasedVolEnv = 0.0f;
 
             SynthesizerAddVoice(self, voice);
 
@@ -187,6 +200,15 @@ static int SynthesizerNoteOn(Synthesizer *self, uint8_t channel, uint8_t noteNo,
 
 END:
     return voicedCount;
+}
+
+static void SynthesizerNoteOff(Synthesizer *self, uint8_t channel, uint8_t noteNo)
+{
+    for (Voice *voice = self->voiceList; NULL != voice; voice = voice->next) {
+        if (voice->channel == channel && voice->key == noteNo) {
+            VoiceRelease(voice);
+        }
+    }
 }
 
 static void SynthesizerAddVoice(Synthesizer *self, Voice *voice)
@@ -223,21 +245,34 @@ static void SynthesizerRemoveVoice(Synthesizer *self, Voice *voice)
 void SynthesizerComputeAudioSample(Synthesizer *self, uint32_t sampleRate, AudioSample *buffer, uint32_t count)
 {
     for (Voice *voice = self->voiceList; NULL != voice;) {
-        uint32_t sampleStart = VoiceSampleStart(voice);
         uint32_t sampleEnd = VoiceSampleEnd(voice);
-        // TODO looping
-        //uint32_t sampleStartLoop = VoiceSampleStartLoop(voice);
-        //uint32_t sampleEndLoop = VoiceSampleEndLoop(voice);
+        uint32_t sampleStartLoop = VoiceSampleStartLoop(voice);
+        uint32_t sampleEndLoop = VoiceSampleEndLoop(voice);
+
+        int16_t sampleModes = VoiceGeneratorShortValue(voice, SFGeneratorType_sampleModes);
         
         for (int i = 0; i < count; ++i) {
-            uint32_t current = sampleStart + (self->tick - voice->startTick) + i;
+            VoiceUpdate(voice, sampleRate);
 
             // TODO pan
             // TODO 24bit sample
-            buffer[i].L += (float)self->sf->smpl[current] / (float)SHRT_MAX;
-            buffer[i].R += (float)self->sf->smpl[current] / (float)SHRT_MAX;
+            buffer[i].L += (float)self->sf->smpl[voice->sampleIndex] / (float)SHRT_MAX;
+            buffer[i].R += (float)self->sf->smpl[voice->sampleIndex] / (float)SHRT_MAX;
 
-            if (sampleEnd < current) {
+            ++voice->sampleIndex;
+
+            if (sampleModes & 0x01) {
+                if (sampleModes & 0x02 && voice->phase == VolEnvPhaseRelase) {
+                    ;
+                }
+                else {
+                    if (sampleEndLoop < voice->sampleIndex) {
+                        voice->sampleIndex = sampleStartLoop;
+                    }
+                }
+            }
+
+            if (VoiceIsReleased(voice) || sampleEnd < voice->sampleIndex) {
                 Voice *toFree = voice;
                 voice = voice->next;
                 SynthesizerRemoveVoice(self, toFree);
