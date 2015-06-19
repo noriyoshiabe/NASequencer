@@ -256,8 +256,8 @@ void SynthesizerComputeAudioSample(Synthesizer *self, uint32_t sampleRate, Audio
 
             // TODO pan
             // TODO 24bit sample
-            buffer[i].L += (float)self->sf->smpl[voice->sampleIndex] / (float)SHRT_MAX;
-            buffer[i].R += (float)self->sf->smpl[voice->sampleIndex] / (float)SHRT_MAX;
+            buffer[i].L += (float)self->sf->smpl[voice->sampleIndex] / (float)SHRT_MAX * voice->volEnv;
+            buffer[i].R += (float)self->sf->smpl[voice->sampleIndex] / (float)SHRT_MAX * voice->volEnv;
 
             ++voice->sampleIndex;
 
