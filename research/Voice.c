@@ -7,6 +7,7 @@
 #include <sys/param.h>
 
 #define Timecent2Sec(tc) (pow(2.0, (double)tc / 1200.0))
+#define ConvexPositiveUnipolar(x) (sqrt(1.0 - pow((double)x - 1.0, 2.0)))
 
 uint32_t VoiceSampleStart(Voice *self)
 {
@@ -44,8 +45,8 @@ void VoiceUpdate(Voice *self, uint32_t sampleRate)
 {
     double duration;
     double endTime;
-    int count;
     float sustainLevel;
+    float f;
 
     switch (self->phase) {
     case VolEnvPhaseDelay:
@@ -53,9 +54,9 @@ void VoiceUpdate(Voice *self, uint32_t sampleRate)
         self->volEnv = 0.0f;
         break;
     case VolEnvPhaseAttack:
-        endTime = Timecent2Sec(VoiceGeneratorShortValue(self, SFGeneratorType_attackVolEnv)) + self->startPhaseTime;
-        count = MIN(1, round((endTime - self->time) * (double)sampleRate));
-        self->volEnv = 1.0f / (float)count;
+        duration = Timecent2Sec(VoiceGeneratorShortValue(self, SFGeneratorType_attackVolEnv));
+        endTime = self->startPhaseTime + duration;
+        self->volEnv = ConvexPositiveUnipolar((self->time - self->startPhaseTime) / duration);
         break;
     case VolEnvPhaseHold:
         endTime = Timecent2Sec(VoiceGeneratorShortValue(self, SFGeneratorType_holdVolEnv)) + self->startPhaseTime;
@@ -65,8 +66,9 @@ void VoiceUpdate(Voice *self, uint32_t sampleRate)
         duration = Timecent2Sec(VoiceGeneratorShortValue(self, SFGeneratorType_decayVolEnv));
         endTime = self->startPhaseTime + duration;
         sustainLevel = 1.0f - 0.001f * (float)VoiceGeneratorShortValue(self, SFGeneratorType_sustainVolEnv);
+        f = (self->time - self->startPhaseTime) / duration;
         self->volEnv = 0.0 < duration
-            ? MAX(0.0f, ((self->time - self->startPhaseTime) + (endTime - self->time) * sustainLevel) / duration)
+            ? MAX(0.0f, 1.0f * (1.0f - f) + f * sustainLevel)
             : sustainLevel;
         break;
     case VolEnvPhaseSustain:
