@@ -89,26 +89,11 @@ void VoiceUpdate(Voice *self, uint32_t sampleRate)
 
     switch (self->phase) {
     case VolEnvPhaseDelay:
-        if (self->time >= endTime) {
-            self->phase = VolEnvPhaseAttack;
-            self->startPhaseTime = self->time;
-        }
-        break;
     case VolEnvPhaseAttack:
-        if (self->time >= endTime) {
-            self->phase = VolEnvPhaseHold;
-            self->startPhaseTime = self->time;
-        }
-        break;
     case VolEnvPhaseHold:
-        if (self->time >= endTime) {
-            self->phase = VolEnvPhaseDecay;
-            self->startPhaseTime = self->time;
-        }
-        break;
     case VolEnvPhaseDecay:
         if (self->time >= endTime) {
-            self->phase = VolEnvPhaseSustain;
+            ++self->phase;
             self->startPhaseTime = self->time;
         }
         break;
