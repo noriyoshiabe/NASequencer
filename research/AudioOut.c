@@ -82,7 +82,7 @@ AudioOut *AudioOutSharedInstance()
     return _sharedInstance;
 }
 
-float AudioOutGetSampleRate(AudioOut *self)
+double AudioOutGetSampleRate(AudioOut *self)
 {
     return (float)self->sampleRate;
 }

@@ -13,23 +13,23 @@
 
 static void VoiceUpdateCachedParams(Voice *self);
 static void VoiceUpdateSampleIncrement(Voice *self);
-static void VoiceUpdateVolEnv(Voice *self, float nextTime);
+static void VoiceUpdateVolEnv(Voice *self, double nextTime);
 static uint32_t VoiceSampleStart(Voice *self);
 static uint32_t VoiceSampleEnd(Voice *self);
 static uint32_t VoiceSampleStartLoop(Voice *self);
 static uint32_t VoiceSampleEndLoop(Voice *self);
 static int16_t VoiceGeneratorShortValue(Voice *self, SFGeneratorType generatorType);
 
-static void VoiceUpdateVolEnvDelayPhase(Voice *self, float nextTime);
-static void VoiceUpdateVolEnvAttackPhase(Voice *self, float nextTime);
-static void VoiceUpdateVolEnvHoldPhase(Voice *self, float nextTime);
-static void VoiceUpdateVolEnvDecayPhase(Voice *self, float nextTime);
-static void VoiceUpdateVolEnvSustainPhase(Voice *self, float nextTime);
-static void VoiceUpdateVolEnvReleasePhase(Voice *self, float nextTime);
+static void VoiceUpdateVolEnvDelayPhase(Voice *self, double nextTime);
+static void VoiceUpdateVolEnvAttackPhase(Voice *self, double nextTime);
+static void VoiceUpdateVolEnvHoldPhase(Voice *self, double nextTime);
+static void VoiceUpdateVolEnvDecayPhase(Voice *self, double nextTime);
+static void VoiceUpdateVolEnvSustainPhase(Voice *self, double nextTime);
+static void VoiceUpdateVolEnvReleasePhase(Voice *self, double nextTime);
 
 extern void VoiceInitialize(Voice *self, uint8_t channel, uint8_t noteNo, uint8_t velocity,
         Zone *presetGlobalZone, Zone *presetZone, Zone *instrumentGlobalZone, Zone *instrumentZone,
-        SoundFont *sf, float sampleRate)
+        SoundFont *sf, double sampleRate)
 {
     self->channel = channel;
     self->key = noteNo;
@@ -44,13 +44,13 @@ extern void VoiceInitialize(Voice *self, uint8_t channel, uint8_t noteNo, uint8_
     self->sampleRate = sampleRate;
 
     self->tick = 0;
-    self->time = 0.0f;
+    self->time = 0.0;
     self->sampleIndex = VoiceSampleStart(self);
 
     self->phase = VolEnvPhaseDelay;
-    self->startPhaseTime = 0.0f;
-    self->volEnv = 0.0f;
-    self->releasedVolEnv = 0.0f;
+    self->startPhaseTime = 0.0;
+    self->volEnv = 0.0;
+    self->releasedVolEnv = 0.0;
 
     self->sampleModes = VoiceGeneratorShortValue(self, SFGeneratorType_sampleModes);
     self->exclusiveClass = VoiceGeneratorShortValue(self, SFGeneratorType_exclusiveClass);
@@ -84,28 +84,28 @@ static void VoiceUpdateSampleIncrement(Voice *self)
     Sample *sample = self->instrumentZone->sample;
 
     self->keyForSample = 0 <= (v = VoiceGeneratorShortValue(self, SFGeneratorType_keynum)) ? v : self->key;
-    float originalPitch = 0 <= (v = VoiceGeneratorShortValue(self, SFGeneratorType_overridingRootKey)) ? v : sample->originalPitch;
+    double originalPitch = 0 <= (v = VoiceGeneratorShortValue(self, SFGeneratorType_overridingRootKey)) ? v : sample->originalPitch;
 
-    float scaleTuning = VoiceGeneratorShortValue(self, SFGeneratorType_scaleTuning);
-    float cent = (self->keyForSample - originalPitch) * scaleTuning;
+    double scaleTuning = VoiceGeneratorShortValue(self, SFGeneratorType_scaleTuning);
+    double cent = (self->keyForSample - originalPitch) * scaleTuning;
     cent += self->instrumentZone->sample->pitchCorrection;
-    cent += VoiceGeneratorShortValue(self, SFGeneratorType_coarseTune) * 100.0f;
+    cent += VoiceGeneratorShortValue(self, SFGeneratorType_coarseTune) * 100.0;
     cent += VoiceGeneratorShortValue(self, SFGeneratorType_fineTune);
 
     self->sampleIncrement = (float)sample->sampleRate / self->sampleRate;
-    self->sampleIncrement *= pow(2.0, cent / 1200.0f);
+    self->sampleIncrement *= pow(2.0, cent / 1200.0);
 }
 
 void VoiceUpdate(Voice *self)
 {
-    float nextTime = (float)++self->tick / self->sampleRate;
+    double nextTime = (double)++self->tick / self->sampleRate;
     VoiceUpdateVolEnv(self, nextTime);
     self->time = nextTime;
 }
 
-static void VoiceUpdateVolEnv(Voice *self, float nextTime)
+static void VoiceUpdateVolEnv(Voice *self, double nextTime)
 {
-    void (*phases[])(Voice *, float) = {
+    void (*phases[])(Voice *, double) = {
         VoiceUpdateVolEnvDelayPhase,
         VoiceUpdateVolEnvAttackPhase,
         VoiceUpdateVolEnvHoldPhase,
@@ -117,7 +117,7 @@ static void VoiceUpdateVolEnv(Voice *self, float nextTime)
     phases[self->phase](self, nextTime);
 }
 
-static inline void VoiceUpdateVolEnvPhaseNext(Voice *self, float nextTime, float endTime)
+static inline void VoiceUpdateVolEnvPhaseNext(Voice *self, double nextTime, double endTime)
 {
     if (nextTime >= endTime) {
         ++self->phase;
@@ -125,7 +125,7 @@ static inline void VoiceUpdateVolEnvPhaseNext(Voice *self, float nextTime, float
     }
 }
 
-static void VoiceUpdateVolEnvDelayPhase(Voice *self, float nextTime)
+static void VoiceUpdateVolEnvDelayPhase(Voice *self, double nextTime)
 {
     // 8.1.1 Kinds of Generator Enumerators
     // 33 delayVolEnv
@@ -136,15 +136,15 @@ static void VoiceUpdateVolEnvDelayPhase(Voice *self, float nextTime)
         return;
     }
 
-    float timecent = Clip(self->cache.delayVolEnv, -12000.0f, 5000.0f);
-    float endTime = Timecent2Sec(timecent) + self->startPhaseTime;
+    double timecent = Clip(self->cache.delayVolEnv, -12000, 5000);
+    double endTime = Timecent2Sec(timecent) + self->startPhaseTime;
 
-    self->volEnv = 0.0f;
+    self->volEnv = 0.0;
 
     VoiceUpdateVolEnvPhaseNext(self, nextTime, endTime);
 }
 
-static void VoiceUpdateVolEnvAttackPhase(Voice *self, float nextTime)
+static void VoiceUpdateVolEnvAttackPhase(Voice *self, double nextTime)
 {
     // 8.1.1 Kinds of Generator Enumerators
     // 34 attackVolEnv
@@ -155,10 +155,10 @@ static void VoiceUpdateVolEnvAttackPhase(Voice *self, float nextTime)
         return;
     }
 
-    float timecent = self->cache.attackVolEnv;
-    timecent = Clip(timecent, -12000.0f, 8000.0f);
-    float duration = Timecent2Sec(timecent);
-    float endTime = duration + self->startPhaseTime;
+    double timecent = self->cache.attackVolEnv;
+    timecent = Clip(timecent, -12000.0, 8000.0);
+    double duration = Timecent2Sec(timecent);
+    double endTime = duration + self->startPhaseTime;
 
     // 9.1.7 Envelope Generators
     // The envelope then rises in a convex curve to a value of one during the attack phase.
@@ -167,7 +167,7 @@ static void VoiceUpdateVolEnvAttackPhase(Voice *self, float nextTime)
     VoiceUpdateVolEnvPhaseNext(self, nextTime, endTime);
 }
 
-static void VoiceUpdateVolEnvHoldPhase(Voice *self, float nextTime)
+static void VoiceUpdateVolEnvHoldPhase(Voice *self, double nextTime)
 {
     // 8.1.1 Kinds of Generator Enumerators
     // 35 holdVolEnv
@@ -178,7 +178,7 @@ static void VoiceUpdateVolEnvHoldPhase(Voice *self, float nextTime)
         return;
     }
 
-    float timecent = self->cache.holdVolEnv;
+    double timecent = self->cache.holdVolEnv;
 
     // 39 keynumToVolEnvHold
     // This is the degree, in timecents per KeyNumber units,
@@ -186,24 +186,24 @@ static void VoiceUpdateVolEnvHoldPhase(Voice *self, float nextTime)
     // The hold time at key number 60 is always unchanged.
     // The unit scaling is such that a value of 100 provides a hold time which tracks the keyboard;
     // that is, an upward octave causes the hold time to halve.
-    timecent *= pow(2.0, self->cache.keynumToVolEnvHold * (60.0f - self->keyForSample) / 1200.0f);
+    timecent *= pow(2.0, self->cache.keynumToVolEnvHold * (60.0 - self->keyForSample) / 1200.0);
 
-    timecent = Clip(timecent, -12000.0f, 5000.0f);
+    timecent = Clip(timecent, -12000.0, 5000.0);
 
-    float duration = Timecent2Sec(timecent);
-    float endTime = duration + self->startPhaseTime;
+    double duration = Timecent2Sec(timecent);
+    double endTime = duration + self->startPhaseTime;
 
-    self->volEnv = 1.0f;
+    self->volEnv = 1.0;
 
     VoiceUpdateVolEnvPhaseNext(self, nextTime, endTime);
 }
 
-static void VoiceUpdateVolEnvDecayPhase(Voice *self, float nextTime)
+static void VoiceUpdateVolEnvDecayPhase(Voice *self, double nextTime)
 {
     // 8.1.1 Kinds of Generator Enumerators
     // 36 decayVolEnv
 
-    float timecent = self->cache.decayVolEnv;
+    double timecent = self->cache.decayVolEnv;
 
     // 40 keynumToVolEnvDecay
     // This is the degree, in timecents per KeyNumber units,
@@ -211,69 +211,69 @@ static void VoiceUpdateVolEnvDecayPhase(Voice *self, float nextTime)
     // The hold time at key number 60 is always unchanged.
     // The unit scaling is such that a value of 100 provides a hold time that tracks the keyboard;
     // that is, an upward octave causes the hold time to halve. 
-    timecent *= pow(2.0, self->cache.keynumToVolEnvDecay * (60.0f - self->keyForSample) / 1200.0f);
+    timecent *= pow(2.0, self->cache.keynumToVolEnvDecay * (60.0 - self->keyForSample) / 1200.0);
 
-    timecent = Clip(timecent, -12000.0f, 8000.0f);
+    timecent = Clip(timecent, -12000.0, 8000.0);
 
-    float duration = Timecent2Sec(timecent);
-    float endTime = duration + self->startPhaseTime;
+    double duration = Timecent2Sec(timecent);
+    double endTime = duration + self->startPhaseTime;
 
-    float sustainLevel = 1.0f - 0.001f * Clip(self->cache.sustainVolEnv, 0, 1440);
+    double sustainLevel = 1.0 - 0.001 * Clip(self->cache.sustainVolEnv, 0, 1440);
 
     // 9.1.7 Envelope Generators
     // When the hold phase ends, the envelope enters a decay phase during which its value decreases linearly to a sustain level.
-    float f = (self->time - self->startPhaseTime) / duration;
-    self->volEnv = 0.0 < duration ? MAX(0.0f, 1.0f * (1.0f - f) + f * sustainLevel) : sustainLevel;
+    double f = (self->time - self->startPhaseTime) / duration;
+    self->volEnv = 0.0 < duration ? MAX(0.0, 1.0 * (1.0 - f) + f * sustainLevel) : sustainLevel;
 
     VoiceUpdateVolEnvPhaseNext(self, nextTime, endTime);
 }
 
-static void VoiceUpdateVolEnvSustainPhase(Voice *self, float nextTime)
+static void VoiceUpdateVolEnvSustainPhase(Voice *self, double nextTime)
 {
     // 9.1.7 Envelope Generators
     // When the sustain level is reached, the envelope enters sustain phase,
     // during which the envelope stays at the sustain level. 
-    float sustainLevel = 1.0f - 0.001f * Clip(self->cache.sustainVolEnv, 0, 1440);
+    double sustainLevel = 1.0 - 0.001 * Clip(self->cache.sustainVolEnv, 0, 1440);
     self->volEnv = sustainLevel;
 
     // Whenever a key-off occurs, the envelope immediately enters a release phase
 }
 
-static void VoiceUpdateVolEnvReleasePhase(Voice *self, float nextTime)
+static void VoiceUpdateVolEnvReleasePhase(Voice *self, double nextTime)
 {
-    // For exclusiveClass, the value -200.0f is from fludesynth
+    // For exclusiveClass, the value -200.0 is from fludesynth
     // 8.1.1 Kinds of Generator Enumerators
     // 57 exclusiveClass - any other sounding note with the same exclusive class value should be rapidly terminated.
-    float timecent = self->terminated ? -200.0f : self->cache.releaseVolEnv;
+    double timecent = self->terminated ? -200.0 : self->cache.releaseVolEnv;
 
-    timecent = Clip(timecent, -12000.0f, 8000.0f);
-    float duration = Timecent2Sec(timecent);
-    float endTime = duration + self->startPhaseTime;
+    timecent = Clip(timecent, -12000.0, 8000.0);
+    double duration = Timecent2Sec(timecent);
+    double endTime = duration + self->startPhaseTime;
 
     // 9.1.7 Envelope Generators
     // Whenever a key-off occurs, the envelope immediately enters a release phase
     // during which the value linearly ramps from the current value to zero.
     // When zero is reached, the envelope value remains at zero.
-    self->volEnv = 0.0 < duration ? MAX(0.0f, ((endTime - self->time) * self->releasedVolEnv) / duration) : 0.0f;
+    self->volEnv = 0.0 < duration ? MAX(0.0, ((endTime - self->time) * self->releasedVolEnv) / duration) : 0.0;
 }
 
 extern AudioSample VoiceComputeSample(Voice *self)
 {
     int index = floor(self->sampleIndex);
-    float over = self->sampleIndex - (float)index;
+    double over = self->sampleIndex - (double)index;
     int32_t indexSample = (self->sf->smpl[index] << 8) + (self->sf->sm24 ? self->sf->sm24[index] : 0);
     int32_t nextSample = (self->sf->smpl[index + 1] << 8) + (self->sf->sm24 ? self->sf->sm24[index + 1] : 0);
 
-    float normalized = ((float)indexSample * (1.0f - over) + (float)nextSample * over) / (float)(SHRT_MAX << 8);
+    double normalized = ((double)indexSample * (1.0 - over) + (double)nextSample * over) / (double)(SHRT_MAX << 8);
 
     // TODO velocity
 
-    float pan = self->cache.pan / 500.0f;
-    float left = 1.0f - self->cache.pan;
-    float right = 1.0f + self->cache.pan;
+    double pan = self->cache.pan / 500.0;
+    double left = 1.0 - self->cache.pan;
+    double right = 1.0 + self->cache.pan;
 
-    left = Clip(left, 0.0f, 1.0f);
-    right = Clip(right, 0.0f, 1.0f);
+    left = Clip(left, 0.0, 1.0);
+    right = Clip(right, 0.0, 1.0);
 
     AudioSample ret;
     ret.L = normalized * self->volEnv * left;
@@ -292,7 +292,7 @@ void VoiceIncrementSample(Voice *self)
         }
         else {
             if (self->cache.sampleEndLoop < self->sampleIndex) {
-                float over = self->sampleIndex - self->cache.sampleEndLoop;
+                double over = self->sampleIndex - self->cache.sampleEndLoop;
                 self->sampleIndex = self->cache.sampleStartLoop + over;
             }
         }
@@ -315,7 +315,7 @@ void VoiceTerminate(Voice *self)
 
 bool VoiceIsReleased(Voice *self)
 {
-    return (self->phase == VolEnvPhaseRelease && 0.0f >= self->volEnv)
+    return (self->phase == VolEnvPhaseRelease && 0.0 >= self->volEnv)
         || self->cache.sampleEnd < self->sampleIndex;
 }
 

@@ -26,7 +26,7 @@ struct _Synthesizer {
     Voice *voiceLast;
     int voicingCount;
 
-    float sampleRate;
+    double sampleRate;
 
     Preset *channelPresets[CHANNEL_COUNT];
 
@@ -124,7 +124,7 @@ static void getProperty(void *_self, MidiSourceProperty property, void *value)
     }
 }
 
-Synthesizer *SynthesizerCreate(const char *filepath, float sampleRate)
+Synthesizer *SynthesizerCreate(const char *filepath, double sampleRate)
 {
     Synthesizer *self = calloc(1, sizeof(Synthesizer));
 
@@ -265,7 +265,6 @@ static void SynthesizerNoteOff(Synthesizer *self, uint8_t channel, uint8_t noteN
     for (Voice *voice = self->voiceFirst; NULL != voice; voice = voice->next) {
         if (voice->channel == channel && voice->key == noteNo) {
             VoiceRelease(voice);
-            break;
         }
     }
 }

@@ -21,14 +21,14 @@ typedef struct _Voice {
     uint8_t velocity;
 
     uint32_t tick;
-    float time;
-    float sampleIncrement;
-    float sampleIndex;
+    double time;
+    double sampleIncrement;
+    double sampleIndex;
 
     VolEnvPhase phase;
-    float startPhaseTime;
-    float volEnv;
-    float releasedVolEnv;
+    double startPhaseTime;
+    double volEnv;
+    double releasedVolEnv;
 
     Zone *presetGlobalZone;
     Zone *presetZone;
@@ -37,7 +37,7 @@ typedef struct _Voice {
 
     SoundFont *sf;
 
-    float sampleRate;
+    double sampleRate;
     int16_t sampleModes;
     uint8_t keyForSample;
 
@@ -72,7 +72,7 @@ typedef struct _VoicePool {
 
 extern void VoiceInitialize(Voice *self, uint8_t channel, uint8_t noteNo, uint8_t velocity,
         Zone *presetGlobalZone, Zone *presetZone, Zone *instrumentGlobalZone, Zone *instrumentZone,
-        SoundFont *sf, float sampleRate);
+        SoundFont *sf, double sampleRate);
 
 extern void VoiceUpdate(Voice *self);
 extern AudioSample VoiceComputeSample(Voice *self);

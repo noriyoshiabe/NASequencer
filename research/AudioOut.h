@@ -8,6 +8,6 @@ typedef struct _AudioOut AudioOut;
 typedef void (*AudioCallback)(void *receiver, AudioSample *buffer, uint32_t count);
 
 AudioOut *AudioOutSharedInstance();
-float AudioOutGetSampleRate(AudioOut *self);
+double AudioOutGetSampleRate(AudioOut *self);
 void AudioOutRegisterCallback(AudioOut *self, AudioCallback function, void *receiver);
 void AudioOutUnregisterCallback(AudioOut *self, AudioCallback function, void *receiver);
