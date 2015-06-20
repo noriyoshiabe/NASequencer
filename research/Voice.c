@@ -52,10 +52,11 @@ extern void VoiceInitialize(Voice *self, uint8_t channel, uint8_t noteNo, uint8_
     self->volEnv = 0.0f;
     self->releasedVolEnv = 0.0f;
 
-    VoiceUpdateSampleIncrement(self);
-
     self->sampleModes = VoiceGeneratorShortValue(self, SFGeneratorType_sampleModes);
+    self->exclusiveClass = VoiceGeneratorShortValue(self, SFGeneratorType_exclusiveClass);
+    self->terminated = false;
 
+    VoiceUpdateSampleIncrement(self);
     VoiceUpdateCachedParams(self);
 }
 
@@ -239,7 +240,11 @@ static void VoiceUpdateVolEnvSustainPhase(Voice *self, float nextTime)
 
 static void VoiceUpdateVolEnvReleasePhase(Voice *self, float nextTime)
 {
-    float timecent = self->cache.releaseVolEnv;
+    // For exclusiveClass, the value -200.0f is from fludesynth
+    // 8.1.1 Kinds of Generator Enumerators
+    // 57 exclusiveClass - any other sounding note with the same exclusive class value should be rapidly terminated.
+    float timecent = self->terminated ? -200.0f : self->cache.releaseVolEnv;
+
     timecent = Clip(timecent, -12000.0f, 8000.0f);
     float duration = Timecent2Sec(timecent);
     float endTime = duration + self->startPhaseTime;
@@ -298,6 +303,13 @@ void VoiceRelease(Voice *self)
     self->phase = VolEnvPhaseRelease;
     self->startPhaseTime = self->time;
     self->releasedVolEnv = self->volEnv;
+}
+
+void VoiceTerminate(Voice *self)
+{
+    VoiceRelease(self);
+    self->terminated = true;
+    self->exclusiveClass = 0;
 }
 
 bool VoiceIsReleased(Voice *self)

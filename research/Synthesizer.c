@@ -31,6 +31,7 @@ static Preset *SynthesizerFindPreset(Synthesizer *self, uint16_t midiPresetNo, u
 static int PresetComparator(const void *preset1, const void *preset2);
 static int SynthesizerNoteOn(Synthesizer *self, uint8_t channel, uint8_t noteNo, uint8_t velocity);
 static void SynthesizerNoteOff(Synthesizer *self, uint8_t channel, uint8_t noteNo);
+static void SynthesizerReleaseExclusiveClass(Synthesizer *self, Voice *newVoice);
 static void SynthesizerAddVoice(Synthesizer *self, Voice *voice);
 static void SynthesizerRemoveVoice(Synthesizer *self, Voice *voice);
 
@@ -180,6 +181,8 @@ static int SynthesizerNoteOn(Synthesizer *self, uint8_t channel, uint8_t noteNo,
                     preset->globalZone, presetZone, instrument->globalZone, instrumentZone,
                     self->sf, self->sampleRate);
 
+            SynthesizerReleaseExclusiveClass(self, voice);
+
             SynthesizerAddVoice(self, voice);
 
             ++voicedCount;
@@ -196,6 +199,24 @@ static void SynthesizerNoteOff(Synthesizer *self, uint8_t channel, uint8_t noteN
         if (voice->channel == channel && voice->key == noteNo) {
             VoiceRelease(voice);
             break;
+        }
+    }
+}
+
+static void SynthesizerReleaseExclusiveClass(Synthesizer *self, Voice *newVoice)
+{
+    // 8.1.1 Kinds of Generator Enumerators
+    // 57 exclusiveClass
+    // An exclusive class value of zero indicates no exclusive class; no special action is taken.
+    if (0 == newVoice->exclusiveClass) {
+        return;
+    }
+
+    // TODO check preset identity insted of channel
+
+    for (Voice *voice = self->voiceFirst; NULL != voice; voice = voice->next) {
+        if (voice->channel == newVoice->channel && voice->exclusiveClass == newVoice->exclusiveClass) {
+            VoiceTerminate(voice);
         }
     }
 }

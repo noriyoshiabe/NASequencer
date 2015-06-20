@@ -41,6 +41,9 @@ typedef struct _Voice {
     int16_t sampleModes;
     uint8_t keyForSample;
 
+    uint8_t exclusiveClass;
+    uint8_t terminated;
+
     struct {
         int16_t delayVolEnv;
         int16_t attackVolEnv;
@@ -75,6 +78,7 @@ extern void VoiceUpdate(Voice *self);
 extern AudioSample VoiceComputeSample(Voice *self);
 extern void VoiceIncrementSample(Voice *self);
 extern void VoiceRelease(Voice *self);
+extern void VoiceTerminate(Voice *self);
 extern bool VoiceIsReleased(Voice *self);
 extern void VoiceDump(Voice *voice);
 
