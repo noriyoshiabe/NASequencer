@@ -12,9 +12,7 @@ typedef enum {
     VolEnvPhaseHold,
     VolEnvPhaseDecay,
     VolEnvPhaseSustain,
-    VolEnvPhaseRelase,
-
-    VolEnvPhaseCount,
+    VolEnvPhaseRelease,
 } VolEnvPhase;
 
 typedef struct _Voice {
@@ -41,13 +39,23 @@ typedef struct _Voice {
 
     float sampleRate;
     int16_t sampleModes;
+    uint8_t keyForSample;
 
     struct {
-        double volEnvValues[VolEnvPhaseCount];
-        float sampleStartLoop;
-        float sampleEndLoop;
-        float sampleEnd;
-        float pan;
+        int16_t delayVolEnv;
+        int16_t attackVolEnv;
+        int16_t holdVolEnv;
+        int16_t decayVolEnv;
+        int16_t sustainVolEnv;
+        int16_t releaseVolEnv;
+        int16_t keynumToVolEnvHold;
+        int16_t keynumToVolEnvDecay;
+
+        uint32_t sampleStartLoop;
+        uint32_t sampleEndLoop;
+        uint32_t sampleEnd;
+
+        int16_t pan;
     } cache;
 
     struct _Voice *next;
