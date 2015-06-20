@@ -441,7 +441,7 @@ int GeneratorDefaultValue(SFGeneratorType generatorType)
         None,     // SFGeneratorType_sampleID
         100,      // SFGeneratorType_sampleModes
         None,     // SFGeneratorType_reserved3
-        0,        // SFGeneratorType_scaleTuning
+        100,      // SFGeneratorType_scaleTuning
         0,        // SFGeneratorType_exclusiveClass
         0,        // SFGeneratorType_overridingRootKey
         None,     // SFGeneratorType_unused5

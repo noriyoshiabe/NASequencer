@@ -12,6 +12,7 @@
 #define Clip(v, min, max) (MIN(v, MAX(v, min)))
 
 static void VoiceUpdateCachedParams(Voice *self);
+static void VoiceUpdateSampleIncrement(Voice *self);
 static void VoiceUpdateVolEnv(Voice *self, float nextTime);
 static uint32_t VoiceSampleStart(Voice *self);
 static uint32_t VoiceSampleEnd(Voice *self);
@@ -51,20 +52,7 @@ extern void VoiceInitialize(Voice *self, uint8_t channel, uint8_t noteNo, uint8_
     self->volEnv = 0.0f;
     self->releasedVolEnv = 0.0f;
 
-    int16_t v;
-    Sample *sample = self->instrumentZone->sample;
-
-    self->keyForSample = 0 <= (v = VoiceGeneratorShortValue(self, SFGeneratorType_keynum)) ? v : self->key;
-    float originalPitch = 0 <= (v = VoiceGeneratorShortValue(self, SFGeneratorType_overridingRootKey)) ? v : sample->originalPitch;
-
-    self->sampleIncrement = (float)sample->sampleRate / self->sampleRate;
-    self->sampleIncrement *= pow(2.0, (self->keyForSample - originalPitch) / 12.0);
-
-    // TODO
-    // coarseTune
-    // fineTune
-    // scaleTuning
-    
+    VoiceUpdateSampleIncrement(self);
 
     self->sampleModes = VoiceGeneratorShortValue(self, SFGeneratorType_sampleModes);
 
@@ -87,6 +75,23 @@ static void VoiceUpdateCachedParams(Voice *self)
     self->cache.sampleEnd = VoiceSampleEnd(self);
 
     self->cache.pan = VoiceGeneratorShortValue(self, SFGeneratorType_pan);
+}
+
+static void VoiceUpdateSampleIncrement(Voice *self)
+{
+    int16_t v;
+    Sample *sample = self->instrumentZone->sample;
+
+    self->keyForSample = 0 <= (v = VoiceGeneratorShortValue(self, SFGeneratorType_keynum)) ? v : self->key;
+    float originalPitch = 0 <= (v = VoiceGeneratorShortValue(self, SFGeneratorType_overridingRootKey)) ? v : sample->originalPitch;
+
+    float scaleTuning = VoiceGeneratorShortValue(self, SFGeneratorType_scaleTuning);
+    float cent = (self->keyForSample - originalPitch) * scaleTuning;
+    cent += VoiceGeneratorShortValue(self, SFGeneratorType_coarseTune) * 100.0f;
+    cent += VoiceGeneratorShortValue(self, SFGeneratorType_fineTune);
+
+    self->sampleIncrement = (float)sample->sampleRate / self->sampleRate;
+    self->sampleIncrement *= pow(2.0, cent / 1200.0f);
 }
 
 void VoiceUpdate(Voice *self)
