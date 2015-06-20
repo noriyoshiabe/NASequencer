@@ -8,6 +8,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define CHANNEL_COUNT 16
+
 struct _Synthesizer {
     MidiSource srcVtbl;
 
@@ -25,6 +27,13 @@ struct _Synthesizer {
     int voicingCount;
 
     float sampleRate;
+
+    Preset *channelPresets[CHANNEL_COUNT];
+
+    struct {
+        uint8_t msb;
+        uint8_t lsb;
+    } control[CHANNEL_COUNT];
 };
 
 static Preset *SynthesizerFindPreset(Synthesizer *self, uint16_t midiPresetNo, uint16_t bankNo);
@@ -32,37 +41,87 @@ static int PresetComparator(const void *preset1, const void *preset2);
 static int SynthesizerNoteOn(Synthesizer *self, uint8_t channel, uint8_t noteNo, uint8_t velocity);
 static void SynthesizerNoteOff(Synthesizer *self, uint8_t channel, uint8_t noteNo);
 static void SynthesizerReleaseExclusiveClass(Synthesizer *self, Voice *newVoice);
+static void SynthesizerProgramChange(Synthesizer *self, uint8_t channel, uint16_t bankNo, uint8_t programNo);
 static void SynthesizerAddVoice(Synthesizer *self, Voice *voice);
 static void SynthesizerRemoveVoice(Synthesizer *self, Voice *voice);
 
-static void send(void *self, uint8_t *bytes, size_t length)
+static void send(void *_self, uint8_t *bytes, size_t length)
 {
-#if 1
-    if (0 == length) {
-        SynthesizerNoteOn(self, 0, 64, 127);
+    Synthesizer *self = _self;
+
+    switch (bytes[0] & 0xF0) {
+    case 0x90:
+        if (3 <= length) {
+            SynthesizerNoteOn(self, bytes[0] & 0x0F, bytes[1], bytes[2]);
+        }
+        break;
+    case 0x80:
+        if (3 <= length) {
+            SynthesizerNoteOff(self, bytes[0] & 0x0F, bytes[1]);
+        }
+        break;
+    case 0xB0:
+        if (3 <= length) {
+            uint8_t channel = bytes[0] & 0x0F;
+
+            switch (bytes[1]) {
+            case 0x00:
+                self->control[channel].msb = bytes[2];
+                break;
+            case 0x20:
+                self->control[channel].lsb = bytes[2];
+                break;
+            }
+        }
+        break;
+    case 0xC0:
+        if (2 <= length) {
+            uint8_t channel = bytes[0] & 0x0F;
+            uint16_t bankNo = self->control[channel].msb << 8 | self->control[channel].lsb;
+            SynthesizerProgramChange(self, channel, bankNo, bytes[1]);
+        }
+        break;
     }
-    else {
-        SynthesizerNoteOff(self, 0, 64);
+}
+
+static bool isAvailable(void *_self)
+{
+    Synthesizer *self = _self;
+    return self->sf && 0 < self->presetCount;
+}
+
+static bool hasProperty(void *self, MidiSourceProperty property)
+{
+    switch (property) {
+    case MidiSourcePropertyPresetMap:
+    case MidiSourcePropertyPresetCount:
+        return true;
+    default:
+        return false;
     }
-#endif
 }
 
-static bool isAvailable(void *self)
-{
-    return true;
-}
-
-static bool hasProperty(void *self, const char *name)
-{
-    return false;
-}
-
-static void setProperty(void *self, const char *name, const void *value)
+static void setProperty(void *_self, MidiSourceProperty property, const void *value)
 {
 }
 
-static void getProperty(void *self, const char *name, void *value)
+static void getProperty(void *_self, MidiSourceProperty property, void *value)
 {
+    Synthesizer *self = _self;
+    PresetMap *presetMaps = value;
+
+    switch (property) {
+    case MidiSourcePropertyPresetMap:
+        for (int i = 0; i < self->presetCount; ++i) {
+            strncpy(presetMaps[i].name, self->presets[i]->name, sizeof(presetMaps[i].name));
+            presetMaps[i].bankNo = self->presets[i]->bankNo;
+            presetMaps[i].programNo = self->presets[i]->midiPresetNo;
+        }
+        break;
+    case MidiSourcePropertyPresetCount:
+        *((int *)value) = self->presetCount;
+        break;
+    }
 }
 
 Synthesizer *SynthesizerCreate(const char *filepath, float sampleRate)
@@ -85,6 +144,11 @@ Synthesizer *SynthesizerCreate(const char *filepath, float sampleRate)
     ParsePresets(self->sf, &self->presets, &self->presetCount);
     qsort(self->presets, self->presetCount, sizeof(Preset *), PresetComparator);
 
+    if (0 < self->presetCount) {
+        for (int i = 0; i < CHANNEL_COUNT; ++i) {
+            self->channelPresets[i] = self->presets[0];
+        }
+    }
 #if 0
     for (int i = 0; i < self->presetCount; ++i) {
         PresetDump(self->presets[i]);
@@ -154,8 +218,11 @@ static int SynthesizerNoteOn(Synthesizer *self, uint8_t channel, uint8_t noteNo,
 {
     int voicedCount = 0;
 
-    Preset *preset = SynthesizerFindPreset(self, 29, 0);
-    //Preset *preset = self->presets[0]; // TODO from channel map
+    if (CHANNEL_COUNT <= channel) {
+        return voicedCount;
+    }
+
+    Preset *preset = self->channelPresets[channel];
     
     for (int i = 0; i < preset->zoneCount; ++i) {
         Zone *presetZone = preset->zones[i];
@@ -218,6 +285,14 @@ static void SynthesizerReleaseExclusiveClass(Synthesizer *self, Voice *newVoice)
         if (voice->channel == newVoice->channel && voice->exclusiveClass == newVoice->exclusiveClass) {
             VoiceTerminate(voice);
         }
+    }
+}
+
+static void SynthesizerProgramChange(Synthesizer *self, uint8_t channel, uint16_t bankNo, uint8_t programNo)
+{
+    Preset *preset = SynthesizerFindPreset(self, programNo, bankNo);
+    if (preset) {
+        self->channelPresets[channel] = preset;
     }
 }
 
