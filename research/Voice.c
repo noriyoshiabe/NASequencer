@@ -88,6 +88,7 @@ static void VoiceUpdateSampleIncrement(Voice *self)
 
     float scaleTuning = VoiceGeneratorShortValue(self, SFGeneratorType_scaleTuning);
     float cent = (self->keyForSample - originalPitch) * scaleTuning;
+    cent += self->instrumentZone->sample->pitchCorrection;
     cent += VoiceGeneratorShortValue(self, SFGeneratorType_coarseTune) * 100.0f;
     cent += VoiceGeneratorShortValue(self, SFGeneratorType_fineTune);
 
