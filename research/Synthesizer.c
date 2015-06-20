@@ -20,7 +20,8 @@ struct _Synthesizer {
     uint32_t tick;
 
     VoicePool *voicePool;
-    Voice *voiceList;
+    Voice *voiceFirst;
+    Voice *voiceLast;
     int voicingCount;
 
     float sampleRate;
@@ -107,7 +108,7 @@ Synthesizer *SynthesizerCreate(const char *filepath, float sampleRate)
 
 #if 0
     SynthesizerNoteOn(self, 0, 64, 127);
-    for (Voice *voice = self->voiceList; NULL != voice; voice = voice->next) {
+    for (Voice *voice = self->voiceFirst; NULL != voice; voice = voice->next) {
         VoiceDump(voice);
     }
 #endif
@@ -191,21 +192,30 @@ END:
 
 static void SynthesizerNoteOff(Synthesizer *self, uint8_t channel, uint8_t noteNo)
 {
-    for (Voice *voice = self->voiceList; NULL != voice; voice = voice->next) {
+    for (Voice *voice = self->voiceFirst; NULL != voice; voice = voice->next) {
         if (voice->channel == channel && voice->key == noteNo) {
             VoiceRelease(voice);
+            break;
         }
     }
 }
 
 static void SynthesizerAddVoice(Synthesizer *self, Voice *voice)
 {
-    if (self->voiceList) {
-        self->voiceList->prev = voice;
+    if (!self->voiceFirst) {
+        self->voiceFirst = voice;
+        voice->prev= NULL;
     }
 
-    voice->next = self->voiceList;
-    self->voiceList = voice;
+    if (self->voiceLast) {
+        self->voiceLast->next = voice;
+        voice->prev = self->voiceLast;
+    }
+
+    self->voiceLast = voice;
+
+    voice->next = NULL;
+
     ++self->voicingCount;
 }
 
@@ -219,8 +229,12 @@ static void SynthesizerRemoveVoice(Synthesizer *self, Voice *voice)
         voice->next->prev = voice->prev;
     }
 
-    if (self->voiceList == voice) {
-        self->voiceList = voice->next;
+    if (self->voiceFirst == voice) {
+        self->voiceFirst = voice->next;
+    }
+
+    if (self->voiceLast == voice) {
+        self->voiceLast = voice->prev;
     }
 
     voice->prev = NULL;
@@ -231,7 +245,7 @@ static void SynthesizerRemoveVoice(Synthesizer *self, Voice *voice)
 
 void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer, uint32_t count)
 {
-    for (Voice *voice = self->voiceList; NULL != voice;) {
+    for (Voice *voice = self->voiceFirst; NULL != voice;) {
         for (int i = 0; i < count; ++i) {
             VoiceUpdate(voice);
 
