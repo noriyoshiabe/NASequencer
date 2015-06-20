@@ -5,7 +5,7 @@
 #include "AudioSample.h"
 
 typedef struct _Synthesizer Synthesizer;
-extern Synthesizer *SynthesizerCreate(const char *filepath);
-extern void SynthesizerComputeAudioSample(Synthesizer *self, uint32_t sampleRate, AudioSample *buffer, uint32_t count);
+extern Synthesizer *SynthesizerCreate(const char *filepath, float sampleRate);
+extern void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer, uint32_t count);
 extern int SynthesizerVoicingCount(Synthesizer *self);
 extern void SynthesizerDestroy(Synthesizer *self);

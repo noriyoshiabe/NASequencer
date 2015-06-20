@@ -10,10 +10,10 @@ typedef struct _SineWave {
 } SineWave;
 
 #if 0
-static void _AudioCallback(void *receiver, uint32_t sampleRate, AudioSample *buffer, uint32_t length)
+static void _AudioCallback(void *receiver, AudioSample *buffer, uint32_t length)
 {
     SineWave *signWave = receiver;
-    float freq = signWave->frequency * 2 * M_PI / sampleRate;
+    float freq = signWave->frequency * 2 * M_PI / 44100.0f;
 
     for (int i = 0; i < length; ++i) {
         float wave = sin(signWave->phase) / 4;
@@ -24,19 +24,19 @@ static void _AudioCallback(void *receiver, uint32_t sampleRate, AudioSample *buf
 
 #else
 
-static void _AudioCallback(void *receiver, uint32_t sampleRate, AudioSample *buffer, uint32_t count)
+static void _AudioCallback(void *receiver, AudioSample *buffer, uint32_t count)
 {
     Synthesizer *synth = receiver;
-    SynthesizerComputeAudioSample(synth, sampleRate, buffer, count);
+    SynthesizerComputeAudioSample(synth, buffer, count);
 }
 #endif
 
 #if 1
 int main(int argc, char **argv)
 {
-    Synthesizer *synth = SynthesizerCreate(argv[1]);
-
     AudioOut *audioOut = AudioOutSharedInstance();
+    Synthesizer *synth = SynthesizerCreate(argv[1], AudioOutGetSampleRate(audioOut));
+
     AudioOutRegisterCallback(audioOut, _AudioCallback, synth);
 
     MidiSource *midiSrc = (MidiSource *)synth;

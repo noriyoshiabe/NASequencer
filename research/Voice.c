@@ -10,48 +10,78 @@
 #define Timecent2Sec(tc) (pow(2.0, (double)tc / 1200.0))
 #define ConvexPositiveUnipolar(x) (sqrt(1.0 - pow((double)x - 1.0, 2.0)))
 
+static void VoiceUpdateCachedParams(Voice *self);
 static void VoiceUpdateVolEnv(Voice *self, float nextTime);
-static void VoiceUpdateSampleIncrement(Voice *self, uint32_t sampleRate);
+static uint32_t VoiceSampleStart(Voice *self);
+static uint32_t VoiceSampleEnd(Voice *self);
+static uint32_t VoiceSampleStartLoop(Voice *self);
+static uint32_t VoiceSampleEndLoop(Voice *self);
+static int16_t VoiceGeneratorShortValue(Voice *self, SFGeneratorType generatorType);
 
-uint32_t VoiceSampleStart(Voice *self)
+extern void VoiceInitialize(Voice *self, uint8_t channel, uint8_t noteNo, uint8_t velocity,
+        Zone *presetGlobalZone, Zone *presetZone, Zone *instrumentGlobalZone, Zone *instrumentZone,
+        SoundFont *sf, float sampleRate)
 {
-    uint32_t ret = self->instrumentZone->sample->start;
-    ret += VoiceGeneratorShortValue(self, SFGeneratorType_startAddrsOffset);
-    ret += VoiceGeneratorShortValue(self, SFGeneratorType_startAddrsCoarseOffset) << 15; // * 32768
-    return ret;
+    self->channel = channel;
+    self->key = noteNo;
+    self->velocity = velocity;
+
+    self->presetGlobalZone = presetGlobalZone;
+    self->presetZone = presetZone;
+    self->instrumentGlobalZone = instrumentGlobalZone;
+    self->instrumentZone = instrumentZone;
+
+    self->sf = sf;
+    self->sampleRate = sampleRate;
+
+    self->tick = 0;
+    self->time = 0.0f;
+    self->sampleIndex = VoiceSampleStart(self);
+
+    self->phase = VolEnvPhaseDelay;
+    self->startPhaseTime = 0.0f;
+    self->volEnv = 0.0f;
+    self->releasedVolEnv = 0.0f;
+
+    int16_t v;
+    Sample *sample = self->instrumentZone->sample;
+
+    int16_t key = 0 <= (v = VoiceGeneratorShortValue(self, SFGeneratorType_keynum)) ? v : self->key;
+    int16_t originalPitch = 0 <= (v = VoiceGeneratorShortValue(self, SFGeneratorType_overridingRootKey)) ? v : sample->originalPitch;
+
+    self->sampleIncrement = (float)sample->sampleRate / self->sampleRate;
+    self->sampleIncrement *= pow(2.0, (float)(key - originalPitch) / 12.0);
+
+    // TODO
+    // coarseTune
+    // fineTune
+    // scaleTuning
+    
+
+    self->sampleModes = VoiceGeneratorShortValue(self, SFGeneratorType_sampleModes);
+
+    VoiceUpdateCachedParams(self);
 }
 
-uint32_t VoiceSampleEnd(Voice *self)
+static void VoiceUpdateCachedParams(Voice *self)
 {
-    uint32_t ret = self->instrumentZone->sample->end;
-    ret += VoiceGeneratorShortValue(self, SFGeneratorType_endAddrsOffset);
-    ret += VoiceGeneratorShortValue(self, SFGeneratorType_endAddrsCoarseOffset) << 15; // * 32768
-    return ret;
+    self->cache.volEnvValues[VolEnvPhaseDelay] = Timecent2Sec(VoiceGeneratorShortValue(self, SFGeneratorType_delayVolEnv));
+    self->cache.volEnvValues[VolEnvPhaseAttack] = Timecent2Sec(VoiceGeneratorShortValue(self, SFGeneratorType_attackVolEnv));
+    self->cache.volEnvValues[VolEnvPhaseHold] = Timecent2Sec(VoiceGeneratorShortValue(self, SFGeneratorType_holdVolEnv));
+    self->cache.volEnvValues[VolEnvPhaseDecay] = Timecent2Sec(VoiceGeneratorShortValue(self, SFGeneratorType_decayVolEnv));
+    self->cache.volEnvValues[VolEnvPhaseRelase] = Timecent2Sec(VoiceGeneratorShortValue(self, SFGeneratorType_releaseVolEnv));
+
+    self->cache.volEnvValues[VolEnvPhaseSustain] = 1.0f - 0.001f * (float)VoiceGeneratorShortValue(self, SFGeneratorType_sustainVolEnv);
+
+    self->cache.sampleStartLoop = (float)VoiceSampleStartLoop(self);
+    self->cache.sampleEndLoop = (float)VoiceSampleEndLoop(self);
+    self->cache.sampleEnd = (float)VoiceSampleEnd(self);
 }
 
-uint32_t VoiceSampleStartLoop(Voice *self)
+void VoiceUpdate(Voice *self)
 {
-    uint32_t ret = self->instrumentZone->sample->startLoop;
-    ret += VoiceGeneratorShortValue(self, SFGeneratorType_startloopAddrsOffset);
-    ret += VoiceGeneratorShortValue(self, SFGeneratorType_startloopAddrsCoarseOffset) << 15; // * 32768
-    return ret;
-}
-
-uint32_t VoiceSampleEndLoop(Voice *self)
-{
-    uint32_t ret = self->instrumentZone->sample->endLoop;
-    ret += VoiceGeneratorShortValue(self, SFGeneratorType_endloopAddrsOffset);
-    ret += VoiceGeneratorShortValue(self, SFGeneratorType_endloopAddrsCoarseOffset) << 15; // * 32768
-    return ret;
-}
-
-void VoiceUpdate(Voice *self, uint32_t sampleRate)
-{
-    float nextTime = (float)++self->tick / (float)sampleRate;
-
+    float nextTime = (float)++self->tick / self->sampleRate;
     VoiceUpdateVolEnv(self, nextTime);
-    VoiceUpdateSampleIncrement(self, sampleRate);
-
     self->time = nextTime;
 }
 
@@ -61,44 +91,37 @@ static void VoiceUpdateVolEnv(Voice *self, float nextTime)
     // keynumToVolEnvHold
     // keynumToVolEnvDecay
 
-    double duration;
-    double endTime;
-    float sustainLevel;
-    float f;
+    double duration = self->cache.volEnvValues[self->phase];
+    double endTime = duration + self->startPhaseTime;
+
+    double sustainLevel = self->cache.volEnvValues[self->phase];
+    double f;
 
     switch (self->phase) {
     case VolEnvPhaseDelay:
-        endTime = Timecent2Sec(VoiceGeneratorShortValue(self, SFGeneratorType_delayVolEnv));
         self->volEnv = 0.0f;
         break;
     case VolEnvPhaseAttack:
-        duration = Timecent2Sec(VoiceGeneratorShortValue(self, SFGeneratorType_attackVolEnv));
-        endTime = self->startPhaseTime + duration;
         self->volEnv = ConvexPositiveUnipolar((self->time - self->startPhaseTime) / duration);
         break;
     case VolEnvPhaseHold:
-        endTime = Timecent2Sec(VoiceGeneratorShortValue(self, SFGeneratorType_holdVolEnv)) + self->startPhaseTime;
         self->volEnv = 1.0f;
         break;
     case VolEnvPhaseDecay:
-        duration = Timecent2Sec(VoiceGeneratorShortValue(self, SFGeneratorType_decayVolEnv));
-        endTime = self->startPhaseTime + duration;
-        sustainLevel = 1.0f - 0.001f * (float)VoiceGeneratorShortValue(self, SFGeneratorType_sustainVolEnv);
         f = (self->time - self->startPhaseTime) / duration;
         self->volEnv = 0.0 < duration
             ? MAX(0.0f, 1.0f * (1.0f - f) + f * sustainLevel)
             : sustainLevel;
         break;
     case VolEnvPhaseSustain:
-        sustainLevel = 1.0f - 0.001f * (float)VoiceGeneratorShortValue(self, SFGeneratorType_sustainVolEnv);
         self->volEnv = sustainLevel;
         break;
     case VolEnvPhaseRelase:
-        duration = Timecent2Sec(VoiceGeneratorShortValue(self, SFGeneratorType_releaseVolEnv));
-        endTime = self->startPhaseTime + duration;
         self->volEnv = 0.0 < duration
             ? MAX(0.0f, ((endTime - self->time) * self->releasedVolEnv) / duration)
             : 0.0f;
+        break;
+    default:
         break;
     }
 
@@ -114,25 +137,9 @@ static void VoiceUpdateVolEnv(Voice *self, float nextTime)
         break;
     case VolEnvPhaseSustain:
     case VolEnvPhaseRelase:
+    default:
         break;
     }
-}
-
-static void VoiceUpdateSampleIncrement(Voice *self, uint32_t sampleRate)
-{
-    int16_t v;
-    Sample *sample = self->instrumentZone->sample;
-
-    int16_t key = 0 <= (v = VoiceGeneratorShortValue(self, SFGeneratorType_keynum)) ? v : self->key;
-    int16_t originalPitch = 0 <= (v = VoiceGeneratorShortValue(self, SFGeneratorType_overridingRootKey)) ? v : sample->originalPitch;
-
-    self->sampleIncrement = (float)sample->sampleRate / (float)sampleRate;
-    self->sampleIncrement *= pow(2.0, (float)(key - originalPitch) / 12.0);
-
-    // TODO
-    // coarseTune
-    // fineTune
-    // scaleTuning
 }
 
 extern AudioSample VoiceComputeSample(Voice *self)
@@ -156,20 +163,16 @@ extern AudioSample VoiceComputeSample(Voice *self)
 
 void VoiceIncrementSample(Voice *self)
 {
-    int16_t sampleModes = VoiceGeneratorShortValue(self, SFGeneratorType_sampleModes);
-
     self->sampleIndex += self->sampleIncrement;
 
-    if (sampleModes & 0x01) {
-        if (sampleModes & 0x02 && self->phase == VolEnvPhaseRelase) {
+    if (self->sampleModes & 0x01) {
+        if (self->sampleModes & 0x02 && self->phase == VolEnvPhaseRelase) {
             ;
         }
         else {
-            uint32_t sampleEndLoop = VoiceSampleEndLoop(self);
-
-            if ((float)sampleEndLoop < self->sampleIndex) {
-                float over = self->sampleIndex - (float)sampleEndLoop;
-                self->sampleIndex = (float)VoiceSampleStartLoop(self) + over;
+            if (self->cache.sampleEndLoop < self->sampleIndex) {
+                float over = self->sampleIndex - self->cache.sampleEndLoop;
+                self->sampleIndex = self->cache.sampleStartLoop + over;
             }
         }
     }
@@ -185,10 +188,42 @@ void VoiceRelease(Voice *self)
 bool VoiceIsReleased(Voice *self)
 {
     return (self->phase == VolEnvPhaseRelase && 0.0f >= self->volEnv)
-        || (float)VoiceSampleEnd(self) < self->sampleIndex;
+        || self->cache.sampleEnd < self->sampleIndex;
 }
 
-int16_t VoiceGeneratorShortValue(Voice *self, SFGeneratorType generatorType)
+static uint32_t VoiceSampleStart(Voice *self)
+{
+    uint32_t ret = self->instrumentZone->sample->start;
+    ret += VoiceGeneratorShortValue(self, SFGeneratorType_startAddrsOffset);
+    ret += VoiceGeneratorShortValue(self, SFGeneratorType_startAddrsCoarseOffset) << 15; // * 32768
+    return ret;
+}
+
+static uint32_t VoiceSampleEnd(Voice *self)
+{
+    uint32_t ret = self->instrumentZone->sample->end;
+    ret += VoiceGeneratorShortValue(self, SFGeneratorType_endAddrsOffset);
+    ret += VoiceGeneratorShortValue(self, SFGeneratorType_endAddrsCoarseOffset) << 15; // * 32768
+    return ret;
+}
+
+static uint32_t VoiceSampleStartLoop(Voice *self)
+{
+    uint32_t ret = self->instrumentZone->sample->startLoop;
+    ret += VoiceGeneratorShortValue(self, SFGeneratorType_startloopAddrsOffset);
+    ret += VoiceGeneratorShortValue(self, SFGeneratorType_startloopAddrsCoarseOffset) << 15; // * 32768
+    return ret;
+}
+
+static uint32_t VoiceSampleEndLoop(Voice *self)
+{
+    uint32_t ret = self->instrumentZone->sample->endLoop;
+    ret += VoiceGeneratorShortValue(self, SFGeneratorType_endloopAddrsOffset);
+    ret += VoiceGeneratorShortValue(self, SFGeneratorType_endloopAddrsCoarseOffset) << 15; // * 32768
+    return ret;
+}
+
+static int16_t VoiceGeneratorShortValue(Voice *self, SFGeneratorType generatorType)
 {
     // 9.4 The SoundFont Generator Model
     // - A generator in a global instrument zone that is identical to a default generator

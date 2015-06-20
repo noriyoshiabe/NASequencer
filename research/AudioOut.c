@@ -12,6 +12,7 @@ struct _AudioOut {
     AudioUnit defaultOutputUnit;
     Callback *callbackList;
     int32_t callbackListLength;
+    Float64 sampleRate;
 };
 
 static AudioOut *_sharedInstance = NULL;
@@ -34,7 +35,7 @@ static OSStatus _RenderCallback(void *inRefCon, AudioUnitRenderActionFlags *ioAc
 
     for (int i = 0; i < self->callbackListLength; ++i) {
         memset(buffer, 0, bufferSize);
-        self->callbackList[i].function(self->callbackList[i].receiver, 44100, buffer, inNumberFrames);
+        self->callbackList[i].function(self->callbackList[i].receiver, buffer, inNumberFrames);
 
         for (int j = 0; j < inNumberFrames; ++j) {
             outL[j] += buffer[j].L;
@@ -59,6 +60,9 @@ static AudioOut *AudioOutCreate()
 	AudioComponent comp = AudioComponentFindNext(NULL, &cd);
 	AudioComponentInstanceNew(comp, &self->defaultOutputUnit);
 
+    UInt32 size = sizeof(Float64);
+    AudioUnitGetProperty(self->defaultOutputUnit, kAudioUnitProperty_SampleRate, kAudioUnitScope_Output, 0, &self->sampleRate, &size);
+
     AURenderCallbackStruct input;
 	input.inputProc = _RenderCallback;
 	input.inputProcRefCon = self;
@@ -76,6 +80,11 @@ AudioOut *AudioOutSharedInstance()
         _sharedInstance = AudioOutCreate();
     }
     return _sharedInstance;
+}
+
+float AudioOutGetSampleRate(AudioOut *self)
+{
+    return (float)self->sampleRate;
 }
 
 void AudioOutRegisterCallback(AudioOut *self, AudioCallback function, void *receiver)

@@ -22,6 +22,8 @@ struct _Synthesizer {
     VoicePool *voicePool;
     Voice *voiceList;
     int voicingCount;
+
+    float sampleRate;
 };
 
 static Preset *SynthesizerFindPreset(Synthesizer *self, uint16_t midiPresetNo, uint16_t bankNo);
@@ -61,7 +63,7 @@ static void getProperty(void *self, const char *name, void *value)
 {
 }
 
-Synthesizer *SynthesizerCreate(const char *filepath)
+Synthesizer *SynthesizerCreate(const char *filepath, float sampleRate)
 {
     Synthesizer *self = calloc(1, sizeof(Synthesizer));
 
@@ -73,6 +75,8 @@ Synthesizer *SynthesizerCreate(const char *filepath)
 
     self->filepath = strdup(filepath);
     self->sf = SoundFontRead(filepath, NULL);
+
+    self->sampleRate = sampleRate;
 
     self->voicePool = VoicePoolCreate();
 
@@ -171,25 +175,9 @@ static int SynthesizerNoteOn(Synthesizer *self, uint8_t channel, uint8_t noteNo,
                 goto END;
             }
 
-            voice->channel = channel;
-            voice->key = noteNo;
-            voice->velocity = velocity;
-
-            voice->presetGlobalZone = preset->globalZone;
-            voice->presetZone = presetZone;
-            voice->instrumentGlobalZone = instrument->globalZone;
-            voice->instrumentZone = instrumentZone;
-
-            voice->sf = self->sf;
-
-            voice->tick = 0;
-            voice->time = 0.0f;
-            voice->sampleIndex = VoiceSampleStart(voice);
-
-            voice->phase = VolEnvPhaseDelay;
-            voice->startPhaseTime = 0.0f;
-            voice->volEnv = 0.0f;
-            voice->releasedVolEnv = 0.0f;
+            VoiceInitialize(voice, channel, noteNo, velocity,
+                    preset->globalZone, presetZone, instrument->globalZone, instrumentZone,
+                    self->sf, self->sampleRate);
 
             SynthesizerAddVoice(self, voice);
 
@@ -241,11 +229,11 @@ static void SynthesizerRemoveVoice(Synthesizer *self, Voice *voice)
     --self->voicingCount;
 }
 
-void SynthesizerComputeAudioSample(Synthesizer *self, uint32_t sampleRate, AudioSample *buffer, uint32_t count)
+void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer, uint32_t count)
 {
     for (Voice *voice = self->voiceList; NULL != voice;) {
         for (int i = 0; i < count; ++i) {
-            VoiceUpdate(voice, sampleRate);
+            VoiceUpdate(voice);
 
             AudioSample sample = VoiceComputeSample(voice);
             buffer[i].L += sample.L;

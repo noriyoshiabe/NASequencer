@@ -13,6 +13,8 @@ typedef enum {
     VolEnvPhaseDecay,
     VolEnvPhaseSustain,
     VolEnvPhaseRelase,
+
+    VolEnvPhaseCount,
 } VolEnvPhase;
 
 typedef struct _Voice {
@@ -37,6 +39,16 @@ typedef struct _Voice {
 
     SoundFont *sf;
 
+    float sampleRate;
+    int16_t sampleModes;
+
+    struct {
+        double volEnvValues[VolEnvPhaseCount];
+        float sampleStartLoop;
+        float sampleEndLoop;
+        float sampleEnd;
+    } cache;
+
     struct _Voice *next;
     struct _Voice *prev;
 } Voice;
@@ -46,19 +58,15 @@ typedef struct _VoicePool {
     Voice *freeList;
 } VoicePool;
 
-extern uint32_t VoiceSampleStart(Voice *self);
-extern uint32_t VoiceSampleEnd(Voice *self);
-extern uint32_t VoiceSampleStartLoop(Voice *self);
-extern uint32_t VoiceSampleEndLoop(Voice *self);
+extern void VoiceInitialize(Voice *self, uint8_t channel, uint8_t noteNo, uint8_t velocity,
+        Zone *presetGlobalZone, Zone *presetZone, Zone *instrumentGlobalZone, Zone *instrumentZone,
+        SoundFont *sf, float sampleRate);
 
-extern void VoiceUpdate(Voice *self, uint32_t sampleRate);
+extern void VoiceUpdate(Voice *self);
 extern AudioSample VoiceComputeSample(Voice *self);
 extern void VoiceIncrementSample(Voice *self);
 extern void VoiceRelease(Voice *self);
 extern bool VoiceIsReleased(Voice *self);
-
-extern int16_t VoiceGeneratorShortValue(Voice *self, SFGeneratorType generatorType);
-
 extern void VoiceDump(Voice *voice);
 
 extern VoicePool *VoicePoolCreate();
