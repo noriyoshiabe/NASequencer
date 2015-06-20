@@ -47,6 +47,7 @@ typedef struct _Voice {
         float sampleStartLoop;
         float sampleEndLoop;
         float sampleEnd;
+        float pan;
     } cache;
 
     struct _Voice *next;

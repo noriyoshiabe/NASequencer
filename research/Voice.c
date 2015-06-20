@@ -9,6 +9,7 @@
 
 #define Timecent2Sec(tc) (pow(2.0, (double)tc / 1200.0))
 #define ConvexPositiveUnipolar(x) (sqrt(1.0 - pow((double)x - 1.0, 2.0)))
+#define Clip(v, min, max) (MIN(v, MAX(v, min)))
 
 static void VoiceUpdateCachedParams(Voice *self);
 static void VoiceUpdateVolEnv(Voice *self, float nextTime);
@@ -72,10 +73,14 @@ static void VoiceUpdateCachedParams(Voice *self)
     self->cache.volEnvValues[VolEnvPhaseRelase] = Timecent2Sec(VoiceGeneratorShortValue(self, SFGeneratorType_releaseVolEnv));
 
     self->cache.volEnvValues[VolEnvPhaseSustain] = 1.0f - 0.001f * (float)VoiceGeneratorShortValue(self, SFGeneratorType_sustainVolEnv);
+    self->cache.volEnvValues[VolEnvPhaseSustain] = Clip(self->cache.volEnvValues[VolEnvPhaseSustain], 0.0f, 1.0f);
 
     self->cache.sampleStartLoop = (float)VoiceSampleStartLoop(self);
     self->cache.sampleEndLoop = (float)VoiceSampleEndLoop(self);
     self->cache.sampleEnd = (float)VoiceSampleEnd(self);
+
+    self->cache.pan = (float)VoiceGeneratorShortValue(self, SFGeneratorType_pan) / 500.0f;
+    self->cache.pan = Clip(self->cache.pan, -1.0f, 1.0f);
 }
 
 void VoiceUpdate(Voice *self)
@@ -151,12 +156,16 @@ extern AudioSample VoiceComputeSample(Voice *self)
 
     float normalized = ((float)indexSample * (1.0f - over) + (float)nextSample * over) / (float)(SHRT_MAX << 8);
 
-    // TODO pan
     // TODO velocity
 
+    float left = 1.0f - self->cache.pan;
+    float right = 1.0f + self->cache.pan;
+    left = Clip(left, 0.0f, 1.0f);
+    right = Clip(right, 0.0f, 1.0f);
+
     AudioSample ret;
-    ret.L = normalized * self->volEnv;
-    ret.R = normalized * self->volEnv;
+    ret.L = normalized * self->volEnv * left;
+    ret.R = normalized * self->volEnv * right;
     
     return ret;
 }
