@@ -9,7 +9,7 @@
 
 #define Timecent2Sec(tc) (pow(2.0, (double)tc / 1200.0))
 #define ConvexPositiveUnipolar(x) (sqrt(1.0 - pow((double)x - 1.0, 2.0)))
-#define Clip(v, min, max) (MIN(v, MAX(v, min)))
+#define Clip(v, min, max) (MIN(MAX(v, min), max))
 
 static void VoiceUpdateCachedParams(Voice *self);
 static void VoiceUpdateSampleIncrement(Voice *self);
