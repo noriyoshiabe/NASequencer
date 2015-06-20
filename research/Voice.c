@@ -92,7 +92,7 @@ static void VoiceUpdateSampleIncrement(Voice *self)
     cent += VoiceGeneratorShortValue(self, SFGeneratorType_coarseTune) * 100.0;
     cent += VoiceGeneratorShortValue(self, SFGeneratorType_fineTune);
 
-    self->sampleIncrement = (float)sample->sampleRate / self->sampleRate;
+    self->sampleIncrement = (double)sample->sampleRate / self->sampleRate;
     self->sampleIncrement *= pow(2.0, cent / 1200.0);
 }
 
