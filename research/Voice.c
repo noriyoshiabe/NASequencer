@@ -185,7 +185,7 @@ static void VoiceUpdateVolEnvHoldPhase(Voice *self, float nextTime)
     // The hold time at key number 60 is always unchanged.
     // The unit scaling is such that a value of 100 provides a hold time which tracks the keyboard;
     // that is, an upward octave causes the hold time to halve.
-    timecent *= pow(2.0, self->cache.keynumToVolEnvHold - (60.0f - self->keyForSample) / 1200.0f);
+    timecent *= pow(2.0, self->cache.keynumToVolEnvHold * (60.0f - self->keyForSample) / 1200.0f);
 
     timecent = Clip(timecent, -12000.0f, 5000.0f);
 
@@ -210,7 +210,7 @@ static void VoiceUpdateVolEnvDecayPhase(Voice *self, float nextTime)
     // The hold time at key number 60 is always unchanged.
     // The unit scaling is such that a value of 100 provides a hold time that tracks the keyboard;
     // that is, an upward octave causes the hold time to halve. 
-    timecent *= pow(2.0, self->cache.keynumToVolEnvDecay - (60.0f - self->keyForSample) / 1200.0f);
+    timecent *= pow(2.0, self->cache.keynumToVolEnvDecay * (60.0f - self->keyForSample) / 1200.0f);
 
     timecent = Clip(timecent, -12000.0f, 8000.0f);
 
