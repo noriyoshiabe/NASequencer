@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <limits.h>
 
 struct _Synthesizer {
     MidiSource srcVtbl;
@@ -245,34 +244,16 @@ static void SynthesizerRemoveVoice(Synthesizer *self, Voice *voice)
 void SynthesizerComputeAudioSample(Synthesizer *self, uint32_t sampleRate, AudioSample *buffer, uint32_t count)
 {
     for (Voice *voice = self->voiceList; NULL != voice;) {
-        uint32_t sampleEnd = VoiceSampleEnd(voice);
-        uint32_t sampleStartLoop = VoiceSampleStartLoop(voice);
-        uint32_t sampleEndLoop = VoiceSampleEndLoop(voice);
-
-        int16_t sampleModes = VoiceGeneratorShortValue(voice, SFGeneratorType_sampleModes);
-        
         for (int i = 0; i < count; ++i) {
             VoiceUpdate(voice, sampleRate);
 
-            // TODO pan
-            // TODO 24bit sample
-            buffer[i].L += (float)self->sf->smpl[voice->sampleIndex] / (float)SHRT_MAX * voice->volEnv;
-            buffer[i].R += (float)self->sf->smpl[voice->sampleIndex] / (float)SHRT_MAX * voice->volEnv;
+            AudioSample sample = VoiceComputeSample(voice);
+            buffer[i].L += sample.L;
+            buffer[i].R += sample.R;
 
-            ++voice->sampleIndex;
+            VoiceIncrementSample(voice);
 
-            if (sampleModes & 0x01) {
-                if (sampleModes & 0x02 && voice->phase == VolEnvPhaseRelase) {
-                    ;
-                }
-                else {
-                    if (sampleEndLoop < voice->sampleIndex) {
-                        voice->sampleIndex = sampleStartLoop;
-                    }
-                }
-            }
-
-            if (VoiceIsReleased(voice) || sampleEnd < voice->sampleIndex) {
+            if (VoiceIsReleased(voice)) {
                 Voice *toFree = voice;
                 voice = voice->next;
                 SynthesizerRemoveVoice(self, toFree);

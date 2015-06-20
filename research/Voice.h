@@ -2,6 +2,7 @@
 
 #include "SoundFont.h"
 #include "Preset.h"
+#include "AudioSample.h"
 
 #define MAX_POLYPHONY 64
 
@@ -21,7 +22,8 @@ typedef struct _Voice {
 
     uint32_t tick;
     float time;
-    uint32_t sampleIndex;
+    float sampleIncrement;
+    float sampleIndex;
 
     VolEnvPhase phase;
     float startPhaseTime;
@@ -50,6 +52,8 @@ extern uint32_t VoiceSampleStartLoop(Voice *self);
 extern uint32_t VoiceSampleEndLoop(Voice *self);
 
 extern void VoiceUpdate(Voice *self, uint32_t sampleRate);
+extern AudioSample VoiceComputeSample(Voice *self);
+extern void VoiceIncrementSample(Voice *self);
 extern void VoiceRelease(Voice *self);
 extern bool VoiceIsReleased(Voice *self);
 

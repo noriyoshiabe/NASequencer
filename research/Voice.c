@@ -4,10 +4,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <limits.h>
 #include <sys/param.h>
 
 #define Timecent2Sec(tc) (pow(2.0, (double)tc / 1200.0))
 #define ConvexPositiveUnipolar(x) (sqrt(1.0 - pow((double)x - 1.0, 2.0)))
+
+static void VoiceUpdateVolEnv(Voice *self, float nextTime);
+static void VoiceUpdateSampleIncrement(Voice *self, uint32_t sampleRate);
 
 uint32_t VoiceSampleStart(Voice *self)
 {
@@ -43,6 +47,20 @@ uint32_t VoiceSampleEndLoop(Voice *self)
 
 void VoiceUpdate(Voice *self, uint32_t sampleRate)
 {
+    float nextTime = (float)++self->tick / (float)sampleRate;
+
+    VoiceUpdateVolEnv(self, nextTime);
+    VoiceUpdateSampleIncrement(self, sampleRate);
+
+    self->time = nextTime;
+}
+
+static void VoiceUpdateVolEnv(Voice *self, float nextTime)
+{
+    // TODO
+    // keynumToVolEnvHold
+    // keynumToVolEnvDecay
+
     double duration;
     double endTime;
     float sustainLevel;
@@ -84,22 +102,76 @@ void VoiceUpdate(Voice *self, uint32_t sampleRate)
         break;
     }
 
-    ++self->tick;
-    self->time = (float)self->tick / (float)sampleRate;
-
     switch (self->phase) {
     case VolEnvPhaseDelay:
     case VolEnvPhaseAttack:
     case VolEnvPhaseHold:
     case VolEnvPhaseDecay:
-        if (self->time >= endTime) {
+        if (nextTime >= endTime) {
             ++self->phase;
-            self->startPhaseTime = self->time;
+            self->startPhaseTime = nextTime;
         }
         break;
     case VolEnvPhaseSustain:
     case VolEnvPhaseRelase:
         break;
+    }
+}
+
+static void VoiceUpdateSampleIncrement(Voice *self, uint32_t sampleRate)
+{
+    int16_t v;
+    Sample *sample = self->instrumentZone->sample;
+
+    int16_t key = 0 <= (v = VoiceGeneratorShortValue(self, SFGeneratorType_keynum)) ? v : self->key;
+    int16_t originalPitch = 0 <= (v = VoiceGeneratorShortValue(self, SFGeneratorType_overridingRootKey)) ? v : sample->originalPitch;
+
+    self->sampleIncrement = (float)sample->sampleRate / (float)sampleRate;
+    self->sampleIncrement *= pow(2.0, (float)(key - originalPitch) / 12.0);
+
+    // TODO
+    // coarseTune
+    // fineTune
+    // scaleTuning
+}
+
+extern AudioSample VoiceComputeSample(Voice *self)
+{
+    int index = floor(self->sampleIndex);
+    float over = self->sampleIndex - (float)index;
+    int32_t indexSample = (self->sf->smpl[index] << 8) + (self->sf->sm24 ? self->sf->sm24[index] : 0);
+    int32_t nextSample = (self->sf->smpl[index + 1] << 8) + (self->sf->sm24 ? self->sf->sm24[index + 1] : 0);
+
+    float normalized = ((float)indexSample * (1.0f - over) + (float)nextSample * over) / (float)(SHRT_MAX << 8);
+
+    // TODO pan
+    // TODO velocity
+
+    AudioSample ret;
+    ret.L = normalized * self->volEnv;
+    ret.R = normalized * self->volEnv;
+    
+    return ret;
+}
+
+void VoiceIncrementSample(Voice *self)
+{
+    int16_t sampleModes = VoiceGeneratorShortValue(self, SFGeneratorType_sampleModes);
+
+    self->sampleIndex += self->sampleIncrement;
+
+    if (sampleModes & 0x01) {
+        if (sampleModes & 0x02 && self->phase == VolEnvPhaseRelase) {
+            ;
+        }
+        else {
+            uint32_t sampleEndLoop = VoiceSampleEndLoop(self);
+
+            if ((float)sampleEndLoop < self->sampleIndex) {
+                float over = self->sampleIndex - (float)sampleEndLoop;
+                self->sampleIndex = (float)VoiceSampleStartLoop(self) + over;
+            }
+        }
     }
 }
 
@@ -112,7 +184,8 @@ void VoiceRelease(Voice *self)
 
 bool VoiceIsReleased(Voice *self)
 {
-    return self->phase == VolEnvPhaseRelase && 0.0f >= self->volEnv;
+    return (self->phase == VolEnvPhaseRelase && 0.0f >= self->volEnv)
+        || (float)VoiceSampleEnd(self) < self->sampleIndex;
 }
 
 int16_t VoiceGeneratorShortValue(Voice *self, SFGeneratorType generatorType)
@@ -228,7 +301,8 @@ void VoiceDump(Voice *voice)
     printf("velocity: %d\n", voice->velocity);
     printf("tick: %d\n", voice->tick);
     printf("time: %f\n", voice->time);
-    printf("sampleIndex: %d\n", voice->sampleIndex);
+    printf("sampleIncrement: %f\n", voice->sampleIncrement);
+    printf("sampleIndex: %f\n", voice->sampleIndex);
     printf("phase: %d\n", voice->phase);
     printf("startPhaseTime: %f\n", voice->startPhaseTime);
     printf("volEnv: %f\n", voice->volEnv);
