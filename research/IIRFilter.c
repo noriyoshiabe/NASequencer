@@ -1,19 +1,26 @@
 #include "IIRFilter.h"
 #include <math.h>
 
-extern void IIRFilterCalcLPFCoefficient(IIRFilter *self, double sampleRate, double frequency, int16_t q_cB)
+extern void IIRFilterCalcLPFCoefficient(IIRFilter *self, double sampleRate, int16_t frequency_cent, int16_t q_cB)
 {
     // 8.1.2 Generator Enumerators Defined
     // 8 initialFilterFc
     // When the cutoff frequency exceeds 20kHz and the Q (resonance) of the filter is zero,
     // the filter does not affect the signal.
-    if (20000.0 < frequency && 0 == q_cB) {
+    //
+    // Actuary, Hz of 13500 cent is approximately 19912 Hz,
+    // but initialFilterFc default value is 13500 as 20kHz.
+    // Even if not exceeds 20kHz, default value should not affect the signal.
+    if (13500 <= frequency_cent && 0 >= q_cB) {
         self->coef.b1 = 0.0;
         self->coef.b02 = 1.0;
         self->coef.a1 = 0.0;
         self->coef.a2 = 0.0;
         return;
     }
+
+    // Convert cent to Hz
+    double frequency = 440.0 * pow(2.0, (frequency_cent - 6900.0) / 1200.0);
 
     // Convert centibel Q to linear Q
     double q_dB = (double)q_cB / 10.0f;
