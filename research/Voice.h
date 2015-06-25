@@ -3,6 +3,7 @@
 #include "SoundFont.h"
 #include "Preset.h"
 #include "AudioSample.h"
+#include "IIRFilter.h"
 
 #define MAX_POLYPHONY 64
 
@@ -43,6 +44,8 @@ typedef struct _Voice {
 
     uint8_t exclusiveClass;
     uint8_t terminated;
+
+    IIRFilter LPF;
 
     struct {
         int16_t delayVolEnv;

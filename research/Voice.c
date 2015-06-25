@@ -58,6 +58,12 @@ extern void VoiceInitialize(Voice *self, uint8_t channel, uint8_t noteNo, uint8_
 
     VoiceUpdateSampleIncrement(self);
     VoiceUpdateCachedParams(self);
+
+    int16_t initialFilterFc = VoiceGeneratorShortValue(self, SFGeneratorType_initialFilterFc);
+    int16_t initialFilterQ = VoiceGeneratorShortValue(self, SFGeneratorType_initialFilterQ);
+    initialFilterFc = Clip(initialFilterFc, 1500, 13500);
+    initialFilterQ = Clip(initialFilterQ, 0, 960);
+    IIRFilterCalcLPFCoefficient(&self->LPF, sampleRate, initialFilterFc, initialFilterQ);
 }
 
 static void VoiceUpdateCachedParams(Voice *self)
@@ -274,11 +280,11 @@ extern AudioSample VoiceComputeSample(Voice *self)
     left = Clip(left, 0.0, 1.0);
     right = Clip(right, 0.0, 1.0);
 
-    AudioSample ret;
-    ret.L = normalized * self->volEnv * left;
-    ret.R = normalized * self->volEnv * right;
+    AudioSample sample;
+    sample.L = normalized * self->volEnv * left;
+    sample.R = normalized * self->volEnv * right;
     
-    return ret;
+    return IIRFilterApply(&self->LPF, sample);
 }
 
 void VoiceIncrementSample(Voice *self)
