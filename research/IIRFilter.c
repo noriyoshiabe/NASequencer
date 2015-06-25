@@ -8,9 +8,9 @@ extern void IIRFilterCalcLPFCoefficient(IIRFilter *self, double sampleRate, int1
     // When the cutoff frequency exceeds 20kHz and the Q (resonance) of the filter is zero,
     // the filter does not affect the signal.
     //
-    // Actuary, Hz of 13500 cent is approximately 19912 Hz,
+    // Actually, Hz of 13500 cent is approximately 19912 Hz,
     // but initialFilterFc default value is 13500 as 20kHz.
-    // Even if not exceeds 20kHz, default value should not affect the signal.
+    // Even if it doesn't exceed 20kHz, default value should not affect the signal.
     if (13500 <= frequency_cent && 0 >= q_cB) {
         self->coef.b1 = 0.0;
         self->coef.b02 = 1.0;
