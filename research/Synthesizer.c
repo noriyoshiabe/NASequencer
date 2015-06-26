@@ -252,6 +252,10 @@ static int SynthesizerNoteOn(Synthesizer *self, uint8_t channel, uint8_t noteNo,
 
             SynthesizerAddVoice(self, voice);
 
+#if 1
+            VoiceDump(voice);
+#endif
+
             ++voicedCount;
         }
     }
@@ -293,6 +297,10 @@ static void SynthesizerProgramChange(Synthesizer *self, uint8_t channel, uint16_
     if (preset) {
         self->channelPresets[channel] = preset;
     }
+
+#if 1
+    PresetDump(preset);
+#endif
 }
 
 static void SynthesizerAddVoice(Synthesizer *self, Voice *voice)

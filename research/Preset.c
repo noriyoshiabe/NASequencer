@@ -472,7 +472,9 @@ bool GeneratorIsInstrumentOnly(SFGeneratorType generatorType)
     }
 }
 
-#define iprintf(indent, ...) do { for (int __i = 0; __i < indent; ++__i) putc(' ', stdout); printf(__VA_ARGS__); } while (0)
+#if 1
+#define printf printf("\r"),printf
+#endif
 
 void PresetDump(Preset *preset)
 {
@@ -489,7 +491,7 @@ void PresetDump(Preset *preset)
     for (int i = 0; i < preset->zoneCount; ++i) {
         ZoneDump(preset->zones[i]);
         if (i + 1 < preset->zoneCount) {
-            iprintf(2, "-----------------------------\n");
+            printf("  -----------------------------\n");
         }
     }
     printf("\n");
@@ -507,7 +509,7 @@ void InstrumentDump(Instrument *instrument)
     for (int i = 0; i < instrument->zoneCount; ++i) {
         ZoneDump(instrument->zones[i]);
         if (i + 1 < instrument->zoneCount) {
-            iprintf(2, "-----------------------------\n");
+            printf("  -----------------------------\n");
         }
     }
     printf("\n");
@@ -517,7 +519,7 @@ void ZoneDump(Zone *zone)
 {
 #define DumpShortGen(zone, type) \
     if (ZoneHasGenerator(zone, SFGeneratorType_##type)) \
-      iprintf(2, #type ": %d\n", zone->gen.type)
+      printf("  " #type ": %d\n", zone->gen.type)
 
     DumpShortGen(zone, startAddrsOffset);
     DumpShortGen(zone, endAddrsOffset);
@@ -562,14 +564,14 @@ void ZoneDump(Zone *zone)
     DumpShortGen(zone, keynumToVolEnvDecay);
 
     if (zone->instrument)
-        iprintf(2, "instrument: %d - %s\n", zone->gen.instrument, zone->instrument->name);
+        printf("  instrument: %d - %s\n", zone->gen.instrument, zone->instrument->name);
 
     DumpShortGen(zone, reserved1);
 
     if (ZoneHasGenerator(zone, SFGeneratorType_keyRange))
-        iprintf(2, "keyRange: %d-%d\n", zone->gen.keyRange.low, zone->gen.keyRange.high);
+        printf("  keyRange: %d-%d\n", zone->gen.keyRange.low, zone->gen.keyRange.high);
     if (ZoneHasGenerator(zone, SFGeneratorType_velRange))
-        iprintf(2, "velRange: %d-%d\n", zone->gen.velRange.low, zone->gen.velRange.high);
+        printf("  velRange: %d-%d\n", zone->gen.velRange.low, zone->gen.velRange.high);
 
     DumpShortGen(zone, startloopAddrsCoarseOffset);
     DumpShortGen(zone, keynum);
@@ -581,10 +583,10 @@ void ZoneDump(Zone *zone)
     DumpShortGen(zone, fineTune);
 
     if (zone->sample)
-        iprintf(2, "sample: %d - %s\n", zone->gen.sampleID, zone->sample->name);
+        printf("  sample: %d - %s\n", zone->gen.sampleID, zone->sample->name);
 
     if (ZoneHasGenerator(zone, SFGeneratorType_sampleModes))
-        iprintf(2, "sampleModes: %d - %s\n", zone->gen.sampleModes,
+        printf("  sampleModes: %d - %s\n", zone->gen.sampleModes,
                 zone->gen.sampleModes == 1 ? "loops continuously" :
                 zone->gen.sampleModes == 3 ? "loops for the duration of key depression then proceeds to play the remainder of the sample." :
                 "no loop");
