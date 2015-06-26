@@ -82,6 +82,7 @@ static void VoiceUpdateCachedParams(Voice *self)
     self->cache.sampleEnd = VoiceSampleEnd(self);
 
     self->cache.pan = VoiceGeneratorShortValue(self, SFGeneratorType_pan);
+    self->cache.initialAttenuation = VoiceGeneratorShortValue(self, SFGeneratorType_pan);
 }
 
 static void VoiceUpdateSampleIncrement(Voice *self)
@@ -280,9 +281,12 @@ extern AudioSample VoiceComputeSample(Voice *self)
     left = Clip(left, 0.0, 1.0);
     right = Clip(right, 0.0, 1.0);
 
+    double attenuation_dB = (double)-self->cache.initialAttenuation / 10.0;
+    double attenuation = pow(10.0, attenuation_dB / 20.0);
+
     AudioSample sample;
-    sample.L = normalized * self->volEnv * left;
-    sample.R = normalized * self->volEnv * right;
+    sample.L = normalized * attenuation * self->volEnv * left;
+    sample.R = normalized * attenuation * self->volEnv * right;
     
     return IIRFilterApply(&self->LPF, sample);
 }

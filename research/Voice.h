@@ -62,6 +62,7 @@ typedef struct _Voice {
         uint32_t sampleEnd;
 
         int16_t pan;
+        int16_t initialAttenuation;
     } cache;
 
     struct _Voice *next;
