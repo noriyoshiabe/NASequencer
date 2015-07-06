@@ -250,7 +250,7 @@ static void VoiceUpdateVolEnvReleasePhase(Voice *self, double nextTime)
 {
     // 8.1.1 Kinds of Generator Enumerators
     // 57 exclusiveClass - any other sounding note with the same exclusive class value should be rapidly terminated.
-    double timecent = self->terminated ? -2000.0 : self->cache.releaseVolEnv;
+    double timecent = self->terminated ? -12000.0 : self->cache.releaseVolEnv;
 
     timecent = Clip(timecent, -12000.0, 8000.0);
     double duration = Timecent2Sec(timecent);
