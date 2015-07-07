@@ -25,7 +25,7 @@ static inline void LFOInit(LFO *self, int16_t delay, int16_t frequency, double s
         self->delay = Timecent2Sec(Clip(delay, -12000, 5000));
     }
 
-    double samplePerCycle = sampleRate / AbsCent2Hz(frequency);
+    double samplePerCycle = sampleRate / AbsCent2Hz(Clip(frequency, -16000, 4500));
     self->increment = 1.0 / (samplePerCycle / 4.0);
 
     self->value = 0.0;
