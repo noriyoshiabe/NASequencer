@@ -4,17 +4,9 @@
 #include "Preset.h"
 #include "AudioSample.h"
 #include "IIRFilter.h"
+#include "ADSREnvelope.h"
 
 #define MAX_POLYPHONY 64
-
-typedef enum {
-    VolEnvPhaseDelay,
-    VolEnvPhaseAttack,
-    VolEnvPhaseHold,
-    VolEnvPhaseDecay,
-    VolEnvPhaseSustain,
-    VolEnvPhaseRelease,
-} VolEnvPhase;
 
 typedef struct _Voice {
     uint8_t channel;
@@ -22,14 +14,10 @@ typedef struct _Voice {
     uint8_t velocity;
 
     uint32_t tick;
-    double time;
     double sampleIncrement;
     double sampleIndex;
 
-    VolEnvPhase phase;
-    double startPhaseTime;
-    double volEnv;
-    double releasedVolEnv;
+    ADSREnvelope volEnv;
 
     Zone *presetGlobalZone;
     Zone *presetZone;
@@ -43,27 +31,15 @@ typedef struct _Voice {
     uint8_t keyForSample;
 
     uint8_t exclusiveClass;
-    uint8_t terminated;
 
     IIRFilter LPF;
 
-    struct {
-        int16_t delayVolEnv;
-        int16_t attackVolEnv;
-        int16_t holdVolEnv;
-        int16_t decayVolEnv;
-        int16_t sustainVolEnv;
-        int16_t releaseVolEnv;
-        int16_t keynumToVolEnvHold;
-        int16_t keynumToVolEnvDecay;
+    uint32_t sampleStartLoop;
+    uint32_t sampleEndLoop;
+    uint32_t sampleEnd;
 
-        uint32_t sampleStartLoop;
-        uint32_t sampleEndLoop;
-        uint32_t sampleEnd;
-
-        int16_t pan;
-        int16_t initialAttenuation;
-    } cache;
+    int16_t pan;
+    int16_t initialAttenuation;
 
     struct _Voice *next;
     struct _Voice *prev;

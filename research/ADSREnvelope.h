@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Define.h"
+
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -39,10 +41,6 @@ typedef struct _ADSREnvelope {
     double startPhaseTime;
     double releasedValue;
 } ADSREnvelope;
-
-#define Timecent2Sec(tc) (pow(2.0, (double)tc / 1200.0))
-#define cBAttn2Value(cb) (pow(10.0, ((double)-cb / 10.0) / 20.0))
-#define ConvexPositiveUnipolar(x) (sqrt(1.0 - pow((double)x - 1.0, 2.0)))
 
 static inline void ADSREnvelopeInit(ADSREnvelope *self, ADSREnvelopeType type,
         int16_t delay, int16_t attack, int16_t hold, int16_t decay, int16_t sustain, int16_t release,
@@ -178,30 +176,32 @@ static inline void ADSREnvelopeUpdatePhase(ADSREnvelope *self, double time)
     }
 }
 
-static inline void ADSREnvelopeRelease(ADSREnvelope *self)
+static inline void ADSREnvelopeRelease(ADSREnvelope *self, double time)
 {
     if (ADSREnvelopePhaseRelease > self->phase) {
         self->phase = ADSREnvelopePhaseRelease;
-        self->startPhaseTime = self->time;
+        self->startPhaseTime = time;
         self->releasedValue = self->value;
     }
 }
 
-static inline void ADSREnvelopeFinish(ADSREnvelope *self)
+static inline void ADSREnvelopeFinish(ADSREnvelope *self, double time)
 {
     // This method is for exclusiveClass
     // 8.1.1 Kinds of Generator Enumerators
     // 57 exclusiveClass - any other sounding note with the same exclusive class value should be rapidly terminated.
 
     if (ADSREnvelopePhaseFinish > self->phase) {
-        ADSREnvelopeRelease(self);
+        ADSREnvelopeRelease(self, time);
 
         self->release = 0.010; // 10 msec
     }
 }
 
-static inline double ADSREnvelopeUpdate(ADSREnvelope *self, double time)
+static inline void ADSREnvelopeUpdate(ADSREnvelope *self, double time)
 {
+    double f;
+
     switch (self->phase) {
     case ADSREnvelopePhaseDelay:
         self->value = 0.0;
@@ -217,8 +217,8 @@ static inline double ADSREnvelopeUpdate(ADSREnvelope *self, double time)
     case ADSREnvelopePhaseDecay:
         // 9.1.7 Envelope Generators
         // When the hold phase ends, the envelope enters a decay phase during which its value decreases linearly to a sustain level.
-        double f = (time - self->startPhaseTime) / self->decay;
-        self->value = 0.0 < self->decay ? MAX(0.0, 1.0 * (1.0 - f) + f * self->sustain) : sustain;
+        f = (time - self->startPhaseTime) / self->decay;
+        self->value = 0.0 < self->decay ? MAX(0.0, 1.0 * (1.0 - f) + f * self->sustain) : self->sustain;
         break;
     case ADSREnvelopePhaseSustain:
         self->value = self->sustain;
@@ -235,11 +235,19 @@ static inline double ADSREnvelopeUpdate(ADSREnvelope *self, double time)
     }
 
     ADSREnvelopeUpdatePhase(self, time);
+}
 
-    return self->value;
+static inline bool ADSREnvelopeIsReleased(ADSREnvelope *self)
+{
+    return ADSREnvelopePhaseRelease == self->phase;
 }
 
 static inline bool ADSREnvelopeIsFinished(ADSREnvelope *self)
 {
     return ADSREnvelopePhaseFinish == self->phase;
+}
+
+static inline double ADSREnvelopeValue(ADSREnvelope *self)
+{
+    return self->value;
 }
