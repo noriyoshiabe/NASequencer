@@ -42,6 +42,7 @@ extern void VoiceInitialize(Voice *self, uint8_t channel, uint8_t noteNo, uint8_
 
     self->pan = VoiceGeneratorShortValue(self, SFGeneratorType_pan);
     self->initialAttenuation = VoiceGeneratorShortValue(self, SFGeneratorType_pan);
+    self->modLfoToPitch = VoiceGeneratorShortValue(self, SFGeneratorType_modLfoToPitch);
     self->vibLfoToPitch = VoiceGeneratorShortValue(self, SFGeneratorType_vibLfoToPitch);
 
     VoiceUpdateSampleIncrement(self);
@@ -63,6 +64,11 @@ extern void VoiceInitialize(Voice *self, uint8_t channel, uint8_t noteNo, uint8_
             VoiceGeneratorShortValue(self, SFGeneratorType_keynumToVolEnvHold),
             VoiceGeneratorShortValue(self, SFGeneratorType_keynumToVolEnvDecay),
             self->keyForSample);
+
+    LFOInit(&self->modLfo,
+            VoiceGeneratorShortValue(self, SFGeneratorType_delayModLFO),
+            VoiceGeneratorShortValue(self, SFGeneratorType_freqModLFO),
+            sampleRate);
 
     LFOInit(&self->vibLfo,
             VoiceGeneratorShortValue(self, SFGeneratorType_delayVibLFO),
@@ -98,6 +104,7 @@ void VoiceUpdate(Voice *self)
     double currentTime = VoiceCurrentTime(self);
 
     ADSREnvelopeUpdate(&self->volEnv, currentTime);
+    LFOUpdate(&self->modLfo, currentTime);
     LFOUpdate(&self->vibLfo, currentTime);
 
     ++self->tick;
@@ -133,8 +140,10 @@ AudioSample VoiceComputeSample(Voice *self)
 
 void VoiceIncrementSample(Voice *self)
 {
+    double modLfoToPitch = Cent2FreqRatio((double)self->modLfoToPitch * LFOValue(&self->modLfo));
     double vibLfoToPitch = Cent2FreqRatio((double)self->vibLfoToPitch * LFOValue(&self->vibLfo));
-    double sampleIncrement = self->sampleIncrement * vibLfoToPitch;
+
+    double sampleIncrement = self->sampleIncrement * modLfoToPitch * vibLfoToPitch;
 
     self->sampleIndex += sampleIncrement;
 

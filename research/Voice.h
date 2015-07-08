@@ -34,6 +34,7 @@ typedef struct _Voice {
     IIRFilter LPF;
     ADSREnvelope volEnv;
     LFO vibLfo;
+    LFO modLfo;
 
     uint32_t sampleStartLoop;
     uint32_t sampleEndLoop;
@@ -41,6 +42,7 @@ typedef struct _Voice {
 
     int16_t pan;
     int16_t initialAttenuation;
+    int16_t modLfoToPitch;
     int16_t vibLfoToPitch;
 
     struct _Voice *next;
