@@ -44,6 +44,7 @@ extern void VoiceInitialize(Voice *self, uint8_t channel, uint8_t noteNo, uint8_
     self->initialAttenuation = VoiceGeneratorShortValue(self, SFGeneratorType_pan);
     self->modLfoToPitch = VoiceGeneratorShortValue(self, SFGeneratorType_modLfoToPitch);
     self->vibLfoToPitch = VoiceGeneratorShortValue(self, SFGeneratorType_vibLfoToPitch);
+    self->modEnvToPitch = VoiceGeneratorShortValue(self, SFGeneratorType_modEnvToPitch);
 
     VoiceUpdateSampleIncrement(self);
 
@@ -52,6 +53,18 @@ extern void VoiceInitialize(Voice *self, uint8_t channel, uint8_t noteNo, uint8_
     initialFilterFc = Clip(initialFilterFc, 1500, 13500);
     initialFilterQ = Clip(initialFilterQ, 0, 960);
     IIRFilterCalcLPFCoefficient(&self->LPF, sampleRate, initialFilterFc, initialFilterQ);
+
+    ADSREnvelopeInit(&self->modEnv,
+            ADSREnvelopeTypeModulation,
+            VoiceGeneratorShortValue(self, SFGeneratorType_delayModEnv),
+            VoiceGeneratorShortValue(self, SFGeneratorType_attackModEnv),
+            VoiceGeneratorShortValue(self, SFGeneratorType_holdModEnv),
+            VoiceGeneratorShortValue(self, SFGeneratorType_decayModEnv),
+            VoiceGeneratorShortValue(self, SFGeneratorType_sustainModEnv),
+            VoiceGeneratorShortValue(self, SFGeneratorType_releaseModEnv),
+            VoiceGeneratorShortValue(self, SFGeneratorType_keynumToModEnvHold),
+            VoiceGeneratorShortValue(self, SFGeneratorType_keynumToModEnvDecay),
+            self->keyForSample);
 
     ADSREnvelopeInit(&self->volEnv,
             ADSREnvelopeTypeVolume,
@@ -103,7 +116,9 @@ void VoiceUpdate(Voice *self)
 {
     double currentTime = VoiceCurrentTime(self);
 
+    ADSREnvelopeUpdate(&self->modEnv, currentTime);
     ADSREnvelopeUpdate(&self->volEnv, currentTime);
+
     LFOUpdate(&self->modLfo, currentTime);
     LFOUpdate(&self->vibLfo, currentTime);
 
@@ -140,10 +155,11 @@ AudioSample VoiceComputeSample(Voice *self)
 
 void VoiceIncrementSample(Voice *self)
 {
-    double modLfoToPitch = Cent2FreqRatio((double)self->modLfoToPitch * LFOValue(&self->modLfo));
-    double vibLfoToPitch = Cent2FreqRatio((double)self->vibLfoToPitch * LFOValue(&self->vibLfo));
+    double sampleIncrement = self->sampleIncrement;
 
-    double sampleIncrement = self->sampleIncrement * modLfoToPitch * vibLfoToPitch;
+    sampleIncrement *= Cent2FreqRatio((double)self->modEnvToPitch * ADSREnvelopeValue(&self->modEnv));
+    sampleIncrement *= Cent2FreqRatio((double)self->vibLfoToPitch * LFOValue(&self->vibLfo));
+    sampleIncrement *= Cent2FreqRatio((double)self->modLfoToPitch * LFOValue(&self->modLfo));
 
     self->sampleIndex += sampleIncrement;
 
@@ -162,12 +178,16 @@ void VoiceIncrementSample(Voice *self)
 
 void VoiceRelease(Voice *self)
 {
-    ADSREnvelopeRelease(&self->volEnv, VoiceCurrentTime(self));
+    double currentTime = VoiceCurrentTime(self);
+    ADSREnvelopeRelease(&self->modEnv, currentTime);
+    ADSREnvelopeRelease(&self->volEnv, currentTime);
 }
 
 void VoiceTerminate(Voice *self)
 {
-    ADSREnvelopeFinish(&self->volEnv, VoiceCurrentTime(self));
+    double currentTime = VoiceCurrentTime(self);
+    ADSREnvelopeFinish(&self->modEnv, currentTime);
+    ADSREnvelopeFinish(&self->volEnv, currentTime);
     self->exclusiveClass = 0;
 }
 

@@ -33,6 +33,7 @@ typedef struct _Voice {
 
     IIRFilter LPF;
     ADSREnvelope volEnv;
+    ADSREnvelope modEnv;
     LFO vibLfo;
     LFO modLfo;
 
@@ -44,6 +45,7 @@ typedef struct _Voice {
     int16_t initialAttenuation;
     int16_t modLfoToPitch;
     int16_t vibLfoToPitch;
+    int16_t modEnvToPitch;
 
     struct _Voice *next;
     struct _Voice *prev;
