@@ -42,17 +42,16 @@ extern void VoiceInitialize(Voice *self, uint8_t channel, uint8_t noteNo, uint8_
 
     self->pan = VoiceGeneratorShortValue(self, SFGeneratorType_pan);
     self->initialAttenuation = VoiceGeneratorShortValue(self, SFGeneratorType_pan);
+
     self->modLfoToPitch = VoiceGeneratorShortValue(self, SFGeneratorType_modLfoToPitch);
     self->vibLfoToPitch = VoiceGeneratorShortValue(self, SFGeneratorType_vibLfoToPitch);
     self->modEnvToPitch = VoiceGeneratorShortValue(self, SFGeneratorType_modEnvToPitch);
 
-    VoiceUpdateSampleIncrement(self);
+    self->initialFilterFc = VoiceGeneratorShortValue(self, SFGeneratorType_initialFilterFc);
+    self->initialFilterQ = VoiceGeneratorShortValue(self, SFGeneratorType_initialFilterQ);
+    self->modLfoToFilterFc = VoiceGeneratorShortValue(self, SFGeneratorType_modLfoToFilterFc);
 
-    int16_t initialFilterFc = VoiceGeneratorShortValue(self, SFGeneratorType_initialFilterFc);
-    int16_t initialFilterQ = VoiceGeneratorShortValue(self, SFGeneratorType_initialFilterQ);
-    initialFilterFc = Clip(initialFilterFc, 1500, 13500);
-    initialFilterQ = Clip(initialFilterQ, 0, 960);
-    IIRFilterCalcLPFCoefficient(&self->LPF, sampleRate, initialFilterFc, initialFilterQ);
+    VoiceUpdateSampleIncrement(self);
 
     ADSREnvelopeInit(&self->modEnv,
             ADSREnvelopeTypeModulation,
@@ -149,6 +148,14 @@ AudioSample VoiceComputeSample(Voice *self)
     AudioSample sample;
     sample.L = normalized * attenuation * volEnvValue * left;
     sample.R = normalized * attenuation * volEnvValue * right;
+
+    double frequency_cent = self->initialFilterFc;
+    frequency_cent += self->modLfoToFilterFc * LFOValue(&self->modLfo);
+    frequency_cent = Clip(frequency_cent, 1500.0, 13500.0);
+
+    double q_cB = Clip(self->initialFilterQ, 0, 960);
+
+    IIRFilterCalcLPFCoefficient(&self->LPF, self->sampleRate, frequency_cent, q_cB);
     
     return IIRFilterApply(&self->LPF, sample);
 }

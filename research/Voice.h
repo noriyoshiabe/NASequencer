@@ -43,9 +43,14 @@ typedef struct _Voice {
 
     int16_t pan;
     int16_t initialAttenuation;
+
     int16_t modLfoToPitch;
     int16_t vibLfoToPitch;
     int16_t modEnvToPitch;
+
+    int16_t initialFilterFc;
+    int16_t initialFilterQ;
+    int16_t modLfoToFilterFc;
 
     struct _Voice *next;
     struct _Voice *prev;

@@ -15,7 +15,9 @@ typedef struct _IIRFilter {
         AudioSample input;
         AudioSample output;
     } history[2];
+
+    double last_frequency_cent;
 } IIRFilter;
 
-extern void IIRFilterCalcLPFCoefficient(IIRFilter *self, double sampleRate, int16_t frequency_cent, int16_t q_cB);
+extern void IIRFilterCalcLPFCoefficient(IIRFilter *self, double sampleRate, double frequency_cent, double q_cB);
 extern AudioSample IIRFilterApply(IIRFilter *self, AudioSample input);
