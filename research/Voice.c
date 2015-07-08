@@ -50,6 +50,7 @@ extern void VoiceInitialize(Voice *self, uint8_t channel, uint8_t noteNo, uint8_
     self->initialFilterFc = VoiceGeneratorShortValue(self, SFGeneratorType_initialFilterFc);
     self->initialFilterQ = VoiceGeneratorShortValue(self, SFGeneratorType_initialFilterQ);
     self->modLfoToFilterFc = VoiceGeneratorShortValue(self, SFGeneratorType_modLfoToFilterFc);
+    self->modEnvToFilterFc = VoiceGeneratorShortValue(self, SFGeneratorType_modEnvToFilterFc);
 
     VoiceUpdateSampleIncrement(self);
 
@@ -151,6 +152,7 @@ AudioSample VoiceComputeSample(Voice *self)
 
     double frequency_cent = self->initialFilterFc;
     frequency_cent += self->modLfoToFilterFc * LFOValue(&self->modLfo);
+    frequency_cent += self->modEnvToFilterFc * ADSREnvelopeValue(&self->modEnv);
     frequency_cent = Clip(frequency_cent, 1500.0, 13500.0);
 
     double q_cB = Clip(self->initialFilterQ, 0, 960);

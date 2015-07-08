@@ -51,6 +51,7 @@ typedef struct _Voice {
     int16_t initialFilterFc;
     int16_t initialFilterQ;
     int16_t modLfoToFilterFc;
+    int16_t modEnvToFilterFc;
 
     struct _Voice *next;
     struct _Voice *prev;
