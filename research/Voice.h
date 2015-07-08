@@ -5,6 +5,7 @@
 #include "AudioSample.h"
 #include "IIRFilter.h"
 #include "ADSREnvelope.h"
+#include "LFO.h"
 
 #define MAX_POLYPHONY 64
 
@@ -16,8 +17,6 @@ typedef struct _Voice {
     uint32_t tick;
     double sampleIncrement;
     double sampleIndex;
-
-    ADSREnvelope volEnv;
 
     Zone *presetGlobalZone;
     Zone *presetZone;
@@ -33,6 +32,8 @@ typedef struct _Voice {
     uint8_t exclusiveClass;
 
     IIRFilter LPF;
+    ADSREnvelope volEnv;
+    LFO vibLfo;
 
     uint32_t sampleStartLoop;
     uint32_t sampleEndLoop;
@@ -40,6 +41,7 @@ typedef struct _Voice {
 
     int16_t pan;
     int16_t initialAttenuation;
+    int16_t vibLfoToPitch;
 
     struct _Voice *next;
     struct _Voice *prev;

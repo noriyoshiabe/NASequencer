@@ -42,8 +42,15 @@ extern void VoiceInitialize(Voice *self, uint8_t channel, uint8_t noteNo, uint8_
 
     self->pan = VoiceGeneratorShortValue(self, SFGeneratorType_pan);
     self->initialAttenuation = VoiceGeneratorShortValue(self, SFGeneratorType_pan);
+    self->vibLfoToPitch = VoiceGeneratorShortValue(self, SFGeneratorType_vibLfoToPitch);
 
     VoiceUpdateSampleIncrement(self);
+
+    int16_t initialFilterFc = VoiceGeneratorShortValue(self, SFGeneratorType_initialFilterFc);
+    int16_t initialFilterQ = VoiceGeneratorShortValue(self, SFGeneratorType_initialFilterQ);
+    initialFilterFc = Clip(initialFilterFc, 1500, 13500);
+    initialFilterQ = Clip(initialFilterQ, 0, 960);
+    IIRFilterCalcLPFCoefficient(&self->LPF, sampleRate, initialFilterFc, initialFilterQ);
 
     ADSREnvelopeInit(&self->volEnv,
             ADSREnvelopeTypeVolume,
@@ -57,11 +64,10 @@ extern void VoiceInitialize(Voice *self, uint8_t channel, uint8_t noteNo, uint8_
             VoiceGeneratorShortValue(self, SFGeneratorType_keynumToVolEnvDecay),
             self->keyForSample);
 
-    int16_t initialFilterFc = VoiceGeneratorShortValue(self, SFGeneratorType_initialFilterFc);
-    int16_t initialFilterQ = VoiceGeneratorShortValue(self, SFGeneratorType_initialFilterQ);
-    initialFilterFc = Clip(initialFilterFc, 1500, 13500);
-    initialFilterQ = Clip(initialFilterQ, 0, 960);
-    IIRFilterCalcLPFCoefficient(&self->LPF, sampleRate, initialFilterFc, initialFilterQ);
+    LFOInit(&self->vibLfo,
+            VoiceGeneratorShortValue(self, SFGeneratorType_delayVibLFO),
+            VoiceGeneratorShortValue(self, SFGeneratorType_freqVibLFO),
+            sampleRate);
 }
 
 static void VoiceUpdateSampleIncrement(Voice *self)
@@ -79,7 +85,7 @@ static void VoiceUpdateSampleIncrement(Voice *self)
     cent += VoiceGeneratorShortValue(self, SFGeneratorType_fineTune);
 
     self->sampleIncrement = (double)sample->sampleRate / self->sampleRate;
-    self->sampleIncrement *= pow(2.0, cent / 1200.0);
+    self->sampleIncrement *= Cent2FreqRatio(cent);
 }
 
 static inline double VoiceCurrentTime(Voice *self)
@@ -89,7 +95,11 @@ static inline double VoiceCurrentTime(Voice *self)
 
 void VoiceUpdate(Voice *self)
 {
-    ADSREnvelopeUpdate(&self->volEnv, VoiceCurrentTime(self));
+    double currentTime = VoiceCurrentTime(self);
+
+    ADSREnvelopeUpdate(&self->volEnv, currentTime);
+    LFOUpdate(&self->vibLfo, currentTime);
+
     ++self->tick;
 }
 
@@ -123,7 +133,10 @@ AudioSample VoiceComputeSample(Voice *self)
 
 void VoiceIncrementSample(Voice *self)
 {
-    self->sampleIndex += self->sampleIncrement;
+    double vibLfoToPitch = Cent2FreqRatio((double)self->vibLfoToPitch * LFOValue(&self->vibLfo));
+    double sampleIncrement = self->sampleIncrement * vibLfoToPitch;
+
+    self->sampleIndex += sampleIncrement;
 
     if (self->sampleModes & 0x01) {
         if (self->sampleModes & 0x02 && ADSREnvelopeIsReleased(&self->volEnv)) {
