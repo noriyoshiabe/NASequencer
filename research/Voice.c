@@ -52,6 +52,8 @@ extern void VoiceInitialize(Voice *self, uint8_t channel, uint8_t noteNo, uint8_
     self->modLfoToFilterFc = VoiceGeneratorShortValue(self, SFGeneratorType_modLfoToFilterFc);
     self->modEnvToFilterFc = VoiceGeneratorShortValue(self, SFGeneratorType_modEnvToFilterFc);
 
+    self->modLfoToVolume = VoiceGeneratorShortValue(self, SFGeneratorType_modLfoToVolume);
+
     VoiceUpdateSampleIncrement(self);
 
     ADSREnvelopeInit(&self->modEnv,
@@ -143,12 +145,9 @@ AudioSample VoiceComputeSample(Voice *self)
     left = Clip(left, 0.0, 1.0);
     right = Clip(right, 0.0, 1.0);
 
-    double attenuation = cBAttn2Value(self->initialAttenuation);
-    double volEnvValue = ADSREnvelopeValue(&self->volEnv);
-
     AudioSample sample;
-    sample.L = normalized * attenuation * volEnvValue * left;
-    sample.R = normalized * attenuation * volEnvValue * right;
+    sample.L = normalized * left;
+    sample.R = normalized * right;
 
     double frequency_cent = self->initialFilterFc;
     frequency_cent += self->modLfoToFilterFc * LFOValue(&self->modLfo);
@@ -158,8 +157,17 @@ AudioSample VoiceComputeSample(Voice *self)
     double q_cB = Clip(self->initialFilterQ, 0, 960);
 
     IIRFilterCalcLPFCoefficient(&self->LPF, self->sampleRate, frequency_cent, q_cB);
+    sample = IIRFilterApply(&self->LPF, sample);
     
-    return IIRFilterApply(&self->LPF, sample);
+    double volume = cBAttn2Value(self->initialAttenuation);
+    volume *= cB2Value(self->modLfoToVolume * LFOValue(&self->modLfo));
+    volume *= ADSREnvelopeValue(&self->volEnv);
+    volume = Clip(volume, 0.0, 1.0);
+
+    sample.L *= volume;
+    sample.R *= volume;
+
+    return sample;
 }
 
 void VoiceIncrementSample(Voice *self)
