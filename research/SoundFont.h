@@ -196,10 +196,10 @@ typedef struct _SoundFont {
     char *ICMT;
     char *ISFT;
 
-    uint16_t *smpl;
+    int16_t *smpl;
     uint32_t smplLength;
 
-    uint8_t *sm24;
+    int8_t *sm24;
     uint32_t sm24Length;
 
     SFPresetHeader *phdr;
