@@ -55,6 +55,8 @@ typedef struct _Voice {
 
     int16_t modLfoToVolume;
 
+    int16_t chorusEffectsSend;
+
     struct _Voice *next;
     struct _Voice *prev;
 } Voice;
@@ -71,6 +73,7 @@ extern void VoiceInitialize(Voice *self, uint8_t channel, uint8_t noteNo, uint8_
 extern void VoiceUpdate(Voice *self);
 extern AudioSample VoiceComputeSample(Voice *self);
 extern void VoiceIncrementSample(Voice *self);
+extern double VoiceChorusEffectsSend(Voice *self);
 extern void VoiceRelease(Voice *self);
 extern void VoiceTerminate(Voice *self);
 extern bool VoiceIsReleased(Voice *self);

@@ -12,6 +12,7 @@ set(SOURCES
   Preset.c
   Voice.c
   IIRFilter.c
+  Chorus.c
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

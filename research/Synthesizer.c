@@ -3,6 +3,7 @@
 #include "SoundFont.h"
 #include "Preset.h"
 #include "Voice.h"
+#include "Chorus.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,6 +28,8 @@ struct _Synthesizer {
     int voicingCount;
 
     double sampleRate;
+
+    Chorus *chorus;
 
     Preset *channelPresets[CHANNEL_COUNT];
 
@@ -141,6 +144,12 @@ Synthesizer *SynthesizerCreate(const char *filepath, double sampleRate)
 
     self->voicePool = VoicePoolCreate();
 
+    self->chorus = ChorusCreate(sampleRate);
+
+    ChorusAddDelay(self->chorus, 0.020, 1.00, 0.001, 0.7, 0.7);
+    ChorusAddDelay(self->chorus, 0.020, 0.50, 0.001, 1.0, 0.0);
+    ChorusAddDelay(self->chorus, 0.020, 0.25, 0.001, 0.0, 1.0);
+
     ParsePresets(self->sf, &self->presets, &self->presetCount);
     qsort(self->presets, self->presetCount, sizeof(Preset *), PresetComparator);
 
@@ -191,6 +200,7 @@ void SynthesizerDestroy(Synthesizer *self)
         free(self->presets);
     }
 
+    ChorusDestroy(self->chorus);
     VoicePoolDestroy(self->voicePool);
     SoundFontDestroy(self->sf);
 
@@ -348,13 +358,20 @@ static void SynthesizerRemoveVoice(Synthesizer *self, Voice *voice)
 
 void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer, uint32_t count)
 {
-    for (Voice *voice = self->voiceFirst; NULL != voice;) {
-        for (int i = 0; i < count; ++i) {
+    for (int i = 0; i < count; ++i) {
+        AudioSample direct = { .L = 0.0, .R = 0.0 };
+        AudioSample chorus = { .L = 0.0, .R = 0.0 };
+
+        for (Voice *voice = self->voiceFirst; NULL != voice;) {
             VoiceUpdate(voice);
 
             AudioSample sample = VoiceComputeSample(voice);
-            buffer[i].L += sample.L;
-            buffer[i].R += sample.R;
+            direct.L += sample.L;
+            direct.R += sample.R;
+
+            double chorusSend = VoiceChorusEffectsSend(voice);
+            chorus.L += sample.L * chorusSend;
+            chorus.R += sample.R * chorusSend;
 
             VoiceIncrementSample(voice);
 
@@ -363,13 +380,16 @@ void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer, uint3
                 voice = voice->next;
                 SynthesizerRemoveVoice(self, toFree);
                 VoicePoolDeallocVoice(self->voicePool, toFree);
-                goto NEXT;
+                continue;
             }
+
+            voice = voice->next;
         }
 
-        voice = voice->next;
-NEXT:
-        ;
+        chorus = ChorusComputeSample(self->chorus, chorus);
+
+        buffer[i].L += direct.L + chorus.L;
+        buffer[i].R += direct.R + chorus.R;
     }
 
     self->tick += count;
