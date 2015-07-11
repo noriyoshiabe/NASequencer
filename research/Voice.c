@@ -134,7 +134,7 @@ AudioSample VoiceComputeSample(Voice *self)
     int32_t indexSample = (self->sf->smpl[index] << 8) + (self->sf->sm24 ? self->sf->sm24[index] : 0);
     int32_t nextSample = (self->sf->smpl[index + 1] << 8) + (self->sf->sm24 ? self->sf->sm24[index + 1] : 0);
 
-    double normalized = ((double)indexSample * (1.0 - over) + (double)nextSample * over) / (double)(SHRT_MAX << 8);
+    double normalized = ((double)indexSample * (1.0 - over) + (double)nextSample * over) / (double)0x7FFFFF;
 
     // TODO velocity
 
