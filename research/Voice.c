@@ -138,12 +138,10 @@ AudioSample VoiceComputeSample(Voice *self)
 
     // TODO velocity
 
-    double pan = self->pan / 500.0;
-    double left = 1.0 - self->pan;
-    double right = 1.0 + self->pan;
-
-    left = Clip(left, 0.0, 1.0);
-    right = Clip(right, 0.0, 1.0);
+    int16_t pan = Clip(self->pan, -500, 500);
+    double coef = M_PI / 2.0 / 1000.0;
+    double left = sin(coef * (-pan + 500));
+    double right = sin(coef * (pan + 500));
 
     AudioSample sample;
     sample.L = normalized * left;
