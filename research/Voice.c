@@ -41,7 +41,7 @@ extern void VoiceInitialize(Voice *self, uint8_t channel, uint8_t noteNo, uint8_
     self->sampleEnd = VoiceSampleEnd(self);
 
     self->pan = VoiceGeneratorShortValue(self, SFGeneratorType_pan);
-    self->initialAttenuation = VoiceGeneratorShortValue(self, SFGeneratorType_pan);
+    self->initialAttenuation = VoiceGeneratorShortValue(self, SFGeneratorType_initialAttenuation);
 
     self->modLfoToPitch = VoiceGeneratorShortValue(self, SFGeneratorType_modLfoToPitch);
     self->vibLfoToPitch = VoiceGeneratorShortValue(self, SFGeneratorType_vibLfoToPitch);
