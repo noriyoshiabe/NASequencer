@@ -4,6 +4,7 @@
 #include "Preset.h"
 #include "Voice.h"
 #include "Chorus.h"
+#include "Reverb.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,6 +31,7 @@ struct _Synthesizer {
     double sampleRate;
 
     Chorus *chorus;
+    Reverb *reverb;
 
     Preset *channelPresets[CHANNEL_COUNT];
 
@@ -150,6 +152,8 @@ Synthesizer *SynthesizerCreate(const char *filepath, double sampleRate)
     ChorusAddDelay(self->chorus, 0.020, 0.50, 0.001, 1.0, 0.0);
     ChorusAddDelay(self->chorus, 0.020, 0.25, 0.001, 0.0, 1.0);
 
+    self->reverb = ReverbCreate(1.0, sampleRate);
+
     ParsePresets(self->sf, &self->presets, &self->presetCount);
     qsort(self->presets, self->presetCount, sizeof(Preset *), PresetComparator);
 
@@ -201,6 +205,8 @@ void SynthesizerDestroy(Synthesizer *self)
     }
 
     ChorusDestroy(self->chorus);
+    ReverbDestroy(self->reverb);
+
     VoicePoolDestroy(self->voicePool);
     SoundFontDestroy(self->sf);
 
@@ -361,6 +367,7 @@ void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer, uint3
     for (int i = 0; i < count; ++i) {
         AudioSample direct = { .L = 0.0, .R = 0.0 };
         AudioSample chorus = { .L = 0.0, .R = 0.0 };
+        AudioSample reverb = { .L = 0.0, .R = 0.0 };
 
         for (Voice *voice = self->voiceFirst; NULL != voice;) {
             VoiceUpdate(voice);
@@ -372,6 +379,10 @@ void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer, uint3
             double chorusSend = VoiceChorusEffectsSend(voice);
             chorus.L += sample.L * chorusSend;
             chorus.R += sample.R * chorusSend;
+
+            double reverbSend = VoiceReverbEffectsSend(voice);
+            reverb.L += sample.L * reverbSend;
+            reverb.R += sample.R * reverbSend;
 
             VoiceIncrementSample(voice);
 
@@ -387,9 +398,10 @@ void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer, uint3
         }
 
         chorus = ChorusComputeSample(self->chorus, chorus);
+        reverb = ReverbComputeSample(self->reverb, reverb);
 
-        buffer[i].L += direct.L + chorus.L;
-        buffer[i].R += direct.R + chorus.R;
+        buffer[i].L += direct.L + chorus.L + reverb.L;
+        buffer[i].R += direct.R + chorus.R + reverb.R;
     }
 
     self->tick += count;

@@ -55,6 +55,7 @@ extern void VoiceInitialize(Voice *self, uint8_t channel, uint8_t noteNo, uint8_
     self->modLfoToVolume = VoiceGeneratorShortValue(self, SFGeneratorType_modLfoToVolume);
 
     self->chorusEffectsSend = VoiceGeneratorShortValue(self, SFGeneratorType_chorusEffectsSend);
+    self->reverbEffectsSend = VoiceGeneratorShortValue(self, SFGeneratorType_reverbEffectsSend);
 
     VoiceUpdateSampleIncrement(self);
 
@@ -196,6 +197,11 @@ void VoiceIncrementSample(Voice *self)
 double VoiceChorusEffectsSend(Voice *self)
 {
     return (double)self->chorusEffectsSend * 0.001;
+}
+
+double VoiceReverbEffectsSend(Voice *self)
+{
+    return (double)self->reverbEffectsSend * 0.001;
 }
 
 void VoiceRelease(Voice *self)
