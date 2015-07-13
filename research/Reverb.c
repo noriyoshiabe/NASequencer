@@ -1,99 +1,21 @@
 #include "Reverb.h"
+#include "IIRFilter.h"
 
 #include <stdlib.h>
 #include <math.h>
 
-typedef struct _IIRCombFilter {
-    AudioSample *history;
-    int historyLength;
-    double g;
-    int index;
-} IIRCombFilter;
-
-static IIRCombFilter *IIRCombFilterCreate(double delay, double g, double sampleRate)
-{
-    IIRCombFilter *self = calloc(1, sizeof(IIRCombFilter));
-
-    int delayInSample = round(delay * sampleRate);
-    self->history = calloc(delayInSample, sizeof(AudioSample));
-    self->historyLength = delayInSample;
-    self->g = g;
-    self->index = 0;
-
-    return self;
-}
-
-static void IIRCombFilterDestroy(IIRCombFilter *self)
-{
-    free(self->history);
-    free(self);
-}
-
-static AudioSample IIRCombFilterApply(IIRCombFilter *self, AudioSample input)
-{
-    AudioSample output = self->history[self->index];
-    
-    self->history[self->index].L = input.L + output.L * self->g;
-    self->history[self->index].R = input.R + output.R * self->g;
-    
-    if (self->historyLength <= ++self->index) {
-        self->index = 0;
-    }
-
-    return output;
-}
-
-typedef struct _IIRAllPassFilter {
-    AudioSample *history;
-    int historyLength;
-    double g;
-    int index;
-} IIRAllPassFilter;
-
-static IIRAllPassFilter *IIRAllPassFilterCreate(double delay, double g, double sampleRate)
-{
-    IIRAllPassFilter *self = calloc(1, sizeof(IIRAllPassFilter));
-
-    int delayInSample = round(delay * sampleRate);
-    self->history = calloc(delayInSample, sizeof(AudioSample));
-    self->historyLength = delayInSample;
-    self->g = g;
-    self->index = 0;
-
-    return self;
-}
-
-static void IIRAllPassFilterDestroy(IIRAllPassFilter *self)
-{
-    free(self->history);
-    free(self);
-}
-
-static AudioSample IIRAllPassFilterApply(IIRAllPassFilter *self, AudioSample input)
-{
-    AudioSample output = self->history[self->index];
-    
-    self->history[self->index].L = input.L + output.L * self->g;
-    self->history[self->index].R = input.R + output.R * self->g;
-
-    output.L -= input.L * self->g;
-    output.R -= input.R * self->g;
-    
-    if (self->historyLength <= ++self->index) {
-        self->index = 0;
-    }
-
-    return output;
-}
-
 struct _Reverb {
     IIRCombFilter *combFilters[4];
     IIRAllPassFilter *allPassFilters[2];
+    IIRLowPassFilter *lowPassFilter;
 };
 
-Reverb *ReverbCreate(double reverbTime, double sampleRate)
+Reverb *ReverbCreate(double sampleRate, double reverbTime)
 {
     Reverb *self = calloc(1, sizeof(Reverb));
+
+    // Reduce high frequency noise with pre LPF
+    self->lowPassFilter = IIRLowPassFilterCreate(sampleRate, 1000.0, 1.0);
 
     // Parameters are from the Schroeder Reverberator simulating a medium-sized concert hall
     // Excerpt from https://www.nativesystems.inf.ethz.ch/pub/Main/WebHomeLecturesReconfigurableSystems/lec7.pdf
@@ -110,13 +32,13 @@ Reverb *ReverbCreate(double reverbTime, double sampleRate)
         0.0017,
     };
 
-    self->combFilters[0] = IIRCombFilterCreate(CombFilterDelayTimes[0], pow(0.001, CombFilterDelayTimes[0] / reverbTime), sampleRate);
-    self->combFilters[1] = IIRCombFilterCreate(CombFilterDelayTimes[1], pow(0.001, CombFilterDelayTimes[1] / reverbTime), sampleRate);
-    self->combFilters[2] = IIRCombFilterCreate(CombFilterDelayTimes[2], pow(0.001, CombFilterDelayTimes[2] / reverbTime), sampleRate);
-    self->combFilters[3] = IIRCombFilterCreate(CombFilterDelayTimes[3], pow(0.001, CombFilterDelayTimes[3] / reverbTime), sampleRate);
+    self->combFilters[0] = IIRCombFilterCreate(sampleRate, CombFilterDelayTimes[0], pow(0.001, CombFilterDelayTimes[0] / reverbTime));
+    self->combFilters[1] = IIRCombFilterCreate(sampleRate, CombFilterDelayTimes[1], pow(0.001, CombFilterDelayTimes[1] / reverbTime));
+    self->combFilters[2] = IIRCombFilterCreate(sampleRate, CombFilterDelayTimes[2], pow(0.001, CombFilterDelayTimes[2] / reverbTime));
+    self->combFilters[3] = IIRCombFilterCreate(sampleRate, CombFilterDelayTimes[3], pow(0.001, CombFilterDelayTimes[3] / reverbTime));
 
-    self->allPassFilters[0] = IIRAllPassFilterCreate(AllPassFilterDelayTimes[0], 0.7, sampleRate);
-    self->allPassFilters[1] = IIRAllPassFilterCreate(AllPassFilterDelayTimes[1], 0.7, sampleRate);
+    self->allPassFilters[0] = IIRAllPassFilterCreate(sampleRate, AllPassFilterDelayTimes[0], 0.7);
+    self->allPassFilters[1] = IIRAllPassFilterCreate(sampleRate, AllPassFilterDelayTimes[1], 0.7);
 
     return self;
 }
@@ -131,12 +53,16 @@ void ReverbDestroy(Reverb *self)
     IIRAllPassFilterDestroy(self->allPassFilters[0]);
     IIRAllPassFilterDestroy(self->allPassFilters[1]);
 
+    IIRLowPassFilterDestroy(self->lowPassFilter);
+
     free(self);
 }
 
 AudioSample ReverbComputeSample(Reverb *self, AudioSample input)
 {
     AudioSample combResults[4];
+
+    input = IIRLowPassFilterApply(self->lowPassFilter, input);
 
     combResults[0] = IIRCombFilterApply(self->combFilters[0], input);
     combResults[1] = IIRCombFilterApply(self->combFilters[1], input);

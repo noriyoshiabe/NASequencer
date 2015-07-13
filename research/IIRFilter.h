@@ -1,9 +1,8 @@
 #pragma once
 
 #include "AudioSample.h"
-#include <stdint.h>
 
-typedef struct _IIRFilter {
+typedef struct _IIRLowPassFilter {
     struct {
         float a1;
         float a2;
@@ -17,7 +16,21 @@ typedef struct _IIRFilter {
     } history[2];
 
     double last_frequency_cent;
-} IIRFilter;
+} IIRLowPassFilter;
 
-extern void IIRFilterCalcLPFCoefficient(IIRFilter *self, double sampleRate, double frequency_cent, double q_cB);
-extern AudioSample IIRFilterApply(IIRFilter *self, AudioSample input);
+extern IIRLowPassFilter *IIRLowPassFilterCreate(double sampleRate, double frequency, double q);
+extern void IIRLowPassFilterDestroy(IIRLowPassFilter *self);
+extern void IIRLowPassFilterCalcLPFCoefficient(IIRLowPassFilter *self, double sampleRate, double frequency_cent, double q_cB);
+extern AudioSample IIRLowPassFilterApply(IIRLowPassFilter *self, AudioSample input);
+
+typedef struct _IIRCombFilter IIRCombFilter;
+
+extern IIRCombFilter *IIRCombFilterCreate(double sampleRate, double delay, double g);
+extern void IIRCombFilterDestroy(IIRCombFilter *self);
+extern AudioSample IIRCombFilterApply(IIRCombFilter *self, AudioSample input);
+
+typedef struct _IIRAllPassFilter IIRAllPassFilter;
+
+extern IIRAllPassFilter *IIRAllPassFilterCreate(double sampleRate, double delay, double g);
+extern void IIRAllPassFilterDestroy(IIRAllPassFilter *self);
+extern AudioSample IIRAllPassFilterApply(IIRAllPassFilter *self, AudioSample input);

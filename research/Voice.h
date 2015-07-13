@@ -31,7 +31,7 @@ typedef struct _Voice {
 
     uint8_t exclusiveClass;
 
-    IIRFilter LPF;
+    IIRLowPassFilter LPF;
     ADSREnvelope volEnv;
     ADSREnvelope modEnv;
     LFO vibLfo;

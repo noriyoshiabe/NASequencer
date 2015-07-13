@@ -157,8 +157,8 @@ AudioSample VoiceComputeSample(Voice *self)
 
     double q_cB = Clip(self->initialFilterQ, 0, 960);
 
-    IIRFilterCalcLPFCoefficient(&self->LPF, self->sampleRate, frequency_cent, q_cB);
-    sample = IIRFilterApply(&self->LPF, sample);
+    IIRLowPassFilterCalcLPFCoefficient(&self->LPF, self->sampleRate, frequency_cent, q_cB);
+    sample = IIRLowPassFilterApply(&self->LPF, sample);
     
     double volume = cBAttn2Value(self->initialAttenuation);
     volume *= cB2Value(self->modLfoToVolume * LFOValue(&self->modLfo));
