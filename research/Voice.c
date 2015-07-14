@@ -164,7 +164,7 @@ AudioSample VoiceComputeSample(Voice *self)
     //   `Alternate attenuation scale used by EMU10K1 cards when setting the attenuation at the preset or instrument level within the SoundFont bank.`
     // And TiMidity++ comments it out!! that implementation for initialAttenuation.
     // This is not doucmented on SF2.4 specification but probably many major soundfont is tunend with EMU10K1's specs.
-    static double AlternateAttenuationScale = 0.4;
+    const double AlternateAttenuationScale = 0.4;
 
     double attenuation = self->initialAttenuation * AlternateAttenuationScale;
     double volume = cBAttn2Value(attenuation);
