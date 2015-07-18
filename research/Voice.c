@@ -157,8 +157,8 @@ AudioSample VoiceComputeSample(Voice *self)
 
     double q_cB = Clip(self->initialFilterQ, 0, 960);
 
-    IIRLowPassFilterCalcLPFCoefficient(&self->LPF, self->sampleRate, frequency_cent, q_cB);
-    sample = IIRLowPassFilterApply(&self->LPF, sample);
+    LowPassFilterCalcLPFCoefficient(&self->LPF, self->sampleRate, frequency_cent, q_cB);
+    sample = LowPassFilterApply(&self->LPF, sample);
   
     // Excerpt from fluid_synth
     //   `Alternate attenuation scale used by EMU10K1 cards when setting the attenuation at the preset or instrument level within the SoundFont bank.`

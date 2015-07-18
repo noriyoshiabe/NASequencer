@@ -3,7 +3,7 @@
 #include "SoundFont.h"
 #include "Preset.h"
 #include "AudioSample.h"
-#include "IIRFilter.h"
+#include "Filter.h"
 #include "Envelope.h"
 #include "LFO.h"
 
@@ -31,7 +31,7 @@ typedef struct _Voice {
 
     uint8_t exclusiveClass;
 
-    IIRLowPassFilter LPF;
+    LowPassFilter LPF;
     Envelope volEnv;
     Envelope modEnv;
     LFO vibLfo;

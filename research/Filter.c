@@ -1,23 +1,23 @@
-#include "IIRFilter.h"
+#include "Filter.h"
 
 #include <stdlib.h>
 #include <math.h>
 
-static void _IIRLowPassFilterCalcLPFCoefficient(IIRLowPassFilter *self, double sampleRate, double frequency, double q);
+static void _LowPassFilterCalcLPFCoefficient(LowPassFilter *self, double sampleRate, double frequency, double q);
 
-IIRLowPassFilter *IIRLowPassFilterCreate(double sampleRate, double frequency, double q)
+LowPassFilter *LowPassFilterCreate(double sampleRate, double frequency, double q)
 {
-    IIRLowPassFilter *self = calloc(1, sizeof(IIRLowPassFilter));
-    _IIRLowPassFilterCalcLPFCoefficient(self, sampleRate, frequency, q);
+    LowPassFilter *self = calloc(1, sizeof(LowPassFilter));
+    _LowPassFilterCalcLPFCoefficient(self, sampleRate, frequency, q);
     return self;
 }
 
-void IIRLowPassFilterDestroy(IIRLowPassFilter *self)
+void LowPassFilterDestroy(LowPassFilter *self)
 {
     free(self);
 }
 
-void IIRLowPassFilterCalcLPFCoefficient(IIRLowPassFilter *self, double sampleRate, double frequency_cent, double q_cB)
+void LowPassFilterCalcLPFCoefficient(LowPassFilter *self, double sampleRate, double frequency_cent, double q_cB)
 {
     // To reduce calculation
     // Skip unless there is a significant change
@@ -49,7 +49,7 @@ void IIRLowPassFilterCalcLPFCoefficient(IIRLowPassFilter *self, double sampleRat
     double q_dB = (double)q_cB / 10.0f;
     double q = pow(10.0f, q_dB / 20.0f);
 
-    _IIRLowPassFilterCalcLPFCoefficient(self, sampleRate, frequency, q);
+    _LowPassFilterCalcLPFCoefficient(self, sampleRate, frequency, q);
 
     // 9.1.3 Low-pass Filter
     // The DC gain at any resonance is half of the resonance value
@@ -59,7 +59,7 @@ void IIRLowPassFilterCalcLPFCoefficient(IIRLowPassFilter *self, double sampleRat
     self->coef.b1 *= filter_gain;
 }
 
-static void _IIRLowPassFilterCalcLPFCoefficient(IIRLowPassFilter *self, double sampleRate, double frequency, double q)
+static void _LowPassFilterCalcLPFCoefficient(LowPassFilter *self, double sampleRate, double frequency, double q)
 {
     // The idea is based on Cookbook formulae for audio EQ biquad filter coefficients
     // http://www.musicdsp.org/files/Audio-EQ-Cookbook.txt
@@ -80,7 +80,7 @@ static void _IIRLowPassFilterCalcLPFCoefficient(IIRLowPassFilter *self, double s
     self->coef.a2 = (1.0 - alpha) / a0_inverter;
 }
 
-AudioSample IIRLowPassFilterApply(IIRLowPassFilter *self, AudioSample input)
+AudioSample LowPassFilterApply(LowPassFilter *self, AudioSample input)
 {
     AudioSample output;
 
@@ -107,16 +107,16 @@ AudioSample IIRLowPassFilterApply(IIRLowPassFilter *self, AudioSample input)
     return output;
 }
 
-struct _IIRCombFilter {
+struct _CombFilter {
     AudioSample *history;
     int historyLength;
     double g;
     int index;
 };
 
-IIRCombFilter *IIRCombFilterCreate(double sampleRate, double delay, double g)
+CombFilter *CombFilterCreate(double sampleRate, double delay, double g)
 {
-    IIRCombFilter *self = calloc(1, sizeof(IIRCombFilter));
+    CombFilter *self = calloc(1, sizeof(CombFilter));
 
     int delayInSample = round(delay * sampleRate);
     self->history = calloc(delayInSample, sizeof(AudioSample));
@@ -127,13 +127,13 @@ IIRCombFilter *IIRCombFilterCreate(double sampleRate, double delay, double g)
     return self;
 }
 
-void IIRCombFilterDestroy(IIRCombFilter *self)
+void CombFilterDestroy(CombFilter *self)
 {
     free(self->history);
     free(self);
 }
 
-AudioSample IIRCombFilterApply(IIRCombFilter *self, AudioSample input)
+AudioSample CombFilterApply(CombFilter *self, AudioSample input)
 {
     AudioSample output = self->history[self->index];
     
@@ -147,16 +147,16 @@ AudioSample IIRCombFilterApply(IIRCombFilter *self, AudioSample input)
     return output;
 }
 
-struct _IIRAllPassFilter {
+struct _AllPassFilter {
     AudioSample *history;
     int historyLength;
     double g;
     int index;
 };
 
-IIRAllPassFilter *IIRAllPassFilterCreate(double sampleRate, double delay, double g)
+AllPassFilter *AllPassFilterCreate(double sampleRate, double delay, double g)
 {
-    IIRAllPassFilter *self = calloc(1, sizeof(IIRAllPassFilter));
+    AllPassFilter *self = calloc(1, sizeof(AllPassFilter));
 
     int delayInSample = round(delay * sampleRate);
     self->history = calloc(delayInSample, sizeof(AudioSample));
@@ -167,13 +167,13 @@ IIRAllPassFilter *IIRAllPassFilterCreate(double sampleRate, double delay, double
     return self;
 }
 
-void IIRAllPassFilterDestroy(IIRAllPassFilter *self)
+void AllPassFilterDestroy(AllPassFilter *self)
 {
     free(self->history);
     free(self);
 }
 
-AudioSample IIRAllPassFilterApply(IIRAllPassFilter *self, AudioSample input)
+AudioSample AllPassFilterApply(AllPassFilter *self, AudioSample input)
 {
     AudioSample output = self->history[self->index];
     

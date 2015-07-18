@@ -11,7 +11,7 @@ set(SOURCES
   SoundFont.c
   Preset.c
   Voice.c
-  IIRFilter.c
+  Filter.c
   Chorus.c
   Reverb.c
 )
