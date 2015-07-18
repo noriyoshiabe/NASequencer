@@ -14,6 +14,7 @@ set(SOURCES
   Filter.c
   Chorus.c
   Reverb.c
+  Modulator.c
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
