@@ -3,6 +3,8 @@
 #include "SoundFont.h"
 #include <stdbool.h>
 
+#define MAX_MODULATOR 64
+
 typedef struct _Preset Preset;
 typedef struct _Instrument Instrument;
 typedef struct _Sample Sample;
@@ -120,6 +122,8 @@ struct _Generator {
 
 struct _Zone {
     Generator gen;
+    SFModList *mod[MAX_MODULATOR];
+    int modCount;
     Instrument *instrument;
     Sample *sample;
 };

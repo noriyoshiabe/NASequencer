@@ -356,7 +356,14 @@ static bool ZoneParseGenerator(Zone *self, SoundFont *sf, SFGenList *generators,
 
 static bool ZoneParseModulator(Zone *self, SoundFont *sf, SFModList *modulators, int modulatorCount)
 {
-    // TODO
+    for (int i = 0; i < modulatorCount; ++i) {
+        if (MAX_MODULATOR <= self->modCount) {
+            break;
+        }
+
+        self->mod[self->modCount++] = &modulators[i];
+    }
+
     return true;
 }
 
@@ -597,8 +604,38 @@ void ZoneDump(Zone *zone)
     DumpShortGen(zone, overridingRootKey);
     DumpShortGen(zone, unused5);
 
-
 #undef DumpShortGen
+
+    for (int i = 0; i < zone->modCount; ++i) {
+        printf("  modulator: %d\n", i);
+        printf("    primary source:\n");
+        printf("      controller pallete: %s\n", zone->mod[i]->sfModSrcOper.CC ? "midi" : "general");
+        if (zone->mod[i]->sfModSrcOper.CC) {
+            printf("      controller number: %d\n", zone->mod[i]->sfModSrcOper.Index);
+        }
+        else {
+            printf("      controller: %s\n", SFGeneralControllerPalette2String(zone->mod[i]->sfModSrcOper.Index));
+        }
+        printf("      source type: %s\n", SFSourceType2String(zone->mod[i]->sfModSrcOper.Type));
+        printf("      direction: %s\n", zone->mod[i]->sfModSrcOper.D ? "negative" : "positive");
+        printf("      polarity: %s\n", zone->mod[i]->sfModSrcOper.P ? "bipolar" : "unipolar");
+
+        printf("    amount source:\n");
+        printf("      controller pallete: %s\n", zone->mod[i]->sfModAmtSrcOper.CC ? "midi" : "general");
+        if (zone->mod[i]->sfModAmtSrcOper.CC) {
+            printf("      controller number: %d\n", zone->mod[i]->sfModAmtSrcOper.Index);
+        }
+        else {
+            printf("      controller: %s\n", SFGeneralControllerPalette2String(zone->mod[i]->sfModAmtSrcOper.Index));
+        }
+        printf("      source type: %s\n", SFSourceType2String(zone->mod[i]->sfModAmtSrcOper.Type));
+        printf("      direction: %s\n", zone->mod[i]->sfModAmtSrcOper.D ? "negative" : "positive");
+        printf("      polarity: %s\n", zone->mod[i]->sfModAmtSrcOper.P ? "bipolar" : "unipolar");
+
+        printf("    destination: %s\n", SFGenerator2String(zone->mod[i]->sfModDestOper));
+        printf("    amount: %d\n", zone->mod[i]->modAmount);
+        printf("    transform: %s\n", SFTransformType2String(zone->mod[i]->sfModTransOper));
+    }
 }
 
 void SampleDump(Sample *sample)

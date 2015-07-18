@@ -232,7 +232,7 @@ extern SoundFont *SoundFontRead(const char *filepath, SoundFontError *error);
 extern void SoundFontDestroy(SoundFont *self);
 extern void SoundFontDump(SoundFont *self);
 
-inline const char *SoundFontError2String(SoundFontError error)
+static inline const char *SoundFontError2String(SoundFontError error)
 {
 #define CASE(error) case error: return &(#error[14]);
     switch (error) {
@@ -243,3 +243,114 @@ inline const char *SoundFontError2String(SoundFontError error)
 #undef CASE
     return "SoundFontErrorUnknown";
 };
+
+static inline const char *SFGenerator2String(SFGenerator generator)
+{
+#define CASE(generator) case generator: return &(#generator[16]);
+    switch (generator) {
+    CASE(SFGeneratorType_startAddrsOffset);
+    CASE(SFGeneratorType_endAddrsOffset);
+    CASE(SFGeneratorType_startloopAddrsOffset);
+    CASE(SFGeneratorType_endloopAddrsOffset);
+    CASE(SFGeneratorType_startAddrsCoarseOffset);
+    CASE(SFGeneratorType_modLfoToPitch);
+    CASE(SFGeneratorType_vibLfoToPitch);
+    CASE(SFGeneratorType_modEnvToPitch);
+    CASE(SFGeneratorType_initialFilterFc);
+    CASE(SFGeneratorType_initialFilterQ);
+    CASE(SFGeneratorType_modLfoToFilterFc);
+    CASE(SFGeneratorType_modEnvToFilterFc);
+    CASE(SFGeneratorType_endAddrsCoarseOffset);
+    CASE(SFGeneratorType_modLfoToVolume);
+    CASE(SFGeneratorType_unused1);
+    CASE(SFGeneratorType_chorusEffectsSend);
+    CASE(SFGeneratorType_reverbEffectsSend);
+    CASE(SFGeneratorType_pan);
+    CASE(SFGeneratorType_unused2);
+    CASE(SFGeneratorType_unused3);
+    CASE(SFGeneratorType_unused4);
+    CASE(SFGeneratorType_delayModLFO);
+    CASE(SFGeneratorType_freqModLFO);
+    CASE(SFGeneratorType_delayVibLFO);
+    CASE(SFGeneratorType_freqVibLFO);
+    CASE(SFGeneratorType_delayModEnv);
+    CASE(SFGeneratorType_attackModEnv);
+    CASE(SFGeneratorType_holdModEnv);
+    CASE(SFGeneratorType_decayModEnv);
+    CASE(SFGeneratorType_sustainModEnv);
+    CASE(SFGeneratorType_releaseModEnv);
+    CASE(SFGeneratorType_keynumToModEnvHold);
+    CASE(SFGeneratorType_keynumToModEnvDecay);
+    CASE(SFGeneratorType_delayVolEnv);
+    CASE(SFGeneratorType_attackVolEnv);
+    CASE(SFGeneratorType_holdVolEnv);
+    CASE(SFGeneratorType_decayVolEnv);
+    CASE(SFGeneratorType_sustainVolEnv);
+    CASE(SFGeneratorType_releaseVolEnv);
+    CASE(SFGeneratorType_keynumToVolEnvHold);
+    CASE(SFGeneratorType_keynumToVolEnvDecay);
+    CASE(SFGeneratorType_instrument);
+    CASE(SFGeneratorType_reserved1);
+    CASE(SFGeneratorType_keyRange);
+    CASE(SFGeneratorType_velRange);
+    CASE(SFGeneratorType_startloopAddrsCoarseOffset);
+    CASE(SFGeneratorType_keynum);
+    CASE(SFGeneratorType_velocity);
+    CASE(SFGeneratorType_initialAttenuation);
+    CASE(SFGeneratorType_reserved2);
+    CASE(SFGeneratorType_endloopAddrsCoarseOffset);
+    CASE(SFGeneratorType_coarseTune);
+    CASE(SFGeneratorType_fineTune);
+    CASE(SFGeneratorType_sampleID);
+    CASE(SFGeneratorType_sampleModes);
+    CASE(SFGeneratorType_reserved3);
+    CASE(SFGeneratorType_scaleTuning);
+    CASE(SFGeneratorType_exclusiveClass);
+    CASE(SFGeneratorType_overridingRootKey);
+    CASE(SFGeneratorType_unused5);
+    CASE(SFGeneratorType_endOper);
+    }
+#undef CASE
+    return "SFGenerator_unknown";
+}
+
+static inline const char *SFGeneralControllerPalette2String(SFGeneralControllerPalette palette)
+{
+#define CASE(palette) case palette: return &(#palette[27]);
+    switch (palette) {
+    CASE(SFGeneralControllerPalette_NoController);
+    CASE(SFGeneralControllerPalette_NoteOnVelocity);
+    CASE(SFGeneralControllerPalette_NoteOnKeyNumber);
+    CASE(SFGeneralControllerPalette_PolyPressure);
+    CASE(SFGeneralControllerPalette_ChannelPressure);
+    CASE(SFGeneralControllerPalette_PitchWheel);
+    CASE(SFGeneralControllerPalette_PitchWheelSensitivity);
+    CASE(SFGeneralControllerPalette_Link);
+    }
+#undef CASE
+    return "SFGeneralControllerPalette_unknown";
+}
+
+static inline const char *SFSourceType2String(SFSourceType type)
+{
+#define CASE(type) case type: return &(#type[13]);
+    switch (type) {
+    CASE(SFSourceType_Linear);
+    CASE(SFSourceType_Concave);
+    CASE(SFSourceType_Convex);
+    CASE(SFSourceType_Switch);
+    }
+#undef CASE
+    return "SFSourceType_unknown";
+}
+
+static inline const char *SFTransformType2String(SFTransformType type)
+{
+#define CASE(type) case type: return &(#type[16]);
+    switch (type) {
+    CASE(SFTransformType_Linear);
+    CASE(SFTransformType_AbsoluteValue);
+    }
+#undef CASE
+    return "SFTransformType_unknown";
+}
