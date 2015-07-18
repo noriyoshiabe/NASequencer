@@ -4,7 +4,7 @@
 #include "Preset.h"
 #include "AudioSample.h"
 #include "IIRFilter.h"
-#include "ADSREnvelope.h"
+#include "Envelope.h"
 #include "LFO.h"
 
 #define MAX_POLYPHONY 64
@@ -32,8 +32,8 @@ typedef struct _Voice {
     uint8_t exclusiveClass;
 
     IIRLowPassFilter LPF;
-    ADSREnvelope volEnv;
-    ADSREnvelope modEnv;
+    Envelope volEnv;
+    Envelope modEnv;
     LFO vibLfo;
     LFO modLfo;
 

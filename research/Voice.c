@@ -59,8 +59,8 @@ extern void VoiceInitialize(Voice *self, uint8_t channel, uint8_t noteNo, uint8_
 
     VoiceUpdateSampleIncrement(self);
 
-    ADSREnvelopeInit(&self->modEnv,
-            ADSREnvelopeTypeModulation,
+    EnvelopeInit(&self->modEnv,
+            EnvelopeTypeModulation,
             VoiceGeneratorShortValue(self, SFGeneratorType_delayModEnv),
             VoiceGeneratorShortValue(self, SFGeneratorType_attackModEnv),
             VoiceGeneratorShortValue(self, SFGeneratorType_holdModEnv),
@@ -71,8 +71,8 @@ extern void VoiceInitialize(Voice *self, uint8_t channel, uint8_t noteNo, uint8_
             VoiceGeneratorShortValue(self, SFGeneratorType_keynumToModEnvDecay),
             self->keyForSample);
 
-    ADSREnvelopeInit(&self->volEnv,
-            ADSREnvelopeTypeVolume,
+    EnvelopeInit(&self->volEnv,
+            EnvelopeTypeVolume,
             VoiceGeneratorShortValue(self, SFGeneratorType_delayVolEnv),
             VoiceGeneratorShortValue(self, SFGeneratorType_attackVolEnv),
             VoiceGeneratorShortValue(self, SFGeneratorType_holdVolEnv),
@@ -121,8 +121,8 @@ void VoiceUpdate(Voice *self)
 {
     double currentTime = VoiceCurrentTime(self);
 
-    ADSREnvelopeUpdate(&self->modEnv, currentTime);
-    ADSREnvelopeUpdate(&self->volEnv, currentTime);
+    EnvelopeUpdate(&self->modEnv, currentTime);
+    EnvelopeUpdate(&self->volEnv, currentTime);
 
     LFOUpdate(&self->modLfo, currentTime);
     LFOUpdate(&self->vibLfo, currentTime);
@@ -152,7 +152,7 @@ AudioSample VoiceComputeSample(Voice *self)
 
     double frequency_cent = self->initialFilterFc;
     frequency_cent += self->modLfoToFilterFc * LFOValue(&self->modLfo);
-    frequency_cent += self->modEnvToFilterFc * ADSREnvelopeValue(&self->modEnv);
+    frequency_cent += self->modEnvToFilterFc * EnvelopeValue(&self->modEnv);
     frequency_cent = Clip(frequency_cent, 1500.0, 13500.0);
 
     double q_cB = Clip(self->initialFilterQ, 0, 960);
@@ -169,7 +169,7 @@ AudioSample VoiceComputeSample(Voice *self)
     double attenuation = self->initialAttenuation * AlternateAttenuationScale;
     double volume = cBAttn2Value(attenuation);
     volume *= cB2Value(self->modLfoToVolume * LFOValue(&self->modLfo));
-    volume *= ADSREnvelopeValue(&self->volEnv);
+    volume *= EnvelopeValue(&self->volEnv);
     volume = Clip(volume, 0.0, 1.0);
 
     sample.L *= volume;
@@ -182,14 +182,14 @@ void VoiceIncrementSample(Voice *self)
 {
     double sampleIncrement = self->sampleIncrement;
 
-    sampleIncrement *= Cent2FreqRatio((double)self->modEnvToPitch * ADSREnvelopeValue(&self->modEnv));
+    sampleIncrement *= Cent2FreqRatio((double)self->modEnvToPitch * EnvelopeValue(&self->modEnv));
     sampleIncrement *= Cent2FreqRatio((double)self->vibLfoToPitch * LFOValue(&self->vibLfo));
     sampleIncrement *= Cent2FreqRatio((double)self->modLfoToPitch * LFOValue(&self->modLfo));
 
     self->sampleIndex += sampleIncrement;
 
     if (self->sampleModes & 0x01) {
-        if (self->sampleModes & 0x02 && ADSREnvelopeIsReleased(&self->volEnv)) {
+        if (self->sampleModes & 0x02 && EnvelopeIsReleased(&self->volEnv)) {
             ;
         }
         else {
@@ -214,21 +214,21 @@ double VoiceReverbEffectsSend(Voice *self)
 void VoiceRelease(Voice *self)
 {
     double currentTime = VoiceCurrentTime(self);
-    ADSREnvelopeRelease(&self->modEnv, currentTime);
-    ADSREnvelopeRelease(&self->volEnv, currentTime);
+    EnvelopeRelease(&self->modEnv, currentTime);
+    EnvelopeRelease(&self->volEnv, currentTime);
 }
 
 void VoiceTerminate(Voice *self)
 {
     double currentTime = VoiceCurrentTime(self);
-    ADSREnvelopeFinish(&self->modEnv, currentTime);
-    ADSREnvelopeFinish(&self->volEnv, currentTime);
+    EnvelopeFinish(&self->modEnv, currentTime);
+    EnvelopeFinish(&self->volEnv, currentTime);
     self->exclusiveClass = 0;
 }
 
 bool VoiceIsReleased(Voice *self)
 {
-    return ADSREnvelopeIsFinished(&self->volEnv) || self->sampleEnd < self->sampleIndex;
+    return EnvelopeIsFinished(&self->volEnv) || self->sampleEnd < self->sampleIndex;
 }
 
 static uint32_t VoiceSampleStart(Voice *self)

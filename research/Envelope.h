@@ -6,22 +6,22 @@
 #include <stdbool.h>
 
 typedef enum {
-    ADSREnvelopeTypeVolume,
-    ADSREnvelopeTypeModulation,
-} ADSREnvelopeType;
+    EnvelopeTypeVolume,
+    EnvelopeTypeModulation,
+} EnvelopeType;
 
 typedef enum {
-    ADSREnvelopePhaseDelay,
-    ADSREnvelopePhaseAttack,
-    ADSREnvelopePhaseHold,
-    ADSREnvelopePhaseDecay,
-    ADSREnvelopePhaseSustain,
-    ADSREnvelopePhaseRelease,
+    EnvelopePhaseDelay,
+    EnvelopePhaseAttack,
+    EnvelopePhaseHold,
+    EnvelopePhaseDecay,
+    EnvelopePhaseSustain,
+    EnvelopePhaseRelease,
 
-    ADSREnvelopePhaseFinish,
-} ADSREnvelopePhase;
+    EnvelopePhaseFinish,
+} EnvelopePhase;
 
-typedef struct _ADSREnvelope {
+typedef struct _Envelope {
     union {
         struct {
             double delay;
@@ -32,23 +32,23 @@ typedef struct _ADSREnvelope {
             double release;
         };
 
-        double phaseValues[ADSREnvelopePhaseFinish];
+        double phaseValues[EnvelopePhaseFinish];
     };
 
     double value;
 
-    ADSREnvelopePhase phase;
+    EnvelopePhase phase;
     double startPhaseTime;
     double releasedValue;
-} ADSREnvelope;
+} Envelope;
 
-static inline void ADSREnvelopeInit(ADSREnvelope *self, ADSREnvelopeType type,
+static inline void EnvelopeInit(Envelope *self, EnvelopeType type,
         int16_t delay, int16_t attack, int16_t hold, int16_t decay, int16_t sustain, int16_t release,
         int16_t keynumToHold, int16_t keynumToDecay, int8_t keyForSample)
 {
     self->value = 0.0;
 
-    self->phase = ADSREnvelopePhaseDelay;
+    self->phase = EnvelopePhaseDelay;
     self->startPhaseTime = 0.0;
     self->releasedValue = 0.0;
 
@@ -89,7 +89,7 @@ static inline void ADSREnvelopeInit(ADSREnvelope *self, ADSREnvelopeType type,
     }
 
     switch (type) {
-    case ADSREnvelopeTypeVolume:
+    case EnvelopeTypeVolume:
         // 37 sustainVolEnv
         // This is the decrease in level, expressed in centibels,
         // to which the Volume Envelope value ramps during the decay phase.
@@ -113,7 +113,7 @@ static inline void ADSREnvelopeInit(ADSREnvelope *self, ADSREnvelopeType type,
         }
         break;
 
-    case ADSREnvelopeTypeModulation:
+    case EnvelopeTypeModulation:
         // 29 sustainModEnv
         // to which the Modulation Envelope value ramps during the decay phase.
         // For the Modulation Envelope, the sustain level is properly expressed in percent of full scale.
@@ -150,104 +150,104 @@ static inline void ADSREnvelopeInit(ADSREnvelope *self, ADSREnvelopeType type,
     self->release = Timecent2Sec(Clip(release, -12000, 8000));
 }
 
-static inline void ADSREnvelopeUpdatePhase(ADSREnvelope *self, double time)
+static inline void EnvelopeUpdatePhase(Envelope *self, double time)
 {
     switch (self->phase) {
-    case ADSREnvelopePhaseDelay:
-    case ADSREnvelopePhaseAttack:
-    case ADSREnvelopePhaseHold:
-    case ADSREnvelopePhaseDecay:
+    case EnvelopePhaseDelay:
+    case EnvelopePhaseAttack:
+    case EnvelopePhaseHold:
+    case EnvelopePhaseDecay:
         if ((self->startPhaseTime + self->phaseValues[self->phase]) <= time) {
             ++self->phase;
             self->startPhaseTime = time;
         }
         break;
-    case ADSREnvelopePhaseSustain:
+    case EnvelopePhaseSustain:
         // Whenever a key-off occurs, the envelope immediately enters a release phase
         break;
-    case ADSREnvelopePhaseRelease:
+    case EnvelopePhaseRelease:
         if (0.0 >= self->value) {
             ++self->phase;
             self->value = 0.0;
         }
         break;
-    case ADSREnvelopePhaseFinish:
+    case EnvelopePhaseFinish:
         break;
     }
 }
 
-static inline void ADSREnvelopeRelease(ADSREnvelope *self, double time)
+static inline void EnvelopeRelease(Envelope *self, double time)
 {
-    if (ADSREnvelopePhaseRelease > self->phase) {
-        self->phase = ADSREnvelopePhaseRelease;
+    if (EnvelopePhaseRelease > self->phase) {
+        self->phase = EnvelopePhaseRelease;
         self->startPhaseTime = time;
         self->releasedValue = self->value;
     }
 }
 
-static inline void ADSREnvelopeFinish(ADSREnvelope *self, double time)
+static inline void EnvelopeFinish(Envelope *self, double time)
 {
     // This method is for exclusiveClass
     // 8.1.1 Kinds of Generator Enumerators
     // 57 exclusiveClass - any other sounding note with the same exclusive class value should be rapidly terminated.
 
-    if (ADSREnvelopePhaseFinish > self->phase) {
-        ADSREnvelopeRelease(self, time);
+    if (EnvelopePhaseFinish > self->phase) {
+        EnvelopeRelease(self, time);
 
         self->release = 0.010; // 10 msec
     }
 }
 
-static inline void ADSREnvelopeUpdate(ADSREnvelope *self, double time)
+static inline void EnvelopeUpdate(Envelope *self, double time)
 {
     double f;
 
     switch (self->phase) {
-    case ADSREnvelopePhaseDelay:
+    case EnvelopePhaseDelay:
         self->value = 0.0;
         break;
-    case ADSREnvelopePhaseAttack:
+    case EnvelopePhaseAttack:
         // 9.1.7 Envelope Generators
         // The envelope then rises in a convex curve to a value of one during the attack phase.
         self->value = ConvexPositiveUnipolar((time - self->startPhaseTime) / self->attack);
         break;
-    case ADSREnvelopePhaseHold:
+    case EnvelopePhaseHold:
         self->value = 1.0;
         break;
-    case ADSREnvelopePhaseDecay:
+    case EnvelopePhaseDecay:
         // 9.1.7 Envelope Generators
         // When the hold phase ends, the envelope enters a decay phase during which its value decreases linearly to a sustain level.
         f = (time - self->startPhaseTime) / self->decay;
         self->value = 0.0 < self->decay ? MAX(0.0, 1.0 * (1.0 - f) + f * self->sustain) : self->sustain;
         break;
-    case ADSREnvelopePhaseSustain:
+    case EnvelopePhaseSustain:
         self->value = self->sustain;
         break;
-    case ADSREnvelopePhaseRelease:
+    case EnvelopePhaseRelease:
         // 9.1.7 Envelope Generators
         // Whenever a key-off occurs, the envelope immediately enters a release phase
         // during which the value linearly ramps from the current value to zero.
         // When zero is reached, the envelope value remains at zero.
         self->value = 0.0 < self->release ? MAX(0.0, ((self->startPhaseTime + self->release - time) * self->releasedValue) / self->release) : 0.0;
         break;
-    case ADSREnvelopePhaseFinish:
+    case EnvelopePhaseFinish:
         break;
     }
 
-    ADSREnvelopeUpdatePhase(self, time);
+    EnvelopeUpdatePhase(self, time);
 }
 
-static inline bool ADSREnvelopeIsReleased(ADSREnvelope *self)
+static inline bool EnvelopeIsReleased(Envelope *self)
 {
-    return ADSREnvelopePhaseRelease == self->phase;
+    return EnvelopePhaseRelease == self->phase;
 }
 
-static inline bool ADSREnvelopeIsFinished(ADSREnvelope *self)
+static inline bool EnvelopeIsFinished(Envelope *self)
 {
-    return ADSREnvelopePhaseFinish == self->phase;
+    return EnvelopePhaseFinish == self->phase;
 }
 
-static inline double ADSREnvelopeValue(ADSREnvelope *self)
+static inline double EnvelopeValue(Envelope *self)
 {
     return self->value;
 }
