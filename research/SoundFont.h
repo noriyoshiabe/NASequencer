@@ -23,11 +23,11 @@ typedef struct _SFPresetBag {
 } SFPresetBag;
 
 typedef struct _SFModulator {
-    unsigned Type:6;
-    unsigned P:1;
-    unsigned D:1;
-    unsigned CC:1;
     unsigned Index:7;
+    unsigned CC:1;
+    unsigned D:1;
+    unsigned P:1;
+    unsigned Type:6;
 } __attribute__((__packed__)) SFModulator;
 
 typedef enum {
