@@ -12,7 +12,7 @@ enum {
 
 int16_t ModulatorGetValue(const Modulator *self, Channel *channel, Voice *voice)
 {
-    double result = 0.0;
+    double result = 1.0;
 
     const SFModulator *srcOpers[2] = {&self->sfModSrcOper, &self->sfModAmtSrcOper};
     for (int i = 0; i < 2; ++i) {
@@ -124,7 +124,7 @@ int16_t ModulatorGetValue(const Modulator *self, Channel *channel, Voice *voice)
             break;
         }
 
-        result += value;
+        result *= value;
     }
 
     result *= (double)self->modAmount;
