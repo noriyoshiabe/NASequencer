@@ -1,5 +1,6 @@
 #include "Voice.h"
 #include "Define.h"
+#include "Modulator.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,6 +8,7 @@
 #include <math.h>
 #include <limits.h>
 
+static void VoiceModulatorInitialize(Voice *self);
 static void VoiceUpdateSampleIncrement(Voice *self);
 static uint32_t VoiceSampleStart(Voice *self);
 static uint32_t VoiceSampleEnd(Voice *self);
@@ -32,18 +34,7 @@ extern void VoiceInitialize(Voice *self, Channel *channel, uint8_t noteNo, uint8
     self->sf = sf;
     self->sampleRate = sampleRate;
 
-    self->modCount = 0;
-
-    self->mod[self->modCount++] = &MIDINoteOnVelocityToInitialAttenuation;
-    self->mod[self->modCount++] = &MIDINoteOnVelocityToFilterCutoff;
-    self->mod[self->modCount++] = &MIDIChannelPressureToVibratoLFOPitchDepth;
-    self->mod[self->modCount++] = &MIDIContinuousController1ToVibratoLFOPitchDepth;
-    self->mod[self->modCount++] = &MIDIContinuousController7ToInitialAttenuation;
-    self->mod[self->modCount++] = &MIDIContinuousController10ToPanPosition;
-    self->mod[self->modCount++] = &MIDIContinuousController11ToInitialAttenuation;
-    self->mod[self->modCount++] = &MIDIContinuousController91ToReverbEffectsSend;
-    self->mod[self->modCount++] = &MIDIContinuousController93ToChorusEffectsSend;
-    self->mod[self->modCount++] = &MIDIPitchWheelToInitialPitchControlledByMIDIPitchWheelSensitivity;
+    VoiceModulatorInitialize(self);
 
     self->tick = 0;
     self->sampleIndex = VoiceSampleStart(self);
@@ -107,6 +98,80 @@ extern void VoiceInitialize(Voice *self, Channel *channel, uint8_t noteNo, uint8
             VoiceGeneratorShortValue(self, SFGeneratorType_delayVibLFO),
             VoiceGeneratorShortValue(self, SFGeneratorType_freqVibLFO),
             sampleRate);
+}
+
+static void VoiceModulatorInitialize(Voice *self)
+{
+    self->modCount = 0;
+
+    self->mod[self->modCount++] = &MIDINoteOnVelocityToInitialAttenuation;
+    self->mod[self->modCount++] = &MIDINoteOnVelocityToFilterCutoff;
+    self->mod[self->modCount++] = &MIDIChannelPressureToVibratoLFOPitchDepth;
+    self->mod[self->modCount++] = &MIDIContinuousController1ToVibratoLFOPitchDepth;
+    self->mod[self->modCount++] = &MIDIContinuousController7ToInitialAttenuation;
+    self->mod[self->modCount++] = &MIDIContinuousController10ToPanPosition;
+    self->mod[self->modCount++] = &MIDIContinuousController11ToInitialAttenuation;
+    self->mod[self->modCount++] = &MIDIContinuousController91ToReverbEffectsSend;
+    self->mod[self->modCount++] = &MIDIContinuousController93ToChorusEffectsSend;
+    self->mod[self->modCount++] = &MIDIPitchWheelToInitialPitchControlledByMIDIPitchWheelSensitivity;
+
+    // 9.5.1 Controller Model Theory of Operation
+
+    // A modulator, contained within a global instrument zone,
+    // that is identical to a default modulator supersedes or replaces the default modulator.
+    for (int i = 0; i < self->instrumentGlobalZone->modCount; ++i) {
+        if (MAX_MODULATOR <= self->modCount) {
+            break;
+        }
+
+        ModulatorAddOverwrite((const Modulator **)self->mod, &self->modCount, self->instrumentGlobalZone->mod[i]);
+    }
+
+    // A modulator, that is contained in a local instrument zone,
+    // which is identical to a default modulator or to a modulator in a global instrument zone supersedes or replaces that modulator.
+    for (int i = 0; i < self->instrumentZone->modCount; ++i) {
+        if (MAX_MODULATOR <= self->modCount) {
+            break;
+        }
+
+        ModulatorAddOverwrite((const Modulator **)self->mod, &self->modCount, self->instrumentZone->mod[i]);
+    }
+
+    // A modulator, contained within a global preset zone,
+    // that is identical to a default modulator or to a modulator in an instrument
+    // adds to that modulator.
+    //
+    // A modulator, contained within a local preset zone,
+    // that is identical to a modulator in a global preset zone supersedes or replaces
+    // that modulator in the global preset zone.
+    // That modulator then has its effects added to the destination summing node of
+    // all zones in the given instrument.
+    
+    int modCount = 0;
+    Modulator *modList[MAX_MODULATOR];
+
+    for (int i = 0; i < self->presetGlobalZone->modCount; ++i) {
+        if (MAX_MODULATOR <= modCount) {
+            break;
+        }
+        modList[modCount++] = self->presetGlobalZone->mod[i];
+    }
+
+    for (int i = 0; i < self->presetZone->modCount; ++i) {
+        if (MAX_MODULATOR <= modCount) {
+            break;
+        }
+
+        ModulatorAddOverwrite((const Modulator **)modList, &modCount, self->presetZone->mod[i]);
+    }
+
+    for (int i = 0; i < modCount; ++i) {
+        if (MAX_MODULATOR <= self->modCount) {
+            break;
+        }
+
+        self->mod[self->modCount++] = modList[i];
+    }
 }
 
 static void VoiceUpdateSampleIncrement(Voice *self)

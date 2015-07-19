@@ -10,14 +10,14 @@ enum {
 
 #define Curve(polarity, direction) ((polarity << 1) | direction)
 
-int16_t ModulatorGetValue(Modulator *self, Channel *channel, Voice *voice)
+int16_t ModulatorGetValue(const Modulator *self, Channel *channel, Voice *voice)
 {
     double result = 0.0;
 
-    SFModulator *srcOpers[2] = {&self->sfModSrcOper, &self->sfModAmtSrcOper};
+    const SFModulator *srcOpers[2] = {&self->sfModSrcOper, &self->sfModAmtSrcOper};
     for (int i = 0; i < 2; ++i) {
         double value;
-        SFModulator *srcOper = srcOpers[i];
+        const SFModulator *srcOper = srcOpers[i];
 
         if (srcOper->CC) {
             value = channel->cc[srcOper->Index];
@@ -135,3 +135,24 @@ int16_t ModulatorGetValue(Modulator *self, Channel *channel, Voice *voice)
 
     return round(result);
 }
+
+bool ModulatorIsIdentical(const Modulator *self, const Modulator *to)
+{
+    return self->sfModDestOper == to->sfModDestOper
+        && *((uint16_t *)&self->sfModSrcOper) == *((uint16_t *)&to->sfModSrcOper)
+        && *((uint16_t *)&self->sfModAmtSrcOper) == *((uint16_t *)&to->sfModAmtSrcOper)
+        && self->sfModTransOper == to->sfModTransOper;
+}
+
+void ModulatorAddOverwrite(const Modulator **modList, int *count, const Modulator *toAdd)
+{
+    for (int i = 0; i < *count; ++i) {
+        if (ModulatorIsIdentical(modList[i], toAdd)) {
+            modList[i] = toAdd;
+            return;
+        }
+    }
+
+    modList[(*count)++] = toAdd;
+}
+
