@@ -226,8 +226,6 @@ AudioSample VoiceComputeSample(Voice *self)
 
     double normalized = ((double)indexSample * (1.0 - over) + (double)nextSample * over) / (double)0x7FFFFF;
 
-    // TODO velocity
-
     int16_t pan = Clip(self->pan, -500, 500);
     double coef = M_PI / 2.0 / 1000.0;
     double left = sin(coef * (-pan + 500));
