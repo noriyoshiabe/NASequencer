@@ -32,6 +32,19 @@ extern void VoiceInitialize(Voice *self, Channel *channel, uint8_t noteNo, uint8
     self->sf = sf;
     self->sampleRate = sampleRate;
 
+    self->modCount = 0;
+
+    self->mod[self->modCount++] = &MIDINoteOnVelocityToInitialAttenuation;
+    self->mod[self->modCount++] = &MIDINoteOnVelocityToFilterCutoff;
+    self->mod[self->modCount++] = &MIDIChannelPressureToVibratoLFOPitchDepth;
+    self->mod[self->modCount++] = &MIDIContinuousController1ToVibratoLFOPitchDepth;
+    self->mod[self->modCount++] = &MIDIContinuousController7ToInitialAttenuation;
+    self->mod[self->modCount++] = &MIDIContinuousController10ToPanPosition ;
+    self->mod[self->modCount++] = &MIDIContinuousController11ToInitialAttenuation;
+    self->mod[self->modCount++] = &MIDIContinuousController91ToReverbEffectsSend;
+    self->mod[self->modCount++] = &MIDIContinuousController93ToChorusEffectsSend;
+    self->mod[self->modCount++] = &MIDIPitchWheelToInitialPitchControlledByMIDIPitchWheelSensitivity;
+
     self->tick = 0;
     self->sampleIndex = VoiceSampleStart(self);
 

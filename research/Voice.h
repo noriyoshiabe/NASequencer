@@ -9,6 +9,7 @@
 #include "Channel.h"
 
 #define MAX_POLYPHONY 64
+#define MAX_MODULATOR 64
 
 typedef struct _Voice {
     Channel *channel;
@@ -26,8 +27,11 @@ typedef struct _Voice {
     Zone *instrumentZone;
 
     SoundFont *sf;
-
     double sampleRate;
+
+    const SFModList *mod[MAX_MODULATOR];
+    int modCount;
+
     int16_t sampleModes;
     uint8_t keyForSample;
 
