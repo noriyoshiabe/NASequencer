@@ -43,6 +43,12 @@ extern void VoiceInitialize(Voice *self, Channel *channel, uint8_t noteNo, uint8
     self->sampleModes = VoiceGeneratorValue(self, SFGeneratorType_sampleModes);
     self->exclusiveClass = VoiceGeneratorValue(self, SFGeneratorType_exclusiveClass);
 
+    EnvelopeInit(&self->modEnv);
+    EnvelopeInit(&self->volEnv);
+
+    LFOInit(&self->modLfo);
+    LFOInit(&self->vibLfo);
+
     VoiceModulatorInitialize(self);
     VoiceUpdateRuntimeParams(self);
 }
@@ -144,7 +150,7 @@ void VoiceUpdateRuntimeParams(Voice* self)
     self->chorusEffectsSend = VoiceGeneratorValue(self, SFGeneratorType_chorusEffectsSend);
     self->reverbEffectsSend = VoiceGeneratorValue(self, SFGeneratorType_reverbEffectsSend);
 
-    EnvelopeInit(&self->modEnv,
+    EnvelopeUpdateRuntimeParams(&self->modEnv,
             EnvelopeTypeModulation,
             VoiceGeneratorValue(self, SFGeneratorType_delayModEnv),
             VoiceGeneratorValue(self, SFGeneratorType_attackModEnv),
@@ -156,7 +162,7 @@ void VoiceUpdateRuntimeParams(Voice* self)
             VoiceGeneratorValue(self, SFGeneratorType_keynumToModEnvDecay),
             self->keyForSample);
 
-    EnvelopeInit(&self->volEnv,
+    EnvelopeUpdateRuntimeParams(&self->volEnv,
             EnvelopeTypeVolume,
             VoiceGeneratorValue(self, SFGeneratorType_delayVolEnv),
             VoiceGeneratorValue(self, SFGeneratorType_attackVolEnv),
@@ -168,12 +174,12 @@ void VoiceUpdateRuntimeParams(Voice* self)
             VoiceGeneratorValue(self, SFGeneratorType_keynumToVolEnvDecay),
             self->keyForSample);
 
-    LFOInit(&self->modLfo,
+    LFOUpdateRuntimeParams(&self->modLfo,
             VoiceGeneratorValue(self, SFGeneratorType_delayModLFO),
             VoiceGeneratorValue(self, SFGeneratorType_freqModLFO),
             self->sampleRate);
 
-    LFOInit(&self->vibLfo,
+    LFOUpdateRuntimeParams(&self->vibLfo,
             VoiceGeneratorValue(self, SFGeneratorType_delayVibLFO),
             VoiceGeneratorValue(self, SFGeneratorType_freqVibLFO),
             self->sampleRate);

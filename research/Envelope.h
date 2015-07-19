@@ -42,16 +42,18 @@ typedef struct _Envelope {
     double releasedValue;
 } Envelope;
 
-static inline void EnvelopeInit(Envelope *self, EnvelopeType type,
-        int16_t delay, int16_t attack, int16_t hold, int16_t decay, int16_t sustain, int16_t release,
-        int16_t keynumToHold, int16_t keynumToDecay, int8_t keyForSample)
+static inline void EnvelopeInit(Envelope *self)
 {
     self->value = 0.0;
-
     self->phase = EnvelopePhaseDelay;
     self->startPhaseTime = 0.0;
     self->releasedValue = 0.0;
+}
 
+static inline void EnvelopeUpdateRuntimeParams(Envelope *self, EnvelopeType type,
+        int16_t delay, int16_t attack, int16_t hold, int16_t decay, int16_t sustain, int16_t release,
+        int16_t keynumToHold, int16_t keynumToDecay, int8_t keyForSample)
+{
     // 8.1.1 Kinds of Generator Enumerators
 
     // 25 delayModEnv / 33 delayVolEnv

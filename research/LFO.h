@@ -13,7 +13,12 @@ typedef struct _LFO {
     double increment;
 } LFO;
 
-static inline void LFOInit(LFO *self, int16_t delay, int16_t frequency, double sampleRate)
+static inline void LFOInit(LFO *self)
+{
+    self->value = 0.0;
+}
+
+static inline void LFOUpdateRuntimeParams(LFO *self, int16_t delay, int16_t frequency, double sampleRate)
 {
     // 8.1.1 Kinds of Generator Enumerators
     // 21 delayModLFO / 23 delayVibLFO
@@ -27,8 +32,6 @@ static inline void LFOInit(LFO *self, int16_t delay, int16_t frequency, double s
 
     double samplePerCycle = sampleRate / AbsCent2Hz(Clip(frequency, -16000, 4500));
     self->increment = 1.0 / (samplePerCycle / 4.0);
-
-    self->value = 0.0;
 }
 
 static inline void LFOUpdate(LFO *self, double time)
