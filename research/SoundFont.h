@@ -110,6 +110,9 @@ typedef enum {
     SFGeneratorType_exclusiveClass,
     SFGeneratorType_overridingRootKey,
     SFGeneratorType_unused5,
+
+    SFGeneratorType_initialPitch, // This is undefined on SF2.4 Generator
+
     SFGeneratorType_endOper,
 } SFGeneratorType;
 

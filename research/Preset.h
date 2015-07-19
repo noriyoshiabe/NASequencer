@@ -139,3 +139,14 @@ extern int16_t ZoneGeneratorShortValue(Zone *zone, SFGeneratorType generatorType
 extern bool ZoneIsInsideRange(Zone *zone, uint8_t key, uint8_t velocity);
 extern int GeneratorDefaultValue(SFGeneratorType generatorType);
 extern bool GeneratorIsInstrumentOnly(SFGeneratorType generatorType);
+
+extern const SFModList MIDINoteOnVelocityToInitialAttenuation;
+extern const SFModList MIDINoteOnVelocityToFilterCutoff;
+extern const SFModList MIDIChannelPressureToVibratoLFOPitchDepth;
+extern const SFModList MIDIContinuousController1ToVibratoLFOPitchDepth;
+extern const SFModList MIDIContinuousController7ToInitialAttenuation;
+extern const SFModList MIDIContinuousController10ToPanPosition ;
+extern const SFModList MIDIContinuousController11ToInitialAttenuation;
+extern const SFModList MIDIContinuousController91ToReverbEffectsSend;
+extern const SFModList MIDIContinuousController93ToChorusEffectsSend;
+extern const SFModList MIDIPitchWheelToInitialPitchControlledByMIDIPitchWheelSensitivity;

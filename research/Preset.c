@@ -17,6 +17,100 @@ static void InstrumentDestroy(Instrument *self);
 static bool ParseSample(SoundFont *sf, int shdrIdx, Sample **result);
 static void SampleDestroy(Sample *self);
 
+// 8.4 Default Modulators
+
+#define NoController {.Type = 0, .P = 0, .D = 0, .CC = 0, .Index = 0}
+
+// 8.4.1 MIDI Note-On Velocity to Initial Attenuation
+const SFModList MIDINoteOnVelocityToInitialAttenuation = {
+    .sfModSrcOper = {.Type = 1, .P = 0, .D = 1, .CC = 0, .Index = 2},
+    .sfModDestOper = SFGeneratorType_initialAttenuation,
+    .modAmount = 960,
+    .sfModAmtSrcOper = NoController,
+    .sfModTransOper = SFTransformType_Linear
+};
+
+// 8.4.2 MIDI Note-On Velocity to Filter Cutoff
+const SFModList MIDINoteOnVelocityToFilterCutoff = {
+    .sfModSrcOper = {.Type = 0, .P = 0, .D = 1, .CC = 0, .Index = 2},
+    .sfModDestOper = SFGeneratorType_initialFilterFc,
+    .modAmount = -2400,
+    .sfModAmtSrcOper = NoController,
+    .sfModTransOper = SFTransformType_Linear
+};
+
+// 8.4.3 MIDI Channel Pressure to Vibrato LFO Pitch Depth
+const SFModList MIDIChannelPressureToVibratoLFOPitchDepth = {
+    .sfModSrcOper = {.Type = 0, .P = 0, .D = 0, .CC = 0, .Index = 13},
+    .sfModDestOper = SFGeneratorType_vibLfoToPitch,
+    .modAmount = 50,
+    .sfModAmtSrcOper = NoController,
+    .sfModTransOper = SFTransformType_Linear
+};
+
+// 8.4.4 MIDI Continuous Controller 1 to Vibrato LFO Pitch Depth
+const SFModList MIDIContinuousController1ToVibratoLFOPitchDepth = {
+    .sfModSrcOper = {.Type = 0, .P = 0, .D = 0, .CC = 1, .Index = 1},
+    .sfModDestOper = SFGeneratorType_vibLfoToPitch,
+    .modAmount = 50,
+    .sfModAmtSrcOper = NoController,
+    .sfModTransOper = SFTransformType_Linear
+};
+
+// 8.4.5 MIDI Continuous Controller 7 to Initial Attenuation
+const SFModList MIDIContinuousController7ToInitialAttenuation = {
+    .sfModSrcOper = {.Type = 1, .P = 0, .D = 1, .CC = 1, .Index = 7},
+    .sfModDestOper = SFGeneratorType_initialAttenuation,
+    .modAmount = 960,
+    .sfModAmtSrcOper = NoController,
+    .sfModTransOper = SFTransformType_Linear
+};
+
+// 8.4.6 MIDI Continuous Controller 10 to Pan Position
+const SFModList MIDIContinuousController10ToPanPosition  = {
+    .sfModSrcOper = {.Type = 0, .P = 1, .D = 0, .CC = 1, .Index = 10},
+    .sfModDestOper = SFGeneratorType_pan,
+    .modAmount = 1000,
+    .sfModAmtSrcOper = NoController,
+    .sfModTransOper = SFTransformType_Linear
+};
+
+// 8.4.7 MIDI Continuous Controller 11 to Initial Attenuation
+const SFModList MIDIContinuousController11ToInitialAttenuation = {
+    .sfModSrcOper = {.Type = 1, .P = 0, .D = 1, .CC = 1, .Index = 11},
+    .sfModDestOper = SFGeneratorType_initialAttenuation,
+    .modAmount = 960,
+    .sfModAmtSrcOper = NoController,
+    .sfModTransOper = SFTransformType_Linear
+};
+
+// 8.4.8 MIDI Continuous Controller 91 to Reverb Effects Send
+const SFModList MIDIContinuousController91ToReverbEffectsSend = {
+    .sfModSrcOper = {.Type = 0, .P = 0, .D = 0, .CC = 1, .Index = 91},
+    .sfModDestOper = SFGeneratorType_reverbEffectsSend,
+    .modAmount = 200,
+    .sfModAmtSrcOper = NoController,
+    .sfModTransOper = SFTransformType_Linear
+};
+
+// 8.4.9 MIDI Continuous Controller 93 to Chorus Effects Send
+const SFModList MIDIContinuousController93ToChorusEffectsSend = {
+    .sfModSrcOper = {.Type = 0, .P = 0, .D = 0, .CC = 1, .Index = 93},
+    .sfModDestOper = SFGeneratorType_chorusEffectsSend,
+    .modAmount = 200,
+    .sfModAmtSrcOper = NoController,
+    .sfModTransOper = SFTransformType_Linear
+};
+
+// 8.4.10 MIDI Pitch Wheel to Initial Pitch Controlled by MIDI Pitch Wheel Sensitivity
+const SFModList MIDIPitchWheelToInitialPitchControlledByMIDIPitchWheelSensitivity = {
+    .sfModSrcOper = {.Type = 0, .P = 1, .D = 0, .CC = 1, .Index = 14},
+    .sfModDestOper = SFGeneratorType_initialPitch,
+    .modAmount = 12700,
+    .sfModAmtSrcOper = {.Type = 0, .P = 0, .D = 0, .CC = 0, .Index = 16},
+    .sfModTransOper = SFTransformType_Linear
+};
+
 bool ParsePresets(SoundFont *sf, Preset ***results, int *resultsCount)
 {
     Preset **presets = NULL;
