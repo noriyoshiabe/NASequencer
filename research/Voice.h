@@ -6,11 +6,12 @@
 #include "Filter.h"
 #include "Envelope.h"
 #include "LFO.h"
+#include "Channel.h"
 
 #define MAX_POLYPHONY 64
 
 typedef struct _Voice {
-    uint8_t channel;
+    Channel *channel;
     uint8_t key;
     uint8_t velocity;
 
@@ -18,6 +19,7 @@ typedef struct _Voice {
     double sampleIncrement;
     double sampleIndex;
 
+    Preset *preset;
     Zone *presetGlobalZone;
     Zone *presetZone;
     Zone *instrumentGlobalZone;
@@ -67,7 +69,7 @@ typedef struct _VoicePool {
     Voice *freeList;
 } VoicePool;
 
-extern void VoiceInitialize(Voice *self, uint8_t channel, uint8_t noteNo, uint8_t velocity,
+extern void VoiceInitialize(Voice *self, Channel *channel, uint8_t noteNo, uint8_t velocity,
         Zone *presetGlobalZone, Zone *presetZone, Zone *instrumentGlobalZone, Zone *instrumentZone,
         SoundFont *sf, double sampleRate);
 

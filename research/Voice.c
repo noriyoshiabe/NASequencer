@@ -14,11 +14,13 @@ static uint32_t VoiceSampleStartLoop(Voice *self);
 static uint32_t VoiceSampleEndLoop(Voice *self);
 static int16_t VoiceGeneratorShortValue(Voice *self, SFGeneratorType generatorType);
 
-extern void VoiceInitialize(Voice *self, uint8_t channel, uint8_t noteNo, uint8_t velocity,
+extern void VoiceInitialize(Voice *self, Channel *channel, uint8_t noteNo, uint8_t velocity,
         Zone *presetGlobalZone, Zone *presetZone, Zone *instrumentGlobalZone, Zone *instrumentZone,
         SoundFont *sf, double sampleRate)
 {
     self->channel = channel;
+    self->preset = channel->preset;
+
     self->key = noteNo;
     self->velocity = velocity;
 
@@ -375,7 +377,7 @@ void VoiceDump(Voice *voice)
 {
     printf("[Voice]\n");
     printf("-----------------------------------------\n");
-    printf("channel: %d\n", voice->channel);
+    printf("channel: %d\n", voice->channel->number);
     printf("key: %d\n", voice->key);
     printf("velocity: %d\n", voice->velocity);
     printf("tick: %d\n", voice->tick);

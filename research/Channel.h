@@ -90,6 +90,7 @@ typedef enum {
 } ControllChange;
 
 typedef struct _Channel {
+    uint8_t number;
     Preset *preset;
 
     int16_t keyPressure;
@@ -103,3 +104,19 @@ typedef struct _Channel {
 
     int16_t nrpn[SFGeneratorType_endOper];
 } Channel;
+
+static inline void ChannelInitialize(Channel *self, uint8_t number, Preset *preset)
+{
+    self->number = number;
+    self->preset = preset;
+}
+
+static inline void ChannelSetControlChange(Channel *self, uint8_t ccNumber, uint8_t value)
+{
+    self->cc[ccNumber] = value;
+}
+
+static inline uint16_t ChannelGetBankNumber(Channel *self)
+{
+    return self->cc[CC_BankSelect_MSB] << 8 | self->cc[CC_BankSelect_LSB];
+}

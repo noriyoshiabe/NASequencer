@@ -5,6 +5,7 @@
 #include "Voice.h"
 #include "Chorus.h"
 #include "Reverb.h"
+#include "Channel.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -33,12 +34,7 @@ struct _Synthesizer {
     Chorus *chorus;
     Reverb *reverb;
 
-    Preset *channelPresets[CHANNEL_COUNT];
-
-    struct {
-        uint8_t msb;
-        uint8_t lsb;
-    } control[CHANNEL_COUNT];
+    Channel channels[CHANNEL_COUNT];
 };
 
 static Preset *SynthesizerFindPreset(Synthesizer *self, uint16_t midiPresetNo, uint16_t bankNo);
@@ -46,7 +42,7 @@ static int PresetComparator(const void *preset1, const void *preset2);
 static int SynthesizerNoteOn(Synthesizer *self, uint8_t channel, uint8_t noteNo, uint8_t velocity);
 static void SynthesizerNoteOff(Synthesizer *self, uint8_t channel, uint8_t noteNo);
 static void SynthesizerReleaseExclusiveClass(Synthesizer *self, Voice *newVoice);
-static void SynthesizerProgramChange(Synthesizer *self, uint8_t channel, uint16_t bankNo, uint8_t programNo);
+static void SynthesizerProgramChange(Synthesizer *self, uint8_t channel, uint8_t programNo);
 static void SynthesizerAddVoice(Synthesizer *self, Voice *voice);
 static void SynthesizerRemoveVoice(Synthesizer *self, Voice *voice);
 
@@ -68,22 +64,13 @@ static void send(void *_self, uint8_t *bytes, size_t length)
     case 0xB0:
         if (3 <= length) {
             uint8_t channel = bytes[0] & 0x0F;
-
-            switch (bytes[1]) {
-            case 0x00:
-                self->control[channel].msb = bytes[2];
-                break;
-            case 0x20:
-                self->control[channel].lsb = bytes[2];
-                break;
-            }
+            ChannelSetControlChange(&self->channels[channel], bytes[1], bytes[2]);
         }
         break;
     case 0xC0:
         if (2 <= length) {
             uint8_t channel = bytes[0] & 0x0F;
-            uint16_t bankNo = self->control[channel].msb << 8 | self->control[channel].lsb;
-            SynthesizerProgramChange(self, channel, bankNo, bytes[1]);
+            SynthesizerProgramChange(self, channel, bytes[1]);
         }
         break;
     }
@@ -159,7 +146,7 @@ Synthesizer *SynthesizerCreate(const char *filepath, double sampleRate)
 
     if (0 < self->presetCount) {
         for (int i = 0; i < CHANNEL_COUNT; ++i) {
-            self->channelPresets[i] = self->presets[0];
+            ChannelInitialize(&self->channels[i], i, self->presets[0]);
         }
     }
 #if 0
@@ -238,7 +225,7 @@ static int SynthesizerNoteOn(Synthesizer *self, uint8_t channel, uint8_t noteNo,
         return voicedCount;
     }
 
-    Preset *preset = self->channelPresets[channel];
+    Preset *preset = self->channels[channel].preset;
     
     for (int i = 0; i < preset->zoneCount; ++i) {
         Zone *presetZone = preset->zones[i];
@@ -260,7 +247,7 @@ static int SynthesizerNoteOn(Synthesizer *self, uint8_t channel, uint8_t noteNo,
                 goto END;
             }
 
-            VoiceInitialize(voice, channel, noteNo, velocity,
+            VoiceInitialize(voice, &self->channels[channel], noteNo, velocity,
                     preset->globalZone, presetZone, instrument->globalZone, instrumentZone,
                     self->sf, self->sampleRate);
 
@@ -283,7 +270,9 @@ END:
 static void SynthesizerNoteOff(Synthesizer *self, uint8_t channel, uint8_t noteNo)
 {
     for (Voice *voice = self->voiceFirst; NULL != voice; voice = voice->next) {
-        if (voice->channel == channel && voice->key == noteNo) {
+        if (voice->channel == &self->channels[channel]
+                && voice->preset == self->channels[channel].preset
+                && voice->key == noteNo) {
             VoiceRelease(voice);
         }
     }
@@ -298,20 +287,21 @@ static void SynthesizerReleaseExclusiveClass(Synthesizer *self, Voice *newVoice)
         return;
     }
 
-    // TODO check preset identity insted of channel
-
     for (Voice *voice = self->voiceFirst; NULL != voice; voice = voice->next) {
-        if (voice->channel == newVoice->channel && voice->exclusiveClass == newVoice->exclusiveClass) {
+        if (voice->channel == newVoice->channel
+                && voice->preset == newVoice->preset
+                && voice->exclusiveClass == newVoice->exclusiveClass) {
             VoiceTerminate(voice);
         }
     }
 }
 
-static void SynthesizerProgramChange(Synthesizer *self, uint8_t channel, uint16_t bankNo, uint8_t programNo)
+static void SynthesizerProgramChange(Synthesizer *self, uint8_t channel, uint8_t programNo)
 {
+    uint16_t bankNo = ChannelGetBankNumber(&self->channels[channel]);
     Preset *preset = SynthesizerFindPreset(self, programNo, bankNo);
     if (preset) {
-        self->channelPresets[channel] = preset;
+        self->channels[channel].preset = preset;
     }
 
 #if 1
