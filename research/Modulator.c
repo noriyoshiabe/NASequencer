@@ -20,7 +20,7 @@ int16_t ModulatorGetValue(const Modulator *self, Channel *channel, Voice *voice)
         const SFModulator *srcOper = srcOpers[i];
 
         if (srcOper->CC) {
-            value = channel->cc[srcOper->Index];
+            value = (double)channel->cc[srcOper->Index] / 128.0;
         }
         else {
             switch (srcOper->Index) {
@@ -155,4 +155,3 @@ void ModulatorAddOverwrite(const Modulator **modList, int *count, const Modulato
 
     modList[(*count)++] = toAdd;
 }
-
