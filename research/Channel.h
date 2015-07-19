@@ -109,8 +109,6 @@ typedef struct _Channel {
     int16_t masterFineTune;
     int16_t masterCoarseTune;
 
-    bool sustain;
-
     uint8_t cc[128];
 
     int16_t nrpnValues[SFGeneratorType_endOper];
@@ -128,3 +126,4 @@ typedef struct _Channel {
 extern void ChannelInitialize(Channel *self, uint8_t number, Preset *preset);
 extern void ChannelSetControlChange(Channel *self, uint8_t ccNumber, uint8_t value);
 extern uint16_t ChannelGetBankNumber(Channel *self);
+extern bool ChannelIsSustained(Channel *self);

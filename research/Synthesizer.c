@@ -287,7 +287,7 @@ static void SynthesizerNoteOff(Synthesizer *self, uint8_t channel, uint8_t noteN
                 && voice->preset == self->channels[channel].preset
                 && voice->key == noteNo) {
 
-            if (self->channels[channel].sustain) {
+            if (ChannelIsSustained(&self->channels[channel])) {
                 voice->sustain = true;
             }
             else {
@@ -325,7 +325,7 @@ static void SynthesizerControlChange(Synthesizer *self, uint8_t channel, uint8_t
 
             switch (ccNumber) {
             case CC_Sustain:
-                if (voice->sustain) {
+                if (voice->sustain && !ChannelIsSustained(voice->channel)) {
                     VoiceRelease(voice);
                 }
                 break;
@@ -333,7 +333,7 @@ static void SynthesizerControlChange(Synthesizer *self, uint8_t channel, uint8_t
                 VoiceTerminate(voice);
                 break;
             case CC_AllNotesOff:
-                if (voice->channel->sustain) {
+                if (ChannelIsSustained(voice->channel)) {
                     voice->sustain = true;
                 }
                 else {

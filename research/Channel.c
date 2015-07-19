@@ -3,6 +3,8 @@
 
 #include <string.h>
 
+static void ChannelResetAllControllers(Channel *self);
+
 void ChannelInitialize(Channel *self, uint8_t number, Preset *preset)
 {
     self->number = number;
@@ -17,7 +19,6 @@ void ChannelInitialize(Channel *self, uint8_t number, Preset *preset)
     self->pitchBendSensitivity = 2; // 2 semi tones excerpt from fluid_synth
     self->masterFineTune = 0;
     self->masterCoarseTune = 0;
-    self->sustain = false;
 
     for (int i = 0; i < 128; ++i) {
         switch (i) {
@@ -60,7 +61,7 @@ void ChannelSetControlChange(Channel *self, uint8_t ccNumber, uint8_t value)
 
     switch (ccNumber) {
     case CC_Sustain:
-        self->sustain = 64 <= value;
+        // Supported but do nothing here
         break;
     case CC_Soft:
     case CC_Sostenuto:
@@ -172,10 +173,93 @@ void ChannelSetControlChange(Channel *self, uint8_t ccNumber, uint8_t value)
             }
         }
         break;
+    case CC_ResetAllControllers:
+        ChannelResetAllControllers(self);
+        break;
     }
+}
+
+static void ChannelResetAllControllers(Channel *self)
+{
+    // Follow Recommended Practice (RP-015) by MIDI Manufacturers Association
+    // http://www.midi.org/techspecs/rp15.php
+
+    for (int i = 0; i < 128; ++i) {
+        switch (i) {
+        // Set Expression (#11) to 127
+        case CC_Expression_LSB:
+        case CC_Expression_MSB:
+        // Set Registered and Non-registered parameter number LSB and MSB (#98-#101) to null value (127)
+        case CC_RPN_LSB:
+        case CC_RPN_MSB:
+        case CC_NRPN_LSB:
+        case CC_NRPN_MSB:
+            self->cc[i] = 127;
+            break;
+        // Do NOT reset Bank Select (#0/#32)
+        case CC_BankSelect_MSB:
+        case CC_BankSelect_LSB:
+        // Do NOT reset Volume (#7)
+        case CC_Volume_MSB:
+        case CC_Volume_LSB:
+        // Do NOT reset Pan (#10)
+        case CC_Pan_MSB:
+        case CC_Pan_LSB:
+        // Do NOT reset Sound Controllers (#70-#79) 
+        case CC_SoundController1:
+        case CC_SoundController2:
+        case CC_SoundController3:
+        case CC_SoundController4:
+        case CC_SoundController5:
+        case CC_SoundController6:
+        case CC_SoundController7:
+        case CC_SoundController8:
+        case CC_SoundController9:
+        case CC_SoundController10:
+        // Do NOT reset Effect Controllers (#91-#95)
+        case CC_Effect1Depth:
+        case CC_Effect2Depth:
+        case CC_Effect3Depth:
+        case CC_Effect4Depth:
+        case CC_Effect5Depth:
+        // Do NOT reset other channel mode messages (#120-#127)
+        case CC_AllSoundOff:
+        case CC_ResetAllControllers:
+        case CC_LocalControll:
+        case CC_AllNotesOff:
+        case CC_OmniModeOff:
+        case CC_OmniModeOn:
+        case CC_MonoMode:
+        case CC_PolyMode:
+            break;
+        default:
+            // Set Modulation (#1) to 0
+            // Set Pedals (#64, #65, #66, #67) to 0
+            // Any other controllers that a device can respond to should be set to 0
+            self->cc[i] = 0;
+            break;
+        }
+    }
+
+    // Do NOT reset Program Change
+    // Do NOT reset registered or non-registered parameters.
+
+    // Reset polyphonic pressure for all notes to 0.
+    for (int i = 0; i < 128; ++i) {
+        self->keyPressure[i] = 0;
+    }
+    // Reset channel pressure to 0 
+    self->channelPressure = 0;
+    // Set pitch bender to center (64/0)
+    self->pitchBend = 8192;
 }
 
 uint16_t ChannelGetBankNumber(Channel *self)
 {
     return self->cc[CC_BankSelect_MSB] << 8 | self->cc[CC_BankSelect_LSB];
+}
+
+bool ChannelIsSustained(Channel *self)
+{
+    return 64 <= self->cc[CC_Sustain];
 }
