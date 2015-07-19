@@ -55,6 +55,8 @@ extern void VoiceInitialize(Voice *self, Channel *channel, uint8_t noteNo, uint8
 
 static void VoiceModulatorInitialize(Voice *self)
 {
+    int count = 0;
+
     self->modCount = 0;
 
     self->mod[self->modCount++] = &MIDINoteOnVelocityToInitialAttenuation;
@@ -72,7 +74,8 @@ static void VoiceModulatorInitialize(Voice *self)
 
     // A modulator, contained within a global instrument zone,
     // that is identical to a default modulator supersedes or replaces the default modulator.
-    for (int i = 0; i < self->instrumentGlobalZone->modCount; ++i) {
+    count = self->instrumentGlobalZone ? self->instrumentGlobalZone->modCount : 0;
+    for (int i = 0; i < count; ++i) {
         if (MAX_MODULATOR <= self->modCount) {
             break;
         }
@@ -82,7 +85,8 @@ static void VoiceModulatorInitialize(Voice *self)
 
     // A modulator, that is contained in a local instrument zone,
     // which is identical to a default modulator or to a modulator in a global instrument zone supersedes or replaces that modulator.
-    for (int i = 0; i < self->instrumentZone->modCount; ++i) {
+    count = self->instrumentZone ? self->instrumentZone->modCount : 0;
+    for (int i = 0; i < count; ++i) {
         if (MAX_MODULATOR <= self->modCount) {
             break;
         }
@@ -103,14 +107,16 @@ static void VoiceModulatorInitialize(Voice *self)
     int modCount = 0;
     Modulator *modList[MAX_MODULATOR];
 
-    for (int i = 0; i < self->presetGlobalZone->modCount; ++i) {
+    count = self->presetGlobalZone ? self->presetGlobalZone->modCount : 0;
+    for (int i = 0; i < count; ++i) {
         if (MAX_MODULATOR <= modCount) {
             break;
         }
         modList[modCount++] = self->presetGlobalZone->mod[i];
     }
 
-    for (int i = 0; i < self->presetZone->modCount; ++i) {
+    count = self->presetZone ? self->presetZone->modCount : 0;
+    for (int i = 0; i < count; ++i) {
         if (MAX_MODULATOR <= modCount) {
             break;
         }
