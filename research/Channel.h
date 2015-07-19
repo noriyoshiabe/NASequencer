@@ -44,10 +44,10 @@ typedef enum {
     CC_GeneralPurposeController3_LSB = 50,
     CC_GeneralPurposeController4_LSB = 51,
 
-    CC_Hold1 = 64,
+    CC_Sustain = 64,
     CC_Portamento = 65,
-    CC_Sostenuto = 66,
-    CC_SoftPedal = 67,
+    CC_Soft = 66,
+    CC_Sostenuto = 67,
     CC_LegatoFootSwitch = 68,
     CC_Hold2 = 69,
 
@@ -108,6 +108,8 @@ typedef struct _Channel {
     int16_t pitchBendSensitivity;
     int16_t masterFineTune;
     int16_t masterCoarseTune;
+
+    bool sustain;
 
     uint8_t cc[128];
 

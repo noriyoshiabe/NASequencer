@@ -12,6 +12,9 @@ void ChannelInitialize(Channel *self, uint8_t number, Preset *preset)
     self->channelPressure = 0;
     self->pitchBend = 8192;
     self->pitchBendSensitivity = 2; // 2 semi tones excerpt from fluid_synth
+    self->masterFineTune = 0;
+    self->masterCoarseTune = 0;
+    self->sustain = false;
 
     for (int i = 0; i < 128; ++i) {
         switch (i) {
@@ -53,6 +56,13 @@ void ChannelSetControlChange(Channel *self, uint8_t ccNumber, uint8_t value)
     self->cc[ccNumber] = value;
 
     switch (ccNumber) {
+    case CC_Sustain:
+        self->sustain = 64 <= value;
+        break;
+    case CC_Soft:
+    case CC_Sostenuto:
+        // Not support
+        break;
     case CC_RPN_MSB:
         self->nrpnActive = false;
         self->rpnActive = true;

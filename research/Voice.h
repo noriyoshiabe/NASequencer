@@ -20,6 +20,8 @@ typedef struct _Voice {
     double sampleIncrement;
     double sampleIndex;
 
+    bool sustain;
+
     Preset *preset;
     Zone *presetGlobalZone;
     Zone *presetZone;

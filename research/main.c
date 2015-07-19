@@ -75,6 +75,7 @@ int main(int argc, char **argv)
     uint8_t bytes[3];
 
     bool noteon[128] = {0};
+    bool sustain = false;
 
 #if 0 // NRPN CC
     bytes[0] = 0xB0;
@@ -169,6 +170,14 @@ int main(int argc, char **argv)
                     break;
                 }
             }
+            break;
+        case 'S': // sustain
+            sustain = !sustain;
+            bytes[0] = 0xB0;
+            bytes[1] = 64;
+            bytes[2] = sustain ? 127 : 0;
+            midiSrc->send(midiSrc, bytes, 3);
+            printf("sustain=%s\r\n", sustain ? "on" : "off");
             break;
         default:
             {

@@ -274,7 +274,13 @@ static void SynthesizerNoteOff(Synthesizer *self, uint8_t channel, uint8_t noteN
         if (voice->channel == &self->channels[channel]
                 && voice->preset == self->channels[channel].preset
                 && voice->key == noteNo) {
-            VoiceRelease(voice);
+
+            if (self->channels[channel].sustain) {
+                voice->sustain = true;
+            }
+            else {
+                VoiceRelease(voice);
+            }
         }
     }
 }
@@ -304,6 +310,10 @@ static void SynthesizerControlChange(Synthesizer *self, uint8_t channel, uint8_t
     for (Voice *voice = self->voiceFirst; NULL != voice; voice = voice->next) {
         if (voice->channel == &self->channels[channel]) {
             VoiceUpdateRuntimeParams(voice);
+
+            if (CC_Sustain == ccNumber && voice->sustain) {
+                VoiceRelease(voice);
+            }
         }
     }
 }

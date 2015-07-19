@@ -38,6 +38,7 @@ extern void VoiceInitialize(Voice *self, Channel *channel, uint8_t noteNo, uint8
 
     self->tick = 0;
     self->sampleIndex = VoiceSampleStart(self);
+    self->sustain = false;
 
     self->sampleModes = VoiceGeneratorValue(self, SFGeneratorType_sampleModes);
     self->exclusiveClass = VoiceGeneratorValue(self, SFGeneratorType_exclusiveClass);
