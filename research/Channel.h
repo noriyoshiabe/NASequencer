@@ -102,7 +102,7 @@ typedef struct _Channel {
     uint8_t number;
     Preset *preset;
 
-    int16_t keyPressure;
+    int16_t keyPressure[128];
     int16_t channelPressure;
     int16_t pitchBend;
     int16_t pitchBendSensitivity;

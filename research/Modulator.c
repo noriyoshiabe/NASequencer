@@ -37,7 +37,7 @@ int16_t ModulatorGetValue(const Modulator *self, Channel *channel, Voice *voice)
                 value = (double)voice->key / 128.0;
                 break;
             case SFGeneralControllerPalette_PolyPressure:
-                value = (double)channel->keyPressure / 128.0;
+                value = (double)channel->keyPressure[voice->key] / 128.0;
                 break;
             case SFGeneralControllerPalette_ChannelPressure:
                 value = (double)channel->channelPressure / 128.0;

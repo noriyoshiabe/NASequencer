@@ -62,6 +62,12 @@ static void send(void *_self, uint8_t *bytes, size_t length)
             SynthesizerNoteOff(self, bytes[0] & 0x0F, bytes[1]);
         }
         break;
+    case 0xA0:
+        if (3 <= length) {
+            uint8_t channel = bytes[0] & 0x0F;
+            self->channels[channel].keyPressure[0x7F & bytes[1]] = bytes[2];
+        }
+        break;
     case 0xB0:
         if (3 <= length) {
             uint8_t channel = bytes[0] & 0x0F;
@@ -72,6 +78,12 @@ static void send(void *_self, uint8_t *bytes, size_t length)
         if (2 <= length) {
             uint8_t channel = bytes[0] & 0x0F;
             SynthesizerProgramChange(self, channel, bytes[1]);
+        }
+        break;
+    case 0xD0:
+        if (2 <= length) {
+            uint8_t channel = bytes[0] & 0x0F;
+            self->channels[channel].channelPressure = bytes[1];
         }
         break;
     }

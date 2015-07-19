@@ -8,7 +8,10 @@ void ChannelInitialize(Channel *self, uint8_t number, Preset *preset)
     self->number = number;
     self->preset = preset;
 
-    self->keyPressure = 0;
+    for (int i = 0; i < 128; ++i) {
+        self->keyPressure[i] = 0;
+    }
+
     self->channelPressure = 0;
     self->pitchBend = 8192;
     self->pitchBendSensitivity = 2; // 2 semi tones excerpt from fluid_synth

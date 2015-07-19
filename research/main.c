@@ -91,6 +91,12 @@ int main(int argc, char **argv)
     bytes[1] = CC_DataEntry_MSB; bytes[2] = 64; midiSrc->send(midiSrc, bytes, 3);
 #endif
 
+#if 0 // Channel Pressure
+    bytes[0] = 0xD0;
+    bytes[1] = 64;
+    midiSrc->send(midiSrc, bytes, 2);
+#endif
+
     char c;
     while (3 != (c = getch())) {
         switch (c) {
