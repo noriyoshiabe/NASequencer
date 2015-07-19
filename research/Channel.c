@@ -254,13 +254,13 @@ static void ChannelResetAllControllers(Channel *self)
     self->pitchBend = 8192;
 
     // Since RPN/NRPN NULL is set
-    se-f->nrpnActive = false;
-    se-f->rpnActive = false;
+    self->nrpnActive = false;
+    self->rpnActive = false;
 }
 
 uint16_t ChannelGetBankNumber(Channel *self)
 {
-    return self->cc[CC_BankSelect_MSB] << 8 | self->cc[CC_BankSelect_LSB];
+    return self->cc[CC_BankSelect_MSB] << 7 | self->cc[CC_BankSelect_LSB];
 }
 
 bool ChannelIsSustained(Channel *self)

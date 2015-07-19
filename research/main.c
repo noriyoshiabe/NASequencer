@@ -115,11 +115,11 @@ int main(int argc, char **argv)
 
                         bytes[0] = 0xB0;
                         bytes[1] = 0x00;
-                        bytes[2] = presetMap->bankNo >> 8 & 0x00FF;
+                        bytes[2] = presetMap->bankNo >> 7 & 0x007F;
                         midiSrc->send(midiSrc, bytes, 3);
 
                         bytes[1] = 0x20;
-                        bytes[2] = presetMap->bankNo & 0x00FF;
+                        bytes[2] = presetMap->bankNo & 0x007F;
                         midiSrc->send(midiSrc, bytes, 3);
 
                         bytes[0] = 0xC0;
@@ -141,11 +141,11 @@ int main(int argc, char **argv)
 
                         bytes[0] = 0xB0;
                         bytes[1] = 0x00;
-                        bytes[2] = presetMap->bankNo >> 8 & 0x00FF;
+                        bytes[2] = presetMap->bankNo >> 7 & 0x007F;
                         midiSrc->send(midiSrc, bytes, 3);
 
                         bytes[1] = 0x20;
-                        bytes[2] = presetMap->bankNo & 0x00FF;
+                        bytes[2] = presetMap->bankNo & 0x007F;
                         midiSrc->send(midiSrc, bytes, 3);
 
                         bytes[0] = 0xC0;
