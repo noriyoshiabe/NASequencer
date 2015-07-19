@@ -43,7 +43,7 @@ int16_t ModulatorGetValue(const Modulator *self, Channel *channel, Voice *voice)
                 value = (double)channel->channelPressure / 128.0;
                 break;
             case SFGeneralControllerPalette_PitchWheel:
-                value = (double)channel->pitchBend / 8192.0;
+                value = (double)channel->pitchBend / 16384.0;
                 break;
             case SFGeneralControllerPalette_PitchWheelSensitivity:
                 value = (double)channel->pitchBendSensitivity / 128.0;

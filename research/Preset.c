@@ -104,7 +104,7 @@ const SFModList MIDIContinuousController93ToChorusEffectsSend = {
 
 // 8.4.10 MIDI Pitch Wheel to Initial Pitch Controlled by MIDI Pitch Wheel Sensitivity
 const SFModList MIDIPitchWheelToInitialPitchControlledByMIDIPitchWheelSensitivity = {
-    .sfModSrcOper = {.Type = 0, .P = 1, .D = 0, .CC = 1, .Index = 14},
+    .sfModSrcOper = {.Type = 0, .P = 1, .D = 0, .CC = 0, .Index = 14},
     .sfModDestOper = SFGeneratorType_initialPitch,
     .modAmount = 12700,
     .sfModAmtSrcOper = {.Type = 0, .P = 0, .D = 0, .CC = 0, .Index = 16},
