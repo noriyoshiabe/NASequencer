@@ -9,12 +9,14 @@
 #include <limits.h>
 
 static void VoiceModulatorInitialize(Voice *self);
+static void VoiceUpdateRuntimeParams(Voice* self);
 static void VoiceUpdateSampleIncrement(Voice *self);
 static uint32_t VoiceSampleStart(Voice *self);
 static uint32_t VoiceSampleEnd(Voice *self);
 static uint32_t VoiceSampleStartLoop(Voice *self);
 static uint32_t VoiceSampleEndLoop(Voice *self);
 static int16_t VoiceGeneratorValue(Voice *self, SFGeneratorType generatorType);
+static int16_t VoiceModulatorValue(Voice *self, SFGeneratorType generatorType);
 
 extern void VoiceInitialize(Voice *self, Channel *channel, uint8_t noteNo, uint8_t velocity,
         Zone *presetGlobalZone, Zone *presetZone, Zone *instrumentGlobalZone, Zone *instrumentZone,
@@ -34,70 +36,14 @@ extern void VoiceInitialize(Voice *self, Channel *channel, uint8_t noteNo, uint8
     self->sf = sf;
     self->sampleRate = sampleRate;
 
-    VoiceModulatorInitialize(self);
-
     self->tick = 0;
     self->sampleIndex = VoiceSampleStart(self);
 
     self->sampleModes = VoiceGeneratorValue(self, SFGeneratorType_sampleModes);
     self->exclusiveClass = VoiceGeneratorValue(self, SFGeneratorType_exclusiveClass);
 
-    self->sampleStartLoop = VoiceSampleStartLoop(self);
-    self->sampleEndLoop = VoiceSampleEndLoop(self);
-    self->sampleEnd = VoiceSampleEnd(self);
-
-    self->pan = VoiceGeneratorValue(self, SFGeneratorType_pan);
-    self->initialAttenuation = VoiceGeneratorValue(self, SFGeneratorType_initialAttenuation);
-
-    self->modLfoToPitch = VoiceGeneratorValue(self, SFGeneratorType_modLfoToPitch);
-    self->vibLfoToPitch = VoiceGeneratorValue(self, SFGeneratorType_vibLfoToPitch);
-    self->modEnvToPitch = VoiceGeneratorValue(self, SFGeneratorType_modEnvToPitch);
-
-    self->initialFilterFc = VoiceGeneratorValue(self, SFGeneratorType_initialFilterFc);
-    self->initialFilterQ = VoiceGeneratorValue(self, SFGeneratorType_initialFilterQ);
-    self->modLfoToFilterFc = VoiceGeneratorValue(self, SFGeneratorType_modLfoToFilterFc);
-    self->modEnvToFilterFc = VoiceGeneratorValue(self, SFGeneratorType_modEnvToFilterFc);
-
-    self->modLfoToVolume = VoiceGeneratorValue(self, SFGeneratorType_modLfoToVolume);
-
-    self->chorusEffectsSend = VoiceGeneratorValue(self, SFGeneratorType_chorusEffectsSend);
-    self->reverbEffectsSend = VoiceGeneratorValue(self, SFGeneratorType_reverbEffectsSend);
-
-    VoiceUpdateSampleIncrement(self);
-
-    EnvelopeInit(&self->modEnv,
-            EnvelopeTypeModulation,
-            VoiceGeneratorValue(self, SFGeneratorType_delayModEnv),
-            VoiceGeneratorValue(self, SFGeneratorType_attackModEnv),
-            VoiceGeneratorValue(self, SFGeneratorType_holdModEnv),
-            VoiceGeneratorValue(self, SFGeneratorType_decayModEnv),
-            VoiceGeneratorValue(self, SFGeneratorType_sustainModEnv),
-            VoiceGeneratorValue(self, SFGeneratorType_releaseModEnv),
-            VoiceGeneratorValue(self, SFGeneratorType_keynumToModEnvHold),
-            VoiceGeneratorValue(self, SFGeneratorType_keynumToModEnvDecay),
-            self->keyForSample);
-
-    EnvelopeInit(&self->volEnv,
-            EnvelopeTypeVolume,
-            VoiceGeneratorValue(self, SFGeneratorType_delayVolEnv),
-            VoiceGeneratorValue(self, SFGeneratorType_attackVolEnv),
-            VoiceGeneratorValue(self, SFGeneratorType_holdVolEnv),
-            VoiceGeneratorValue(self, SFGeneratorType_decayVolEnv),
-            VoiceGeneratorValue(self, SFGeneratorType_sustainVolEnv),
-            VoiceGeneratorValue(self, SFGeneratorType_releaseVolEnv),
-            VoiceGeneratorValue(self, SFGeneratorType_keynumToVolEnvHold),
-            VoiceGeneratorValue(self, SFGeneratorType_keynumToVolEnvDecay),
-            self->keyForSample);
-
-    LFOInit(&self->modLfo,
-            VoiceGeneratorValue(self, SFGeneratorType_delayModLFO),
-            VoiceGeneratorValue(self, SFGeneratorType_freqModLFO),
-            sampleRate);
-
-    LFOInit(&self->vibLfo,
-            VoiceGeneratorValue(self, SFGeneratorType_delayVibLFO),
-            VoiceGeneratorValue(self, SFGeneratorType_freqVibLFO),
-            sampleRate);
+    VoiceModulatorInitialize(self);
+    VoiceUpdateRuntimeParams(self);
 }
 
 static void VoiceModulatorInitialize(Voice *self)
@@ -174,6 +120,66 @@ static void VoiceModulatorInitialize(Voice *self)
     }
 }
 
+static void VoiceUpdateRuntimeParams(Voice* self)
+{
+    self->sampleStartLoop = VoiceSampleStartLoop(self);
+    self->sampleEndLoop = VoiceSampleEndLoop(self);
+    self->sampleEnd = VoiceSampleEnd(self);
+
+    self->pan = VoiceGeneratorValue(self, SFGeneratorType_pan);
+    self->initialAttenuation = VoiceGeneratorValue(self, SFGeneratorType_initialAttenuation);
+
+    self->modLfoToPitch = VoiceGeneratorValue(self, SFGeneratorType_modLfoToPitch);
+    self->vibLfoToPitch = VoiceGeneratorValue(self, SFGeneratorType_vibLfoToPitch);
+    self->modEnvToPitch = VoiceGeneratorValue(self, SFGeneratorType_modEnvToPitch);
+
+    self->initialFilterFc = VoiceGeneratorValue(self, SFGeneratorType_initialFilterFc);
+    self->initialFilterQ = VoiceGeneratorValue(self, SFGeneratorType_initialFilterQ);
+    self->modLfoToFilterFc = VoiceGeneratorValue(self, SFGeneratorType_modLfoToFilterFc);
+    self->modEnvToFilterFc = VoiceGeneratorValue(self, SFGeneratorType_modEnvToFilterFc);
+
+    self->modLfoToVolume = VoiceGeneratorValue(self, SFGeneratorType_modLfoToVolume);
+
+    self->chorusEffectsSend = VoiceGeneratorValue(self, SFGeneratorType_chorusEffectsSend);
+    self->reverbEffectsSend = VoiceGeneratorValue(self, SFGeneratorType_reverbEffectsSend);
+
+    EnvelopeInit(&self->modEnv,
+            EnvelopeTypeModulation,
+            VoiceGeneratorValue(self, SFGeneratorType_delayModEnv),
+            VoiceGeneratorValue(self, SFGeneratorType_attackModEnv),
+            VoiceGeneratorValue(self, SFGeneratorType_holdModEnv),
+            VoiceGeneratorValue(self, SFGeneratorType_decayModEnv),
+            VoiceGeneratorValue(self, SFGeneratorType_sustainModEnv),
+            VoiceGeneratorValue(self, SFGeneratorType_releaseModEnv),
+            VoiceGeneratorValue(self, SFGeneratorType_keynumToModEnvHold),
+            VoiceGeneratorValue(self, SFGeneratorType_keynumToModEnvDecay),
+            self->keyForSample);
+
+    EnvelopeInit(&self->volEnv,
+            EnvelopeTypeVolume,
+            VoiceGeneratorValue(self, SFGeneratorType_delayVolEnv),
+            VoiceGeneratorValue(self, SFGeneratorType_attackVolEnv),
+            VoiceGeneratorValue(self, SFGeneratorType_holdVolEnv),
+            VoiceGeneratorValue(self, SFGeneratorType_decayVolEnv),
+            VoiceGeneratorValue(self, SFGeneratorType_sustainVolEnv),
+            VoiceGeneratorValue(self, SFGeneratorType_releaseVolEnv),
+            VoiceGeneratorValue(self, SFGeneratorType_keynumToVolEnvHold),
+            VoiceGeneratorValue(self, SFGeneratorType_keynumToVolEnvDecay),
+            self->keyForSample);
+
+    LFOInit(&self->modLfo,
+            VoiceGeneratorValue(self, SFGeneratorType_delayModLFO),
+            VoiceGeneratorValue(self, SFGeneratorType_freqModLFO),
+            self->sampleRate);
+
+    LFOInit(&self->vibLfo,
+            VoiceGeneratorValue(self, SFGeneratorType_delayVibLFO),
+            VoiceGeneratorValue(self, SFGeneratorType_freqVibLFO),
+            self->sampleRate);
+
+    VoiceUpdateSampleIncrement(self);
+}
+
 static void VoiceUpdateSampleIncrement(Voice *self)
 {
     int16_t v;
@@ -187,6 +193,7 @@ static void VoiceUpdateSampleIncrement(Voice *self)
     cent += self->instrumentZone->sample->pitchCorrection;
     cent += VoiceGeneratorValue(self, SFGeneratorType_coarseTune) * 100.0;
     cent += VoiceGeneratorValue(self, SFGeneratorType_fineTune);
+    cent += VoiceGeneratorValue(self, SFGeneratorType_initialPitch);
 
     self->sampleIncrement = (double)sample->sampleRate / self->sampleRate;
     self->sampleIncrement *= Cent2FreqRatio(cent);
@@ -389,14 +396,20 @@ static int16_t VoiceGeneratorValue(Voice *self, SFGeneratorType generatorType)
             0;
     }
 
-    // What does 'not identical' mean?  excerpted 9.4 The SoundFont Generator Model
-    // - A generator in a global preset zone which is not identical to a default generator
-    //   and is not identical to a generator in an instrument has its effect added to the given synthesis parameter.
-    // - A generator in a local preset zone which is not identical to a default generator
-    //   or a generator in a global preset zone has its effects added to the destination summing node of all zones
-    //   in the given instrument.
+    return value + VoiceModulatorValue(self, generatorType);
+}
 
-    return value;
+static int16_t VoiceModulatorValue(Voice *self, SFGeneratorType generatorType)
+{
+    int16_t result = 0;
+
+    for (int i = 0; i < self->modCount; ++i) {
+        if (self->mod[i]->sfModDestOper == generatorType) {
+            result += ModulatorGetValue(self->mod[i], self->channel, self);
+        }
+    }
+
+    return result;
 }
 
 VoicePool *VoicePoolCreate()

@@ -546,6 +546,7 @@ int GeneratorDefaultValue(SFGeneratorType generatorType)
         0,        // SFGeneratorType_exclusiveClass
         None,     // SFGeneratorType_overridingRootKey
         None,     // SFGeneratorType_unused5
+        0,        // SFGeneratorType_initialPitch
     };
 
     return defaults[generatorType];
