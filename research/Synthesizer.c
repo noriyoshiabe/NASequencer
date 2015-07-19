@@ -43,6 +43,7 @@ static int SynthesizerNoteOn(Synthesizer *self, uint8_t channel, uint8_t noteNo,
 static void SynthesizerNoteOff(Synthesizer *self, uint8_t channel, uint8_t noteNo);
 static void SynthesizerReleaseExclusiveClass(Synthesizer *self, Voice *newVoice);
 static void SynthesizerProgramChange(Synthesizer *self, uint8_t channel, uint8_t programNo);
+static void SynthesizerControlChange(Synthesizer *self, uint8_t channel, uint8_t ccNumber, uint8_t value);
 static void SynthesizerAddVoice(Synthesizer *self, Voice *voice);
 static void SynthesizerRemoveVoice(Synthesizer *self, Voice *voice);
 
@@ -64,7 +65,7 @@ static void send(void *_self, uint8_t *bytes, size_t length)
     case 0xB0:
         if (3 <= length) {
             uint8_t channel = bytes[0] & 0x0F;
-            ChannelSetControlChange(&self->channels[channel], bytes[1], bytes[2]);
+            SynthesizerControlChange(self, channel, bytes[1], bytes[2]);
         }
         break;
     case 0xC0:
@@ -292,6 +293,17 @@ static void SynthesizerReleaseExclusiveClass(Synthesizer *self, Voice *newVoice)
                 && voice->preset == newVoice->preset
                 && voice->exclusiveClass == newVoice->exclusiveClass) {
             VoiceTerminate(voice);
+        }
+    }
+}
+
+static void SynthesizerControlChange(Synthesizer *self, uint8_t channel, uint8_t ccNumber, uint8_t value)
+{
+    ChannelSetControlChange(&self->channels[channel], ccNumber, value);
+
+    for (Voice *voice = self->voiceFirst; NULL != voice; voice = voice->next) {
+        if (voice->channel == &self->channels[channel]) {
+            VoiceUpdateRuntimeParams(voice);
         }
     }
 }

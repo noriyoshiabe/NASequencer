@@ -1,6 +1,7 @@
 #include "AudioOut.h"
 #include "Synthesizer.h"
 #include "MidiSource.h"
+#include "Channel.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -74,6 +75,13 @@ int main(int argc, char **argv)
     uint8_t bytes[3];
 
     bool noteon[128] = {0};
+
+#if 0 // NRPN CC
+    bytes[0] = 0xB0;
+    bytes[1] = CC_NRPN_MSB; bytes[2] = 120; midiSrc->send(midiSrc, bytes, 3);
+    bytes[1] = CC_NRPN_LSB; bytes[2] =  17; midiSrc->send(midiSrc, bytes, 3);
+    bytes[1] = CC_DataEntry_MSB; bytes[2] = 0; midiSrc->send(midiSrc, bytes, 3);
+#endif
 
     char c;
     while (3 != (c = getch())) {

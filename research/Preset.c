@@ -552,6 +552,75 @@ int GeneratorDefaultValue(SFGeneratorType generatorType)
     return defaults[generatorType];
 }
 
+int GeneratorNRPNScale(SFGeneratorType generatorType)
+{
+    const int16_t scales[SFGeneratorType_endOper] = {
+        1, // SFGeneratorType_startAddrsOffset
+        1, // SFGeneratorType_endAddrsOffset
+        1, // SFGeneratorType_startloopAddrsOffset
+        1, // SFGeneratorType_endloopAddrsOffset
+        1, // SFGeneratorType_startAddrsCoarseOffset
+        2, // SFGeneratorType_modLfoToPitch
+        2, // SFGeneratorType_vibLfoToPitch
+        2, // SFGeneratorType_modEnvToPitch
+        2, // SFGeneratorType_initialFilterFc
+        1, // SFGeneratorType_initialFilterQ
+        2, // SFGeneratorType_modLfoToFilterFc
+        2, // SFGeneratorType_modEnvToFilterFc
+        1, // SFGeneratorType_endAddrsCoarseOffset
+        1, // SFGeneratorType_modLfoToVolume
+        0, // SFGeneratorType_unused1
+        1, // SFGeneratorType_chorusEffectsSend
+        1, // SFGeneratorType_reverbEffectsSend
+        1, // SFGeneratorType_pan
+        0, // SFGeneratorType_unused2
+        0, // SFGeneratorType_unused3
+        0, // SFGeneratorType_unused4
+        2, // SFGeneratorType_delayModLFO
+        2, // SFGeneratorType_freqModLFO
+        2, // SFGeneratorType_delayVibLFO
+        2, // SFGeneratorType_freqVibLFO
+        2, // SFGeneratorType_delayModEnv
+        2, // SFGeneratorType_attackModEnv
+        2, // SFGeneratorType_holdModEnv
+        2, // SFGeneratorType_decayModEnv
+        1, // SFGeneratorType_sustainModEnv
+        2, // SFGeneratorType_releaseModEnv
+        1, // SFGeneratorType_keynumToModEnvHold
+        1, // SFGeneratorType_keynumToModEnvDecay
+        2, // SFGeneratorType_delayVolEnv
+        2, // SFGeneratorType_attackVolEnv
+        2, // SFGeneratorType_holdVolEnv
+        2, // SFGeneratorType_decayVolEnv
+        1, // SFGeneratorType_sustainVolEnv
+        2, // SFGeneratorType_releaseVolEnv
+        1, // SFGeneratorType_keynumToVolEnvHold
+        1, // SFGeneratorType_keynumToVolEnvDecay
+        0, // SFGeneratorType_instrument
+        0, // SFGeneratorType_reserved1
+        0, // SFGeneratorType_keyRange
+        0, // SFGeneratorType_velRange
+        1, // SFGeneratorType_startloopAddrsCoarseOffset
+        0, // SFGeneratorType_keynum
+        1, // SFGeneratorType_velocity
+        1, // SFGeneratorType_initialAttenuation
+        0, // SFGeneratorType_reserved2
+        1, // SFGeneratorType_endloopAddrsCoarseOffset
+        1, // SFGeneratorType_coarseTune
+        1, // SFGeneratorType_fineTune
+        0, // SFGeneratorType_sampleID
+        0, // SFGeneratorType_sampleModes
+        0, // SFGeneratorType_reserved3
+        1, // SFGeneratorType_scaleTuning
+        0, // SFGeneratorType_exclusiveClass
+        0, // SFGeneratorType_overridingRootKey
+        0, // SFGeneratorType_unused5
+        0, // SFGeneratorType_initialPitch
+    };
+
+    return scales[generatorType];
+}
+
 bool GeneratorIsInstrumentOnly(SFGeneratorType generatorType)
 {
     switch (generatorType) {

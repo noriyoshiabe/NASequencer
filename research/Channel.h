@@ -102,60 +102,18 @@ typedef struct _Channel {
 
     uint8_t cc[128];
 
-    int16_t nrpn[SFGeneratorType_endOper];
+    int16_t nrpnValues[SFGeneratorType_endOper];
+    int32_t nrpnSelection;
+    struct {
+        int8_t _100;
+        int8_t _1000;
+        int8_t _10000;
+    } nrpnMultiplier;
+
+    bool nrpnActive;
+    bool rpnActive;
 } Channel;
 
-static inline void ChannelInitialize(Channel *self, uint8_t number, Preset *preset)
-{
-    self->number = number;
-    self->preset = preset;
-
-    self->keyPressure = 0;
-    self->channelPressure = 0;
-    self->pitchBend = 8192;
-    self->pitchBendSensitivity = 2; // 2 semi tones excerpt from fluid_synth
-
-    for (int i = 0; i < 128; ++i) {
-        switch (i) {
-        case CC_Expression_LSB:
-        case CC_Expression_MSB:
-        case CC_RPN_LSB:
-        case CC_RPN_MSB:
-        case CC_NRPN_LSB:
-        case CC_NRPN_MSB:
-            self->cc[i] = 127;
-            break;
-        case CC_Volume_MSB:
-            self->cc[i] = 100;
-            break;
-        case CC_Pan_MSB:
-            self->cc[i] = 64;
-            break;
-        case CC_SoundController1:
-        case CC_SoundController2:
-        case CC_SoundController3:
-        case CC_SoundController4:
-        case CC_SoundController5:
-        case CC_SoundController6:
-        case CC_SoundController7:
-        case CC_SoundController8:
-        case CC_SoundController9:
-        case CC_SoundController10:
-            self->cc[i] = 64; // Excerpt from fluid_synth
-            break;
-        default:
-            self->cc[i] = 0;
-            break;
-        }
-    }
-}
-
-static inline void ChannelSetControlChange(Channel *self, uint8_t ccNumber, uint8_t value)
-{
-    self->cc[ccNumber] = value;
-}
-
-static inline uint16_t ChannelGetBankNumber(Channel *self)
-{
-    return self->cc[CC_BankSelect_MSB] << 8 | self->cc[CC_BankSelect_LSB];
-}
+extern void ChannelInitialize(Channel *self, uint8_t number, Preset *preset);
+extern void ChannelSetControlChange(Channel *self, uint8_t ccNumber, uint8_t value);
+extern uint16_t ChannelGetBankNumber(Channel *self);

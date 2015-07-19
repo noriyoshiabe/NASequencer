@@ -9,7 +9,6 @@
 #include <limits.h>
 
 static void VoiceModulatorInitialize(Voice *self);
-static void VoiceUpdateRuntimeParams(Voice* self);
 static void VoiceUpdateSampleIncrement(Voice *self);
 static uint32_t VoiceSampleStart(Voice *self);
 static uint32_t VoiceSampleEnd(Voice *self);
@@ -17,6 +16,7 @@ static uint32_t VoiceSampleStartLoop(Voice *self);
 static uint32_t VoiceSampleEndLoop(Voice *self);
 static int16_t VoiceGeneratorValue(Voice *self, SFGeneratorType generatorType);
 static int16_t VoiceModulatorValue(Voice *self, SFGeneratorType generatorType);
+static int16_t VoiceNRPNValue(Voice *self, SFGeneratorType generatorType);
 
 extern void VoiceInitialize(Voice *self, Channel *channel, uint8_t noteNo, uint8_t velocity,
         Zone *presetGlobalZone, Zone *presetZone, Zone *instrumentGlobalZone, Zone *instrumentZone,
@@ -120,7 +120,7 @@ static void VoiceModulatorInitialize(Voice *self)
     }
 }
 
-static void VoiceUpdateRuntimeParams(Voice* self)
+void VoiceUpdateRuntimeParams(Voice* self)
 {
     self->sampleStartLoop = VoiceSampleStartLoop(self);
     self->sampleEndLoop = VoiceSampleEndLoop(self);
@@ -394,7 +394,9 @@ static int16_t VoiceGeneratorValue(Voice *self, SFGeneratorType generatorType)
             0;
     }
 
-    return value + VoiceModulatorValue(self, generatorType);
+    return value
+        + VoiceModulatorValue(self, generatorType)
+        + VoiceNRPNValue(self, generatorType);
 }
 
 static int16_t VoiceModulatorValue(Voice *self, SFGeneratorType generatorType)
@@ -408,6 +410,11 @@ static int16_t VoiceModulatorValue(Voice *self, SFGeneratorType generatorType)
     }
 
     return result;
+}
+
+static int16_t VoiceNRPNValue(Voice *self, SFGeneratorType generatorType)
+{
+    return self->channel->nrpnValues[generatorType];
 }
 
 VoicePool *VoicePoolCreate()

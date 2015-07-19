@@ -138,6 +138,7 @@ extern bool ZoneHasGenerator(Zone *zone, SFGeneratorType generatorType);
 extern int16_t ZoneGeneratorShortValue(Zone *zone, SFGeneratorType generatorType);
 extern bool ZoneIsInsideRange(Zone *zone, uint8_t key, uint8_t velocity);
 extern int GeneratorDefaultValue(SFGeneratorType generatorType);
+extern int GeneratorNRPNScale(SFGeneratorType generatorType);
 extern bool GeneratorIsInstrumentOnly(SFGeneratorType generatorType);
 
 extern const SFModList MIDINoteOnVelocityToInitialAttenuation;
