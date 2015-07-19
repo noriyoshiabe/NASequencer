@@ -185,6 +185,20 @@ int main(int argc, char **argv)
             midiSrc->send(midiSrc, bytes, 3);
             printf("sustain=%s\r\n", sustain ? "on" : "off");
             break;
+        case 'Q': // All sound Off
+            bytes[0] = 0xB0;
+            bytes[1] = 120;
+            bytes[2] = 0;
+            midiSrc->send(midiSrc, bytes, 3);
+            printf("All sound off\r\n");
+            break;
+        case 'q': // All notes Off
+            bytes[0] = 0xB0;
+            bytes[1] = 123;
+            bytes[2] = 0;
+            midiSrc->send(midiSrc, bytes, 3);
+            printf("All notes off\r\n");
+            break;
         default:
             {
                 int n = -99;

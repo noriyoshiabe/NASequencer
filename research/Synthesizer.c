@@ -323,8 +323,23 @@ static void SynthesizerControlChange(Synthesizer *self, uint8_t channel, uint8_t
         if (voice->channel == &self->channels[channel]) {
             VoiceUpdateRuntimeParams(voice);
 
-            if (CC_Sustain == ccNumber && voice->sustain) {
-                VoiceRelease(voice);
+            switch (ccNumber) {
+            case CC_Sustain:
+                if (voice->sustain) {
+                    VoiceRelease(voice);
+                }
+                break;
+            case CC_AllSoundOff:
+                VoiceTerminate(voice);
+                break;
+            case CC_AllNotesOff:
+                if (voice->channel->sustain) {
+                    voice->sustain = true;
+                }
+                else {
+                    VoiceRelease(voice);
+                }
+                break;
             }
         }
     }
