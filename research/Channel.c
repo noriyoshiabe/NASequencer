@@ -252,6 +252,10 @@ static void ChannelResetAllControllers(Channel *self)
     self->channelPressure = 0;
     // Set pitch bender to center (64/0)
     self->pitchBend = 8192;
+
+    // Since RPN/NRPN NULL is set
+    se-f->nrpnActive = false;
+    se-f->rpnActive = false;
 }
 
 uint16_t ChannelGetBankNumber(Channel *self)
