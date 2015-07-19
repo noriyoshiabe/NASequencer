@@ -14,7 +14,7 @@ static uint32_t VoiceSampleStart(Voice *self);
 static uint32_t VoiceSampleEnd(Voice *self);
 static uint32_t VoiceSampleStartLoop(Voice *self);
 static uint32_t VoiceSampleEndLoop(Voice *self);
-static int16_t VoiceGeneratorShortValue(Voice *self, SFGeneratorType generatorType);
+static int16_t VoiceGeneratorValue(Voice *self, SFGeneratorType generatorType);
 
 extern void VoiceInitialize(Voice *self, Channel *channel, uint8_t noteNo, uint8_t velocity,
         Zone *presetGlobalZone, Zone *presetZone, Zone *instrumentGlobalZone, Zone *instrumentZone,
@@ -39,64 +39,64 @@ extern void VoiceInitialize(Voice *self, Channel *channel, uint8_t noteNo, uint8
     self->tick = 0;
     self->sampleIndex = VoiceSampleStart(self);
 
-    self->sampleModes = VoiceGeneratorShortValue(self, SFGeneratorType_sampleModes);
-    self->exclusiveClass = VoiceGeneratorShortValue(self, SFGeneratorType_exclusiveClass);
+    self->sampleModes = VoiceGeneratorValue(self, SFGeneratorType_sampleModes);
+    self->exclusiveClass = VoiceGeneratorValue(self, SFGeneratorType_exclusiveClass);
 
     self->sampleStartLoop = VoiceSampleStartLoop(self);
     self->sampleEndLoop = VoiceSampleEndLoop(self);
     self->sampleEnd = VoiceSampleEnd(self);
 
-    self->pan = VoiceGeneratorShortValue(self, SFGeneratorType_pan);
-    self->initialAttenuation = VoiceGeneratorShortValue(self, SFGeneratorType_initialAttenuation);
+    self->pan = VoiceGeneratorValue(self, SFGeneratorType_pan);
+    self->initialAttenuation = VoiceGeneratorValue(self, SFGeneratorType_initialAttenuation);
 
-    self->modLfoToPitch = VoiceGeneratorShortValue(self, SFGeneratorType_modLfoToPitch);
-    self->vibLfoToPitch = VoiceGeneratorShortValue(self, SFGeneratorType_vibLfoToPitch);
-    self->modEnvToPitch = VoiceGeneratorShortValue(self, SFGeneratorType_modEnvToPitch);
+    self->modLfoToPitch = VoiceGeneratorValue(self, SFGeneratorType_modLfoToPitch);
+    self->vibLfoToPitch = VoiceGeneratorValue(self, SFGeneratorType_vibLfoToPitch);
+    self->modEnvToPitch = VoiceGeneratorValue(self, SFGeneratorType_modEnvToPitch);
 
-    self->initialFilterFc = VoiceGeneratorShortValue(self, SFGeneratorType_initialFilterFc);
-    self->initialFilterQ = VoiceGeneratorShortValue(self, SFGeneratorType_initialFilterQ);
-    self->modLfoToFilterFc = VoiceGeneratorShortValue(self, SFGeneratorType_modLfoToFilterFc);
-    self->modEnvToFilterFc = VoiceGeneratorShortValue(self, SFGeneratorType_modEnvToFilterFc);
+    self->initialFilterFc = VoiceGeneratorValue(self, SFGeneratorType_initialFilterFc);
+    self->initialFilterQ = VoiceGeneratorValue(self, SFGeneratorType_initialFilterQ);
+    self->modLfoToFilterFc = VoiceGeneratorValue(self, SFGeneratorType_modLfoToFilterFc);
+    self->modEnvToFilterFc = VoiceGeneratorValue(self, SFGeneratorType_modEnvToFilterFc);
 
-    self->modLfoToVolume = VoiceGeneratorShortValue(self, SFGeneratorType_modLfoToVolume);
+    self->modLfoToVolume = VoiceGeneratorValue(self, SFGeneratorType_modLfoToVolume);
 
-    self->chorusEffectsSend = VoiceGeneratorShortValue(self, SFGeneratorType_chorusEffectsSend);
-    self->reverbEffectsSend = VoiceGeneratorShortValue(self, SFGeneratorType_reverbEffectsSend);
+    self->chorusEffectsSend = VoiceGeneratorValue(self, SFGeneratorType_chorusEffectsSend);
+    self->reverbEffectsSend = VoiceGeneratorValue(self, SFGeneratorType_reverbEffectsSend);
 
     VoiceUpdateSampleIncrement(self);
 
     EnvelopeInit(&self->modEnv,
             EnvelopeTypeModulation,
-            VoiceGeneratorShortValue(self, SFGeneratorType_delayModEnv),
-            VoiceGeneratorShortValue(self, SFGeneratorType_attackModEnv),
-            VoiceGeneratorShortValue(self, SFGeneratorType_holdModEnv),
-            VoiceGeneratorShortValue(self, SFGeneratorType_decayModEnv),
-            VoiceGeneratorShortValue(self, SFGeneratorType_sustainModEnv),
-            VoiceGeneratorShortValue(self, SFGeneratorType_releaseModEnv),
-            VoiceGeneratorShortValue(self, SFGeneratorType_keynumToModEnvHold),
-            VoiceGeneratorShortValue(self, SFGeneratorType_keynumToModEnvDecay),
+            VoiceGeneratorValue(self, SFGeneratorType_delayModEnv),
+            VoiceGeneratorValue(self, SFGeneratorType_attackModEnv),
+            VoiceGeneratorValue(self, SFGeneratorType_holdModEnv),
+            VoiceGeneratorValue(self, SFGeneratorType_decayModEnv),
+            VoiceGeneratorValue(self, SFGeneratorType_sustainModEnv),
+            VoiceGeneratorValue(self, SFGeneratorType_releaseModEnv),
+            VoiceGeneratorValue(self, SFGeneratorType_keynumToModEnvHold),
+            VoiceGeneratorValue(self, SFGeneratorType_keynumToModEnvDecay),
             self->keyForSample);
 
     EnvelopeInit(&self->volEnv,
             EnvelopeTypeVolume,
-            VoiceGeneratorShortValue(self, SFGeneratorType_delayVolEnv),
-            VoiceGeneratorShortValue(self, SFGeneratorType_attackVolEnv),
-            VoiceGeneratorShortValue(self, SFGeneratorType_holdVolEnv),
-            VoiceGeneratorShortValue(self, SFGeneratorType_decayVolEnv),
-            VoiceGeneratorShortValue(self, SFGeneratorType_sustainVolEnv),
-            VoiceGeneratorShortValue(self, SFGeneratorType_releaseVolEnv),
-            VoiceGeneratorShortValue(self, SFGeneratorType_keynumToVolEnvHold),
-            VoiceGeneratorShortValue(self, SFGeneratorType_keynumToVolEnvDecay),
+            VoiceGeneratorValue(self, SFGeneratorType_delayVolEnv),
+            VoiceGeneratorValue(self, SFGeneratorType_attackVolEnv),
+            VoiceGeneratorValue(self, SFGeneratorType_holdVolEnv),
+            VoiceGeneratorValue(self, SFGeneratorType_decayVolEnv),
+            VoiceGeneratorValue(self, SFGeneratorType_sustainVolEnv),
+            VoiceGeneratorValue(self, SFGeneratorType_releaseVolEnv),
+            VoiceGeneratorValue(self, SFGeneratorType_keynumToVolEnvHold),
+            VoiceGeneratorValue(self, SFGeneratorType_keynumToVolEnvDecay),
             self->keyForSample);
 
     LFOInit(&self->modLfo,
-            VoiceGeneratorShortValue(self, SFGeneratorType_delayModLFO),
-            VoiceGeneratorShortValue(self, SFGeneratorType_freqModLFO),
+            VoiceGeneratorValue(self, SFGeneratorType_delayModLFO),
+            VoiceGeneratorValue(self, SFGeneratorType_freqModLFO),
             sampleRate);
 
     LFOInit(&self->vibLfo,
-            VoiceGeneratorShortValue(self, SFGeneratorType_delayVibLFO),
-            VoiceGeneratorShortValue(self, SFGeneratorType_freqVibLFO),
+            VoiceGeneratorValue(self, SFGeneratorType_delayVibLFO),
+            VoiceGeneratorValue(self, SFGeneratorType_freqVibLFO),
             sampleRate);
 }
 
@@ -179,14 +179,14 @@ static void VoiceUpdateSampleIncrement(Voice *self)
     int16_t v;
     Sample *sample = self->instrumentZone->sample;
 
-    self->keyForSample = 0 <= (v = VoiceGeneratorShortValue(self, SFGeneratorType_keynum)) ? v : self->key;
-    double originalPitch = 0 <= (v = VoiceGeneratorShortValue(self, SFGeneratorType_overridingRootKey)) ? v : sample->originalPitch;
+    self->keyForSample = 0 <= (v = VoiceGeneratorValue(self, SFGeneratorType_keynum)) ? v : self->key;
+    double originalPitch = 0 <= (v = VoiceGeneratorValue(self, SFGeneratorType_overridingRootKey)) ? v : sample->originalPitch;
 
-    double scaleTuning = VoiceGeneratorShortValue(self, SFGeneratorType_scaleTuning);
+    double scaleTuning = VoiceGeneratorValue(self, SFGeneratorType_scaleTuning);
     double cent = (self->keyForSample - originalPitch) * scaleTuning;
     cent += self->instrumentZone->sample->pitchCorrection;
-    cent += VoiceGeneratorShortValue(self, SFGeneratorType_coarseTune) * 100.0;
-    cent += VoiceGeneratorShortValue(self, SFGeneratorType_fineTune);
+    cent += VoiceGeneratorValue(self, SFGeneratorType_coarseTune) * 100.0;
+    cent += VoiceGeneratorValue(self, SFGeneratorType_fineTune);
 
     self->sampleIncrement = (double)sample->sampleRate / self->sampleRate;
     self->sampleIncrement *= Cent2FreqRatio(cent);
@@ -314,36 +314,36 @@ bool VoiceIsReleased(Voice *self)
 static uint32_t VoiceSampleStart(Voice *self)
 {
     uint32_t ret = self->instrumentZone->sample->start;
-    ret += VoiceGeneratorShortValue(self, SFGeneratorType_startAddrsOffset);
-    ret += VoiceGeneratorShortValue(self, SFGeneratorType_startAddrsCoarseOffset) << 15; // * 32768
+    ret += VoiceGeneratorValue(self, SFGeneratorType_startAddrsOffset);
+    ret += VoiceGeneratorValue(self, SFGeneratorType_startAddrsCoarseOffset) << 15; // * 32768
     return ret;
 }
 
 static uint32_t VoiceSampleEnd(Voice *self)
 {
     uint32_t ret = self->instrumentZone->sample->end;
-    ret += VoiceGeneratorShortValue(self, SFGeneratorType_endAddrsOffset);
-    ret += VoiceGeneratorShortValue(self, SFGeneratorType_endAddrsCoarseOffset) << 15; // * 32768
+    ret += VoiceGeneratorValue(self, SFGeneratorType_endAddrsOffset);
+    ret += VoiceGeneratorValue(self, SFGeneratorType_endAddrsCoarseOffset) << 15; // * 32768
     return ret;
 }
 
 static uint32_t VoiceSampleStartLoop(Voice *self)
 {
     uint32_t ret = self->instrumentZone->sample->startLoop;
-    ret += VoiceGeneratorShortValue(self, SFGeneratorType_startloopAddrsOffset);
-    ret += VoiceGeneratorShortValue(self, SFGeneratorType_startloopAddrsCoarseOffset) << 15; // * 32768
+    ret += VoiceGeneratorValue(self, SFGeneratorType_startloopAddrsOffset);
+    ret += VoiceGeneratorValue(self, SFGeneratorType_startloopAddrsCoarseOffset) << 15; // * 32768
     return ret;
 }
 
 static uint32_t VoiceSampleEndLoop(Voice *self)
 {
     uint32_t ret = self->instrumentZone->sample->endLoop;
-    ret += VoiceGeneratorShortValue(self, SFGeneratorType_endloopAddrsOffset);
-    ret += VoiceGeneratorShortValue(self, SFGeneratorType_endloopAddrsCoarseOffset) << 15; // * 32768
+    ret += VoiceGeneratorValue(self, SFGeneratorType_endloopAddrsOffset);
+    ret += VoiceGeneratorValue(self, SFGeneratorType_endloopAddrsCoarseOffset) << 15; // * 32768
     return ret;
 }
 
-static int16_t VoiceGeneratorShortValue(Voice *self, SFGeneratorType generatorType)
+static int16_t VoiceGeneratorValue(Voice *self, SFGeneratorType generatorType)
 {
     // 9.4 The SoundFont Generator Model
     // - A generator in a global instrument zone that is identical to a default generator
@@ -484,67 +484,67 @@ void VoiceDump(Voice *voice)
     printf("  startLoop: %d\n", VoiceSampleStartLoop(voice));
     printf("  endLoop: %d\n", VoiceSampleEndLoop(voice));
     printf("  ---------------------------------------\n");
-    //printf("  startAddrsOffset: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_startAddrsOffset));
-    //printf("  endAddrsOffset: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_endAddrsOffset));
-    //printf("  startloopAddrsOffset: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_startloopAddrsOffset));
-    //printf("  endloopAddrsOffset: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_endloopAddrsOffset));
-    //printf("  startAddrsCoarseOffset: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_startAddrsCoarseOffset));
-    printf("  modLfoToPitch: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_modLfoToPitch));
-    printf("  vibLfoToPitch: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_vibLfoToPitch));
-    printf("  modEnvToPitch: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_modEnvToPitch));
-    printf("  initialFilterFc: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_initialFilterFc));
-    printf("  initialFilterQ: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_initialFilterQ));
-    printf("  modLfoToFilterFc: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_modLfoToFilterFc));
-    printf("  modEnvToFilterFc: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_modEnvToFilterFc));
-    //printf("  endAddrsCoarseOffset: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_endAddrsCoarseOffset));
-    printf("  modLfoToVolume: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_modLfoToVolume));
-    //printf("  unused1: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_unused1));
-    printf("  chorusEffectsSend: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_chorusEffectsSend));
-    printf("  reverbEffectsSend: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_reverbEffectsSend));
-    printf("  pan: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_pan));
-    //printf("  unused2: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_unused2));
-    //printf("  unused3: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_unused3));
-    //printf("  unused4: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_unused4));
-    printf("  delayModLFO: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_delayModLFO));
-    printf("  freqModLFO: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_freqModLFO));
-    printf("  delayVibLFO: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_delayVibLFO));
-    printf("  freqVibLFO: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_freqVibLFO));
-    printf("  delayModEnv: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_delayModEnv));
-    printf("  attackModEnv: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_attackModEnv));
-    printf("  holdModEnv: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_holdModEnv));
-    printf("  decayModEnv: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_decayModEnv));
-    printf("  sustainModEnv: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_sustainModEnv));
-    printf("  releaseModEnv: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_releaseModEnv));
-    printf("  keynumToModEnvHold: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_keynumToModEnvHold));
-    printf("  keynumToModEnvDecay: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_keynumToModEnvDecay));
-    printf("  delayVolEnv: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_delayVolEnv));
-    printf("  attackVolEnv: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_attackVolEnv));
-    printf("  holdVolEnv: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_holdVolEnv));
-    printf("  decayVolEnv: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_decayVolEnv));
-    printf("  sustainVolEnv: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_sustainVolEnv));
-    printf("  releaseVolEnv: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_releaseVolEnv));
-    printf("  keynumToVolEnvHold: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_keynumToVolEnvHold));
-    printf("  keynumToVolEnvDecay: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_keynumToVolEnvDecay));
-    //printf("  instrument: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_instrument));
-    //printf("  reserved1: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_reserved1));
-    //printf("  keyRange: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_keyRange));
-    //printf("  velRange: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_velRange));
-    //printf("  startloopAddrsCoarseOffset: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_startloopAddrsCoarseOffset));
-    printf("  keynum: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_keynum));
-    printf("  velocity: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_velocity));
-    printf("  initialAttenuation: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_initialAttenuation));
-    //printf("  reserved2: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_reserved2));
-    //printf("  endloopAddrsCoarseOffset: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_endloopAddrsCoarseOffset));
-    printf("  coarseTune: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_coarseTune));
-    printf("  fineTune: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_fineTune));
-    //printf("  sampleID: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_sampleID));
-    printf("  sampleModes: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_sampleModes));
-    //printf("  reserved3: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_reserved3));
-    printf("  scaleTuning: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_scaleTuning));
-    printf("  exclusiveClass: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_exclusiveClass));
-    printf("  overridingRootKey: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_overridingRootKey));
-    //printf("  unused5: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_unused5));
-    //printf("  endOper: %d\n", VoiceGeneratorShortValue(voice, SFGeneratorType_endOper));
+    //printf("  startAddrsOffset: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_startAddrsOffset));
+    //printf("  endAddrsOffset: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_endAddrsOffset));
+    //printf("  startloopAddrsOffset: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_startloopAddrsOffset));
+    //printf("  endloopAddrsOffset: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_endloopAddrsOffset));
+    //printf("  startAddrsCoarseOffset: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_startAddrsCoarseOffset));
+    printf("  modLfoToPitch: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_modLfoToPitch));
+    printf("  vibLfoToPitch: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_vibLfoToPitch));
+    printf("  modEnvToPitch: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_modEnvToPitch));
+    printf("  initialFilterFc: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_initialFilterFc));
+    printf("  initialFilterQ: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_initialFilterQ));
+    printf("  modLfoToFilterFc: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_modLfoToFilterFc));
+    printf("  modEnvToFilterFc: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_modEnvToFilterFc));
+    //printf("  endAddrsCoarseOffset: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_endAddrsCoarseOffset));
+    printf("  modLfoToVolume: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_modLfoToVolume));
+    //printf("  unused1: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_unused1));
+    printf("  chorusEffectsSend: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_chorusEffectsSend));
+    printf("  reverbEffectsSend: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_reverbEffectsSend));
+    printf("  pan: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_pan));
+    //printf("  unused2: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_unused2));
+    //printf("  unused3: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_unused3));
+    //printf("  unused4: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_unused4));
+    printf("  delayModLFO: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_delayModLFO));
+    printf("  freqModLFO: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_freqModLFO));
+    printf("  delayVibLFO: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_delayVibLFO));
+    printf("  freqVibLFO: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_freqVibLFO));
+    printf("  delayModEnv: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_delayModEnv));
+    printf("  attackModEnv: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_attackModEnv));
+    printf("  holdModEnv: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_holdModEnv));
+    printf("  decayModEnv: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_decayModEnv));
+    printf("  sustainModEnv: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_sustainModEnv));
+    printf("  releaseModEnv: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_releaseModEnv));
+    printf("  keynumToModEnvHold: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_keynumToModEnvHold));
+    printf("  keynumToModEnvDecay: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_keynumToModEnvDecay));
+    printf("  delayVolEnv: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_delayVolEnv));
+    printf("  attackVolEnv: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_attackVolEnv));
+    printf("  holdVolEnv: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_holdVolEnv));
+    printf("  decayVolEnv: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_decayVolEnv));
+    printf("  sustainVolEnv: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_sustainVolEnv));
+    printf("  releaseVolEnv: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_releaseVolEnv));
+    printf("  keynumToVolEnvHold: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_keynumToVolEnvHold));
+    printf("  keynumToVolEnvDecay: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_keynumToVolEnvDecay));
+    //printf("  instrument: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_instrument));
+    //printf("  reserved1: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_reserved1));
+    //printf("  keyRange: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_keyRange));
+    //printf("  velRange: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_velRange));
+    //printf("  startloopAddrsCoarseOffset: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_startloopAddrsCoarseOffset));
+    printf("  keynum: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_keynum));
+    printf("  velocity: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_velocity));
+    printf("  initialAttenuation: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_initialAttenuation));
+    //printf("  reserved2: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_reserved2));
+    //printf("  endloopAddrsCoarseOffset: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_endloopAddrsCoarseOffset));
+    printf("  coarseTune: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_coarseTune));
+    printf("  fineTune: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_fineTune));
+    //printf("  sampleID: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_sampleID));
+    printf("  sampleModes: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_sampleModes));
+    //printf("  reserved3: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_reserved3));
+    printf("  scaleTuning: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_scaleTuning));
+    printf("  exclusiveClass: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_exclusiveClass));
+    printf("  overridingRootKey: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_overridingRootKey));
+    //printf("  unused5: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_unused5));
+    //printf("  endOper: %d\n", VoiceGeneratorValue(voice, SFGeneratorType_endOper));
 
     printf("\n");
 }
