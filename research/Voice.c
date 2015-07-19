@@ -194,6 +194,8 @@ static void VoiceUpdateSampleIncrement(Voice *self)
     cent += VoiceGeneratorValue(self, SFGeneratorType_coarseTune) * 100.0;
     cent += VoiceGeneratorValue(self, SFGeneratorType_fineTune);
     cent += VoiceGeneratorValue(self, SFGeneratorType_initialPitch);
+    cent += self->channel->masterCoarseTune * 100.0;
+    cent += self->channel->masterFineTune;
 
     self->sampleIncrement = (double)sample->sampleRate / self->sampleRate;
     self->sampleIncrement *= Cent2FreqRatio(cent);

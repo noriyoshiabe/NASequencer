@@ -53,6 +53,20 @@ void ChannelSetControlChange(Channel *self, uint8_t ccNumber, uint8_t value)
     self->cc[ccNumber] = value;
 
     switch (ccNumber) {
+    case CC_RPN_MSB:
+        self->nrpnActive = false;
+        self->rpnActive = true;
+        break;
+    case CC_RPN_LSB:
+        self->nrpnActive = false;
+        self->rpnActive = true;
+
+        // RPN NULL
+        if (127 == self->cc[CC_RPN_MSB] && 127 == self->cc[CC_RPN_LSB]) {
+            self->nrpnActive = false;
+            self->rpnActive = false;
+        }
+        break;
     case CC_NRPN_MSB:
         self->nrpnActive = true;
         self->rpnActive = false;
@@ -101,6 +115,29 @@ void ChannelSetControlChange(Channel *self, uint8_t ccNumber, uint8_t value)
                 int16_t data = (value << 7 | self->cc[CC_DataEntry_LSB]) - 8192;
                 data = Clip(data, -8192, 8192);
                 self->nrpnValues[self->nrpnSelection] = data * GeneratorNRPNScale(self->nrpnSelection);
+            }
+        }
+        else if (self->rpnActive) {
+            switch (self->cc[CC_RPN_LSB]) {
+            case RPN_PitchBendSensitivity:
+                self->pitchBendSensitivity = value;
+                break;
+            case RPN_MasterFineTune:
+                {
+                    // MSB unit is 1 cent (+/- 64 cent)
+                    int16_t data = (value << 7 | self->cc[CC_DataEntry_LSB]) - 8192;
+                    self->masterFineTune = round((double)data / 8192.0 * 64.0);
+                }
+                break;
+            case RPN_MasterCoarseTune:
+                // semitone
+                self->masterCoarseTune = value - 64;
+                break;
+            case RPN_TuningProgramChange:
+            case RPN_TuningBankSelect:
+            case RPN_ModurationDepthRange:
+                // Not support
+                break;
             }
         }
         break;

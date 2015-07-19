@@ -83,6 +83,13 @@ int main(int argc, char **argv)
     bytes[1] = CC_DataEntry_MSB; bytes[2] = 0; midiSrc->send(midiSrc, bytes, 3);
 #endif
 
+#if 0 // RPN CC
+    bytes[0] = 0xB0;
+    bytes[1] = CC_RPN_MSB; bytes[2] = 0; midiSrc->send(midiSrc, bytes, 3);
+    bytes[1] = CC_RPN_LSB; bytes[2] = 2; midiSrc->send(midiSrc, bytes, 3);
+    bytes[1] = CC_DataEntry_MSB; bytes[2] = 64; midiSrc->send(midiSrc, bytes, 3);
+#endif
+
     char c;
     while (3 != (c = getch())) {
         switch (c) {

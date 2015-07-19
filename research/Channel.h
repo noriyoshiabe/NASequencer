@@ -89,6 +89,15 @@ typedef enum {
     CC_PolyMode = 127,
 } ControllChange;
 
+typedef enum {
+    RPN_PitchBendSensitivity = 0,
+    RPN_MasterFineTune = 1,
+    RPN_MasterCoarseTune = 2,
+    RPN_TuningProgramChange = 3,
+    RPN_TuningBankSelect = 4,
+    RPN_ModurationDepthRange = 5,
+} RPN_Number;
+
 typedef struct _Channel {
     uint8_t number;
     Preset *preset;
