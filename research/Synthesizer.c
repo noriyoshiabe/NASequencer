@@ -93,39 +93,41 @@ static bool isAvailable(void *_self)
     return self->sf && 0 < self->presetCount;
 }
 
-static bool hasProperty(void *self, MidiSourceProperty property)
-{
-    switch (property) {
-    case MidiSourcePropertyPresetMap:
-    case MidiSourcePropertyPresetCount:
-        return true;
-    default:
-        return false;
-    }
-}
+static void registerCallback(void *self, MidiSourceCallback callback, void *receiver) { }
+static void ungisterCallback(void *self, MidiSourceCallback callback, void *receiver) { }
+static const char *getName(void *self) { return NULL; }
 
-static void setProperty(void *_self, MidiSourceProperty property, const void *value)
-{
-}
-
-static void getProperty(void *_self, MidiSourceProperty property, void *value)
+static int getPresetCount(void *_self)
 {
     Synthesizer *self = _self;
-    PresetMap *presetMaps = value;
+    return self->presetCount;
+}
 
-    switch (property) {
-    case MidiSourcePropertyPresetMap:
-        for (int i = 0; i < self->presetCount; ++i) {
-            strncpy(presetMaps[i].name, self->presets[i]->name, sizeof(presetMaps[i].name));
-            presetMaps[i].bankNo = self->presets[i]->bankNo;
-            presetMaps[i].programNo = self->presets[i]->midiPresetNo;
-        }
-        break;
-    case MidiSourcePropertyPresetCount:
-        *((int *)value) = self->presetCount;
-        break;
+static void getPresetList(void *_self, PresetList *presetList, size_t count)
+{
+    Synthesizer *self = _self;
+
+    for (int i = 0; i < self->presetCount; ++i) {
+        strncpy(presetList[i].name, self->presets[i]->name, sizeof(presetList[i].name));
+        presetList[i].bankNo = self->presets[i]->bankNo;
+        presetList[i].programNo = self->presets[i]->midiPresetNo;
     }
 }
+
+static int getPresetIndex(void *self, uint8_t channel) { return 0; }
+static void setPresetIndex(void *self, uint8_t channel, int index) { }
+static int16_t getLastMasterLevel(void *self) { return 0; }
+static int16_t getLastLevel(void *self, uint8_t channel) { return 0; }
+static void setMasterVolume(void *self, int16_t value) { }
+static void setVolume(void *self, uint8_t channel, uint8_t value) { }
+static void setPan(void *self, uint8_t channel, uint8_t value) { }
+static void setChorusSend(void *self, uint8_t channel, uint8_t value) { }
+static void setReverbSend(void *self, uint8_t channel, uint8_t value) { }
+static int16_t getMasterVolume(void *self) { return 0; }
+static uint8_t getVolume(void *self, uint8_t channel) { return 0; }
+static uint8_t getPan(void *self, uint8_t channel) { return 0; }
+static uint8_t getChorusSend(void *self, uint8_t channel) { return 0; }
+static uint8_t getReverbSend(void *self, uint8_t channel) { return 0; }
 
 Synthesizer *SynthesizerCreate(SoundFont *sf, double sampleRate)
 {
@@ -133,9 +135,25 @@ Synthesizer *SynthesizerCreate(SoundFont *sf, double sampleRate)
 
     self->srcVtbl.send = send;
     self->srcVtbl.isAvailable = isAvailable;
-    self->srcVtbl.hasProperty = hasProperty;
-    self->srcVtbl.setProperty = setProperty;
-    self->srcVtbl.getProperty = getProperty;
+    self->srcVtbl.registerCallback = registerCallback;
+    self->srcVtbl.ungisterCallback = ungisterCallback;
+    self->srcVtbl.getName = getName;
+    self->srcVtbl.getPresetCount = getPresetCount;
+    self->srcVtbl.getPresetList = getPresetList;
+    self->srcVtbl.getPresetIndex = getPresetIndex;
+    self->srcVtbl.setPresetIndex = setPresetIndex;
+    self->srcVtbl.getLastMasterLevel = getLastMasterLevel;
+    self->srcVtbl.getLastLevel = getLastLevel;
+    self->srcVtbl.setMasterVolume = setMasterVolume;
+    self->srcVtbl.setVolume = setVolume;
+    self->srcVtbl.setPan = setPan;
+    self->srcVtbl.setChorusSend = setChorusSend;
+    self->srcVtbl.setReverbSend = setReverbSend;
+    self->srcVtbl.getMasterVolume = getMasterVolume;
+    self->srcVtbl.getVolume = getVolume;
+    self->srcVtbl.getPan = getPan;
+    self->srcVtbl.getChorusSend = getChorusSend;
+    self->srcVtbl.getReverbSend = getReverbSend;
 
     self->sf = sf;
 

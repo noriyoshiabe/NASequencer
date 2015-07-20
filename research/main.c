@@ -58,15 +58,13 @@ int main(int argc, char **argv)
 
     MidiSource *midiSrc = (MidiSource *)synth;
 
-    int presetCount;
-    midiSrc->getProperty(midiSrc, MidiSourcePropertyPresetCount, &presetCount);
-
-    PresetMap *presetMaps = calloc(presetCount, sizeof(PresetMap));
-    midiSrc->getProperty(midiSrc, MidiSourcePropertyPresetMap, presetMaps);
+    int presetCount = midiSrc->getPresetCount(midiSrc);
+    PresetList presetList[presetCount];
+    midiSrc->getPresetList(midiSrc, presetList, presetCount);
 
     for (int i = 0; i < presetCount; ++i) {
-        PresetMap *presetMap = &presetMaps[i];
-        printf("preset: name=%s bankNo=%d, programNo=%d\n", presetMap->name, presetMap->bankNo, presetMap->programNo);
+        PresetList *preset = &presetList[i];
+        printf("preset: name=%s bankNo=%d, programNo=%d\n", preset->name, preset->bankNo, preset->programNo);
     }
 
     set_conio_terminal_mode();
@@ -113,23 +111,23 @@ int main(int argc, char **argv)
                             presetIndex = 0;
                         }
 
-                        PresetMap *presetMap = &presetMaps[presetIndex];
+                        PresetList *preset = &presetList[presetIndex];
 
                         bytes[0] = 0xB0;
                         bytes[1] = 0x00;
-                        bytes[2] = presetMap->bankNo >> 7 & 0x007F;
+                        bytes[2] = preset->bankNo >> 7 & 0x007F;
                         midiSrc->send(midiSrc, bytes, 3);
 
                         bytes[1] = 0x20;
-                        bytes[2] = presetMap->bankNo & 0x007F;
+                        bytes[2] = preset->bankNo & 0x007F;
                         midiSrc->send(midiSrc, bytes, 3);
 
                         bytes[0] = 0xC0;
-                        bytes[1] = presetMap->programNo;
+                        bytes[1] = preset->programNo;
                         midiSrc->send(midiSrc, bytes, 2);
 
                         printf("preset change: index=%d name=%s bank:%d ptrogram:%d\r\n", presetIndex,
-                                presetMap->name, presetMap->bankNo, presetMap->programNo);
+                                preset->name, preset->bankNo, preset->programNo);
                     }
                     break;
                 case 'B': // down
@@ -139,23 +137,23 @@ int main(int argc, char **argv)
                             presetIndex = presetCount - 1;
                         }
 
-                        PresetMap *presetMap = &presetMaps[presetIndex];
+                        PresetList *preset = &presetList[presetIndex];
 
                         bytes[0] = 0xB0;
                         bytes[1] = 0x00;
-                        bytes[2] = presetMap->bankNo >> 7 & 0x007F;
+                        bytes[2] = preset->bankNo >> 7 & 0x007F;
                         midiSrc->send(midiSrc, bytes, 3);
 
                         bytes[1] = 0x20;
-                        bytes[2] = presetMap->bankNo & 0x007F;
+                        bytes[2] = preset->bankNo & 0x007F;
                         midiSrc->send(midiSrc, bytes, 3);
 
                         bytes[0] = 0xC0;
-                        bytes[1] = presetMap->programNo;
+                        bytes[1] = preset->programNo;
                         midiSrc->send(midiSrc, bytes, 2);
 
                         printf("preset change: index=%d name=%s bank:%d ptrogram:%d\r\n", presetIndex,
-                                presetMap->name, presetMap->bankNo, presetMap->programNo);
+                                preset->name, preset->bankNo, preset->programNo);
                     }
                     break;
                 case 'C': // right
