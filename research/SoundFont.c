@@ -689,20 +689,3 @@ void SoundFontDump(SoundFont *self)
         printf("\n");
     }
 }
-
-#if 0
-int main(int argc, char **argv)
-{
-    SoundFontError error;
-
-    SoundFont *sf = SoundFontRead(argv[1], &error);
-    if (!sf) {
-        printf("error read sf2 error=%s\n", SoundFontError2String(error));
-        return 1;
-    }
-
-    SoundFontDump(sf);
-    SoundFontDestroy(sf);
-    return 0;
-}
-#endif

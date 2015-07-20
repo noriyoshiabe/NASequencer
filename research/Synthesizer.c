@@ -162,34 +162,6 @@ Synthesizer *SynthesizerCreate(const char *filepath, double sampleRate)
             ChannelInitialize(&self->channels[i], i, self->presets[0]);
         }
     }
-#if 0
-    for (int i = 0; i < self->presetCount; ++i) {
-        PresetDump(self->presets[i]);
-    }
-#endif
-
-#if 0
-    Preset *preset = SynthesizerFindPreset(self, 25, 128);
-    //Preset *preset = self->presets[0];
-    PresetDump(preset);
-
-    for (int i = 0; i < preset->zoneCount; ++i) {
-        InstrumentDump(preset->zones[i]->instrument);
-    }
-
-    for (int i = 0; i < preset->zoneCount; ++i) {
-        for (int j = 0; j < preset->zones[i]->instrument->zoneCount; ++j) {
-            SampleDump(preset->zones[i]->instrument->zones[j]->sample);
-        }
-    }
-#endif
-
-#if 0
-    SynthesizerNoteOn(self, 0, 64, 127);
-    for (Voice *voice = self->voiceFirst; NULL != voice; voice = voice->next) {
-        VoiceDump(voice);
-    }
-#endif
 
     return self;
 }
@@ -268,7 +240,7 @@ static int SynthesizerNoteOn(Synthesizer *self, uint8_t channel, uint8_t noteNo,
 
             SynthesizerAddVoice(self, voice);
 
-#if 1
+#if 0
             VoiceDump(voice);
 #endif
 
@@ -351,11 +323,10 @@ static void SynthesizerProgramChange(Synthesizer *self, uint8_t channel, uint8_t
     Preset *preset = SynthesizerFindPreset(self, programNo, bankNo);
     if (preset) {
         self->channels[channel].preset = preset;
-    }
-
-#if 1
-    PresetDump(preset);
+#if 0
+        PresetDump(preset);
 #endif
+    }
 }
 
 static void SynthesizerAddVoice(Synthesizer *self, Voice *voice)
