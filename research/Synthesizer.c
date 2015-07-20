@@ -174,12 +174,12 @@ static void setPresetIndex(void *_self, uint8_t channel, int index)
     SynthesizerProgramChange(self, channel, self->presets[index]->midiPresetNo);
 }
 
-Level getMasterLevel(void *self)
+static Level getMasterLevel(void *self)
 {
     return ((Synthesizer *)self)->level.master;
 }
 
-Level getChannelLevel(void *self, uint8_t channel)
+static Level getChannelLevel(void *self, uint8_t channel)
 {
     return ((Synthesizer *)self)->level.channels[channel];
 }
