@@ -5,6 +5,7 @@
 #include "Chorus.h"
 #include "Reverb.h"
 #include "Channel.h"
+#include "Define.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,6 +33,7 @@ struct _Synthesizer {
     Voice *voiceLast;
 
     double sampleRate;
+    double masterVolume;
 
     Chorus *chorus;
     Reverb *reverb;
@@ -40,6 +42,11 @@ struct _Synthesizer {
 
     Callback *callbackList;
     int32_t callbackListLength;
+
+    struct {
+        Level master;
+        Level channels[CHANNEL_COUNT];
+    } level;
 };
 
 static Preset *SynthesizerFindPreset(Synthesizer *self, uint16_t midiPresetNo, uint16_t bankNo);
@@ -100,16 +107,20 @@ static bool isAvailable(void *_self)
     return self->sf && 0 < self->presetCount;
 }
 
-static void registerCallback(void *self, MidiSourceCallback callback, void *receiver)
+static void registerCallback(void *_self, MidiSourceCallback function, void *receiver)
 {
+    Synthesizer *self = _self;
+
     self->callbackList = realloc(self->callbackList, sizeof(Callback) * self->callbackListLength + 1);
     self->callbackList[self->callbackListLength].function = function; 
     self->callbackList[self->callbackListLength].receiver = receiver; 
     ++self->callbackListLength;
 }
 
-static void ungisterCallback(void *self, MidiSourceCallback callback, void *receiver)
+static void ungisterCallback(void *_self, MidiSourceCallback function, void *receiver)
 {
+    Synthesizer *self = _self;
+
     for (int i = 0; i < self->callbackListLength; ++i) {
         if (self->callbackList[i].function == function
                 && self->callbackList[i].receiver == receiver) {
@@ -160,9 +171,20 @@ static void setPresetIndex(void *_self, uint8_t channel, int index)
     SynthesizerProgramChange(self, channel, self->presets[index]->midiPresetNo);
 }
 
-static int16_t getLastMasterLevel(void *self) { return 0; }
-static int16_t getLastLevel(void *self, uint8_t channel) { return 0; }
-static void setMasterVolume(void *self, int16_t value) { }
+Level getMasterLevel(void *self)
+{
+    return ((Synthesizer *)self)->level.master;
+}
+
+Level getChannelLevel(void *self, uint8_t channel)
+{
+    return ((Synthesizer *)self)->level.channels[channel];
+}
+
+static void setMasterVolume(void *self, int16_t cb)
+{
+    ((Synthesizer *)self)->masterVolume = cB2Value(cb);
+}
 
 static void setVolume(void *self, uint8_t channel, uint8_t value)
 {
@@ -184,7 +206,10 @@ static void setReverbSend(void *self, uint8_t channel, uint8_t value)
     SynthesizerControlChange(self, channel, CC_Effect1Depth, value);
 }
 
-static int16_t getMasterVolume(void *self) { return 0; }
+static int16_t getMasterVolume(void *self)
+{
+    return Value2cB(((Synthesizer *)self)->masterVolume);
+}
 
 static uint8_t getVolume(void *self, uint8_t channel)
 {
@@ -219,8 +244,8 @@ Synthesizer *SynthesizerCreate(SoundFont *sf, double sampleRate)
     self->srcVtbl.getPresetList = getPresetList;
     self->srcVtbl.getPresetIndex = getPresetIndex;
     self->srcVtbl.setPresetIndex = setPresetIndex;
-    self->srcVtbl.getLastMasterLevel = getLastMasterLevel;
-    self->srcVtbl.getLastLevel = getLastLevel;
+    self->srcVtbl.getMasterLevel = getMasterLevel;
+    self->srcVtbl.getChannelLevel = getChannelLevel;
     self->srcVtbl.setMasterVolume = setMasterVolume;
     self->srcVtbl.setVolume = setVolume;
     self->srcVtbl.setPan = setPan;
@@ -465,10 +490,15 @@ static void SynthesizerRemoveVoice(Synthesizer *self, Voice *voice)
 
 void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer, uint32_t count)
 {
+    AudioSample masterLevel = {0};
+    AudioSample channelLevels[CHANNEL_COUNT] = {0.0};
+
     for (int i = 0; i < count; ++i) {
         AudioSample direct = { .L = 0.0, .R = 0.0 };
         AudioSample chorus = { .L = 0.0, .R = 0.0 };
         AudioSample reverb = { .L = 0.0, .R = 0.0 };
+
+        AudioSample channels[CHANNEL_COUNT] = {0.0};
 
         for (Voice *voice = self->voiceFirst; NULL != voice;) {
             VoiceUpdate(voice);
@@ -476,6 +506,9 @@ void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer, uint3
             AudioSample sample = VoiceComputeSample(voice);
             direct.L += sample.L;
             direct.R += sample.R;
+
+            channels[voice->channel->number].L += sample.L;
+            channels[voice->channel->number].R += sample.R;
 
             double chorusSend = VoiceChorusEffectsSend(voice);
             chorus.L += sample.L * chorusSend;
@@ -501,8 +534,28 @@ void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer, uint3
         chorus = ChorusComputeSample(self->chorus, chorus);
         reverb = ReverbComputeSample(self->reverb, reverb);
 
-        buffer[i].L += direct.L + chorus.L + reverb.L;
-        buffer[i].R += direct.R + chorus.R + reverb.R;
+        AudioSample master;
+        master.L = (direct.L + chorus.L + reverb.L) * self->masterVolume;
+        master.R = (direct.R + chorus.R + reverb.R) * self->masterVolume;
+
+        buffer[i].L += master.L;
+        buffer[i].R += master.R;
+
+        masterLevel.L = MAX(masterLevel.L, fabs(master.L));
+        masterLevel.R = MAX(masterLevel.R, fabs(master.R));
+
+        for (int i = 0; i < CHANNEL_COUNT; ++i) {
+            channelLevels[i].L = MAX(channelLevels[i].L, fabs(channels[i].L));
+            channelLevels[i].R = MAX(channelLevels[i].R, fabs(channels[i].R));
+        }
+    }
+
+    self->level.master.L = Value2cB(masterLevel.L);
+    self->level.master.R = Value2cB(masterLevel.R);
+
+    for (int i = 0; i < CHANNEL_COUNT; ++i) {
+        self->level.channels[i].L = Value2cB(channelLevels[i].L);
+        self->level.channels[i].R = Value2cB(channelLevels[i].R);
     }
 
     self->tick += count;

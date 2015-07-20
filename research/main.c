@@ -57,6 +57,7 @@ int main(int argc, char **argv)
     AudioOutRegisterCallback(audioOut, _AudioCallback, synth);
 
     MidiSource *midiSrc = (MidiSource *)synth;
+    midiSrc->setMasterVolume(midiSrc, 0);
 
     int presetCount = midiSrc->getPresetCount(midiSrc);
     PresetList presetList[presetCount];

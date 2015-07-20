@@ -19,6 +19,11 @@ typedef struct _PresetList {
     uint8_t programNo;
 } PresetList;
 
+typedef struct _Level {
+    int16_t L;
+    int16_t R;
+} Level;
+
 typedef struct _MidiSource MidiSource;
 
 typedef void (*MidiSourceCallback)(void *receiver, MidiSource *midiSrc, MidiSourceEvent event, void *arg);
@@ -27,8 +32,8 @@ struct _MidiSource {
     void (*send)(void *self, uint8_t *bytes, size_t length);
     bool (*isAvailable)(void *self);
 
-    void (*registerCallback)(void *self, MidiSourceCallback callback, void *receiver);
-    void (*ungisterCallback)(void *self, MidiSourceCallback callback, void *receiver);
+    void (*registerCallback)(void *self, MidiSourceCallback function, void *receiver);
+    void (*ungisterCallback)(void *self, MidiSourceCallback function, void *receiver);
 
     const char *(*getName)(void *self);
 
@@ -37,10 +42,10 @@ struct _MidiSource {
     int (*getPresetIndex)(void *self, uint8_t channel);
     void (*setPresetIndex)(void *self, uint8_t channel, int index);
 
-    int16_t (*getLastMasterLevel)(void *self);
-    int16_t (*getLastLevel)(void *self, uint8_t channel);
+    Level (*getMasterLevel)(void *self);
+    Level (*getChannelLevel)(void *self, uint8_t channel);
 
-    void (*setMasterVolume)(void *self, int16_t value);
+    void (*setMasterVolume)(void *self, int16_t cb);
     void (*setVolume)(void *self, uint8_t channel, uint8_t value);
     void (*setPan)(void *self, uint8_t channel, uint8_t value);
     void (*setChorusSend)(void *self, uint8_t channel, uint8_t value);
