@@ -47,6 +47,11 @@ static void _AudioCallback(void *receiver, AudioSample *buffer, uint32_t count)
     midiSrc->computeAudioSample(midiSrc, buffer, count);
 }
 
+void _MidiSourceCallback(void *receiver, MidiSource *midiSrc, MidiSourceEvent event, void *arg1, void *arg2)
+{
+    //printf("_MidiSourceCallback %s\r\n", MidiSourceEvent2String(event));
+}
+
 int main(int argc, char **argv)
 {
     AudioOut *audioOut = AudioOutSharedInstance();
@@ -57,6 +62,7 @@ int main(int argc, char **argv)
     AudioOutRegisterCallback(audioOut, _AudioCallback, synth);
 
     MidiSource *midiSrc = (MidiSource *)synth;
+    midiSrc->registerCallback(midiSrc, _MidiSourceCallback, NULL);
     midiSrc->setMasterVolume(midiSrc, 0);
 
     int presetCount = midiSrc->getPresetCount(midiSrc);

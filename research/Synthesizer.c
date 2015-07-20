@@ -60,6 +60,7 @@ static void SynthesizerControlChange(Synthesizer *self, uint8_t channel, uint8_t
 static void SynthesizerAddVoice(Synthesizer *self, Voice *voice);
 static void SynthesizerRemoveVoice(Synthesizer *self, Voice *voice);
 static void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer, uint32_t count);
+static void SynthesizerNotifyEvent(Synthesizer *self, MidiSourceEvent event, void *arg1, void *arg2);
 
 static void send(void *_self, uint8_t *bytes, size_t length)
 {
@@ -183,9 +184,11 @@ Level getChannelLevel(void *self, uint8_t channel)
     return ((Synthesizer *)self)->level.channels[channel];
 }
 
-static void setMasterVolume(void *self, int16_t cb)
+static void setMasterVolume(void *_self, int16_t cb)
 {
-    ((Synthesizer *)self)->masterVolume = cB2Value(cb);
+    Synthesizer *self = _self;
+    self->masterVolume = cB2Value(cb);
+    SynthesizerNotifyEvent(self, MidiSourceEventChangeMasterVolume, &self->masterVolume, NULL);
 }
 
 static void setVolume(void *self, uint8_t channel, uint8_t value)
@@ -444,6 +447,21 @@ static void SynthesizerControlChange(Synthesizer *self, uint8_t channel, uint8_t
             }
         }
     }
+
+    switch (ccNumber) {
+    case CC_Volume_MSB:
+        SynthesizerNotifyEvent(self, MidiSourceEventChangeVolume, &channel, &value);
+        break;
+    case CC_Pan_MSB:
+        SynthesizerNotifyEvent(self, MidiSourceEventChangePan, &channel, &value);
+        break;
+    case CC_Effect3Depth:
+        SynthesizerNotifyEvent(self, MidiSourceEventChangeChorusSend, &channel, &value);
+        break;
+    case CC_Effect1Depth:
+        SynthesizerNotifyEvent(self, MidiSourceEventChangeReverbSend, &channel, &value);
+        break;
+    }
 }
 
 static void SynthesizerProgramChange(Synthesizer *self, uint8_t channel, uint8_t programNo)
@@ -455,6 +473,8 @@ static void SynthesizerProgramChange(Synthesizer *self, uint8_t channel, uint8_t
 #if 0
         PresetDump(preset);
 #endif
+        int index = getPresetIndex(self, channel);
+        SynthesizerNotifyEvent(self, MidiSourceEventChangePreset, &channel, &index);
     }
 }
 
@@ -589,6 +609,14 @@ static void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer
     }
 
     LevelMaterNormalize(&levelMater, &self->level.master, self->level.channels);
+    SynthesizerNotifyEvent(self, MidiSourceEventChangeLevelMater, &self->level.master, self->level.channels);
 
     self->tick += count;
+}
+
+static void SynthesizerNotifyEvent(Synthesizer *self, MidiSourceEvent event, void *arg1, void *arg2)
+{
+    for (int i = 0; i < self->callbackListLength; ++i) {
+        self->callbackList[i].function(self->callbackList[i].receiver, (MidiSource *)self, event, arg1, arg2);
+    }
 }

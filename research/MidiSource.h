@@ -12,7 +12,8 @@ typedef enum {
     MidiSourceEventChangePan,
     MidiSourceEventChangeChorusSend,
     MidiSourceEventChangeReverbSend,
-    MidiSourceEventChangeProgramNumber,
+    MidiSourceEventChangePreset,
+    MidiSourceEventChangeLevelMater,
 } MidiSourceEvent;
 
 typedef struct _PresetList {
@@ -28,7 +29,7 @@ typedef struct _Level {
 
 typedef struct _MidiSource MidiSource;
 
-typedef void (*MidiSourceCallback)(void *receiver, MidiSource *midiSrc, MidiSourceEvent event, void *arg);
+typedef void (*MidiSourceCallback)(void *receiver, MidiSource *midiSrc, MidiSourceEvent event, void *arg1, void *arg2);
 
 struct _MidiSource {
     void (*send)(void *self, uint8_t *bytes, size_t length);
@@ -61,3 +62,19 @@ struct _MidiSource {
     uint8_t (*getChorusSend)(void *self, uint8_t channel);
     uint8_t (*getReverbSend)(void *self, uint8_t channel);
 };
+
+static inline const char *MidiSourceEvent2String(MidiSourceEvent event)
+{
+#define CASE(event) case event: return &(#event[15]);
+    switch (event) {
+    CASE(MidiSourceEventChangeMasterVolume);
+    CASE(MidiSourceEventChangeVolume);
+    CASE(MidiSourceEventChangePan);
+    CASE(MidiSourceEventChangeChorusSend);
+    CASE(MidiSourceEventChangeReverbSend);
+    CASE(MidiSourceEventChangePreset);
+    CASE(MidiSourceEventChangeLevelMater);
+    }
+#undef CASE
+    return "MidiSourceEventUnknown";
+}
