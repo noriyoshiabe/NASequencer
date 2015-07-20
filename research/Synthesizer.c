@@ -12,6 +12,11 @@
 
 #define CHANNEL_COUNT 16
 
+typedef struct _Callback {
+    void *receiver;
+    MidiSourceCallback function;
+} Callback;
+
 struct _Synthesizer {
     MidiSource srcVtbl;
 
@@ -33,6 +38,9 @@ struct _Synthesizer {
     Reverb *reverb;
 
     Channel channels[CHANNEL_COUNT];
+
+    Callback *callbackList;
+    int32_t callbackListLength;
 };
 
 static Preset *SynthesizerFindPreset(Synthesizer *self, uint16_t midiPresetNo, uint16_t bankNo);
@@ -93,14 +101,40 @@ static bool isAvailable(void *_self)
     return self->sf && 0 < self->presetCount;
 }
 
-static void registerCallback(void *self, MidiSourceCallback callback, void *receiver) { }
-static void ungisterCallback(void *self, MidiSourceCallback callback, void *receiver) { }
-static const char *getName(void *self) { return NULL; }
-
-static int getPresetCount(void *_self)
+static void registerCallback(void *self, MidiSourceCallback callback, void *receiver)
 {
-    Synthesizer *self = _self;
-    return self->presetCount;
+    self->callbackList = realloc(self->callbackList, sizeof(Callback) * self->callbackListLength + 1);
+    self->callbackList[self->callbackListLength].function = function; 
+    self->callbackList[self->callbackListLength].receiver = receiver; 
+    ++self->callbackListLength;
+}
+
+static void ungisterCallback(void *self, MidiSourceCallback callback, void *receiver)
+{
+    for (int i = 0; i < self->callbackListLength; ++i) {
+        if (self->callbackList[i].function == function
+                && self->callbackList[i].receiver == receiver) {
+
+            size_t moveLength = self->callbackListLength - 1 - i;
+            if (0 < moveLength) {
+                memmove(&self->callbackList[i + 1], &self->callbackList[i], sizeof(Callback) * moveLength);
+            }
+
+            --self->callbackListLength;
+            self->callbackList = realloc(self->callbackList, sizeof(Callback) * self->callbackListLength);
+            break;
+        }
+    }
+}
+
+static const char *getName(void *self)
+{
+    return ((Synthesizer *)self)->sf->INAM;
+}
+
+static int getPresetCount(void *self)
+{
+    return ((Synthesizer *)self)->presetCount;
 }
 
 static void getPresetList(void *_self, PresetList *presetList, size_t count)
@@ -114,20 +148,64 @@ static void getPresetList(void *_self, PresetList *presetList, size_t count)
     }
 }
 
-static int getPresetIndex(void *self, uint8_t channel) { return 0; }
-static void setPresetIndex(void *self, uint8_t channel, int index) { }
+static int getPresetIndex(void *_self, uint8_t channel)
+{
+    Synthesizer *self = _self;
+    Preset **result = bsearch(self->channels[channel].preset, self->presets, self->presetCount, sizeof(Preset *), PresetComparator);
+    return result - self->presets;
+}
+
+static void setPresetIndex(void *_self, uint8_t channel, int index)
+{
+    Synthesizer *self = _self;
+    SynthesizerProgramChange(self, channel, self->presets[index]->midiPresetNo);
+}
+
 static int16_t getLastMasterLevel(void *self) { return 0; }
 static int16_t getLastLevel(void *self, uint8_t channel) { return 0; }
 static void setMasterVolume(void *self, int16_t value) { }
-static void setVolume(void *self, uint8_t channel, uint8_t value) { }
-static void setPan(void *self, uint8_t channel, uint8_t value) { }
-static void setChorusSend(void *self, uint8_t channel, uint8_t value) { }
-static void setReverbSend(void *self, uint8_t channel, uint8_t value) { }
+
+static void setVolume(void *self, uint8_t channel, uint8_t value)
+{
+    SynthesizerControlChange(self, channel, CC_Volume_MSB, value);
+}
+
+static void setPan(void *self, uint8_t channel, uint8_t value)
+{
+    SynthesizerControlChange(self, channel, CC_Pan_MSB, value);
+}
+
+static void setChorusSend(void *self, uint8_t channel, uint8_t value)
+{
+    SynthesizerControlChange(self, channel, CC_Effect3Depth, value);
+}
+
+static void setReverbSend(void *self, uint8_t channel, uint8_t value)
+{
+    SynthesizerControlChange(self, channel, CC_Effect1Depth, value);
+}
+
 static int16_t getMasterVolume(void *self) { return 0; }
-static uint8_t getVolume(void *self, uint8_t channel) { return 0; }
-static uint8_t getPan(void *self, uint8_t channel) { return 0; }
-static uint8_t getChorusSend(void *self, uint8_t channel) { return 0; }
-static uint8_t getReverbSend(void *self, uint8_t channel) { return 0; }
+
+static uint8_t getVolume(void *self, uint8_t channel)
+{
+    return ((Synthesizer *)self)->channels[channel].cc[CC_Volume_MSB];
+}
+
+static uint8_t getPan(void *self, uint8_t channel)
+{
+    return ((Synthesizer *)self)->channels[channel].cc[CC_Pan_MSB];
+}
+
+static uint8_t getChorusSend(void *self, uint8_t channel)
+{
+    return ((Synthesizer *)self)->channels[channel].cc[CC_Effect3Depth];
+}
+
+static uint8_t getReverbSend(void *self, uint8_t channel)
+{
+    return ((Synthesizer *)self)->channels[channel].cc[CC_Effect1Depth];
+}
 
 Synthesizer *SynthesizerCreate(SoundFont *sf, double sampleRate)
 {
@@ -189,6 +267,10 @@ void SynthesizerDestroy(Synthesizer *self)
 
     if (self->presets) {
         free(self->presets);
+    }
+
+    if (self->callbackList) {
+        free(self->callbackList);
     }
 
     ChorusDestroy(self->chorus);
