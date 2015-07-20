@@ -497,17 +497,53 @@ static void SynthesizerRemoveVoice(Synthesizer *self, Voice *voice)
     voice->next = NULL;
 }
 
+typedef struct _LevelMater {
+    AudioSample master;
+    AudioSample channels[CHANNEL_COUNT];
+    struct {
+        AudioSample channels[CHANNEL_COUNT];
+    } buffer;
+} LevelMater;
+
+static void LevelMaterAddToChannel(LevelMater *self, uint8_t channel, AudioSample *sample)
+{
+    self->buffer.channels[channel].L += sample->L;
+    self->buffer.channels[channel].R += sample->R;
+}
+
+static void LevelMaterUpdate(LevelMater *self, AudioSample *master)
+{
+    self->master.L = MAX(self->master.L, fabs(master->L));
+    self->master.R = MAX(self->master.R, fabs(master->R));
+
+    for (int i = 0; i < CHANNEL_COUNT; ++i) {
+        self->channels[i].L = MAX(self->channels[i].L, fabs(self->buffer.channels[i].L));
+        self->channels[i].R = MAX(self->channels[i].R, fabs(self->buffer.channels[i].R));
+
+        self->buffer.channels[i].L = 0.0f;
+        self->buffer.channels[i].R = 0.0f;
+    }
+}
+
+static void LevelMaterNormalize(LevelMater *self, Level *master, Level *channels)
+{
+    master->L = Value2cB(self->master.L);
+    master->R = Value2cB(self->master.R);
+
+    for (int i = 0; i < CHANNEL_COUNT; ++i) {
+        channels[i].L = Value2cB(self->channels[i].L);
+        channels[i].R = Value2cB(self->channels[i].R);
+    }
+}
+
 static void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer, uint32_t count)
 {
-    AudioSample masterLevel = {0};
-    AudioSample channelLevels[CHANNEL_COUNT] = {0.0};
+    LevelMater levelMater = {0};
 
     for (int i = 0; i < count; ++i) {
         AudioSample direct = { .L = 0.0, .R = 0.0 };
         AudioSample chorus = { .L = 0.0, .R = 0.0 };
         AudioSample reverb = { .L = 0.0, .R = 0.0 };
-
-        AudioSample channels[CHANNEL_COUNT] = {0.0};
 
         for (Voice *voice = self->voiceFirst; NULL != voice;) {
             VoiceUpdate(voice);
@@ -516,9 +552,6 @@ static void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer
             direct.L += sample.L;
             direct.R += sample.R;
 
-            channels[voice->channel->number].L += sample.L;
-            channels[voice->channel->number].R += sample.R;
-
             double chorusSend = VoiceChorusEffectsSend(voice);
             chorus.L += sample.L * chorusSend;
             chorus.R += sample.R * chorusSend;
@@ -526,6 +559,8 @@ static void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer
             double reverbSend = VoiceReverbEffectsSend(voice);
             reverb.L += sample.L * reverbSend;
             reverb.R += sample.R * reverbSend;
+
+            LevelMaterAddToChannel(&levelMater, voice->channel->number, &sample);
 
             VoiceIncrementSample(voice);
 
@@ -550,22 +585,10 @@ static void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer
         buffer[i].L += master.L;
         buffer[i].R += master.R;
 
-        masterLevel.L = MAX(masterLevel.L, fabs(master.L));
-        masterLevel.R = MAX(masterLevel.R, fabs(master.R));
-
-        for (int i = 0; i < CHANNEL_COUNT; ++i) {
-            channelLevels[i].L = MAX(channelLevels[i].L, fabs(channels[i].L));
-            channelLevels[i].R = MAX(channelLevels[i].R, fabs(channels[i].R));
-        }
+        LevelMaterUpdate(&levelMater, &master);
     }
 
-    self->level.master.L = Value2cB(masterLevel.L);
-    self->level.master.R = Value2cB(masterLevel.R);
-
-    for (int i = 0; i < CHANNEL_COUNT; ++i) {
-        self->level.channels[i].L = Value2cB(channelLevels[i].L);
-        self->level.channels[i].R = Value2cB(channelLevels[i].R);
-    }
+    LevelMaterNormalize(&levelMater, &self->level.master, self->level.channels);
 
     self->tick += count;
 }
