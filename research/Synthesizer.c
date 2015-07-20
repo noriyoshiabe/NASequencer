@@ -1,5 +1,6 @@
 #include "Synthesizer.h"
 #include "MidiSource.h"
+#include "AudioSample.h"
 #include "Preset.h"
 #include "Voice.h"
 #include "Chorus.h"
@@ -58,6 +59,7 @@ static void SynthesizerProgramChange(Synthesizer *self, uint8_t channel, uint8_t
 static void SynthesizerControlChange(Synthesizer *self, uint8_t channel, uint8_t ccNumber, uint8_t value);
 static void SynthesizerAddVoice(Synthesizer *self, Voice *voice);
 static void SynthesizerRemoveVoice(Synthesizer *self, Voice *voice);
+static void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer, uint32_t count);
 
 static void send(void *_self, uint8_t *bytes, size_t length)
 {
@@ -231,12 +233,19 @@ static uint8_t getReverbSend(void *self, uint8_t channel)
     return ((Synthesizer *)self)->channels[channel].cc[CC_Effect1Depth];
 }
 
+static void computeAudioSample(void *self, AudioSample *buffer, uint32_t count)
+{
+    SynthesizerComputeAudioSample((Synthesizer *)self, buffer, count);
+}
+
+
 Synthesizer *SynthesizerCreate(SoundFont *sf, double sampleRate)
 {
     Synthesizer *self = calloc(1, sizeof(Synthesizer));
 
     self->srcVtbl.send = send;
     self->srcVtbl.isAvailable = isAvailable;
+    self->srcVtbl.computeAudioSample = computeAudioSample;
     self->srcVtbl.registerCallback = registerCallback;
     self->srcVtbl.ungisterCallback = ungisterCallback;
     self->srcVtbl.getName = getName;
@@ -488,7 +497,7 @@ static void SynthesizerRemoveVoice(Synthesizer *self, Voice *voice)
     voice->next = NULL;
 }
 
-void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer, uint32_t count)
+static void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer, uint32_t count)
 {
     AudioSample masterLevel = {0};
     AudioSample channelLevels[CHANNEL_COUNT] = {0.0};

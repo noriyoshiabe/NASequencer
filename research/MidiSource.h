@@ -1,5 +1,7 @@
 #pragma once
 
+#include "AudioSample.h"
+
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -31,6 +33,8 @@ typedef void (*MidiSourceCallback)(void *receiver, MidiSource *midiSrc, MidiSour
 struct _MidiSource {
     void (*send)(void *self, uint8_t *bytes, size_t length);
     bool (*isAvailable)(void *self);
+
+    void (*computeAudioSample)(void *self, AudioSample *buffer, uint32_t count);
 
     void (*registerCallback)(void *self, MidiSourceCallback function, void *receiver);
     void (*ungisterCallback)(void *self, MidiSourceCallback function, void *receiver);

@@ -43,8 +43,8 @@ int getch()
 
 static void _AudioCallback(void *receiver, AudioSample *buffer, uint32_t count)
 {
-    Synthesizer *synth = receiver;
-    SynthesizerComputeAudioSample(synth, buffer, count);
+    MidiSource *midiSrc = receiver;
+    midiSrc->computeAudioSample(midiSrc, buffer, count);
 }
 
 int main(int argc, char **argv)
