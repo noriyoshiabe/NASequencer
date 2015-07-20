@@ -11,6 +11,8 @@ set(SOURCES
   SoundFont.c
   Preset.c
   Voice.c
+  Envelope.c
+  LFO.c
   Filter.c
   Chorus.c
   Reverb.c
