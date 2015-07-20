@@ -50,7 +50,9 @@ static void _AudioCallback(void *receiver, AudioSample *buffer, uint32_t count)
 int main(int argc, char **argv)
 {
     AudioOut *audioOut = AudioOutSharedInstance();
-    Synthesizer *synth = SynthesizerCreate(argv[1], AudioOutGetSampleRate(audioOut));
+
+    SoundFont *sf = SoundFontRead(argv[1], NULL);
+    Synthesizer *synth = SynthesizerCreate(sf, AudioOutGetSampleRate(audioOut));
 
     AudioOutRegisterCallback(audioOut, _AudioCallback, synth);
 

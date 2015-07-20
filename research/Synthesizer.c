@@ -1,6 +1,5 @@
 #include "Synthesizer.h"
 #include "MidiSource.h"
-#include "SoundFont.h"
 #include "Preset.h"
 #include "Voice.h"
 #include "Chorus.h"
@@ -16,7 +15,6 @@
 struct _Synthesizer {
     MidiSource srcVtbl;
 
-    char *filepath;
     SoundFont *sf;
 
     Preset **presets;
@@ -129,7 +127,7 @@ static void getProperty(void *_self, MidiSourceProperty property, void *value)
     }
 }
 
-Synthesizer *SynthesizerCreate(const char *filepath, double sampleRate)
+Synthesizer *SynthesizerCreate(SoundFont *sf, double sampleRate)
 {
     Synthesizer *self = calloc(1, sizeof(Synthesizer));
 
@@ -139,8 +137,7 @@ Synthesizer *SynthesizerCreate(const char *filepath, double sampleRate)
     self->srcVtbl.setProperty = setProperty;
     self->srcVtbl.getProperty = getProperty;
 
-    self->filepath = strdup(filepath);
-    self->sf = SoundFontRead(filepath, NULL);
+    self->sf = sf;
 
     self->sampleRate = sampleRate;
 
@@ -182,7 +179,6 @@ void SynthesizerDestroy(Synthesizer *self)
     VoicePoolDestroy(self->voicePool);
     SoundFontDestroy(self->sf);
 
-    free(self->filepath);
     free(self);
 }
 
