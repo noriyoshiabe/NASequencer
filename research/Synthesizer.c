@@ -30,7 +30,6 @@ struct _Synthesizer {
     VoicePool *voicePool;
     Voice *voiceFirst;
     Voice *voiceLast;
-    int voicingCount;
 
     double sampleRate;
 
@@ -440,8 +439,6 @@ static void SynthesizerAddVoice(Synthesizer *self, Voice *voice)
     self->voiceLast = voice;
 
     voice->next = NULL;
-
-    ++self->voicingCount;
 }
 
 static void SynthesizerRemoveVoice(Synthesizer *self, Voice *voice)
@@ -464,8 +461,6 @@ static void SynthesizerRemoveVoice(Synthesizer *self, Voice *voice)
 
     voice->prev = NULL;
     voice->next = NULL;
-
-    --self->voicingCount;
 }
 
 void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer, uint32_t count)
@@ -511,9 +506,4 @@ void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer, uint3
     }
 
     self->tick += count;
-}
-
-int SynthesizerVoicingCount(Synthesizer *self)
-{
-    return self->voicingCount;
 }
