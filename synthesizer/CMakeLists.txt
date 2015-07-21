@@ -1,11 +1,14 @@
 cmake_minimum_required(VERSION 3.2)
 
-project(research)
+project(namidi-synthesizer)
 
 find_library(AUDIO_UNIT AudioUnit)
 
+include_directories(
+  ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
 set(SOURCES
-  main.c
   AudioOut.c
   Synthesizer.c
   SoundFont.c
@@ -20,5 +23,5 @@ set(SOURCES
   Channel.c
 )
 
-add_executable(${PROJECT_NAME} ${SOURCES})
+add_library(${PROJECT_NAME} ${SOURCES})
 target_link_libraries(${PROJECT_NAME} ${AUDIO_UNIT})
