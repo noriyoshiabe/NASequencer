@@ -3,10 +3,29 @@
 #import <Foundation/Foundation.h>
 
 #import "MidiEvent.h"
+#import "MidiSourceManager.h"
 
-@interface MixerChannel : NSObject
+@interface MidiSourceRepresentation : NSObject
 
-@property (nonatomic, readonly) uint8_t channelNumber;
+@property (nonatomic, readonly) MidiSourceDescription *description;
+@property (nonatomic, readonly) NSArray *presets;
+@property (nonatomic, readonly) Level level;
+
+// MidiSource *midiSource;
+@end
+
+@interface PresetRepresentation : NSObject
+
+@property (nonatomic, readonly) NSString *name;
+@property (nonatomic, readonly) uint16_t bankNo;
+@property (nonatomic, readonly) uint8_t programNo;
+
+// PresetList *preset;
+@end
+
+@interface ChannelRepresentation : NSObject
+
+@property (nonatomic, readonly) uint8_t number;
 @property (nonatomic, readonly) Level level;
 
 @property (nonatomic) MidiSourceRepresentation *midiSource;
@@ -17,21 +36,31 @@
 @property (nonatomic) uint8_t chorusSend;
 @property (nonatomic) uint8_t reverbSend;
 
+@property (nonatomic) bool mute;
+@property (nonatomic) bool solo;
+
 @end
+
+@protocol MixerObserver <NSObject>
+@optional
+- (void)mixer:(Mixer *)mixer onChannelChange:(ChannelRepresentation *)channel;
+- (void)mixer:(Mixer *)mixer onAvailableMidisourceChange:(NSArray *)midiSources;
+- (void)mixer:(Mixer *)mixer onLevelUpdate;
+@end
+@protocol MixerObserver;
 
 @interface Mixer : NSObject
 
 @property (nonatomic, readonly) NSArray *midiSources;
+@property (nonatomic, readonly) NSArray *channels;
+@property (nonatomic, readonly) Level level;
 
-+ (Mixer *)sharedInstance;
-- (void)initialize;
 - (void)sendNoteOn:(NoteEvent *)event;
 - (void)sendNoteOff:(NoteEvent *)event;
 - (void)sendAllNoteOff;
 - (void)sendSound:(SoundEvent *)event;
 
-- (PresetRepresentation *)preset:(uint8_t)channel;
-- (NSArray *)presetList:(uint8_t)channel;
-- (MidiSourceDescription *)midiSourceDescription:(uint8_t)channel;
+- (void)addObserver:(id<MixerObserver>)observer;
+- (void)removeObserver:(id<MixerObserver>)observer;
 
 @end

@@ -1,5 +1,6 @@
 #import "Mixer.h"
-#import "MidiSourceManager.h"
+#import "MidiClient.h"
+#import "CoreMidiClient.h"
 
 @interface Mixer() {
     MidiClient **clients;
