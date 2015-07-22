@@ -4,10 +4,18 @@
 
 #import "MidiSource.h"
 
+typedef NS_ENUM (NSUInteger, MidiSourceDescriptionError) {
+    MidiSourceDescriptionErrorNoError,
+    MidiSourceDescriptionErrorFileNotFound,
+    MidiSourceDescriptionErrorUnsupportedVersion,
+    MidiSourceDescriptionErrorInvalidFileFormat,
+};
+
 @interface MidiSourceDescription : NSObject
 
 @property (nonatomic, readonly) NSString *name;
 @property (nonatomic, readonly) NSString *filepath;
+@property (nonatomic, readonly) MidiSourceDescriptionError error;
 
 @end
 

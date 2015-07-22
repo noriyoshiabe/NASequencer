@@ -40,10 +40,12 @@ struct _MidiSource {
     void (*registerCallback)(void *self, MidiSourceCallback function, void *receiver);
     void (*ungisterCallback)(void *self, MidiSourceCallback function, void *receiver);
 
+    void (*destroy)(void *self);
+
     const char *(*getName)(void *self);
 
     int (*getPresetCount)(void *self);
-    void (*getPresetList)(void *self, PresetList *presetList, size_t count);
+    void (*getPresetList)(void *self, PresetList *presetList);
     int (*getPresetIndex)(void *self, uint8_t channel);
     void (*setPresetIndex)(void *self, uint8_t channel, int index);
 

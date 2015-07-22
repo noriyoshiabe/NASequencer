@@ -1,6 +1,56 @@
 #import "Mixer.h"
-#import "MidiClient.h"
-#import "CoreMidiClient.h"
+
+@interface MidiSourceRepresentation() {
+    MidiSource *midiSource;
+}
+
+@property (nonatomic, strong, readwrite) MidiSourceDescription *description;
+@property (nonatomic, strong, readwrite) NSMutableArray *presets;
+
+@end
+
+@interface PresetRepresentation()
+
+@property (nonatomic, strong, readwrite) NSString *name;
+@property (nonatomic, readwrite) uint16_t bankNo;
+@property (nonatomic, readwrite) uint8_t programNo;
+
+@end
+
+@implementation MidiSourceRepresentation
+
+- (id)initWithMidiSource:(MidiSource *)midiSource description:(MidiSourceDescription *)description
+{
+    if (self = [super init]) {
+        self->midiSource = midiSource;
+        
+        self.description = description;
+        self.presets = [NSMutableArray array];
+
+        int presetCount = midiSource->getPresetCount(midiSource);
+        PresetList plisetList[presetCount];
+        midiSource->getPresetList(midiSource, presetList);
+
+        for (int i = 0; i < presetCount; ++i) {
+            PresetRepresentation *preset = [[PresetRepresentation alloc] init];
+            preset.name = [NSString stringWithCString:plisetList[i].name encoding:NSUTF8StringEncoding];
+            preset.bankNo = plisetList[i].bankNo;
+            preset.programNo = plisetList[i].programNo;
+            [presets addObject: preset];
+        }
+    }
+    return self;
+}
+
+- (void)dealloc
+{
+    self.description = nil;
+    self.presets = nil;
+    midiSource->destroy(midiSource);
+}
+
+@end
+
 
 @interface Mixer() {
     MidiClient **clients;

@@ -145,12 +145,17 @@ static const char *getName(void *self)
     return ((Synthesizer *)self)->sf->INAM;
 }
 
+static void destroy(void *self)
+{
+    SynthesizerDestroy(self);
+}
+
 static int getPresetCount(void *self)
 {
     return ((Synthesizer *)self)->presetCount;
 }
 
-static void getPresetList(void *_self, PresetList *presetList, size_t count)
+static void getPresetList(void *_self, PresetList *presetList)
 {
     Synthesizer *self = _self;
 
@@ -251,6 +256,7 @@ Synthesizer *SynthesizerCreate(SoundFont *sf, double sampleRate)
     self->srcVtbl.computeAudioSample = computeAudioSample;
     self->srcVtbl.registerCallback = registerCallback;
     self->srcVtbl.ungisterCallback = ungisterCallback;
+    self->srcVtbl.destroy = destroy;
     self->srcVtbl.getName = getName;
     self->srcVtbl.getPresetCount = getPresetCount;
     self->srcVtbl.getPresetList = getPresetList;

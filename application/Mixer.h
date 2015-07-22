@@ -11,7 +11,6 @@
 @property (nonatomic, readonly) NSArray *presets;
 @property (nonatomic, readonly) Level level;
 
-// MidiSource *midiSource;
 @end
 
 @interface PresetRepresentation : NSObject
@@ -20,7 +19,6 @@
 @property (nonatomic, readonly) uint16_t bankNo;
 @property (nonatomic, readonly) uint8_t programNo;
 
-// PresetList *preset;
 @end
 
 @interface ChannelRepresentation : NSObject
