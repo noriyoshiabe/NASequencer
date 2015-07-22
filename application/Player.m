@@ -123,7 +123,7 @@ static PlayerClockSourceCallbacks callbacks = {
 
 - (void)sendNoteOn:(NoteEvent *)event
 {
-    [[Mixer sharedInstance] sendNoteOn:event];
+    [self.mixer sendNoteOn:event];
 
     [_playingNoteEvents addObject:event];
 
@@ -134,7 +134,7 @@ static PlayerClockSourceCallbacks callbacks = {
 
 - (void)sendNoteOff:(NoteEvent *)event
 {
-    [[Mixer sharedInstance] sendNoteOff:event];
+    [self.mixer sendNoteOff:event];
 
     [_playingNoteEvents removeObject:event];
 
@@ -149,7 +149,7 @@ static PlayerClockSourceCallbacks callbacks = {
         [self sendNoteOff:event];
     }
 
-    [[Mixer sharedInstance] sendAllNoteOff];
+    [self.mixer sendAllNoteOff];
 }
 
 - (void)scanNoteOffFrom:(int32_t)from to:(int32_t)to
@@ -163,7 +163,7 @@ static PlayerClockSourceCallbacks callbacks = {
 
 - (void)sendSound:(SoundEvent *)event
 {
-    [[Mixer sharedInstance] sendSound:event];
+    [self.mixer sendSound:event];
 
     if ([self.delegate respondsToSelector:@selector(player:didSendSound:)]) {
         [self.delegate player:self didSendSound:event];

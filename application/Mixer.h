@@ -26,8 +26,8 @@
 @property (nonatomic, readonly) uint8_t number;
 @property (nonatomic, readonly) Level level;
 
-@property (nonatomic) MidiSourceRepresentation *midiSource;
-@property (nonatomic) PresetRepresentation *preset;
+@property (nonatomic, strong) MidiSourceRepresentation *midiSource;
+@property (nonatomic, strong) PresetRepresentation *preset;
 
 @property (nonatomic) uint8_t volume;
 @property (nonatomic) uint8_t pan;
@@ -39,12 +39,6 @@
 
 @end
 
-@protocol MixerObserver <NSObject>
-@optional
-- (void)mixer:(Mixer *)mixer onChannelChange:(ChannelRepresentation *)channel;
-- (void)mixer:(Mixer *)mixer onAvailableMidisourceChange:(NSArray *)midiSources;
-- (void)mixer:(Mixer *)mixer onLevelUpdate;
-@end
 @protocol MixerObserver;
 
 @interface Mixer : NSObject
@@ -61,4 +55,11 @@
 - (void)addObserver:(id<MixerObserver>)observer;
 - (void)removeObserver:(id<MixerObserver>)observer;
 
+@end
+
+@protocol MixerObserver <NSObject>
+@optional
+- (void)mixer:(Mixer *)mixer onChannelChange:(ChannelRepresentation *)channel;
+- (void)mixer:(Mixer *)mixer onAvailableMidisourceChange:(NSArray *)midiSources;
+- (void)mixerOnLevelUpdate:(Mixer *)mixer;
 @end

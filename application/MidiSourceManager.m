@@ -8,6 +8,7 @@
 
 @property (nonatomic, strong, readwrite) NSString *name;
 @property (nonatomic, strong, readwrite) NSString *filepath;
+@property (nonatomic, readwrite) bool available;
 @property (nonatomic, readwrite) MidiSourceDescriptionError error;
 
 @end
@@ -60,6 +61,7 @@ static MidiSourceManager *_sharedInstance = nil;
 
     if (soundFont) {
         description.name = [NSString stringWithCString:soundFont->INAM encoding:NSUTF8StringEncoding];
+        description.available = true;
     }
     else {
         description.name = [[filepath lastPathComponent] stringByDeletingPathExtension];

@@ -5,6 +5,7 @@
 #import "TimeTable.h"
 #import "Sequence.h"
 #import "MidiEvent.h"
+#import "Mixer.h"
 
 typedef NS_ENUM (NSUInteger, PlayerEvent) {
     PlayerEventStop,
@@ -25,6 +26,7 @@ typedef NS_ENUM (NSUInteger, PlayerEvent) {
 @property (nonatomic, readonly) Location location;
 @property (nonatomic, readonly) NSSet *playingNoteEvents;
 
+@property (nonatomic, strong) Mixer *mixer;
 @property (nonatomic, strong) Sequence *sequence;
 @property (nonatomic, weak) id<PlayerDelegate> delegate;
 

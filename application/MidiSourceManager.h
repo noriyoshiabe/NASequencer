@@ -15,15 +15,12 @@ typedef NS_ENUM (NSUInteger, MidiSourceDescriptionError) {
 
 @property (nonatomic, readonly) NSString *name;
 @property (nonatomic, readonly) NSString *filepath;
+@property (nonatomic, readonly) bool available;
 @property (nonatomic, readonly) MidiSourceDescriptionError error;
 
 @end
 
-@protocol MidiSourceManagerObserver <NSObject>
-@optional
-- (void)manager:(MidiSourceManager *)manager onLoadMidiSource:(MidiSourceDescription *)description;
-- (void)manager:(MidiSourceManager *)manager onUnloadMidiSource:(MidiSourceDescription *)description;
-@end
+@protocol MidiSourceManagerObserver;
 
 @interface MidiSourceManager : NSObject
 
@@ -39,4 +36,10 @@ typedef NS_ENUM (NSUInteger, MidiSourceDescriptionError) {
 - (void)addObserver:(id<MidiSourceManagerObserver>)observer;
 - (void)removeObserver:(id<MidiSourceManagerObserver>)observer;
 
+@end
+
+@protocol MidiSourceManagerObserver <NSObject>
+@optional
+- (void)manager:(MidiSourceManager *)manager onLoadMidiSource:(MidiSourceDescription *)description;
+- (void)manager:(MidiSourceManager *)manager onUnloadMidiSource:(MidiSourceDescription *)description;
 @end
