@@ -28,7 +28,7 @@ typedef NS_ENUM (NSUInteger, MidiSourceDescriptionError) {
 
 + (MidiSourceManager *)sharedInstance;
 
-- (void)loadSoundFont:(NSString *)filepath sampleRate:(double)sampleRate;
+- (void)loadSoundFont:(NSString *)filepath;
 - (void)unloadMidiSource:(MidiSourceDescription *)description;
 
 - (MidiSource *)createMidiSource:(MidiSourceDescription *)description;

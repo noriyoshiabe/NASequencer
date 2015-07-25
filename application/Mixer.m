@@ -1,4 +1,6 @@
 #import "Mixer.h"
+#import "AudioOut.h"
+#import "Define.h"
 
 @interface MidiSourceRepresentation() {
     NSMutableArray *_presets;
@@ -27,8 +29,9 @@
 @interface Mixer() {
     NSMutableArray *_midiSources;
     NSMutableArray *_channels;
-    AudioOut *_audioOut;
 }
+
+@property (nonatomic, readwrite) Level level;
 
 - (void)updateActiveChannels;
 
@@ -147,7 +150,7 @@ static void _MixerAudioCallback(void *receiver, AudioSample *buffer, uint32_t co
     [self audioCallback:buffer count:count];
 }
 
-- (id)initWithAudiouOut:(AudioOut *)audioOut
+- (id)init
 {
     if (self = [super init]) {
         _midiSources = [NSMutableArray array];
@@ -180,15 +183,9 @@ static void _MixerAudioCallback(void *receiver, AudioSample *buffer, uint32_t co
             [_channels addObject:channel];
         }
 
-        _audioOut = audioOut;
-        AudioOutRegisterCallback(audioOut, _MixerAudioCallback, (__bridge void *)self);
+        AudioOutRegisterCallback(AudioOutSharedInstance(), _MixerAudioCallback, (__bridge void *)self);
     }
     return self;
-}
-
-- (Level)level
-{
-    return (Level){0,0}; // TODO
 }
 
 - (void)sendNoteOn:(NoteEvent *)event
@@ -262,10 +259,30 @@ static void _MixerAudioCallback(void *receiver, AudioSample *buffer, uint32_t co
 
 - (void)audioCallback:(AudioSample *)buffer count:(uint32_t)count
 {
+    AudioSample samples[count];
+    AudioSample *p = samples;
+
+    for (int i = 0; i < count; ++i) {
+        *p++ = (AudioSample){0, 0};
+    }
+
     for (MidiSourceRepresentation *midiSource in _midiSources) {
         MidiSource *native = midiSource->native;
-        native->computeAudioSample(native, buffer, count);
+        native->computeAudioSample(native, samples, count);
     }
+
+    AudioSample valueLevel = {0, 0};
+
+    for (int i = 0; i < count; ++i) {
+        buffer[i].L += samples[i].L;
+        buffer[i].R += samples[i].R;
+
+        valueLevel.L = MAX(valueLevel.L, fabs(samples[i].L));
+        valueLevel.R = MAX(valueLevel.L, fabs(samples[i].R));
+    }
+
+    _level.L = Value2cB(valueLevel.L);
+    _level.R = Value2cB(valueLevel.R);
 }
 
 @end

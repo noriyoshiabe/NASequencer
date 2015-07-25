@@ -1,5 +1,6 @@
 #import "MidiSourceManager.h"
 #import "SoundFont.h"
+#import "AudioOut.h"
 #import "Synthesizer.h"
 
 @interface MidiSourceDescription() {
@@ -11,7 +12,6 @@
 @property (nonatomic, strong, readwrite) NSString *filepath;
 @property (nonatomic, readwrite) bool available;
 @property (nonatomic, readwrite) MidiSourceDescriptionError error;
-@property (nonatomic, readwrite) double sampleRate;
 
 @end
 
@@ -54,14 +54,13 @@ static MidiSourceManager *_sharedInstance = nil;
     _descriptions = [NSMutableArray array];
 }
 
-- (void)loadSoundFont:(NSString *)filepath sampleRate:(double)sampleRate
+- (void)loadSoundFont:(NSString *)filepath
 {
     SoundFontError error;
     SoundFont *soundFont = SoundFontRead([filepath UTF8String], &error);
 
     MidiSourceDescription *description = [[MidiSourceDescription alloc] init];
     description->soundFont = soundFont;
-    description.sampleRate = sampleRate;
     description.filepath = filepath;
 
     if (soundFont) {
@@ -98,7 +97,8 @@ static MidiSourceManager *_sharedInstance = nil;
         return NULL;
     }
 
-    return (MidiSource *)SynthesizerCreate(description->soundFont, description.sampleRate);
+    AudioOut *audioOut = AudioOutSharedInstance();
+    return (MidiSource *)SynthesizerCreate(description->soundFont, AudioOutGetSampleRate(audioOut));
 }
 
 - (void)addObserver:(id<MidiSourceManagerObserver>)observer

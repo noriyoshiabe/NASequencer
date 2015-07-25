@@ -4,7 +4,6 @@
 
 #import "MidiEvent.h"
 #import "MidiSourceManager.h"
-#import "AudioOut.h"
 
 @interface MidiSourceRepresentation : NSObject
 
@@ -47,8 +46,6 @@
 @property (nonatomic, readonly) NSArray *midiSources;
 @property (nonatomic, readonly) NSArray *channels;
 @property (nonatomic, readonly) Level level;
-
-- (id)initWithAudiouOut:(AudioOut *)audioOut;
 
 - (void)sendNoteOn:(NoteEvent *)event;
 - (void)sendNoteOff:(NoteEvent *)event;

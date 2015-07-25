@@ -54,7 +54,7 @@ void _MidiSourceCallback(void *receiver, MidiSource *midiSrc, MidiSourceEvent ev
 
 int main(int argc, char **argv)
 {
-    AudioOut *audioOut = AudioOutCreate();
+    AudioOut *audioOut = AudioOutSharedInstance();
 
     SoundFont *sf = SoundFontRead(argv[1], NULL);
     Synthesizer *synth = SynthesizerCreate(sf, AudioOutGetSampleRate(audioOut));
@@ -260,7 +260,6 @@ int main(int argc, char **argv)
     getch(); /* consume the character */
 
     AudioOutUnregisterCallback(audioOut, _AudioCallback, synth);
-    AudioOutDestroy(audioOut);
     SynthesizerDestroy(synth);
     return 0;
 }
