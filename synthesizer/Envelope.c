@@ -188,7 +188,8 @@ void EnvelopeUpdate(Envelope *self, double time)
         // Whenever a key-off occurs, the envelope immediately enters a release phase
         // during which the value linearly ramps from the current value to zero.
         // When zero is reached, the envelope value remains at zero.
-        self->value = 0.0 < self->release ? MAX(0.0, ((self->startPhaseTime + self->release - time) * self->releasedValue) / self->release) : 0.0;
+        f = (time - self->startPhaseTime) / self->release;
+        self->value = 0.0 < self->release ? MAX(0.0, (1.0 - f) * self->releasedValue) : 0.0;
         break;
     case EnvelopePhaseFinish:
         break;
