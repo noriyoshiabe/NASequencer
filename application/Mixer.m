@@ -4,17 +4,17 @@
 
 @interface MidiSourceRepresentation() {
     NSMutableArray *_presets;
-    MidiSourceDescription *_description;
-
 @public
     MidiSource *native;
 }
+
+@property (nonatomic, readwrite) MidiSourceDescription *description;
 
 @end
 
 @interface PresetRepresentation()
 
-@property (nonatomic, strong, readwrite) NSString *name;
+@property (nonatomic, readwrite) NSString *name;
 @property (nonatomic, readwrite) uint16_t bankNo;
 @property (nonatomic, readwrite) uint8_t programNo;
 
