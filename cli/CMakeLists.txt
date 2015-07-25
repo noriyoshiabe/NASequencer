@@ -8,6 +8,7 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}
   ../application
   ../core
+  ../synthesizer
 )
 
 set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} -fobjc-arc)

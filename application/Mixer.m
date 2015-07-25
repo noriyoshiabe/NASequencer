@@ -1,12 +1,12 @@
 #import "Mixer.h"
 
 @interface MidiSourceRepresentation() {
+    NSMutableArray *_presets;
+    MidiSourceDescription *_description;
+
 @public
     MidiSource *native;
 }
-
-@property (nonatomic, strong, readwrite) MidiSourceDescription *description;
-@property (nonatomic, strong, readwrite) NSMutableArray *presets;
 
 @end
 
@@ -24,26 +24,38 @@
 @property (nonatomic) bool active;
 @end
 
+@interface Mixer() {
+    NSMutableArray *_midiSources;
+    NSMutableArray *_channels;
+}
+
+- (void)updateActiveChannels;
+
+@end
+
+
 @implementation MidiSourceRepresentation
+
+@synthesize description = _description;
 
 - (id)initWithMidiSource:(MidiSource *)midiSource description:(MidiSourceDescription *)description
 {
     if (self = [super init]) {
-        native = midiSource
+        native = midiSource;
         
-        self.description = description;
-        self.presets = [NSMutableArray array];
+        _description = description;
+        _presets = [NSMutableArray array];
 
         int presetCount = native->getPresetCount(native);
-        PresetList plisetList[presetCount];
+        PresetList presetList[presetCount];
         native->getPresetList(native, presetList);
 
         for (int i = 0; i < presetCount; ++i) {
             PresetRepresentation *preset = [[PresetRepresentation alloc] init];
-            preset.name = [NSString stringWithCString:plisetList[i].name encoding:NSUTF8StringEncoding];
-            preset.bankNo = plisetList[i].bankNo;
-            preset.programNo = plisetList[i].programNo;
-            [presets addObject: preset];
+            preset.name = [NSString stringWithCString:presetList[i].name encoding:NSUTF8StringEncoding];
+            preset.bankNo = presetList[i].bankNo;
+            preset.programNo = presetList[i].programNo;
+            [_presets addObject: preset];
         }
     }
     return self;
@@ -51,8 +63,6 @@
 
 - (void)dealloc
 {
-    self.description = nil;
-    self.presets = nil;
     native->destroy(native);
 }
 
@@ -62,6 +72,7 @@
 }
 
 @end
+
 
 @implementation ChannelRepresentation
 
@@ -81,7 +92,7 @@
 - (void)setPreset:(PresetRepresentation *)preset
 {
     _preset = preset;
-    _midiSource->native->setPresetIndex(_midiSource->native, [_midiSource.presets indexOfObject:_preset]);
+    _midiSource->native->setPresetIndex(_midiSource->native, _number, [_midiSource.presets indexOfObject:_preset]);
 }
 
 - (void)setVolume:(uint8_t)volume;
@@ -122,23 +133,19 @@
 
 @end
 
-@interface Mixer()
-@property (nonatomic, strong, readwrite) NSMutableArray *midiSources;
-@property (nonatomic, strong, readwrite) NSMutableArray *channels;
-@end
 
 @implementation Mixer
 
 - (id)init
 {
     if (self = [super init]) {
-        self.midiSources = [NSMutableArray array];
-        self.channels = [NSMutableArray array];
+        _midiSources = [NSMutableArray array];
+        _channels = [NSMutableArray array];
 
         for (MidiSourceDescription *description in [MidiSourceManager sharedInstance].descriptions) {
             if (description.available) {
                 MidiSource *midiSource = [[MidiSourceManager sharedInstance] createMidiSource:description];
-                [_midiSources addObject:[[MidiSourceRepresentation] alloc] initWithMidiSource:midiSource description:description];
+                [_midiSources addObject:[[MidiSourceRepresentation alloc] initWithMidiSource:midiSource description:description]];
             }
         }
 
@@ -174,23 +181,30 @@
 {
     uint8_t bytes[3] = {0x90 | (0x0F & (event.channel - 1)), event.noteNo, event.velocity};
 
-    MidiSource *midiSource = _channels[event.channel - 1].midiSource->native;
-    midiSource->send(midiSource, bytes, sizeof(bytes));
+    ChannelRepresentation *channel = _channels[event.channel - 1];
+    if (channel.active) {
+        MidiSource *midiSource = channel.midiSource->native;
+        midiSource->send(midiSource, bytes, sizeof(bytes));
+    }
 }
 
 - (void)sendNoteOff:(NoteEvent *)event
 {
     uint8_t bytes[3] = {0x80 | (0x0F & (event.channel - 1)), event.noteNo, 0x00};
 
-    MidiSource *midiSource = _channels[event.channel - 1].midiSource->native;
-    midiSource->send(midiSource, bytes, sizeof(bytes));
+    ChannelRepresentation *channel = _channels[event.channel - 1];
+    if (channel.active) {
+        MidiSource *midiSource = channel.midiSource->native;
+        midiSource->send(midiSource, bytes, sizeof(bytes));
+    }
 }
 
 - (void)sendAllNoteOff
 {
     uint8_t bytes[3] = {0, 0x7B, 0x00};
     for(int i = 0; i < 16; ++i) {
-        MidiSource *midiSource = _channels[i].midiSource->native;
+        ChannelRepresentation *channel = _channels[i];
+        MidiSource *midiSource = channel.midiSource->native;
         bytes[0] = 0xB0 | (0x0F & i);
         midiSource->send(midiSource, bytes, sizeof(bytes));
     }
@@ -199,7 +213,9 @@
 - (void)sendSound:(SoundEvent *)event
 {
     uint8_t bytes[3];
-    MidiSource *midiSource = _channels[event.channel - 1].midiSource->native;
+
+    ChannelRepresentation *channel = _channels[event.channel - 1];
+    MidiSource *midiSource = channel.midiSource->native;
 
     bytes[0] = 0xB0 | (0x0F & (event.channel - 1));
     bytes[1] = 0x00;
@@ -221,6 +237,11 @@
 }
 
 - (void)removeObserver:(id<MixerObserver>)observer
+{
+    // TODO
+}
+
+- (void)updateActiveChannels
 {
     // TODO
 }
