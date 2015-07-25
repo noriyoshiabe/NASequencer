@@ -43,8 +43,8 @@ extern void VoiceInitialize(Voice *self, Channel *channel, uint8_t noteNo, uint8
     self->sampleModes = VoiceGeneratorValue(self, SFGeneratorType_sampleModes);
     self->exclusiveClass = VoiceGeneratorValue(self, SFGeneratorType_exclusiveClass);
 
-    EnvelopeInit(&self->modEnv);
-    EnvelopeInit(&self->volEnv);
+    EnvelopeInit(&self->modEnv, EnvelopeTypeModulation);
+    EnvelopeInit(&self->volEnv, EnvelopeTypeVolume);
 
     LFOInit(&self->modLfo);
     LFOInit(&self->vibLfo);
@@ -157,7 +157,6 @@ void VoiceUpdateRuntimeParams(Voice* self)
     self->reverbEffectsSend = VoiceGeneratorValue(self, SFGeneratorType_reverbEffectsSend);
 
     EnvelopeUpdateRuntimeParams(&self->modEnv,
-            EnvelopeTypeModulation,
             VoiceGeneratorValue(self, SFGeneratorType_delayModEnv),
             VoiceGeneratorValue(self, SFGeneratorType_attackModEnv),
             VoiceGeneratorValue(self, SFGeneratorType_holdModEnv),
@@ -169,7 +168,6 @@ void VoiceUpdateRuntimeParams(Voice* self)
             self->keyForSample);
 
     EnvelopeUpdateRuntimeParams(&self->volEnv,
-            EnvelopeTypeVolume,
             VoiceGeneratorValue(self, SFGeneratorType_delayVolEnv),
             VoiceGeneratorValue(self, SFGeneratorType_attackVolEnv),
             VoiceGeneratorValue(self, SFGeneratorType_holdVolEnv),

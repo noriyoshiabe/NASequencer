@@ -6,8 +6,8 @@
 #include <stdbool.h>
 
 typedef enum {
-    EnvelopeTypeVolume,
     EnvelopeTypeModulation,
+    EnvelopeTypeVolume,
 } EnvelopeType;
 
 typedef enum {
@@ -22,6 +22,8 @@ typedef enum {
 } EnvelopePhase;
 
 typedef struct _Envelope {
+    EnvelopeType type;
+
     union {
         struct {
             double delay;
@@ -42,8 +44,8 @@ typedef struct _Envelope {
     double releasedValue;
 } Envelope;
 
-extern void EnvelopeInit(Envelope *self);
-extern void EnvelopeUpdateRuntimeParams(Envelope *self, EnvelopeType type,
+extern void EnvelopeInit(Envelope *self, EnvelopeType type);
+extern void EnvelopeUpdateRuntimeParams(Envelope *self,
         int16_t delay, int16_t attack, int16_t hold, int16_t decay, int16_t sustain, int16_t release,
         int16_t keynumToHold, int16_t keynumToDecay, int8_t keyForSample);
 extern void EnvelopeRelease(Envelope *self, double time);

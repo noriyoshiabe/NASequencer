@@ -1,14 +1,15 @@
 #include "Envelope.h"
 
-void EnvelopeInit(Envelope *self)
+void EnvelopeInit(Envelope *self, EnvelopeType type)
 {
+    self->type = type;
     self->value = 0.0;
     self->phase = EnvelopePhaseDelay;
     self->startPhaseTime = 0.0;
     self->releasedValue = 0.0;
 }
 
-void EnvelopeUpdateRuntimeParams(Envelope *self, EnvelopeType type,
+void EnvelopeUpdateRuntimeParams(Envelope *self,
         int16_t delay, int16_t attack, int16_t hold, int16_t decay, int16_t sustain, int16_t release,
         int16_t keynumToHold, int16_t keynumToDecay, int8_t keyForSample)
 {
@@ -48,54 +49,10 @@ void EnvelopeUpdateRuntimeParams(Envelope *self, EnvelopeType type,
         self->hold = Timecent2Sec(Clip(timecent, -12000, 5000));
     }
 
-    switch (type) {
-    case EnvelopeTypeVolume:
-        // 37 sustainVolEnv
-        // This is the decrease in level, expressed in centibels,
-        // to which the Volume Envelope value ramps during the decay phase.
-        // For the Volume Envelope, the sustain level is best expressed
-        // in centibels of attenuation from full scale.
-        // A value of 0 indicates the sustain level is full level;
-        // this implies a zero duration of decay phase regardless of decay time.
-        // A positive value indicates a decay to the corresponding level.
-        // Values less than zero are to be interpreted as zero;
-        // conventionally 1000 indicates full attenuation.
-        // For example, a sustain level which corresponds to
-        // an absolute value 12dB below of peak would be 120.
-        if (0 >= sustain) {
-            self->sustain = 1.0;
-        }
-        else if (1000 <= sustain) {
-            self->sustain = 0.0;
-        }
-        else {
-            self->sustain = cBAttn2Value(sustain);
-        }
-        break;
-
-    case EnvelopeTypeModulation:
-        // 29 sustainModEnv
-        // to which the Modulation Envelope value ramps during the decay phase.
-        // For the Modulation Envelope, the sustain level is properly expressed in percent of full scale.
-        // Because the volume envelope sustain level is expressed as an attenuation from full scale,
-        // the sustain level is analogously expressed as a decrease from full scale.
-        // A value of 0 indicates the sustain level is full level;
-        // this implies a zero duration of decay phase regardless of decay time.
-        // A positive value indicates a decay to the corresponding level.
-        // Values less than zero are to be interpreted as zero;
-        // values above 1000 are to be interpreted as 1000.
-        // For example, a sustain level which corresponds to an absolute value 40% of peak would be 600.
-        if (0 >= sustain) {
-            self->sustain = 1.0;
-        }
-        else if (1000 <= sustain) {
-            self->sustain = 0.0;
-        }
-        else {
-            self->sustain = 1.0 - 0.001 * Clip(sustain, 0, 1000);
-        }
-        break;
-    }
+    // 37 sustainVolEnv/ 29 sustainModEnv
+    // Values less than zero are to be interpreted as zero;
+    // values above 1000 are to be interpreted as 1000.
+    self->sustain = Clip(sustain, 0.0, 1000.0);
 
     // 32 keynumToModEnvDecay / 40 keynumToVolEnvDecay
     // This is the degree, in timecents per KeyNumber units,
@@ -148,7 +105,8 @@ static void EnvelopeUpdatePhase(Envelope *self, double time)
         // Whenever a key-off occurs, the envelope immediately enters a release phase
         break;
     case EnvelopePhaseRelease:
-        if (0.0 >= self->value) {
+        // -100dB
+        if (0.00001 >= self->value) {
             ++self->phase;
             self->value = 0.0;
         }
@@ -178,10 +136,35 @@ void EnvelopeUpdate(Envelope *self, double time)
         // 9.1.7 Envelope Generators
         // When the hold phase ends, the envelope enters a decay phase during which its value decreases linearly to a sustain level.
         f = (time - self->startPhaseTime) / self->decay;
-        self->value = 0.0 < self->decay ? MAX(0.0, 1.0 * (1.0 - f) + f * self->sustain) : self->sustain;
+
+        switch (self->type) {
+        case EnvelopeTypeModulation:
+            // The degree of modulation is specified in cents for the full-scale attack peak.
+            self->value = 1.0 * (1.0 - f) + f * (1.0 - 0.001 * self->sustain);
+            break;
+        case EnvelopeTypeVolume:
+            // The volume envelope operates in dB,
+            self->value = cBAttn2Value(f * self->sustain);
+            break;
+        }
         break;
     case EnvelopePhaseSustain:
-        self->value = self->sustain;
+        switch (self->type) {
+        case EnvelopeTypeModulation:
+            // 8.1.1 Kinds of Generator Enumerators
+            // This is the decrease in level, expressed in 0.1% units,
+            // to which the Modulation Envelope value ramps during the decay phase.
+            // For the Modulation Envelope, the sustain level is properly expressed
+            // in percent of full scale. 
+            self->value = 1.0 - 0.001 * self->sustain;
+            break;
+        case EnvelopeTypeVolume:
+            // 9.1.7 Envelope Generators
+            // The volume envelope operates in dB, with the attack peak providing a full scale output,
+            // appropriately scaled by the initial volume.
+            self->value = cBAttn2Value(self->sustain);
+            break;
+        }
         break;
     case EnvelopePhaseRelease:
         // 9.1.7 Envelope Generators
@@ -189,7 +172,18 @@ void EnvelopeUpdate(Envelope *self, double time)
         // during which the value linearly ramps from the current value to zero.
         // When zero is reached, the envelope value remains at zero.
         f = (time - self->startPhaseTime) / self->release;
-        self->value = 0.0 < self->release ? MAX(0.0, (1.0 - f) * self->releasedValue) : 0.0;
+
+        switch (self->type) {
+        case EnvelopeTypeModulation:
+            // The degree of modulation is specified in cents for the full-scale attack peak.
+            self->value = MAX(0.0, (1.0 - f) * self->releasedValue);
+            break;
+        case EnvelopeTypeVolume:
+            // The volume envelope operates in dB,
+            // If the current level were full scale, the Volume Envelope Release Time would be the time spent in release phase until 100dB attenuation were reached.
+            self->value = self->releasedValue * cBAttn2Value(f * 1000.0);
+            break;
+        }
         break;
     case EnvelopePhaseFinish:
         break;
