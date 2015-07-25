@@ -1,4 +1,5 @@
 #import "NAMidi.h"
+#import "MidiSourceManager.h"
 #import "Mixer.h"
 #import "Controller.h"
 #import "View.h"
@@ -8,10 +9,11 @@
 int main(int argc, char **argv)
 {
     int result = 0;
+    char *soundfont = NULL;
     char *outfile = NULL;
     BOOL repeat = NO;
 
-    while (-1 != (result = getopt(argc, argv, "o:r"))) {
+    while (-1 != (result = getopt(argc, argv, "o:s:r"))) {
         switch (result) {
         case 'o':
             outfile = optarg;
@@ -19,15 +21,18 @@ int main(int argc, char **argv)
         case 'r':
             repeat = YES;
             break;
+        case 's':
+            soundfont = optarg;
+            break;
         case ':':
         case '?':
-            printf("usage:\n  namidi [-r] [-o <outfile>] <infile>\n");
+            printf("usage:\n  namidi [-r] [-s <soundfont>] [-o <outfile>] <infile>\n");
             return 1;
         }
     }
 
     if (argc <= optind) {
-        printf("usage:\n  namidi [-r] [-o <outfile>] <infile>\n");
+        printf("usage:\n  namidi [-r] [-s <soundfont>] [-o <outfile>] <infile>\n");
         return 1;
     }
 
@@ -43,7 +48,12 @@ int main(int argc, char **argv)
         [controller write:infile outfile:outfile];
     } 
     else {
-        [[Mixer sharedInstance] initialize];
+        MidiSourceManager *manager = [MidiSourceManager sharedInstance];
+        [manager loadSoundFont:[NSString stringWithUTF8String:soundfont]];
+        
+        Mixer *mixer = [[Mixer alloc] init];
+        namidi.player.mixer = mixer;
+
         [controller run:infile repeat:repeat];
     }
 

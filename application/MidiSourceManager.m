@@ -1,8 +1,10 @@
 #import "MidiSourceManager.h"
 #import "SoundFont.h"
 #import "AudioOut.h"
+#import "Synthesizer.h"
 
 @interface MidiSourceDescription() {
+@public
     SoundFont *soundFont;
 }
 
@@ -27,8 +29,10 @@
 
 @end
 
-@interface MidiSourceManager()
-@property (nonatomic, strong, readwrite) NSMutableArray *descriptions;
+@interface MidiSourceManager() {
+    NSMutableArray *_descriptions;
+}
+
 @end
 
 @implementation MidiSourceManager
@@ -47,7 +51,7 @@ static MidiSourceManager *_sharedInstance = nil;
 
 - (void)initialize
 {
-    self.descriptions = [NSMutableArray array];
+    _descriptions = [NSMutableArray array];
 }
 
 - (void)loadSoundFont:(NSString *)filepath
@@ -56,7 +60,7 @@ static MidiSourceManager *_sharedInstance = nil;
     SoundFont *soundFont = SoundFontRead([filepath UTF8String], &error);
 
     MidiSourceDescription *description = [[MidiSourceDescription alloc] init];
-    description.soundFont = soundFont;
+    description->soundFont = soundFont;
     description.filepath = filepath;
 
     if (soundFont) {
@@ -79,7 +83,7 @@ static MidiSourceManager *_sharedInstance = nil;
         }
     }
 
-    [descriptions addObject:description];
+    [_descriptions addObject:description];
 }
 
 - (void)unloadMidiSource:(MidiSourceDescription *)description
@@ -89,12 +93,12 @@ static MidiSourceManager *_sharedInstance = nil;
 
 - (MidiSource *)createMidiSource:(MidiSourceDescription *)description
 {
-    if (!description.soundFont) {
+    if (!description->soundFont) {
         return NULL;
     }
 
     AudioOut *audioOut = AudioOutSharedInstance();
-    return (MidiSource *)SynthesizerCreate(description.soundFont, AudioOutGetSampleRate(audioOut));
+    return (MidiSource *)SynthesizerCreate(description->soundFont, AudioOutGetSampleRate(audioOut));
 }
 
 - (void)addObserver:(id<MidiSourceManagerObserver>)observer

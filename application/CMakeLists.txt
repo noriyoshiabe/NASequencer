@@ -20,7 +20,8 @@ set(SOURCES
   SequenceBuilder.m
   MidiEvent.m
   Mixer.m
+  MidiSourceManager.m
 )
 
 add_library(${PROJECT_NAME} ${SOURCES})
-target_link_libraries(${PROJECT_NAME} namidi-core)
+target_link_libraries(${PROJECT_NAME} namidi-core namidi-synthesizer)

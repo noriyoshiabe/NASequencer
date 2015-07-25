@@ -74,6 +74,10 @@
 @end
 
 
+@implementation PresetRepresentation
+@end
+
+
 @implementation ChannelRepresentation
 
 - (Level)level
