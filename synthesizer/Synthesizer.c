@@ -289,6 +289,8 @@ Synthesizer *SynthesizerCreate(SoundFont *sf, double sampleRate)
 
     self->reverb = ReverbCreate(sampleRate, 1.0);
 
+    self->masterVolume = cB2Value(0);
+
     ParsePresets(self->sf, &self->presets, &self->presetCount);
     qsort(self->presets, self->presetCount, sizeof(Preset *), PresetComparator);
 
