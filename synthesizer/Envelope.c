@@ -85,7 +85,8 @@ void EnvelopeFinish(Envelope *self, double time)
     if (EnvelopePhaseFinish > self->phase) {
         EnvelopeRelease(self, time);
 
-        self->release = 0.010; // 10 msec
+        // Excerpt from fluid_synth.  Approximately 891 msec
+        self->release = Timecent2Sec(-200);
     }
 }
 
