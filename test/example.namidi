@@ -1,17 +1,19 @@
 channel 10
 
-sound 127 0 0
-
-1/8
+sound 0 120 0
+//sound 127 0 0
 octave 2
 
 {
-  //{ 1/8  F+*7A+  }
-  { 1/8  F+A+F+A+F+A+F+A+  }
-  //{ 1/16 rrrrErrErErrErrr },
-  //{ 1/8  CrrCCCrr }
-} * 20
+  { 1/8  F+*7A+  },
+  { 1/16 rrrrErrErErrErrr },
+  { 1/8  CrrCCCrr }
+}
 
+channel 1
+octave 4
+1/8
+cdefgabc^
 
 /*
 time 4/4

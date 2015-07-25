@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		020CC1281B636EA8003EBEB1 /* GeneralUser GS Live-Audigy v1.44.sf2 in Resources */ = {isa = PBXBuildFile; fileRef = 020CC1271B636EA8003EBEB1 /* GeneralUser GS Live-Audigy v1.44.sf2 */; };
+		020CC1291B6370A2003EBEB1 /* libnamidi-synthesizer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 020CC1211B635887003EBEB1 /* libnamidi-synthesizer.a */; };
+		020CC12B1B6370C2003EBEB1 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 020CC12A1B6370C2003EBEB1 /* AudioUnit.framework */; };
 		021EFCCE1AC18E1700AC924F /* Help in Resources */ = {isa = PBXBuildFile; fileRef = 021EFCCD1AC18E1700AC924F /* Help */; };
 		02225DDE1A906E610077ABCB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02225DDD1A906E610077ABCB /* AppDelegate.swift */; };
 		02225DE01A906E610077ABCB /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02225DDF1A906E610077ABCB /* Document.swift */; };
@@ -74,6 +77,8 @@
 
 /* Begin PBXFileReference section */
 		020CC11C1B635887003EBEB1 /* namidi-synthesizer.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "namidi-synthesizer.xcodeproj"; path = "../synthesizer/namidi-synthesizer.xcodeproj"; sourceTree = "<group>"; };
+		020CC1271B636EA8003EBEB1 /* GeneralUser GS Live-Audigy v1.44.sf2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GeneralUser GS Live-Audigy v1.44.sf2"; sourceTree = "<group>"; };
+		020CC12A1B6370C2003EBEB1 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		021EFCCD1AC18E1700AC924F /* Help */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Help; sourceTree = "<group>"; };
 		02225DD81A906E610077ABCB /* NAMIDI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NAMIDI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		02225DDC1A906E610077ABCB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -107,7 +112,9 @@
 			files = (
 				02CAE4541AFE1371007D4D27 /* libnamidi-application.a in Frameworks */,
 				02CAE4551AFE1371007D4D27 /* libnamidi-core.a in Frameworks */,
+				020CC1291B6370A2003EBEB1 /* libnamidi-synthesizer.a in Frameworks */,
 				02FE8D531A923C6600BEF62E /* CoreMIDI.framework in Frameworks */,
+				020CC12B1B6370C2003EBEB1 /* AudioUnit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -129,6 +136,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		020CC1261B636EA8003EBEB1 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				020CC1271B636EA8003EBEB1 /* GeneralUser GS Live-Audigy v1.44.sf2 */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		02225DCF1A906E610077ABCB = {
 			isa = PBXGroup;
 			children = (
@@ -136,6 +151,7 @@
 				020CC11C1B635887003EBEB1 /* namidi-synthesizer.xcodeproj */,
 				02EB35DA1AFE106C00EFBE27 /* namidi-application.xcodeproj */,
 				02FE8D521A923C6600BEF62E /* CoreMIDI.framework */,
+				020CC12A1B6370C2003EBEB1 /* AudioUnit.framework */,
 				02225DDA1A906E610077ABCB /* NAMIDI */,
 				02225DF01A906E610077ABCB /* NAMIDITests */,
 				02225DD91A906E610077ABCB /* Products */,
@@ -154,6 +170,7 @@
 		02225DDA1A906E610077ABCB /* NAMIDI */ = {
 			isa = PBXGroup;
 			children = (
+				020CC1261B636EA8003EBEB1 /* Resources */,
 				021EFCCD1AC18E1700AC924F /* Help */,
 				02AD4ABE1AADEE4D005364C5 /* icon.png */,
 				02225DDD1A906E610077ABCB /* AppDelegate.swift */,
@@ -336,6 +353,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				020CC1281B636EA8003EBEB1 /* GeneralUser GS Live-Audigy v1.44.sf2 in Resources */,
 				02225DE31A906E610077ABCB /* Document.xib in Resources */,
 				021EFCCE1AC18E1700AC924F /* Help in Resources */,
 				02225DE51A906E610077ABCB /* Images.xcassets in Resources */,

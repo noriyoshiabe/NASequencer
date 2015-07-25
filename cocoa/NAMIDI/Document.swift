@@ -11,10 +11,13 @@ import Cocoa
 class Document: NSDocument {
 
     let namidi: NAMidi
+    let mixer: Mixer
     var fileUrl: NSURL?
     
     override init() {
         namidi = NAMidi()
+        mixer = Mixer()
+        namidi.player.mixer = mixer
         super.init()
     }
     

@@ -24,6 +24,16 @@
 		020CC1171B635827003EBEB1 /* Synthesizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 020CC1061B635827003EBEB1 /* Synthesizer.h */; };
 		020CC1181B635827003EBEB1 /* Voice.c in Sources */ = {isa = PBXBuildFile; fileRef = 020CC1071B635827003EBEB1 /* Voice.c */; };
 		020CC1191B635827003EBEB1 /* Voice.h in Headers */ = {isa = PBXBuildFile; fileRef = 020CC1081B635827003EBEB1 /* Voice.h */; };
+		022CAB0F1B6371EC00CD315D /* Define.h in Headers */ = {isa = PBXBuildFile; fileRef = 022CAB051B6371EB00CD315D /* Define.h */; };
+		022CAB101B6371EC00CD315D /* Envelope.c in Sources */ = {isa = PBXBuildFile; fileRef = 022CAB061B6371EB00CD315D /* Envelope.c */; };
+		022CAB111B6371EC00CD315D /* Envelope.h in Headers */ = {isa = PBXBuildFile; fileRef = 022CAB071B6371EB00CD315D /* Envelope.h */; };
+		022CAB121B6371EC00CD315D /* Filter.c in Sources */ = {isa = PBXBuildFile; fileRef = 022CAB081B6371EB00CD315D /* Filter.c */; };
+		022CAB131B6371EC00CD315D /* Filter.h in Headers */ = {isa = PBXBuildFile; fileRef = 022CAB091B6371EB00CD315D /* Filter.h */; };
+		022CAB141B6371EC00CD315D /* LFO.c in Sources */ = {isa = PBXBuildFile; fileRef = 022CAB0A1B6371EC00CD315D /* LFO.c */; };
+		022CAB151B6371EC00CD315D /* LFO.h in Headers */ = {isa = PBXBuildFile; fileRef = 022CAB0B1B6371EC00CD315D /* LFO.h */; };
+		022CAB161B6371EC00CD315D /* MidiSource.h in Headers */ = {isa = PBXBuildFile; fileRef = 022CAB0C1B6371EC00CD315D /* MidiSource.h */; };
+		022CAB171B6371EC00CD315D /* Modulator.c in Sources */ = {isa = PBXBuildFile; fileRef = 022CAB0D1B6371EC00CD315D /* Modulator.c */; };
+		022CAB181B6371EC00CD315D /* Modulator.h in Headers */ = {isa = PBXBuildFile; fileRef = 022CAB0E1B6371EC00CD315D /* Modulator.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -45,6 +55,16 @@
 		020CC1061B635827003EBEB1 /* Synthesizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Synthesizer.h; sourceTree = "<group>"; };
 		020CC1071B635827003EBEB1 /* Voice.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Voice.c; sourceTree = "<group>"; };
 		020CC1081B635827003EBEB1 /* Voice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Voice.h; sourceTree = "<group>"; };
+		022CAB051B6371EB00CD315D /* Define.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Define.h; sourceTree = "<group>"; };
+		022CAB061B6371EB00CD315D /* Envelope.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Envelope.c; sourceTree = "<group>"; };
+		022CAB071B6371EB00CD315D /* Envelope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Envelope.h; sourceTree = "<group>"; };
+		022CAB081B6371EB00CD315D /* Filter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Filter.c; sourceTree = "<group>"; };
+		022CAB091B6371EB00CD315D /* Filter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Filter.h; sourceTree = "<group>"; };
+		022CAB0A1B6371EC00CD315D /* LFO.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = LFO.c; sourceTree = "<group>"; };
+		022CAB0B1B6371EC00CD315D /* LFO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LFO.h; sourceTree = "<group>"; };
+		022CAB0C1B6371EC00CD315D /* MidiSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiSource.h; sourceTree = "<group>"; };
+		022CAB0D1B6371EC00CD315D /* Modulator.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Modulator.c; sourceTree = "<group>"; };
+		022CAB0E1B6371EC00CD315D /* Modulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Modulator.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +88,16 @@
 				020CC0FC1B635827003EBEB1 /* Channel.h */,
 				020CC0FD1B635827003EBEB1 /* Chorus.c */,
 				020CC0FE1B635827003EBEB1 /* Chorus.h */,
+				022CAB051B6371EB00CD315D /* Define.h */,
+				022CAB061B6371EB00CD315D /* Envelope.c */,
+				022CAB071B6371EB00CD315D /* Envelope.h */,
+				022CAB081B6371EB00CD315D /* Filter.c */,
+				022CAB091B6371EB00CD315D /* Filter.h */,
+				022CAB0A1B6371EC00CD315D /* LFO.c */,
+				022CAB0B1B6371EC00CD315D /* LFO.h */,
+				022CAB0C1B6371EC00CD315D /* MidiSource.h */,
+				022CAB0D1B6371EC00CD315D /* Modulator.c */,
+				022CAB0E1B6371EC00CD315D /* Modulator.h */,
 				020CC0FF1B635827003EBEB1 /* Preset.c */,
 				020CC1001B635827003EBEB1 /* Preset.h */,
 				020CC1011B635827003EBEB1 /* Reverb.c */,
@@ -97,15 +127,21 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				022CAB161B6371EC00CD315D /* MidiSource.h in Headers */,
+				022CAB131B6371EC00CD315D /* Filter.h in Headers */,
+				022CAB151B6371EC00CD315D /* LFO.h in Headers */,
 				020CC1151B635827003EBEB1 /* SoundFont.h in Headers */,
+				022CAB111B6371EC00CD315D /* Envelope.h in Headers */,
 				020CC1111B635827003EBEB1 /* Preset.h in Headers */,
 				020CC10A1B635827003EBEB1 /* AudioOut.h in Headers */,
+				022CAB181B6371EC00CD315D /* Modulator.h in Headers */,
 				020CC1171B635827003EBEB1 /* Synthesizer.h in Headers */,
 				020CC1131B635827003EBEB1 /* Reverb.h in Headers */,
 				020CC10D1B635827003EBEB1 /* Channel.h in Headers */,
 				020CC1191B635827003EBEB1 /* Voice.h in Headers */,
 				020CC10F1B635827003EBEB1 /* Chorus.h in Headers */,
 				020CC10B1B635827003EBEB1 /* AudioSample.h in Headers */,
+				022CAB0F1B6371EC00CD315D /* Define.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -165,14 +201,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				022CAB141B6371EC00CD315D /* LFO.c in Sources */,
 				020CC1161B635827003EBEB1 /* Synthesizer.c in Sources */,
 				020CC1101B635827003EBEB1 /* Preset.c in Sources */,
 				020CC1091B635827003EBEB1 /* AudioOut.c in Sources */,
 				020CC10C1B635827003EBEB1 /* Channel.c in Sources */,
 				020CC10E1B635827003EBEB1 /* Chorus.c in Sources */,
 				020CC1141B635827003EBEB1 /* SoundFont.c in Sources */,
+				022CAB171B6371EC00CD315D /* Modulator.c in Sources */,
 				020CC1181B635827003EBEB1 /* Voice.c in Sources */,
 				020CC1121B635827003EBEB1 /* Reverb.c in Sources */,
+				022CAB101B6371EC00CD315D /* Envelope.c in Sources */,
+				022CAB121B6371EC00CD315D /* Filter.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

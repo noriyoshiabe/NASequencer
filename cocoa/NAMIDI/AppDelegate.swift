@@ -13,6 +13,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, DocumentViewDelegate {
 
     func applicationDidFinishLaunching(aNotification: NSNotification) {
         // Insert code here to initialize your application
+        
+        let sounfFontPath = NSBundle.mainBundle().pathForResource("GeneralUser GS Live-Audigy v1.44", ofType: "sf2")
+        MidiSourceManager.sharedInstance().loadSoundFont(sounfFontPath)
     }
 
     func applicationWillTerminate(aNotification: NSNotification) {

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		020CC12E1B6370FD003EBEB1 /* MidiSourceManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 020CC12C1B6370FD003EBEB1 /* MidiSourceManager.h */; };
+		020CC12F1B6370FD003EBEB1 /* MidiSourceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 020CC12D1B6370FD003EBEB1 /* MidiSourceManager.m */; };
 		02EB35981AFDF70C00EFBE27 /* MidiEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02EB358C1AFDF70C00EFBE27 /* MidiEvent.h */; };
 		02EB35991AFDF70C00EFBE27 /* MidiEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 02EB358D1AFDF70C00EFBE27 /* MidiEvent.m */; };
 		02EB359A1AFDF70C00EFBE27 /* Mixer.h in Headers */ = {isa = PBXBuildFile; fileRef = 02EB358E1AFDF70C00EFBE27 /* Mixer.h */; };
@@ -22,6 +24,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		020CC12C1B6370FD003EBEB1 /* MidiSourceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiSourceManager.h; sourceTree = "<group>"; };
+		020CC12D1B6370FD003EBEB1 /* MidiSourceManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MidiSourceManager.m; sourceTree = "<group>"; };
 		02EB35851AFDF6EB00EFBE27 /* libnamidi-application.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libnamidi-application.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		02EB358C1AFDF70C00EFBE27 /* MidiEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiEvent.h; sourceTree = "<group>"; };
 		02EB358D1AFDF70C00EFBE27 /* MidiEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MidiEvent.m; sourceTree = "<group>"; };
@@ -51,6 +55,8 @@
 		02EB357C1AFDF6EB00EFBE27 = {
 			isa = PBXGroup;
 			children = (
+				020CC12C1B6370FD003EBEB1 /* MidiSourceManager.h */,
+				020CC12D1B6370FD003EBEB1 /* MidiSourceManager.m */,
 				02EB358C1AFDF70C00EFBE27 /* MidiEvent.h */,
 				02EB358D1AFDF70C00EFBE27 /* MidiEvent.m */,
 				02EB358E1AFDF70C00EFBE27 /* Mixer.h */,
@@ -85,6 +91,7 @@
 				02EB359A1AFDF70C00EFBE27 /* Mixer.h in Headers */,
 				02EB35981AFDF70C00EFBE27 /* MidiEvent.h in Headers */,
 				02EB35A01AFDF70C00EFBE27 /* Sequence.h in Headers */,
+				020CC12E1B6370FD003EBEB1 /* MidiSourceManager.h in Headers */,
 				02EB359C1AFDF70C00EFBE27 /* NAMidi.h in Headers */,
 				02EB359E1AFDF70C00EFBE27 /* Player.h in Headers */,
 				02EB35A21AFDF70C00EFBE27 /* SequenceBuilder.h in Headers */,
@@ -151,6 +158,7 @@
 				02EB359D1AFDF70C00EFBE27 /* NAMidi.m in Sources */,
 				02EB35A31AFDF70C00EFBE27 /* SequenceBuilder.m in Sources */,
 				02EB35A11AFDF70C00EFBE27 /* Sequence.m in Sources */,
+				020CC12F1B6370FD003EBEB1 /* MidiSourceManager.m in Sources */,
 				02EB35991AFDF70C00EFBE27 /* MidiEvent.m in Sources */,
 				02EB359B1AFDF70C00EFBE27 /* Mixer.m in Sources */,
 			);
