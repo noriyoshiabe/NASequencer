@@ -1,6 +1,7 @@
 #import "NAMidi.h"
 #import "MidiSourceManager.h"
 #import "Mixer.h"
+#import "AudioOut.h"
 #import "Controller.h"
 #import "View.h"
 
@@ -48,10 +49,12 @@ int main(int argc, char **argv)
         [controller write:infile outfile:outfile];
     } 
     else {
+        AudioOut *audioOut = AudioOutCreate();
+
         MidiSourceManager *manager = [MidiSourceManager sharedInstance];
-        [manager loadSoundFont:[NSString stringWithUTF8String:soundfont]];
+        [manager loadSoundFont:[NSString stringWithUTF8String:soundfont] sampleRate:AudioOutGetSampleRate(audioOut)];
         
-        Mixer *mixer = [[Mixer alloc] init];
+        Mixer *mixer = [[Mixer alloc] initWithAudiouOut:audioOut];
         namidi.player.mixer = mixer;
 
         [controller run:infile repeat:repeat];

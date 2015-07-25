@@ -27,6 +27,7 @@
 @interface Mixer() {
     NSMutableArray *_midiSources;
     NSMutableArray *_channels;
+    AudioOut *_audioOut;
 }
 
 - (void)updateActiveChannels;
@@ -140,7 +141,13 @@
 
 @implementation Mixer
 
-- (id)init
+static void _MixerAudioCallback(void *receiver, AudioSample *buffer, uint32_t count)
+{
+    Mixer *self = (__bridge Mixer *)receiver;
+    [self audioCallback:buffer count:count];
+}
+
+- (id)initWithAudiouOut:(AudioOut *)audioOut
 {
     if (self = [super init]) {
         _midiSources = [NSMutableArray array];
@@ -172,6 +179,9 @@
 
             [_channels addObject:channel];
         }
+
+        _audioOut = audioOut;
+        AudioOutRegisterCallback(audioOut, _MixerAudioCallback, (__bridge void *)self);
     }
     return self;
 }
@@ -248,6 +258,14 @@
 - (void)updateActiveChannels
 {
     // TODO
+}
+
+- (void)audioCallback:(AudioSample *)buffer count:(uint32_t)count
+{
+    for (MidiSourceRepresentation *midiSource in _midiSources) {
+        MidiSource *native = midiSource->native;
+        native->computeAudioSample(native, buffer, count);
+    }
 }
 
 @end

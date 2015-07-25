@@ -54,7 +54,7 @@ void _MidiSourceCallback(void *receiver, MidiSource *midiSrc, MidiSourceEvent ev
 
 int main(int argc, char **argv)
 {
-    AudioOut *audioOut = AudioOutSharedInstance();
+    AudioOut *audioOut = AudioOutCreate();
 
     SoundFont *sf = SoundFontRead(argv[1], NULL);
     Synthesizer *synth = SynthesizerCreate(sf, AudioOutGetSampleRate(audioOut));
@@ -67,7 +67,7 @@ int main(int argc, char **argv)
 
     int presetCount = midiSrc->getPresetCount(midiSrc);
     PresetList presetList[presetCount];
-    midiSrc->getPresetList(midiSrc, presetList, presetCount);
+    midiSrc->getPresetList(midiSrc, presetList);
 
     for (int i = 0; i < presetCount; ++i) {
         PresetList *preset = &presetList[i];
@@ -260,6 +260,7 @@ int main(int argc, char **argv)
     getch(); /* consume the character */
 
     AudioOutUnregisterCallback(audioOut, _AudioCallback, synth);
+    AudioOutDestroy(audioOut);
     SynthesizerDestroy(synth);
     return 0;
 }

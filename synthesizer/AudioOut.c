@@ -15,8 +15,6 @@ struct _AudioOut {
     Float64 sampleRate;
 };
 
-static AudioOut *_sharedInstance = NULL;
-
 static OSStatus _RenderCallback(void *inRefCon, AudioUnitRenderActionFlags *ioActionFlags, const AudioTimeStamp *inTimeStamp,
         UInt32 inBusNumber, UInt32 inNumberFrames, AudioBufferList *ioData)
 {
@@ -46,7 +44,7 @@ static OSStatus _RenderCallback(void *inRefCon, AudioUnitRenderActionFlags *ioAc
     return noErr;
 }
 
-static AudioOut *AudioOutCreate()
+AudioOut *AudioOutCreate()
 {
     AudioOut *self = calloc(1, sizeof(AudioOut));
 
@@ -74,12 +72,18 @@ static AudioOut *AudioOutCreate()
     return self;
 }
 
-AudioOut *AudioOutSharedInstance()
+void AudioOutDestroy(AudioOut *self)
 {
-    if (!_sharedInstance) {
-        _sharedInstance = AudioOutCreate();
+    self->callbackListLength = 0;
+    if (self->callbackList) {
+        free(self->callbackList);
     }
-    return _sharedInstance;
+
+    AudioOutputUnitStop(self->defaultOutputUnit);
+    AudioUnitUninitialize(self->defaultOutputUnit);
+    AudioComponentInstanceDispose(self->defaultOutputUnit);
+
+    free(self);
 }
 
 double AudioOutGetSampleRate(AudioOut *self)
