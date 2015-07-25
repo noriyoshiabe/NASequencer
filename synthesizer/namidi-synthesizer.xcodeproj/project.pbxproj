@@ -1,0 +1,299 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		020CC1091B635827003EBEB1 /* AudioOut.c in Sources */ = {isa = PBXBuildFile; fileRef = 020CC0F81B635827003EBEB1 /* AudioOut.c */; };
+		020CC10A1B635827003EBEB1 /* AudioOut.h in Headers */ = {isa = PBXBuildFile; fileRef = 020CC0F91B635827003EBEB1 /* AudioOut.h */; };
+		020CC10B1B635827003EBEB1 /* AudioSample.h in Headers */ = {isa = PBXBuildFile; fileRef = 020CC0FA1B635827003EBEB1 /* AudioSample.h */; };
+		020CC10C1B635827003EBEB1 /* Channel.c in Sources */ = {isa = PBXBuildFile; fileRef = 020CC0FB1B635827003EBEB1 /* Channel.c */; };
+		020CC10D1B635827003EBEB1 /* Channel.h in Headers */ = {isa = PBXBuildFile; fileRef = 020CC0FC1B635827003EBEB1 /* Channel.h */; };
+		020CC10E1B635827003EBEB1 /* Chorus.c in Sources */ = {isa = PBXBuildFile; fileRef = 020CC0FD1B635827003EBEB1 /* Chorus.c */; };
+		020CC10F1B635827003EBEB1 /* Chorus.h in Headers */ = {isa = PBXBuildFile; fileRef = 020CC0FE1B635827003EBEB1 /* Chorus.h */; };
+		020CC1101B635827003EBEB1 /* Preset.c in Sources */ = {isa = PBXBuildFile; fileRef = 020CC0FF1B635827003EBEB1 /* Preset.c */; };
+		020CC1111B635827003EBEB1 /* Preset.h in Headers */ = {isa = PBXBuildFile; fileRef = 020CC1001B635827003EBEB1 /* Preset.h */; };
+		020CC1121B635827003EBEB1 /* Reverb.c in Sources */ = {isa = PBXBuildFile; fileRef = 020CC1011B635827003EBEB1 /* Reverb.c */; };
+		020CC1131B635827003EBEB1 /* Reverb.h in Headers */ = {isa = PBXBuildFile; fileRef = 020CC1021B635827003EBEB1 /* Reverb.h */; };
+		020CC1141B635827003EBEB1 /* SoundFont.c in Sources */ = {isa = PBXBuildFile; fileRef = 020CC1031B635827003EBEB1 /* SoundFont.c */; };
+		020CC1151B635827003EBEB1 /* SoundFont.h in Headers */ = {isa = PBXBuildFile; fileRef = 020CC1041B635827003EBEB1 /* SoundFont.h */; };
+		020CC1161B635827003EBEB1 /* Synthesizer.c in Sources */ = {isa = PBXBuildFile; fileRef = 020CC1051B635827003EBEB1 /* Synthesizer.c */; };
+		020CC1171B635827003EBEB1 /* Synthesizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 020CC1061B635827003EBEB1 /* Synthesizer.h */; };
+		020CC1181B635827003EBEB1 /* Voice.c in Sources */ = {isa = PBXBuildFile; fileRef = 020CC1071B635827003EBEB1 /* Voice.c */; };
+		020CC1191B635827003EBEB1 /* Voice.h in Headers */ = {isa = PBXBuildFile; fileRef = 020CC1081B635827003EBEB1 /* Voice.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		020CC0F11B6357D8003EBEB1 /* libnamidi-synthesizer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libnamidi-synthesizer.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		020CC0F81B635827003EBEB1 /* AudioOut.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = AudioOut.c; sourceTree = "<group>"; };
+		020CC0F91B635827003EBEB1 /* AudioOut.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioOut.h; sourceTree = "<group>"; };
+		020CC0FA1B635827003EBEB1 /* AudioSample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioSample.h; sourceTree = "<group>"; };
+		020CC0FB1B635827003EBEB1 /* Channel.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Channel.c; sourceTree = "<group>"; };
+		020CC0FC1B635827003EBEB1 /* Channel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Channel.h; sourceTree = "<group>"; };
+		020CC0FD1B635827003EBEB1 /* Chorus.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Chorus.c; sourceTree = "<group>"; };
+		020CC0FE1B635827003EBEB1 /* Chorus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Chorus.h; sourceTree = "<group>"; };
+		020CC0FF1B635827003EBEB1 /* Preset.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Preset.c; sourceTree = "<group>"; };
+		020CC1001B635827003EBEB1 /* Preset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Preset.h; sourceTree = "<group>"; };
+		020CC1011B635827003EBEB1 /* Reverb.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Reverb.c; sourceTree = "<group>"; };
+		020CC1021B635827003EBEB1 /* Reverb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reverb.h; sourceTree = "<group>"; };
+		020CC1031B635827003EBEB1 /* SoundFont.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SoundFont.c; sourceTree = "<group>"; };
+		020CC1041B635827003EBEB1 /* SoundFont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundFont.h; sourceTree = "<group>"; };
+		020CC1051B635827003EBEB1 /* Synthesizer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Synthesizer.c; sourceTree = "<group>"; };
+		020CC1061B635827003EBEB1 /* Synthesizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Synthesizer.h; sourceTree = "<group>"; };
+		020CC1071B635827003EBEB1 /* Voice.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Voice.c; sourceTree = "<group>"; };
+		020CC1081B635827003EBEB1 /* Voice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Voice.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		020CC0EE1B6357D8003EBEB1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		020CC0E81B6357D8003EBEB1 = {
+			isa = PBXGroup;
+			children = (
+				020CC0F81B635827003EBEB1 /* AudioOut.c */,
+				020CC0F91B635827003EBEB1 /* AudioOut.h */,
+				020CC0FA1B635827003EBEB1 /* AudioSample.h */,
+				020CC0FB1B635827003EBEB1 /* Channel.c */,
+				020CC0FC1B635827003EBEB1 /* Channel.h */,
+				020CC0FD1B635827003EBEB1 /* Chorus.c */,
+				020CC0FE1B635827003EBEB1 /* Chorus.h */,
+				020CC0FF1B635827003EBEB1 /* Preset.c */,
+				020CC1001B635827003EBEB1 /* Preset.h */,
+				020CC1011B635827003EBEB1 /* Reverb.c */,
+				020CC1021B635827003EBEB1 /* Reverb.h */,
+				020CC1031B635827003EBEB1 /* SoundFont.c */,
+				020CC1041B635827003EBEB1 /* SoundFont.h */,
+				020CC1051B635827003EBEB1 /* Synthesizer.c */,
+				020CC1061B635827003EBEB1 /* Synthesizer.h */,
+				020CC1071B635827003EBEB1 /* Voice.c */,
+				020CC1081B635827003EBEB1 /* Voice.h */,
+				020CC0F21B6357D8003EBEB1 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		020CC0F21B6357D8003EBEB1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				020CC0F11B6357D8003EBEB1 /* libnamidi-synthesizer.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		020CC0EF1B6357D8003EBEB1 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				020CC1151B635827003EBEB1 /* SoundFont.h in Headers */,
+				020CC1111B635827003EBEB1 /* Preset.h in Headers */,
+				020CC10A1B635827003EBEB1 /* AudioOut.h in Headers */,
+				020CC1171B635827003EBEB1 /* Synthesizer.h in Headers */,
+				020CC1131B635827003EBEB1 /* Reverb.h in Headers */,
+				020CC10D1B635827003EBEB1 /* Channel.h in Headers */,
+				020CC1191B635827003EBEB1 /* Voice.h in Headers */,
+				020CC10F1B635827003EBEB1 /* Chorus.h in Headers */,
+				020CC10B1B635827003EBEB1 /* AudioSample.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		020CC0F01B6357D8003EBEB1 /* namidi-synthesizer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 020CC0F51B6357D8003EBEB1 /* Build configuration list for PBXNativeTarget "namidi-synthesizer" */;
+			buildPhases = (
+				020CC0ED1B6357D8003EBEB1 /* Sources */,
+				020CC0EE1B6357D8003EBEB1 /* Frameworks */,
+				020CC0EF1B6357D8003EBEB1 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "namidi-synthesizer";
+			productName = "namidi-synthesizer";
+			productReference = 020CC0F11B6357D8003EBEB1 /* libnamidi-synthesizer.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		020CC0E91B6357D8003EBEB1 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0630;
+				ORGANIZATIONNAME = abechan;
+				TargetAttributes = {
+					020CC0F01B6357D8003EBEB1 = {
+						CreatedOnToolsVersion = 6.3.1;
+					};
+				};
+			};
+			buildConfigurationList = 020CC0EC1B6357D8003EBEB1 /* Build configuration list for PBXProject "namidi-synthesizer" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 020CC0E81B6357D8003EBEB1;
+			productRefGroup = 020CC0F21B6357D8003EBEB1 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				020CC0F01B6357D8003EBEB1 /* namidi-synthesizer */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		020CC0ED1B6357D8003EBEB1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				020CC1161B635827003EBEB1 /* Synthesizer.c in Sources */,
+				020CC1101B635827003EBEB1 /* Preset.c in Sources */,
+				020CC1091B635827003EBEB1 /* AudioOut.c in Sources */,
+				020CC10C1B635827003EBEB1 /* Channel.c in Sources */,
+				020CC10E1B635827003EBEB1 /* Chorus.c in Sources */,
+				020CC1141B635827003EBEB1 /* SoundFont.c in Sources */,
+				020CC1181B635827003EBEB1 /* Voice.c in Sources */,
+				020CC1121B635827003EBEB1 /* Reverb.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		020CC0F31B6357D8003EBEB1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		020CC0F41B6357D8003EBEB1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		020CC0F61B6357D8003EBEB1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		020CC0F71B6357D8003EBEB1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		020CC0EC1B6357D8003EBEB1 /* Build configuration list for PBXProject "namidi-synthesizer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				020CC0F31B6357D8003EBEB1 /* Debug */,
+				020CC0F41B6357D8003EBEB1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		020CC0F51B6357D8003EBEB1 /* Build configuration list for PBXNativeTarget "namidi-synthesizer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				020CC0F61B6357D8003EBEB1 /* Debug */,
+				020CC0F71B6357D8003EBEB1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 020CC0E91B6357D8003EBEB1 /* Project object */;
+}

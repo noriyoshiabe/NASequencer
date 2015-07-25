@@ -170,7 +170,7 @@ static int getPresetIndex(void *_self, uint8_t channel)
 {
     Synthesizer *self = _self;
     Preset **result = bsearch(self->channels[channel].preset, self->presets, self->presetCount, sizeof(Preset *), PresetComparator);
-    return result - self->presets;
+    return (int)(result - self->presets);
 }
 
 static void setPresetIndex(void *_self, uint8_t channel, int index)

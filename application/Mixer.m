@@ -97,7 +97,7 @@
 - (void)setPreset:(PresetRepresentation *)preset
 {
     _preset = preset;
-    _midiSource->native->setPresetIndex(_midiSource->native, _number, [_midiSource.presets indexOfObject:_preset]);
+    _midiSource->native->setPresetIndex(_midiSource->native, _number, (int)[_midiSource.presets indexOfObject:_preset]);
 }
 
 - (void)setVolume:(uint8_t)volume;

@@ -28,6 +28,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		020CC1201B635887003EBEB1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 020CC11C1B635887003EBEB1 /* namidi-synthesizer.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 020CC0F11B6357D8003EBEB1;
+			remoteInfo = "namidi-synthesizer";
+		};
 		02225DEE1A906E610077ABCB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 02225DD01A906E610077ABCB /* Project object */;
@@ -66,6 +73,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		020CC11C1B635887003EBEB1 /* namidi-synthesizer.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "namidi-synthesizer.xcodeproj"; path = "../synthesizer/namidi-synthesizer.xcodeproj"; sourceTree = "<group>"; };
 		021EFCCD1AC18E1700AC924F /* Help */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Help; sourceTree = "<group>"; };
 		02225DD81A906E610077ABCB /* NAMIDI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NAMIDI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		02225DDC1A906E610077ABCB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -113,10 +121,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		020CC11D1B635887003EBEB1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				020CC1211B635887003EBEB1 /* libnamidi-synthesizer.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		02225DCF1A906E610077ABCB = {
 			isa = PBXGroup;
 			children = (
 				02EB35E01AFE107700EFBE27 /* namidi-core.xcodeproj */,
+				020CC11C1B635887003EBEB1 /* namidi-synthesizer.xcodeproj */,
 				02EB35DA1AFE106C00EFBE27 /* namidi-application.xcodeproj */,
 				02FE8D521A923C6600BEF62E /* CoreMIDI.framework */,
 				02225DDA1A906E610077ABCB /* NAMIDI */,
@@ -277,6 +294,10 @@
 					ProductGroup = 02EB35E11AFE107700EFBE27 /* Products */;
 					ProjectRef = 02EB35E01AFE107700EFBE27 /* namidi-core.xcodeproj */;
 				},
+				{
+					ProductGroup = 020CC11D1B635887003EBEB1 /* Products */;
+					ProjectRef = 020CC11C1B635887003EBEB1 /* namidi-synthesizer.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -287,6 +308,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		020CC1211B635887003EBEB1 /* libnamidi-synthesizer.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libnamidi-synthesizer.a";
+			remoteRef = 020CC1201B635887003EBEB1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		02EB35DF1AFE106C00EFBE27 /* libnamidi-application.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -437,6 +465,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					../application,
 					../core,
+					../synthesizer,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -480,6 +509,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					../application,
 					../core,
+					../synthesizer,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				MTL_ENABLE_DEBUG_INFO = NO;
