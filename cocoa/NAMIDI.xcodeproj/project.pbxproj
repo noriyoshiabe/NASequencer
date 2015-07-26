@@ -45,6 +45,13 @@
 			remoteGlobalIDString = 02225DD71A906E610077ABCB;
 			remoteInfo = NAMIDI;
 		};
+		027F21A31B64FA510000AEFA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 020CC11C1B635887003EBEB1 /* namidi-synthesizer.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 020CC0F01B6357D8003EBEB1;
+			remoteInfo = "namidi-synthesizer";
+		};
 		02EB35DE1AFE106C00EFBE27 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 02EB35DA1AFE106C00EFBE27 /* namidi-application.xcodeproj */;
@@ -247,6 +254,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				027F21A41B64FA510000AEFA /* PBXTargetDependency */,
 				02EB35E71AFE108C00EFBE27 /* PBXTargetDependency */,
 				02EB35E91AFE108C00EFBE27 /* PBXTargetDependency */,
 			);
@@ -403,6 +411,11 @@
 			isa = PBXTargetDependency;
 			target = 02225DD71A906E610077ABCB /* NAMIDI */;
 			targetProxy = 02225DEE1A906E610077ABCB /* PBXContainerItemProxy */;
+		};
+		027F21A41B64FA510000AEFA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "namidi-synthesizer";
+			targetProxy = 027F21A31B64FA510000AEFA /* PBXContainerItemProxy */;
 		};
 		02EB35E71AFE108C00EFBE27 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
