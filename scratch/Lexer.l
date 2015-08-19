@@ -36,6 +36,7 @@ STRING         \"[^\"]*\"|'[^']*'
 WSPACE         [[:blank:]]+
 
 RESOLUTION     resolution
+TITLE          title
 
 PLUS           "+"
 MINUS          "-"
@@ -59,6 +60,7 @@ LINE_COMMENT   \/\/.*$
 {WSPACE}         { }
 
 {RESOLUTION}     { return RESOLUTION; }
+{TITLE}          { return TITLE; }
 
 {PLUS}           { return PLUS; }
 {MINUS}          { return MINUS; }

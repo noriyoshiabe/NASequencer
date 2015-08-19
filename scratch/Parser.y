@@ -6,6 +6,8 @@
 
 extern int yyerror(YYLTYPE *yylloc, void *scanner, ParserCallback callback, ParserErrorCallback errorCallback, const char *message);
  
+#define CALLBACK(location, statement, ...) callback(yyget_extra(scanner), (ParseLocation *)location, statement, __VA_ARGS__)
+
 %}
 
 %output = "Parser.c"
@@ -29,6 +31,7 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, ParserCallback callback, Pars
 %token <s>STRING
 
 %token RESOLUTION
+%token TITLE
 
 %token PLUS
 %token MINUS
@@ -43,18 +46,19 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, ParserCallback callback, Pars
  
 input
     :
-    | statement { return 1; }
-    | EOL { return 1; }
+    | statement
+    | EOL
     ;
 
 statement
-    : RESOLUTION INTEGER { callback(yyget_extra(scanner), RESOLUTION, $2); }
+    : RESOLUTION INTEGER { CALLBACK(&@$, StatementResolution, $2); }
+    | TITLE STRING { CALLBACK(&@$, StatementTitle, $2); }
     ;
 
 %%
 
 int yyerror(YYLTYPE *yylloc, void *scanner, ParserCallback callback, ParserErrorCallback errorCallback, const char *message)
 {
-    errorCallback(yyget_extra(scanner), yylloc->first_line, yylloc->first_column, message);
+    errorCallback(yyget_extra(scanner), (ParseLocation *)yylloc, message);
     return 0;
 }
