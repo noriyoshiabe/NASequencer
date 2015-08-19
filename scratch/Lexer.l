@@ -37,18 +37,34 @@ WSPACE         [[:blank:]]+
 
 RESOLUTION     resolution
 TITLE          title
+TEMPO          tempo
+TIME           time
+MARKER         marker
+DEFINE         define
+END            end
+CHANNEL        channel
+VOICE          voice
+VOLUME         volume
+PAN            pan
+CHORUS         chorus
+REVERB         reverb
+TRANSPOSE      transpose
+KEY            key
 
 PLUS           "+"
 MINUS          "-"
-ASSIGN         "="
-COMMA          ","
+DIVISION       "/"
 SEMICOLON      ";"
 
-IDENTIFIER     $[_\-[:alnum:]]+
+IDENTIFIER     [^@$;"=\^%!\`\n[:blank:]]+
+PATTERN_ID     @{IDENTIFIER}
+PHRASE_ID      ${IDENTIFIER}
+KEY_SIGN       [cdefgab](#|b)?(maj|min)
+NOTE           [cdefgab](#|b|n)?\-?[[:digit:]]{1,2}
 
 EOL            \n
 
-LINE_COMMENT   \/\/.*$
+LINE_COMMENT   (\/\/|==|--).*$
 
 %%
 
@@ -61,15 +77,31 @@ LINE_COMMENT   \/\/.*$
 
 {RESOLUTION}     { return RESOLUTION; }
 {TITLE}          { return TITLE; }
+{TEMPO}          { return TEMPO; }
+{TIME}           { return TIME; }
+{MARKER}         { return MARKER; }
+{DEFINE}         { return DEFINE; }
+{END}            { return END; }
+{CHANNEL}        { return CHANNEL; }
+{VOICE}          { return VOICE; }
+{VOLUME}         { return VOLUME; }
+{PAN}            { return PAN; }
+{CHORUS}         { return CHORUS; }
+{REVERB}         { return REVERB; }
+{TRANSPOSE}      { return TRANSPOSE; }
+{KEY}            { return KEY; }
 
 {PLUS}           { return PLUS; }
 {MINUS}          { return MINUS; }
-{ASSIGN}         { return ASSIGN; }
-{COMMA}          { return COMMA; }
+{DIVISION}       { return DIVISION; }
 
-{IDENTIFIER}     { yylval->s = strdup(yytext); return IDENTIFIER; }
+{PATTERN_ID}     { yylval->s = strdup(yytext + 1); return PATTERN_ID; }
+{PHRASE_ID}      { yylval->s = strdup(yytext + 1); return PHRASE_ID; }
+{NOTE}           { yylval->s = strdup(yytext); return NOTE; }
+{KEY_SIGN}       { yylval->s = strdup(yytext); return KEY_SIGN; }
 
-{EOL}            { return EOL; }
+{EOL}            { }
+{SEMICOLON}      { }
 
 {LINE_COMMENT}   { }
 "/*"             { BEGIN(COMMENT); }

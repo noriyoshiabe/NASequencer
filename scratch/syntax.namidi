@@ -1,13 +1,13 @@
 title 'Title'
 =================
-resolution 480; tempo 120.0; meter 4/4
+resolution 480; tempo 120.0; time 4/4
 -----------------
 1
-  marker Start
-  @Initialize
+  marker 'Start'
+  @Initialize,ss
   @Intro
 9
-  marker A
+  marker 'A'
   @A
 17
   @Intro'
@@ -47,6 +47,7 @@ end
 
 define $Intro-Drums
 ===================
+C1
 C1 - 240 127
 E1 240
 C-1
@@ -54,9 +55,9 @@ E1 240
 C1
 E1 240
 --------------
-C1 240 3
+C1 240
 E1
-C1 240 .
+C1 240
 E1
 C1 240
 E1
@@ -66,6 +67,7 @@ end
 define $Intro-Melo
 ===================
 transpose +1
+key C#maj
 --------------
 - 480
 C1 - 1440 127

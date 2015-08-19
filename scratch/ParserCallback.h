@@ -3,6 +3,25 @@
 typedef enum {
     StatementResolution,
     StatementTitle,
+    StatementTempo,
+    StatementTimeSign,
+    StatementMeasure,
+    StatementMarker,
+    StatementPattern,
+    StatementPatternDefine,
+    StatementEnd,
+    StatementChannel,
+    StatementVoice,
+    StatementVolume,
+    StatementPan,
+    StatementChrous,
+    StatementReverb,
+    StatementPhrase,
+    StatementPhraseDefine,
+    StatementTranspose,
+    StatementKey,
+    StatementNote,
+    StatementRest,
 } Statement;
 
 typedef struct _ParseLocation {
@@ -19,6 +38,25 @@ static inline const char *Statement2String(Statement statement)
     switch (statement) {
     CASE(StatementResolution);
     CASE(StatementTitle);
+    CASE(StatementTempo);
+    CASE(StatementTimeSign);
+    CASE(StatementMeasure);
+    CASE(StatementMarker);
+    CASE(StatementPattern);
+    CASE(StatementPatternDefine);
+    CASE(StatementEnd);
+    CASE(StatementChannel);
+    CASE(StatementVoice);
+    CASE(StatementVolume);
+    CASE(StatementPan);
+    CASE(StatementChrous);
+    CASE(StatementReverb);
+    CASE(StatementPhrase);
+    CASE(StatementPhraseDefine);
+    CASE(StatementTranspose);
+    CASE(StatementKey);
+    CASE(StatementNote);
+    CASE(StatementRest);
 
     default:
        break;

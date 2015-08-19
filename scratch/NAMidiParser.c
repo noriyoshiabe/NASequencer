@@ -62,7 +62,7 @@ void NAMidiParserRender(NAMidiParser *self, void *view, NAMidiParserRenderHandle
 static void NAMidiParserCallback(void *context, ParseLocation *location, Statement statement, ...)
 {
     NAMidiParser *self = context;
-    printf("statment=%d\n", statement);
+    printf("statment=%s\n", Statement2String(statement));
 }
 
 static void NAMidiParserErrorCallback(void *context, ParseLocation *location, const char *message)
