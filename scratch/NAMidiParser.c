@@ -5,6 +5,8 @@
 #include "ParserCallback.h"
 
 #include <stdlib.h>
+#include <libgen.h>
+#include <limits.h>
 
 int yyparse(void *scanner, ParserCallback callback, ParserErrorCallback errorCallback);
 
@@ -85,13 +87,16 @@ bool NAMidiParserExecuteParse(NAMidiParser *self, const char *filepath)
     bool ret = false;
 
     self->filepaths = realloc(self->filepaths, (self->fileCount + 2) * sizeof(char *));
-    self->filepaths[self->fileCount] = strdup(filepath);
+
+    char *_filepath = realpath(filepath, NULL);
+    self->filepaths[self->fileCount] = _filepath ? _filepath : strdup(filepath);
     self->parseContext.currentFilepath = self->filepaths[self->fileCount];
     self->filepaths[++self->fileCount] = NULL;
 
     FILE *fp = fopen(filepath, "r");
     if (!fp) {
         self->error.kind = NAMidiParserErrorKindFileNotFound;
+        self->error.message = strdup("File not found.");
         self->error.filepath = self->parseContext.currentFilepath;
         return ret;
     }
@@ -131,10 +136,29 @@ const char **NAMidiParserGetFilepaths(NAMidiParser *self)
 
 static bool NAMidiParserCallback(void *context, ParseLocation *location, StatementType type, ...)
 {
+    printf("statment=%s\n", StatementType2String(type));
+    
     NAMidiParser *self = context;
 
     va_list argList;
     va_start(argList, type);
+
+    // TODO move to dispatch function
+    if (StatementTypeInclude == type) {
+        char filename[256];
+        char *_filename = va_arg(argList, char *);
+        int len = strlen(_filename);
+        strncpy(filename, _filename + 1, len - 2);
+        filename[len - 2] = '\0';
+        char buf[PATH_MAX + 1];
+        snprintf(buf, PATH_MAX + 1, "%s/%s", dirname((char *)self->parseContext.currentFilepath), filename);
+        if (!NAMidiParserExecuteParse(self, buf)) {
+            self->error.line = location->line;
+            self->error.column = location->column;
+            va_end(argList);
+            return false;
+        }
+    }
 
     // TODO dispatch
     if (false) {

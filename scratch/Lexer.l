@@ -56,6 +56,8 @@ MINUS          "-"
 DIVISION       "/"
 SEMICOLON      ";"
 
+INCLUDE        include
+
 IDENTIFIER     [^@$;"=\^%!\`\n[:blank:]]+
 PATTERN_ID     @{IDENTIFIER}
 PHRASE_ID      ${IDENTIFIER}
@@ -102,6 +104,7 @@ LINE_COMMENT   (\/\/|==|--).*$
 
 {EOL}            { return EOL; }
 {SEMICOLON}      { return SEMICOLON; }
+{INCLUDE}        { return INCLUDE; }
 
 {LINE_COMMENT}   { }
 "/*"             { BEGIN(COMMENT); }

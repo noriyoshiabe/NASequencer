@@ -24,6 +24,7 @@ typedef enum {
     StatementTypeKey,
     StatementTypeNote,
     StatementTypeRest,
+    StatementTypeInclude,
 } StatementType;
 
 typedef struct _ParseLocation {
@@ -59,6 +60,7 @@ static inline const char *StatementType2String(StatementType type)
     CASE(StatementTypeKey);
     CASE(StatementTypeNote);
     CASE(StatementTypeRest);
+    CASE(StatementTypeInclude);
 
     default:
        break;

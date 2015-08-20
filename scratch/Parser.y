@@ -54,6 +54,8 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, ParserCallback callback, Pars
 %token DIVISION
 %token SEMICOLON
 
+%token INCLUDE
+
 %token <s>IDENTIFIER
 %token <s>PATTERN_ID
 %token <s>PHRASE_ID
@@ -115,6 +117,7 @@ statement
     | MINUS INTEGER                 { CALLBACK(&@$, StatementTypeRest, $2); }
     | EOL
     | SEMICOLON
+    | INCLUDE STRING                { CALLBACK(&@$, StatementTypeInclude, $2); }
     ;
 
 %%

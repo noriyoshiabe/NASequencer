@@ -1,3 +1,5 @@
+include 'include.namidi'
+
 title 'Title'
 =================
 resolution 480; tempo 120.0; time 4/4
