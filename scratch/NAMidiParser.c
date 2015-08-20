@@ -8,20 +8,74 @@
 
 int yyparse(void *scanner, ParserCallback callback, ParserErrorCallback errorCallback);
 
+typedef struct _Statement {
+    ParseLocation location;
+    StatementType type;
+    union {
+        int i;
+        float f;
+        char *s;
+    } values[4];
+} Statement;
+
+typedef struct _StatementList {
+    Statement *array;
+    int count;
+    int capacity;
+} StatementList;
+
+static StatementList *StatementListCreate();
+static Statement *StatementListAlloc(StatementList *self);
+static void StatementListDestroy(StatementList *self);
+
+typedef enum {
+    NAMidiParserStateSong,
+    NAMidiParserStatePattern,
+    NAMidiParserStatePhrase,
+} NAMidiParserState;
+
 struct _NAMidiParser {
     NAMidiParserError error;
+    StatementList *songStatements;
+    char **filepaths;
+    int fileCount;
+
+    struct {
+        NAMidiParserState state;
+        const StatementList *currentStatements;
+        const char *currentFilepath;
+    } parseContext;
 };
 
-static void NAMidiParserCallback(void *context, ParseLocation *location, Statement statement, ...);
+static bool NAMidiParserCallback(void *context, ParseLocation *location, StatementType type, ...);
 static void NAMidiParserErrorCallback(void *context, ParseLocation *location, const char *message);
 
 NAMidiParser *NAMidiParserCreate()
 {
-    return calloc(1, sizeof(NAMidiParser));
+    NAMidiParser *self = calloc(1, sizeof(NAMidiParser));
+    self->songStatements = StatementListCreate();
+
+    self->parseContext.state = NAMidiParserStateSong;
+    self->parseContext.currentStatements = self->songStatements;
+
+    return self;
 }
 
 void NAMidiParserDestroy(NAMidiParser *self)
 {
+    if (self->error.message) {
+        free(self->error.message);
+    }
+
+    for (int i = 0; i < self->fileCount; ++i) {
+        free(self->filepaths[i]);
+    }
+
+    if (self->filepaths) {
+        free(self->filepaths);
+    }
+
+    StatementListDestroy(self->songStatements);
     free(self);
 }
 
@@ -30,9 +84,15 @@ bool NAMidiParserExecuteParse(NAMidiParser *self, const char *filepath)
     void *scanner;
     bool ret = false;
 
+    self->filepaths = realloc(self->filepaths, (self->fileCount + 2) * sizeof(char *));
+    self->filepaths[self->fileCount] = strdup(filepath);
+    self->parseContext.currentFilepath = self->filepaths[self->fileCount];
+    self->filepaths[++self->fileCount] = NULL;
+
     FILE *fp = fopen(filepath, "r");
     if (!fp) {
         self->error.kind = NAMidiParserErrorKindFileNotFound;
+        self->error.filepath = self->parseContext.currentFilepath;
         return ret;
     }
 
@@ -59,14 +119,84 @@ void NAMidiParserRender(NAMidiParser *self, void *view, NAMidiParserRenderHandle
 {
 }
 
-static void NAMidiParserCallback(void *context, ParseLocation *location, Statement statement, ...)
+const NAMidiParserError *NAMidiParserGetError(NAMidiParser *self)
+{
+    return (const NAMidiParserError *)&self->error;
+}
+
+const char **NAMidiParserGetFilepaths(NAMidiParser *self)
+{
+    return (const char **)self->filepaths;
+}
+
+static bool NAMidiParserCallback(void *context, ParseLocation *location, StatementType type, ...)
 {
     NAMidiParser *self = context;
-    printf("statment=%s\n", Statement2String(statement));
+
+    va_list argList;
+    va_start(argList, type);
+
+    // TODO dispatch
+    if (false) {
+        self->error.line = location->line;
+        self->error.column = location->column;
+        return false;
+    }
+
+    va_end(argList);
+
+    return true;
 }
 
 static void NAMidiParserErrorCallback(void *context, ParseLocation *location, const char *message)
 {
     NAMidiParser *self = context;
-    printf("line=%d column=%d %s\n", location->line, location->column, message);
+
+    self->error.kind = NAMidiParserErrorKindSyntaxError;
+    self->error.message = strdup(message);
+    self->error.filepath = self->parseContext.currentFilepath;
+    self->error.line = location->line;
+    self->error.column = location->column;
+}
+
+
+static StatementList *StatementListCreate()
+{
+    StatementList *self = calloc(1, sizeof(StatementList));
+    self->capacity = 32;
+    self->array = calloc(self->capacity, sizeof(Statement));
+    return self;
+}
+
+static Statement *StatementListAlloc(StatementList *self)
+{
+    if (self->capacity <= self->count) {
+        self->capacity *= 2;
+        self->array = realloc(self->array, self->capacity);
+    }
+
+    return &self->array[self->count++];
+}
+
+static void StatementListDestroy(StatementList *self)
+{
+    for (int i = 0; i < self->count; ++i) {
+        switch (self->array[i].type) {
+        case StatementTypeTitle:
+        case StatementTypeMarker:
+        case StatementTypePattern:
+        case StatementTypePatternDefine:
+        case StatementTypePhrase:
+        case StatementTypePhraseDefine:
+        case StatementTypeKey:
+        case StatementTypeNote:
+            free(self->array[i].values[0].s);
+            break;
+        default:
+            break;
+        }
+    }
+
+    free(self->array);
+    free(self);
 }

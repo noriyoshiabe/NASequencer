@@ -6,7 +6,10 @@
 
 extern int yyerror(YYLTYPE *yylloc, void *scanner, ParserCallback callback, ParserErrorCallback errorCallback, const char *message);
  
-#define CALLBACK(location, statement, ...) callback(yyget_extra(scanner), (ParseLocation *)location, statement, __VA_ARGS__)
+#define CALLBACK(location, type, ...) \
+    if (!callback(yyget_extra(scanner), (ParseLocation *)location, type, __VA_ARGS__)) { \
+        return 1;\
+    }
 
 %}
 
@@ -72,44 +75,44 @@ statement_list
     ;
 
 statement
-    : TITLE STRING                  { CALLBACK(&@$, StatementTitle, $2); }
-    | RESOLUTION INTEGER            { CALLBACK(&@$, StatementResolution, $2); }
-    | TEMPO FLOAT                   { CALLBACK(&@$, StatementTempo, $2); }
-    | TEMPO INTEGER                 { CALLBACK(&@$, StatementTempo, (float)$2); }
-    | TIME INTEGER DIVISION INTEGER { CALLBACK(&@$, StatementTimeSign, $2, $4); }
-    | INTEGER                       { CALLBACK(&@$, StatementMeasure, $1); }
-    | MARKER STRING                 { CALLBACK(&@$, StatementMarker, $2); }
-    | PATTERN_ID                    { CALLBACK(&@$, StatementPattern, $1); }
-    | DEFINE PATTERN_ID             { CALLBACK(&@$, StatementPatternDefine, $2); }
-    | END                           { CALLBACK(&@$, StatementEnd, NULL); }
-    | CHANNEL INTEGER               { CALLBACK(&@$, StatementChannel, $2); }
-    | VOICE INTEGER INTEGER INTEGER { CALLBACK(&@$, StatementVoice, $2, $3, $4); }
-    | VOLUME INTEGER                { CALLBACK(&@$, StatementVolume, $2); }
-    | PAN INTEGER                   { CALLBACK(&@$, StatementPan, $2); }
-    | CHORUS INTEGER                { CALLBACK(&@$, StatementChrous, $2); }
-    | REVERB INTEGER                { CALLBACK(&@$, StatementReverb, $2); }
-    | PHRASE_ID                     { CALLBACK(&@$, StatementPhrase, $1); }
-    | DEFINE PHRASE_ID              { CALLBACK(&@$, StatementPhraseDefine, $2); }
-    | TRANSPOSE INTEGER             { CALLBACK(&@$, StatementTranspose, $2); }
-    | TRANSPOSE PLUS INTEGER        { CALLBACK(&@$, StatementTranspose, $3); }
-    | TRANSPOSE MINUS INTEGER       { CALLBACK(&@$, StatementTranspose, -$3); }
-    | KEY KEY_SIGN                  { CALLBACK(&@$, StatementKey, $2); }
-    | NOTE                          { CALLBACK(&@$, StatementNote, $1, -1, -1, -1); }
-    | NOTE MINUS                    { CALLBACK(&@$, StatementNote, $1, -1, -1, -1); }
-    | NOTE MINUS   MINUS            { CALLBACK(&@$, StatementNote, $1, -1, -1, -1); }
-    | NOTE MINUS   MINUS   MINUS    { CALLBACK(&@$, StatementNote, $1, -1, -1, -1); }
-    | NOTE MINUS   MINUS   INTEGER  { CALLBACK(&@$, StatementNote, $1, -1, -1, $4); }
-    | NOTE MINUS   INTEGER          { CALLBACK(&@$, StatementNote, $1, -1, $3, -1); }
-    | NOTE MINUS   INTEGER MINUS    { CALLBACK(&@$, StatementNote, $1, -1, $3, -1); }
-    | NOTE MINUS   INTEGER INTEGER  { CALLBACK(&@$, StatementNote, $1, -1, $3, $4); }
-    | NOTE INTEGER                  { CALLBACK(&@$, StatementNote, $1, $2, -1, -1); }
-    | NOTE INTEGER INTEGER          { CALLBACK(&@$, StatementNote, $1, $2, $3, -1); }
-    | NOTE INTEGER INTEGER INTEGER  { CALLBACK(&@$, StatementNote, $1, $2, $3, $4); }
-    | NOTE INTEGER INTEGER MINUS    { CALLBACK(&@$, StatementNote, $1, $2, $3, -1); }
-    | NOTE INTEGER MINUS            { CALLBACK(&@$, StatementNote, $1, $2, -1, -1); }
-    | NOTE INTEGER MINUS   INTEGER  { CALLBACK(&@$, StatementNote, $1, $2, -1, $4); }
-    | NOTE INTEGER MINUS   MINUS    { CALLBACK(&@$, StatementNote, $1, $2, -1, -1); }
-    | MINUS INTEGER                 { CALLBACK(&@$, StatementRest, $2); }
+    : TITLE STRING                  { CALLBACK(&@$, StatementTypeTitle, $2); }
+    | RESOLUTION INTEGER            { CALLBACK(&@$, StatementTypeResolution, $2); }
+    | TEMPO FLOAT                   { CALLBACK(&@$, StatementTypeTempo, $2); }
+    | TEMPO INTEGER                 { CALLBACK(&@$, StatementTypeTempo, (float)$2); }
+    | TIME INTEGER DIVISION INTEGER { CALLBACK(&@$, StatementTypeTimeSign, $2, $4); }
+    | INTEGER                       { CALLBACK(&@$, StatementTypeMeasure, $1); }
+    | MARKER STRING                 { CALLBACK(&@$, StatementTypeMarker, $2); }
+    | PATTERN_ID                    { CALLBACK(&@$, StatementTypePattern, $1); }
+    | DEFINE PATTERN_ID             { CALLBACK(&@$, StatementTypePatternDefine, $2); }
+    | END                           { CALLBACK(&@$, StatementTypeEnd, NULL); }
+    | CHANNEL INTEGER               { CALLBACK(&@$, StatementTypeChannel, $2); }
+    | VOICE INTEGER INTEGER INTEGER { CALLBACK(&@$, StatementTypeVoice, $2, $3, $4); }
+    | VOLUME INTEGER                { CALLBACK(&@$, StatementTypeVolume, $2); }
+    | PAN INTEGER                   { CALLBACK(&@$, StatementTypePan, $2); }
+    | CHORUS INTEGER                { CALLBACK(&@$, StatementTypeChrous, $2); }
+    | REVERB INTEGER                { CALLBACK(&@$, StatementTypeReverb, $2); }
+    | PHRASE_ID                     { CALLBACK(&@$, StatementTypePhrase, $1); }
+    | DEFINE PHRASE_ID              { CALLBACK(&@$, StatementTypePhraseDefine, $2); }
+    | TRANSPOSE INTEGER             { CALLBACK(&@$, StatementTypeTranspose, $2); }
+    | TRANSPOSE PLUS INTEGER        { CALLBACK(&@$, StatementTypeTranspose, $3); }
+    | TRANSPOSE MINUS INTEGER       { CALLBACK(&@$, StatementTypeTranspose, -$3); }
+    | KEY KEY_SIGN                  { CALLBACK(&@$, StatementTypeKey, $2); }
+    | NOTE                          { CALLBACK(&@$, StatementTypeNote, $1, -1, -1, -1); }
+    | NOTE MINUS                    { CALLBACK(&@$, StatementTypeNote, $1, -1, -1, -1); }
+    | NOTE MINUS   MINUS            { CALLBACK(&@$, StatementTypeNote, $1, -1, -1, -1); }
+    | NOTE MINUS   MINUS   MINUS    { CALLBACK(&@$, StatementTypeNote, $1, -1, -1, -1); }
+    | NOTE MINUS   MINUS   INTEGER  { CALLBACK(&@$, StatementTypeNote, $1, -1, -1, $4); }
+    | NOTE MINUS   INTEGER          { CALLBACK(&@$, StatementTypeNote, $1, -1, $3, -1); }
+    | NOTE MINUS   INTEGER MINUS    { CALLBACK(&@$, StatementTypeNote, $1, -1, $3, -1); }
+    | NOTE MINUS   INTEGER INTEGER  { CALLBACK(&@$, StatementTypeNote, $1, -1, $3, $4); }
+    | NOTE INTEGER                  { CALLBACK(&@$, StatementTypeNote, $1, $2, -1, -1); }
+    | NOTE INTEGER INTEGER          { CALLBACK(&@$, StatementTypeNote, $1, $2, $3, -1); }
+    | NOTE INTEGER INTEGER INTEGER  { CALLBACK(&@$, StatementTypeNote, $1, $2, $3, $4); }
+    | NOTE INTEGER INTEGER MINUS    { CALLBACK(&@$, StatementTypeNote, $1, $2, $3, -1); }
+    | NOTE INTEGER MINUS            { CALLBACK(&@$, StatementTypeNote, $1, $2, -1, -1); }
+    | NOTE INTEGER MINUS   INTEGER  { CALLBACK(&@$, StatementTypeNote, $1, $2, -1, $4); }
+    | NOTE INTEGER MINUS   MINUS    { CALLBACK(&@$, StatementTypeNote, $1, $2, -1, -1); }
+    | MINUS INTEGER                 { CALLBACK(&@$, StatementTypeRest, $2); }
     | EOL
     | SEMICOLON
     ;
