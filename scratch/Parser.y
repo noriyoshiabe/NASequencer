@@ -49,12 +49,15 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, ParserCallback callback, Pars
 %token PLUS
 %token MINUS
 %token DIVISION
+%token SEMICOLON
 
 %token <s>IDENTIFIER
 %token <s>PATTERN_ID
 %token <s>PHRASE_ID
-%token <s>NOTE
 %token <s>KEY_SIGN
+%token <s>NOTE
+
+%token EOL
 
 %%
  
@@ -107,6 +110,8 @@ statement
     | NOTE INTEGER MINUS   INTEGER  { CALLBACK(&@$, StatementNote, $1, $2, -1, $4); }
     | NOTE INTEGER MINUS   MINUS    { CALLBACK(&@$, StatementNote, $1, $2, -1, -1); }
     | MINUS INTEGER                 { CALLBACK(&@$, StatementRest, $2); }
+    | EOL
+    | SEMICOLON
     ;
 
 %%

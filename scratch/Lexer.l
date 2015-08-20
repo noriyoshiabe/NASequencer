@@ -100,8 +100,8 @@ LINE_COMMENT   (\/\/|==|--).*$
 {NOTE}           { yylval->s = strdup(yytext); return NOTE; }
 {KEY_SIGN}       { yylval->s = strdup(yytext); return KEY_SIGN; }
 
-{EOL}            { }
-{SEMICOLON}      { }
+{EOL}            { return EOL; }
+{SEMICOLON}      { return SEMICOLON; }
 
 {LINE_COMMENT}   { }
 "/*"             { BEGIN(COMMENT); }
