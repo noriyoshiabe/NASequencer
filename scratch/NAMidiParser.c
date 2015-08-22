@@ -806,6 +806,30 @@ static bool renderReverb(NAMidiParser *self, Statement *statement)
     return true;
 }
 
+static bool renderTranspose(NAMidiParser *self, Statement *statement)
+{
+    self->renderContext.tracks[self->renderContext.currentTrack].transpose = statement->values[0].i;
+    return true;
+}
+
+static bool renderKey(NAMidiParser *self, Statement *statement)
+{
+    self->renderContext.tracks[self->renderContext.currentTrack].keySign = statement->values[0].i;
+    return true;
+}
+
+static bool renderNote(NAMidiParser *self, Statement *statement)
+{
+    // TODO
+    return true;
+}
+
+static bool renderRest(NAMidiParser *self, Statement *statement)
+{
+    self->renderContext.tracks[self->renderContext.currentTrack].tick += statement->values[0].i;
+    return true;
+}
+
 static void __attribute__((constructor)) initializeTable()
 {
     statementParserTable[StatementTypeTitle] = parseTitle;
@@ -846,6 +870,11 @@ static void __attribute__((constructor)) initializeTable()
     statementRendererTable[StatementTypePan] = renderPan;
     statementRendererTable[StatementTypeChorus] = renderChorus;
     statementRendererTable[StatementTypeReverb] = renderReverb;
+    statementRendererTable[StatementTypeTranspose] = renderTranspose;
+    statementRendererTable[StatementTypeKey] = renderKey;
+    statementRendererTable[StatementTypeNote] = renderNote;
+    statementRendererTable[StatementTypeRest] = renderRest;
+    statementRendererTable[StatementTypeInclude] = renderNoOperation;
 }
 
 const char *NAMidiParserErrorKind2String(NAMidiParserErrorKind kind)
