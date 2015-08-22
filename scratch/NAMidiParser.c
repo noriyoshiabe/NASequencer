@@ -34,6 +34,15 @@ typedef struct _StatementList {
     int capacity;
 } StatementList;
 
+typedef struct _TrackContext {
+    int tick;
+    int channel;
+    int gatetime;
+    int velocity;
+    NoteTableKeySign keySign;
+    int transpose;
+} TrackContext;
+
 static StatementList *StatementListCreate();
 static Statement *StatementListAlloc(StatementList *self);
 static void StatementListDestroy(StatementList *self);
@@ -52,6 +61,13 @@ struct _NAMidiParser {
     } parseContext;
 
     NAMidiParserRenderHandler handler;
+
+    struct {
+        int resolution;
+        bool resolutionChanged;
+        TrackContext tracks[17];
+        int currentTrack;
+    } renderContext;
 };
 
 static bool NAMidiParserParseFile(NAMidiParser *self, const char *filepath);
@@ -71,6 +87,17 @@ NAMidiParser *NAMidiParserCreate(NAMidiParserRenderHandler handler)
     self->parseContext.currentStatements = self->songStatements;
 
     self->handler = handler;
+
+    self->renderContext.resolution = 480;
+
+    for (int i = 0; i < 17; ++i) {
+        self->renderContext.tracks[i].tick = 0;
+        self->renderContext.tracks[i].channel = 1;
+        self->renderContext.tracks[i].gatetime = 480;
+        self->renderContext.tracks[i].velocity = 100;
+        self->renderContext.tracks[i].keySign = NoteTableKeySignCMajor;
+        self->renderContext.tracks[i].transpose = 0;
+    }
 
     return self;
 }
