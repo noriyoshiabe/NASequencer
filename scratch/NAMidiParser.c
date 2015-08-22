@@ -3,6 +3,8 @@
 #include "Parser.h"
 #include "Lexer.h"
 #include "ParserCallback.h"
+#include "NoteTable.h"
+
 #include "NAMap.h"
 
 #include <stdlib.h>
@@ -474,6 +476,26 @@ static bool parseTranspose(NAMidiParser *self, Statement *statment, va_list argL
     return true;
 }
 
+static bool parseKey(NAMidiParser *self, Statement *statment, va_list argList)
+{
+    char *keyString = va_arg(argList, char *);
+    char keyChar = keyString[0];
+
+    bool sharp = NULL != strchr(keyString, '#');
+    bool flat = NULL != strchr(keyString, 'b');
+    bool major = NULL == strstr(keyString, "min");
+
+    NoteTableKeySign key = NoteTableGetKeySign(keyChar, sharp, flat, major);
+    if (NoteTableKeySignInvalid == key) {
+        self->error.kind = NAMidiParserErrorKindInvalidKeySign;
+        self->error.message = "invalid key sign.";
+        return false;
+    }
+
+    statment->values[0].i = key;
+    return true;
+}
+
 static bool parseInclude(NAMidiParser *self, Statement *statment, va_list argList)
 {
     char filename[256];
@@ -509,6 +531,7 @@ static void __attribute__((constructor)) initializeTable()
     statementParserTable[StatementTypeChorus] = parseChorus;
     statementParserTable[StatementTypeReverb] = parseReverb;
     statementParserTable[StatementTypeTranspose] = parseTranspose;
+    statementParserTable[StatementTypeKey] = parseKey;
     statementParserTable[StatementTypeInclude] = parseInclude;
 }
 

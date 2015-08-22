@@ -17,6 +17,7 @@ include_directories(
 set(SOURCES
   main.c
   NAMidiParser.c
+  NoteTable.c
   nalib/NAHash.c
   nalib/NADescription.c
   nalib/NASet.c

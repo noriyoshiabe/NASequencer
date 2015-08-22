@@ -34,6 +34,7 @@ typedef enum {
     NAMidiParserErrorKindInvalidChorus,
     NAMidiParserErrorKindInvalidReverb,
     NAMidiParserErrorKindInvalidTranspose,
+    NAMidiParserErrorKindInvalidKeySign,
 } NAMidiParserErrorKind;
 
 typedef struct _NAMidiParserError {
