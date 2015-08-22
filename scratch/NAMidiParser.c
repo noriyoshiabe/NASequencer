@@ -223,8 +223,13 @@ static bool parseInclude(NAMidiParser *self, ParseLocation *location, StatementT
     int len = strlen(_filename);
     strncpy(filename, _filename + 1, len - 2);
     filename[len - 2] = '\0';
+
+    char *directory = dirname((char *)location->filepath);
+
     char buf[PATH_MAX + 1];
-    snprintf(buf, PATH_MAX + 1, "%s/%s", dirname((char *)location->filepath), filename);
+    snprintf(buf, PATH_MAX + 1, "%s/%s", directory, filename);
+
+    free(directory);
 
     return NAMidiParserExecuteParse(self, buf);
 }
