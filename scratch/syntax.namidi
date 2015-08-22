@@ -17,7 +17,7 @@ track 1
 channel 10
 voice 0 120 0
 volume 127
-pan 127
+pan 12
 chorus 127
 reverb 127
 ---------------
@@ -31,7 +31,7 @@ track 2
 channel 12
 voice 0 44 0
 volume 127
-pan 127
+pan -12
 chorus 127
 reverb 127
 ---------------

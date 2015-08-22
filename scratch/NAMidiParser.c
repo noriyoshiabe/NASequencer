@@ -3,6 +3,7 @@
 #include "Parser.h"
 #include "Lexer.h"
 #include "ParserCallback.h"
+#include "NAMap.h"
 
 #include <stdlib.h>
 #include <libgen.h>
@@ -36,7 +37,6 @@ static void StatementListDestroy(StatementList *self);
 typedef enum {
     NAMidiParserStateSong,
     NAMidiParserStatePattern,
-    NAMidiParserStatePhrase,
 } NAMidiParserState;
 
 struct _NAMidiParser {
@@ -44,10 +44,12 @@ struct _NAMidiParser {
     StatementList *songStatements;
     char **filepaths;
     int fileCount;
+    NAMap *patterns;
 
     struct {
         NAMidiParserState state;
         StatementList *currentStatements;
+        bool inTrack;
     } parseContext;
 };
 
@@ -63,6 +65,7 @@ NAMidiParser *NAMidiParserCreate()
     NAMidiParser *self = calloc(1, sizeof(NAMidiParser));
     self->songStatements = StatementListCreate();
 
+    self->patterns = NAMapCreate(NAHashCString, NADescriptionCString, NULL);
     self->parseContext.state = NAMidiParserStateSong;
     self->parseContext.currentStatements = self->songStatements;
 
@@ -71,10 +74,6 @@ NAMidiParser *NAMidiParserCreate()
 
 void NAMidiParserDestroy(NAMidiParser *self)
 {
-    if (self->error.message) {
-        free(self->error.message);
-    }
-
     for (int i = 0; i < self->fileCount; ++i) {
         free(self->filepaths[i]);
     }
@@ -82,6 +81,14 @@ void NAMidiParserDestroy(NAMidiParser *self)
     if (self->filepaths) {
         free(self->filepaths);
     }
+
+    uint8_t iteratorBuffer[NAMapIteratorSize];
+    NAIterator *iterator = NAMapGetIterator(self->patterns, iteratorBuffer);
+    while (iterator->hasNext(iterator)) {
+        NAMapEntry *entry = iterator->next(iterator);
+        StatementListDestroy(entry->value);
+    }
+    NAMapDestroy(self->patterns);
 
     StatementListDestroy(self->songStatements);
     free(self);
@@ -113,7 +120,7 @@ static bool NAMidiParserParseFile(NAMidiParser *self, const char *filepath)
     FILE *fp = fopen(_filepath, "r");
     if (!fp) {
         self->error.kind = NAMidiParserErrorKindFileNotFound;
-        self->error.message = strdup("include file is not found.");
+        self->error.message = "include file is not found.";
         return ret;
     }
 
@@ -193,7 +200,7 @@ static void NAMidiParserErrorCallback(void *context, ParseLocation *location, co
     NAMidiParser *self = context;
 
     self->error.kind = NAMidiParserErrorKindSyntaxError;
-    self->error.message = strdup(message);
+    self->error.message = message;
     self->error.filepath = location->filepath;
     self->error.line = location->line;
     self->error.column = location->column;
@@ -211,10 +218,12 @@ static Statement *StatementListAlloc(StatementList *self)
 {
     if (self->capacity <= self->count) {
         self->capacity *= 2;
-        self->array = realloc(self->array, self->capacity);
+        self->array = realloc(self->array, self->capacity * sizeof(Statement));
     }
 
-    return &self->array[self->count++];
+    Statement *ret = &self->array[self->count++];
+    memset(ret, 0, sizeof(Statement));
+    return ret;
 }
 
 static void StatementListDestroy(StatementList *self)
@@ -234,6 +243,7 @@ static bool parseResolution(NAMidiParser *self, Statement *statment, va_list arg
     int resolution = va_arg(argList, int);
     if (!isValidRange(resolution, 1, 9600)) {
         self->error.kind = NAMidiParserErrorKindInvalidResolution;
+        self->error.message = "invalid range of resolution.";
         return false;
     }
 
@@ -246,6 +256,7 @@ static bool parseTempo(NAMidiParser *self, Statement *statment, va_list argList)
     double tempo = va_arg(argList, double);
     if (!isValidRange(tempo, 30.0, 300.0)) {
         self->error.kind = NAMidiParserErrorKindInvalidTempo;
+        self->error.message = "invalid range of tempo.";
         return false;
     }
 
@@ -259,6 +270,7 @@ static bool parseTimeSign(NAMidiParser *self, Statement *statment, va_list argLi
     int denominator = va_arg(argList, int);
     if (1 > numerator || 1 > denominator || !isPowerOf2(denominator)) {
         self->error.kind = NAMidiParserErrorKindInvalidTimeSign;
+        self->error.message = "invalid time sign.";
         return false;
     }
 
@@ -272,6 +284,7 @@ static bool parseMeasure(NAMidiParser *self, Statement *statment, va_list argLis
     int measure = va_arg(argList, int);
     if (!isValidRange(measure, 1, 9999)) {
         self->error.kind = NAMidiParserErrorKindInvalidMeasure;
+        self->error.message = "invalid range of measure.";
         return false;
     }
 
@@ -282,6 +295,182 @@ static bool parseMeasure(NAMidiParser *self, Statement *statment, va_list argLis
 static bool parseMarker(NAMidiParser *self, Statement *statment, va_list argList)
 {
     statment->string = strdup(va_arg(argList, char *));
+    return true;
+}
+
+static bool parsePattern(NAMidiParser *self, Statement *statment, va_list argList)
+{
+    statment->string = strdup(va_arg(argList, char *));
+    return true;
+}
+
+static bool parsePatternDefine(NAMidiParser *self, Statement *statment, va_list argList)
+{
+    if (NAMidiParserStateSong != self->parseContext.state) {
+        self->error.kind = NAMidiParserErrorKindIllegalPatternDefineInPattern;
+        self->error.message = "cannnot define pattern inside other pattern.";
+        return false;
+    }
+
+    if (self->parseContext.inTrack) {
+        self->error.kind = NAMidiParserErrorKindIllegalPatternDefineInTrack;
+        self->error.message = "cannnot define pattern inside track.";
+        return false;
+    }
+
+    statment->string = strdup(va_arg(argList, char *));
+    self->parseContext.state = NAMidiParserStatePattern;
+
+    StatementList *statmentList = StatementListCreate();
+    NAMapPut(self->patterns, statment->string, statmentList);
+    self->parseContext.currentStatements = statmentList;
+    return true;
+}
+
+static bool parseEnd(NAMidiParser *self, Statement *statment, va_list argList)
+{
+    if (NAMidiParserStatePattern != self->parseContext.state && !self->parseContext.inTrack) {
+        self->error.kind = NAMidiParserErrorKindIllegalEnd;
+        self->error.message = "end statement with no pattern nor track definition.";
+        return false;
+    }
+
+    if (self->parseContext.inTrack) {
+        self->parseContext.inTrack = false;
+    }
+    else {
+        self->parseContext.currentStatements = self->songStatements;
+        self->parseContext.state = NAMidiParserStateSong;
+    }
+
+    return true;
+}
+
+static bool parseTrack(NAMidiParser *self, Statement *statment, va_list argList)
+{
+    if (self->parseContext.inTrack) {
+        self->error.kind = NAMidiParserErrorKindIllegalTrackStartInTrack;
+        self->error.message = "cannnot define track inside other track.";
+        return false;
+    }
+
+    int track = va_arg(argList, int);
+    if (!isValidRange(track, 1, 16)) {
+        self->error.kind = NAMidiParserErrorKindInvalidTrack;
+        self->error.message = "invalid range of track number.";
+        return false;
+    }
+
+    statment->values[0].i = track;
+    self->parseContext.inTrack = true;
+    return true;
+}
+
+static bool parseChannel(NAMidiParser *self, Statement *statment, va_list argList)
+{
+    int channel = va_arg(argList, int);
+    if (!isValidRange(channel, 1, 16)) {
+        self->error.kind = NAMidiParserErrorKindInvalidChannel;
+        self->error.message = "invalid range of channel.";
+        return false;
+    }
+
+    statment->values[0].i = channel;
+    return true;
+}
+
+static bool parseVoice(NAMidiParser *self, Statement *statment, va_list argList)
+{
+    int msb = va_arg(argList, int);
+    int lsb = va_arg(argList, int);
+    int programNo = va_arg(argList, int);
+
+    if (!isValidRange(msb, 0, 127)) {
+        self->error.kind = NAMidiParserErrorKindInvalidVoiceMSB;
+        self->error.message = "invalid range of msb.";
+        return false;
+    }
+
+    if (!isValidRange(lsb, 0, 127)) {
+        self->error.kind = NAMidiParserErrorKindInvalidVoiceLSB;
+        self->error.message = "invalid range of lsb.";
+        return false;
+    }
+
+    if (!isValidRange(programNo, 0, 127)) {
+        self->error.kind = NAMidiParserErrorKindInvalidVoiceProgramNo;
+        self->error.message = "invalid range of program number.";
+        return false;
+    }
+
+    statment->values[0].i = msb;
+    statment->values[1].i = lsb;
+    statment->values[2].i = programNo;
+    return true;
+}
+
+static bool parseVolume(NAMidiParser *self, Statement *statment, va_list argList)
+{
+    int volume = va_arg(argList, int);
+    if (!isValidRange(volume, 0, 127)) {
+        self->error.kind = NAMidiParserErrorKindInvalidVolume;
+        self->error.message = "invalid range of volume.";
+        return false;
+    }
+
+    statment->values[0].i = volume;
+    return true;
+}
+
+static bool parsePan(NAMidiParser *self, Statement *statment, va_list argList)
+{
+    int pan = va_arg(argList, int);
+    if (!isValidRange(pan, -64, 64)) {
+        self->error.kind = NAMidiParserErrorKindInvalidPan;
+        self->error.message = "invalid range of pan.";
+        return false;
+    }
+
+    statment->values[0].i = pan;
+    return true;
+}
+
+static bool parseChorus(NAMidiParser *self, Statement *statment, va_list argList)
+{
+    int chorus = va_arg(argList, int);
+    if (!isValidRange(chorus, 0, 127)) {
+        self->error.kind = NAMidiParserErrorKindInvalidChorus;
+        self->error.message = "invalid range of chorus.";
+        return false;
+    }
+
+    statment->values[0].i = chorus;
+    return true;
+}
+
+static bool parseReverb(NAMidiParser *self, Statement *statment, va_list argList)
+{
+    int reverb = va_arg(argList, int);
+    if (!isValidRange(reverb, 0, 127)) {
+        self->error.kind = NAMidiParserErrorKindInvalidReverb;
+        self->error.message = "invalid range of reverb.";
+        return false;
+    }
+
+    statment->values[0].i = reverb;
+    return true;
+}
+
+static bool parseTranspose(NAMidiParser *self, Statement *statment, va_list argList)
+{
+    int transpose = va_arg(argList, int);
+    if (!isValidRange(transpose, -24, 24)) {
+        self->error.kind = NAMidiParserErrorKindInvalidTranspose;
+        self->error.message = "invalid range of transpose.";
+        return false;
+    }
+
+    statment->values[0].i = transpose;
     return true;
 }
 
@@ -309,6 +498,17 @@ static void __attribute__((constructor)) initializeTable()
     statementParserTable[StatementTypeTimeSign] = parseTimeSign;
     statementParserTable[StatementTypeMeasure] = parseMeasure;
     statementParserTable[StatementTypeMarker] = parseMarker;
+    statementParserTable[StatementTypePattern] = parsePattern;
+    statementParserTable[StatementTypePatternDefine] = parsePatternDefine;
+    statementParserTable[StatementTypeEnd] = parseEnd;
+    statementParserTable[StatementTypeTrack] = parseTrack;
+    statementParserTable[StatementTypeChannel] = parseChannel;
+    statementParserTable[StatementTypeVoice] = parseVoice;
+    statementParserTable[StatementTypeVolume] = parseVolume;
+    statementParserTable[StatementTypePan] = parsePan;
+    statementParserTable[StatementTypeChorus] = parseChorus;
+    statementParserTable[StatementTypeReverb] = parseReverb;
+    statementParserTable[StatementTypeTranspose] = parseTranspose;
     statementParserTable[StatementTypeInclude] = parseInclude;
 }
 

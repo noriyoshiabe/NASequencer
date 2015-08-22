@@ -20,11 +20,25 @@ typedef enum {
     NAMidiParserErrorKindInvalidTempo,
     NAMidiParserErrorKindInvalidTimeSign,
     NAMidiParserErrorKindInvalidMeasure,
+    NAMidiParserErrorKindIllegalPatternDefineInPattern,
+    NAMidiParserErrorKindIllegalPatternDefineInTrack,
+    NAMidiParserErrorKindIllegalEnd,
+    NAMidiParserErrorKindIllegalTrackStartInTrack,
+    NAMidiParserErrorKindInvalidTrack,
+    NAMidiParserErrorKindInvalidChannel,
+    NAMidiParserErrorKindInvalidVoiceMSB,
+    NAMidiParserErrorKindInvalidVoiceLSB,
+    NAMidiParserErrorKindInvalidVoiceProgramNo,
+    NAMidiParserErrorKindInvalidVolume,
+    NAMidiParserErrorKindInvalidPan,
+    NAMidiParserErrorKindInvalidChorus,
+    NAMidiParserErrorKindInvalidReverb,
+    NAMidiParserErrorKindInvalidTranspose,
 } NAMidiParserErrorKind;
 
 typedef struct _NAMidiParserError {
     NAMidiParserErrorKind kind;
-    char *message;
+    const char *message;
     const char *filepath;
     int line;
     int column;

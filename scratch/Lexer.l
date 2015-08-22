@@ -59,7 +59,7 @@ SEMICOLON      ";"
 
 INCLUDE        include
 
-IDENTIFIER     [_\-[:alnum:]]+
+IDENTIFIER     [_[:alpha:]][_\-[:alnum:]]+
 KEY_SIGN       [cdefgab](#|b)?(maj|min)
 NOTE           [cdefgab](#|b|n)?\-?[[:digit:]]{1,2}
 

@@ -93,7 +93,9 @@ statement
     | VOICE INTEGER INTEGER INTEGER { CALLBACK(@$, StatementTypeVoice, $2, $3, $4); }
     | VOLUME INTEGER                { CALLBACK(@$, StatementTypeVolume, $2); }
     | PAN INTEGER                   { CALLBACK(@$, StatementTypePan, $2); }
-    | CHORUS INTEGER                { CALLBACK(@$, StatementTypeChrous, $2); }
+    | PAN PLUS INTEGER              { CALLBACK(@$, StatementTypePan, $3); }
+    | PAN MINUS INTEGER             { CALLBACK(@$, StatementTypePan, -$3); }
+    | CHORUS INTEGER                { CALLBACK(@$, StatementTypeChorus, $2); }
     | REVERB INTEGER                { CALLBACK(@$, StatementTypeReverb, $2); }
     | TRANSPOSE INTEGER             { CALLBACK(@$, StatementTypeTranspose, $2); }
     | TRANSPOSE PLUS INTEGER        { CALLBACK(@$, StatementTypeTranspose, $3); }
