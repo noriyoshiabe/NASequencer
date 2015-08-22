@@ -58,15 +58,17 @@ struct _NAMidiParser {
         StatementList *currentStatements;
         bool inPattern;
         bool inTrack;
+        bool resolutionDefined;
+        bool titleDefined;
     } parseContext;
 
     NAMidiParserRenderHandler handler;
 
     struct {
         int resolution;
-        bool resolutionChanged;
         TrackContext tracks[17];
         int currentTrack;
+        int maximumStep;
     } renderContext;
 };
 
@@ -271,17 +273,49 @@ static void StatementListDestroy(StatementList *self)
 
 static bool parseTitle(NAMidiParser *self, Statement *statment, va_list argList)
 {
+    if (self->parseContext.titleDefined) {
+        self->error.kind = NAMidiParserErrorKindIllegalTitleRedefined;
+        return false;
+    }
+
+    if (self->parseContext.inPattern) {
+        self->error.kind = NAMidiParserErrorKindIllegalTitleInPattern;
+        return false;
+    }
+
+    if (self->parseContext.inTrack) {
+        self->error.kind = NAMidiParserErrorKindIllegalTitleInTrack;
+        return false;
+    }
+
     statment->string = strdup(va_arg(argList, char *));
     return true;
 }
 
 static bool parseResolution(NAMidiParser *self, Statement *statment, va_list argList)
 {
+    if (self->parseContext.resolutionDefined) {
+        self->error.kind = NAMidiParserErrorKindIllegalResolutionRedefined;
+        return false;
+    }
+
+    if (self->parseContext.inPattern) {
+        self->error.kind = NAMidiParserErrorKindIllegalResolutionInPattern;
+        return false;
+    }
+
+    if (self->parseContext.inTrack) {
+        self->error.kind = NAMidiParserErrorKindIllegalResolutionInTrack;
+        return false;
+    }
+
     int resolution = va_arg(argList, int);
     if (!isValidRange(resolution, 1, 9600)) {
         self->error.kind = NAMidiParserErrorKindInvalidResolution;
         return false;
     }
+
+    self->parseContext.resolutionDefined = true;
 
     statment->values[0].i = resolution;
     return true;
@@ -289,6 +323,11 @@ static bool parseResolution(NAMidiParser *self, Statement *statment, va_list arg
 
 static bool parseTempo(NAMidiParser *self, Statement *statment, va_list argList)
 {
+    if (self->parseContext.inPattern) {
+        self->error.kind = NAMidiParserErrorKindIllegalTempoInPattern;
+        return false;
+    }
+
     double tempo = va_arg(argList, double);
     if (!isValidRange(tempo, 30.0, 300.0)) {
         self->error.kind = NAMidiParserErrorKindInvalidTempo;
@@ -301,6 +340,11 @@ static bool parseTempo(NAMidiParser *self, Statement *statment, va_list argList)
 
 static bool parseTimeSign(NAMidiParser *self, Statement *statment, va_list argList)
 {
+    if (self->parseContext.inPattern) {
+        self->error.kind = NAMidiParserErrorKindIllegalTimeSignInPattern;
+        return false;
+    }
+
     int numerator = va_arg(argList, int);
     int denominator = va_arg(argList, int);
     if (1 > numerator || 1 > denominator || !isPowerOf2(denominator)) {
@@ -495,6 +539,11 @@ static bool parseTranspose(NAMidiParser *self, Statement *statment, va_list argL
 
 static bool parseKey(NAMidiParser *self, Statement *statment, va_list argList)
 {
+    if (self->parseContext.inPattern) {
+        self->error.kind = NAMidiParserErrorKindIllegalKeySignInPattern;
+        return false;
+    }
+
     const char *keyString = va_arg(argList, char *);
     char keyChar = keyString[0];
 
@@ -608,10 +657,18 @@ const char *NAMidiParserErrorKind2String(NAMidiParserErrorKind kind)
     switch (kind) {
     CASE(NAMidiParserErrorKindFileNotFound);
     CASE(NAMidiParserErrorKindSyntaxError);
-    CASE(NAMidiParserErrorKindIllegalResolution);
+    CASE(NAMidiParserErrorKindIllegalTitleRedefined);
+    CASE(NAMidiParserErrorKindIllegalTitleInPattern);
+    CASE(NAMidiParserErrorKindIllegalTitleInTrack);
+    CASE(NAMidiParserErrorKindIllegalResolutionRedefined);
+    CASE(NAMidiParserErrorKindIllegalResolutionInPattern);
+    CASE(NAMidiParserErrorKindIllegalResolutionInTrack);
+    CASE(NAMidiParserErrorKindIllegalResolutionAfterStepForward);
     CASE(NAMidiParserErrorKindInvalidResolution);
     CASE(NAMidiParserErrorKindInvalidTempo);
+    CASE(NAMidiParserErrorKindIllegalTempoInPattern);
     CASE(NAMidiParserErrorKindInvalidTimeSign);
+    CASE(NAMidiParserErrorKindIllegalTimeSignInPattern);
     CASE(NAMidiParserErrorKindInvalidMeasure);
     CASE(NAMidiParserErrorKindIllegalPatternDefineInPattern);
     CASE(NAMidiParserErrorKindIllegalPatternDefineInTrack);
@@ -628,6 +685,7 @@ const char *NAMidiParserErrorKind2String(NAMidiParserErrorKind kind)
     CASE(NAMidiParserErrorKindInvalidReverb);
     CASE(NAMidiParserErrorKindInvalidTranspose);
     CASE(NAMidiParserErrorKindInvalidKeySign);
+    CASE(NAMidiParserErrorKindIllegalKeySignInPattern);
     CASE(NAMidiParserErrorKindInvalidNote);
     CASE(NAMidiParserErrorKindInvalidStep);
     CASE(NAMidiParserErrorKindInvalidGatetime);
