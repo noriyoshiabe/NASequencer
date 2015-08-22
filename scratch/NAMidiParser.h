@@ -14,6 +14,12 @@ typedef enum {
 typedef enum {
     NAMidiParserErrorKindFileNotFound,
     NAMidiParserErrorKindSyntaxError,
+
+    NAMidiParserErrorKindIllegalResolution,
+    NAMidiParserErrorKindInvalidResolution,
+    NAMidiParserErrorKindInvalidTempo,
+    NAMidiParserErrorKindInvalidTimeSign,
+    NAMidiParserErrorKindInvalidMeasure,
 } NAMidiParserErrorKind;
 
 typedef struct _NAMidiParserError {

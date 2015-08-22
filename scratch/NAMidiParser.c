@@ -8,6 +8,9 @@
 #include <libgen.h>
 #include <limits.h>
 
+#define isPowerOf2(x) ((x != 0) && ((x & (x - 1)) == 0))
+#define isValidRange(v, from, to) (from <= v && v <= to)
+
 int yyparse(void *scanner, const char *filepath, ParserCallback callback, ParserErrorCallback errorCallback);
 
 typedef struct _Statement {
@@ -44,10 +47,11 @@ struct _NAMidiParser {
 
     struct {
         NAMidiParserState state;
-        const StatementList *currentStatements;
+        StatementList *currentStatements;
     } parseContext;
 };
 
+static bool NAMidiParserParseFile(NAMidiParser *self, const char *filepath);
 static bool NAMidiParserCallback(void *context, ParseLocation *location, StatementType type, ...);
 static void NAMidiParserErrorCallback(void *context, ParseLocation *location, const char *message);
 
@@ -85,6 +89,16 @@ void NAMidiParserDestroy(NAMidiParser *self)
 
 bool NAMidiParserExecuteParse(NAMidiParser *self, const char *filepath)
 {
+    if (!NAMidiParserParseFile(self, filepath)) {
+        return false;
+    }
+
+    // TODO Render?
+
+    return true;
+}
+static bool NAMidiParserParseFile(NAMidiParser *self, const char *filepath)
+{
     void *scanner;
     bool ret = false;
 
@@ -112,6 +126,8 @@ bool NAMidiParserExecuteParse(NAMidiParser *self, const char *filepath)
         goto ERROR;
     }
 
+    // TODO state check
+
     ret = true;
 
 ERROR:
@@ -124,6 +140,7 @@ ERROR:
 
 void NAMidiParserRender(NAMidiParser *self, void *view, NAMidiParserRenderHandler handler)
 {
+    // TODO remove?
 }
 
 const NAMidiParserError *NAMidiParserGetError(NAMidiParser *self)
@@ -136,7 +153,7 @@ const char **NAMidiParserGetFilepaths(NAMidiParser *self)
     return (const char **)self->filepaths;
 }
 
-typedef bool (*NAMidiParserStatemntParser)(NAMidiParser *self, ParseLocation *location, StatementType type, va_list argList);
+typedef bool (*NAMidiParserStatemntParser)(NAMidiParser *self, Statement *statement, va_list argList);
 static NAMidiParserStatemntParser statementParserTable[StatementTypeCount] = {NULL};
 
 static bool NAMidiParserCallback(void *context, ParseLocation *location, StatementType type, ...)
@@ -150,7 +167,10 @@ static bool NAMidiParserCallback(void *context, ParseLocation *location, Stateme
     NAMidiParserStatemntParser parser = statementParserTable[type];
     if (parser) {
         printf("statment=%s\n", StatementType2String(type));
-        success = parser(self, location, type, argList);
+        Statement *statement = StatementListAlloc(self->parseContext.currentStatements);
+        statement->type = type;
+        statement->location = *location;
+        success = parser(self, statement, argList);
     }
     else {
         printf("parser for statment=%s is not implemented.\n", StatementType2String(type));
@@ -209,7 +229,63 @@ static void StatementListDestroy(StatementList *self)
     free(self);
 }
 
-static bool parseInclude(NAMidiParser *self, ParseLocation *location, StatementType type, va_list argList)
+static bool parseResolution(NAMidiParser *self, Statement *statment, va_list argList)
+{
+    int resolution = va_arg(argList, int);
+    if (!isValidRange(resolution, 1, 9600)) {
+        self->error.kind = NAMidiParserErrorKindInvalidResolution;
+        return false;
+    }
+
+    statment->values[0].i = resolution;
+    return true;
+}
+
+static bool parseTempo(NAMidiParser *self, Statement *statment, va_list argList)
+{
+    double tempo = va_arg(argList, double);
+    if (!isValidRange(tempo, 30.0, 300.0)) {
+        self->error.kind = NAMidiParserErrorKindInvalidTempo;
+        return false;
+    }
+
+    statment->values[0].f = tempo;
+    return true;
+}
+
+static bool parseTimeSign(NAMidiParser *self, Statement *statment, va_list argList)
+{
+    int numerator = va_arg(argList, int);
+    int denominator = va_arg(argList, int);
+    if (1 > numerator || 1 > denominator || !isPowerOf2(denominator)) {
+        self->error.kind = NAMidiParserErrorKindInvalidTimeSign;
+        return false;
+    }
+
+    statment->values[0].i = numerator;
+    statment->values[1].i = denominator;
+    return true;
+}
+
+static bool parseMeasure(NAMidiParser *self, Statement *statment, va_list argList)
+{
+    int measure = va_arg(argList, int);
+    if (!isValidRange(measure, 1, 9999)) {
+        self->error.kind = NAMidiParserErrorKindInvalidMeasure;
+        return false;
+    }
+
+    statment->values[0].i = measure;
+    return true;
+}
+
+static bool parseMarker(NAMidiParser *self, Statement *statment, va_list argList)
+{
+    statment->string = strdup(va_arg(argList, char *));
+    return true;
+}
+
+static bool parseInclude(NAMidiParser *self, Statement *statment, va_list argList)
 {
     char filename[256];
     char *_filename = va_arg(argList, char *);
@@ -217,10 +293,10 @@ static bool parseInclude(NAMidiParser *self, ParseLocation *location, StatementT
     strncpy(filename, _filename + 1, len - 2);
     filename[len - 2] = '\0';
 
-    char *directory = dirname((char *)location->filepath);
+    char *directory = dirname((char *)statment->location.filepath);
     char *fullPath = buildPathWithDirectory(directory, filename);
 
-    bool ret = NAMidiParserExecuteParse(self, fullPath);
+    bool ret = NAMidiParserParseFile(self, fullPath);
     free(fullPath);
 
     return ret;
@@ -228,6 +304,11 @@ static bool parseInclude(NAMidiParser *self, ParseLocation *location, StatementT
 
 static void __attribute__((constructor)) initializeTable()
 {
+    statementParserTable[StatementTypeResolution] = parseResolution;
+    statementParserTable[StatementTypeTempo] = parseTempo;
+    statementParserTable[StatementTypeTimeSign] = parseTimeSign;
+    statementParserTable[StatementTypeMeasure] = parseMeasure;
+    statementParserTable[StatementTypeMarker] = parseMarker;
     statementParserTable[StatementTypeInclude] = parseInclude;
 }
 
