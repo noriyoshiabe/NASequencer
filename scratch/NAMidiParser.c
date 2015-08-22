@@ -12,9 +12,11 @@
 #include <ctype.h>
 #include <libgen.h>
 #include <limits.h>
+#include <sys/param.h>
 
 #define isPowerOf2(x) ((x != 0) && ((x & (x - 1)) == 0))
 #define isValidRange(v, from, to) (from <= v && v <= to)
+#define MeasureMax 9999
 
 int yyparse(void *scanner, const char *filepath, ParserCallback callback, ParserErrorCallback errorCallback);
 int yyget_lineno(void *scanner);
@@ -45,6 +47,14 @@ typedef struct _TrackContext {
     int transpose;
 } TrackContext;
 
+typedef struct _TimeTable {
+    int stepStart;
+    int stepEnd;
+    int measureStart;
+    int measureEnd;
+    int measureLength;
+} TimeTable;
+
 static StatementList *StatementListCreate();
 static Statement *StatementListAlloc(StatementList *self);
 static void StatementListDestroy(StatementList *self);
@@ -72,6 +82,9 @@ struct _NAMidiParser {
         TrackContext tracks[17];
         int currentTrack;
         NASet *expandingPatterns;
+        int maximumMeasuredStep;
+        TimeTable *timeTable;
+        int timeTableCount;
     } renderContext;
 };
 
@@ -96,6 +109,13 @@ NAMidiParser *NAMidiParserCreate(NAMidiParserRenderHandler handler, void *receiv
 
     self->renderContext.resolution = 480;
     self->renderContext.expandingPatterns = NASetCreate(NAHashCString, NADescriptionCString);
+    self->renderContext.timeTable = calloc(1, sizeof(TimeTable));
+    self->renderContext.timeTableCount = 1;
+    self->renderContext.timeTable[0].stepStart = 0;
+    self->renderContext.timeTable[0].stepEnd = INT_MAX;
+    self->renderContext.timeTable[0].measureStart = 1;
+    self->renderContext.timeTable[0].measureEnd = MeasureMax + 1;
+    self->renderContext.timeTable[0].measureLength = 480 * 4;
 
     for (int i = 0; i < 17; ++i) {
         self->renderContext.tracks[i].tick = 0;
@@ -118,6 +138,8 @@ void NAMidiParserDestroy(NAMidiParser *self)
     if (self->filepaths) {
         free(self->filepaths);
     }
+
+    free(self->renderContext.timeTable);
 
     uint8_t iteratorBuffer[NAMapIteratorSize];
     NAIterator *iterator = NAMapGetIterator(self->patterns, iteratorBuffer);
@@ -214,7 +236,6 @@ static bool NAMidiParserCallback(void *context, ParseLocation *location, Stateme
 
     NAMidiParserStatemntParser parser = statementParserTable[type];
     if (parser) {
-        printf("statment=%s\n", StatementType2String(type));
         Statement *statement = StatementListAlloc(self->parseContext.currentStatements);
         statement->type = type;
         statement->location = *location;
@@ -372,7 +393,7 @@ static bool parseMeasure(NAMidiParser *self, Statement *statment, va_list argLis
     }
 
     int measure = va_arg(argList, int);
-    if (!isValidRange(measure, 1, 9999)) {
+    if (!isValidRange(measure, 1, MeasureMax)) {
         self->error.kind = NAMidiParserErrorKindInvalidMeasure;
         return false;
     }
@@ -714,16 +735,54 @@ static bool renderTempo(NAMidiParser *self, Statement *statement)
 
 static bool renderTimeSign(NAMidiParser *self, Statement *statement)
 {
-    // TODO TimeTable
     int tick = self->renderContext.tracks[self->renderContext.currentTrack].tick;
+    if (tick < self->renderContext.maximumMeasuredStep) {
+        self->error.kind = NAMidiParserErrorKindIllegalTimeSignBeforeMeasuredStep;
+        return false;
+    }
+
+    TimeTable *lastTimeTable = &self->renderContext.timeTable[self->renderContext.timeTableCount - 1];
+    if (tick < lastTimeTable->stepStart) {
+        self->error.kind = NAMidiParserErrorKindIllegalTimeSignBeforeLastTimeSign;
+        return false;
+    }
+
+    if (0 != (tick - lastTimeTable->stepStart) % lastTimeTable->measureLength) {
+        self->error.kind = NAMidiParserErrorKindIllegalTimeSignLocation;
+        return false;
+    }
+
+    int measure = lastTimeTable->measureStart + (tick - lastTimeTable->stepStart) / lastTimeTable->measureLength;
+
+    lastTimeTable->stepEnd = tick;
+    lastTimeTable->measureEnd = measure;
+
+    self->renderContext.timeTable = realloc(self->renderContext.timeTable, ++self->renderContext.timeTableCount * sizeof(TimeTable));
+    lastTimeTable = &self->renderContext.timeTable[self->renderContext.timeTableCount - 1];
+    lastTimeTable->stepStart = tick;
+    lastTimeTable->stepEnd = INT_MAX;
+    lastTimeTable->measureStart = measure;
+    lastTimeTable->measureEnd = MeasureMax + 1;
+    lastTimeTable->measureLength = self->renderContext.resolution * (4 / statement->values[1].i) * statement->values[0].i;
+
     NAMidiParserCallbackToHandler(self, NAMidiParserEventTypeTime, tick, statement->values[0].i, statement->values[1].i);
     return true;
 }
 
 static bool renderMeasure(NAMidiParser *self, Statement *statement)
 {
-    // TODO TimeTable
-    self->renderContext.tracks[self->renderContext.currentTrack].tick = statement->values[0].i * self->renderContext.resolution * 4;
+    int tick = 0;
+    int measure = statement->values[0].i;
+
+    for (int i = 0; i < self->renderContext.timeTableCount; ++i) {
+        TimeTable *timeTable = &self->renderContext.timeTable[i];
+        if (timeTable->measureStart <= measure && measure < timeTable->measureEnd) {
+            tick = timeTable->stepStart + (measure - timeTable->measureStart) * timeTable->measureLength;
+        }
+    }
+
+    self->renderContext.tracks[self->renderContext.currentTrack].tick = tick;
+    self->renderContext.maximumMeasuredStep = MAX(tick, self->renderContext.maximumMeasuredStep);
     return true;
 }
 
@@ -940,6 +999,9 @@ const char *NAMidiParserErrorKind2String(NAMidiParserErrorKind kind)
     CASE(NAMidiParserErrorKindIllegalTempoInPattern);
     CASE(NAMidiParserErrorKindInvalidTimeSign);
     CASE(NAMidiParserErrorKindIllegalTimeSignInPattern);
+    CASE(NAMidiParserErrorKindIllegalTimeSignBeforeMeasuredStep);
+    CASE(NAMidiParserErrorKindIllegalTimeSignBeforeLastTimeSign);
+    CASE(NAMidiParserErrorKindIllegalTimeSignLocation);
     CASE(NAMidiParserErrorKindInvalidMeasure);
     CASE(NAMidiParserErrorKindIllegalMeasureInPattern);
     CASE(NAMidiParserErrorKindIllegalPatternDefineInPattern);
