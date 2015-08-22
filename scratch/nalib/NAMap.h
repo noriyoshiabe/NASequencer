@@ -2,10 +2,16 @@
 
 #include "NAHash.h"
 #include "NADescription.h"
+#include "NAIterator.h"
 
 #include <stdbool.h>
 
 typedef struct _NAMap NAMap;
+
+typedef struct _NAMapEntry {
+    void *key;
+    void *value;
+} NAMapEntry;
 
 extern NAMap *NAMapCreate(NAHash keyHash, NADescription keyDescription, NADescription valueDescription);
 extern void NAMapDestroy(NAMap *self);
@@ -14,4 +20,7 @@ extern void *NAMapPut(NAMap *self, void *key, void *value);
 extern void *NAMapGet(NAMap *self, void *key);
 extern int NAMapCount(NAMap *self);
 extern void *NAMapRemove(NAMap *self, void *key);
+extern NAIterator *NAMapGetIterator(NAMap *self, void *buffer);
 extern void NAMapDump(NAMap *self);
+
+extern const int NAMapIteratorSize;

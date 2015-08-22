@@ -20,6 +20,15 @@ struct _NASet {
     NADescription description;
 };
 
+typedef struct _NASetIterator {
+    NAIterator super;
+    NASet *set;
+    int bucketIndex;
+    Entry *entry;
+} NASetIterator;
+
+const int NASetIteratorSize = sizeof(NASetIterator);
+
 NASet *NASetCreate(NAHash hash, NADescription description)
 {
     const int __initialSize = 32;
@@ -168,6 +177,47 @@ bool NASetRemove(NASet *self, void *value)
     }
 
     return false;
+}
+
+static bool NASetIteratorHasNext(NAIterator *_iterator)
+{
+    NASetIterator *iterator = (NASetIterator *)_iterator;
+    return NULL != iterator->entry;
+}
+
+static void *NASetIteratorNext(NAIterator *_iterator)
+{
+    NASetIterator *iterator = (NASetIterator *)_iterator;
+    void *ret = iterator->entry->value;
+
+    iterator->entry = iterator->entry->next;
+    if (!iterator->entry) {
+        for (iterator->bucketIndex += 1; iterator->bucketIndex < iterator->set->size; ++iterator->bucketIndex) {
+            iterator->entry = iterator->set->buckets[iterator->bucketIndex];
+            if (iterator->entry) {
+                break;
+            }
+        }
+    }
+
+    return ret;
+}
+
+NAIterator *NASetGetIterator(NASet *self, void *buffer)
+{
+    NASetIterator *iterator = buffer;
+    iterator->super.hasNext = NASetIteratorHasNext;
+    iterator->super.next = NASetIteratorNext;
+    iterator->set = self;
+
+    for (iterator->bucketIndex = 0; iterator->bucketIndex < self->size; ++iterator->bucketIndex) {
+        iterator->entry = self->buckets[iterator->bucketIndex];
+        if (iterator->entry) {
+            break;
+        }
+    }
+
+    return (NAIterator *)iterator;
 }
 
 void NASetDump(NASet *self)

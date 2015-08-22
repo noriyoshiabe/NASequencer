@@ -21,6 +21,15 @@ struct _NAMap {
     NADescription valueDescription;
 };
 
+typedef struct _NAMapIterator {
+    NAIterator super;
+    NAMap *map;
+    int bucketIndex;
+    Entry *entry;
+} NAMapIterator;
+
+const int NAMapIteratorSize = sizeof(NAMapIterator);
+
 NAMap *NAMapCreate(NAHash keyHash, NADescription keyDescription, NADescription valueDescription)
 {
     const int __initialSize = 32;
@@ -172,6 +181,47 @@ void *NAMapRemove(NAMap *self, void *key)
     }
 
     return NULL;
+}
+
+static bool NAMapIteratorHasNext(NAIterator *_iterator)
+{
+    NAMapIterator *iterator = (NAMapIterator *)_iterator;
+    return NULL != iterator->entry;
+}
+
+static void *NAMapIteratorNext(NAIterator *_iterator)
+{
+    NAMapIterator *iterator = (NAMapIterator *)_iterator;
+    void *ret = iterator->entry;
+
+    iterator->entry = iterator->entry->next;
+    if (!iterator->entry) {
+        for (iterator->bucketIndex += 1; iterator->bucketIndex < iterator->map->size; ++iterator->bucketIndex) {
+            iterator->entry = iterator->map->buckets[iterator->bucketIndex];
+            if (iterator->entry) {
+                break;
+            }
+        }
+    }
+
+    return ret;
+}
+
+NAIterator *NAMapGetIterator(NAMap *self, void *buffer)
+{
+    NAMapIterator *iterator = buffer;
+    iterator->super.hasNext = NAMapIteratorHasNext;
+    iterator->super.next = NAMapIteratorNext;
+    iterator->map = self;
+
+    for (iterator->bucketIndex = 0; iterator->bucketIndex < self->size; ++iterator->bucketIndex) {
+        iterator->entry = self->buckets[iterator->bucketIndex];
+        if (iterator->entry) {
+            break;
+        }
+    }
+
+    return (NAIterator *)iterator;
 }
 
 void NAMapDump(NAMap *self)

@@ -36,6 +36,12 @@ int main(int argc, char **argv)
 
     NASetDump(set);
 
+    uint8_t setIteratorBuffer[NASetIteratorSize];
+    NAIterator *iterator = NASetGetIterator(set, setIteratorBuffer);
+    while (iterator->hasNext(iterator)) {
+        printf("set iterator result: %s\n", iterator->next(iterator));
+    }
+
     NASetDestroy(set);
 
     NAMap *map = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionCString);
@@ -67,6 +73,14 @@ int main(int argc, char **argv)
     NAMapPut(map, "example13", "scratch");
 
     NAMapDump(map);
+
+    uint8_t mapIteratorBuffer[NAMapIteratorSize];
+    iterator = NAMapGetIterator(map, mapIteratorBuffer);
+    while (iterator->hasNext(iterator)) {
+        NAMapEntry *entry = iterator->next(iterator);
+        printf("map iterator result: %s: %s\n", entry->key, entry->value);
+    }
+
 
     NAMapDestroy(map);
     return 0;

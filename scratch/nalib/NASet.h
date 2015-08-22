@@ -2,6 +2,7 @@
 
 #include "NAHash.h"
 #include "NADescription.h"
+#include "NAIterator.h"
 
 #include <stdbool.h>
 
@@ -14,4 +15,7 @@ extern bool NASetAdd(NASet *self, void *value);
 extern void *NASetGet(NASet *self, void *value);
 extern int NASetCount(NASet *self);
 extern bool NASetRemove(NASet *self, void *value);
+extern NAIterator *NASetGetIterator(NASet *self, void *buffer);
 extern void NASetDump(NASet *self);
+
+extern const int NASetIteratorSize;
