@@ -40,6 +40,7 @@ typedef enum {
     NAMidiParserErrorKindIllegalMeasureInPattern,
     NAMidiParserErrorKindIllegalPatternDefineInPattern,
     NAMidiParserErrorKindIllegalPatternDefineInTrack,
+    NAMidiParserErrorKindIllegalPatternDefineDuplicateIdentifier,
     NAMidiParserErrorKindIllegalEnd,
     NAMidiParserErrorKindIllegalTrackStartInPattern,
     NAMidiParserErrorKindIllegalTrackStartInTrack,

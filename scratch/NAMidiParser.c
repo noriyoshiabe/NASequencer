@@ -426,6 +426,11 @@ static bool parsePatternDefine(NAMidiParser *self, Statement *statment, va_list 
         return false;
     }
 
+    if (NAMapContainsKey(self->patterns, statment->string)) {
+        self->error.kind = NAMidiParserErrorKindIllegalPatternDefineDuplicateIdentifier;
+        return false;
+    }
+
     statment->string = strdup(va_arg(argList, char *));
     self->parseContext.inPattern = true;
 
@@ -898,8 +903,8 @@ static bool renderNote(NAMidiParser *self, Statement *statement)
         ++pc;
         break;
     case 'n':
-        ++pc;
         accidental += NoteTableGetNaturalDiff(keySign, noteChar);
+        ++pc;
         break;
     }
 
@@ -1006,6 +1011,7 @@ const char *NAMidiParserErrorKind2String(NAMidiParserErrorKind kind)
     CASE(NAMidiParserErrorKindIllegalMeasureInPattern);
     CASE(NAMidiParserErrorKindIllegalPatternDefineInPattern);
     CASE(NAMidiParserErrorKindIllegalPatternDefineInTrack);
+    CASE(NAMidiParserErrorKindIllegalPatternDefineDuplicateIdentifier);
     CASE(NAMidiParserErrorKindIllegalEnd);
     CASE(NAMidiParserErrorKindIllegalTrackStartInPattern);
     CASE(NAMidiParserErrorKindIllegalTrackStartInTrack);
