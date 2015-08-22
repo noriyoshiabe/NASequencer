@@ -13,10 +13,10 @@ int yyparse(void *scanner, const char *filepath, ParserCallback callback, Parser
 typedef struct _Statement {
     ParseLocation location;
     StatementType type;
+    char *string;
     union {
         int i;
         float f;
-        char *s;
     } values[4];
 } Statement;
 
@@ -196,19 +196,8 @@ static Statement *StatementListAlloc(StatementList *self)
 static void StatementListDestroy(StatementList *self)
 {
     for (int i = 0; i < self->count; ++i) {
-        switch (self->array[i].type) {
-        case StatementTypeTitle:
-        case StatementTypeMarker:
-        case StatementTypePattern:
-        case StatementTypePatternDefine:
-        case StatementTypePhrase:
-        case StatementTypePhraseDefine:
-        case StatementTypeKey:
-        case StatementTypeNote:
-            free(self->array[i].values[0].s);
-            break;
-        default:
-            break;
+        if (self->array[i].string) {
+            free(self->array[i].string);
         }
     }
 
