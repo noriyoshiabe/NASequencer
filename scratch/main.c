@@ -9,8 +9,7 @@ int main(int argc, char **argv)
     if (!NAMidiParserExecuteParse(parser, argv[1])) {
         const NAMidiParserError *error = NAMidiParserGetError(parser);
         printf("error:\n");
-        printf("  kind: %d\n", error->kind);
-        printf("  message: %s\n", error->message);
+        printf("  kind: %s\n", NAMidiParserErrorKind2String(error->kind));
         printf("  filepath: %s\n", error->filepath);
         printf("  line: %d\n", error->line);
         printf("  column: %d\n", error->column);

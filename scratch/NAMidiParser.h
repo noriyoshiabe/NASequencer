@@ -43,7 +43,6 @@ typedef enum {
 
 typedef struct _NAMidiParserError {
     NAMidiParserErrorKind kind;
-    const char *message;
     const char *filepath;
     int line;
     int column;
@@ -58,3 +57,4 @@ extern bool NAMidiParserExecuteParse(NAMidiParser *self, const char *filepath);
 extern void NAMidiParserRender(NAMidiParser *self, void *view, NAMidiParserRenderHandler handler);
 extern const NAMidiParserError *NAMidiParserGetError(NAMidiParser *self);
 extern const char **NAMidiParserGetFilepaths(NAMidiParser *self);
+extern const char *NAMidiParserErrorKind2String(NAMidiParserErrorKind kind);
