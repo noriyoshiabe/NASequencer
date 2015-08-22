@@ -55,6 +55,7 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, const char *filepath, ParserC
 %token PLUS
 %token MINUS
 %token DIVISION
+%token COLON
 %token SEMICOLON
 
 %token INCLUDE
@@ -83,7 +84,7 @@ statement
     | TEMPO FLOAT                   { CALLBACK(@$, StatementTypeTempo, $2); }
     | TEMPO INTEGER                 { CALLBACK(@$, StatementTypeTempo, (float)$2); }
     | TIME INTEGER DIVISION INTEGER { CALLBACK(@$, StatementTypeTimeSign, $2, $4); }
-    | INTEGER                       { CALLBACK(@$, StatementTypeMeasure, $1); }
+    | INTEGER COLON                 { CALLBACK(@$, StatementTypeMeasure, $1); }
     | MARKER STRING                 { CALLBACK(@$, StatementTypeMarker, $2); }
     | IDENTIFIER                    { CALLBACK(@$, StatementTypePattern, $1); }
     | DEFINE IDENTIFIER             { CALLBACK(@$, StatementTypePatternDefine, $2); }

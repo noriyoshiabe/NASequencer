@@ -1,18 +1,22 @@
 title 'HogeHoge'
 ===========================
 resolution 480
-tempo 120.0
-time 4/4
 ---------------------------
 
 include 'drums.namidi'
 include 'bass.namidi'
 
-1 marker 'A'
-120 marker 'B'
-140 marker 'C'
-
 track 1
+===============
+1: marker 'A'
+   tempo 120.0
+   time 4/4
+120: marker 'B'
+140: marker 'C'
+---------------
+end
+
+track 2
 ===============
 channel 10
 voice 0 120 0
@@ -26,7 +30,7 @@ drums-a
 -----------------
 end
 
-track 2
+track 3
 ===============
 channel 12
 voice 0 44 0

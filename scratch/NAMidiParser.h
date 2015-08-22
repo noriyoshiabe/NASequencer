@@ -34,9 +34,11 @@ typedef enum {
     NAMidiParserErrorKindInvalidTimeSign,
     NAMidiParserErrorKindIllegalTimeSignInPattern,
     NAMidiParserErrorKindInvalidMeasure,
+    NAMidiParserErrorKindIllegalMeasureInPattern,
     NAMidiParserErrorKindIllegalPatternDefineInPattern,
     NAMidiParserErrorKindIllegalPatternDefineInTrack,
     NAMidiParserErrorKindIllegalEnd,
+    NAMidiParserErrorKindIllegalTrackStartInPattern,
     NAMidiParserErrorKindIllegalTrackStartInTrack,
     NAMidiParserErrorKindInvalidTrack,
     NAMidiParserErrorKindInvalidChannel,
@@ -57,6 +59,9 @@ typedef enum {
 
     NAMidiParserErrorKindPatternEndMissing,
     NAMidiParserErrorKindTrackEndMissing,
+
+    NAMidiParserErrorKindPatternMissing,
+    NAMidiParserErrorKindPatternCircularReference,
 } NAMidiParserErrorKind;
 
 typedef struct _NAMidiParserError {
@@ -67,9 +72,9 @@ typedef struct _NAMidiParserError {
 } NAMidiParserError;
 
 typedef struct _NAMidiParser NAMidiParser;
-typedef void (*NAMidiParserRenderHandler)(void *receiver, va_list argList);
+typedef void (*NAMidiParserRenderHandler)(void *receiver, NAMidiParserEventType type, va_list argList);
 
-extern NAMidiParser *NAMidiParserCreate(NAMidiParserRenderHandler handler);
+extern NAMidiParser *NAMidiParserCreate(NAMidiParserRenderHandler handler, void *receiver);
 extern void NAMidiParserDestroy(NAMidiParser *self);
 extern bool NAMidiParserExecuteParse(NAMidiParser *self, const char *filepath);
 extern const NAMidiParserError *NAMidiParserGetError(NAMidiParser *self);

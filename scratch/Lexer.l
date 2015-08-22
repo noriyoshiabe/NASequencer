@@ -55,13 +55,14 @@ KEY            key
 PLUS           "+"
 MINUS          "-"
 DIVISION       "/"
+COLON          ":"
 SEMICOLON      ";"
 
 INCLUDE        include
 
-IDENTIFIER     [_[:alpha:]][_\-[:alnum:]]+
 KEY_SIGN       [cdefgab](#|b)?(maj|min)
 NOTE           [cdefgab](#|b|n)?\-?[[:digit:]]{1,2}
+IDENTIFIER     [_[:alpha:]][_\-[:alnum:]]+
 
 EOL            \n
 
@@ -96,12 +97,13 @@ LINE_COMMENT   (\/\/|==|--).*$
 {PLUS}           { return PLUS; }
 {MINUS}          { return MINUS; }
 {DIVISION}       { return DIVISION; }
+{COLON}          { return COLON; }
 
 {INCLUDE}        { return INCLUDE; }
 
-{IDENTIFIER}     { yylval->s = yytext; return IDENTIFIER; }
 {NOTE}           { yylval->s = yytext; return NOTE; }
 {KEY_SIGN}       { yylval->s = yytext; return KEY_SIGN; }
+{IDENTIFIER}     { yylval->s = yytext; return IDENTIFIER; }
 
 {EOL}            { return EOL; }
 {SEMICOLON}      { return SEMICOLON; }

@@ -6,6 +6,7 @@
 #include "NoteTable.h"
 
 #include "NAMap.h"
+#include "NASet.h"
 
 #include <stdlib.h>
 #include <libgen.h>
@@ -63,12 +64,13 @@ struct _NAMidiParser {
     } parseContext;
 
     NAMidiParserRenderHandler handler;
+    void *receiver;
 
     struct {
         int resolution;
         TrackContext tracks[17];
         int currentTrack;
-        int maximumStep;
+        NASet *expandingPatterns;
     } renderContext;
 };
 
@@ -80,7 +82,7 @@ static void NAMidiParserErrorCallback(void *context, ParseLocation *location, co
 static char *getRealPath(const char *filepath);
 static char *buildPathWithDirectory(const char *directory, const char *filepath);
 
-NAMidiParser *NAMidiParserCreate(NAMidiParserRenderHandler handler)
+NAMidiParser *NAMidiParserCreate(NAMidiParserRenderHandler handler, void *receiver)
 {
     NAMidiParser *self = calloc(1, sizeof(NAMidiParser));
     self->songStatements = StatementListCreate();
@@ -89,8 +91,10 @@ NAMidiParser *NAMidiParserCreate(NAMidiParserRenderHandler handler)
     self->parseContext.currentStatements = self->songStatements;
 
     self->handler = handler;
+    self->receiver = receiver;
 
     self->renderContext.resolution = 480;
+    self->renderContext.expandingPatterns = NASetCreate(NAHashCString, NADescriptionCString);
 
     for (int i = 0; i < 17; ++i) {
         self->renderContext.tracks[i].tick = 0;
@@ -121,6 +125,8 @@ void NAMidiParserDestroy(NAMidiParser *self)
         StatementListDestroy(entry->value);
     }
     NAMapDestroy(self->patterns);
+
+    NASetDestroy(self->renderContext.expandingPatterns);
 
     StatementListDestroy(self->songStatements);
     free(self);
@@ -359,6 +365,11 @@ static bool parseTimeSign(NAMidiParser *self, Statement *statment, va_list argLi
 
 static bool parseMeasure(NAMidiParser *self, Statement *statment, va_list argList)
 {
+    if (self->parseContext.inPattern) {
+        self->error.kind = NAMidiParserErrorKindIllegalMeasureInPattern;
+        return false;
+    }
+
     int measure = va_arg(argList, int);
     if (!isValidRange(measure, 1, 9999)) {
         self->error.kind = NAMidiParserErrorKindInvalidMeasure;
@@ -422,6 +433,11 @@ static bool parseEnd(NAMidiParser *self, Statement *statment, va_list argList)
 
 static bool parseTrack(NAMidiParser *self, Statement *statment, va_list argList)
 {
+    if (self->parseContext.inPattern) {
+        self->error.kind = NAMidiParserErrorKindIllegalTrackStartInPattern;
+        return false;
+    }
+
     if (self->parseContext.inTrack) {
         self->error.kind = NAMidiParserErrorKindIllegalTrackStartInTrack;
         return false;
@@ -620,6 +636,176 @@ static bool parseInclude(NAMidiParser *self, Statement *statment, va_list argLis
     return ret;
 }
 
+typedef bool (*NAMidiParserStatemntRenderer)(NAMidiParser *self, Statement *statement);
+static NAMidiParserStatemntRenderer statementRendererTable[StatementTypeCount] = {NULL};
+
+static bool NAMidiParserRenderLocal(NAMidiParser *self, StatementList *statementList)
+{
+    bool success = false;
+
+    for (int i = 0; i < statementList->count; ++i) {
+        Statement *statement = &statementList->array[i];
+        NAMidiParserStatemntRenderer renderer = statementRendererTable[statement->type];
+
+        if (renderer) {
+            success = renderer(self, statement);
+
+            if (!success && !self->error.filepath) {
+                self->error.filepath = statement->location.filepath;;
+                self->error.line = statement->location.line;
+                self->error.column = statement->location.column;
+            }
+        }
+        else {
+            printf("renderer for statment=%s is not implemented.\n", StatementType2String(statement->type));
+            success = true;
+        }
+    }
+
+    return success;
+}
+
+static bool NAMidiParserRender(NAMidiParser *self)
+{
+    return NAMidiParserRenderLocal(self, self->songStatements);
+}
+
+static void NAMidiParserCallbackToHandler(NAMidiParser *self, NAMidiParserEventType type, ...)
+{
+    va_list argList;
+    va_start(argList, type);
+    self->handler(self->receiver, type, argList);
+    va_end(argList);
+}
+
+static bool renderNoOperation(NAMidiParser *self, Statement *statement)
+{
+    return true;
+}
+
+static bool renderTitle(NAMidiParser *self, Statement *statement)
+{
+    NAMidiParserCallbackToHandler(self, NAMidiParserEventTypeTitle, statement->string);
+    return true;
+}
+
+static bool renderResolution(NAMidiParser *self, Statement *statement)
+{
+    self->renderContext.resolution = statement->values[0].i;
+
+    for (int i = 0; i < 17; ++i) {
+        if (0 < self->renderContext.tracks[i].tick) {
+            self->error.kind = NAMidiParserErrorKindIllegalResolutionAfterStepForward;
+            return false;
+        }
+        self->renderContext.tracks[i].gatetime = self->renderContext.resolution;
+    }
+
+    return true;
+}
+
+static bool renderTempo(NAMidiParser *self, Statement *statement)
+{
+    int tick = self->renderContext.tracks[self->renderContext.currentTrack].tick;
+    NAMidiParserCallbackToHandler(self, NAMidiParserEventTypeTempo, tick, statement->values[0].f);
+    return true;
+}
+
+static bool renderTimeSign(NAMidiParser *self, Statement *statement)
+{
+    // TODO TimeTable
+    int tick = self->renderContext.tracks[self->renderContext.currentTrack].tick;
+    NAMidiParserCallbackToHandler(self, NAMidiParserEventTypeTime, tick, statement->values[0].i, statement->values[1].i);
+    return true;
+}
+
+static bool renderMeasure(NAMidiParser *self, Statement *statement)
+{
+    // TODO TimeTable
+    self->renderContext.tracks[self->renderContext.currentTrack].tick = statement->values[0].i * self->renderContext.resolution * 4;
+    return true;
+}
+
+static bool renderMarker(NAMidiParser *self, Statement *statement)
+{
+    int tick = self->renderContext.tracks[self->renderContext.currentTrack].tick;
+    NAMidiParserCallbackToHandler(self, NAMidiParserEventTypeMarker, tick, statement->string);
+    return true;
+}
+
+static bool renderPattern(NAMidiParser *self, Statement *statement)
+{
+    if (NASetContains(self->renderContext.expandingPatterns, statement->string)) {
+        self->error.kind = NAMidiParserErrorKindPatternCircularReference;
+        return false;
+    }
+
+    StatementList *statements = NAMapGet(self->patterns, statement->string);
+    if (!statements) {
+        self->error.kind = NAMidiParserErrorKindPatternMissing;
+        return false;
+    }
+
+    NASetAdd(self->renderContext.expandingPatterns, statement->string);
+    bool success = NAMidiParserRenderLocal(self, statements);
+    NASetRemove(self->renderContext.expandingPatterns, statement->string);
+
+    return success;
+}
+
+static bool renderTrack(NAMidiParser *self, Statement *statement)
+{
+    self->renderContext.currentTrack = statement->values[0].i;
+    return true;
+}
+
+static bool renderChannel(NAMidiParser *self, Statement *statement)
+{
+    self->renderContext.tracks[self->renderContext.currentTrack].channel = statement->values[0].i;
+    return true;
+}
+
+static bool renderVoice(NAMidiParser *self, Statement *statement)
+{
+    int tick = self->renderContext.tracks[self->renderContext.currentTrack].tick;
+    int channel = self->renderContext.tracks[self->renderContext.currentTrack].channel;
+    NAMidiParserCallbackToHandler(self, NAMidiParserEventTypeSound, tick, channel,
+            statement->values[0].i, statement->values[1].i, statement->values[2].i);
+    return true;
+}
+
+static bool renderVolume(NAMidiParser *self, Statement *statement)
+{
+    int tick = self->renderContext.tracks[self->renderContext.currentTrack].tick;
+    int channel = self->renderContext.tracks[self->renderContext.currentTrack].channel;
+    NAMidiParserCallbackToHandler(self, NAMidiParserEventTypeVolume, tick, channel, statement->values[0].i);
+    return true;
+}
+
+static bool renderPan(NAMidiParser *self, Statement *statement)
+{
+    int tick = self->renderContext.tracks[self->renderContext.currentTrack].tick;
+    int channel = self->renderContext.tracks[self->renderContext.currentTrack].channel;
+    NAMidiParserCallbackToHandler(self, NAMidiParserEventTypePan, tick, channel, statement->values[0].i);
+    return true;
+}
+
+static bool renderChorus(NAMidiParser *self, Statement *statement)
+{
+    int tick = self->renderContext.tracks[self->renderContext.currentTrack].tick;
+    int channel = self->renderContext.tracks[self->renderContext.currentTrack].channel;
+    NAMidiParserCallbackToHandler(self, NAMidiParserEventTypeChorus, tick, channel, statement->values[0].i);
+    return true;
+}
+
+static bool renderReverb(NAMidiParser *self, Statement *statement)
+{
+    int tick = self->renderContext.tracks[self->renderContext.currentTrack].tick;
+    int channel = self->renderContext.tracks[self->renderContext.currentTrack].channel;
+    NAMidiParserCallbackToHandler(self, NAMidiParserEventTypeReverb, tick, channel, statement->values[0].i);
+    return true;
+}
+
 static void __attribute__((constructor)) initializeTable()
 {
     statementParserTable[StatementTypeTitle] = parseTitle;
@@ -643,12 +829,23 @@ static void __attribute__((constructor)) initializeTable()
     statementParserTable[StatementTypeNote] = parseNote;
     statementParserTable[StatementTypeRest] = parseRest;
     statementParserTable[StatementTypeInclude] = parseInclude;
-}
 
-static bool NAMidiParserRender(NAMidiParser *self)
-{
-    // TODO
-    return true;
+    statementRendererTable[StatementTypeTitle] = renderTitle;
+    statementRendererTable[StatementTypeResolution] = renderResolution;
+    statementRendererTable[StatementTypeTempo] = renderTempo;
+    statementRendererTable[StatementTypeTimeSign] = renderTimeSign;
+    statementRendererTable[StatementTypeMeasure] = renderMeasure;
+    statementRendererTable[StatementTypeMarker] = renderMarker;
+    statementRendererTable[StatementTypePattern] = renderPattern;
+    statementRendererTable[StatementTypePatternDefine] = renderNoOperation;
+    statementRendererTable[StatementTypeEnd] = renderNoOperation;
+    statementRendererTable[StatementTypeTrack] = renderTrack;
+    statementRendererTable[StatementTypeChannel] = renderChannel;
+    statementRendererTable[StatementTypeVoice] = renderVoice;
+    statementRendererTable[StatementTypeVolume] = renderVolume;
+    statementRendererTable[StatementTypePan] = renderPan;
+    statementRendererTable[StatementTypeChorus] = renderChorus;
+    statementRendererTable[StatementTypeReverb] = renderReverb;
 }
 
 const char *NAMidiParserErrorKind2String(NAMidiParserErrorKind kind)
@@ -657,6 +854,7 @@ const char *NAMidiParserErrorKind2String(NAMidiParserErrorKind kind)
     switch (kind) {
     CASE(NAMidiParserErrorKindFileNotFound);
     CASE(NAMidiParserErrorKindSyntaxError);
+
     CASE(NAMidiParserErrorKindIllegalTitleRedefined);
     CASE(NAMidiParserErrorKindIllegalTitleInPattern);
     CASE(NAMidiParserErrorKindIllegalTitleInTrack);
@@ -670,9 +868,11 @@ const char *NAMidiParserErrorKind2String(NAMidiParserErrorKind kind)
     CASE(NAMidiParserErrorKindInvalidTimeSign);
     CASE(NAMidiParserErrorKindIllegalTimeSignInPattern);
     CASE(NAMidiParserErrorKindInvalidMeasure);
+    CASE(NAMidiParserErrorKindIllegalMeasureInPattern);
     CASE(NAMidiParserErrorKindIllegalPatternDefineInPattern);
     CASE(NAMidiParserErrorKindIllegalPatternDefineInTrack);
     CASE(NAMidiParserErrorKindIllegalEnd);
+    CASE(NAMidiParserErrorKindIllegalTrackStartInPattern);
     CASE(NAMidiParserErrorKindIllegalTrackStartInTrack);
     CASE(NAMidiParserErrorKindInvalidTrack);
     CASE(NAMidiParserErrorKindInvalidChannel);
@@ -690,8 +890,12 @@ const char *NAMidiParserErrorKind2String(NAMidiParserErrorKind kind)
     CASE(NAMidiParserErrorKindInvalidStep);
     CASE(NAMidiParserErrorKindInvalidGatetime);
     CASE(NAMidiParserErrorKindInvalidVelocity);
+
     CASE(NAMidiParserErrorKindPatternEndMissing);
     CASE(NAMidiParserErrorKindTrackEndMissing);
+
+    CASE(NAMidiParserErrorKindPatternMissing);
+    CASE(NAMidiParserErrorKindPatternCircularReference);
 
     default:
        break;

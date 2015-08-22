@@ -2,9 +2,8 @@
 
 #include "NAMidiParser.h"
 
-void _NAMidiParserRenderHandler(void *receiver, va_list argList)
+void _NAMidiParserRenderHandler(void *receiver, NAMidiParserEventType type, va_list argList)
 {
-    NAMidiParserEventType type = va_arg(argList, int);
     switch (type) {
     case NAMidiParserEventTypeNote:
         printf("%d:Note channel=%d noteNo=%d gatetime=%d velocity=%d\n",
@@ -50,7 +49,7 @@ void _NAMidiParserRenderHandler(void *receiver, va_list argList)
 
 int main(int argc, char **argv)
 {
-    NAMidiParser *parser = NAMidiParserCreate(_NAMidiParserRenderHandler);
+    NAMidiParser *parser = NAMidiParserCreate(_NAMidiParserRenderHandler, NULL);
     
     if (!NAMidiParserExecuteParse(parser, argv[1])) {
         const NAMidiParserError *error = NAMidiParserGetError(parser);
