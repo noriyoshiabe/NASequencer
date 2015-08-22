@@ -30,15 +30,15 @@ void _NAMidiParserRenderHandler(void *receiver, NAMidiParserEventType type, va_l
                 va_arg(argList, int), va_arg(argList, int), va_arg(argList, int));
         break;
     case NAMidiParserEventTypePan:
-        printf("%d:Pan channel=%d volume=%d\n",
+        printf("%d:Pan channel=%d pan=%d\n",
                 va_arg(argList, int), va_arg(argList, int), va_arg(argList, int));
         break;
     case NAMidiParserEventTypeChorus:
-        printf("%d:Chorus channel=%d volume=%d\n",
+        printf("%d:Chorus channel=%d chorus=%d\n",
                 va_arg(argList, int), va_arg(argList, int), va_arg(argList, int));
         break;
     case NAMidiParserEventTypeReverb:
-        printf("%d:Reverb channel=%d volume=%d\n",
+        printf("%d:Reverb channel=%d reverb=%d\n",
                 va_arg(argList, int), va_arg(argList, int), va_arg(argList, int));
         break;
     case NAMidiParserEventTypeKeySign:

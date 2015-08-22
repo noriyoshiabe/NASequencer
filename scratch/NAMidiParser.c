@@ -9,6 +9,7 @@
 #include "NASet.h"
 
 #include <stdlib.h>
+#include <ctype.h>
 #include <libgen.h>
 #include <limits.h>
 
@@ -561,7 +562,7 @@ static bool parseKey(NAMidiParser *self, Statement *statment, va_list argList)
     }
 
     const char *keyString = va_arg(argList, char *);
-    char keyChar = keyString[0];
+    char keyChar = tolower(keyString[0]);
 
     bool sharp = NULL != strchr(keyString, '#');
     bool flat = NULL != strchr(keyString, 'b');
@@ -610,7 +611,7 @@ static bool parseRest(NAMidiParser *self, Statement *statment, va_list argList)
 {
     int step = va_arg(argList, int);
 
-    if (!isValidRange(step, -1, 65535)) {
+    if (!isValidRange(step, 0, 65535)) {
         self->error.kind = NAMidiParserErrorKindInvalidStep;
         return false;
     }
@@ -820,7 +821,50 @@ static bool renderKey(NAMidiParser *self, Statement *statement)
 
 static bool renderNote(NAMidiParser *self, Statement *statement)
 {
-    // TODO
+    const char *pc = statement->string;
+
+    NoteTableKeySign keySign = self->renderContext.tracks[self->renderContext.currentTrack].keySign;
+
+    char noteChar = tolower(*pc);
+    int noteNo = NoteTableGetBaseNoteNo(keySign, noteChar);
+    int accidental = 0;
+
+    switch (*(++pc)) {
+    case '#':
+        ++accidental;
+        ++pc;
+        break;
+    case 'b':
+        --accidental;
+        ++pc;
+        break;
+    case 'n':
+        ++pc;
+        accidental += NoteTableGetNaturalDiff(keySign, noteChar);
+        break;
+    }
+
+    int octave = atoi(pc);
+    noteNo += accidental + 12 * octave;
+
+    if (!isValidRange(noteNo, 0, 127)) {
+        self->error.kind = NAMidiParserErrorKindInvalidNote;
+        return false;
+    }
+
+    int tick = self->renderContext.tracks[self->renderContext.currentTrack].tick;
+    int channel = self->renderContext.tracks[self->renderContext.currentTrack].channel;
+
+    int step = -1 != statement->values[0].i ? statement->values[0].i : 0;
+    int gatetime = -1 != statement->values[1].i ? statement->values[1].i : self->renderContext.tracks[self->renderContext.currentTrack].gatetime;
+    int velocity = -1 != statement->values[2].i ? statement->values[2].i : self->renderContext.tracks[self->renderContext.currentTrack].velocity;
+
+    NAMidiParserCallbackToHandler(self, NAMidiParserEventTypeNote, tick, channel, noteNo, gatetime, velocity);
+
+    self->renderContext.tracks[self->renderContext.currentTrack].tick += step;
+    self->renderContext.tracks[self->renderContext.currentTrack].gatetime = gatetime;
+    self->renderContext.tracks[self->renderContext.currentTrack].velocity = velocity;
+
     return true;
 }
 
