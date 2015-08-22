@@ -240,6 +240,12 @@ static void StatementListDestroy(StatementList *self)
     free(self);
 }
 
+static bool parseTitle(NAMidiParser *self, Statement *statment, va_list argList)
+{
+    statment->string = strdup(va_arg(argList, char *));
+    return true;
+}
+
 static bool parseResolution(NAMidiParser *self, Statement *statment, va_list argList)
 {
     int resolution = va_arg(argList, int);
@@ -478,7 +484,7 @@ static bool parseTranspose(NAMidiParser *self, Statement *statment, va_list argL
 
 static bool parseKey(NAMidiParser *self, Statement *statment, va_list argList)
 {
-    char *keyString = va_arg(argList, char *);
+    const char *keyString = va_arg(argList, char *);
     char keyChar = keyString[0];
 
     bool sharp = NULL != strchr(keyString, '#');
@@ -493,6 +499,52 @@ static bool parseKey(NAMidiParser *self, Statement *statment, va_list argList)
     }
 
     statment->values[0].i = key;
+    return true;
+}
+
+static bool parseNote(NAMidiParser *self, Statement *statment, va_list argList)
+{
+    const char *noteString = va_arg(argList, char *);
+    int step = va_arg(argList, int);
+    int gatetime = va_arg(argList, int);
+    int velocity = va_arg(argList, int);
+
+    if (!isValidRange(step, -1, 65535)) {
+        self->error.kind = NAMidiParserErrorKindInvalidStep;
+        self->error.message = "invalid range of step.";
+        return false;
+    }
+
+    if (!isValidRange(step, -1, 65535)) {
+        self->error.kind = NAMidiParserErrorKindInvalidGatetime;
+        self->error.message = "invalid range of gatetime.";
+        return false;
+    }
+
+    if (!isValidRange(velocity, -1, 127)) {
+        self->error.kind = NAMidiParserErrorKindInvalidVelocity;
+        self->error.message = "invalid range of velocity.";
+        return false;
+    }
+
+    statment->string = strdup(noteString);
+    statment->values[0].i = step;
+    statment->values[1].i = gatetime;
+    statment->values[2].i = velocity;
+    return true;
+}
+
+static bool parseRest(NAMidiParser *self, Statement *statment, va_list argList)
+{
+    int step = va_arg(argList, int);
+
+    if (!isValidRange(step, -1, 65535)) {
+        self->error.kind = NAMidiParserErrorKindInvalidStep;
+        self->error.message = "invalid range of step.";
+        return false;
+    }
+
+    statment->values[0].i = step;
     return true;
 }
 
@@ -515,6 +567,7 @@ static bool parseInclude(NAMidiParser *self, Statement *statment, va_list argLis
 
 static void __attribute__((constructor)) initializeTable()
 {
+    statementParserTable[StatementTypeTitle] = parseTitle;
     statementParserTable[StatementTypeResolution] = parseResolution;
     statementParserTable[StatementTypeTempo] = parseTempo;
     statementParserTable[StatementTypeTimeSign] = parseTimeSign;
@@ -532,6 +585,8 @@ static void __attribute__((constructor)) initializeTable()
     statementParserTable[StatementTypeReverb] = parseReverb;
     statementParserTable[StatementTypeTranspose] = parseTranspose;
     statementParserTable[StatementTypeKey] = parseKey;
+    statementParserTable[StatementTypeNote] = parseNote;
+    statementParserTable[StatementTypeRest] = parseRest;
     statementParserTable[StatementTypeInclude] = parseInclude;
 }
 

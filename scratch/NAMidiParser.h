@@ -35,6 +35,10 @@ typedef enum {
     NAMidiParserErrorKindInvalidReverb,
     NAMidiParserErrorKindInvalidTranspose,
     NAMidiParserErrorKindInvalidKeySign,
+    NAMidiParserErrorKindInvalidNote,
+    NAMidiParserErrorKindInvalidStep,
+    NAMidiParserErrorKindInvalidGatetime,
+    NAMidiParserErrorKindInvalidVelocity,
 } NAMidiParserErrorKind;
 
 typedef struct _NAMidiParserError {
