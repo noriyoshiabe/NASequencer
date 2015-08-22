@@ -8,7 +8,7 @@
 #include <libgen.h>
 #include <limits.h>
 
-int yyparse(void *scanner, ParserCallback callback, ParserErrorCallback errorCallback);
+int yyparse(void *scanner, const char *filepath, ParserCallback callback, ParserErrorCallback errorCallback);
 
 typedef struct _Statement {
     ParseLocation location;
@@ -45,7 +45,6 @@ struct _NAMidiParser {
     struct {
         NAMidiParserState state;
         const StatementList *currentStatements;
-        const char *currentFilepath;
     } parseContext;
 };
 
@@ -97,18 +96,15 @@ bool NAMidiParserExecuteParse(NAMidiParser *self, const char *filepath)
     if (!fp) {
         self->error.kind = NAMidiParserErrorKindFileNotFound;
         self->error.message = strdup("include file is not found.");
-        self->error.filepath = self->parseContext.currentFilepath;
         return ret;
     }
-
-    self->parseContext.currentFilepath = _filepath;
 
     yylex_init_extra(self, &scanner);
 
     YY_BUFFER_STATE state = yy_create_buffer(fp, YY_BUF_SIZE, scanner);
     yy_switch_to_buffer(state, scanner);
 
-    if (yyparse(scanner, NAMidiParserCallback, NAMidiParserErrorCallback)) {
+    if (yyparse(scanner, _filepath, NAMidiParserCallback, NAMidiParserErrorCallback)) {
         goto ERROR;
     }
 
@@ -136,7 +132,7 @@ const char **NAMidiParserGetFilepaths(NAMidiParser *self)
     return (const char **)self->filepaths;
 }
 
-typedef bool (*NAMidiParserStatemntParser)(NAMidiParser *self, StatementType type, va_list argList);
+typedef bool (*NAMidiParserStatemntParser)(NAMidiParser *self, ParseLocation *location, StatementType type, va_list argList);
 static NAMidiParserStatemntParser statementParserTable[StatementTypeCount] = {NULL};
 
 static bool NAMidiParserCallback(void *context, ParseLocation *location, StatementType type, ...)
@@ -150,14 +146,15 @@ static bool NAMidiParserCallback(void *context, ParseLocation *location, Stateme
     NAMidiParserStatemntParser parser = statementParserTable[type];
     if (parser) {
         printf("statment=%s\n", StatementType2String(type));
-        success = parser(self, type, argList);
+        success = parser(self, location, type, argList);
     }
     else {
         printf("parser for statment=%s id not implemented.\n", StatementType2String(type));
         success = true;
     }
 
-    if (!success && !self->error.line) {
+    if (!success && !self->error.filepath) {
+        self->error.filepath = location->filepath;;
         self->error.line = location->line;
         self->error.column = location->column;
     }
@@ -173,7 +170,7 @@ static void NAMidiParserErrorCallback(void *context, ParseLocation *location, co
 
     self->error.kind = NAMidiParserErrorKindSyntaxError;
     self->error.message = strdup(message);
-    self->error.filepath = self->parseContext.currentFilepath;
+    self->error.filepath = location->filepath;
     self->error.line = location->line;
     self->error.column = location->column;
 }
@@ -219,7 +216,7 @@ static void StatementListDestroy(StatementList *self)
     free(self);
 }
 
-static bool parseInclude(NAMidiParser *self, StatementType type, va_list argList)
+static bool parseInclude(NAMidiParser *self, ParseLocation *location, StatementType type, va_list argList)
 {
     char filename[256];
     char *_filename = va_arg(argList, char *);
@@ -227,7 +224,7 @@ static bool parseInclude(NAMidiParser *self, StatementType type, va_list argList
     strncpy(filename, _filename + 1, len - 2);
     filename[len - 2] = '\0';
     char buf[PATH_MAX + 1];
-    snprintf(buf, PATH_MAX + 1, "%s/%s", dirname((char *)self->parseContext.currentFilepath), filename);
+    snprintf(buf, PATH_MAX + 1, "%s/%s", dirname((char *)location->filepath), filename);
 
     return NAMidiParserExecuteParse(self, buf);
 }

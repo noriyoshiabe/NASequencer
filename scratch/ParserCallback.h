@@ -30,6 +30,7 @@ typedef enum {
 } StatementType;
 
 typedef struct _ParseLocation {
+    const char *filepath;
     int line;
     int column;
 } ParseLocation;
