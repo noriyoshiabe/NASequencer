@@ -12,14 +12,13 @@ typedef enum {
     StatementTypePattern,
     StatementTypePatternDefine,
     StatementTypeEnd,
+    StatementTypeTrack,
     StatementTypeChannel,
     StatementTypeVoice,
     StatementTypeVolume,
     StatementTypePan,
     StatementTypeChrous,
     StatementTypeReverb,
-    StatementTypePhrase,
-    StatementTypePhraseDefine,
     StatementTypeTranspose,
     StatementTypeKey,
     StatementTypeNote,
@@ -51,14 +50,13 @@ static inline const char *StatementType2String(StatementType type)
     CASE(StatementTypePattern);
     CASE(StatementTypePatternDefine);
     CASE(StatementTypeEnd);
+    CASE(StatementTypeTrack);
     CASE(StatementTypeChannel);
     CASE(StatementTypeVoice);
     CASE(StatementTypeVolume);
     CASE(StatementTypePan);
     CASE(StatementTypeChrous);
     CASE(StatementTypeReverb);
-    CASE(StatementTypePhrase);
-    CASE(StatementTypePhraseDefine);
     CASE(StatementTypeTranspose);
     CASE(StatementTypeKey);
     CASE(StatementTypeNote);

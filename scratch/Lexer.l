@@ -42,6 +42,7 @@ TIME           time
 MARKER         marker
 DEFINE         define
 END            end
+TRACK          track
 CHANNEL        channel
 VOICE          voice
 VOLUME         volume
@@ -58,9 +59,7 @@ SEMICOLON      ";"
 
 INCLUDE        include
 
-IDENTIFIER     [^@$;"=\^%!\`\n[:blank:]]+
-PATTERN_ID     @{IDENTIFIER}
-PHRASE_ID      ${IDENTIFIER}
+IDENTIFIER     [_\-[:alnum:]]+
 KEY_SIGN       [cdefgab](#|b)?(maj|min)
 NOTE           [cdefgab](#|b|n)?\-?[[:digit:]]{1,2}
 
@@ -84,6 +83,7 @@ LINE_COMMENT   (\/\/|==|--).*$
 {MARKER}         { return MARKER; }
 {DEFINE}         { return DEFINE; }
 {END}            { return END; }
+{TRACK}          { return TRACK; }
 {CHANNEL}        { return CHANNEL; }
 {VOICE}          { return VOICE; }
 {VOLUME}         { return VOLUME; }
@@ -97,14 +97,14 @@ LINE_COMMENT   (\/\/|==|--).*$
 {MINUS}          { return MINUS; }
 {DIVISION}       { return DIVISION; }
 
-{PATTERN_ID}     { yylval->s = yytext + 1; return PATTERN_ID; }
-{PHRASE_ID}      { yylval->s = yytext + 1; return PHRASE_ID; }
+{INCLUDE}        { return INCLUDE; }
+
+{IDENTIFIER}     { yylval->s = yytext; return IDENTIFIER; }
 {NOTE}           { yylval->s = yytext; return NOTE; }
 {KEY_SIGN}       { yylval->s = yytext; return KEY_SIGN; }
 
 {EOL}            { return EOL; }
 {SEMICOLON}      { return SEMICOLON; }
-{INCLUDE}        { return INCLUDE; }
 
 {LINE_COMMENT}   { }
 "/*"             { BEGIN(COMMENT); }

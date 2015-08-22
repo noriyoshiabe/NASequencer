@@ -42,6 +42,7 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, const char *filepath, ParserC
 %token MARKER
 %token DEFINE
 %token END
+%token TRACK
 %token CHANNEL
 %token VOICE
 %token VOLUME
@@ -59,8 +60,6 @@ extern int yyerror(YYLTYPE *yylloc, void *scanner, const char *filepath, ParserC
 %token INCLUDE
 
 %token <s>IDENTIFIER
-%token <s>PATTERN_ID
-%token <s>PHRASE_ID
 %token <s>KEY_SIGN
 %token <s>NOTE
 
@@ -86,17 +85,16 @@ statement
     | TIME INTEGER DIVISION INTEGER { CALLBACK(@$, StatementTypeTimeSign, $2, $4); }
     | INTEGER                       { CALLBACK(@$, StatementTypeMeasure, $1); }
     | MARKER STRING                 { CALLBACK(@$, StatementTypeMarker, $2); }
-    | PATTERN_ID                    { CALLBACK(@$, StatementTypePattern, $1); }
-    | DEFINE PATTERN_ID             { CALLBACK(@$, StatementTypePatternDefine, $2); }
+    | IDENTIFIER                    { CALLBACK(@$, StatementTypePattern, $1); }
+    | DEFINE IDENTIFIER             { CALLBACK(@$, StatementTypePatternDefine, $2); }
     | END                           { CALLBACK(@$, StatementTypeEnd, NULL); }
+    | TRACK INTEGER                 { CALLBACK(@$, StatementTypeTrack, $2); }
     | CHANNEL INTEGER               { CALLBACK(@$, StatementTypeChannel, $2); }
     | VOICE INTEGER INTEGER INTEGER { CALLBACK(@$, StatementTypeVoice, $2, $3, $4); }
     | VOLUME INTEGER                { CALLBACK(@$, StatementTypeVolume, $2); }
     | PAN INTEGER                   { CALLBACK(@$, StatementTypePan, $2); }
     | CHORUS INTEGER                { CALLBACK(@$, StatementTypeChrous, $2); }
     | REVERB INTEGER                { CALLBACK(@$, StatementTypeReverb, $2); }
-    | PHRASE_ID                     { CALLBACK(@$, StatementTypePhrase, $1); }
-    | DEFINE PHRASE_ID              { CALLBACK(@$, StatementTypePhraseDefine, $2); }
     | TRANSPOSE INTEGER             { CALLBACK(@$, StatementTypeTranspose, $2); }
     | TRANSPOSE PLUS INTEGER        { CALLBACK(@$, StatementTypeTranspose, $3); }
     | TRANSPOSE MINUS INTEGER       { CALLBACK(@$, StatementTypeTranspose, -$3); }

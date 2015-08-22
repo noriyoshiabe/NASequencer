@@ -1,104 +1,44 @@
-include 'include.namidi'
+title 'HogeHoge'
+===========================
+resolution 480
+tempo 120.0
+time 4/4
+---------------------------
 
-title 'Title'
-=================
-resolution 480; tempo 120.0; time 4/4
------------------
-1
-  marker 'Start'
-  @Initialize,ss
-  @Intro
-9
-  marker 'A'
-  @A
-17
-  @Intro'
-25
-  @B
-33
-  @C
------------------
+include 'drums.namidi'
+include 'bass.namidi'
 
-define @Initialize
-===================
-channel 1
-  voice 0 120 0
-  volume 127
-  pan 127
-  chorus 127
-  reverb 127
-channel  2
-  voice 0 120 0
-  volume 127
-  pan 127
-  chorus 127
-  reverb 127
--------------------
-end
+1 marker 'A'
+120 marker 'B'
+140 marker 'C'
 
-define @Intro
-==============
+track 1
+===============
 channel 10
-  $Intro-Drums
+voice 0 120 0
+volume 127
+pan 127
+chorus 127
+reverb 127
+---------------
+drums-intro
+drums-a
+-----------------
+end
+
+track 2
+===============
 channel 12
-  $Intro-Bass
-channel 1
-  $Intro-Melo
---------------
-end
-
-define $Intro-Drums
-===================
-C1
-C1 - 240 127
-E1 240
-C-1
-E1 240
-C1
-E1 240
---------------
-C1 240
-E1
-C1 240
-E1
-C1 240
-E1
---------------
-end
-
-define $Intro-Melo
-===================
-transpose +1
+voice 0 44 0
+volume 127
+pan 127
+chorus 127
+reverb 127
+---------------
 key C#maj
---------------
-- 480
-C1 - 1440 127
-E1 240 - 100
-C1
-E#1 240 // sharp
-C1
-E1 240 - 127
---------------
-C1
-B1 240
-C1
-E1 240
-C1
-Eb1 240 // flat
-En1 240 // natural
---------------
+transpose +1
+---------------
+bass-intro
+bass-a
+---------------
 end
-
------------------------
--- This is a comment --
------------------------
-
--- This is a comment --
-
--- This is a comment
-
-// This is a comment
-
-/*
- * This is a comment
- */

@@ -51,6 +51,9 @@ struct _NAMidiParser {
 static bool NAMidiParserCallback(void *context, ParseLocation *location, StatementType type, ...);
 static void NAMidiParserErrorCallback(void *context, ParseLocation *location, const char *message);
 
+static char *getRealPath(const char *filepath);
+static char *buildPathWithDirectory(const char *directory, const char *filepath);
+
 NAMidiParser *NAMidiParserCreate()
 {
     NAMidiParser *self = calloc(1, sizeof(NAMidiParser));
@@ -87,7 +90,8 @@ bool NAMidiParserExecuteParse(NAMidiParser *self, const char *filepath)
 
     self->filepaths = realloc(self->filepaths, (self->fileCount + 2) * sizeof(char *));
 
-    char *_filepath = realpath(filepath, NULL);
+    char *_filepath = getRealPath(filepath);
+
     _filepath = _filepath ? _filepath : strdup(filepath);
     self->filepaths[self->fileCount] = _filepath;
     self->filepaths[++self->fileCount] = NULL;
@@ -149,7 +153,7 @@ static bool NAMidiParserCallback(void *context, ParseLocation *location, Stateme
         success = parser(self, location, type, argList);
     }
     else {
-        printf("parser for statment=%s id not implemented.\n", StatementType2String(type));
+        printf("parser for statment=%s is not implemented.\n", StatementType2String(type));
         success = true;
     }
 
@@ -214,13 +218,12 @@ static bool parseInclude(NAMidiParser *self, ParseLocation *location, StatementT
     filename[len - 2] = '\0';
 
     char *directory = dirname((char *)location->filepath);
+    char *fullPath = buildPathWithDirectory(directory, filename);
 
-    char buf[PATH_MAX + 1];
-    snprintf(buf, PATH_MAX + 1, "%s/%s", directory, filename);
+    bool ret = NAMidiParserExecuteParse(self, fullPath);
+    free(fullPath);
 
-    free(directory);
-
-    return NAMidiParserExecuteParse(self, buf);
+    return ret;
 }
 
 static void __attribute__((constructor)) initializeTable()
@@ -228,3 +231,24 @@ static void __attribute__((constructor)) initializeTable()
     statementParserTable[StatementTypeInclude] = parseInclude;
 }
 
+static char *getRealPath(const char *filepath)
+{
+    char buf[PATH_MAX];
+    char *_filepath = realpath(filepath, buf);
+    if (!_filepath) {
+        return NULL;
+    }
+
+    char *ret = malloc(strlen(_filepath) + 1);
+    strcpy(ret, _filepath);
+    return ret;
+}
+
+static char *buildPathWithDirectory(const char *directory, const char *filename)
+{
+    char buf[PATH_MAX];
+    snprintf(buf, PATH_MAX, "%s/%s", directory, filename);
+    char *ret = malloc(strlen(buf) + 1);
+    strcpy(ret, buf);
+    return ret;
+}
