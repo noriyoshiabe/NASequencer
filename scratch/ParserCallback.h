@@ -25,6 +25,8 @@ typedef enum {
     StatementTypeNote,
     StatementTypeRest,
     StatementTypeInclude,
+
+    StatementTypeCount,
 } StatementType;
 
 typedef struct _ParseLocation {
