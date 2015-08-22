@@ -353,3 +353,46 @@ NoteTableKeySign NoteTableGetKeySign(char keyChar, bool sharp, bool flat, bool m
 
     return table[Index(keyChar)][sharpFlatIdx][majorMinorIdx];
 }
+
+char *NoteTableKeySign2String(NoteTableKeySign keySign)
+{
+#define CASE(keySign) case keySign: return &(#keySign[16])
+    switch (keySign) {
+    CASE(NoteTableKeySignCMajor);
+    CASE(NoteTableKeySignGMajor);
+    CASE(NoteTableKeySignDMajor);
+    CASE(NoteTableKeySignAMajor);
+    CASE(NoteTableKeySignEMajor);
+    CASE(NoteTableKeySignBMajor);
+
+    CASE(NoteTableKeySignFMajor);
+    CASE(NoteTableKeySignBFlatMajor);
+    CASE(NoteTableKeySignEFlatMajor);
+    CASE(NoteTableKeySignAFlatMajor);
+    CASE(NoteTableKeySignDFlatMajor);
+    CASE(NoteTableKeySignGFlatMajor);
+
+    CASE(NoteTableKeySignFSharpMajor);
+
+    CASE(NoteTableKeySignAMinor);
+    CASE(NoteTableKeySignEMinor);
+    CASE(NoteTableKeySignBMinor);
+    CASE(NoteTableKeySignFSharpMinor);
+    CASE(NoteTableKeySignCSharpMinor);
+    CASE(NoteTableKeySignGSharpMinor);
+    CASE(NoteTableKeySignDMinor);
+    CASE(NoteTableKeySignGMinor);
+    CASE(NoteTableKeySignCMinor);
+    CASE(NoteTableKeySignFMinor);
+    CASE(NoteTableKeySignBFlatMinor);
+    CASE(NoteTableKeySignEFlatMinor);
+
+    CASE(NoteTableKeySignDSharpMinor);
+
+    default:
+       break;
+    }
+
+    return "Unknown key sign";
+#undef CASE
+}

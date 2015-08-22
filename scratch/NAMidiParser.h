@@ -9,6 +9,12 @@ typedef enum {
     NAMidiParserEventTypeTime,
     NAMidiParserEventTypeSound,
     NAMidiParserEventTypeMarker,
+    NAMidiParserEventTypeTitle,
+    NAMidiParserEventTypeVolume,
+    NAMidiParserEventTypePan,
+    NAMidiParserEventTypeChorus,
+    NAMidiParserEventTypeReverb,
+    NAMidiParserEventTypeKeySign,
 } NAMidiParserEventType;
 
 typedef enum {
@@ -39,6 +45,9 @@ typedef enum {
     NAMidiParserErrorKindInvalidStep,
     NAMidiParserErrorKindInvalidGatetime,
     NAMidiParserErrorKindInvalidVelocity,
+
+    NAMidiParserErrorKindPatternEndMissing,
+    NAMidiParserErrorKindTrackEndMissing,
 } NAMidiParserErrorKind;
 
 typedef struct _NAMidiParserError {
@@ -51,10 +60,9 @@ typedef struct _NAMidiParserError {
 typedef struct _NAMidiParser NAMidiParser;
 typedef void (*NAMidiParserRenderHandler)(void *receiver, va_list argList);
 
-extern NAMidiParser *NAMidiParserCreate();
+extern NAMidiParser *NAMidiParserCreate(NAMidiParserRenderHandler handler);
 extern void NAMidiParserDestroy(NAMidiParser *self);
 extern bool NAMidiParserExecuteParse(NAMidiParser *self, const char *filepath);
-extern void NAMidiParserRender(NAMidiParser *self, void *view, NAMidiParserRenderHandler handler);
 extern const NAMidiParserError *NAMidiParserGetError(NAMidiParser *self);
 extern const char **NAMidiParserGetFilepaths(NAMidiParser *self);
 extern const char *NAMidiParserErrorKind2String(NAMidiParserErrorKind kind);

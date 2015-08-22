@@ -15,6 +15,8 @@
 #define isValidRange(v, from, to) (from <= v && v <= to)
 
 int yyparse(void *scanner, const char *filepath, ParserCallback callback, ParserErrorCallback errorCallback);
+int yyget_lineno(void *scanner);
+int yyget_column(void *scanner);
 
 typedef struct _Statement {
     ParseLocation location;
@@ -36,11 +38,6 @@ static StatementList *StatementListCreate();
 static Statement *StatementListAlloc(StatementList *self);
 static void StatementListDestroy(StatementList *self);
 
-typedef enum {
-    NAMidiParserStateSong,
-    NAMidiParserStatePattern,
-} NAMidiParserState;
-
 struct _NAMidiParser {
     NAMidiParserError error;
     StatementList *songStatements;
@@ -49,27 +46,31 @@ struct _NAMidiParser {
     NAMap *patterns;
 
     struct {
-        NAMidiParserState state;
         StatementList *currentStatements;
+        bool inPattern;
         bool inTrack;
     } parseContext;
+
+    NAMidiParserRenderHandler handler;
 };
 
 static bool NAMidiParserParseFile(NAMidiParser *self, const char *filepath);
+static bool NAMidiParserRender(NAMidiParser *self);
 static bool NAMidiParserCallback(void *context, ParseLocation *location, StatementType type, ...);
 static void NAMidiParserErrorCallback(void *context, ParseLocation *location, const char *message);
 
 static char *getRealPath(const char *filepath);
 static char *buildPathWithDirectory(const char *directory, const char *filepath);
 
-NAMidiParser *NAMidiParserCreate()
+NAMidiParser *NAMidiParserCreate(NAMidiParserRenderHandler handler)
 {
     NAMidiParser *self = calloc(1, sizeof(NAMidiParser));
     self->songStatements = StatementListCreate();
 
     self->patterns = NAMapCreate(NAHashCString, NADescriptionCString, NULL);
-    self->parseContext.state = NAMidiParserStateSong;
     self->parseContext.currentStatements = self->songStatements;
+
+    self->handler = handler;
 
     return self;
 }
@@ -102,7 +103,9 @@ bool NAMidiParserExecuteParse(NAMidiParser *self, const char *filepath)
         return false;
     }
 
-    // TODO Render?
+    if (!NAMidiParserRender(self)) {
+        return false;
+    }
 
     return true;
 }
@@ -134,7 +137,13 @@ static bool NAMidiParserParseFile(NAMidiParser *self, const char *filepath)
         goto ERROR;
     }
 
-    // TODO state check
+    if (self->parseContext.inPattern || self->parseContext.inTrack) {
+        self->error.kind = self->parseContext.inTrack ? NAMidiParserErrorKindTrackEndMissing : NAMidiParserErrorKindPatternEndMissing;
+        self->error.filepath = _filepath;
+        self->error.line = yyget_lineno(scanner);
+        self->error.column = yyget_column(scanner);
+        goto ERROR;
+    }
 
     ret = true;
 
@@ -144,11 +153,6 @@ ERROR:
     fclose(fp);
 
     return ret;
-}
-
-void NAMidiParserRender(NAMidiParser *self, void *view, NAMidiParserRenderHandler handler)
-{
-    // TODO remove?
 }
 
 const NAMidiParserError *NAMidiParserGetError(NAMidiParser *self)
@@ -308,7 +312,7 @@ static bool parsePattern(NAMidiParser *self, Statement *statment, va_list argLis
 
 static bool parsePatternDefine(NAMidiParser *self, Statement *statment, va_list argList)
 {
-    if (NAMidiParserStateSong != self->parseContext.state) {
+    if (self->parseContext.inPattern) {
         self->error.kind = NAMidiParserErrorKindIllegalPatternDefineInPattern;
         return false;
     }
@@ -319,7 +323,7 @@ static bool parsePatternDefine(NAMidiParser *self, Statement *statment, va_list 
     }
 
     statment->string = strdup(va_arg(argList, char *));
-    self->parseContext.state = NAMidiParserStatePattern;
+    self->parseContext.inPattern = true;
 
     StatementList *statmentList = StatementListCreate();
     NAMapPut(self->patterns, statment->string, statmentList);
@@ -329,7 +333,7 @@ static bool parsePatternDefine(NAMidiParser *self, Statement *statment, va_list 
 
 static bool parseEnd(NAMidiParser *self, Statement *statment, va_list argList)
 {
-    if (NAMidiParserStatePattern != self->parseContext.state && !self->parseContext.inTrack) {
+    if (!self->parseContext.inPattern && !self->parseContext.inTrack) {
         self->error.kind = NAMidiParserErrorKindIllegalEnd;
         return false;
     }
@@ -338,8 +342,8 @@ static bool parseEnd(NAMidiParser *self, Statement *statment, va_list argList)
         self->parseContext.inTrack = false;
     }
     else {
+        self->parseContext.inPattern = false;
         self->parseContext.currentStatements = self->songStatements;
-        self->parseContext.state = NAMidiParserStateSong;
     }
 
     return true;
@@ -565,6 +569,12 @@ static void __attribute__((constructor)) initializeTable()
     statementParserTable[StatementTypeInclude] = parseInclude;
 }
 
+static bool NAMidiParserRender(NAMidiParser *self)
+{
+    // TODO
+    return true;
+}
+
 const char *NAMidiParserErrorKind2String(NAMidiParserErrorKind kind)
 {
 #define CASE(kind) case kind: return &(#kind[21])
@@ -595,6 +605,8 @@ const char *NAMidiParserErrorKind2String(NAMidiParserErrorKind kind)
     CASE(NAMidiParserErrorKindInvalidStep);
     CASE(NAMidiParserErrorKindInvalidGatetime);
     CASE(NAMidiParserErrorKindInvalidVelocity);
+    CASE(NAMidiParserErrorKindPatternEndMissing);
+    CASE(NAMidiParserErrorKindTrackEndMissing);
 
     default:
        break;

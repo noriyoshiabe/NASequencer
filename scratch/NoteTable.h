@@ -42,3 +42,4 @@ typedef enum {
 extern int NoteTableGetBaseNoteNo(NoteTableKeySign keySign, char noteChar);
 extern int NoteTableGetNaturalDiff(NoteTableKeySign keySign, char noteChar);
 NoteTableKeySign NoteTableGetKeySign(char keyChar, bool sharp, bool flat, bool major);
+extern char *NoteTableKeySign2String(NoteTableKeySign keySign);
