@@ -2,8 +2,24 @@
 
 #include "NAMidiParser.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <libgen.h>
+#include <limits.h>
+
+typedef struct _Context {
+    NAMidiParser *parser;
+} Context;
+
+static char *getRealPath(const char *filepath);
+static char *buildPathWithDirectory(const char *directory, const char *filepath);
+static char *getCurrentDirectory();
+
 static void onParseEvent(void *receiver, NAMidiParserEvent *event, va_list argList)
 {
+    Context *context = receiver;
+
     switch (event->type) {
     case NAMidiParserEventTypeNote:
         printf("Note: %s step=%d gatetime=%d velocity=%d\n", va_arg(argList, char *), va_arg(argList, int), va_arg(argList, int), va_arg(argList, int));
@@ -66,7 +82,30 @@ static void onParseEvent(void *receiver, NAMidiParserEvent *event, va_list argLi
         printf("Rest: step=%d\n", va_arg(argList, int));
         break;
     case NAMidiParserEventTypeIncludeFile:
-        printf("IncludeFile: %s\n", va_arg(argList, char *));
+        {
+            char *filename = va_arg(argList, char *);
+            printf("IncludeFile: %s\n", filename);
+            char *directory;
+            
+            if (event->location.filepath) {
+                directory = dirname((char *)event->location.filepath);
+            }
+            else {
+                directory = getCurrentDirectory();
+            }
+
+            char *fullPath = buildPathWithDirectory(directory, filename);
+
+            FILE *fp = fopen(fullPath, "r");
+            if (!fp) {
+                printf("file not found. %s\n", fullPath);
+            }
+            else {
+                bool ret = NAMidiParserExecuteParse(context->parser, fp, fullPath);
+                printf("-- ret: %d\n", ret);
+                fclose(fp);
+            }
+        }
         break;
     }
 }
@@ -84,10 +123,30 @@ static NAMidiParserCallbacks callbacks = {onParseEvent, onParseError};
 
 int main(int argc, char **argv)
 {
-    NAMidiParser *parser = NAMidiParserCreate(&callbacks, NULL);
+    Context context;
+    NAMidiParser *parser = NAMidiParserCreate(&callbacks, &context);
+    context.parser = parser;
+
+    FILE *fp = NULL;
+    char *filepath = NULL;
+
+    if (1 < argc) {
+        filepath = getRealPath(argv[1]);
+        fp = fopen(filepath, "r");
+        if (!fp) {
+            printf("file not found. %s\n", argv[1]);
+            return 1;
+        }
+    }
+    else {
+        fp = stdin;
+    }
     
-    bool ret = NAMidiParserExecuteParse(parser, argv[1]);
+    bool ret = NAMidiParserExecuteParse(parser, fp, filepath);
     printf("-- ret: %d\n", ret);
+    if (fp != stdin) {
+        fclose(fp);
+    }
 
     //printf("files:\n");
     //while ((const char *filepath = *(filepaths++))) {
@@ -96,4 +155,35 @@ int main(int argc, char **argv)
 
     NAMidiParserDestroy(parser);
     return 0;
+}
+
+static char *getRealPath(const char *filepath)
+{
+    char buf[PATH_MAX];
+    char *_filepath = realpath(filepath, buf);
+    if (!_filepath) {
+        return NULL;
+    }
+
+    char *ret = malloc(strlen(_filepath) + 1);
+    strcpy(ret, _filepath);
+    return ret;
+}
+
+static char *buildPathWithDirectory(const char *directory, const char *filename)
+{
+    char buf[PATH_MAX];
+    snprintf(buf, PATH_MAX, "%s/%s", directory, filename);
+    char *ret = malloc(strlen(buf) + 1);
+    strcpy(ret, buf);
+    return ret;
+}
+
+static char *getCurrentDirectory()
+{
+    char buf[PATH_MAX];
+    char *directory = getcwd(buf, PATH_MAX);
+    char *ret = malloc(strlen(directory) + 1);
+    strcpy(ret, directory);
+    return ret;
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdio.h>
 #include <stdbool.h>
 #include <stdarg.h>
 
@@ -28,7 +29,6 @@ typedef enum {
 } NAMidiParserEventType;
 
 typedef enum {
-    NAMidiParserErrorKindFileNotFound,
     NAMidiParserErrorKindSyntaxError,
 
     NAMidiParserErrorKindInvalidResolution,
@@ -79,7 +79,7 @@ typedef struct _NAMidiParserCallbacks {
 
 extern NAMidiParser *NAMidiParserCreate(NAMidiParserCallbacks *callbacks, void *receiver);
 extern void NAMidiParserDestroy(NAMidiParser *self);
-extern bool NAMidiParserExecuteParse(NAMidiParser *self, const char *filepath);
+extern bool NAMidiParserExecuteParse(NAMidiParser *self, FILE *fp, const char *filepath);
 extern const char *NAMidiParserErrorKind2String(NAMidiParserErrorKind kind);
 
 #define NAMidiParserMeasureMax 9999

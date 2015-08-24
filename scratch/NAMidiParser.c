@@ -6,8 +6,6 @@
 
 #include <stdlib.h>
 #include <ctype.h>
-#include <libgen.h>
-#include <limits.h>
 #include <sys/param.h>
 
 #define isPowerOf2(x) ((x != 0) && ((x & (x - 1)) == 0))
@@ -28,13 +26,8 @@ typedef struct _Context {
     NAMidiParser *parser;
 } Context;
 
-static bool NAMidiParserParseFile(NAMidiParser *self, const char *filepath);
-static bool NAMidiParserRender(NAMidiParser *self);
 static bool NAMidiParserCallback(void *context, ParseLocation *location, StatementType type, ...);
 static void NAMidiParserErrorCallback(void *context, ParseLocation *location, const char *message);
-
-static char *getRealPath(const char *filepath);
-static char *buildPathWithDirectory(const char *directory, const char *filepath);
 
 NAMidiParser *NAMidiParserCreate(NAMidiParserCallbacks *callbacks, void *receiver)
 {
@@ -49,15 +42,7 @@ void NAMidiParserDestroy(NAMidiParser *self)
     free(self);
 }
 
-bool NAMidiParserExecuteParse(NAMidiParser *self, const char *filepath)
-{
-    if (!NAMidiParserParseFile(self, filepath)) {
-        return false;
-    }
-
-    return true;
-}
-static bool NAMidiParserParseFile(NAMidiParser *self, const char *filepath)
+bool NAMidiParserExecuteParse(NAMidiParser *self, FILE *fp, const char *filepath)
 {
     void *scanner;
     bool ret = false;
@@ -66,44 +51,30 @@ static bool NAMidiParserParseFile(NAMidiParser *self, const char *filepath)
     memset(&context, 0, sizeof(Context));
     context.parser = self;
 
-    char *_filepath = getRealPath(filepath);
-    _filepath = _filepath ? _filepath : strdup(filepath);
-
-    FILE *fp = fopen(_filepath, "r");
-    if (!fp) {
-        context.error.kind = NAMidiParserErrorKindFileNotFound;
-        context.error.location.filepath = _filepath;
-        self->callbacks->onParseError(self->receiver, &context.error);
-        goto ERROR_1;
-    }
-
     yylex_init_extra(&context, &scanner);
     YY_BUFFER_STATE state = yy_create_buffer(fp, YY_BUF_SIZE, scanner);
     yy_switch_to_buffer(state, scanner);
 
-    if (yyparse(scanner, _filepath, NAMidiParserCallback, NAMidiParserErrorCallback)) {
-        self->callbacks->onParseError(self->receiver, &context.error);
-        goto ERROR_2;
-    }
-
+    do {
+        if (yyparse(scanner, filepath, NAMidiParserCallback, NAMidiParserErrorCallback)) {
+            self->callbacks->onParseError(self->receiver, &context.error);
+        }
+	} while (!feof(fp));
+	
     if (0 < context.expectedEndCount) {
         context.error.kind = NAMidiParserErrorKindEndMissing;
-        context.error.location.filepath = _filepath;
+        context.error.location.filepath = filepath;
         context.error.location.line = yyget_lineno(scanner);
         context.error.location.column = yyget_column(scanner);
         self->callbacks->onParseError(self->receiver, &context.error);
-        goto ERROR_2;
+        goto ERROR;
     }
 
     ret = true;
 
-ERROR_2:
+ERROR:
     yy_delete_buffer(state, scanner);
     yylex_destroy(scanner);
-    fclose(fp);
-
-ERROR_1:
-    free(_filepath);
 
     return ret;
 }
@@ -422,17 +393,9 @@ static bool parseInclude(Context *context, ParseLocation *location, StatementTyp
     int len = strlen(_filename);
     strncpy(filename, _filename + 1, len - 2);
     filename[len - 2] = '\0';
-
-    char *directory = dirname((char *)location->filepath);
-    char *fullPath = buildPathWithDirectory(directory, filename);
-
-    ContextCallbackEvent(context, location, NAMidiParserEventTypeIncludeFile, fullPath);
-
-    bool ret = NAMidiParserParseFile(context->parser, fullPath);
-    free(fullPath);
+    ContextCallbackEvent(context, location, NAMidiParserEventTypeIncludeFile, filename);
     free(_filename);
-
-    return ret;
+    return true;
 }
 
 static void __attribute__((constructor)) initializeTable()
@@ -464,7 +427,6 @@ const char *NAMidiParserErrorKind2String(NAMidiParserErrorKind kind)
 {
 #define CASE(kind) case kind: return &(#kind[21])
     switch (kind) {
-    CASE(NAMidiParserErrorKindFileNotFound);
     CASE(NAMidiParserErrorKindSyntaxError);
 
     CASE(NAMidiParserErrorKindInvalidResolution);
@@ -495,26 +457,4 @@ const char *NAMidiParserErrorKind2String(NAMidiParserErrorKind kind)
 
     return "Unknown error kind";
 #undef CASE
-}
-
-static char *getRealPath(const char *filepath)
-{
-    char buf[PATH_MAX];
-    char *_filepath = realpath(filepath, buf);
-    if (!_filepath) {
-        return NULL;
-    }
-
-    char *ret = malloc(strlen(_filepath) + 1);
-    strcpy(ret, _filepath);
-    return ret;
-}
-
-static char *buildPathWithDirectory(const char *directory, const char *filename)
-{
-    char buf[PATH_MAX];
-    snprintf(buf, PATH_MAX, "%s/%s", directory, filename);
-    char *ret = malloc(strlen(buf) + 1);
-    strcpy(ret, buf);
-    return ret;
 }
