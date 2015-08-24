@@ -74,7 +74,7 @@ LINE_COMMENT   (\/\/|==|--).*$
 
 {INTEGER}        { yylval->i = atoi(yytext); return INTEGER; }
 {FLOAT}          { yylval->f = atof(yytext); return FLOAT; }
-{STRING}         { yylval->s = yytext; return STRING; }
+{STRING}         { yylval->s = strdup(yytext); return STRING; }
 {WSPACE}         { }
 
 {RESOLUTION}     { return RESOLUTION; }
@@ -101,9 +101,9 @@ LINE_COMMENT   (\/\/|==|--).*$
 
 {INCLUDE}        { return INCLUDE; }
 
-{NOTE}           { yylval->s = yytext; return NOTE; }
-{KEY_SIGN}       { yylval->s = yytext; return KEY_SIGN; }
-{IDENTIFIER}     { yylval->s = yytext; return IDENTIFIER; }
+{NOTE}           { yylval->s = strdup(yytext); return NOTE; }
+{KEY_SIGN}       { yylval->s = strdup(yytext); return KEY_SIGN; }
+{IDENTIFIER}     { yylval->s = strdup(yytext); return IDENTIFIER; }
 
 {EOL}            { return EOL; }
 {SEMICOLON}      { return SEMICOLON; }

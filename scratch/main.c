@@ -2,70 +2,97 @@
 
 #include "NAMidiParser.h"
 
-void _NAMidiParserRenderHandler(void *receiver, NAMidiParserEventType type, va_list argList)
+static void onParseEvent(void *receiver, NAMidiParserEvent *event, va_list argList)
 {
-    switch (type) {
+    switch (event->type) {
     case NAMidiParserEventTypeNote:
-        printf("%d:Note channel=%d noteNo=%d gatetime=%d velocity=%d\n",
-                va_arg(argList, int), va_arg(argList, int), va_arg(argList, int), va_arg(argList, int), va_arg(argList, int));
+        printf("Note: %s step=%d gatetime=%d velocity=%d\n", va_arg(argList, char *), va_arg(argList, int), va_arg(argList, int), va_arg(argList, int));
         break;
     case NAMidiParserEventTypeTempo:
-        printf("%d:Tempo %f\n", va_arg(argList, int), va_arg(argList, double));
+        printf("Tempo: %f\n", va_arg(argList, double));
         break;
-    case NAMidiParserEventTypeTime:
-        printf("%d:Time %d/%d\n", va_arg(argList, int), va_arg(argList, int), va_arg(argList, int));
+    case NAMidiParserEventTypeResolution:
+        printf("Resolution: %d\n", va_arg(argList, int));
+        break;
+    case NAMidiParserEventTypeTimeSign:
+        printf("Time: %d/%d\n", va_arg(argList, int), va_arg(argList, int));
+        break;
+    case NAMidiParserEventTypeMeasure:
+        printf("Measure: %d\n", va_arg(argList, int));
+        break;
+    case NAMidiParserEventTypePattern:
+        printf("Pattern: %s\n", va_arg(argList, char *));
+        break;
+    case NAMidiParserEventTypePatternDefine:
+        printf("PatternDefine: %s\n", va_arg(argList, char *));
+        break;
+    case NAMidiParserEventTypeEnd:
+        printf("End:\n");
+        break;
+    case NAMidiParserEventTypeTrack:
+        printf("Track: %d\n", va_arg(argList, int));
+        break;
+    case NAMidiParserEventTypeChannel:
+        printf("Channel: %d\n", va_arg(argList, int));
         break;
     case NAMidiParserEventTypeSound:
-        printf("%d:Sound channel=%d msb=%d lsb=%d programNo=%d\n",
-                va_arg(argList, int), va_arg(argList, int), va_arg(argList, int), va_arg(argList, int), va_arg(argList, int));
+        printf("Sound: msb=%d lsb=%d programNo=%d\n", va_arg(argList, int), va_arg(argList, int), va_arg(argList, int));
         break;
     case NAMidiParserEventTypeMarker:
-        printf("%d:Marker %s\n", va_arg(argList, int), va_arg(argList, char *));
+        printf("Marker: %s\n", va_arg(argList, char *));
         break;
     case NAMidiParserEventTypeTitle:
-        printf("Title %s\n", va_arg(argList, char *));
+        printf("Title: %s\n", va_arg(argList, char *));
         break;
     case NAMidiParserEventTypeVolume:
-        printf("%d:Volume channel=%d volume=%d\n",
-                va_arg(argList, int), va_arg(argList, int), va_arg(argList, int));
+        printf("Volume: %d\n", va_arg(argList, int));
         break;
     case NAMidiParserEventTypePan:
-        printf("%d:Pan channel=%d pan=%d\n",
-                va_arg(argList, int), va_arg(argList, int), va_arg(argList, int));
+        printf("Pan: %d\n", va_arg(argList, int));
         break;
     case NAMidiParserEventTypeChorus:
-        printf("%d:Chorus channel=%d chorus=%d\n",
-                va_arg(argList, int), va_arg(argList, int), va_arg(argList, int));
+        printf("Chorus: %d\n", va_arg(argList, int));
         break;
     case NAMidiParserEventTypeReverb:
-        printf("%d:Reverb channel=%d reverb=%d\n",
-                va_arg(argList, int), va_arg(argList, int), va_arg(argList, int));
+        printf("Reverb: %d\n", va_arg(argList, int));
+        break;
+    case NAMidiParserEventTypeTranspose:
+        printf("Transpose: %d\n", va_arg(argList, int));
         break;
     case NAMidiParserEventTypeKeySign:
-        printf("%d:KeySign %s\n", va_arg(argList, int), va_arg(argList, char *));
+        printf("KeySign: %s\n", va_arg(argList, char *));
+        break;
+    case NAMidiParserEventTypeRest:
+        printf("Rest: step=%d\n", va_arg(argList, int));
+        break;
+    case NAMidiParserEventTypeIncludeFile:
+        printf("IncludeFile: %s\n", va_arg(argList, char *));
         break;
     }
 }
 
+static void onParseError(void *receiver, NAMidiParserError *error)
+{
+    printf("error:\n");
+    printf("  kind: %s\n", NAMidiParserErrorKind2String(error->kind));
+    printf("  filepath: %s\n", error->location.filepath);
+    printf("  line: %d\n", error->location.line);
+    printf("  column: %d\n", error->location.column);
+}
+
+static NAMidiParserCallbacks callbacks = {onParseEvent, onParseError};
+
 int main(int argc, char **argv)
 {
-    NAMidiParser *parser = NAMidiParserCreate(_NAMidiParserRenderHandler, NULL);
+    NAMidiParser *parser = NAMidiParserCreate(&callbacks, NULL);
     
-    if (!NAMidiParserExecuteParse(parser, argv[1])) {
-        const NAMidiParserError *error = NAMidiParserGetError(parser);
-        printf("error:\n");
-        printf("  kind: %s\n", NAMidiParserErrorKind2String(error->kind));
-        printf("  filepath: %s\n", error->filepath);
-        printf("  line: %d\n", error->line);
-        printf("  column: %d\n", error->column);
-    }
+    bool ret = NAMidiParserExecuteParse(parser, argv[1]);
+    printf("-- ret: %d\n", ret);
 
-    const char **filepaths = NAMidiParserGetFilepaths(parser);
-    const char *filepath;
-    printf("files:\n");
-    while ((filepath = *(filepaths++))) {
-        printf("  %s\n", filepath);
-    }
+    //printf("files:\n");
+    //while ((const char *filepath = *(filepaths++))) {
+    //    printf("  %s\n", filepath);
+    //}
 
     NAMidiParserDestroy(parser);
     return 0;
