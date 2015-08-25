@@ -15,6 +15,8 @@ int yyparse(void *scanner, const char *filepath, ParserCallback callback, Parser
 int yyget_lineno(void *scanner);
 int yyget_column(void *scanner);
 
+void yy_flush_buffer(YY_BUFFER_STATE  state, void *scanner);
+
 struct _NAMidiParser {
     NAMidiParserCallbacks *callbacks;
     void *receiver;
@@ -58,6 +60,7 @@ bool NAMidiParserExecuteParse(NAMidiParser *self, FILE *fp, const char *filepath
     do {
         if (yyparse(scanner, filepath, NAMidiParserCallback, NAMidiParserErrorCallback)) {
             self->callbacks->onParseError(self->receiver, &context.error);
+            yy_flush_buffer(state, scanner);
         }
 	} while (!feof(fp));
 	
