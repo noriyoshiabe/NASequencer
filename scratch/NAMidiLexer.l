@@ -17,8 +17,9 @@
 
 %}
 
-%option outfile="Lexer.c"
-%option header-file="Lexer.h"
+%option prefix="NAMidi_"
+%option outfile="NAMidiLexer.c"
+%option header-file="NAMidiLexer.h"
 %option reentrant
 %option noyywrap
 %option bison-bridge

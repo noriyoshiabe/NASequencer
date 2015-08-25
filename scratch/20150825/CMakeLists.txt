@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.2)
 
 project(namidi)
 
-find_package(BISON)
 find_package(FLEX)
+find_package(BISON)
 
 BISON_TARGET(Parser Parser.y ${CMAKE_CURRENT_SOURCE_DIR}/Parser.c)
 FLEX_TARGET(Lexer Lexer.l ${CMAKE_CURRENT_SOURCE_DIR}/Lexer.c)

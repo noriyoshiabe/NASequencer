@@ -1,2 +1,9 @@
-!Parser.h
-!Parser.c
+!./Parser.h
+!./Parser.c
+
+NAMidiParser.h
+NAMidiParser.c
+NAMidiLexer.h
+NAMidiLexer.c
+
+a.out

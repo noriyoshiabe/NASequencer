@@ -18,7 +18,7 @@ static bool SequenceProcess(void *self, ParseLocation *location, StatementType t
     return true;
 }
 
-static void SequenceError(void *self, ParseLocation *location, ParserError error)
+static void SequenceError(void *self, ParseLocation *location, ParseError error)
 {
     printf("%d:%d %s\n", location->line, location->column, ParseError2String(error));
 }
