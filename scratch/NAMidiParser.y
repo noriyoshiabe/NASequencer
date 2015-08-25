@@ -78,17 +78,6 @@ statement_list
     ;
 
 statement
-    : expr
-    | block_start expr_list block_end
-    ;
-
-
-expr_list
-    : expr
-    | expr_list expr
-    ;
-
-expr
     : TITLE STRING                  { CALLBACK(@$, StatementTypeTitle, $2); }
     | RESOLUTION INTEGER            { CALLBACK(@$, StatementTypeResolution, $2); }
     | TEMPO FLOAT                   { CALLBACK(@$, StatementTypeTempo, $2); }
@@ -97,6 +86,9 @@ expr
     | INTEGER COLON                 { CALLBACK(@$, StatementTypeMeasure, $1); }
     | MARKER STRING                 { CALLBACK(@$, StatementTypeMarker, $2); }
     | IDENTIFIER                    { CALLBACK(@$, StatementTypePattern, $1); }
+    | DEFINE IDENTIFIER             { CALLBACK(@$, StatementTypePatternDefine, $2); }
+    | END                           { CALLBACK(@$, StatementTypeEnd, NULL); }
+    | TRACK INTEGER                 { CALLBACK(@$, StatementTypeTrack, $2); }
     | CHANNEL INTEGER               { CALLBACK(@$, StatementTypeChannel, $2); }
     | VOICE INTEGER INTEGER INTEGER { CALLBACK(@$, StatementTypeVoice, $2, $3, $4); }
     | VOLUME INTEGER                { CALLBACK(@$, StatementTypeVolume, $2); }
@@ -129,16 +121,6 @@ expr
     | SEMICOLON
     | INCLUDE STRING                { CALLBACK(@$, StatementTypeInclude, $2); }
     ;
-
-block_start
-    : DEFINE IDENTIFIER             { CALLBACK(@$, StatementTypePatternDefine, $2); }
-    | TRACK INTEGER                 { CALLBACK(@$, StatementTypeTrack, $2); }
-    ;
-
-block_end
-    : END                           { CALLBACK(@$, StatementTypeEnd, NULL); }
-    ;
-    
 
 %%
 

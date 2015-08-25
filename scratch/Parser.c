@@ -23,9 +23,9 @@ void ParserDestroy(Parser *self)
     free(self);
 }
 
-void ParserScanBuffer(Parser *self, char *buffer, int length)
+void ParserScanString(Parser *self, char *line)
 {
-    YY_BUFFER_STATE state = NAMidi__scan_buffer(buffer, length, self->scanner);
+    YY_BUFFER_STATE state = NAMidi__scan_string(line, self->scanner);
     if (NAMidi_parse(self->scanner)) {
         NAMidi__flush_buffer(state, self->scanner);
     }

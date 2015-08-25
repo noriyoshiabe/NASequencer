@@ -6,7 +6,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
-#define MAX_HISTORY_NO 10
+#define MAX_HISTORY 10
 
 typedef struct _Sequence {
     StatementHandler handler;
@@ -28,32 +28,25 @@ int main(int argc, char **argv)
     const char *prompt = "namidi> ";
 
     char *line = NULL;
-    int index = 0;
-    int history_no = 0;
-    HIST_ENTRY *history = NULL;
-
+    int historyCount = 0;
     Sequence sequence = {SequenceProcess, SequenceError};
-
     Parser *parser = ParserCreate(SyntaxNAMidi, &sequence);
 
     while ((line = readline(prompt))) {
-        ParserScanBuffer(parser, line, strlen(line));
+        ParserScanString(parser, line);
+
         add_history(line);
-
-        if (++history_no > MAX_HISTORY_NO) {
-            history = remove_history(0);
-            free(history);
-        }
-
         free(line);
+
+        if (MAX_HISTORY < ++historyCount) {
+            free(remove_history(0));
+        }
     }
 
     printf("\n");
 
     ParserDestroy(parser);
-
     clear_history();
-    free(line);
 
     return 0;
 }

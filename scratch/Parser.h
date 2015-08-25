@@ -51,7 +51,7 @@ typedef struct _Parser Parser;
 
 extern Parser *ParserCreate(Syntax syntax, void *handler);
 extern void ParserDestroy(Parser *self);
-extern void ParserScanBuffer(Parser *self, char *buffer, int length);
+extern void ParserScanString(Parser *self, char *line);
 
 static inline const char *StatementType2String(StatementType type)
 {
@@ -89,7 +89,7 @@ static inline const char *StatementType2String(StatementType type)
 
 static inline const char *ParseError2String(ParseError error)
 {
-#define CASE(error) case error: return &(#error[6])
+#define CASE(error) case error: return &(#error[10])
     switch (error) {
     CASE(ParseErrorSyntaxError);
     CASE(ParseErrorInvalidValue);
