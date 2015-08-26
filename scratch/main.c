@@ -12,7 +12,7 @@ typedef struct _Sequence {
     StatementHandler handler;
 } Sequence;
 
-static bool SequenceProcess(void *self, ParseLocation *location, StatementType type, ...)
+static bool SequenceProcess(void *self, ParseLocation *location, StatementType type, va_list argList)
 {
     printf("%d: %s\n", location->line, StatementType2String(type));
     return true;

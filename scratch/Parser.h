@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdbool.h>
+#include <stdarg.h>
 
 typedef enum {
     StatementTypeResolution,
@@ -43,7 +44,7 @@ typedef struct _ParseLocation {
 } ParseLocation;
 
 typedef struct _StatementHandler {
-    bool (*process)(void *self, ParseLocation *location, StatementType type, ...);
+    bool (*process)(void *self, ParseLocation *location, StatementType type, va_list argList);
     void (*error)(void *self, ParseLocation *location, ParseError error);
 } StatementHandler;
 
