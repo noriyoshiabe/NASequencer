@@ -8,19 +8,15 @@
 
 #define MAX_HISTORY 10
 
-typedef struct _Sequence {
-    StatementHandler handler;
-} Sequence;
-
-static bool SequenceProcess(void *self, ParseLocation *location, StatementType type, va_list argList)
+static bool Process(void *receiver, ParseContext *context, StatementType type, va_list argList)
 {
-    printf("%d: %s\n", location->line, StatementType2String(type));
+    printf("%s: %d: %s\n", context->extra, context->location.line, StatementType2String(type));
     return true;
 }
 
-static void SequenceError(void *self, ParseLocation *location, ParseError error)
+static void Error(void *receiver, ParseContext *context, ParseError error)
 {
-    printf("%d:%d %s\n", location->line, location->column, ParseError2String(error));
+    printf("%s: %d:%d %s\n", context->extra, context->location.line, context->location.column, ParseError2String(error));
 }
 
 int main(int argc, char **argv)
@@ -29,8 +25,10 @@ int main(int argc, char **argv)
 
     char *line = NULL;
     int historyCount = 0;
-    Sequence sequence = {SequenceProcess, SequenceError};
-    Parser *parser = ParserCreate(SyntaxNAMidi, &sequence);
+
+    int receiver = 1;
+    StatementHandler handler = {Process, Error};
+    Parser *parser = ParserCreate(SyntaxNAMidi, &handler, &receiver, "hoge");
 
     while ((line = readline(prompt))) {
         ParserScanString(parser, line);

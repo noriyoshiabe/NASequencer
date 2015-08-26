@@ -125,20 +125,20 @@ statement
 
 int NAMidi_error(yyscan_t scanner, const char *message)
 {
-    ParseLocation location = {NAMidi_get_lineno(scanner), NAMidi_get_column(scanner)};
-    StatementHandler *handler = NAMidi_get_extra(scanner);
-    handler->error(handler, &location, ParseErrorSyntaxError);
+    ParseContext *context = NAMidi_get_extra(scanner);
+    context->location = (ParseLocation){NAMidi_get_lineno(scanner), NAMidi_get_column(scanner)};
+    context->handler->error(context->receiver, context, ParseErrorSyntaxError);
     return 0;
 }
 
 static bool callbackStatement(yyscan_t scanner, StatementType type, ...)
 {
-    StatementHandler *handler = NAMidi_get_extra(scanner);
-    ParseLocation location = {NAMidi_get_lineno(scanner), NAMidi_get_column(scanner)};
+    ParseContext *context = NAMidi_get_extra(scanner);
+    context->location = (ParseLocation){NAMidi_get_lineno(scanner), NAMidi_get_column(scanner)};
 
     va_list argList;
     va_start(argList, type);
-    bool ret = handler->process(handler, &location, type, argList);
+    bool ret = context->handler->process(context->receiver, context, type, argList);
     va_end(argList);
     return ret;
 }

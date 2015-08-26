@@ -21,6 +21,7 @@ struct _Parser {
     yyscan_t scanner;
     const ParserInterface *parser;
     int lineno;
+    ParseContext context;
 };
 
 static const struct {
@@ -41,9 +42,14 @@ static const struct {
     }
 };
 
-Parser *ParserCreate(Syntax syntax, void *handler)
+Parser *ParserCreate(Syntax syntax, void *handler, void *receiver, void *extra)
 {
     Parser *self = calloc(1, sizeof(Parser));
+
+    self->context.handler = handler;
+    self->context.receiver = receiver;
+    self->context.extra = extra;
+
     for (int i = 0; i < sizeof(parserTable) / sizeof(parserTable[0]); ++i) {
         if (parserTable[i].syntax == syntax) {
             self->parser = &parserTable[i].interface;
@@ -51,7 +57,7 @@ Parser *ParserCreate(Syntax syntax, void *handler)
         }
     }
 
-    self->parser->init_extra(handler, &self->scanner);
+    self->parser->init_extra(&self->context, &self->scanner);
     return self;
 }
 

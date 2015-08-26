@@ -38,19 +38,30 @@ typedef enum {
     SyntaxNAMidi,
 } Syntax;
 
-typedef struct _ParseLocation {
+typedef struct _ParseContext ParseContext;
+typedef struct _ParseLocation ParseLocation;
+typedef struct _StatementHandler StatementHandler;
+
+struct _ParseLocation {
     int line;
     int column;
-} ParseLocation;
+};
 
-typedef struct _StatementHandler {
-    bool (*process)(void *self, ParseLocation *location, StatementType type, va_list argList);
-    void (*error)(void *self, ParseLocation *location, ParseError error);
-} StatementHandler;
+struct _ParseContext {
+    StatementHandler *handler;
+    ParseLocation location;
+    void *receiver;
+    void *extra;
+};
+
+struct _StatementHandler {
+    bool (*process)(void *receiver, ParseContext *context, StatementType type, va_list argList);
+    void (*error)(void *receiver, ParseContext *context, ParseError error);
+};
 
 typedef struct _Parser Parser;
 
-extern Parser *ParserCreate(Syntax syntax, void *handler);
+extern Parser *ParserCreate(Syntax syntax, void *handler, void *receiver, void *extra);
 extern void ParserDestroy(Parser *self);
 extern void ParserScanString(Parser *self, char *line);
 
