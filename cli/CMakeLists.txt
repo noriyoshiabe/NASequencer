@@ -4,20 +4,19 @@ project(namidi)
 
 find_library(LIBEDIT edit)
 
-add_subdirectory (../lib ${CMAKE_CURRENT_BINARY_DIR}/lib)
+add_subdirectory (../core ${CMAKE_CURRENT_BINARY_DIR}/core)
 
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}
-  ../lib
+  ../core
 )
 
 set(SOURCES
   main.c
   CLI.c
   Command.c
-  NAMidi.c
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 target_link_libraries(${PROJECT_NAME} ${LIBEDIT})
-target_link_libraries(${PROJECT_NAME} nalib)
+target_link_libraries(${PROJECT_NAME} namidi-core)
