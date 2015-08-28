@@ -20,9 +20,19 @@ struct _CLI {
     sigjmp_buf jmpBuf;
 };
 
+extern void CLINAMidiOnParseFinish(void *receiver, Sequence *sequence)
+{
+    printf("called %s\n", __FUNCTION__);
+}
+
+extern void CLINAMidiOnParseError(void *receiver, ParseError *error)
+{
+    printf("called %s\n", __FUNCTION__);
+}
+
 static NAMidiObserverCallbacks CLINAMidiObserverCallbacks = {
-    NULL,
-    NULL
+    CLINAMidiOnParseFinish,
+    CLINAMidiOnParseError
 };
 
 CLI *CLICreate(const char *filepath)
