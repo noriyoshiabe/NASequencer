@@ -9,6 +9,8 @@ add_subdirectory (../core ${CMAKE_CURRENT_BINARY_DIR}/core)
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}
   ../core
+  ../sequence
+  ../lib
 )
 
 set(SOURCES
@@ -19,4 +21,4 @@ set(SOURCES
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 target_link_libraries(${PROJECT_NAME} ${LIBEDIT})
-target_link_libraries(${PROJECT_NAME} namidi-core)
+target_link_libraries(${PROJECT_NAME} namidi-core namidi-sequence namidi-lib)

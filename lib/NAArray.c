@@ -168,3 +168,8 @@ bool NAArrayRemoveAtIndex(NAArray *self, int index)
 
     return true;
 }
+
+void NAArraySort(NAArray *self, int (*comparator)(const void *, const void *))
+{
+    qsort(self->bytes, self->count, self->elementSize, comparator);
+}

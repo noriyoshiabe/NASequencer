@@ -10,3 +10,4 @@ extern int NAArrayCount(NAArray *self);
 extern void *NAArrayGetValues(NAArray *self);
 extern void NAArrayAppend(NAArray *self, void *value);
 extern bool NAArrayRemoveAtIndex(NAArray *self, int index);
+extern void NAArraySort(NAArray *self, int (*comparator)(const void *, const void *));
