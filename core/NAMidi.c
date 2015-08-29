@@ -11,6 +11,8 @@ typedef struct Observer {
 
 struct _NAMidi {
     NAArray *observers;
+    NAArray *filepaths;
+    Sequence *sequence;
 };
 
 NAMidi *NAMidiCreate()
@@ -43,12 +45,45 @@ void NAMidiRemoveObserver(NAMidi *self, void *receiver)
     }
 }
 
-void NAMidiParse(NAMidi *self, const char *filepath)
+static void NAMidiNotifyParseFinish(NAMidi *self, Sequence *sequence)
 {
     int count = NAArrayCount(self->observers);
     Observer *observers = NAArrayGetValues(self->observers);
     for (int i = 0; i < count; ++i) {
-        observers[i].callbacks->onParseFinish(observers[i].receiver, NULL);
+        observers[i].callbacks->onParseFinish(observers[i].receiver, self->sequence);
+    }
+}
+
+static void NAMidiNotifyParseError(NAMidi *self, ParseError *error)
+{
+    int count = NAArrayCount(self->observers);
+    Observer *observers = NAArrayGetValues(self->observers);
+    for (int i = 0; i < count; ++i) {
+        observers[i].callbacks->onParseError(observers[i].receiver, error);
+    }
+}
+
+void NAMidiParse(NAMidi *self, const char *filepath)
+{
+    ParseResult result;
+
+    if (!ParserParseFile(filepath, &result)) {
+        NAMidiNotifyParseError(self, &result.error);
+    }
+    else {
+        if (self->sequence) {
+            SequenceRelease(self->sequence);
+        }
+
+        if (self->filepaths) {
+            NAArrayTraverse(self->filepaths, free);
+            NAArrayDestroy(self->filepaths);
+        }
+
+        self->sequence = result.sequence;
+        self->filepaths = result.filepaths;
+
+        NAMidiNotifyParseFinish(self, self->sequence);
     }
 }
 

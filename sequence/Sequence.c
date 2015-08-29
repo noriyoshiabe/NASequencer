@@ -29,18 +29,10 @@ void SequenceRelease(Sequence *self)
 
         TimeTableDestroy(self->timeTable);
 
-        int count = NAArrayCount(self->events);
-        MidiEvent **events = NAArrayGetValues(self->events);
-        for (int i = 0; i < count; ++i) {
-            free(events[i]);
-        }
+        NAArrayTraverse(self->events, free);
         NAArrayDestroy(self->events);
 
-        count = NAArrayCount(self->children);
-        Sequence **children = NAArrayGetValues(self->children);
-        for (int i = 0; i < count; ++i) {
-            SequenceRelease(children[i]);
-        }
+        NAArrayTraverse(self->events, (void (*)(void *))SequenceRelease);
         NAArrayDestroy(self->children);
     }
 }
