@@ -173,3 +173,9 @@ void NAArraySort(NAArray *self, int (*comparator)(const void *, const void *))
 {
     qsort(self->bytes, self->count, self->elementSize, comparator);
 }
+
+int NAArrayFindIndex(NAArray *self, const void *key, int (*comparator)(const void *, const void *))
+{
+    uint8_t *result = bsearch(key, self->bytes, self->count, self->elementSize, comparator);
+    return NULL != result ? (int)(result - self->bytes) / self->elementSize : -1;
+}

@@ -35,6 +35,9 @@ static int TimeSignRecordFindByMeasureComparator(const void *_measure, const voi
 static int TempoRecordFindByTickComparator(const void *_tick, const void *_record);
 static int TempoRecordFindByUsecComparator(const void *_usec, const void *_record);
 
+static void TimeTableRefreshMeasureFrom(TimeTable *self, int index);
+static void TimeTableRefreshUsecFrom(TimeTable *self, int index);
+
 const Location LocationZero = {1, 1, 0};
 
 TimeTable *TimeTableCreate()
@@ -97,7 +100,7 @@ bool TimeTableAddTimeSign(TimeTable *self, int32_t tick, TimeSign timeSign)
         NAArrayAppend(self->timeSignRecords, &insert);
     }
 
-    TimeTableRefreshMeasureFrom(TimeTable *self, i);
+    TimeTableRefreshMeasureFrom(self, i);
     return true;
 }
 
@@ -136,7 +139,7 @@ bool TimeTableAddTempo(TimeTable *self, int32_t tick, float tempo)
         NAArrayAppend(self->tempoRecords, &insert);
     }
 
-    TimeTableRefreshUsecFrom(TimeTable *self, i);
+    TimeTableRefreshUsecFrom(self, i);
     return true;
 }
 
@@ -212,34 +215,50 @@ Location TimeTableTick2Location(TimeTable *self, int32_t tick)
 
 int64_t TimeTableTick2MicroSec(TimeTable *self, int32_t tick)
 {
-    double usecPerTick = 60 * 1000 * 1000 / 120.0 / self->resolution;
-
     int count = NAArrayCount(self->tempoRecords);
     TempoRecord *records = NAArrayGetValues(self->tempoRecords);
     int i = NAArrayFindIndex(self->tempoRecords, &tick, TempoRecordFindByTickComparator);
 
+    double usecPerTick = 60 * 1000 * 1000 / records[i].tempo / self->resolution;
     return round(records[i].usecStart + (tick - records[i].tickStart) * usecPerTick);
 }
 
 int32_t TimeTableMicroSec2Tick(TimeTable *self, int64_t usec)
 {
-    double usecPerTick = 60 * 1000 * 1000 / 120.0 / self->resolution;
-
     int count = NAArrayCount(self->tempoRecords);
     TempoRecord *records = NAArrayGetValues(self->tempoRecords);
     int i = NAArrayFindIndex(self->tempoRecords, &usec, TempoRecordFindByUsecComparator);
 
+    double usecPerTick = 60 * 1000 * 1000 / records[i].tempo / self->resolution;
     return round(records[i].tickStart + usec / usecPerTick);
 }
 
-void TimeTableRefreshMeasureFrom(TimeTable *self, int index)
+static void TimeTableRefreshMeasureFrom(TimeTable *self, int index)
 {
-    // TODO
+    int count = NAArrayCount(self->timeSignRecords);
+    TimeSignRecord *records = NAArrayGetValues(self->timeSignRecords);
+
+    TimeSignRecord *previous = 0 < i ? &records[i - 1] : &((TimeSignRecord){0});
+    for (int i = index ; i < count; ++i) {
+        records[i].measureStart = previous->measureEnd;
+        records[i].measureLength = self->resolution * 4 / records[i].denominator * records[i].numerator;
+        records[i].measureEnd = records[i].measureStart + (records[i].tickEnd - records[i].tickStart) / records[i].measureLength;
+        previous = &records[i];
+    }
 }
 
-void TimeTableRefreshUsecFrom(TimeTable *self, int index)
+static void TimeTableRefreshUsecFrom(TimeTable *self, int index)
 {
-    // TODO
+    int count = NAArrayCount(self->tempoRecords);
+    TempoRecord *records = NAArrayGetValues(self->tempoRecords);
+
+    TempoRecord *previous = 0 < i ? &records[i - 1] : &((TempoRecord){0});
+    for (int i = index; i < count; ++i) {
+        double usecPerTick = 60 * 1000 * 1000 / records[i].tempo / self->resolution;
+        records[i].usecStart = previous->usecEnd;
+        records[i].usecEnd = records[i].usecStart + round((records[i].tickEnd - records[i].tickStart) / usecPerTick);
+        previous = &records[i];
+    }
 }
 
 static int TimeTableRecordFindByTickComparator(const void *_tick, const void *_record)
