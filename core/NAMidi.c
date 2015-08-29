@@ -63,9 +63,29 @@ static void NAMidiNotifyParseError(NAMidi *self, ParseError *error)
     }
 }
 
+static void NAMidiStopFileWatch(NAMidi *self)
+{
+    // TODO
+    
+    if (self->filepaths) {
+        NAArrayTraverse(self->filepaths, free);
+        NAArrayDestroy(self->filepaths);
+        self->filepaths = NULL;
+    }
+}
+
+static void NAMidiStartFileWatch(NAMidi *self, NAArray *filepaths)
+{
+    self->filepaths = filepaths;
+
+    // TODO
+}
+
 void NAMidiParse(NAMidi *self, const char *filepath)
 {
     ParseResult result;
+
+    NAMidiStopFileWatch(self);
 
     if (!ParserParseFile(filepath, &result)) {
         NAMidiNotifyParseError(self, &result.error);
@@ -75,16 +95,12 @@ void NAMidiParse(NAMidi *self, const char *filepath)
             SequenceRelease(self->sequence);
         }
 
-        if (self->filepaths) {
-            NAArrayTraverse(self->filepaths, free);
-            NAArrayDestroy(self->filepaths);
-        }
-
         self->sequence = result.sequence;
-        self->filepaths = result.filepaths;
 
         NAMidiNotifyParseFinish(self, self->sequence);
     }
+
+    NAMidiStartFileWatch(self, result.filepaths);
 }
 
 Player *NAMidiGetPlayer(NAMidi *self)
