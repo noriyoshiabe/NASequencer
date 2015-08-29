@@ -266,16 +266,17 @@ NAIterator *NAArrayGetIterator(NAArray *self, void *buffer)
     return (NAIterator *)iterator;
 }
 
-void NAArrayDump(NAArray *self)
+void NAArrayDescription(void *_self, FILE *stream)
 {
-    printf("<NAArray capacity=%d count=%d 0x%X\n", self->capacity, self->count, (uint32_t)self);
+    NAArray *self = _self;
+    fprintf(stream, "<NAArray capacity=%d count=%d 0x%X\n", self->capacity, self->count, (uint32_t)self);
 
     for (int i = 0; i < self->count; ++i) {
         void *value = self->bytes + i * self->elementSize;
-        char buf[1024];
-        self->description(value, buf, 1024);
-        printf("  [%d] %s\n", i, buf);
+        fprintf(stream, "  [%d] ", i);
+        self->description(value, stream);
+        fprintf(stream, "\n");
     }
 
-    printf(">\n");
+    fprintf(stream, ">\n");
 }

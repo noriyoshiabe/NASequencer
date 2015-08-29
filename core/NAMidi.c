@@ -18,7 +18,7 @@ struct _NAMidi {
 NAMidi *NAMidiCreate()
 {
     NAMidi *self = calloc(1, sizeof(NAMidi));
-    self->observers = NAArrayCreate(1, sizeof(Observer));
+    self->observers = NAArrayCreate(1, sizeof(Observer), NULL);
     return self;
 }
 

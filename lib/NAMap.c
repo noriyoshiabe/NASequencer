@@ -224,23 +224,24 @@ NAIterator *NAMapGetIterator(NAMap *self, void *buffer)
     return (NAIterator *)iterator;
 }
 
-void NAMapDump(NAMap *self)
+void NAMapDescription(void *_self, FILE *stream)
 {
-    printf("<NAMap 0x%X\n", (uint32_t)self);
+    NAMap *self = _self;
+    fprintf(stream, "<NAMap 0x%X\n", (uint32_t)self);
 
     for (int i = 0; i < self->size; ++i) {
         Entry *entry = self->buckets[i];
         int chain = 0;
         while (entry != NULL) {
-            char key[1024];
-            char value[1024];
-            self->keyDescription(entry->key, key, 1024);
-            self->valueDescription(entry->value, value, 1024);
-            printf("  [%d:%d] %s: %s\n", i, chain, key, value);
+            fprintf(stream, "  [%d:%d] ", i, chain);
+            self->keyDescription(entry->key, stream);
+            fprintf(stream, ": ");
+            self->valueDescription(entry->value, stream);
+            fprintf(stream, "\n");
             entry = entry->next;
             ++chain;
         }
     }
 
-    printf(">\n");
+    fprintf(stream, ">\n");
 }

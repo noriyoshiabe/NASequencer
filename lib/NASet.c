@@ -220,21 +220,22 @@ NAIterator *NASetGetIterator(NASet *self, void *buffer)
     return (NAIterator *)iterator;
 }
 
-void NASetDump(NASet *self)
+void NASetDescription(void *_self, FILE *stream)
 {
-    printf("<NASet 0x%X\n", (uint32_t)self);
+    NASet *self = _self;
+    fprintf(stream, "<NASet 0x%X\n", (uint32_t)self);
 
     for (int i = 0; i < self->size; ++i) {
         Entry *entry = self->buckets[i];
         int chain = 0;
         while (entry != NULL) {
-            char buf[1024];
-            self->description(entry->value, buf, 1024);
-            printf("  [%d:%d] %s\n", i, chain, buf);
+            fprintf(stream, "  [%d:%d] ", i, chain);
+            self->description(entry->value, stream);
+            fprintf(stream, "\n");
             entry = entry->next;
             ++chain;
         }
     }
 
-    printf(">\n");
+    fprintf(stream, ">\n");
 }

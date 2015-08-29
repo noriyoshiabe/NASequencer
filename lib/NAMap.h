@@ -21,6 +21,6 @@ extern void *NAMapGet(NAMap *self, void *key);
 extern int NAMapCount(NAMap *self);
 extern void *NAMapRemove(NAMap *self, void *key);
 extern NAIterator *NAMapGetIterator(NAMap *self, void *buffer);
-extern void NAMapDump(NAMap *self);
+extern void NAMapDescription(void *self, FILE *stream);
 
 extern const int NAMapIteratorSize;

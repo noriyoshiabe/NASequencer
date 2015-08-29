@@ -1,14 +1,13 @@
 #include "NADescription.h"
 
-#include <stdio.h>
 #include <stdint.h>
 
-void NADescriptionAddress(void *value, char *buffer, int length)
+void NADescriptionAddress(void *value, FILE *stream)
 {
-    snprintf(buffer, length, "<%08X>", (uint32_t)value);
+    fprintf(stream, "<%08X>", (uint32_t)value);
 }
 
-void NADescriptionCString(void *value, char *buffer, int length)
+void NADescriptionCString(void *value, FILE *stream)
 {
-    snprintf(buffer, length, "%s", (char *)value);
+    fprintf(stream, "%s", (char *)value);
 }

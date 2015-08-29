@@ -1,5 +1,7 @@
 #pragma once
 
-typedef void (*NADescription)(void *value, char *buffer, int length);
-extern void NADescriptionAddress(void *value, char *buffer, int length);
-extern void NADescriptionCString(void *value, char *buffer, int length);
+#include <stdio.h>
+
+typedef void (*NADescription)(void *value, FILE *stream);
+extern void NADescriptionAddress(void *value, FILE *stream);
+extern void NADescriptionCString(void *value, FILE *stream);

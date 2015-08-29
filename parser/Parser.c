@@ -63,7 +63,7 @@ static void ParseContextDestroy(ParseContext *context)
 
 bool ParserParseFile(const char *filepath, ParseResult *result)
 {
-    result->filepaths = NAArrayCreate(4, sizeof(char *));
+    result->filepaths = NAArrayCreate(4, sizeof(char *), NADescriptionCString);
 
     SequenceBuilder *builder = SequenceBuilderCreate();
     ParseContext *context = ParseContextCeate(builder, &SequenceBuilderStatementHandler, result);

@@ -16,6 +16,6 @@ extern void *NASetGet(NASet *self, void *value);
 extern int NASetCount(NASet *self);
 extern bool NASetRemove(NASet *self, void *value);
 extern NAIterator *NASetGetIterator(NASet *self, void *buffer);
-extern void NASetDump(NASet *self);
+extern void NASetDescription(void *self, FILE *stream);
 
 extern const int NASetIteratorSize;
