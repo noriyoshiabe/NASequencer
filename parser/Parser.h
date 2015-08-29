@@ -66,9 +66,12 @@ typedef struct _ParseContext {
     ParseResult *result;
 } ParseContext;
 
+typedef bool (*StatementHandlerProcessFunction)(void *receiver, ParseContext *context, StatementType type, va_list argList);
+typedef void (*StatementHandlerErrorFunction)(void *receiver, ParseContext *context, ParseError *error);
+
 struct _StatementHandler {
-    bool (*process)(void *receiver, ParseContext *context, StatementType type, va_list argList);
-    void (*error)(void *receiver, ParseContext *context, ParseError *error);
+    StatementHandlerProcessFunction process;
+    StatementHandlerErrorFunction error;
 };
 
 extern bool ParserParseFile(const char *filepath, ParseResult *result);
@@ -112,6 +115,8 @@ static inline const char *ParseErrorKind2String(ParseErrorKind kind)
 {
 #define CASE(kind) case kind: return &(#kind[14])
     switch (kind) {
+    CASE(ParseErrorKindUnsupportedFileType);
+    CASE(ParseErrorKindFileNotFound);
     CASE(ParseErrorKindSyntaxError);
     CASE(ParseErrorKindInvalidValue);
 

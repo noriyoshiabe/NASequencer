@@ -9,9 +9,14 @@ extern int NAMidi_get_column(yyscan_t scanner);
 
 static bool validateStatement(yyscan_t scanner, StatementType type, ...);
 static bool callbackStatement(yyscan_t scanner, StatementType type, ...);
+static void postProcess(yyscan_t scanner, StatementType type, ...);
+
 #define CALLBACK(type, ...) \
-    if (!validateStatement(scanner, type, __VA_ARGS__) \
-            || !callbackStatement(scanner, type, __VA_ARGS__)) { \
+    bool success = validateStatement(scanner, type, __VA_ARGS__) \
+        && callbackStatement(scanner, type, __VA_ARGS__); \
+    \
+    postProcess(scanner, type, __VA_ARGS__); \
+    if (!success) { \
         return 1;\
     }
 
@@ -154,4 +159,25 @@ static bool callbackStatement(yyscan_t scanner, StatementType type, ...)
     bool ret = context->handler->process(context->receiver, context, type, argList);
     va_end(argList);
     return ret;
+}
+
+static void postProcess(yyscan_t scanner, StatementType type, ...)
+{
+    va_list argList;
+
+    switch (type) {
+    case StatementTypeTitle:
+    case StatementTypeMarker:
+    case StatementTypePattern:
+    case StatementTypePatternDefine:
+    case StatementTypeKey:
+    case StatementTypeNote:
+    case StatementTypeInclude:
+        va_start(argList, type);
+        free(va_arg(argList, char *));
+        va_end(argList);
+        break;
+    default:
+        break;
+    }
 }

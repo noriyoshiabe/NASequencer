@@ -67,11 +67,13 @@ bool ParserParseFile(const char *filepath, ParseResult *result)
 
     SequenceBuilder *builder = SequenceBuilderCreate();
     ParseContext *context = ParseContextCeate(builder, &SequenceBuilderStatementHandler, result);
+    char *fullpath = NAUtilGetRealPath(filepath);
 
     bool success = ParserParseFileWithContext(filepath, context) && SequenceBuilderBuild(builder, result);
 
     SequenceBuilderDestroy(builder);
     ParseContextDestroy(context);
+    free(fullpath);
 
     return success;
 }
@@ -85,20 +87,17 @@ bool ParserParseFileWithContext(const char *filepath, ParseContext *context)
         return false;
     }
 
-    char *fullpath = NAUtilGetRealPath(filepath);
-
-    FILE *fp = fopen(fullpath, "r");
+    FILE *fp = fopen(filepath, "r");
     if (!fp) {
         context->result->error.kind = ParseErrorKindFileNotFound;
-        free(fullpath);
         return false;
     }
 
     const char *previousFilepath = context->location.filepath;
-    context->location.filepath = fullpath;
+    context->location.filepath = filepath;
 
-    if (!NASetContains(context->fileSet, fullpath)) {
-        char *copied = strdup(fullpath);
+    if (!NASetContains(context->fileSet, (char *)filepath)) {
+        char *copied = strdup(filepath);
         NASetAdd(context->fileSet, copied);
         NAArrayAppend(context->result->filepaths, copied);
     }
@@ -116,7 +115,6 @@ bool ParserParseFileWithContext(const char *filepath, ParseContext *context)
     parser->lex_destroy(scanner);
 
     fclose(fp);
-    free(fullpath);
 
     return success;
 }

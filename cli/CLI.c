@@ -27,7 +27,7 @@ extern void CLINAMidiOnParseFinish(void *receiver, Sequence *sequence)
 
 extern void CLINAMidiOnParseError(void *receiver, ParseError *error)
 {
-    printf("called %s\n", __FUNCTION__);
+    printf("%s: %d:%s\n", __FUNCTION__, error->kind, ParseErrorKind2String(error->kind));
 }
 
 static NAMidiObserverCallbacks CLINAMidiObserverCallbacks = {
