@@ -4,6 +4,8 @@
 #include "NAMidiLexer.h"
 #include "Parser.h"
 
+#include <ctype.h>
+
 extern int NAMidi_error(yyscan_t scanner, const char *message);
 extern int NAMidi_get_column(yyscan_t scanner);
 
@@ -318,19 +320,49 @@ static bool callbackStatement(yyscan_t scanner, StatementType type, ...)
     case StatementTypeKey:
         {
             char *keyString = va_arg(argList, char *);
-            // TODO
-            KeySign keySign = KeySignCMajor;
-            success = context->handler->process(context->receiver, context, type, keySign);
+
+            char keyChar = tolower(keyString[0]);
+            bool sharp = NULL != strchr(keyString, '#');
+            bool flat = NULL != strchr(keyString, 'b');
+            bool major = NULL == strstr(keyString, "min");
+
+            KeySign keySign = KeySignTableGetKeySign(keyChar, sharp, flat, major);
+            if (KeySignInvalid == keySign) {
+                callbackError(context, ParseErrorKindInvalidValue);
+            }
+            else {
+              success = context->handler->process(context->receiver, context, type, keySign);
+            }
         }
         break;
     case StatementTypeNote:
         {
-            char *noteString = va_arg(argList, char *);
+            const BaseNote noteTable[] = {
+                BaseNote_A, BaseNote_B, BaseNote_C,
+                BaseNote_D, BaseNote_E, BaseNote_F, BaseNote_G
+            };
 
-            // TODO
-            int baseNoteNo = 0;
-            int accidental = 0;
-            int octave = 0;
+            char *pc = va_arg(argList, char *);
+
+            BaseNote baseNote = noteTable[tolower(*pc) - 97];
+            Accidental accidental = AccidentalNone;
+
+            switch (*(++pc)) {
+            case '#':
+                accidental = AccidentalSharp;
+                ++pc;
+                break;
+            case 'b':
+                accidental = AccidentalFlat;
+                ++pc;
+                break;
+            case 'n':
+                accidental = AccidentalNatural;
+                ++pc;
+                break;
+            }
+
+            int octave = atoi(pc);
 
             int step = va_arg(argList, int);
             int gatetime = va_arg(argList, int);
@@ -339,13 +371,12 @@ static bool callbackStatement(yyscan_t scanner, StatementType type, ...)
             if (!isValidRange(step, -1, 65535)
                     || !isValidRange(gatetime, -1, 65535)
                     || !isValidRange(velocity, -1, 127)
-                    || !isValidRange(accidental, -2, 2)
                     || !isValidRange(octave, -2, 8)) {
                 callbackError(context, ParseErrorKindInvalidValue);
             }
             else {
                 success = context->handler->process(context->receiver, context, type,
-                    baseNoteNo, accidental, octave, step, gatetime, velocity);
+                    baseNote, accidental, octave, step, gatetime, velocity);
             }
         }
         break;
