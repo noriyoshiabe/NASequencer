@@ -12,6 +12,7 @@ set(SOURCES
   NAHash.c
   NASet.c
   NAMap.c
+  NABuffer.c
   NAUtil.c
 )
 
