@@ -22,4 +22,7 @@ set(SOURCES
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 target_link_libraries(${PROJECT_NAME} ${LIBEDIT})
-target_link_libraries(${PROJECT_NAME} namidi-core namidi-sequence namidi-lib)
+target_link_libraries(${PROJECT_NAME} namidi-core)
+target_link_libraries(${PROJECT_NAME} namidi-sequence)
+target_link_libraries(${PROJECT_NAME} namidi-parser)
+target_link_libraries(${PROJECT_NAME} namidi-lib)

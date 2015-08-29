@@ -33,6 +33,8 @@ typedef enum {
 } StatementType;
 
 typedef enum {
+    ParseErrorKindUnsupportedFileType,
+    ParseErrorKindFileNotFound,
     ParseErrorKindSyntaxError,
     ParseErrorKindInvalidValue,
 } ParseErrorKind;

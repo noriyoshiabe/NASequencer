@@ -1,0 +1,22 @@
+cmake_minimum_required(VERSION 3.2)
+
+project(namidi-parser)
+
+find_package(FLEX)
+find_package(BISON)
+
+FLEX_TARGET(NAMidiLexer NAMidiLexer.l ${CMAKE_CURRENT_SOURCE_DIR}/NAMidiLexer.c)
+BISON_TARGET(NAMidiParser NAMidiParser.y ${CMAKE_CURRENT_SOURCE_DIR}/NAMidiParser.c)
+ADD_FLEX_BISON_DEPENDENCY(NAMidiLexer NAMidiParser)
+
+include_directories(
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ../sequence
+  ../lib
+)
+
+set(SOURCES
+  Parser.c
+)
+
+add_library(${PROJECT_NAME} ${SOURCES} ${FLEX_NAMidiLexer_OUTPUTS} ${BISON_NAMidiParser_OUTPUTS})

@@ -1,6 +1,8 @@
 #include "Parser.h"
 #include "NAMidiParser.h"
 #include "NAMidiLexer.h"
+#include "SequenceBuilder.h"
+#include "NAUtil.h"
 
 #include <stdlib.h>
 
@@ -43,7 +45,7 @@ static const struct {
     }
 };
 
-static ParseContext *ParseContextCeate(void *receiver, StatementHandler handler, ParseResult *result)
+static ParseContext *ParseContextCeate(void *receiver, StatementHandler *handler, ParseResult *result)
 {
     ParseContext *context = calloc(1, sizeof(ParseContext));
     context->receiver = receiver;
@@ -66,28 +68,28 @@ bool ParserParseFile(const char *filepath, ParseResult *result)
     SequenceBuilder *builder = SequenceBuilderCreate();
     ParseContext *context = ParseContextCeate(builder, &SequenceBuilderStatementHandler, result);
 
-    bool success = ParserParseFileWithContext(filepath, result) && builder->build(result);
+    bool success = ParserParseFileWithContext(filepath, context) && SequenceBuilderBuild(builder, result);
 
     SequenceBuilderDestroy(builder);
-    ParseContextDestroy(destroy);
+    ParseContextDestroy(context);
 
     return success;
 }
 
-bool ParserParseFileWithContext(const char *filepath, ParseResult *result)
+bool ParserParseFileWithContext(const char *filepath, ParseContext *context)
 {
     // TODO filetype check
-    ParserInterface *parser = parserTable[0];
+    const ParserInterface *parser = &parserTable[0].interface;
     if (!parser) {
-        result->error.kind = ParseErrorKindUnsupportedFileType;
+        context->result->error.kind = ParseErrorKindUnsupportedFileType;
         return false;
     }
 
-    char *fullpath = NAUtilGetRealPath(filetype);
+    char *fullpath = NAUtilGetRealPath(filepath);
 
     FILE *fp = fopen(fullpath, "r");
     if (!fp) {
-        result->error.kind = ParseErrorKindFileNotFound;
+        context->result->error.kind = ParseErrorKindFileNotFound;
         free(fullpath);
         return false;
     }
@@ -96,9 +98,9 @@ bool ParserParseFileWithContext(const char *filepath, ParseResult *result)
     context->location.filepath = fullpath;
 
     if (!NASetContains(context->fileSet, fullpath)) {
-        const char *copied = strdup(fullpath);
-        NASetPut(context->fileSet, copied);
-        NAArrayAppend(result.filepaths, copied);
+        char *copied = strdup(fullpath);
+        NASetAdd(context->fileSet, copied);
+        NAArrayAppend(context->result->filepaths, copied);
     }
 
     yyscan_t scanner;
@@ -110,8 +112,8 @@ bool ParserParseFileWithContext(const char *filepath, ParseResult *result)
 
     context->location.filepath = previousFilepath;
 
-    yy_delete_buffer(state, scanner);
-    yylex_destroy(scanner);
+    parser->delete_buffer(state, scanner);
+    parser->lex_destroy(scanner);
 
     fclose(fp);
     free(fullpath);
