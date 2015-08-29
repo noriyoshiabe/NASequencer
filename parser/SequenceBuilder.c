@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <libgen.h>
 
 struct _SequenceBuilder {
@@ -36,9 +37,12 @@ static bool SequenceBuilderIncludeFile(SequenceBuilder *self, ParseContext *cont
     return success;
 }
 
-static bool StatementHandlerProcess(void *receiver, ParseContext *context, StatementType type, va_list argList)
+static bool StatementHandlerProcess(void *receiver, ParseContext *context, StatementType type, ...)
 {
     printf("statement: %s\n", StatementType2String(type));
+
+    va_list argList;
+    va_start(argList, type);
 
     switch (type) {
     case StatementTypeInclude:
@@ -46,6 +50,8 @@ static bool StatementHandlerProcess(void *receiver, ParseContext *context, State
     default:
         break;
     }
+
+    va_end(argList);
 
     return true;
 }

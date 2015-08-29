@@ -4,7 +4,6 @@
 #include "NASet.h"
 
 #include <stdbool.h>
-#include <stdarg.h>
 
 #define ParserMeasureMax 9999
 
@@ -68,7 +67,7 @@ typedef struct _ParseContext {
     ParseResult *result;
 } ParseContext;
 
-typedef bool (*StatementHandlerProcessFunction)(void *receiver, ParseContext *context, StatementType type, va_list argList);
+typedef bool (*StatementHandlerProcessFunction)(void *receiver, ParseContext *context, StatementType type, ...);
 typedef void (*StatementHandlerErrorFunction)(void *receiver, ParseContext *context, ParseError *error);
 
 struct _StatementHandler {

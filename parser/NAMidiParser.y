@@ -143,63 +143,232 @@ int NAMidi_error(yyscan_t scanner, const char *message)
     return 0;
 }
 
+static void callbackError(ParseContext *context, ParseErrorKind kind)
+{
+    ParseError error;
+    error.kind = kind;
+    error.location = context->location;
+    context->handler->error(context->receiver, context, &error);
+}
+
 static bool callbackStatement(yyscan_t scanner, StatementType type, ...)
 {
     ParseContext *context = NAMidi_get_extra(scanner);
     context->location = (ParseLocation){NAMidi_get_lineno(scanner), NAMidi_get_column(scanner)};
 
+    bool success = false;
+
+    va_list argList;
+    va_start(argList, type);
+
     switch (type) {
     case StatementTypeResolution:
+        {
+            int resolution = va_arg(argList, int);
+            if (!isValidRange(resolution, 1, 9600)) {
+                callbackError(context, ParseErrorKindInvalidValue);
+            }
+            else {
+                success = context->handler->process(context->receiver, context, type, resolution);
+            }
+        }
         break;
     case StatementTypeTitle:
+        success = context->handler->process(context->receiver, context, type, va_arg(argList, char *));
         break;
     case StatementTypeTempo:
+        {
+            double tempo = va_arg(argList, double);
+            if (!isValidRange(tempo, 30.0, 300.0)) {
+                callbackError(context, ParseErrorKindInvalidValue);
+            }
+            else {
+                success = context->handler->process(context->receiver, context, type, tempo);
+            }
+        }
         break;
     case StatementTypeTimeSign:
+        {
+            int numerator = va_arg(argList, int);
+            int denominator = va_arg(argList, int);
+            if (1 > numerator || 1 > denominator || !isPowerOf2(denominator)) {
+                callbackError(context, ParseErrorKindInvalidValue);
+            }
+            else {
+                success = context->handler->process(context->receiver, context, type, numerator, denominator);
+            }
+        }
         break;
     case StatementTypeMeasure:
+        {
+            int measure = va_arg(argList, int);
+            if (!isValidRange(measure, 1, ParserMeasureMax)) {
+                callbackError(context, ParseErrorKindInvalidValue);
+            }
+            else {
+                success = context->handler->process(context->receiver, context, type, measure);
+            }
+        }
         break;
     case StatementTypeMarker:
+        success = context->handler->process(context->receiver, context, type, va_arg(argList, char *));
         break;
     case StatementTypePattern:
+        success = context->handler->process(context->receiver, context, type, va_arg(argList, char *));
         break;
     case StatementTypePatternDefine:
+        success = context->handler->process(context->receiver, context, type, va_arg(argList, char *));
         break;
     case StatementTypeEnd:
+        success = context->handler->process(context->receiver, context, type);
         break;
     case StatementTypeTrack:
+        {
+            int track = va_arg(argList, int);
+            if (!isValidRange(track, 1, 16)) {
+                callbackError(context, ParseErrorKindInvalidValue);
+            }
+            else {
+                success = context->handler->process(context->receiver, context, type, track);
+            }
+        }
         break;
     case StatementTypeChannel:
+        {
+            int channel = va_arg(argList, int);
+            if (!isValidRange(channel, 1, 16)) {
+                callbackError(context, ParseErrorKindInvalidValue);
+            }
+            else {
+                success = context->handler->process(context->receiver, context, type, channel);
+            }
+        }
         break;
     case StatementTypeVoice:
+        {
+            int msb = va_arg(argList, int);
+            int lsb = va_arg(argList, int);
+            int programNo = va_arg(argList, int);
+
+            if (!isValidRange(msb, 0, 127)
+                    || !isValidRange(lsb, 0, 127)
+                    || !isValidRange(programNo, 0, 127)) {
+                callbackError(context, ParseErrorKindInvalidValue);
+            }
+            else {
+                success = context->handler->process(context->receiver, context, type, msb, lsb, programNo);
+            }
+        }
         break;
     case StatementTypeVolume:
+        {
+            int volume = va_arg(argList, int);
+            if (!isValidRange(volume, 0, 127)) {
+                callbackError(context, ParseErrorKindInvalidValue);
+            }
+            else {
+                success = context->handler->process(context->receiver, context, type, volume);
+            }
+        }
         break;
     case StatementTypePan:
+        {
+            int pan = va_arg(argList, int);
+            if (!isValidRange(pan, -64, 64)) {
+                callbackError(context, ParseErrorKindInvalidValue);
+            }
+            else {
+                success = context->handler->process(context->receiver, context, type, pan);
+            }
+        }
         break;
     case StatementTypeChorus:
+        {
+            int chorus = va_arg(argList, int);
+            if (!isValidRange(chorus, 0, 127)) {
+                callbackError(context, ParseErrorKindInvalidValue);
+            }
+            else {
+                success = context->handler->process(context->receiver, context, type, chorus);
+            }
+        }
         break;
     case StatementTypeReverb:
+        {
+            int reverb = va_arg(argList, int);
+            if (!isValidRange(reverb, 0, 127)) {
+                callbackError(context, ParseErrorKindInvalidValue);
+            }
+            else {
+                success = context->handler->process(context->receiver, context, type, reverb);
+            }
+        }
         break;
     case StatementTypeTranspose:
+        {
+            int transpose = va_arg(argList, int);
+            if (!isValidRange(transpose, -64, 64)) {
+                callbackError(context, ParseErrorKindInvalidValue);
+            }
+            else {
+                success = context->handler->process(context->receiver, context, type, transpose);
+            }
+        }
         break;
     case StatementTypeKey:
+        {
+            char *keyString = va_arg(argList, char *);
+            // TODO
+            KeySign keySign = KeySignCMajor;
+            success = context->handler->process(context->receiver, context, type, keySign);
+        }
         break;
     case StatementTypeNote:
+        {
+            char *noteString = va_arg(argList, char *);
+
+            // TODO
+            int baseNoteNo = 0;
+            int accidental = 0;
+            int octave = 0;
+
+            int step = va_arg(argList, int);
+            int gatetime = va_arg(argList, int);
+            int velocity = va_arg(argList, int);
+
+            if (!isValidRange(step, -1, 65535)
+                    || !isValidRange(gatetime, -1, 65535)
+                    || !isValidRange(velocity, -1, 127)
+                    || !isValidRange(accidental, -2, 2)
+                    || !isValidRange(octave, -2, 8)) {
+                callbackError(context, ParseErrorKindInvalidValue);
+            }
+            else {
+                success = context->handler->process(context->receiver, context, type,
+                    baseNoteNo, accidental, octave, step, gatetime, velocity);
+            }
+        }
         break;
     case StatementTypeRest:
+        {
+            int step = va_arg(argList, int);
+            if (!isValidRange(step, 0, 65535)) {
+                callbackError(context, ParseErrorKindInvalidValue);
+            }
+            else {
+                success = context->handler->process(context->receiver, context, type, step);
+            }
+        }
         break;
     case StatementTypeInclude:
+        success = context->handler->process(context->receiver, context, type, va_arg(argList, char *));
         break;
     default:
         break;
     }
 
-    va_list argList;
-    va_start(argList, type);
-    bool ret = context->handler->process(context->receiver, context, type, argList);
     va_end(argList);
-    return ret;
+    return success;
 }
 
 static void postProcess(yyscan_t scanner, StatementType type, ...)
