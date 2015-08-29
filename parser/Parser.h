@@ -6,6 +6,8 @@
 #include <stdbool.h>
 #include <stdarg.h>
 
+#define ParserMeasureMax 9999
+
 typedef enum {
     StatementTypeResolution,
     StatementTypeTitle,

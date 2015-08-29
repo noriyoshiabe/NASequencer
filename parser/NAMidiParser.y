@@ -7,18 +7,18 @@
 extern int NAMidi_error(yyscan_t scanner, const char *message);
 extern int NAMidi_get_column(yyscan_t scanner);
 
-static bool validateStatement(yyscan_t scanner, StatementType type, ...);
 static bool callbackStatement(yyscan_t scanner, StatementType type, ...);
 static void postProcess(yyscan_t scanner, StatementType type, ...);
 
 #define CALLBACK(type, ...) \
-    bool success = validateStatement(scanner, type, __VA_ARGS__) \
-        && callbackStatement(scanner, type, __VA_ARGS__); \
-    \
+    bool success = callbackStatement(scanner, type, __VA_ARGS__); \
     postProcess(scanner, type, __VA_ARGS__); \
     if (!success) { \
         return 1;\
     }
+
+#define isPowerOf2(x) ((x != 0) && ((x & (x - 1)) == 0))
+#define isValidRange(v, from, to) (from <= v && v <= to)
 
 %}
 
@@ -143,16 +143,57 @@ int NAMidi_error(yyscan_t scanner, const char *message)
     return 0;
 }
 
-static bool validateStatement(yyscan_t scanner, StatementType type, ...)
-{
-    // TODO validation
-    return true;
-}
-
 static bool callbackStatement(yyscan_t scanner, StatementType type, ...)
 {
     ParseContext *context = NAMidi_get_extra(scanner);
     context->location = (ParseLocation){NAMidi_get_lineno(scanner), NAMidi_get_column(scanner)};
+
+    switch (type) {
+    case StatementTypeResolution:
+        break;
+    case StatementTypeTitle:
+        break;
+    case StatementTypeTempo:
+        break;
+    case StatementTypeTimeSign:
+        break;
+    case StatementTypeMeasure:
+        break;
+    case StatementTypeMarker:
+        break;
+    case StatementTypePattern:
+        break;
+    case StatementTypePatternDefine:
+        break;
+    case StatementTypeEnd:
+        break;
+    case StatementTypeTrack:
+        break;
+    case StatementTypeChannel:
+        break;
+    case StatementTypeVoice:
+        break;
+    case StatementTypeVolume:
+        break;
+    case StatementTypePan:
+        break;
+    case StatementTypeChorus:
+        break;
+    case StatementTypeReverb:
+        break;
+    case StatementTypeTranspose:
+        break;
+    case StatementTypeKey:
+        break;
+    case StatementTypeNote:
+        break;
+    case StatementTypeRest:
+        break;
+    case StatementTypeInclude:
+        break;
+    default:
+        break;
+    }
 
     va_list argList;
     va_start(argList, type);
