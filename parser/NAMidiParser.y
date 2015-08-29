@@ -326,7 +326,7 @@ static bool callbackStatement(yyscan_t scanner, StatementType type, ...)
             bool flat = NULL != strchr(keyString, 'b');
             bool major = NULL == strstr(keyString, "min");
 
-            KeySign keySign = KeySignTableGetKeySign(keyChar, sharp, flat, major);
+            KeySign keySign = NoteTableGetKeySign(keyChar, sharp, flat, major);
             if (KeySignInvalid == keySign) {
                 callbackError(context, ParseErrorKindInvalidValue);
             }

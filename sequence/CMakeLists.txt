@@ -11,6 +11,7 @@ set(SOURCES
   MidiEvent.c
   Sequence.c
   TimeTable.c
+  NoteTable.c
 )
 
 add_library(${PROJECT_NAME} ${SOURCES})
