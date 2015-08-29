@@ -229,7 +229,7 @@ void NASetDump(NASet *self)
         int chain = 0;
         while (entry != NULL) {
             char buf[1024];
-            self->description(entry->value, buf, 128);
+            self->description(entry->value, buf, 1024);
             printf("  [%d:%d] %s\n", i, chain, buf);
             entry = entry->next;
             ++chain;

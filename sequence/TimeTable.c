@@ -44,8 +44,8 @@ TimeTable *TimeTableCreate()
 {
     TimeTable *self = calloc(1, sizeof(TimeTable));
     self->resolution = 480;
-    self->timeSignRecords = NAArrayCreate(4, sizeof(TimeSignRecord));
-    self->tempoRecords = NAArrayCreate(4, sizeof(TempoRecord));
+    self->timeSignRecords = NAArrayCreate(4, sizeof(TimeSignRecord), NULL);
+    self->tempoRecords = NAArrayCreate(4, sizeof(TempoRecord), NULL);
     TimeSignRecord timeSign = {0, INT32_MAX, 4, 4, 1, INT32_MAX, 480 * 4};
     NAArrayAppend(self->timeSignRecords, &timeSign);
     TempoRecord tempo = {0, INT32_MAX, 120.0, 0, INT64_MAX};

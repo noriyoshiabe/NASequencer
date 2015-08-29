@@ -3,9 +3,12 @@
 #include <stdbool.h>
 #include <stdarg.h>
 
+#include "NADescription.h"
+#include "NAIterator.h"
+
 typedef struct _NAArray NAArray;
 
-extern NAArray *NAArrayCreate(int capacity, int elementSize);
+extern NAArray *NAArrayCreate(int capacity, int elementSize, NADescription description);
 extern void NAArrayDestroy(NAArray *self);
 extern int NAArrayCount(NAArray *self);
 extern void *NAArrayGetValues(NAArray *self);
@@ -17,3 +20,6 @@ extern int NAArrayFindIndex(NAArray *self, const void *key, int (*comparator)(co
 extern void NAArrayTraverse(NAArray *self, void (*function)(void *));
 extern void NAArrayTraverseWithArg(NAArray *self, void (*function)(void *, void *), void *arg);
 extern void NAArrayTraverseWithArgList(NAArray *self, void (*function)(void *, va_list), ...);
+extern void NAArrayDump(NAArray *self);
+
+extern const int NAArrayIteratorSize;

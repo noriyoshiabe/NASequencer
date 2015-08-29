@@ -1,5 +1,6 @@
 #include "NAArray.h"
 
+#include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,9 +10,19 @@ struct _NAArray {
     int elementSize;
     int count;
     uint8_t *bytes;
+    NADescription description;
     void *(*__memcpy__)(void *dst, const void *src, size_t size);
     void *(*__memmove__)(void *dst, const void *src, size_t size);
 };
+
+typedef struct _NAArrayIterator {
+    NAIterator super;
+    NAArray *array;
+    int index;
+    int byteCount;
+} NAArrayIterator;
+
+const int NAArrayIteratorSize = sizeof(NAArrayIterator);
 
 static void *NAArrayMemcpy16(void *_dst, const void *_src, size_t size)
 {
@@ -112,12 +123,13 @@ static void *NAArrayMemmove64(void *_dst, const void *_src, size_t size)
 	return _dst;
 }
 
-NAArray *NAArrayCreate(int capacity, int elementSize)
+NAArray *NAArrayCreate(int capacity, int elementSize, NADescription description)
 {
     NAArray *self = calloc(1, sizeof(NAArray));
     self->capacity = capacity;
     self->elementSize = elementSize;
     self->bytes = malloc(capacity * elementSize);
+    self->description = description ? description : NADescriptionAddress;
     self->__memcpy__ =
         0 == elementSize % sizeof(int64_t) ? NAArrayMemcpy64 : 
         0 == elementSize % sizeof(int32_t) ? NAArrayMemcpy32 : 
@@ -226,4 +238,44 @@ void NAArrayTraverseWithArgList(NAArray *self, void (*function)(void *, va_list)
     }
 
     va_end(argList);
+}
+
+static bool NAArrayIteratorHasNext(NAIterator *_iterator)
+{
+    NAArrayIterator *iterator = (NAArrayIterator *)_iterator;
+    return iterator->index < iterator->byteCount;
+}
+
+static void *NAArrayIteratorNext(NAIterator *_iterator)
+{
+    NAArrayIterator *iterator = (NAArrayIterator *)_iterator;
+    void *ret = iterator->array->bytes + iterator->index;
+    iterator->index += iterator->array->elementSize;
+    return ret;
+}
+
+NAIterator *NAArrayGetIterator(NAArray *self, void *buffer)
+{
+    NAArrayIterator *iterator = buffer;
+    iterator->super.hasNext = NAArrayIteratorHasNext;
+    iterator->super.next = NAArrayIteratorNext;
+    iterator->array = self;
+    iterator->index = 0;
+    iterator->byteCount = self->count * self->elementSize;
+
+    return (NAIterator *)iterator;
+}
+
+void NAArrayDump(NAArray *self)
+{
+    printf("<NAArray capacity=%d count=%d 0x%X\n", self->capacity, self->count, (uint32_t)self);
+
+    for (int i = 0; i < self->count; ++i) {
+        void *value = self->bytes + i * self->elementSize;
+        char buf[1024];
+        self->description(value, buf, 1024);
+        printf("  [%d] %s\n", i, buf);
+    }
+
+    printf(">\n");
 }
