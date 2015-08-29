@@ -198,3 +198,32 @@ int NAArrayFindIndex(NAArray *self, const void *key, int (*comparator)(const voi
     uint8_t *result = bsearch(key, self->bytes, self->count, self->elementSize, comparator);
     return NULL != result ? (int)(result - self->bytes) / self->elementSize : -1;
 }
+
+void NAArrayTraverse(NAArray *self, void (*function)(void *))
+{
+    for (int i = 0; i < self->count; ++i) {
+        void *value = self->bytes + i * self->elementSize;
+        function(value);
+    }
+}
+
+void NAArrayTraverseWithArg(NAArray *self, void (*function)(void *, void *), void *arg)
+{
+    for (int i = 0; i < self->count; ++i) {
+        void *value = self->bytes + i * self->elementSize;
+        function(value, arg);
+    }
+}
+
+void NAArrayTraverseWithArgList(NAArray *self, void (*function)(void *, va_list), ...)
+{
+    va_list argList;
+    va_start(argList, function);
+
+    for (int i = 0; i < self->count; ++i) {
+        void *value = self->bytes + i * self->elementSize;
+        function(value, argList);
+    }
+
+    va_end(argList);
+}
