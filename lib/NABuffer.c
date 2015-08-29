@@ -5,13 +5,11 @@
 #include <string.h>
 
 struct _NABuffer {
+    uint8_t *buffer;
     int writeCursor;
     int readCursor;
-    uint8_t *buffer;
-
     int allocationUnit;
     int capacity;
-    int size;
 };
 
 NABuffer *NABufferCreate(int allocationUnit)
@@ -31,7 +29,7 @@ void NABufferDestroy(NABuffer *self)
 
 static void NABufferExtend(NABuffer *self, int sizeNeeded)
 {
-    while (sizeNeeded > self->capacity - self->size) {
+    while (sizeNeeded > self->capacity - self->writeCursor) {
         self->capacity += self->allocationUnit;
     }
 
@@ -41,7 +39,7 @@ static void NABufferExtend(NABuffer *self, int sizeNeeded)
 void NABufferWriteString(NABuffer *self, char *string)
 {
     int length = strlen(string) + 1;
-    if (self->capacity - self->size < length ) {
+    if (self->capacity - self->writeCursor < length ) {
         NABufferExtend(self, length);
     }
 
@@ -51,7 +49,7 @@ void NABufferWriteString(NABuffer *self, char *string)
 
 void NABufferWriteInteger(NABuffer *self, int value)
 {
-    if (self->capacity - self->size < sizeof(int)) {
+    if (self->capacity - self->writeCursor < sizeof(int)) {
         NABufferExtend(self, sizeof(int));
     }
 
@@ -61,7 +59,7 @@ void NABufferWriteInteger(NABuffer *self, int value)
 
 void NABufferWriteFloat(NABuffer *self, float value)
 {
-    if (self->capacity - self->size < sizeof(float)) {
+    if (self->capacity - self->writeCursor < sizeof(float)) {
         NABufferExtend(self, sizeof(float));
     }
 
@@ -69,29 +67,40 @@ void NABufferWriteFloat(NABuffer *self, float value)
     self->writeCursor += sizeof(float);
 }
 
-char *NABufferReadString(NABuffer *self)
+bool NABufferReadString(NABuffer *self, char **string)
 {
-    char *ret = (char *)(self->buffer + self->readCursor);
+    if (self->writeCursor <= self->readCursor) {
+        return false;
+    }
+
+    *string = (char *)(self->buffer + self->readCursor);
     self->readCursor += strlen((char *)(self->buffer + self->readCursor));
-    return ret;
+    return true;
 }
 
-int NABufferReadInteger(NABuffer *self)
+bool NABufferReadInteger(NABuffer *self, int *value)
 {
-    int ret = *((int *)(self->buffer + self->readCursor));
+    if (self->writeCursor <= self->readCursor) {
+        return false;
+    }
+
+    *value = *((int *)(self->buffer + self->readCursor));
     self->readCursor += sizeof(int);
-    return ret;
+    return true;
 }
 
-float NABufferReadFloat(NABuffer *self)
+bool NABufferReadFloat(NABuffer *self, float *value)
 {
-    float ret = *((float *)(self->buffer + self->readCursor));
+    if (self->writeCursor <= self->readCursor) {
+        return false;
+    }
+
+    *value = *((float *)(self->buffer + self->readCursor));
     self->readCursor += sizeof(float);
-    return ret;
+    return true;
 }
 
 void NABufferSeekFirst(NABuffer *self)
 {
     self->readCursor = 0;
-    self->writeCursor = 0;
 }
