@@ -17,6 +17,7 @@ include_directories(
 
 set(SOURCES
   Parser.c
+  SequenceBuilder.c
 )
 
 add_library(${PROJECT_NAME} ${SOURCES} ${FLEX_NAMidiLexer_OUTPUTS} ${BISON_NAMidiParser_OUTPUTS})
