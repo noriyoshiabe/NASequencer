@@ -16,8 +16,8 @@ typedef struct _ParserInterface {
     int (*lex_init_extra)(YY_EXTRA_TYPE extra, yyscan_t* scanner);
     int (*lex_destroy)(yyscan_t scanner);
     YY_BUFFER_STATE (*create_buffer)(FILE *file, int size, yyscan_t yyscanner);
-    void (*delete_buffer)(YY_BUFFER_STATE b, yyscan_t yyscanner);
     void (*switch_to_buffer)(YY_BUFFER_STATE new_buffer, yyscan_t yyscanner);
+    void (*delete_buffer)(YY_BUFFER_STATE b, yyscan_t yyscanner);
     int (*parse)(yyscan_t scanner);
 } ParserInterface;
 
