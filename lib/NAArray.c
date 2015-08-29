@@ -155,6 +155,25 @@ void NAArrayAppend(NAArray *self, void *value)
     self->__memcpy__(self->bytes + self->elementSize * self->count++, value, self->elementSize);
 }
 
+bool NAArrayInsertAt(NAArray *self, int index, void *value)
+{
+    if (index < 0 || self->count < index) {
+        return false;
+    }
+
+    if (self->capacity <= self->count + 1) {
+        self->capacity *= 2;
+        self->bytes = realloc(self->bytes, self->capacity * self->elementSize);
+    }
+
+    self->__memmove__(
+            self->bytes + self->elementSize * (index + 1),
+            self->bytes + self->elementSize * index,
+            self->elementSize * (self->count++ - index));
+
+    return true;
+}
+
 bool NAArrayRemoveAtIndex(NAArray *self, int index)
 {
     if (self->count <= index) {
