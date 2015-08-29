@@ -64,7 +64,10 @@ LINE_COMMENT   (\/\/|==|--).*$
 
 {INTEGER}        { yylval->i = atoi(yytext); return INTEGER; }
 {FLOAT}          { yylval->f = atof(yytext); return FLOAT; }
-{STRING}         { yylval->s = strdup(yytext); return STRING; }
+{STRING}         { yylval->s = strdup(yytext + 1);
+                   yylval->s[strlen(yylval->s) - 1] = '\0';
+                   return STRING; }
+
 {WSPACE}         { }
 
 {RESOLUTION}     { return RESOLUTION; }
