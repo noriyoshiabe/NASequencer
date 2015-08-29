@@ -30,5 +30,6 @@ extern const Location LocationZero;
 
 extern TimeTable *TimeTableCreate();
 extern void TimeTableDestroy(TimeTable *self);
-extern void TimeTableAddTimeSign(TimeTable *self, int32_t tick, TimeSign timeSign);
-extern void TimeTableAddTempo(TimeTable *self, int32_t tick, float tempo);
+extern void TimeTableSetLength(TimeTable *self, int32_t length);
+extern bool TimeTableAddTimeSign(TimeTable *self, int32_t tick, TimeSign timeSign);
+extern bool TimeTableAddTempo(TimeTable *self, int32_t tick, float tempo);
