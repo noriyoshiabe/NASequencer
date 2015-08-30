@@ -12,7 +12,7 @@ set(SOURCES
   NAHash.c
   NASet.c
   NAMap.c
-  NABuffer.c
+  NAByteBuffer.c
   NAUtil.c
 )
 

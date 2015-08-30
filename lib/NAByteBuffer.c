@@ -1,10 +1,10 @@
-#include "NABuffer.h"
+#include "NAByteBuffer.h"
 
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
-struct _NABuffer {
+struct _NAByteBuffer {
     uint8_t *buffer;
     int writeCursor;
     int readCursor;
@@ -12,22 +12,22 @@ struct _NABuffer {
     int capacity;
 };
 
-NABuffer *NABufferCreate(int allocationUnit)
+NAByteBuffer *NAByteBufferCreate(int allocationUnit)
 {
-    NABuffer *self = calloc(1, sizeof(NABuffer));
+    NAByteBuffer *self = calloc(1, sizeof(NAByteBuffer));
     self->buffer = malloc(allocationUnit);
     self->allocationUnit = allocationUnit;
     self->capacity = allocationUnit;
     return self;
 }
 
-void NABufferDestroy(NABuffer *self)
+void NAByteBufferDestroy(NAByteBuffer *self)
 {
     free(self->buffer);
     free(self);
 }
 
-static void NABufferExtend(NABuffer *self, int sizeNeeded)
+static void NAByteBufferExtend(NAByteBuffer *self, int sizeNeeded)
 {
     while (sizeNeeded > self->capacity - self->writeCursor) {
         self->capacity += self->allocationUnit;
@@ -36,71 +36,75 @@ static void NABufferExtend(NABuffer *self, int sizeNeeded)
     self->buffer = realloc(self->buffer, self->capacity);
 }
 
-void NABufferWriteString(NABuffer *self, char *string)
+int NAByteBufferWriteString(NAByteBuffer *self, char *string)
 {
     int length = strlen(string) + 1;
     if (self->capacity - self->writeCursor < length ) {
-        NABufferExtend(self, length);
+        NAByteBufferExtend(self, length);
     }
 
     strcpy((char *)(self->buffer + self->writeCursor), string);
     self->writeCursor += length;
+    return length;
 }
 
-void NABufferWriteInteger(NABuffer *self, int value)
+int NAByteBufferWriteInteger(NAByteBuffer *self, int value)
 {
     if (self->capacity - self->writeCursor < sizeof(int)) {
-        NABufferExtend(self, sizeof(int));
+        NAByteBufferExtend(self, sizeof(int));
     }
 
     *((int *)(self->buffer + self->writeCursor)) = value;
     self->writeCursor += sizeof(int);
+    return sizeof(int);
 }
 
-void NABufferWriteFloat(NABuffer *self, float value)
+int NAByteBufferWriteFloat(NAByteBuffer *self, float value)
 {
     if (self->capacity - self->writeCursor < sizeof(float)) {
-        NABufferExtend(self, sizeof(float));
+        NAByteBufferExtend(self, sizeof(float));
     }
 
     *((float *)(self->buffer + self->writeCursor)) = value;
     self->writeCursor += sizeof(float);
+    return sizeof(float);
 }
 
-bool NABufferReadString(NABuffer *self, char **string)
+int NAByteBufferReadString(NAByteBuffer *self, char **string)
 {
     if (self->writeCursor <= self->readCursor) {
-        return false;
+        return 0;
     }
 
     *string = (char *)(self->buffer + self->readCursor);
-    self->readCursor += strlen((char *)(self->buffer + self->readCursor));
-    return true;
+    int length = strlen(*string) + 1;
+    self->readCursor += length;
+    return length;
 }
 
-bool NABufferReadInteger(NABuffer *self, int *value)
+int NAByteBufferReadInteger(NAByteBuffer *self, int *value)
 {
     if (self->writeCursor <= self->readCursor) {
-        return false;
+        return 0;
     }
 
     *value = *((int *)(self->buffer + self->readCursor));
     self->readCursor += sizeof(int);
-    return true;
+    return sizeof(int);
 }
 
-bool NABufferReadFloat(NABuffer *self, float *value)
+int NAByteBufferReadFloat(NAByteBuffer *self, float *value)
 {
     if (self->writeCursor <= self->readCursor) {
-        return false;
+        return 0;
     }
 
     *value = *((float *)(self->buffer + self->readCursor));
     self->readCursor += sizeof(float);
-    return true;
+    return sizeof(float);
 }
 
-void NABufferSeekFirst(NABuffer *self)
+void NAByteBufferSeekFirst(NAByteBuffer *self)
 {
     self->readCursor = 0;
 }
