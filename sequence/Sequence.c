@@ -11,8 +11,8 @@ Sequence *SequenceCreate()
 {
     SequenceImpl *self = calloc(1, sizeof(SequenceImpl));
     self->sequence.timeTable = TimeTableCreate();
-    self->sequence.events = NAArrayCreate(32, sizeof(MidiEvent *), NULL);
-    self->sequence.children = NAArrayCreate(8, sizeof(Sequence *), NULL);
+    self->sequence.events = NAArrayCreate(32, NULL);
+    self->sequence.children = NAArrayCreate(8, NULL);
     self->rerCount = 1;
 
     return (Sequence *)self;

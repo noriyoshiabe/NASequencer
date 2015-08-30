@@ -1,5 +1,6 @@
 #include "NAMidi.h"
 #include "NAArray.h"
+#include "NAMap.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,7 +11,7 @@ typedef struct Observer {
 } Observer;
 
 struct _NAMidi {
-    NAArray *observers;
+    NAMap *observers;
     NAArray *filepaths;
     Sequence *sequence;
 };
@@ -18,48 +19,47 @@ struct _NAMidi {
 NAMidi *NAMidiCreate()
 {
     NAMidi *self = calloc(1, sizeof(NAMidi));
-    self->observers = NAArrayCreate(1, sizeof(Observer), NULL);
+    self->observers = NAMapCreate(NULL, NULL, NULL);
     return self;
 }
 
 void NAMidiDestroy(NAMidi *self)
 {
-    NAArrayDestroy(self->observers);
+    NAMapDestroy(self->observers);
     free(self);
 }
 
 void NAMidiAddObserver(NAMidi *self, void *receiver, NAMidiObserverCallbacks *callbacks)
 {
-    NAArrayAppend(self->observers, &(Observer){receiver, callbacks});
+    NAMapPut(self->observers, receiver, callbacks);
 }
 
 void NAMidiRemoveObserver(NAMidi *self, void *receiver)
 {
-    int count = NAArrayCount(self->observers);
-    Observer *observers = NAArrayGetValues(self->observers);
-    for (int i = 0; i < count; ++i) {
-        if (observers[i].receiver == receiver) {
-            NAArrayRemoveAtIndex(self->observers, i);
-            break;
-        }
-    }
+    NAMapRemove(self->observers, receiver);
 }
 
 static void NAMidiNotifyParseFinish(NAMidi *self, Sequence *sequence)
 {
-    int count = NAArrayCount(self->observers);
-    Observer *observers = NAArrayGetValues(self->observers);
-    for (int i = 0; i < count; ++i) {
-        observers[i].callbacks->onParseFinish(observers[i].receiver, self->sequence);
+    uint8_t mapIteratorBuffer[NAMapIteratorSize];
+    NAIterator *iterator = NAMapGetIterator(self->observers, mapIteratorBuffer);
+    while (iterator->hasNext(iterator)) {
+        NAMapEntry *entry = iterator->next(iterator);
+        void *receiver = entry->key;
+        NAMidiObserverCallbacks *callbacks = entry->value;
+        callbacks->onParseFinish(receiver, self->sequence);
     }
 }
 
 static void NAMidiNotifyParseError(NAMidi *self, ParseError *error)
 {
-    int count = NAArrayCount(self->observers);
-    Observer *observers = NAArrayGetValues(self->observers);
-    for (int i = 0; i < count; ++i) {
-        observers[i].callbacks->onParseError(observers[i].receiver, error);
+    uint8_t mapIteratorBuffer[NAMapIteratorSize];
+    NAIterator *iterator = NAMapGetIterator(self->observers, mapIteratorBuffer);
+    while (iterator->hasNext(iterator)) {
+        NAMapEntry *entry = iterator->next(iterator);
+        void *receiver = entry->key;
+        NAMidiObserverCallbacks *callbacks = entry->value;
+        callbacks->onParseError(receiver, error);
     }
 }
 

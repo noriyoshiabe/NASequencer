@@ -8,7 +8,7 @@
 
 typedef struct _NAArray NAArray;
 
-extern NAArray *NAArrayCreate(int capacity, int elementSize, NADescription description);
+extern NAArray *NAArrayCreate(int initialCapacity, NADescription description);
 extern void NAArrayDestroy(NAArray *self);
 extern int NAArrayCount(NAArray *self);
 extern void *NAArrayGetValues(NAArray *self);

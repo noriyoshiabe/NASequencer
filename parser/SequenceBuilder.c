@@ -22,7 +22,7 @@ SequenceBuilder *SequenceBuilderCreate()
     SequenceBuilder *self = calloc(1, sizeof(SequenceBuilder));
     self->songBuffer = NAByteBufferCreate(1024);
     self->patternBuffers = NAMapCreate(NAHashCString, NADescriptionCString, NULL);
-    self->patternIdentifiers = NAArrayCreate(16, sizeof(char *), NADescriptionCString);
+    self->patternIdentifiers = NAArrayCreate(16, NADescriptionCString);
     self->currentBuffer = self->songBuffer;
     return self;
 }
@@ -52,14 +52,14 @@ bool SequenceBuilderBuild(SequenceBuilder *self, ParseResult *result)
         printf("statement: %s\n", StatementType2String(type));
     }
 
-    uint8_t arrayIteratorBuffer[NAArrayIteratorSize];
-    NAIterator *iterator = NAArrayGetIterator(self->patternIdentifiers, arrayIteratorBuffer);
-    while (iterator->hasNext(iterator)) {
-        char *identifier = iterator->next(iterator);
-        NAByteBuffer *buffer = NAMapGet(self->patternBuffers, identifier);
+    NAArrayDescription(self->patternIdentifiers, stdout);
+    int count = NAArrayCount(self->patternIdentifiers);
+    char **identifiers = NAArrayGetValues(self->patternIdentifiers);
+    for (int i = 0; i < count; ++i) {
+        printf("-- pattern buffer [%s] --\n", identifiers[i]);
 
-        printf("-- pattern buffer [%s] --\n", identifier);
-        while (NAByteBufferReadInteger(self->songBuffer, &type)) {
+        NAByteBuffer *buffer = NAMapGet(self->patternBuffers, identifiers[i]);
+        while (NAByteBufferReadInteger(buffer, &type)) {
             printf("statement: %s\n", StatementType2String(type));
         }
     }
