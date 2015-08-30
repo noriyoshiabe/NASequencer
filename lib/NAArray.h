@@ -20,6 +20,7 @@ extern int NAArrayFindIndex(NAArray *self, const void *key, int (*comparator)(co
 extern void NAArrayTraverse(NAArray *self, void (*function)(void *));
 extern void NAArrayTraverseWithArg(NAArray *self, void (*function)(void *, void *), void *arg);
 extern void NAArrayTraverseWithArgList(NAArray *self, void (*function)(void *, va_list), ...);
+extern NAIterator *NAArrayGetIterator(NAArray *self, void *buffer);
 extern void NAArrayDescription(void *self, FILE *stream);
 
 extern const int NAArrayIteratorSize;

@@ -2,6 +2,7 @@
 #include "NAUtil.h"
 #include "NAByteBuffer.h"
 #include "NAMap.h"
+#include "NAArray.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,6 +13,7 @@
 struct _SequenceBuilder {
     NAByteBuffer *songBuffer;
     NAMap *patternBuffers;
+    NAArray *patternIdentifiers;
     NAByteBuffer *currentBuffer;
 };
 
@@ -20,6 +22,7 @@ SequenceBuilder *SequenceBuilderCreate()
     SequenceBuilder *self = calloc(1, sizeof(SequenceBuilder));
     self->songBuffer = NAByteBufferCreate(1024);
     self->patternBuffers = NAMapCreate(NAHashCString, NADescriptionCString, NULL);
+    self->patternIdentifiers = NAArrayCreate(16, sizeof(char *), NADescriptionCString);
     self->currentBuffer = self->songBuffer;
     return self;
 }
@@ -32,15 +35,35 @@ void SequenceBuilderDestroy(SequenceBuilder *self)
     NAIterator *iterator = NAMapGetIterator(self->patternBuffers, mapIteratorBuffer);
     while (iterator->hasNext(iterator)) {
         NAMapEntry *entry = iterator->next(iterator);
-        free(entry->key);
         NAByteBufferDestroy(entry->value);
     }
+
+    NAArrayTraverse(self->patternIdentifiers, free);
+    NAArrayDestroy(self->patternIdentifiers);
 
     free(self);
 }
 
 bool SequenceBuilderBuild(SequenceBuilder *self, ParseResult *result)
 {
+    int type;
+    printf("-- song buffer --\n");
+    while (NAByteBufferReadInteger(self->songBuffer, &type)) {
+        printf("statement: %s\n", StatementType2String(type));
+    }
+
+    uint8_t arrayIteratorBuffer[NAArrayIteratorSize];
+    NAIterator *iterator = NAArrayGetIterator(self->patternIdentifiers, arrayIteratorBuffer);
+    while (iterator->hasNext(iterator)) {
+        char *identifier = iterator->next(iterator);
+        NAByteBuffer *buffer = NAMapGet(self->patternBuffers, identifier);
+
+        printf("-- pattern buffer [%s] --\n", identifier);
+        while (NAByteBufferReadInteger(self->songBuffer, &type)) {
+            printf("statement: %s\n", StatementType2String(type));
+        }
+    }
+
     result->sequence = SequenceCreate();
     return true;
 }
@@ -58,8 +81,6 @@ static bool SequenceBuilderIncludeFile(SequenceBuilder *self, ParseContext *cont
 
 static bool StatementHandlerProcess(void *receiver, ParseContext *context, StatementType type, ...)
 {
-    printf("statement: %s\n", StatementType2String(type));
-
     SequenceBuilder *self = receiver;
 
     va_list argList;
@@ -96,17 +117,18 @@ static bool StatementHandlerProcess(void *receiver, ParseContext *context, State
         break;
     case StatementTypePatternDefine:
         {
-            char *patternName = strdup(va_arg(argList, char *));
+            char *patternIdentifier = strdup(va_arg(argList, char *));
 
-            if (NAMapContainsKey(self->patternBuffers, patternName)) {
-                printf("duplicate pattern name: %s\n", patternName);
-                free(patternName);
+            if (NAMapContainsKey(self->patternBuffers, patternIdentifier)) {
+                printf("duplicate pattern identifier: %s\n", patternIdentifier);
+                free(patternIdentifier);
                 success = false;
                 break;
             }
 
             NAByteBuffer *buffer = NAByteBufferCreate(1024);
-            NAMapPut(self->patternBuffers, patternName, buffer);
+            NAMapPut(self->patternBuffers, patternIdentifier, buffer);
+            NAArrayAppend(self->patternIdentifiers, patternIdentifier);
             self->currentBuffer = buffer;
         }
         break;
