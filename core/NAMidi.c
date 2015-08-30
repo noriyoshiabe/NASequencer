@@ -16,6 +16,8 @@ struct _NAMidi {
     Sequence *sequence;
 };
 
+static void NAMidiStopFileWatch(NAMidi *self);
+
 NAMidi *NAMidiCreate()
 {
     NAMidi *self = calloc(1, sizeof(NAMidi));
@@ -25,6 +27,7 @@ NAMidi *NAMidiCreate()
 
 void NAMidiDestroy(NAMidi *self)
 {
+    NAMidiStopFileWatch(self);
     NAMapDestroy(self->observers);
     free(self);
 }

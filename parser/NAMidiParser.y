@@ -137,20 +137,18 @@ int NAMidi_error(yyscan_t scanner, const char *message)
     ParseContext *context = NAMidi_get_extra(scanner);
     context->location = (ParseLocation){NAMidi_get_lineno(scanner), NAMidi_get_column(scanner)};
 
-    ParseError error;
-    error.kind = ParseErrorKindSyntaxError;
-    error.location = context->location;
+    context->result->error.kind = ParseErrorKindSyntaxError;
+    context->result->error.location = context->location;
 
-    context->handler->error(context->receiver, context, &error);
+    context->handler->error(context->receiver, context, &context->result->error);
     return 0;
 }
 
 static void callbackError(ParseContext *context, ParseErrorKind kind)
 {
-    ParseError error;
-    error.kind = kind;
-    error.location = context->location;
-    context->handler->error(context->receiver, context, &error);
+    context->result->error.kind = kind;
+    context->result->error.location = context->location;
+    context->handler->error(context->receiver, context, &context->result->error);
 }
 
 static bool callbackStatement(yyscan_t scanner, StatementType type, ...)

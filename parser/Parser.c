@@ -24,7 +24,6 @@ typedef struct _ParserInterface {
 struct _Parser {
     yyscan_t scanner;
     const ParserInterface *parser;
-    int lineno;
     ParseContext context;
 };
 

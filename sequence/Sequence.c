@@ -32,7 +32,7 @@ void SequenceRelease(Sequence *self)
         NAArrayTraverse(self->events, free);
         NAArrayDestroy(self->events);
 
-        NAArrayTraverse(self->events, (void *)SequenceRelease);
+        NAArrayTraverse(self->children, (void *)SequenceRelease);
         NAArrayDestroy(self->children);
     }
 }

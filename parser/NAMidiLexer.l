@@ -4,7 +4,8 @@
 #include <string.h>
 
 #define YY_USER_ACTION \
-  yycolumn += yyleng;
+  if (strchr(yytext, '\n')) ++yylineno, yycolumn = 0; \
+  else yycolumn += yyleng;
 
 %}
 
