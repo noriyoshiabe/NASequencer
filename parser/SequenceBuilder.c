@@ -31,12 +31,8 @@ void SequenceBuilderDestroy(SequenceBuilder *self)
 {
     NAByteBufferDestroy(self->songBuffer);
 
-    uint8_t mapIteratorBuffer[NAMapIteratorSize];
-    NAIterator *iterator = NAMapGetIterator(self->patternBuffers, mapIteratorBuffer);
-    while (iterator->hasNext(iterator)) {
-        NAMapEntry *entry = iterator->next(iterator);
-        NAByteBufferDestroy(entry->value);
-    }
+    NAMapTraverseValue(self->patternBuffers, (void *)NAByteBufferDestroy);
+    NAMapDestroy(self->patternBuffers);
 
     NAArrayTraverse(self->patternIdentifiers, free);
     NAArrayDestroy(self->patternIdentifiers);

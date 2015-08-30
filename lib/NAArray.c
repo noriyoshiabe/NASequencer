@@ -115,25 +115,6 @@ void NAArrayTraverse(NAArray *self, void (*function)(void *))
     }
 }
 
-void NAArrayTraverseWithArg(NAArray *self, void (*function)(void *, void *), void *arg)
-{
-    for (int i = 0; i < self->count; ++i) {
-        function((void *)self->values[i], arg);
-    }
-}
-
-void NAArrayTraverseWithArgList(NAArray *self, void (*function)(void *, va_list), ...)
-{
-    va_list argList;
-    va_start(argList, function);
-
-    for (int i = 0; i < self->count; ++i) {
-        function((void *)self->values[i], argList);
-    }
-
-    va_end(argList);
-}
-
 static bool NAArrayIteratorHasNext(NAIterator *_iterator)
 {
     NAArrayIterator *iterator = (NAArrayIterator *)_iterator;

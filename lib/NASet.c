@@ -179,6 +179,17 @@ bool NASetRemove(NASet *self, void *value)
     return false;
 }
 
+void NASetTraverse(NASet *self, void (*function)(void *))
+{
+    for (int i = 0; i < self->size; ++i) {
+        Entry *entry = self->buckets[i];
+        while (entry != NULL) {
+            function(entry->value);
+            entry = entry->next;
+        }
+    }
+}
+
 static bool NASetIteratorHasNext(NAIterator *_iterator)
 {
     NASetIterator *iterator = (NASetIterator *)_iterator;

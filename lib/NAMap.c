@@ -183,6 +183,28 @@ void *NAMapRemove(NAMap *self, void *key)
     return NULL;
 }
 
+void NAMapTraverseKey(NAMap *self, void (*function)(void *))
+{
+    for (int i = 0; i < self->size; ++i) {
+        Entry *entry = self->buckets[i];
+        while (entry != NULL) {
+            function(entry->key);
+            entry = entry->next;
+        }
+    }
+}
+
+void NAMapTraverseValue(NAMap *self, void (*function)(void *))
+{
+    for (int i = 0; i < self->size; ++i) {
+        Entry *entry = self->buckets[i];
+        while (entry != NULL) {
+            function(entry->value);
+            entry = entry->next;
+        }
+    }
+}
+
 static bool NAMapIteratorHasNext(NAIterator *_iterator)
 {
     NAMapIterator *iterator = (NAMapIterator *)_iterator;
