@@ -17,77 +17,99 @@ typedef struct _StatementHeader {
     int length;
 } StatementHeader;
 
-struct _SequenceBuilder {
-    NAByteBuffer *songBuffer;
-    NAMap *patternBuffers;
+typedef struct _BuildContext {
+    NAByteBuffer *buffer;
+    NAMap *patternContexts;
     NAArray *patternIdentifiers;
-    NAByteBuffer *currentBuffer;
-    NAStack *bufferStack;
+} BuildContext;
+
+struct _SequenceBuilder {
+    BuildContext *context;
+    NAStack *contextStack;
 };
+
+static BuildContext *BuildContextCreate()
+{
+    BuildContext *self = calloc(1, sizeof(BuildContext));
+    self->buffer = NAByteBufferCreate(1024);
+    self->patternContexts = NAMapCreate(NAHashCString, NADescriptionCString, NULL);
+    self->patternIdentifiers = NAArrayCreate(16, NADescriptionCString);
+    return self;
+}
+
+static void BuildContextDestroy(BuildContext *self)
+{
+    NAByteBufferDestroy(self->buffer);
+
+    NAMapTraverseValue(self->patternContexts, (void *)BuildContextDestroy);
+    NAMapDestroy(self->patternContexts);
+
+    NAArrayTraverse(self->patternIdentifiers, free);
+    NAArrayDestroy(self->patternIdentifiers);
+
+    free(self);
+}
 
 SequenceBuilder *SequenceBuilderCreate()
 {
     SequenceBuilder *self = calloc(1, sizeof(SequenceBuilder));
-    self->songBuffer = NAByteBufferCreate(1024);
-    self->patternBuffers = NAMapCreate(NAHashCString, NADescriptionCString, NULL);
-    self->patternIdentifiers = NAArrayCreate(16, NADescriptionCString);
-    self->currentBuffer = self->songBuffer;
-    self->bufferStack = NAStackCreate(4);
+    self->context = BuildContextCreate();
+    self->contextStack = NAStackCreate(4);
     return self;
 }
 
 void SequenceBuilderDestroy(SequenceBuilder *self)
 {
-    NAByteBufferDestroy(self->songBuffer);
-
-    NAMapTraverseValue(self->patternBuffers, (void *)NAByteBufferDestroy);
-    NAMapDestroy(self->patternBuffers);
-
-    NAArrayTraverse(self->patternIdentifiers, free);
-    NAArrayDestroy(self->patternIdentifiers);
-
-    NAStackDestroy(self->bufferStack);
+    BuildContextDestroy(self->context);
+    NAStackDestroy(self->contextStack);
 
     free(self);
 }
 
-bool SequenceBuilderBuild(SequenceBuilder *self, ParseResult *result)
+static void BuildContextDump(BuildContext *self, char *name, int indent)
 {
+    if (name) {
+        for (int i = 0; i < indent; ++i) printf(" ");
+        printf("-- pattern [%s] buffer --\n", name);
+    }
+    else {
+        for (int i = 0; i < indent; ++i) printf(" ");
+        printf("-- song buffer --\n");
+    }
+
     StatementHeader *header;
     void *data;
-    printf("-- song buffer --\n");
-    while (NAByteBufferReadData(self->songBuffer, &header, sizeof(StatementHeader))) {
+
+    while (NAByteBufferReadData(self->buffer, &header, sizeof(StatementHeader))) {
+        for (int i = 0; i < indent; ++i) printf(" ");
         printf("statement: %s - %d [%s %d %d]\n",
                 StatementType2String(header->type),
                 header->length, header->location.filepath, header->location.line, header->location.column);
-        NAByteBufferReadData(self->songBuffer, &data, header->length);
+        NAByteBufferReadData(self->buffer, &data, header->length);
     }
 
     int count = NAArrayCount(self->patternIdentifiers);
     char **identifiers = NAArrayGetValues(self->patternIdentifiers);
     for (int i = 0; i < count; ++i) {
-        printf("-- pattern buffer [%s] --\n", identifiers[i]);
-
-        NAByteBuffer *buffer = NAMapGet(self->patternBuffers, identifiers[i]);
-        while (NAByteBufferReadData(buffer, &header, sizeof(StatementHeader))) {
-            printf("statement: %s - %d [%s %d %d]\n",
-                    StatementType2String(header->type),
-                    header->length, header->location.filepath, header->location.line, header->location.column);
-            NAByteBufferReadData(buffer, &data, header->length);
-        }
+        BuildContext *context = NAMapGet(self->patternContexts, identifiers[i]);
+        BuildContextDump(context, identifiers[i], indent + 2);
     }
+}
 
+bool SequenceBuilderBuild(SequenceBuilder *self, ParseResult *result)
+{
+    BuildContextDump(self->context, NULL, 0);
     result->sequence = SequenceCreate();
     return true;
 }
 
-static bool StatementHandlerProcess(void *receiver, ParseContext *context, StatementType type, ...)
+static bool StatementHandlerProcess(void *receiver, ParseContext *parseContext, StatementType type, ...)
 {
     SequenceBuilder *self = receiver;
 
     StatementHeader header;
     header.type = type;
-    header.location = context->location;
+    header.location = parseContext->location;
 
     va_list argList;
     va_start(argList, type);
@@ -97,87 +119,87 @@ static bool StatementHandlerProcess(void *receiver, ParseContext *context, State
     switch (type) {
     case StatementTypeResolution:
         header.length = sizeof(int);
-        NAByteBufferWriteData(self->currentBuffer, &header, sizeof(StatementHeader));
-        NAByteBufferWriteInteger(self->currentBuffer, va_arg(argList, int));
+        NAByteBufferWriteData(self->context->buffer, &header, sizeof(StatementHeader));
+        NAByteBufferWriteInteger(self->context->buffer, va_arg(argList, int));
         break;
     case StatementTypeTitle:
         {
             char *string = va_arg(argList, char *);
             header.length = strlen(string) + 1;
-            NAByteBufferWriteData(self->currentBuffer, &header, sizeof(StatementHeader));
-            NAByteBufferWriteString(self->currentBuffer, string);
+            NAByteBufferWriteData(self->context->buffer, &header, sizeof(StatementHeader));
+            NAByteBufferWriteString(self->context->buffer, string);
         }
         break;
     case StatementTypeTempo:
         header.length = sizeof(float);
-        NAByteBufferWriteData(self->currentBuffer, &header, sizeof(StatementHeader));
-        NAByteBufferWriteFloat(self->currentBuffer, va_arg(argList, double));
+        NAByteBufferWriteData(self->context->buffer, &header, sizeof(StatementHeader));
+        NAByteBufferWriteFloat(self->context->buffer, va_arg(argList, double));
         break;
     case StatementTypeTimeSign:
         header.length = sizeof(int) * 2;
-        NAByteBufferWriteData(self->currentBuffer, &header, sizeof(StatementHeader));
-        NAByteBufferWriteInteger(self->currentBuffer, va_arg(argList, int));
-        NAByteBufferWriteInteger(self->currentBuffer, va_arg(argList, int));
+        NAByteBufferWriteData(self->context->buffer, &header, sizeof(StatementHeader));
+        NAByteBufferWriteInteger(self->context->buffer, va_arg(argList, int));
+        NAByteBufferWriteInteger(self->context->buffer, va_arg(argList, int));
         break;
     case StatementTypeMeasure:
         header.length = sizeof(int);
-        NAByteBufferWriteData(self->currentBuffer, &header, sizeof(StatementHeader));
-        NAByteBufferWriteInteger(self->currentBuffer, va_arg(argList, int));
+        NAByteBufferWriteData(self->context->buffer, &header, sizeof(StatementHeader));
+        NAByteBufferWriteInteger(self->context->buffer, va_arg(argList, int));
         break;
     case StatementTypeMarker:
     case StatementTypePattern:
         {
             char *string = va_arg(argList, char *);
             header.length = strlen(string) + 1;
-            NAByteBufferWriteData(self->currentBuffer, &header, sizeof(StatementHeader));
-            NAByteBufferWriteString(self->currentBuffer, string);
+            NAByteBufferWriteData(self->context->buffer, &header, sizeof(StatementHeader));
+            NAByteBufferWriteString(self->context->buffer, string);
         }
         break;
     case StatementTypePatternDefine:
         {
             char *patternIdentifier = strdup(va_arg(argList, char *));
 
-            if (NAMapContainsKey(self->patternBuffers, patternIdentifier)) {
-                context->result->error.kind = ParseErrorKindDuplicatePatternIdentifier;
-                context->result->error.location = context->location;
+            if (NAMapContainsKey(self->context->patternContexts, patternIdentifier)) {
+                parseContext->result->error.kind = ParseErrorKindDuplicatePatternIdentifier;
+                parseContext->result->error.location = parseContext->location;
                 free(patternIdentifier);
                 success = false;
                 break;
             }
 
-            NAByteBuffer *buffer = NAByteBufferCreate(1024);
-            NAMapPut(self->patternBuffers, patternIdentifier, buffer);
-            NAArrayAppend(self->patternIdentifiers, patternIdentifier);
+            BuildContext *buildContext = BuildContextCreate();
+            NAMapPut(self->context->patternContexts, patternIdentifier, buildContext);
+            NAArrayAppend(self->context->patternIdentifiers, patternIdentifier);
 
-            NAStackPush(self->bufferStack, self->currentBuffer);
-            self->currentBuffer = buffer;
+            NAStackPush(self->contextStack, self->context);
+            self->context = buildContext;
         }
         break;
     case StatementTypeEnd:
         {
-            NAByteBuffer *buffer = NAStackPop(self->bufferStack);
-            if (!buffer) {
-                context->result->error.kind = ParseErrorKindUnexpectedEnd;
-                context->result->error.location = context->location;
+            BuildContext *buildContext = NAStackPop(self->contextStack);
+            if (!buildContext) {
+                parseContext->result->error.kind = ParseErrorKindUnexpectedEnd;
+                parseContext->result->error.location = parseContext->location;
                 success = false;
                 break;
             }
 
-            self->currentBuffer = buffer;
+            self->context = buildContext;
         }
         break;
     case StatementTypeTrack:
     case StatementTypeChannel:
         header.length = sizeof(int);
-        NAByteBufferWriteData(self->currentBuffer, &header, sizeof(StatementHeader));
-        NAByteBufferWriteInteger(self->currentBuffer, va_arg(argList, int));
+        NAByteBufferWriteData(self->context->buffer, &header, sizeof(StatementHeader));
+        NAByteBufferWriteInteger(self->context->buffer, va_arg(argList, int));
         break;
     case StatementTypeVoice:
         header.length = sizeof(int) * 3;
-        NAByteBufferWriteData(self->currentBuffer, &header, sizeof(StatementHeader));
-        NAByteBufferWriteInteger(self->currentBuffer, va_arg(argList, int));
-        NAByteBufferWriteInteger(self->currentBuffer, va_arg(argList, int));
-        NAByteBufferWriteInteger(self->currentBuffer, va_arg(argList, int));
+        NAByteBufferWriteData(self->context->buffer, &header, sizeof(StatementHeader));
+        NAByteBufferWriteInteger(self->context->buffer, va_arg(argList, int));
+        NAByteBufferWriteInteger(self->context->buffer, va_arg(argList, int));
+        NAByteBufferWriteInteger(self->context->buffer, va_arg(argList, int));
         break;
     case StatementTypeVolume:
     case StatementTypePan:
@@ -186,39 +208,39 @@ static bool StatementHandlerProcess(void *receiver, ParseContext *context, State
     case StatementTypeTranspose:
     case StatementTypeKey:
         header.length = sizeof(int);
-        NAByteBufferWriteData(self->currentBuffer, &header, sizeof(StatementHeader));
-        NAByteBufferWriteInteger(self->currentBuffer, va_arg(argList, int));
+        NAByteBufferWriteData(self->context->buffer, &header, sizeof(StatementHeader));
+        NAByteBufferWriteInteger(self->context->buffer, va_arg(argList, int));
         break;
     case StatementTypeNote:
         header.length = sizeof(int) * 6;
-        NAByteBufferWriteData(self->currentBuffer, &header, sizeof(StatementHeader));
-        NAByteBufferWriteInteger(self->currentBuffer, va_arg(argList, int));
-        NAByteBufferWriteInteger(self->currentBuffer, va_arg(argList, int));
-        NAByteBufferWriteInteger(self->currentBuffer, va_arg(argList, int));
-        NAByteBufferWriteInteger(self->currentBuffer, va_arg(argList, int));
-        NAByteBufferWriteInteger(self->currentBuffer, va_arg(argList, int));
-        NAByteBufferWriteInteger(self->currentBuffer, va_arg(argList, int));
+        NAByteBufferWriteData(self->context->buffer, &header, sizeof(StatementHeader));
+        NAByteBufferWriteInteger(self->context->buffer, va_arg(argList, int));
+        NAByteBufferWriteInteger(self->context->buffer, va_arg(argList, int));
+        NAByteBufferWriteInteger(self->context->buffer, va_arg(argList, int));
+        NAByteBufferWriteInteger(self->context->buffer, va_arg(argList, int));
+        NAByteBufferWriteInteger(self->context->buffer, va_arg(argList, int));
+        NAByteBufferWriteInteger(self->context->buffer, va_arg(argList, int));
         break;
     case StatementTypeRest:
         header.length = sizeof(int);
-        NAByteBufferWriteData(self->currentBuffer, &header, sizeof(StatementHeader));
-        NAByteBufferWriteInteger(self->currentBuffer, va_arg(argList, int));
+        NAByteBufferWriteData(self->context->buffer, &header, sizeof(StatementHeader));
+        NAByteBufferWriteInteger(self->context->buffer, va_arg(argList, int));
         break;
     case StatementTypeInclude:
         {
             char *filename = va_arg(argList, char *);
-            char *directory = dirname((char *)context->location.filepath);
+            char *directory = dirname((char *)parseContext->location.filepath);
             char *fullPath = NAUtilBuildPathWithDirectory(directory, filename);
 
-            if (NASetContains(context->fileSet, fullPath)) {
-                context->result->error.kind = ParseErrorKindCircularFileInclude;
-                context->result->error.location = context->location;
+            if (NASetContains(parseContext->fileSet, fullPath)) {
+                parseContext->result->error.kind = ParseErrorKindCircularFileInclude;
+                parseContext->result->error.location = parseContext->location;
                 free(fullPath);
                 success = false;
                 break;
             }
 
-            success = ParserParseFileWithContext(fullPath, context);
+            success = ParserParseFileWithContext(fullPath, parseContext);
             free(fullPath);
         }
         break;
