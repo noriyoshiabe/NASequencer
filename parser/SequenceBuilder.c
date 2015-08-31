@@ -3,6 +3,7 @@
 #include "NAByteBuffer.h"
 #include "NAMap.h"
 #include "NAArray.h"
+#include "NAStack.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,6 +22,7 @@ struct _SequenceBuilder {
     NAMap *patternBuffers;
     NAArray *patternIdentifiers;
     NAByteBuffer *currentBuffer;
+    NAStack *bufferStack;
 };
 
 SequenceBuilder *SequenceBuilderCreate()
@@ -30,6 +32,7 @@ SequenceBuilder *SequenceBuilderCreate()
     self->patternBuffers = NAMapCreate(NAHashCString, NADescriptionCString, NULL);
     self->patternIdentifiers = NAArrayCreate(16, NADescriptionCString);
     self->currentBuffer = self->songBuffer;
+    self->bufferStack = NAStackCreate(4);
     return self;
 }
 
@@ -42,6 +45,8 @@ void SequenceBuilderDestroy(SequenceBuilder *self)
 
     NAArrayTraverse(self->patternIdentifiers, free);
     NAArrayDestroy(self->patternIdentifiers);
+
+    NAStackDestroy(self->bufferStack);
 
     free(self);
 }
@@ -133,7 +138,8 @@ static bool StatementHandlerProcess(void *receiver, ParseContext *context, State
             char *patternIdentifier = strdup(va_arg(argList, char *));
 
             if (NAMapContainsKey(self->patternBuffers, patternIdentifier)) {
-                printf("duplicate pattern identifier: %s\n", patternIdentifier);
+                context->result->error.kind = ParseErrorKindDuplicatePatternIdentifier;
+                context->result->error.location = context->location;
                 free(patternIdentifier);
                 success = false;
                 break;
@@ -142,18 +148,23 @@ static bool StatementHandlerProcess(void *receiver, ParseContext *context, State
             NAByteBuffer *buffer = NAByteBufferCreate(1024);
             NAMapPut(self->patternBuffers, patternIdentifier, buffer);
             NAArrayAppend(self->patternIdentifiers, patternIdentifier);
+
+            NAStackPush(self->bufferStack, self->currentBuffer);
             self->currentBuffer = buffer;
         }
         break;
     case StatementTypeEnd:
-        // TODO Stack management
-        if (self->currentBuffer == self->songBuffer) {
-            printf("unexpected pattern end\n");
-            success = false;
-            break;
-        }
+        {
+            NAByteBuffer *buffer = NAStackPop(self->bufferStack);
+            if (!buffer) {
+                context->result->error.kind = ParseErrorKindUnexpectedEnd;
+                context->result->error.location = context->location;
+                success = false;
+                break;
+            }
 
-        self->currentBuffer = self->songBuffer;
+            self->currentBuffer = buffer;
+        }
         break;
     case StatementTypeTrack:
     case StatementTypeChannel:
@@ -200,7 +211,8 @@ static bool StatementHandlerProcess(void *receiver, ParseContext *context, State
             char *fullPath = NAUtilBuildPathWithDirectory(directory, filename);
 
             if (NASetContains(context->fileSet, fullPath)) {
-                printf("circular refence of file '%s'\n", filename);
+                context->result->error.kind = ParseErrorKindCircularFileInclude;
+                context->result->error.location = context->location;
                 free(fullPath);
                 success = false;
                 break;
