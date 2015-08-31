@@ -68,7 +68,7 @@ bool ParserParseFile(const char *filepath, ParseResult *result)
     ParseContext *context = ParseContextCeate(builder, &SequenceBuilderStatementHandler, result);
     char *fullpath = NAUtilGetRealPath(filepath);
 
-    bool success = ParserParseFileWithContext(filepath, context) && SequenceBuilderBuild(builder, result);
+    bool success = ParserParseFileWithContext(fullpath, context) && SequenceBuilderBuild(builder, result);
 
     SequenceBuilderDestroy(builder);
     ParseContextDestroy(context);
@@ -92,14 +92,15 @@ bool ParserParseFileWithContext(const char *filepath, ParseContext *context)
         return false;
     }
 
-    const char *previousFilepath = context->location.filepath;
-    context->location.filepath = filepath;
-
-    if (!NASetContains(context->fileSet, (char *)filepath)) {
-        char *copied = strdup(filepath);
-        NASetAdd(context->fileSet, copied);
-        NAArrayAppend(context->result->filepaths, copied);
+    char *copiedFilePath;
+    if (!(copiedFilePath = NASetGet(context->fileSet, (char *)filepath))) {
+        copiedFilePath = strdup(filepath);
+        NASetAdd(context->fileSet, copiedFilePath);
+        NAArrayAppend(context->result->filepaths, copiedFilePath);
     }
+
+    const char *previousFilepath = context->location.filepath;
+    context->location.filepath = copiedFilePath;
 
     yyscan_t scanner;
     parser->lex_init_extra(context, &scanner);

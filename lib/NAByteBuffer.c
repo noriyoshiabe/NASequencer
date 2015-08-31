@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#undef NAByteBufferReadData
+
 struct _NAByteBuffer {
     uint8_t *buffer;
     int writeCursor;
@@ -70,6 +72,17 @@ int NAByteBufferWriteFloat(NAByteBuffer *self, float value)
     return sizeof(float);
 }
 
+int NAByteBufferWriteData(NAByteBuffer *self, void *data, int length)
+{
+    if (self->capacity - self->writeCursor < length ) {
+        NAByteBufferExtend(self, length);
+    }
+
+    memcpy(self->buffer + self->writeCursor, data, length);
+    self->writeCursor += length;
+    return length;
+}
+
 int NAByteBufferReadString(NAByteBuffer *self, char **string)
 {
     if (self->writeCursor <= self->readCursor) {
@@ -102,6 +115,17 @@ int NAByteBufferReadFloat(NAByteBuffer *self, float *value)
     *value = *((float *)(self->buffer + self->readCursor));
     self->readCursor += sizeof(float);
     return sizeof(float);
+}
+
+int NAByteBufferReadData(NAByteBuffer *self, void **data, int length)
+{
+    if (self->writeCursor <= self->readCursor) {
+        return 0;
+    }
+
+    *data = (void *)(self->buffer + self->readCursor);
+    self->readCursor += length;
+    return length;
 }
 
 void NAByteBufferSeekFirst(NAByteBuffer *self)

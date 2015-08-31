@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#undef NAArrayGetValues
+
 struct _NAArray {
     int capacity;
     int count;
@@ -56,9 +58,9 @@ int NAArrayCount(NAArray *self)
     return self->count;
 }
 
-void *NAArrayGetValues(NAArray *self)
+void **NAArrayGetValues(NAArray *self)
 {
-    return self->values;
+    return (void **)self->values;
 }
 
 void NAArrayAppend(NAArray *self, void *value)

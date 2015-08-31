@@ -11,7 +11,7 @@ typedef struct _NAArray NAArray;
 extern NAArray *NAArrayCreate(int initialCapacity, NADescription description);
 extern void NAArrayDestroy(NAArray *self);
 extern int NAArrayCount(NAArray *self);
-extern void *NAArrayGetValues(NAArray *self);
+extern void **NAArrayGetValues(NAArray *self);
 extern void NAArrayAppend(NAArray *self, void *value);
 extern bool NAArrayInsertAt(NAArray *self, int index, void *value);
 extern bool NAArrayRemoveAtIndex(NAArray *self, int index);
@@ -22,3 +22,5 @@ extern NAIterator *NAArrayGetIterator(NAArray *self, void *buffer);
 extern void NAArrayDescription(void *self, FILE *stream);
 
 extern const int NAArrayIteratorSize;
+
+#define NAArrayGetValues(self) (void *)NAArrayGetValues(self)

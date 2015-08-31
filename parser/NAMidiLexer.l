@@ -3,9 +3,16 @@
 #include "NAMidiParser.h"
 #include <string.h>
 
+#define YY_USER_INIT \
+    yylineno = 1; \
+    yycolumn = 1;
+
 #define YY_USER_ACTION \
-  if (strchr(yytext, '\n')) ++yylineno, yycolumn = 0; \
-  else yycolumn += yyleng;
+    yylloc->first_line = yylloc->last_line; \
+    yylloc->last_line = yylineno; \
+    yylloc->first_column = yycolumn; yylloc->last_column = yycolumn + yyleng - 1; \
+    if (strchr(yytext, '\n')) ++yylineno, yycolumn = 1; \
+    else yycolumn += yyleng;
 
 %}
 
@@ -15,6 +22,7 @@
 %option reentrant
 %option noyywrap
 %option bison-bridge
+%option bison-locations
 %option case-insensitive
 
 %x COMMENT
