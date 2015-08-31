@@ -13,6 +13,7 @@ set(SOURCES
   NASet.c
   NAMap.c
   NAByteBuffer.c
+  NAStack.c
   NAUtil.c
 )
 
