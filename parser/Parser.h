@@ -1,37 +1,9 @@
 #pragma once
 
 #include "Sequence.h"
-#include "NASet.h"
+#include "NAArray.h"
 
 #include <stdbool.h>
-
-#define ParserMeasureMax 9999
-
-typedef enum {
-    StatementTypeResolution,
-    StatementTypeTitle,
-    StatementTypeTempo,
-    StatementTypeTimeSign,
-    StatementTypeMeasure,
-    StatementTypeMarker,
-    StatementTypePattern,
-    StatementTypePatternDefine,
-    StatementTypeEnd,
-    StatementTypeTrack,
-    StatementTypeChannel,
-    StatementTypeVoice,
-    StatementTypeVolume,
-    StatementTypePan,
-    StatementTypeChorus,
-    StatementTypeReverb,
-    StatementTypeTranspose,
-    StatementTypeKey,
-    StatementTypeNote,
-    StatementTypeRest,
-    StatementTypeInclude,
-
-    StatementTypeCount,
-} StatementType;
 
 typedef enum {
     ParseErrorKindUnsupportedFileType,
@@ -61,60 +33,7 @@ typedef struct _ParseResult {
     NAArray *filepaths;
 } ParseResult;
 
-typedef struct _StatementHandler StatementHandler;
-
-typedef struct _ParseContext {
-    StatementHandler *handler;
-    void *receiver;
-    ParseLocation location;
-    NASet *fileSet;
-    ParseResult *result;
-} ParseContext;
-
-typedef bool (*StatementHandlerProcessFunction)(void *receiver, ParseContext *context, StatementType type, ...);
-typedef void (*StatementHandlerErrorFunction)(void *receiver, ParseContext *context, ParseError *error);
-
-struct _StatementHandler {
-    StatementHandlerProcessFunction process;
-    StatementHandlerErrorFunction error;
-};
-
 extern bool ParserParseFile(const char *filepath, ParseResult *result);
-extern bool ParserParseFileWithContext(const char *filepath, ParseContext *context);
-
-static inline const char *StatementType2String(StatementType type)
-{
-#define CASE(type) case type: return &(#type[13])
-    switch (type) {
-    CASE(StatementTypeResolution);
-    CASE(StatementTypeTitle);
-    CASE(StatementTypeTempo);
-    CASE(StatementTypeTimeSign);
-    CASE(StatementTypeMeasure);
-    CASE(StatementTypeMarker);
-    CASE(StatementTypePattern);
-    CASE(StatementTypePatternDefine);
-    CASE(StatementTypeEnd);
-    CASE(StatementTypeTrack);
-    CASE(StatementTypeChannel);
-    CASE(StatementTypeVoice);
-    CASE(StatementTypeVolume);
-    CASE(StatementTypePan);
-    CASE(StatementTypeChorus);
-    CASE(StatementTypeReverb);
-    CASE(StatementTypeTranspose);
-    CASE(StatementTypeKey);
-    CASE(StatementTypeNote);
-    CASE(StatementTypeRest);
-    CASE(StatementTypeInclude);
-
-    default:
-       break;
-    }
-
-    return "Unknown statement type";
-#undef CASE
-}
 
 static inline const char *ParseErrorKind2String(ParseErrorKind kind)
 {
@@ -135,3 +54,11 @@ static inline const char *ParseErrorKind2String(ParseErrorKind kind)
     return "Unknown error kind";
 #undef CASE
 }
+
+typedef struct _Parser Parser;
+struct _Parser {
+    bool (*parseFile)(Parser *parser, const char *filepath, ParseResult *result);
+    void (*destroy)(Parser *parser);
+};
+
+typedef Parser *(*ParserFactory)();
