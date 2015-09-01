@@ -42,3 +42,8 @@ void *NAStackPop(NAStack *self)
 
     return self->stack[self->pointer--];
 }
+
+int NAStackCount(NAStack *self)
+{
+    return self->pointer + 1;
+}

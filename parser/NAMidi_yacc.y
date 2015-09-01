@@ -18,9 +18,6 @@ static void postProcess(YYLTYPE *yylloc, yyscan_t scanner, StatementType type, .
         return 1;\
     }
 
-#define isPowerOf2(x) ((x != 0) && ((x & (x - 1)) == 0))
-#define isValidRange(v, from, to) (from <= v && v <= to)
-
 %}
 
 %name-prefix = "NAMidi_"
