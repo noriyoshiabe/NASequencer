@@ -8,9 +8,8 @@
     yycolumn = 1;
 
 #define YY_USER_ACTION \
-    yylloc->first_line = yylloc->last_line; \
-    yylloc->last_line = yylineno; \
-    yylloc->first_column = yycolumn; yylloc->last_column = yycolumn + yyleng - 1; \
+    yylloc->first_line = yylineno; \
+    yylloc->first_column = yycolumn; \
     if (strchr(yytext, '\n')) ++yylineno, yycolumn = 1; \
     else yycolumn += yyleng;
 
