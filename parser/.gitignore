@@ -1,4 +1,4 @@
-NAMidiParser.h
-NAMidiParser.c
-NAMidiLexer.h
-NAMidiLexer.c
+*lex.h
+*lex.c
+*yacc.h
+*yacc.c

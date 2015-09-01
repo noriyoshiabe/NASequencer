@@ -5,9 +5,9 @@ project(namidi-parser)
 find_package(FLEX)
 find_package(BISON)
 
-FLEX_TARGET(NAMidiLexer NAMidiLexer.l ${CMAKE_CURRENT_SOURCE_DIR}/NAMidiLexer.c)
-BISON_TARGET(NAMidiParser NAMidiParser.y ${CMAKE_CURRENT_SOURCE_DIR}/NAMidiParser.c)
-ADD_FLEX_BISON_DEPENDENCY(NAMidiLexer NAMidiParser)
+FLEX_TARGET(NAMidi_lex NAMidi_lex.l ${CMAKE_CURRENT_SOURCE_DIR}/NAMidi_lex.c)
+BISON_TARGET(NAMidi_yacc NAMidi_yacc.y ${CMAKE_CURRENT_SOURCE_DIR}/NAMidi_yacc.c)
+ADD_FLEX_BISON_DEPENDENCY(NAMidi_lex NAMidi_yacc)
 
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}
@@ -20,4 +20,4 @@ set(SOURCES
   SequenceBuilder.c
 )
 
-add_library(${PROJECT_NAME} ${SOURCES} ${FLEX_NAMidiLexer_OUTPUTS} ${BISON_NAMidiParser_OUTPUTS})
+add_library(${PROJECT_NAME} ${SOURCES} ${FLEX_NAMidi_lex_OUTPUTS} ${BISON_NAMidi_yacc_OUTPUTS})

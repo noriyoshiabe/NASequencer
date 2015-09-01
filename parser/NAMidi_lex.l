@@ -1,6 +1,6 @@
 %{
   
-#include "NAMidiParser.h"
+#include "NAMidi_yacc.h"
 #include <string.h>
 
 #define YY_USER_INIT \
@@ -17,8 +17,8 @@
 %}
 
 %option prefix="NAMidi_"
-%option outfile="NAMidiLexer.c"
-%option header-file="NAMidiLexer.h"
+%option outfile="NAMidi_lex.c"
+%option header-file="NAMidi_lex.h"
 %option reentrant
 %option noyywrap
 %option bison-bridge

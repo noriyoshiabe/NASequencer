@@ -1,7 +1,7 @@
 %{
  
-#include "NAMidiParser.h"
-#include "NAMidiLexer.h"
+#include "NAMidi_yacc.h"
+#include "NAMidi_lex.h"
 #include "Parser.h"
 
 #include <ctype.h>
@@ -24,7 +24,7 @@ static void postProcess(yyscan_t scanner, StatementType type, ...);
 %}
 
 %name-prefix = "NAMidi_"
-%output = "NAMidiParser.c"
+%output = "NAMidi_yacc.c"
 %defines
 
 %pure-parser
