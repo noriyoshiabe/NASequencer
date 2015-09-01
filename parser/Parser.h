@@ -57,8 +57,8 @@ static inline const char *ParseErrorKind2String(ParseErrorKind kind)
 
 typedef struct _Parser Parser;
 struct _Parser {
-    bool (*parseFile)(Parser *parser, const char *filepath, ParseResult *result);
-    void (*destroy)(Parser *parser);
+    bool (*parseFile)(void *parser, const char *filepath);
+    void (*destroy)(void *parser);
 };
 
-typedef Parser *(*ParserFactory)();
+typedef Parser *(*ParserFactory)(ParseResult *result);

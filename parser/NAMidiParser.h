@@ -36,7 +36,7 @@ typedef enum {
 
 typedef struct _NAMidiParser NAMidiParser;
 
-bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType type, va_list argList);
-void NAMidiParserError(NAMidiParser *self, int line, int column, ParseErrorKind errorKind);
+extern bool NAMidiParserProcess(void *self, int line, int column, StatementType type, va_list argList);
+extern void NAMidiParserError(void *self, int line, int column, ParseErrorKind errorKind);
 
-extern Parser *NAMidiParserCreate();
+extern Parser *NAMidiParserCreate(ParseResult *result);
