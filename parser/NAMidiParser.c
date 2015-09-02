@@ -37,7 +37,6 @@ typedef struct _BuildContext {
     struct {
         int channel;
         int tick;
-        int step;
         int gatetime;
         int velocity;
     } tracks[16];
@@ -45,6 +44,8 @@ typedef struct _BuildContext {
 
 static BuildContext *BuildContextCreate()
 {
+    // TODO take over parrent?
+
     BuildContext *self = calloc(1, sizeof(BuildContext));
     self->buffer = NAByteBufferCreate(1024);
     self->patternContexts = NAMapCreate(NAHashCString, NADescriptionCString, NULL);
@@ -556,6 +557,8 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context
         if (!success) {
             return false;
         }
+
+        // TODO add pattern
     }
 
     StatementHeader *header;
@@ -622,7 +625,7 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context
                     break;
                 }
 
-                success = NAMidiParserParseStatement(self, patternContext, pattern);
+                // TODO expand pattern
             }
             break;
         case StatementTypePatternDefine:
@@ -688,8 +691,58 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context
             }
             break;
         case StatementTypeNote:
+            {
+                BaseNote baseNote;
+                Accidental accidental;
+                int octave, step, gatetime, velocity;
+
+                NAByteBufferReadInteger(context->buffer, (int *)&baseNote);
+                NAByteBufferReadInteger(context->buffer, (int *)&accidental);
+                NAByteBufferReadInteger(context->buffer, &octave);
+                NAByteBufferReadInteger(context->buffer, &step);
+                NAByteBufferReadInteger(context->buffer, &gatetime);
+                NAByteBufferReadInteger(context->buffer, &velocity);
+
+                int noteNo = NoteTableGetNoteNo(context->keySign, baseNote, accidental, octave);
+                if (!isValidRange(noteNo, 0, 127)) {
+                    NAMidiParserError(self, header->location.line, header->location.column, ParseErrorKindInvalidNoteRange);
+                    success = false;
+                    break;
+                }
+
+                if (-1 == step) {
+                    step = 0;
+                }
+
+                if (-1 == gatetime) {
+                    gatetime = context->tracks[context->track].gatetime;
+                }
+                else {
+                    context->tracks[context->track].gatetime = gatetime;
+                }
+
+                if (-1 == velocity) {
+                    velocity = context->tracks[context->track].velocity;
+                }
+                else {
+                    context->tracks[context->track].velocity = velocity;
+                }
+
+                NoteEvent *event = MidiEventAlloc(MidiEventTypeNote, *tick, sizeof(NoteEvent) - sizeof(MidiEvent));
+                event->noteNo = noteNo;
+                event->channel = context->tracks[context->track].channel;
+                event->gatetime = gatetime;
+                event->velocity = velocity;
+
+                *tick += step;
+            }
+            break;
         case StatementTypeRest:
-            NAByteBufferReadData(context->buffer, &data, header->length);
+            {
+                int step;
+                NAByteBufferReadInteger(context->buffer, &step);
+                *tick += step;
+            }
             break;
         case StatementTypeInclude:
             // never reach

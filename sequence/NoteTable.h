@@ -57,6 +57,7 @@ typedef enum {
 } Accidental;
 
 extern KeySign NoteTableGetKeySign(char keyChar, bool sharp, bool flat, bool major);
+extern int NoteTableGetNoteNo(KeySign keySign, BaseNote baseNote, Accidental Accidental, int octave);
 
 static inline char *KeySign2String(KeySign keySign)
 {

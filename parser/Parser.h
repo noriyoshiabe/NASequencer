@@ -15,6 +15,7 @@ typedef enum {
     ParseErrorKindUnexpectedEnd,
     ParseErrorKindDuplicatePatternIdentifier,
     ParseErrorKindPatternMissing,
+    ParseErrorKindInvalidNoteRange,
 } ParseErrorKind;
 
 typedef struct _ParseLocation {
@@ -49,6 +50,7 @@ static inline const char *ParseErrorKind2String(ParseErrorKind kind)
     CASE(ParseErrorKindUnexpectedEnd);
     CASE(ParseErrorKindDuplicatePatternIdentifier);
     CASE(ParseErrorKindPatternMissing);
+    CASE(ParseErrorKindInvalidNoteRange);
     default:
        break;
     }
