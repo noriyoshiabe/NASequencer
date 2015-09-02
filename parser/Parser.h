@@ -14,6 +14,7 @@ typedef enum {
     ParseErrorKindCircularFileInclude,
     ParseErrorKindUnexpectedEnd,
     ParseErrorKindDuplicatePatternIdentifier,
+    ParseErrorKindPatternMissing,
 } ParseErrorKind;
 
 typedef struct _ParseLocation {
@@ -47,6 +48,7 @@ static inline const char *ParseErrorKind2String(ParseErrorKind kind)
     CASE(ParseErrorKindCircularFileInclude);
     CASE(ParseErrorKindUnexpectedEnd);
     CASE(ParseErrorKindDuplicatePatternIdentifier);
+    CASE(ParseErrorKindPatternMissing);
     default:
        break;
     }

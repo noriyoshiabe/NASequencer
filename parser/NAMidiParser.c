@@ -32,7 +32,10 @@ typedef struct _BuildContext {
     Sequence *sequence;
 
     int track;
+    int transpose;
+    KeySign keySign;
     struct {
+        int channel;
         int tick;
         int step;
         int gatetime;
@@ -609,21 +612,81 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context
             }
             break;
         case StatementTypePattern:
-            NAByteBufferReadData(context->buffer, &data, header->length);
+            {
+                char *pattern;
+                NAByteBufferReadString(context->buffer, &pattern);
+                BuildContext *patternContext = NAMapGet(context->patternContexts, pattern);
+                if (!patternContext) {
+                    NAMidiParserError(self, header->location.line, header->location.column, ParseErrorKindPatternMissing);
+                    success = false;
+                    break;
+                }
+
+                success = NAMidiParserParseStatement(self, patternContext, pattern);
+            }
             break;
         case StatementTypePatternDefine:
         case StatementTypeEnd:
             // never reach
             break;
         case StatementTypeTrack:
+            {
+                NAByteBufferReadInteger(context->buffer, &context->track);
+            }
+            break;
         case StatementTypeChannel:
+            {
+                NAByteBufferReadInteger(context->buffer, &context->tracks[context->track].channel);
+            }
+            break;
         case StatementTypeVoice:
+            {
+                VoiceEvent *event = MidiEventAlloc(MidiEventTypeVoice, *tick, sizeof(VoiceEvent) - sizeof(MidiEvent));
+                event->channel = context->tracks[context->track].channel;
+                NAByteBufferReadInteger(context->buffer, &event->msb);
+                NAByteBufferReadInteger(context->buffer, &event->lsb);
+                NAByteBufferReadInteger(context->buffer, &event->programNo);
+                NAArrayAppend(sequence->events, event);
+            }
+            break;
         case StatementTypeVolume:
+            {
+                VolumeEvent *event = MidiEventAlloc(MidiEventTypeVolume, *tick, sizeof(VolumeEvent) - sizeof(MidiEvent));
+                event->channel = context->tracks[context->track].channel;
+                NAByteBufferReadInteger(context->buffer, &event->value);
+            }
+            break;
         case StatementTypePan:
+            {
+                PanEvent *event = MidiEventAlloc(MidiEventTypePan, *tick, sizeof(PanEvent) - sizeof(MidiEvent));
+                event->channel = context->tracks[context->track].channel;
+                NAByteBufferReadInteger(context->buffer, &event->value);
+            }
+            break;
         case StatementTypeChorus:
+            {
+                ChorusEvent *event = MidiEventAlloc(MidiEventTypeChorus, *tick, sizeof(ChorusEvent) - sizeof(MidiEvent));
+                event->channel = context->tracks[context->track].channel;
+                NAByteBufferReadInteger(context->buffer, &event->value);
+            }
+            break;
         case StatementTypeReverb:
+            {
+                ReverbEvent *event = MidiEventAlloc(MidiEventTypeReverb, *tick, sizeof(ReverbEvent) - sizeof(MidiEvent));
+                event->channel = context->tracks[context->track].channel;
+                NAByteBufferReadInteger(context->buffer, &event->value);
+            }
+            break;
         case StatementTypeTranspose:
+            {
+                NAByteBufferReadInteger(context->buffer, &context->transpose);
+            }
+            break;
         case StatementTypeKey:
+            {
+                NAByteBufferReadInteger(context->buffer, &context->keySign);
+            }
+            break;
         case StatementTypeNote:
         case StatementTypeRest:
             NAByteBufferReadData(context->buffer, &data, header->length);
