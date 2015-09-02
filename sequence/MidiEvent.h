@@ -51,7 +51,6 @@ typedef struct _KeyEvent {
 typedef struct _MarkerEvent {
     MidiEventType type;
     int tick;
-    int length;
     char text[];
 } MarkerEvent;
 

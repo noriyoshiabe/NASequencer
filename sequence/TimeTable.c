@@ -147,6 +147,11 @@ bool TimeTableAddTempo(TimeTable *self, int32_t tick, float tempo)
     return true;
 }
 
+void TimeTableSetResolution(TimeTable *self, int32_t resolution)
+{
+    self->resolution = resolution;
+}
+
 void TimeTableSetLength(TimeTable *self, int32_t length)
 {
     self->length = length;

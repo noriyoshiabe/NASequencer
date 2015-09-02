@@ -28,6 +28,16 @@ typedef struct _BuildContext {
     NAByteBuffer *buffer;
     NAMap *patternContexts;
     NAArray *patternIdentifiers;
+
+    Sequence *sequence;
+
+    int track;
+    struct {
+        int tick;
+        int step;
+        int gatetime;
+        int velocity;
+    } tracks[16];
 } BuildContext;
 
 static BuildContext *BuildContextCreate()
@@ -57,6 +67,7 @@ static void NAMidiParserDestroy(void *self);
 
 static bool NAMidiParserParseFileInternal(NAMidiParser *self, const char *filepath, int line, int column);
 static bool NAMidiParserBuildSequence(NAMidiParser *self);
+static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context, char *name);
 
 struct _NAMidiParser {
     Parser interface;
@@ -519,7 +530,112 @@ static void BuildContextDump(BuildContext *self, char *name, int indent)
 static bool NAMidiParserBuildSequence(NAMidiParser *self)
 {
     BuildContextDump(self->context, NULL, 0);
-    // TODO
-    self->result->sequence = SequenceCreate();
-    return true;
+
+    bool success = NAMidiParserParseStatement(self, self->context, "Song");
+    self->result->sequence = self->context->sequence;
+    return success;
+}
+
+static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context, char *name)
+{
+    bool success = true;
+
+    Sequence *sequence = SequenceCreate();
+    sequence->title = strdup(name);
+
+    context->sequence = sequence;
+
+    int count = NAArrayCount(context->patternIdentifiers);
+    char **identifiers = NAArrayGetValues(context->patternIdentifiers);
+    for (int i = 0; i < count; ++i) {
+        BuildContext *patternContext = NAMapGet(context->patternContexts, identifiers[i]);
+        success = NAMidiParserParseStatement(self, patternContext, identifiers[i]);
+        if (!success) {
+            return false;
+        }
+    }
+
+    StatementHeader *header;
+    void *data;
+
+    int *tick = &context->tracks[context->track].tick;
+
+    while (NAByteBufferReadData(context->buffer, &header, sizeof(StatementHeader))) {
+        switch (header->type) {
+        case StatementTypeResolution:
+            {
+                int resolution;
+                NAByteBufferReadInteger(context->buffer, &resolution);
+                TimeTableSetResolution(sequence->timeTable, resolution);
+            }
+            break;
+        case StatementTypeTitle:
+            {
+                char *title;
+                NAByteBufferReadString(context->buffer, &title);
+                free(sequence->title);
+                sequence->title = strdup(title);
+            }
+            break;
+        case StatementTypeTempo:
+            {
+                float tempo;
+                NAByteBufferReadFloat(context->buffer, &tempo);
+                TimeTableAddTempo(sequence->timeTable, *tick, tempo);
+            }
+            break;
+        case StatementTypeTimeSign:
+            {
+                int numerator, denominator;
+                NAByteBufferReadInteger(context->buffer, &numerator);
+                NAByteBufferReadInteger(context->buffer, &denominator);
+                TimeTableAddTimeSign(sequence->timeTable, *tick, (TimeSign){numerator, denominator});
+            }
+            break;
+        case StatementTypeMeasure:
+            {
+                int measure;
+                NAByteBufferReadInteger(context->buffer, &measure);
+                *tick = TimeTableTickByMeasure(sequence->timeTable, measure);
+            }
+            break;
+        case StatementTypeMarker:
+            {
+                char *marker;
+                NAByteBufferReadString(context->buffer, &marker);
+                MarkerEvent *event = MidiEventAlloc(MidiEventTypeMarker, *tick, strlen(marker) + 1);
+                strcpy(event->text, marker);
+                NAArrayAppend(sequence->events, event);
+            }
+            break;
+        case StatementTypePattern:
+            NAByteBufferReadData(context->buffer, &data, header->length);
+            break;
+        case StatementTypePatternDefine:
+        case StatementTypeEnd:
+            // never reach
+            break;
+        case StatementTypeTrack:
+        case StatementTypeChannel:
+        case StatementTypeVoice:
+        case StatementTypeVolume:
+        case StatementTypePan:
+        case StatementTypeChorus:
+        case StatementTypeReverb:
+        case StatementTypeTranspose:
+        case StatementTypeKey:
+        case StatementTypeNote:
+        case StatementTypeRest:
+            NAByteBufferReadData(context->buffer, &data, header->length);
+            break;
+        case StatementTypeInclude:
+            // never reach
+            break;
+        default:
+            // never reach
+            break;
+        }
+    }
+
+    return success;
 }
