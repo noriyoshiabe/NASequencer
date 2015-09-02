@@ -3,27 +3,37 @@
 #include "NAUtil.h"
 
 #include <stdlib.h>
+#include <string.h>
 
-typedef enum {
-    SyntaxNAMidi,
-} Syntax;
+static ParserFactory FindParserFactory(const char *filepath)
+{
+    const struct {
+        const char *extenstion;
+        ParserFactory factory;
+    } parserTable[] = {
+        {"namidi", NAMidiParserCreate},
+    };
 
-static const struct {
-    Syntax syntax;
-    ParserFactory factory;
-} ParserTable[] = {
-    {SyntaxNAMidi, NAMidiParserCreate},
-};
+    for (int i = 0; i < sizeof(parserTable) / sizeof(parserTable[0]); ++i) {
+        if (0 == strcmp(parserTable[i].extenstion, NAUtilGetFileExtenssion(filepath))) {
+            return parserTable[i].factory;
+        }
+    }
+
+    return NULL;
+}
 
 
 bool ParserParseFile(const char *filepath, ParseResult *result)
 {
-    Parser *parser = ParserTable[0].factory(result);
-    // TODO filetype check
-    if (!parser) {
+    ParserFactory factory = FindParserFactory(filepath);
+    if (!factory) {
         result->error.kind = ParseErrorKindUnsupportedFileType;
+        result->error.location.filepath = filepath;
         return false;
     }
+
+    Parser *parser = factory(result);
 
     result->filepaths = NAArrayCreate(4, NADescriptionCString);
     char *fullpath = NAUtilGetRealPath(filepath);

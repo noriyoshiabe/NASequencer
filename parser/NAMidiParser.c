@@ -448,6 +448,13 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             char *filename = va_arg(argList, char *);
             char *directory = dirname((char *)self->currentFile);
             char *fullPath = NAUtilBuildPathWithDirectory(directory, filename);
+            
+            if (0 != strcmp("namidi", NAUtilGetFileExtenssion(fullPath))) {
+                NAMidiParserError(self, line, column, ParseErrorKindUnsupportedFileType);
+                free(fullPath);
+                success = false;
+                break;
+            }
 
             if (NASetContains(self->readingFileSet, fullPath)) {
                 NAMidiParserError(self, line, column, ParseErrorKindCircularFileInclude);

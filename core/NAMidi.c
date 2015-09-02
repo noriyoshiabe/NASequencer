@@ -86,7 +86,7 @@ static void NAMidiStartFileWatch(NAMidi *self, NAArray *filepaths)
 
 void NAMidiParse(NAMidi *self, const char *filepath)
 {
-    ParseResult result;
+    ParseResult result = {};
 
     NAMidiStopFileWatch(self);
 

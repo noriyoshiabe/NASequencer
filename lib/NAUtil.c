@@ -27,3 +27,14 @@ char *NAUtilBuildPathWithDirectory(const char *directory, const char *filename)
     strcpy(ret, buf);
     return ret;
 }
+
+const char *NAUtilGetFileExtenssion(const char *filepath)
+{
+    const char *dot = strrchr(filepath, '.');
+    
+    if(!dot || dot == filepath) {
+        return "";
+    }
+
+    return dot + 1;
+}
