@@ -55,6 +55,7 @@ static void BuildContextDestroy(BuildContext *self)
 static bool NAMidiParserParseFile(void *self, const char *filepath);
 static void NAMidiParserDestroy(void *self);
 
+static bool NAMidiParserParseFileInternal(NAMidiParser *self, const char *filepath, int line, int column);
 static bool NAMidiParserBuildSequence(NAMidiParser *self);
 
 struct _NAMidiParser {
@@ -82,13 +83,16 @@ Parser *NAMidiParserCreate(ParseResult *result)
     return (Parser *)self;
 }
 
-static bool NAMidiParserParseFile(void *_self, const char *filepath)
+static bool NAMidiParserParseFile(void *self, const char *filepath)
 {
-    NAMidiParser *self = _self;
+    return NAMidiParserParseFileInternal(self, filepath, 0, 0);
+}
 
+static bool NAMidiParserParseFileInternal(NAMidiParser *self, const char *filepath, int line, int column)
+{
     FILE *fp = fopen(filepath, "r");
     if (!fp) {
-        self->result->error.kind = ParseErrorKindFileNotFound;
+        NAMidiParserError(self, line, column, ParseErrorKindFileNotFound);
         return false;
     }
 
@@ -463,7 +467,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
                 break;
             }
 
-            success = NAMidiParserParseFile(self, fullPath);
+            success = NAMidiParserParseFileInternal(self, fullPath, line, column);
             free(fullPath);
         }
         break;
