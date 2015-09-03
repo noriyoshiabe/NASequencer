@@ -16,4 +16,4 @@ struct _Sequence {
 extern Sequence *SequenceCreate();
 extern void SequenceRelease(Sequence *self);
 extern void SequenceSortEvents(Sequence *self);
-extern void SequenceDescription(void *self, FILE *stream);
+extern void SequenceDump(Sequence *self, int indent);

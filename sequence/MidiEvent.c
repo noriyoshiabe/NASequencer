@@ -1,5 +1,6 @@
 #include "MidiEvent.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 
 void *MidiEventAlloc(MidiEventType type, int tick, int extraSize)
@@ -45,76 +46,79 @@ void *MidiEventAlloc(MidiEventType type, int tick, int extraSize)
     return ret;
 }
 
-void MidiEventDescription(void *_self, FILE *stream)
+void MidiEventDump(MidiEvent *self, int indent)
 {
-    switch (((MidiEvent *)_self)->type) {
+    printf("%*s", indent, "");
+    void *_self = self;
+
+    switch (self->type) {
     case MidiEventTypeNote:
         {
             NoteEvent *self = _self;
-            fprintf(stream, "Note: tick=%d channel=%d noteNo=%d gatetime=%d velocity=%d",
+            printf("Note: tick=%d channel=%d noteNo=%d gatetime=%d velocity=%d\n",
                     self->tick, self->channel, self->noteNo, self->gatetime, self->velocity);
         }
         break;
     case MidiEventTypeTempo:
         {
             TempoEvent *self = _self;
-            fprintf(stream, "Tempo: tick=%d tempo=%f",
+            printf("Tempo: tick=%d tempo=%f\n",
                     self->tick, self->tempo);
         }
         break;
     case MidiEventTypeTime:
         {
             TimeEvent *self = _self;
-            fprintf(stream, "Time: tick=%d time=%d/%d",
+            printf("Time: tick=%d time=%d/%d\n",
                     self->tick, self->numerator, self->denominator);
         }
         break;
     case MidiEventTypeKey:
         {
             KeyEvent *self = _self;
-            fprintf(stream, "Key: tick=%d key=%s",
+            printf("Key: tick=%d key=%s\n",
                     self->tick, KeySign2String(self->keySign));
         }
         break;
     case MidiEventTypeMarker:
         {
             MarkerEvent *self = _self;
-            fprintf(stream, "Marker: tick=%d text=%s",
+            printf("Marker: tick=%d text=%s\n",
                     self->tick, self->text);
         }
         break;
     case MidiEventTypeVoice:
         {
             VoiceEvent *self = _self;
-            fprintf(stream, "Voice: tick=%d channel=%d msb=%d lsb=%d programNo=%d",
+            printf("Voice: tick=%d channel=%d msb=%d lsb=%d programNo=%d\n",
                     self->tick, self->channel, self->msb, self->lsb, self->programNo);
         }
         break;
     case MidiEventTypeVolume:
         {
             VolumeEvent *self = _self;
-            fprintf(stream, "Volume: tick=%d channel=%d value=%d",
+            printf("Volume: tick=%d channel=%d value=%d\n",
                     self->tick, self->channel, self->value);
         }
         break;
     case MidiEventTypePan:
         {
             PanEvent *self = _self;
-            fprintf(stream, "Pan: tick=%d channel=%d value=%d",
+            printf("Pan: tick=%d channel=%d value=%d\n",
                     self->tick, self->channel, self->value);
         }
         break;
     case MidiEventTypeChorus:
         {
             ChorusEvent *self = _self;
-            fprintf(stream, "Chorus: tick=%d channel=%d value=%d",
+            printf("Chorus: tick=%d channel=%d value=%d\n",
                     self->tick, self->channel, self->value);
         }
         break;
     case MidiEventTypeReverb:
         {
             ReverbEvent *self = _self;
-            fprintf(stream, "Reverb: tick=%d channel=%d value=%d",
+            printf("Reverb: tick=%d channel=%d value=%d\n",
                     self->tick, self->channel, self->value);
         }
         break;
