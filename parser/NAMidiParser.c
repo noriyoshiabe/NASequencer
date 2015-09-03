@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <libgen.h>
+#include <sys/param.h>
 
 #define isPowerOf2(x) ((x != 0) && ((x & (x - 1)) == 0))
 #define isValidRange(v, from, to) (from <= v && v <= to)
@@ -74,6 +75,15 @@ static void BuildContextDestroy(BuildContext *self)
     }
 
     free(self);
+}
+
+static int BuildContextGetLength(BuildContext *self)
+{
+    int length = 0;
+    for (int i = 0; i < 16; ++i) {
+        length = MAX(length, self->tracks[i].tick);
+    }
+    return length;
 }
 
 static bool NAMidiParserParseFile(void *self, const char *filepath);
@@ -540,14 +550,21 @@ static void BuildContextDump(BuildContext *self, char *name, int indent)
         BuildContext *context = NAMapGet(self->patternContexts, identifiers[i]);
         BuildContextDump(context, identifiers[i], indent + 2);
     }
+
+    NAByteBufferSeekFirst(self->buffer);
 }
 
 static bool NAMidiParserBuildSequence(NAMidiParser *self)
 {
-    //BuildContextDump(self->context, NULL, 0);
+#if 1
+    BuildContextDump(self->context, NULL, 0);
+#endif
 
     bool success = NAMidiParserParseBuildContext(self, self->context, "Song");
     self->result->sequence = self->context->sequence;
+#if 1
+    SequenceDescription(self->result->sequence, stdout);
+#endif
     return success;
 }
 
@@ -569,10 +586,15 @@ static bool NAMidiParserParseBuildContext(NAMidiParser *self, BuildContext *cont
             return false;
         }
 
+        TimeTableSetLength(patternContext->sequence->timeTable, BuildContextGetLength(patternContext));
+        SequenceSortEvents(patternContext->sequence);
         NAArrayAppend(sequence->children, patternContext->sequence);
     }
 
-    return NAMidiParserParseStatement(self, context);
+    success = NAMidiParserParseStatement(self, context);
+    TimeTableSetLength(sequence->timeTable, BuildContextGetLength(context));
+    SequenceSortEvents(sequence);
+    return success;
 }
 
 static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context)
@@ -757,6 +779,8 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context
                 event->channel = context->tracks[context->track].channel;
                 event->gatetime = gatetime;
                 event->velocity = velocity;
+
+                NAArrayAppend(sequence->events, event);
 
                 *tick += step;
             }

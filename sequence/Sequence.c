@@ -49,3 +49,17 @@ void SequenceSortEvents(Sequence *self)
 {
     NAArraySort(self->events, MidiEventComparator);
 }
+
+void SequenceDescription(void *_self, FILE *stream)
+{
+    Sequence *self = _self;
+    fprintf(stream, "Sequence: %s\n", self->title);
+    fprintf(stream, "-------------------------\n");
+    TimeTableDescription(self->timeTable, stream);
+    fprintf(stream, "Event:\n");
+    fprintf(stream, "-------------------------\n");
+    NAArrayDescription(self->events, stream);
+    fprintf(stream, "Pattern:\n");
+    fprintf(stream, "-------------------------\n");
+    NAArrayDescription(self->children, stream);
+}

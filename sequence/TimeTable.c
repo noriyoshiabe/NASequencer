@@ -321,3 +321,17 @@ static int TempoRecordFindByUsecComparator(const void *_usec, const void *_recor
         return *usec - record->usecStart;
     }
 }
+
+void TimeTableDescription(void *_self, FILE *stream)
+{
+    TimeTable *self = _self;
+
+    fprintf(stream, "TimeTable: resolution=%d length=%d\n", self->resolution, self->length);
+    fprintf(stream, "-------------------------\n");
+    fprintf(stream, "TimeSign:\n");
+    fprintf(stream, "-------------------------\n");
+    NAArrayDescription(self->timeSignRecords, stream);
+    fprintf(stream, "Tempo:\n");
+    fprintf(stream, "-------------------------\n");
+    NAArrayDescription(self->tempoRecords, stream);
+}
