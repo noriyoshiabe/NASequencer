@@ -40,12 +40,12 @@ typedef struct _BuildContext {
         int gatetime;
         int velocity;
     } tracks[16];
+
+    bool shallowCopy;
 } BuildContext;
 
 static BuildContext *BuildContextCreate()
 {
-    // TODO take over parrent?
-
     BuildContext *self = calloc(1, sizeof(BuildContext));
     self->buffer = NAByteBufferCreate(1024);
     self->patternContexts = NAMapCreate(NAHashCString, NADescriptionCString, NULL);
@@ -53,15 +53,25 @@ static BuildContext *BuildContextCreate()
     return self;
 }
 
+static BuildContext *BuildContextCreateShallowCopy(BuildContext *self)
+{
+    BuildContext *copy = calloc(1, sizeof(BuildContext));
+    memcpy(copy, self, sizeof(BuildContext));
+    copy->shallowCopy = true;
+    return copy;
+}
+
 static void BuildContextDestroy(BuildContext *self)
 {
-    NAByteBufferDestroy(self->buffer);
+    if (!self->shallowCopy) {
+        NAByteBufferDestroy(self->buffer);
 
-    NAMapTraverseValue(self->patternContexts, (void *)BuildContextDestroy);
-    NAMapDestroy(self->patternContexts);
+        NAMapTraverseValue(self->patternContexts, (void *)BuildContextDestroy);
+        NAMapDestroy(self->patternContexts);
 
-    NAArrayTraverse(self->patternIdentifiers, free);
-    NAArrayDestroy(self->patternIdentifiers);
+        NAArrayTraverse(self->patternIdentifiers, free);
+        NAArrayDestroy(self->patternIdentifiers);
+    }
 
     free(self);
 }
@@ -71,7 +81,8 @@ static void NAMidiParserDestroy(void *self);
 
 static bool NAMidiParserParseFileInternal(NAMidiParser *self, const char *filepath, int line, int column);
 static bool NAMidiParserBuildSequence(NAMidiParser *self);
-static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context, char *name);
+static bool NAMidiParserParseBuildContext(NAMidiParser *self, BuildContext *context, char *name);
+static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context);
 
 struct _NAMidiParser {
     Parser interface;
@@ -533,14 +544,14 @@ static void BuildContextDump(BuildContext *self, char *name, int indent)
 
 static bool NAMidiParserBuildSequence(NAMidiParser *self)
 {
-    BuildContextDump(self->context, NULL, 0);
+    //BuildContextDump(self->context, NULL, 0);
 
-    bool success = NAMidiParserParseStatement(self, self->context, "Song");
+    bool success = NAMidiParserParseBuildContext(self, self->context, "Song");
     self->result->sequence = self->context->sequence;
     return success;
 }
 
-static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context, char *name)
+static bool NAMidiParserParseBuildContext(NAMidiParser *self, BuildContext *context, char *name)
 {
     bool success = true;
 
@@ -553,17 +564,23 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context
     char **identifiers = NAArrayGetValues(context->patternIdentifiers);
     for (int i = 0; i < count; ++i) {
         BuildContext *patternContext = NAMapGet(context->patternContexts, identifiers[i]);
-        success = NAMidiParserParseStatement(self, patternContext, identifiers[i]);
+        success = NAMidiParserParseBuildContext(self, patternContext, identifiers[i]);
         if (!success) {
             return false;
         }
 
-        // TODO add pattern
+        NAArrayAppend(sequence->children, patternContext->sequence);
     }
 
-    StatementHeader *header;
-    void *data;
+    return NAMidiParserParseStatement(self, context);
+}
 
+static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context)
+{
+    bool success = true;
+    StatementHeader *header;
+
+    Sequence *sequence = context->sequence;
     int *tick = &context->tracks[context->track].tick;
 
     while (NAByteBufferReadData(context->buffer, &header, sizeof(StatementHeader))) {
@@ -625,7 +642,14 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context
                     break;
                 }
 
-                // TODO expand pattern
+                BuildContext *copy = BuildContextCreateShallowCopy(context);
+                copy->buffer = patternContext->buffer;
+                copy->patternContexts = patternContext->patternContexts;
+                copy->patternIdentifiers = patternContext->patternIdentifiers;
+                NAByteBufferSeekFirst(copy->buffer);
+
+                success = NAMidiParserParseStatement(self, copy);
+                BuildContextDestroy(copy);
             }
             break;
         case StatementTypePatternDefine:
@@ -703,7 +727,7 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context
                 NAByteBufferReadInteger(context->buffer, &gatetime);
                 NAByteBufferReadInteger(context->buffer, &velocity);
 
-                int noteNo = NoteTableGetNoteNo(context->keySign, baseNote, accidental, octave);
+                int noteNo = 0;//NoteTableGetNoteNo(context->keySign, baseNote, accidental, octave);
                 if (!isValidRange(noteNo, 0, 127)) {
                     NAMidiParserError(self, header->location.line, header->location.column, ParseErrorKindInvalidNoteRange);
                     success = false;
