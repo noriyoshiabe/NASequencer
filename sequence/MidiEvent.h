@@ -1,6 +1,7 @@
 #pragma once
 
 #include "NoteTable.h"
+#include "NADescription.h"
 
 typedef enum {
     MidiEventTypeNote,
@@ -92,3 +93,4 @@ typedef struct _ReverbEvent {
 } ReverbEvent;
 
 extern void *MidiEventAlloc(MidiEventType type, int tick, int extraSize);
+extern void MidiEventDescription(void *self, FILE *stream);

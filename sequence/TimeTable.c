@@ -322,16 +322,27 @@ static int TempoRecordFindByUsecComparator(const void *_usec, const void *_recor
     }
 }
 
+void TimeSignRecordDescription(void *_self, FILE *stream)
+{
+    TimeSignRecord *self = _self;
+    fprintf(stream, "tickStart=%d tickEnd=%d timeSign=%d/%d measureStart=%d measureEnd=%d measureLength=%d",
+            self->tickStart, self->tickEnd, self->timeSign.numerator, self->timeSign.denominator, self->measureStart, self->measureEnd, self->measureLength);
+}
+
+void TempoRecordDescription(void *_self, FILE *stream)
+{
+    TempoRecord *self = _self;
+    fprintf(stream, "tickStart=%d tickEnd=%d tempo=%f usecStart=%lld usecEnd=%lld",
+            self->tickStart, self->tickEnd, self->tempo, self->usecStart, self->usecEnd);
+}
+
 void TimeTableDescription(void *_self, FILE *stream)
 {
     TimeTable *self = _self;
 
     fprintf(stream, "TimeTable: resolution=%d length=%d\n", self->resolution, self->length);
-    fprintf(stream, "-------------------------\n");
     fprintf(stream, "TimeSign:\n");
-    fprintf(stream, "-------------------------\n");
     NAArrayDescription(self->timeSignRecords, stream);
     fprintf(stream, "Tempo:\n");
-    fprintf(stream, "-------------------------\n");
     NAArrayDescription(self->tempoRecords, stream);
 }
