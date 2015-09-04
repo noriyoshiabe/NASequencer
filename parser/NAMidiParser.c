@@ -51,6 +51,13 @@ static BuildContext *BuildContextCreate()
     self->buffer = NAByteBufferCreate(1024);
     self->patternContexts = NAMapCreate(NAHashCString, NADescriptionCString, NULL);
     self->patternIdentifiers = NAArrayCreate(16, NADescriptionCString);
+
+    for (int i = 0; i < 16; ++i) {
+        self->tracks[i].channel = 1;
+        self->tracks[i].gatetime = 240;
+        self->tracks[i].velocity = 100;
+    }
+
     return self;
 }
 
@@ -522,6 +529,7 @@ void NAMidiParserError(NAMidiParser *self, int line, int column, ParseErrorKind 
     self->result->error.location.filepath = self->currentFile;
 }
 
+#if 0
 static void BuildContextDump(BuildContext *self, char *name, int indent)
 {
     if (name) {
@@ -553,10 +561,11 @@ static void BuildContextDump(BuildContext *self, char *name, int indent)
 
     NAByteBufferSeekFirst(self->buffer);
 }
+#endif
 
 static bool NAMidiParserBuildSequence(NAMidiParser *self)
 {
-#if 1
+#if 0
     BuildContextDump(self->context, NULL, 0);
 #endif
 
