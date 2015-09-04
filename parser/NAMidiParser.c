@@ -769,25 +769,19 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context
                     step = 0;
                 }
 
-                if (-1 == gatetime) {
-                    gatetime = context->tracks[context->track].gatetime;
-                }
-                else {
+                if (-1 != gatetime) {
                     context->tracks[context->track].gatetime = gatetime;
                 }
 
-                if (-1 == velocity) {
-                    velocity = context->tracks[context->track].velocity;
-                }
-                else {
+                if (-1 != velocity) {
                     context->tracks[context->track].velocity = velocity;
                 }
 
                 NoteEvent *event = MidiEventAlloc(MidiEventTypeNote, *tick, sizeof(NoteEvent) - sizeof(MidiEvent));
                 event->noteNo = noteNo;
                 event->channel = context->tracks[context->track].channel;
-                event->gatetime = gatetime;
-                event->velocity = velocity;
+                event->gatetime = context->tracks[context->track].gatetime;
+                event->velocity = context->tracks[context->track].velocity;
 
                 NAArrayAppend(sequence->events, event);
 
