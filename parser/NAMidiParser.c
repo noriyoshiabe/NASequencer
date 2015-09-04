@@ -758,7 +758,7 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context
                 NAByteBufferReadInteger(context->buffer, &gatetime);
                 NAByteBufferReadInteger(context->buffer, &velocity);
 
-                int noteNo = 0;//NoteTableGetNoteNo(context->keySign, baseNote, accidental, octave);
+                int noteNo = NoteTableGetNoteNo(context->keySign, baseNote, accidental, octave);
                 if (!isValidRange(noteNo, 0, 127)) {
                     NAMidiParserError(self, header->location.line, header->location.column, ParseErrorKindInvalidNoteRange);
                     success = false;
