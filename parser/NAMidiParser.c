@@ -74,7 +74,7 @@ static void BuildContextDestroy(BuildContext *self)
     if (!self->shallowCopy) {
         NAByteBufferDestroy(self->buffer);
 
-        NAMapTraverseValue(self->patternContexts, (void *)BuildContextDestroy);
+        NAMapTraverseValue(self->patternContexts, BuildContextDestroy);
         NAMapDestroy(self->patternContexts);
 
         NAArrayTraverse(self->patternIdentifiers, free);

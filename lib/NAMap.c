@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#undef NAMapTraverseKey
+#undef NAMapTraverseValue
+
 typedef struct _Entry {
     void *key;
     void *value;

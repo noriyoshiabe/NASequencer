@@ -20,3 +20,5 @@ extern NAIterator *NASetGetIterator(NASet *self, void *buffer);
 extern void NASetDescription(void *self, FILE *stream);
 
 extern const int NASetIteratorSize;
+
+#define NASetTraverse(self, function) NASetTraverse(self, (void *)function)

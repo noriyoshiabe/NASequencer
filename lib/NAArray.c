@@ -109,7 +109,7 @@ void NAArraySort(NAArray *self, int (*comparator)(const void *, const void *))
 int NAArrayFindFirstIndex(NAArray *self, const void *key, int (*comparator)(const void *, const void *))
 {
     for (int i = 0; i < self->count; ++i) {
-        if (0 == comparator(key, self->values[i])) {
+        if (0 == comparator(key, (const void *)self->values[i])) {
             return i;
         }
     }
@@ -120,7 +120,7 @@ int NAArrayFindFirstIndex(NAArray *self, const void *key, int (*comparator)(cons
 int NAArrayFindLastIndex(NAArray *self, const void *key, int (*comparator)(const void *, const void *))
 {
     for (int i = self->count - 1; 0 <= i; --i) {
-        if (0 == comparator(key, self->values[i])) {
+        if (0 == comparator(key, (const void *)self->values[i])) {
             return i;
         }
     }

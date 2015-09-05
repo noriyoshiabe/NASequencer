@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#undef NASetTraverse
+
 typedef struct _Entry {
     void *value;
     struct _Entry *next;

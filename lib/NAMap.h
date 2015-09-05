@@ -26,3 +26,6 @@ extern NAIterator *NAMapGetIterator(NAMap *self, void *buffer);
 extern void NAMapDescription(void *self, FILE *stream);
 
 extern const int NAMapIteratorSize;
+
+#define NAMapTraverseKey(self, function) NAMapTraverseKey(self, (void *)function)
+#define NAMapTraverseValue(self, function) NAMapTraverseValue(self, (void *)function)
