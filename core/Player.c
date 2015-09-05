@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "NAMessageQ.h"
 #include "NAArray.h"
+#include "NASet.h"
 
 #include <stdlib.h>
 #include <pthread.h>
@@ -31,6 +32,7 @@ struct _Player {
 
     Mixer *mixer;
     Sequence *sequence;
+    NASet *playingNoteEvents;
 
     bool playing;
     Location location;
@@ -47,11 +49,10 @@ static void *PlayerRun(void *self);
 static void PlayerProcessMessage(Player *self, PlayerMessage message, void *data);
 static void PlayerProcessEvent(Player *self, PlayerEvent event);
 static void PlayerSupplyClock(Player *self);
-static void PlayerScanEvents(Player *self, int32_t tick, int32_t prevTick);
+static void PlayerScanEvents(Player *self, int32_t prevTick, int32_t tick);
 static void PlayerSendNoteOn(Player *self, NoteEvent *event);
-static void PlayerSendNoteOff(Player *self, NoteEvent *event);
-static void PlayerScanNoteOff(Player *self, int tickFrom, int tickTo);
-static void PlayerSendAllNoteOff();
+static void PlayerScanNoteOff(Player *self, int prevTick, int tick);
+static void PlayerSendAllNoteOff(Player *self);
 
 Player *PlayerCreate(Mixer *mixer)
 {
@@ -59,6 +60,7 @@ Player *PlayerCreate(Mixer *mixer)
     self->observers = NAArrayCreate(4, NULL);
     self->msgQ = NAMessageQCreate();
     self->mixer = mixer;
+    self->playingNoteEvents = NASetCreate(NULL, NULL);
     self->location = LocationZero;
     pthread_create(&self->thread, NULL, PlayerRun, self);
     return self;
@@ -137,6 +139,21 @@ void PlayerBackWard(Player *self)
     NAMessageQPost(self->msgQ, PlayerMessageBackward, NULL);
 }
 
+bool PlayerIsPlaying(Player *self)
+{
+    return self->playing;
+}
+
+uint64_t PlayerGetUsec(Player *self)
+{
+    return self->usec;
+}
+
+Location PlayerGetLocation(Player *self)
+{
+    return self->location;
+}
+
 static void *PlayerRun(void *_self)
 {
     Player *self = _self;
@@ -172,13 +189,10 @@ static void PlayerTriggerEvent(Player *self, PlayerEvent event)
 static void PlayerNotifyClock(Player *self, Observer *observer, va_list argList)
 {
     observer->callbacks->onNotifyClock(observer->receiver,
-            *va_arg(argList, int32_t *),
-            *va_arg(argList, int32_t *),
-            *va_arg(argList, int64_t *),
-            *va_arg(argList, Location *));
+            *va_arg(argList, int32_t *), *va_arg(argList, int64_t *), *va_arg(argList, Location *));
 }
 
-static void PlayerUpdateClock(Player *self, int32_t tick, int32_t prevTick, int64_t usec, Location location)
+static void PlayerUpdateClock(Player *self, int32_t tick, int64_t usec, Location location)
 {
     self->tick = tick;
 
@@ -186,7 +200,7 @@ static void PlayerUpdateClock(Player *self, int32_t tick, int32_t prevTick, int6
             || location.b != self->location.b
             || location.m != self->location.m) {
         self->location = location;
-        NAArrayTraverseWithContext(self->observers, self, PlayerNotifyClock, &tick, &prevTick, &usec, &location);
+        NAArrayTraverseWithContext(self->observers, self, PlayerNotifyClock, &tick, &usec, &location);
     }
 }
 
@@ -217,7 +231,7 @@ static void PlayerProcessMessage(Player *self, PlayerMessage message, void *data
         self->offset = 0;
         self->usec = 0;
         self->start = currentMicroSec();
-        PlayerUpdateClock(self, 0, 0, 0, LocationZero);
+        PlayerUpdateClock(self, 0, 0, LocationZero);
         PlayerTriggerEvent(self, PlayerEventRewind);
         break;
     case PlayerMessageForward:
@@ -235,7 +249,7 @@ static void PlayerProcessMessage(Player *self, PlayerMessage message, void *data
             self->offset = self->usec;
             self->start = currentMicroSec();
 
-            PlayerUpdateClock(self, tick, tick, self->usec, location);
+            PlayerUpdateClock(self, tick, self->usec, location);
             PlayerTriggerEvent(self, PlayerEventForward);
         }
         break;
@@ -254,7 +268,7 @@ static void PlayerProcessMessage(Player *self, PlayerMessage message, void *data
             self->offset = self->usec;
             self->start = currentMicroSec();
 
-            PlayerUpdateClock(self, tick, tick, self->usec, location);
+            PlayerUpdateClock(self, tick, self->usec, location);
             PlayerTriggerEvent(self, PlayerEventBackward);
         }
         break;
@@ -319,37 +333,96 @@ static void PlayerSupplyClock(Player *self)
     int32_t tick = TimeTableMicroSec2Tick(self->sequence->timeTable, self->usec);
     Location location = TimeTableTick2Location(self->sequence->timeTable, tick);
 
-    PlayerScanEvents(self, tick, prevTick);
-    PlayerUpdateClock(self, tick, prevTick, self->usec, location);
+    PlayerScanEvents(self, prevTick, tick);
+    PlayerUpdateClock(self, tick, self->usec, location);
 
     if (TimeTableLength(self->sequence->timeTable) <= tick) {
         PlayerTriggerEvent(self, PlayerEventReachEnd);
     }
 }
 
-static void PlayerScanEvents(Player *self, int32_t tick, int32_t prevTick)
+static void PlayerScanEvents(Player *self, int32_t prevTick, int32_t tick)
 {
-    // TODO
+    if (self->playing && prevTick < tick) {
+        PlayerScanNoteOff(self, prevTick, tick);
+
+        int count = NAArrayCount(self->sequence->events);
+        MidiEvent **events = NAArrayGetValues(self->sequence->events);
+        for (; self->index < count; ++self->index) {
+            MidiEvent *event = events[self->index];
+            if (prevTick <= event->tick && event->tick < tick) {
+                switch (event->type) {
+                case MidiEventTypeNote:
+                    PlayerSendNoteOn(self, (NoteEvent *)event);
+                    break;
+                case MidiEventTypeVoice:
+                    MixerSendVoice(self->mixer, (VoiceEvent *)event);
+                    break;
+                case MidiEventTypeVolume:
+                    MixerSendVolume(self->mixer, (VolumeEvent *)event);
+                    break;
+                case MidiEventTypePan:
+                    MixerSendPan(self->mixer, (PanEvent *)event);
+                    break;
+                case MidiEventTypeChorus:
+                    MixerSendChorus(self->mixer, (ChorusEvent *)event);
+                    break;
+                case MidiEventTypeReverb:
+                    MixerSendReverb(self->mixer, (ReverbEvent *)event);
+                    break;
+                default:
+                    break;
+                }
+            }
+            else if (tick <= event->tick) {
+                break;
+            }
+        }
+    }
+}
+
+static void PlayerNotifySendNoteOn(Player *self, Observer *observer, va_list argList)
+{
+    observer->callbacks->onSendNoteOn(observer->receiver, va_arg(argList, NoteEvent *));
+}
+
+static void PlayerNotifySendNoteOff(Player *self, Observer *observer, va_list argList)
+{
+    observer->callbacks->onSendNoteOff(observer->receiver, va_arg(argList, NoteEvent *));
 }
 
 static void PlayerSendNoteOn(Player *self, NoteEvent *event)
 {
-    // TODO
+    MixerSendNoteOn(self->mixer, event);
+    NASetAdd(self->playingNoteEvents, event);
+    NAArrayTraverseWithContext(self->observers, self, PlayerNotifySendNoteOn, event);
 }
 
-static void PlayerSendNoteOff(Player *self, NoteEvent *event)
+static void PlayerScanNoteOff(Player *self, int prevTick, int tick)
 {
-    // TODO
+    uint8_t iteratorBuffer[NASetIteratorSize];
+    NAIterator *iterator = NASetGetIterator(self->playingNoteEvents, iteratorBuffer);
+    while (iterator->hasNext(iterator)) {
+        NoteEvent *event = iterator->next(iterator);
+        int offTick = event->tick + event->gatetime;
+        if (prevTick <= offTick && offTick < tick) {
+            MixerSendNoteOff(self->mixer, event);
+            NAArrayTraverseWithContext(self->observers, self, PlayerNotifySendNoteOff, event);
+            iterator->remove(iterator);
+        }
+    }
 }
 
-static void PlayerScanNoteOff(Player *self, int tickFrom, int tickTo)
+static void PlayerSendAllNoteOff(Player *self)
 {
-    // TODO
-}
-
-static void PlayerSendAllNoteOff()
-{
-    // TODO
+    uint8_t iteratorBuffer[NASetIteratorSize];
+    NAIterator *iterator = NASetGetIterator(self->playingNoteEvents, iteratorBuffer);
+    while (iterator->hasNext(iterator)) {
+        NoteEvent *event = iterator->next(iterator);
+        MixerSendNoteOff(self->mixer, event);
+        NAArrayTraverseWithContext(self->observers, self, PlayerNotifySendNoteOff, event);
+        iterator->remove(iterator);
+    }
 }
 
 static int64_t currentMicroSec()
