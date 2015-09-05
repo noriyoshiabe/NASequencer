@@ -48,11 +48,6 @@ void NAMidiDestroy(NAMidi *self)
     free(self);
 }
 
-static int NAMidiObserverFindComparator(const void *receiver, const void *observer)
-{
-    return receiver - ((Observer *)observer)->receiver;
-}
-
 void NAMidiAddObserver(NAMidi *self, void *receiver, NAMidiObserverCallbacks *callbacks)
 {
     Observer *observer = malloc(sizeof(Observer));
@@ -61,10 +56,16 @@ void NAMidiAddObserver(NAMidi *self, void *receiver, NAMidiObserverCallbacks *ca
     NAArrayAppend(self->observers, observer);
 }
 
+static int NAMidiObserverFindComparator(const void *receiver, const void *observer)
+{
+    return receiver - ((Observer *)observer)->receiver;
+}
+
 void NAMidiRemoveObserver(NAMidi *self, void *receiver)
 {
     int index = NAArrayFindFirstIndex(self->observers, receiver, NAMidiObserverFindComparator);
-    NAArrayRemoveAtIndex(self->observers, index);
+    NAArrayApplyAt(self->observers, index, free);
+    NAArrayRemoveAt(self->observers, index);
 }
 
 static void NAMidiNotifyParseFinish(NAMidi *self, Observer *observer, va_list argList)

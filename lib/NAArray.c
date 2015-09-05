@@ -7,6 +7,7 @@
 #undef NAArrayGetValues
 #undef NAArrayTraverse
 #undef NAArrayTraverseWithContext
+#undef NAArrayApplyAt
 
 struct _NAArray {
     int capacity;
@@ -65,6 +66,11 @@ void **NAArrayGetValues(NAArray *self)
     return (void **)self->values;
 }
 
+void *NAArrayGetValueAt(NAArray *self, int index)
+{
+    return (void *)self->values[index];
+}
+
 void NAArrayAppend(NAArray *self, void *value)
 {
     if (self->capacity <= self->count + 1) {
@@ -91,7 +97,7 @@ bool NAArrayInsertAt(NAArray *self, int index, void *value)
     return true;
 }
 
-bool NAArrayRemoveAtIndex(NAArray *self, int index)
+bool NAArrayRemoveAt(NAArray *self, int index)
 {
     if (self->count <= index) {
         return false;
@@ -151,6 +157,11 @@ void NAArrayTraverseWithContext(NAArray *self, void *context, void (*function)(v
     }
 
     va_end(argList);
+}
+
+void NAArrayApplyAt(NAArray *self, int index, void (*function)(void *))
+{
+    function((void *)self->values[index]);
 }
 
 static bool NAArrayIteratorHasNext(NAIterator *_iterator)

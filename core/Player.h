@@ -16,16 +16,16 @@ typedef enum {
 
 typedef struct _Player Player;
 
-typedef struct _PlayerCallbacks {
+typedef struct _PlayerObserverCallbacks {
     void (*onNotifyClock)(void *receiver, int tick, int prevTick, int64_t usec, Location location);
     void (*onNotifyEvent)(void *receiver, PlayerEvent event);
     void (*onSendNoteOn)(void *receiver, NoteEvent *event);
     void (*onSendNoteOff)(void *receiver, NoteEvent *event);
-} PlayerCallbacks;
+} PlayerObserverCallbacks;
 
 extern Player *PlayerCreate(Mixer *mixer);
 extern void PlayerDestroy(Player *self);
-extern void PlayerAddObserver(Player *self, void *receiver, PlayerCallbacks *callbacks);
+extern void PlayerAddObserver(Player *self, void *receiver, PlayerObserverCallbacks *callbacks);
 extern void PlayerRemoveObserver(Player *self, void *receiver);
 
 extern void PlayerSetSequence(Player *self, Sequence *sequence);
