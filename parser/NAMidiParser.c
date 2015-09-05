@@ -571,7 +571,7 @@ static bool NAMidiParserBuildSequence(NAMidiParser *self)
 
     bool success = NAMidiParserParseBuildContext(self, self->context, "Song");
     self->result->sequence = self->context->sequence;
-#if 1
+#if 0
     SequenceDump(self->result->sequence, 0);
 #endif
     return success;

@@ -11,11 +11,10 @@ struct _FSWatcher {
     FSWatcherCallbacks *callbacks;
     void *receiver;
     pthread_t thread;
-    CFMutableSetRef files;
+    CFMutableDictionaryRef files;
     CFMutableSetRef dirPaths;
     FSEventStreamRef stream;
     CFRunLoopRef runloop;
-    struct tm lastModified;;
 };
 
 FSWatcher *FSWatcherCreate(FSWatcherCallbacks *callbacks, void *receiver)
@@ -24,7 +23,7 @@ FSWatcher *FSWatcherCreate(FSWatcherCallbacks *callbacks, void *receiver)
     self->callbacks = callbacks;
     self->receiver = receiver;
 
-    self->files = CFSetCreateMutable(NULL, 0, &kCFTypeSetCallBacks);
+    self->files = CFDictionaryCreateMutable(NULL, 0, &kCFTypeDictionaryKeyCallBacks, NULL);
     self->dirPaths = CFSetCreateMutable(NULL, 0, &kCFTypeSetCallBacks);
 
     return self;
@@ -33,6 +32,13 @@ FSWatcher *FSWatcherCreate(FSWatcherCallbacks *callbacks, void *receiver)
 void FSWatcherDestroy(FSWatcher *self)
 {
     self->receiver = NULL;
+
+    CFIndex count = CFDictionaryGetCount(self->files);
+    struct tm *lastModifiedTimes[count];
+    CFDictionaryGetKeysAndValues(self->files, NULL, (const void **)lastModifiedTimes);
+    for (int i = 0; i < count; ++i) {
+        free(lastModifiedTimes[i]);
+    }
 
     CFRelease(self->files);
     CFRelease(self->dirPaths);
@@ -68,29 +74,30 @@ static struct tm *getModifiedTime(const char *filepath)
 
 static void onFSChanged(FSWatcher *self)
 {
-    CFIndex count = CFSetGetCount(self->files);
-    CFTypeRef *values = (CFTypeRef *)malloc(count * sizeof(CFTypeRef));
-    CFSetGetValues(self->files, (const void **)values);
+    CFIndex count = CFDictionaryGetCount(self->files);
+    CFStringRef filepaths[count];
+    struct tm *lastModifiedTimes[count];
+    CFDictionaryGetKeysAndValues(self->files, (const void **)filepaths, (const void **)lastModifiedTimes);
 
     for (int i = 0; i < count; ++i) {
-        CFIndex length = CFStringGetLength(values[i]) + 1;
-        char *cstring = alloca(length);
-        CFStringGetCString(values[i], cstring, length, kCFStringEncodingUTF8);
+        CFIndex length = CFStringGetLength(filepaths[i]) + 1;
+        char cstring[length];
+        CFStringGetCString(filepaths[i], cstring, length, kCFStringEncodingUTF8);
 
         struct tm *clock = getModifiedTime(cstring);
         if (!clock) {
             onError(self);
         }
         else {
-            if (memcmp(clock, &self->lastModified, sizeof(struct tm))) {
-                memcpy(&self->lastModified, clock, sizeof(struct tm));
+            struct tm *lastModifiedTime = (struct tm *)CFDictionaryGetValue(self->files, filepaths[i]);
+
+            if (memcmp(clock, lastModifiedTime, offsetof(struct tm, tm_isdst))) {
+                memcpy(lastModifiedTime, clock, sizeof(struct tm));
                 onFileChanged(self, cstring);
                 break;
             }
         }
     }
-
-    free(values);
 }
 
 static void fsCallback(ConstFSEventStreamRef streamRef, void *_self, size_t numEvents,
@@ -117,10 +124,12 @@ void FSWatcherRegisterFilepath(FSWatcher *self, const char *filepath)
         onError(self);
     }
     else {
-        memcpy(&self->lastModified, clock, sizeof(struct tm));
+        struct tm* _clock = malloc(sizeof(struct tm));
+        memcpy(_clock, clock, sizeof(struct tm));
+
         CFStringRef path = CFStringCreateWithCString(NULL, actualpath, kCFStringEncodingUTF8);
         CFStringRef dirPath = CFStringCreateWithCString(NULL, dirname(actualpath), kCFStringEncodingUTF8);
-        CFSetAddValue(self->files, path);
+        CFDictionarySetValue(self->files, path, _clock);
         CFSetAddValue(self->dirPaths, dirPath);
         CFRelease(path);
         CFRelease(dirPath);
