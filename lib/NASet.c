@@ -26,7 +26,8 @@ typedef struct _NASetIterator {
     NAIterator super;
     NASet *set;
     int bucketIndex;
-    Entry *entry;
+    Entry *current;
+    Entry *next;
 } NASetIterator;
 
 const int NASetIteratorSize = sizeof(NASetIterator);
@@ -195,25 +196,33 @@ void NASetTraverse(NASet *self, void (*function)(void *))
 static bool NASetIteratorHasNext(NAIterator *_iterator)
 {
     NASetIterator *iterator = (NASetIterator *)_iterator;
-    return NULL != iterator->entry;
+    return NULL != iterator->next;
 }
 
 static void *NASetIteratorNext(NAIterator *_iterator)
 {
     NASetIterator *iterator = (NASetIterator *)_iterator;
-    void *ret = iterator->entry->value;
+    iterator->current = iterator->next;
 
-    iterator->entry = iterator->entry->next;
-    if (!iterator->entry) {
+    iterator->next = iterator->next->next;
+    if (!iterator->next) {
         for (iterator->bucketIndex += 1; iterator->bucketIndex < iterator->set->size; ++iterator->bucketIndex) {
-            iterator->entry = iterator->set->buckets[iterator->bucketIndex];
-            if (iterator->entry) {
+            iterator->next = iterator->set->buckets[iterator->bucketIndex];
+            if (iterator->next) {
                 break;
             }
         }
     }
 
-    return ret;
+    return iterator->current->value;
+}
+
+static void NASetIteratorRemove(NAIterator *_iterator)
+{
+    NASetIterator *iterator = (NASetIterator *)_iterator;
+    if (iterator->current) {
+        NASetRemove(iterator->set, iterator->current->value);
+    }
 }
 
 NAIterator *NASetGetIterator(NASet *self, void *buffer)
@@ -221,11 +230,13 @@ NAIterator *NASetGetIterator(NASet *self, void *buffer)
     NASetIterator *iterator = buffer;
     iterator->super.hasNext = NASetIteratorHasNext;
     iterator->super.next = NASetIteratorNext;
+    iterator->super.remove = NASetIteratorRemove;
     iterator->set = self;
+    iterator->current = NULL;
 
     for (iterator->bucketIndex = 0; iterator->bucketIndex < self->size; ++iterator->bucketIndex) {
-        iterator->entry = self->buckets[iterator->bucketIndex];
-        if (iterator->entry) {
+        iterator->next = self->buckets[iterator->bucketIndex];
+        if (iterator->next) {
             break;
         }
     }

@@ -176,11 +176,22 @@ static void *NAArrayIteratorNext(NAIterator *_iterator)
     return (void *)iterator->array->values[iterator->index++];
 }
 
+static void NAArrayIteratorRemove(NAIterator *_iterator)
+{
+    NAArrayIterator *iterator = (NAArrayIterator *)_iterator;
+    int targetIndex = iterator->index - 1;
+    if (0 <= targetIndex && targetIndex < iterator->array->count) {
+        --iterator->index;
+        NAArrayRemoveAt(iterator->array, iterator->index);
+    }
+}
+
 NAIterator *NAArrayGetIterator(NAArray *self, void *buffer)
 {
     NAArrayIterator *iterator = buffer;
     iterator->super.hasNext = NAArrayIteratorHasNext;
     iterator->super.next = NAArrayIteratorNext;
+    iterator->super.remove = NAArrayIteratorRemove;
     iterator->array = self;
     iterator->index = 0;
 
