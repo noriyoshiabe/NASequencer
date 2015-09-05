@@ -5,6 +5,8 @@
 #include <stdlib.h>
 
 #undef NAArrayGetValues
+#undef NAArrayTraverse
+#undef NAArrayTraverseWithContext
 
 struct _NAArray {
     int capacity;
@@ -104,7 +106,29 @@ void NAArraySort(NAArray *self, int (*comparator)(const void *, const void *))
     qsort(self->values, self->count, sizeof(intptr_t), comparator);
 }
 
-int NAArrayFindIndex(NAArray *self, const void *key, int (*comparator)(const void *, const void *))
+int NAArrayFindFirstIndex(NAArray *self, const void *key, int (*comparator)(const void *, const void *))
+{
+    for (int i = 0; i < self->count; ++i) {
+        if (0 == comparator(key, self->values[i])) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+int NAArrayFindLastIndex(NAArray *self, const void *key, int (*comparator)(const void *, const void *))
+{
+    for (int i = self->count - 1; 0 <= i; --i) {
+        if (0 == comparator(key, self->values[i])) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+int NAArrayBSearchIndex(NAArray *self, const void *key, int (*comparator)(const void *, const void *))
 {
     intptr_t *result = bsearch(key, self->values, self->count, sizeof(intptr_t), comparator);
     return NULL != result ? (int)(result - self->values) : -1;
@@ -115,6 +139,18 @@ void NAArrayTraverse(NAArray *self, void (*function)(void *))
     for (int i = 0; i < self->count; ++i) {
         function((void *)self->values[i]);
     }
+}
+
+void NAArrayTraverseWithContext(NAArray *self, void *context, void (*function)(void *, void *, va_list), ...)
+{
+    va_list argList;
+    va_start(argList, function);
+
+    for (int i = 0; i < self->count; ++i) {
+        function(context, (void *)self->values[i], argList);
+    }
+
+    va_end(argList);
 }
 
 static bool NAArrayIteratorHasNext(NAIterator *_iterator)

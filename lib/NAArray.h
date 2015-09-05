@@ -16,11 +16,16 @@ extern void NAArrayAppend(NAArray *self, void *value);
 extern bool NAArrayInsertAt(NAArray *self, int index, void *value);
 extern bool NAArrayRemoveAtIndex(NAArray *self, int index);
 extern void NAArraySort(NAArray *self, int (*comparator)(const void *, const void *));
-extern int NAArrayFindIndex(NAArray *self, const void *key, int (*comparator)(const void *, const void *));
+extern int NAArrayFindFirstIndex(NAArray *self, const void *key, int (*comparator)(const void *, const void *));
+extern int NAArrayFindLastIndex(NAArray *self, const void *key, int (*comparator)(const void *, const void *));
+extern int NAArrayBSearchIndex(NAArray *self, const void *key, int (*comparator)(const void *, const void *));
 extern void NAArrayTraverse(NAArray *self, void (*function)(void *));
+extern void NAArrayTraverseWithContext(NAArray *self, void *context, void (*function)(void *, void *, va_list), ...);
 extern NAIterator *NAArrayGetIterator(NAArray *self, void *buffer);
 extern void NAArrayDescription(void *self, FILE *stream);
 
 extern const int NAArrayIteratorSize;
 
 #define NAArrayGetValues(self) (void *)NAArrayGetValues(self)
+#define NAArrayTraverse(self, function) NAArrayTraverse(self, (void *)function)
+#define NAArrayTraverseWithContext(self, context, function, ...) NAArrayTraverseWithContext(self, context, (void *)function, __VA_ARGS__)

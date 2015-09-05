@@ -74,7 +74,7 @@ bool TimeTableAddTimeSign(TimeTable *self, int32_t tick, TimeSign timeSign)
     int count = NAArrayCount(self->timeSignRecords);
     TimeSignRecord **records = NAArrayGetValues(self->timeSignRecords);
 
-    int i = NAArrayFindIndex(self->timeSignRecords, &tick, TimeSignRecordFindByTickComparator);
+    int i = NAArrayBSearchIndex(self->timeSignRecords, &tick, TimeSignRecordFindByTickComparator);
     if (0 == memcmp(&records[i]->timeSign, &timeSign, sizeof(TimeSign))) {
         return true;
     }
@@ -113,7 +113,7 @@ bool TimeTableAddTempo(TimeTable *self, int32_t tick, float tempo)
     int count = NAArrayCount(self->tempoRecords);
     TempoRecord **records = NAArrayGetValues(self->tempoRecords);
 
-    int i = NAArrayFindIndex(self->tempoRecords, &tick, TempoRecordFindByTickComparator);
+    int i = NAArrayBSearchIndex(self->tempoRecords, &tick, TempoRecordFindByTickComparator);
     if (records[i]->tempo == tempo) {
         return true;
     }
@@ -172,7 +172,7 @@ int32_t TimeTableTickByMeasure(TimeTable *self, int32_t measure)
 {
     int count = NAArrayCount(self->timeSignRecords);
     TimeSignRecord **records = NAArrayGetValues(self->timeSignRecords);
-    int i = NAArrayFindIndex(self->timeSignRecords, &measure, TimeSignRecordFindByMeasureComparator);
+    int i = NAArrayBSearchIndex(self->timeSignRecords, &measure, TimeSignRecordFindByMeasureComparator);
 
     return records[i]->tickStart + records[i]->measureLength * (measure - records[i]->measureStart);
 }
@@ -181,7 +181,7 @@ int32_t TimeTableTickByLocation(TimeTable *self, Location location)
 {
     int count = NAArrayCount(self->timeSignRecords);
     TimeSignRecord **records = NAArrayGetValues(self->timeSignRecords);
-    int i = NAArrayFindIndex(self->timeSignRecords, &location.m, TimeSignRecordFindByMeasureComparator);
+    int i = NAArrayBSearchIndex(self->timeSignRecords, &location.m, TimeSignRecordFindByMeasureComparator);
 
     int32_t ret = records[i]->tickStart + records[i]->measureLength * (location.m - records[i]->measureStart);
     ret += (location.b - 1) * self->resolution * 4 / records[i]->timeSign.denominator * records[i]->timeSign.numerator;
@@ -193,7 +193,7 @@ TimeSign TimeTableTimeSignOnTick(TimeTable *self, int32_t tick)
 {
     int count = NAArrayCount(self->timeSignRecords);
     TimeSignRecord **records = NAArrayGetValues(self->timeSignRecords);
-    int i = NAArrayFindIndex(self->timeSignRecords, &tick, TimeSignRecordFindByTickComparator);
+    int i = NAArrayBSearchIndex(self->timeSignRecords, &tick, TimeSignRecordFindByTickComparator);
     return records[i]->timeSign;
 }
 
@@ -201,7 +201,7 @@ float TimeTableTempoOnTick(TimeTable *self, int32_t tick)
 {
     int count = NAArrayCount(self->tempoRecords);
     TempoRecord **records = NAArrayGetValues(self->tempoRecords);
-    int i = NAArrayFindIndex(self->tempoRecords, &tick, TempoRecordFindByTickComparator);
+    int i = NAArrayBSearchIndex(self->tempoRecords, &tick, TempoRecordFindByTickComparator);
     return records[i]->tempo;
 }
 
@@ -209,7 +209,7 @@ Location TimeTableTick2Location(TimeTable *self, int32_t tick)
 {
     int count = NAArrayCount(self->timeSignRecords);
     TimeSignRecord **records = NAArrayGetValues(self->timeSignRecords);
-    int i = NAArrayFindIndex(self->timeSignRecords, &tick, TimeSignRecordFindByTickComparator);
+    int i = NAArrayBSearchIndex(self->timeSignRecords, &tick, TimeSignRecordFindByTickComparator);
 
     int32_t tickFromPreviousTimeSign = (tick - records[i]->tickStart);
     int32_t tickPerBeat = self->resolution * 4 / records[i]->timeSign.denominator;
@@ -226,7 +226,7 @@ int64_t TimeTableTick2MicroSec(TimeTable *self, int32_t tick)
 {
     int count = NAArrayCount(self->tempoRecords);
     TempoRecord **records = NAArrayGetValues(self->tempoRecords);
-    int i = NAArrayFindIndex(self->tempoRecords, &tick, TempoRecordFindByTickComparator);
+    int i = NAArrayBSearchIndex(self->tempoRecords, &tick, TempoRecordFindByTickComparator);
 
     double usecPerTick = 60 * 1000 * 1000 / records[i]->tempo / self->resolution;
     return round(records[i]->usecStart + (tick - records[i]->tickStart) * usecPerTick);
@@ -236,7 +236,7 @@ int32_t TimeTableMicroSec2Tick(TimeTable *self, int64_t usec)
 {
     int count = NAArrayCount(self->tempoRecords);
     TempoRecord **records = NAArrayGetValues(self->tempoRecords);
-    int i = NAArrayFindIndex(self->tempoRecords, &usec, TempoRecordFindByUsecComparator);
+    int i = NAArrayBSearchIndex(self->tempoRecords, &usec, TempoRecordFindByUsecComparator);
 
     double usecPerTick = 60 * 1000 * 1000 / records[i]->tempo / self->resolution;
     return round(records[i]->tickStart + usec / usecPerTick);

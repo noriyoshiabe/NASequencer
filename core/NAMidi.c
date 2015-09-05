@@ -12,7 +12,7 @@ typedef struct Observer {
 } Observer;
 
 struct _NAMidi {
-    NAMap *observers;
+    NAArray *observers;
     NAArray *filepaths;
     Sequence *sequence;
     FSWatcher *watcher;
@@ -30,7 +30,7 @@ static void NAMidiStopFileWatch(NAMidi *self);
 NAMidi *NAMidiCreate()
 {
     NAMidi *self = calloc(1, sizeof(NAMidi));
-    self->observers = NAMapCreate(NULL, NULL, NULL);
+    self->observers = NAArrayCreate(4, NULL);
     self->mixer = MixerCreate();
     self->player = PlayerCreate(self->mixer);
     return self;
@@ -43,42 +43,38 @@ void NAMidiDestroy(NAMidi *self)
 
     NAMidiSetFilePaths(self, NULL);
     NAMidiStopFileWatch(self);
-    NAMapDestroy(self->observers);
+    NAArrayTraverse(self->observers, free);
+    NAArrayDestroy(self->observers);
     free(self);
+}
+
+static int NAMidiObserverFindComparator(const void *receiver, const void *observer)
+{
+    return receiver - ((Observer *)observer)->receiver;
 }
 
 void NAMidiAddObserver(NAMidi *self, void *receiver, NAMidiObserverCallbacks *callbacks)
 {
-    NAMapPut(self->observers, receiver, callbacks);
+    Observer *observer = malloc(sizeof(Observer));
+    observer->receiver = receiver;
+    observer->callbacks = callbacks;
+    NAArrayAppend(self->observers, observer);
 }
 
 void NAMidiRemoveObserver(NAMidi *self, void *receiver)
 {
-    NAMapRemove(self->observers, receiver);
+    int index = NAArrayFindFirstIndex(self->observers, receiver, NAMidiObserverFindComparator);
+    NAArrayRemoveAtIndex(self->observers, index);
 }
 
-static void NAMidiNotifyParseFinish(NAMidi *self, Sequence *sequence)
+static void NAMidiNotifyParseFinish(NAMidi *self, Observer *observer, va_list argList)
 {
-    uint8_t mapIteratorBuffer[NAMapIteratorSize];
-    NAIterator *iterator = NAMapGetIterator(self->observers, mapIteratorBuffer);
-    while (iterator->hasNext(iterator)) {
-        NAMapEntry *entry = iterator->next(iterator);
-        void *receiver = entry->key;
-        NAMidiObserverCallbacks *callbacks = entry->value;
-        callbacks->onParseFinish(receiver, self->sequence);
-    }
+    observer->callbacks->onParseFinish(observer->receiver, va_arg(argList, Sequence *));
 }
 
-static void NAMidiNotifyParseError(NAMidi *self, ParseError *error)
+static void NAMidiNotifyParseError(NAMidi *self, Observer *observer, va_list argList)
 {
-    uint8_t mapIteratorBuffer[NAMapIteratorSize];
-    NAIterator *iterator = NAMapGetIterator(self->observers, mapIteratorBuffer);
-    while (iterator->hasNext(iterator)) {
-        NAMapEntry *entry = iterator->next(iterator);
-        void *receiver = entry->key;
-        NAMidiObserverCallbacks *callbacks = entry->value;
-        callbacks->onParseError(receiver, error);
-    }
+    observer->callbacks->onParseError(observer->receiver, va_arg(argList, ParseError *));
 }
 
 static void NAMidiSetFilePaths(NAMidi *self, NAArray *filepaths)
@@ -125,7 +121,7 @@ void NAMidiParse(NAMidi *self, const char *filepath)
     ParseResult result = {};
 
     if (!ParserParseFile(filepath, &result)) {
-        NAMidiNotifyParseError(self, &result.error);
+        NAArrayTraverseWithContext(self->observers, self, NAMidiNotifyParseError, &result.error);
     }
     else {
         if (self->sequence) {
@@ -134,7 +130,7 @@ void NAMidiParse(NAMidi *self, const char *filepath)
 
         self->sequence = result.sequence;
 
-        NAMidiNotifyParseFinish(self, self->sequence);
+        NAArrayTraverseWithContext(self->observers, self, NAMidiNotifyParseFinish, self->sequence);
     }
 
     NAMidiSetFilePaths(self, result.filepaths);
