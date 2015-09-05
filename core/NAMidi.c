@@ -17,6 +17,9 @@ struct _NAMidi {
     Sequence *sequence;
     FSWatcher *watcher;
     bool watchEnable;
+
+    Mixer *mixer;
+    Player *player;
 };
 
 static FSWatcherCallbacks NAMidiFSWatcherCallbacks;
@@ -28,11 +31,16 @@ NAMidi *NAMidiCreate()
 {
     NAMidi *self = calloc(1, sizeof(NAMidi));
     self->observers = NAMapCreate(NULL, NULL, NULL);
+    self->mixer = MixerCreate();
+    self->player = PlayerCreate(self->mixer);
     return self;
 }
 
 void NAMidiDestroy(NAMidi *self)
 {
+    PlayerDestroy(self->player);
+    MixerDestroy(self->mixer);
+
     NAMidiSetFilePaths(self, NULL);
     NAMidiStopFileWatch(self);
     NAMapDestroy(self->observers);
@@ -148,22 +156,18 @@ void NAMidiSetWatchEnable(NAMidi *self, bool watchEnable)
     self->watchEnable = watchEnable;
 }
 
-Player *NAMidiGetPlayer(NAMidi *self)
-{
-    printf("called %s\n", __FUNCTION__);
-    return NULL;
-}
-
 Mixer *NAMidiGetMixer(NAMidi *self)
 {
-    printf("called %s\n", __FUNCTION__);
-    return NULL;
+    return self->mixer;
+}
+
+Player *NAMidiGetPlayer(NAMidi *self)
+{
+    return self->player;
 }
 
 static void NAMidiFSWatcherOnFileChanged(void *receiver, const char *changedFile)
 {
-    printf("%s: changedFile=%s\n", __FUNCTION__, changedFile);
-    
     NAMidi *self = receiver;
     char **filepaths = NAArrayGetValues(self->filepaths);
     NAMidiParse(self, filepaths[0]);

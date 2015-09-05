@@ -2,10 +2,8 @@
 
 #include "Sequence.h"
 #include "Parser.h"
-
-// TODO move type definition
-typedef struct _Player Player;
-typedef struct _Mixer Mixer;
+#include "Mixer.h"
+#include "Player.h"
 
 typedef struct _NAMidi NAMidi;
 
