@@ -15,6 +15,7 @@ set(SOURCES
   NAByteBuffer.c
   NAStack.c
   NAUtil.c
+  NAMessageQ.c
 )
 
 add_library(${PROJECT_NAME} ${SOURCES})
