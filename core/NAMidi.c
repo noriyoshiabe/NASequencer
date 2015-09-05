@@ -1,4 +1,5 @@
 #include "NAMidi.h"
+#include "FSWatcher.h"
 #include "NAArray.h"
 #include "NAMap.h"
 
@@ -14,8 +15,13 @@ struct _NAMidi {
     NAMap *observers;
     NAArray *filepaths;
     Sequence *sequence;
+    FSWatcher *watcher;
+    bool watchEnable;
 };
 
+static FSWatcherCallbacks NAMidiFSWatcherCallbacks;
+
+static void NAMidiSetFilePaths(NAMidi *self, NAArray *filepaths);
 static void NAMidiStopFileWatch(NAMidi *self);
 
 NAMidi *NAMidiCreate()
@@ -27,6 +33,7 @@ NAMidi *NAMidiCreate()
 
 void NAMidiDestroy(NAMidi *self)
 {
+    NAMidiSetFilePaths(self, NULL);
     NAMidiStopFileWatch(self);
     NAMapDestroy(self->observers);
     free(self);
@@ -66,29 +73,48 @@ static void NAMidiNotifyParseError(NAMidi *self, ParseError *error)
     }
 }
 
-static void NAMidiStopFileWatch(NAMidi *self)
+static void NAMidiSetFilePaths(NAMidi *self, NAArray *filepaths)
 {
-    // TODO
-    
     if (self->filepaths) {
         NAArrayTraverse(self->filepaths, free);
         NAArrayDestroy(self->filepaths);
-        self->filepaths = NULL;
+    }
+
+    self->filepaths = filepaths;
+}
+
+static void NAMidiStopFileWatch(NAMidi *self)
+{
+    if (self->watcher) {
+        FSWatcherDestroy(self->watcher);
+        self->watcher = NULL;
     }
 }
 
-static void NAMidiStartFileWatch(NAMidi *self, NAArray *filepaths)
+static void NAMidiStartFileWatch(NAMidi *self)
 {
-    self->filepaths = filepaths;
+    if (!self->filepaths) {
+        return;
+    }
 
-    // TODO
+    if (self->watcher) {
+        NAMidiStopFileWatch(self);
+    }
+
+    self->watcher = FSWatcherCreate(&NAMidiFSWatcherCallbacks, self);
+
+    int count = NAArrayCount(self->filepaths);
+    char **values = NAArrayGetValues(self->filepaths);
+    for (int i = 0; i < count; ++i) {
+        FSWatcherRegisterFilepath(self->watcher, values[i]);
+    }
+
+    FSWatcherStart(self->watcher);
 }
 
 void NAMidiParse(NAMidi *self, const char *filepath)
 {
     ParseResult result = {};
-
-    NAMidiStopFileWatch(self);
 
     if (!ParserParseFile(filepath, &result)) {
         NAMidiNotifyParseError(self, &result.error);
@@ -103,7 +129,23 @@ void NAMidiParse(NAMidi *self, const char *filepath)
         NAMidiNotifyParseFinish(self, self->sequence);
     }
 
-    NAMidiStartFileWatch(self, result.filepaths);
+    NAMidiSetFilePaths(self, result.filepaths);
+
+    if (self->watchEnable) {
+        NAMidiStartFileWatch(self);
+    }
+}
+
+void NAMidiSetWatchEnable(NAMidi *self, bool watchEnable)
+{
+    if (!self->watchEnable && watchEnable) {
+        NAMidiStartFileWatch(self);
+    }
+    else if (self->watchEnable && !watchEnable) {
+        NAMidiStopFileWatch(self);
+    }
+
+    self->watchEnable = watchEnable;
 }
 
 Player *NAMidiGetPlayer(NAMidi *self)
@@ -117,3 +159,22 @@ Mixer *NAMidiGetMixer(NAMidi *self)
     printf("called %s\n", __FUNCTION__);
     return NULL;
 }
+
+static void NAMidiFSWatcherOnFileChanged(void *receiver, const char *changedFile)
+{
+    printf("%s: changedFile=%s\n", __FUNCTION__, changedFile);
+    
+    NAMidi *self = receiver;
+    char **filepaths = NAArrayGetValues(self->filepaths);
+    NAMidiParse(self, filepaths[0]);
+}
+
+static void NAMidiFSWatcherOnError(void *receiver, int error, const char *message)
+{
+    printf("%s: message=%s\n", __FUNCTION__, message);
+}
+
+static FSWatcherCallbacks NAMidiFSWatcherCallbacks = {
+    NAMidiFSWatcherOnFileChanged,
+    NAMidiFSWatcherOnError,
+};

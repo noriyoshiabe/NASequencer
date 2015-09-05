@@ -17,4 +17,13 @@ set(SOURCES
   NAMidi.c
 )
 
+if (APPLE)
+  set(SOURCES ${SOURCES} osx/FSWatcher.c)
+  find_library(CORE_SEARVICES CoreServices)
+endif (APPLE)
+
 add_library(${PROJECT_NAME} ${SOURCES})
+
+if (APPLE)
+  target_link_libraries(${PROJECT_NAME} ${CORE_SEARVICES})
+endif (APPLE)

@@ -51,6 +51,7 @@ void CLIRun(CLI *self)
     int historyCount = 0;
 
     if (self->filepath) {
+        NAMidiSetWatchEnable(self->namidi, true);
         NAMidiParse(self->namidi, self->filepath);
     }
 
