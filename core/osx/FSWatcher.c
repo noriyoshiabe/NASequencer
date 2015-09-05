@@ -13,7 +13,6 @@ struct _FSWatcher {
     pthread_t thread;
     CFMutableDictionaryRef files;
     CFMutableSetRef dirPaths;
-    FSEventStreamRef stream;
     CFRunLoopRef runloop;
 };
 
@@ -31,7 +30,8 @@ FSWatcher *FSWatcherCreate(FSWatcherCallbacks *callbacks, void *receiver)
 
 void FSWatcherDestroy(FSWatcher *self)
 {
-    self->receiver = NULL;
+    CFRunLoopStop(self->runloop);
+    pthread_join(self->thread, NULL);
 
     CFIndex count = CFDictionaryGetCount(self->files);
     struct tm *lastModifiedTimes[count];
@@ -43,21 +43,17 @@ void FSWatcherDestroy(FSWatcher *self)
     CFRelease(self->files);
     CFRelease(self->dirPaths);
 
-    CFRunLoopStop(self->runloop);
+    free(self);
 }
 
 static void onFileChanged(FSWatcher *self, const char *changedFile)
 {
-    if (self->receiver) {
-        self->callbacks->onFileChanged(self->receiver, changedFile);
-    }
+    self->callbacks->onFileChanged(self->receiver, changedFile);
 }
 
 static void onError(FSWatcher *self)
 {
-    if (self->receiver) {
-        self->callbacks->onError(self->receiver, errno, strerror(errno));
-    }
+    self->callbacks->onError(self->receiver, errno, strerror(errno));
 }
 
 static struct tm *getModifiedTime(const char *filepath)
@@ -148,22 +144,20 @@ static void *run(void *_self)
 
     FSEventStreamContext context = {0, self, NULL, NULL, NULL};
  
-    self->stream = FSEventStreamCreate(kCFAllocatorDefault, fsCallback, &context,
+    FSEventStreamRef stream = FSEventStreamCreate(kCFAllocatorDefault, fsCallback, &context,
             _paths, kFSEventStreamEventIdSinceNow, 0, kFSEventStreamCreateFlagNone);
 
     CFRelease(_paths);
 
     self->runloop = CFRunLoopGetCurrent();
-    FSEventStreamScheduleWithRunLoop(self->stream, self->runloop, kCFRunLoopDefaultMode);
-    FSEventStreamStart(self->stream);
+    FSEventStreamScheduleWithRunLoop(stream, self->runloop, kCFRunLoopDefaultMode);
+    FSEventStreamStart(stream);
 
     CFRunLoopRun();
 
-    FSEventStreamStop(self->stream);
-    FSEventStreamInvalidate(self->stream);
-    FSEventStreamRelease(self->stream);
-
-    free(self);
+    FSEventStreamStop(stream);
+    FSEventStreamInvalidate(stream);
+    FSEventStreamRelease(stream);
 
     return NULL;
 }
