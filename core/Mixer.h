@@ -8,22 +8,30 @@
 #include <stdbool.h>
 
 typedef struct _Mixer Mixer;
+typedef struct _MixerChannel MixerChannel;
 
-typedef struct _Track {
-    int channel;
-    MidiSource *source;
-    PresetList preset;
-    Level level;
-    int volume;
-    int pan;
-    int chorusSend;
-    int reverbSend;
-    bool mute;
-    bool solo;
-} Track;
+extern int MixerChannelGetNumber(MixerChannel *self);
+extern int MixerChannelGetPresetCount(MixerChannel *self);
+extern PresetInfo **MixerChannelGetPresetInfos(MixerChannel *self);
+extern PresetInfo *MixerChannelGetPresetInfo(MixerChannel *self);
+extern Level MixerChannelGetLevel(MixerChannel *self);
+extern int MixerChannelGetVolume(MixerChannel *self);
+extern int MixerChannelGetPan(MixerChannel *self);
+extern int MixerChannelGetChorusSend(MixerChannel *self);
+extern int MixerChannelGetReverbSend(MixerChannel *self);
+extern bool MixerChannelGetMute(MixerChannel *self);
+extern bool MixerChannelGetSolo(MixerChannel *self);
+
+extern void MixerChannelSetPresetInfo(MixerChannel *self, PresetInfo *presetInfo);
+extern void MixerChannelSetVolume(MixerChannel *self, int value);
+extern void MixerChannelSetPan(MixerChannel *self, int value);
+extern void MixerChannelSetChorusSend(MixerChannel *self, int value);
+extern void MixerChannelSetReverbSend(MixerChannel *self, int value);
+extern void MixerChannelSetMute(MixerChannel *self, bool mute);
+extern void MixerChannelSetSolo(MixerChannel *self, bool solo);
 
 typedef struct _MixerObserverCallbacks {
-    void (*onTrackChange)(void *receiver, int trackNo);
+    void (*onChannelStatusChange)(void *receiver, MixerChannel *channel);
     void (*onAvailableMidisourceChange)(void *receiver, NAArray *midiSources);
     void (*onLevelUpdate)(void *receiver);
 } MixerObserverCallbacks;
@@ -42,4 +50,4 @@ extern void MixerSendPan(Mixer *self, PanEvent *event);
 extern void MixerSendChorus(Mixer *self, ChorusEvent *event);
 extern void MixerSendReverb(Mixer *self, ReverbEvent *event);
 
-extern Track *MixerGetTracks(Mixer *self);
+extern NAArray *MixerGetChannels(Mixer *self);

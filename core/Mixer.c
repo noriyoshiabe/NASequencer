@@ -7,9 +7,16 @@
 #include <string.h>
 #include <limits.h>
 
+struct _MixerChannel {
+    int number;
+    MidiSource *source;
+    bool active;
+    Mixer *mixer;
+};
+
 struct _Mixer {
     NAArray *observers;
-    Track tracks[16];
+    NAArray *channels;
     Level level;
 };
 
@@ -34,19 +41,14 @@ Mixer *MixerCreate()
     AudioOut *audioOut = AudioOutSharedInstance();
     MidiSource *source = (MidiSource *)SynthesizerCreate(soundFont, AudioOutGetSampleRate(audioOut));
 
-    PresetList presetList[source->getPresetCount(source)];
-    source->getPresetList(source, presetList);
-
+    self->channels = NAArrayCreate(16, NULL);
     for (int i = 0; i < 16; ++i) {
-        int channel = i + 1;
-        self->tracks[i].channel = channel;
-        self->tracks[i].source = source;
-        self->tracks[i].preset = presetList[0];
-        self->tracks[i].level = source->getChannelLevel(source, channel);
-        self->tracks[i].volume = source->getVolume(source, channel);
-        self->tracks[i].pan = source->getPan(source, channel);
-        self->tracks[i].chorusSend = source->getChorusSend(source, channel);
-        self->tracks[i].reverbSend = source->getReverbSend(source, channel);
+        MixerChannel *channel = calloc(1, sizeof(MixerChannel));
+        channel->number = i + 1;
+        channel->source = source;
+        channel->active = true;
+        channel->mixer = self;
+        NAArrayAppend(self->channels, channel);
     }
 
     AudioOutRegisterCallback(AudioOutSharedInstance(), MixerAudioCallback, self);
@@ -58,6 +60,8 @@ void MixerDestroy(Mixer *self)
 {
     NAArrayTraverse(self->observers, free);
     NAArrayDestroy(self->observers);
+    NAArrayTraverse(self->channels, free);
+    NAArrayDestroy(self->channels);
     free(self);
 }
 
@@ -83,82 +87,88 @@ void MixerRemoveObserver(Mixer *self, void *receiver)
 
 void MixerSendNoteOn(Mixer *self, NoteEvent *event)
 {
-    int channel = event->channel - 1;
-    MidiSource *source = self->tracks[channel].source;
-    uint8_t bytes[3] = {0x90 | (0x0F & channel), event->noteNo, event->velocity};
-    source->send(source, bytes, 3);
-
+    MixerChannel *channel = NAArrayGetValueAt(self->channels, event->channel - 1);
+    if (channel->active) {
+        uint8_t bytes[3] = {0x90 | (0x0F & channel->number), event->noteNo, event->velocity};
+        channel->source->send(channel->source, bytes, 3);
+    }
 }
 
 void MixerSendNoteOff(Mixer *self, NoteEvent *event)
 {
-    int channel = event->channel - 1;
-    MidiSource *source = self->tracks[channel].source;
-    uint8_t bytes[3] = {0x80 | (0x0F & channel), event->noteNo, 0};
-    source->send(source, bytes, 3);
+    MixerChannel *channel = NAArrayGetValueAt(self->channels, event->channel - 1);
+    if (channel->active) {
+        uint8_t bytes[3] = {0x80 | (0x0F & channel->number), event->noteNo, 0};
+        channel->source->send(channel->source, bytes, 3);
+    }
 }
 
 void MixerSendAllNoteOff(Mixer *self)
 {
     uint8_t bytes[3] = {0, 0x7B, 0x00};
     for (int i = 0; i < 16; ++i) {
-        MidiSource *source = self->tracks[i].source;
+        MixerChannel *channel = NAArrayGetValueAt(self->channels, i);
         bytes[0] = 0xB0 | i;
-        source->send(source, bytes, 3);
+        channel->source->send(channel->source, bytes, 3);
     }
 }
 
 void MixerSendVoice(Mixer *self, VoiceEvent *event)
 {
-    int channel = event->channel - 1;
-    MidiSource *source = self->tracks[channel].source;
-    uint8_t bytes[3];
+    MixerChannel *channel = NAArrayGetValueAt(self->channels, event->channel - 1);
+    if (channel->active) {
+        uint8_t bytes[3];
 
-    bytes[0] = 0xB0 | (0x0F & channel);
-    bytes[1] = 0x00;
-    bytes[2] = event->msb;
-    source->send(source, bytes, 3);
+        bytes[0] = 0xB0 | (0x0F & channel->number);
+        bytes[1] = 0x00;
+        bytes[2] = event->msb;
+        channel->source->send(channel->source, bytes, 3);
 
-    bytes[1] = 0x20;
-    bytes[2] = event->lsb;
-    source->send(source, bytes, 3);
+        bytes[1] = 0x20;
+        bytes[2] = event->lsb;
+        channel->source->send(channel->source, bytes, 3);
 
-    bytes[0] = 0xC0 | (0x0F & channel);
-    bytes[1] = event->programNo;
-    source->send(source, bytes, 2);
+        bytes[0] = 0xC0 | (0x0F & channel->number);
+        bytes[1] = event->programNo;
+        channel->source->send(channel->source, bytes, 2);
+    }
 }
 
 void MixerSendVolume(Mixer *self, VolumeEvent *event)
 {
-    int channel = event->channel - 1;
-    MidiSource *source = self->tracks[channel].source;
-    source->setVolume(source, channel, event->value);
+    MixerChannel *channel = NAArrayGetValueAt(self->channels, event->channel - 1);
+    if (channel->active) {
+        channel->source->setVolume(channel->source, channel->number, event->value);
+    }
 }
 
 void MixerSendPan(Mixer *self, PanEvent *event)
 {
-    int channel = event->channel - 1;
-    MidiSource *source = self->tracks[channel].source;
-    source->setPan(source, channel, event->value);
+    MixerChannel *channel = NAArrayGetValueAt(self->channels, event->channel - 1);
+    if (channel->active) {
+        channel->source->setPan(channel->source, channel->number, event->value);
+    }
 }
 
 void MixerSendChorus(Mixer *self, ChorusEvent *event)
 {
-    int channel = event->channel - 1;
-    MidiSource *source = self->tracks[channel].source;
-    source->setChorusSend(source, channel, event->value);
+    MixerChannel *channel = NAArrayGetValueAt(self->channels, event->channel - 1);
+    if (channel->active) {
+        channel->source->setChorusSend(channel->source, channel->number, event->value);
+    }
 }
 
 void MixerSendReverb(Mixer *self, ReverbEvent *event)
 {
-    int channel = event->channel - 1;
-    MidiSource *source = self->tracks[channel].source;
-    source->setReverbSend(source, channel, event->value);
+    MixerChannel *channel = NAArrayGetValueAt(self->channels, event->channel - 1);
+    if (channel->active) {
+        channel->source->setReverbSend(channel->source, channel->number, event->value);
+    }
 }
 
-Track *MixerGetTracks(Mixer *self)
+NAArray *MixerGetChannels(Mixer *self)
 {
-    return self->tracks;
+    return self->channels;
 }
 
 static void MixerAudioCallback(void *receiver, AudioSample *buffer, uint32_t count)
@@ -173,8 +183,8 @@ static void MixerAudioCallback(void *receiver, AudioSample *buffer, uint32_t cou
     }
 
     // TODO manage multiple midi sources
-    MidiSource *source = self->tracks[0].source;
-    source->computeAudioSample(source, samples, count);
+    MixerChannel *channel = NAArrayGetValueAt(self->channels, 0);
+    channel->source->computeAudioSample(channel->source, samples, count);
 
     AudioSample valueLevel = {0, 0};
 
