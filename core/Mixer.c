@@ -1,6 +1,7 @@
 #include "Mixer.h"
 #include "Synthesizer.h"
 #include "AudioOut.h"
+#include "Define.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -9,12 +10,15 @@
 struct _Mixer {
     NAArray *observers;
     Track tracks[16];
+    Level level;
 };
 
 typedef struct Observer {
     void *receiver;
     MixerObserverCallbacks *callbacks;
 } Observer;
+
+static void MixerAudioCallback(void *receiver, AudioSample *buffer, uint32_t count);
 
 Mixer *MixerCreate()
 {
@@ -44,6 +48,8 @@ Mixer *MixerCreate()
         self->tracks[i].chorusSend = source->getChorusSend(source, channel);
         self->tracks[i].reverbSend = source->getReverbSend(source, channel);
     }
+
+    AudioOutRegisterCallback(AudioOutSharedInstance(), MixerAudioCallback, self);
 
     return self;
 }
@@ -153,4 +159,33 @@ void MixerSendReverb(Mixer *self, ReverbEvent *event)
 Track *MixerGetTracks(Mixer *self)
 {
     return self->tracks;
+}
+
+static void MixerAudioCallback(void *receiver, AudioSample *buffer, uint32_t count)
+{
+    Mixer *self = receiver;
+
+    AudioSample samples[count];
+    AudioSample *p = samples;
+
+    for (int i = 0; i < count; ++i) {
+        *p++ = (AudioSample){0, 0};
+    }
+
+    // TODO manage multiple midi sources
+    MidiSource *source = self->tracks[0].source;
+    source->computeAudioSample(source, samples, count);
+
+    AudioSample valueLevel = {0, 0};
+
+    for (int i = 0; i < count; ++i) {
+        buffer[i].L += samples[i].L;
+        buffer[i].R += samples[i].R;
+
+        valueLevel.L = MAX(valueLevel.L, fabs(samples[i].L));
+        valueLevel.R = MAX(valueLevel.L, fabs(samples[i].R));
+    }
+
+    self->level.L = Value2cB(valueLevel.L);
+    self->level.R = Value2cB(valueLevel.R);
 }
