@@ -24,6 +24,7 @@ struct _Synthesizer {
 
     SoundFont *sf;
 
+    PresetInfo **presetInfos;
     Preset **presets;
     int presetCount;
 
@@ -155,28 +156,18 @@ static int getPresetCount(void *self)
     return ((Synthesizer *)self)->presetCount;
 }
 
-static void getPresetList(void *_self, PresetList *presetList)
+static PresetInfo **getPresetInfos(void *_self)
 {
     Synthesizer *self = _self;
-
-    for (int i = 0; i < self->presetCount; ++i) {
-        strncpy(presetList[i].name, self->presets[i]->name, sizeof(presetList[i].name));
-        presetList[i].bankNo = self->presets[i]->bankNo;
-        presetList[i].programNo = self->presets[i]->midiPresetNo;
-    }
+    return self->presetInfos;
 }
 
-static int getPresetIndex(void *_self, uint8_t channel)
+static PresetInfo *getPresetInfo(void *_self, uint8_t channel)
 {
     Synthesizer *self = _self;
     Preset **result = bsearch(self->channels[channel].preset, self->presets, self->presetCount, sizeof(Preset *), PresetComparator);
-    return (int)(result - self->presets);
-}
-
-static void setPresetIndex(void *_self, uint8_t channel, int index)
-{
-    Synthesizer *self = _self;
-    SynthesizerProgramChange(self, channel, self->presets[index]->midiPresetNo);
+    int index = (int)(result - self->presets);
+    return self->presetInfos[index];
 }
 
 static Level getMasterLevel(void *self)
@@ -187,6 +178,14 @@ static Level getMasterLevel(void *self)
 static Level getChannelLevel(void *self, uint8_t channel)
 {
     return ((Synthesizer *)self)->level.channels[channel];
+}
+
+static void setPresetInfo(void *_self, uint8_t channel, PresetInfo *presetInfo)
+{
+    Synthesizer *self = _self;
+    SynthesizerControlChange(self, channel, CC_BankSelect_MSB, 0x00FF & (presetInfo->bankNo >> 8));
+    SynthesizerControlChange(self, channel, CC_BankSelect_LSB, 0x00FF & presetInfo->bankNo);
+    SynthesizerProgramChange(self, channel, presetInfo->programNo);
 }
 
 static void setMasterVolume(void *_self, int16_t cb)
@@ -259,9 +258,9 @@ Synthesizer *SynthesizerCreate(SoundFont *sf, double sampleRate)
     self->srcVtbl.destroy = destroy;
     self->srcVtbl.getName = getName;
     self->srcVtbl.getPresetCount = getPresetCount;
-    self->srcVtbl.getPresetList = getPresetList;
-    self->srcVtbl.getPresetIndex = getPresetIndex;
-    self->srcVtbl.setPresetIndex = setPresetIndex;
+    self->srcVtbl.getPresetInfos = getPresetInfos;
+    self->srcVtbl.getPresetInfo = getPresetInfo;
+    self->srcVtbl.setPresetInfo = setPresetInfo;
     self->srcVtbl.getMasterLevel = getMasterLevel;
     self->srcVtbl.getChannelLevel = getChannelLevel;
     self->srcVtbl.setMasterVolume = setMasterVolume;
@@ -294,6 +293,15 @@ Synthesizer *SynthesizerCreate(SoundFont *sf, double sampleRate)
     ParsePresets(self->sf, &self->presets, &self->presetCount);
     qsort(self->presets, self->presetCount, sizeof(Preset *), PresetComparator);
 
+    self->presetInfos = calloc(self->presetCount, sizeof(PresetInfo *));
+
+    for (int i = 0; i < self->presetCount; ++i) {
+        self->presetInfos[i] = calloc(1, sizeof(PresetInfo));
+        self->presetInfos[i]->name = self->presets[i]->name;
+        self->presetInfos[i]->bankNo = self->presets[i]->bankNo;
+        self->presetInfos[i]->programNo = self->presets[i]->midiPresetNo;
+    }
+
     if (0 < self->presetCount) {
         for (int i = 0; i < CHANNEL_COUNT; ++i) {
             ChannelInitialize(&self->channels[i], i, self->presets[0]);
@@ -308,6 +316,11 @@ void SynthesizerDestroy(Synthesizer *self)
     for (int i = 0; i < self->presetCount; ++i) {
         PresetDestroy(self->presets[i]);
     }
+
+    for (int i = 0; i < self->presetCount; ++i) {
+        free(self->presetInfos[i]);
+    }
+    free(self->presetInfos);
 
     if (self->presets) {
         free(self->presets);
@@ -481,8 +494,8 @@ static void SynthesizerProgramChange(Synthesizer *self, uint8_t channel, uint8_t
 #if 0
         PresetDump(preset);
 #endif
-        int index = getPresetIndex(self, channel);
-        SynthesizerNotifyEvent(self, MidiSourceEventChangePreset, &channel, &index);
+        PresetInfo *presetInfo = getPresetInfo(self, channel);
+        SynthesizerNotifyEvent(self, MidiSourceEventChangePreset, &channel, presetInfo);
     }
 }
 

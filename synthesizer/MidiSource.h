@@ -16,11 +16,11 @@ typedef enum {
     MidiSourceEventChangeLevelMater,
 } MidiSourceEvent;
 
-typedef struct _PresetList {
-    char name[32];
+typedef struct _PresetInfo {
+    const char *name;
     uint16_t bankNo;
     uint8_t programNo;
-} PresetList;
+} PresetInfo;
 
 typedef struct _Level {
     int16_t L;
@@ -45,9 +45,9 @@ struct _MidiSource {
     const char *(*getName)(void *self);
 
     int (*getPresetCount)(void *self);
-    void (*getPresetList)(void *self, PresetList *presetList);
-    int (*getPresetIndex)(void *self, uint8_t channel);
-    void (*setPresetIndex)(void *self, uint8_t channel, int index);
+    PresetInfo **(*getPresetInfos)(void *self);
+    PresetInfo *(*getPresetInfo)(void *self, uint8_t channel);
+    void (*setPresetInfo)(void *self, uint8_t channel, PresetInfo *presetInfo);
 
     Level (*getMasterLevel)(void *self);
     Level (*getChannelLevel)(void *self, uint8_t channel);
