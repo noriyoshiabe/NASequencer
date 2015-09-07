@@ -23,6 +23,12 @@ struct _CLI {
 extern void CLINAMidiOnParseFinish(void *receiver, Sequence *sequence)
 {
     printf("called %s\n", __FUNCTION__);
+
+    CLI *self = receiver;
+
+    // TODO remove
+    PlayerSetSequence(NAMidiGetPlayer(self->namidi), sequence);
+    PlayerPlay(NAMidiGetPlayer(self->namidi));
 }
 
 extern void CLINAMidiOnParseError(void *receiver, ParseError *error)

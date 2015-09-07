@@ -12,6 +12,7 @@ include_directories(
   ../sequence
   ../parser
   ../lib
+  ../synthesizer
 )
 
 set(SOURCES
@@ -26,3 +27,4 @@ target_link_libraries(${PROJECT_NAME} namidi-core)
 target_link_libraries(${PROJECT_NAME} namidi-sequence)
 target_link_libraries(${PROJECT_NAME} namidi-parser)
 target_link_libraries(${PROJECT_NAME} namidi-lib)
+target_link_libraries(${PROJECT_NAME} namidi-synthesizer)

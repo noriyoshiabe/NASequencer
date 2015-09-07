@@ -214,28 +214,34 @@ static void PlayerProcessMessage(Player *self, PlayerMessage message, void *data
         self->sequence = data;
         break;
     case PlayerMessageStop:
-        if (self->playing) {
-            self->playing = false;
-            PlayerTriggerEvent(self, PlayerEventStop);
+        if (self->sequence) {
+            if (self->playing) {
+                self->playing = false;
+                PlayerTriggerEvent(self, PlayerEventStop);
+            }
         }
         break;
     case PlayerMessagePlay:
-        if (!self->playing) {
-            self->start = currentMicroSec();
-            self->offset = self->usec;
-            self->playing = true;
-            PlayerTriggerEvent(self, PlayerEventPlay);
+        if (self->sequence) {
+            if (!self->playing) {
+                self->start = currentMicroSec();
+                self->offset = self->usec;
+                self->playing = true;
+                PlayerTriggerEvent(self, PlayerEventPlay);
+            }
         }
         break;
     case PlayerMessageRewind:
-        self->offset = 0;
-        self->usec = 0;
-        self->start = currentMicroSec();
-        PlayerUpdateClock(self, 0, 0, LocationZero);
-        PlayerTriggerEvent(self, PlayerEventRewind);
+        if (self->sequence) {
+            self->offset = 0;
+            self->usec = 0;
+            self->start = currentMicroSec();
+            PlayerUpdateClock(self, 0, 0, LocationZero);
+            PlayerTriggerEvent(self, PlayerEventRewind);
+        }
         break;
     case PlayerMessageForward:
-        {
+        if (self->sequence) {
             int32_t tick = TimeTableMicroSec2Tick(self->sequence->timeTable, self->usec);
             Location location = TimeTableTick2Location(self->sequence->timeTable, tick);
             location.m++;
@@ -254,7 +260,7 @@ static void PlayerProcessMessage(Player *self, PlayerMessage message, void *data
         }
         break;
     case PlayerMessageBackward:
-        {
+        if (self->sequence) {
             int32_t tick = TimeTableMicroSec2Tick(self->sequence->timeTable, self->usec);
             Location location = TimeTableTick2Location(self->sequence->timeTable, tick);
             location.m -= 1 == location.b ? 1 : 0;
@@ -423,6 +429,8 @@ static void PlayerSendAllNoteOff(Player *self)
         NAArrayTraverseWithContext(self->observers, self, PlayerNotifySendNoteOff, event);
         iterator->remove(iterator);
     }
+
+    MixerSendAllNoteOff(self->mixer);
 }
 
 static int64_t currentMicroSec()
