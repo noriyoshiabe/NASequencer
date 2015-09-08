@@ -1,16 +1,28 @@
 #include "Mixer.h"
-#include "Synthesizer.h"
+#include "MidiSourceManager.h"
 #include "AudioOut.h"
 #include "Define.h"
+#include "NAMap.h"
+#include "NAMessageQ.h"
 
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
 
+typedef enum _MixerMessage {
+    MixerMessageAttachSource,
+    MixerMessageDetachSource,
+    MixerMessageDestroy,
+} MixerMessage;
+
 struct _Mixer {
     NAArray *observers;
     NAArray *channels;
     Level level;
+    NAMap *sourceMap;
+
+    NAMessageQ *msgQ;
+    NAArray *activeSources;
 };
 
 struct _MixerChannel {
@@ -27,21 +39,28 @@ typedef struct Observer {
     MixerObserverCallbacks *callbacks;
 } Observer;
 
+static MidiSourceManagerObserverCallbacks MixerMidiSourceManagerObserverCallbacks;
+
 static void MixerAudioCallback(void *receiver, AudioSample *buffer, uint32_t count);
 
 Mixer *MixerCreate()
 {
-    Mixer *self =  calloc(1, sizeof(Mixer));
+    Mixer *self = calloc(1, sizeof(Mixer));
 
     self->observers = NAArrayCreate(4, NULL);
 
-    // TODO move to midisource manager
-    char filepath[PATH_MAX];
-    sprintf(filepath, "%s/.namidi/GeneralUser GS Live-Audigy v1.44.sf2", getenv("HOME"));
-    SoundFontError error;
-    SoundFont *soundFont = SoundFontRead(filepath, &error);
-    AudioOut *audioOut = AudioOutSharedInstance();
-    MidiSource *source = (MidiSource *)SynthesizerCreate(soundFont, AudioOutGetSampleRate(audioOut));
+    MidiSourceManager *manager = MidiSourceManagerSharedInstance();
+    MidiSourceManagerAddObserver(manager, self, &MixerMidiSourceManagerObserverCallbacks);
+
+    NAArray *descriptions = MidiSourceManagerGetDescriptions(manager);
+    MidiSourceDescription *description = NAArrayGetValueAt(descriptions, 0);
+    MidiSource *source = MidiSourceManagerCreateMidiSource(manager, description);
+
+    self->sourceMap = NAMapCreate(NAHashAddress, NULL, NULL);
+    NAMapPut(self->sourceMap, description, source);
+
+    self->msgQ = NAMessageQCreate();
+    self->activeSources = NAArrayCreate(2, NULL);
 
     self->channels = NAArrayCreate(16, NULL);
     for (int i = 0; i < 16; ++i) {
@@ -60,6 +79,24 @@ Mixer *MixerCreate()
 
 void MixerDestroy(Mixer *self)
 {
+    MidiSourceManagerRemoveObserver(MidiSourceManagerSharedInstance(), self);
+    NAMessageQPost(self->msgQ, MixerMessageDestroy, NULL);
+}
+
+static void _DestroyMidiSource(MidiSource *source)
+{
+    source->destroy(source);
+}
+
+static void _MixerDestroy(Mixer *self)
+{
+    AudioOutUnregisterCallback(AudioOutSharedInstance(), MixerAudioCallback, self);
+
+    NAMessageQDestroy(self->msgQ);
+
+    NAMapTraverseValue(self->sourceMap, _DestroyMidiSource);
+    NAArrayDestroy(self->activeSources);
+
     NAArrayTraverse(self->observers, free);
     NAArrayDestroy(self->observers);
     NAArrayTraverse(self->channels, free);
@@ -173,6 +210,34 @@ NAArray *MixerGetChannels(Mixer *self)
     return self->channels;
 }
 
+static void MixerProcessMessage(Mixer *self)
+{
+    NAMessage msg;
+
+    if (!NAMessageQPeek(self->msgQ, &msg)) {
+        return;
+    }
+
+    switch (msg.kind) {
+    case MixerMessageAttachSource:
+        if (-1 == NAArrayFindFirstIndex(self->activeSources, msg.data, NAArrayAddressComparator)) {
+            NAArrayAppend(self->activeSources, msg.data);
+        }
+        break;
+    case MixerMessageDetachSource:
+        {
+            int index = NAArrayFindFirstIndex(self->activeSources, msg.data, NAArrayAddressComparator);
+            if (-1 != index) {
+                NAArrayRemoveAt(self->activeSources, index);
+            }
+        }
+        break;
+    case MixerMessageDestroy:
+        _MixerDestroy(self);
+        break;
+    }
+}
+
 static void MixerAudioCallback(void *receiver, AudioSample *buffer, uint32_t count)
 {
     Mixer *self = receiver;
@@ -184,9 +249,11 @@ static void MixerAudioCallback(void *receiver, AudioSample *buffer, uint32_t cou
         *p++ = (AudioSample){0, 0};
     }
 
-    // TODO manage multiple midi sources
-    MixerChannel *channel = NAArrayGetValueAt(self->channels, 0);
-    channel->source->computeAudioSample(channel->source, samples, count);
+    int sourceCount = NAArrayCount(self->activeSources);
+    MidiSource **sources = NAArrayGetValues(self->activeSources);
+    for (int i = 0; i < sourceCount; ++i) {
+        sources[i]->computeAudioSample(sources[i], samples, count);
+    }
 
     AudioSample valueLevel = {0, 0};
 
@@ -200,6 +267,8 @@ static void MixerAudioCallback(void *receiver, AudioSample *buffer, uint32_t cou
 
     self->level.L = Value2cB(valueLevel.L);
     self->level.R = Value2cB(valueLevel.R);
+
+    MixerProcessMessage(self);
 }
 
 static void MixerUpdateActiveChannles(Mixer *self)

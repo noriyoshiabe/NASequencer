@@ -26,6 +26,7 @@ extern void NAArrayApplyAt(NAArray *self, int index, void (*function)(void *));
 extern NAIterator *NAArrayGetIterator(NAArray *self, void *buffer);
 extern void NAArrayDescription(void *self, FILE *stream);
 
+extern int NAArrayAddressComparator(const void *p1, const void *p2);
 extern const int NAArrayIteratorSize;
 
 #define NAArrayGetValues(self) (void *)NAArrayGetValues(self)

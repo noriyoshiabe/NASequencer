@@ -211,3 +211,8 @@ void NAArrayDescription(void *_self, FILE *stream)
 
     fprintf(stream, ">\n");
 }
+
+int NAArrayAddressComparator(const void *p1, const void *p2)
+{
+    return p1 - p2;
+}

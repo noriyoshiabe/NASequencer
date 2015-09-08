@@ -22,7 +22,7 @@ typedef struct _MidiSourceManagerObserverCallbacks {
     void (*onUnloadMidiSourceDescription)(void *receiver, MidiSourceDescription *description);
 } MidiSourceManagerObserverCallbacks;
 
-typedef struct _MidiSourceManager MidiSourceManagerObserver;
+typedef struct _MidiSourceManager MidiSourceManager;
 
 extern MidiSourceManager *MidiSourceManagerSharedInstance();
 extern void MidiSourceManagerAddObserver(MidiSourceManager *self, void *receiver, MidiSourceManagerObserverCallbacks *callbacks);
@@ -31,8 +31,6 @@ extern void MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(MidiSourceMa
 extern void MidiSourceManagerUnloadMidiSourceDescription(MidiSourceManager *self, MidiSourceDescription *description);
 extern MidiSource *MidiSourceManagerCreateMidiSource(MidiSourceManager *self, MidiSourceDescription *description);
 extern NAArray *MidiSourceManagerGetDescriptions(MidiSourceManager *self);
-
-extern MidiSource NotAvailableMidiSource;
 
 static inline const char *MidiSourceDescriptionError2String(MidiSourceDescriptionError error)
 {
