@@ -7,17 +7,19 @@
 #include <string.h>
 #include <limits.h>
 
-struct _MixerChannel {
-    int number;
-    MidiSource *source;
-    bool active;
-    Mixer *mixer;
-};
-
 struct _Mixer {
     NAArray *observers;
     NAArray *channels;
     Level level;
+};
+
+struct _MixerChannel {
+    int number;
+    MidiSource *source;
+    bool mute;
+    bool solo;
+    bool active;
+    Mixer *mixer;
 };
 
 typedef struct Observer {
@@ -198,4 +200,116 @@ static void MixerAudioCallback(void *receiver, AudioSample *buffer, uint32_t cou
 
     self->level.L = Value2cB(valueLevel.L);
     self->level.R = Value2cB(valueLevel.R);
+}
+
+static void MixerUpdateActiveChannles(Mixer *self)
+{
+    bool soloExists = false;
+
+    int count = NAArrayCount(self->channels);
+    MixerChannel **channels = NAArrayGetValues(self->channels);
+    for (int i = 0; i < count; ++i) {
+        if (channels[i]->solo) {
+            soloExists = true;
+            break;
+        }
+    }
+
+    for (int i = 0; i < count; ++i) {
+        MixerChannel *channel = channels[i];
+        channel->active = !channel->mute && (channel->solo || !soloExists);
+    }
+}
+
+
+int MixerChannelGetNumber(MixerChannel *self)
+{
+    return self->number;
+}
+
+int MixerChannelGetPresetCount(MixerChannel *self)
+{
+    return self->source->getPresetCount(self->source);
+}
+
+PresetInfo **MixerChannelGetPresetInfos(MixerChannel *self)
+{
+    return self->source->getPresetInfos(self->source);
+}
+
+PresetInfo *MixerChannelGetPresetInfo(MixerChannel *self)
+{
+    return self->source->getPresetInfo(self->source, self->number);
+}
+
+Level MixerChannelGetLevel(MixerChannel *self)
+{
+    return self->source->getChannelLevel(self->source, self->number);
+}
+
+int MixerChannelGetVolume(MixerChannel *self)
+{
+    return self->source->getVolume(self->source, self->number);
+}
+
+int MixerChannelGetPan(MixerChannel *self)
+{
+    return self->source->getPan(self->source, self->number);
+}
+
+int MixerChannelGetChorusSend(MixerChannel *self)
+{
+    return self->source->getChorusSend(self->source, self->number);
+}
+
+int MixerChannelGetReverbSend(MixerChannel *self)
+{
+    return self->source->getReverbSend(self->source, self->number);
+}
+
+bool MixerChannelGetMute(MixerChannel *self)
+{
+    return self->mute;
+}
+
+bool MixerChannelGetSolo(MixerChannel *self)
+{
+    return self->solo;
+}
+
+void MixerChannelSetPresetInfo(MixerChannel *self, PresetInfo *presetInfo)
+{
+    self->source->setPresetInfo(self->source, self->number, presetInfo);
+}
+
+void MixerChannelSetVolume(MixerChannel *self, int value)
+{
+    self->source->setVolume(self->source, self->number, value);
+}
+
+void MixerChannelSetPan(MixerChannel *self, int value)
+{
+    self->source->setPan(self->source, self->number, value);
+}
+
+void MixerChannelSetChorusSend(MixerChannel *self, int value)
+{
+    self->source->setChorusSend(self->source, self->number, value);
+}
+
+void MixerChannelSetReverbSend(MixerChannel *self, int value)
+{
+    self->source->setReverbSend(self->source, self->number, value);
+}
+
+void MixerChannelSetMute(MixerChannel *self, bool mute)
+{
+    self->mute = mute;
+    MixerUpdateActiveChannles(self->mixer);
+}
+
+void MixerChannelSetSolo(MixerChannel *self, bool solo)
+{
+    self->solo = solo;
+    MixerUpdateActiveChannles(self->mixer);
 }

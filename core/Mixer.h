@@ -10,26 +10,6 @@
 typedef struct _Mixer Mixer;
 typedef struct _MixerChannel MixerChannel;
 
-extern int MixerChannelGetNumber(MixerChannel *self);
-extern int MixerChannelGetPresetCount(MixerChannel *self);
-extern PresetInfo **MixerChannelGetPresetInfos(MixerChannel *self);
-extern PresetInfo *MixerChannelGetPresetInfo(MixerChannel *self);
-extern Level MixerChannelGetLevel(MixerChannel *self);
-extern int MixerChannelGetVolume(MixerChannel *self);
-extern int MixerChannelGetPan(MixerChannel *self);
-extern int MixerChannelGetChorusSend(MixerChannel *self);
-extern int MixerChannelGetReverbSend(MixerChannel *self);
-extern bool MixerChannelGetMute(MixerChannel *self);
-extern bool MixerChannelGetSolo(MixerChannel *self);
-
-extern void MixerChannelSetPresetInfo(MixerChannel *self, PresetInfo *presetInfo);
-extern void MixerChannelSetVolume(MixerChannel *self, int value);
-extern void MixerChannelSetPan(MixerChannel *self, int value);
-extern void MixerChannelSetChorusSend(MixerChannel *self, int value);
-extern void MixerChannelSetReverbSend(MixerChannel *self, int value);
-extern void MixerChannelSetMute(MixerChannel *self, bool mute);
-extern void MixerChannelSetSolo(MixerChannel *self, bool solo);
-
 typedef struct _MixerObserverCallbacks {
     void (*onChannelStatusChange)(void *receiver, MixerChannel *channel);
     void (*onAvailableMidisourceChange)(void *receiver, NAArray *midiSources);
@@ -51,3 +31,23 @@ extern void MixerSendChorus(Mixer *self, ChorusEvent *event);
 extern void MixerSendReverb(Mixer *self, ReverbEvent *event);
 
 extern NAArray *MixerGetChannels(Mixer *self);
+
+extern int MixerChannelGetNumber(MixerChannel *self);
+extern int MixerChannelGetPresetCount(MixerChannel *self);
+extern PresetInfo **MixerChannelGetPresetInfos(MixerChannel *self);
+extern PresetInfo *MixerChannelGetPresetInfo(MixerChannel *self);
+extern Level MixerChannelGetLevel(MixerChannel *self);
+extern int MixerChannelGetVolume(MixerChannel *self);
+extern int MixerChannelGetPan(MixerChannel *self);
+extern int MixerChannelGetChorusSend(MixerChannel *self);
+extern int MixerChannelGetReverbSend(MixerChannel *self);
+extern bool MixerChannelGetMute(MixerChannel *self);
+extern bool MixerChannelGetSolo(MixerChannel *self);
+
+extern void MixerChannelSetPresetInfo(MixerChannel *self, PresetInfo *presetInfo);
+extern void MixerChannelSetVolume(MixerChannel *self, int value);
+extern void MixerChannelSetPan(MixerChannel *self, int value);
+extern void MixerChannelSetChorusSend(MixerChannel *self, int value);
+extern void MixerChannelSetReverbSend(MixerChannel *self, int value);
+extern void MixerChannelSetMute(MixerChannel *self, bool mute);
+extern void MixerChannelSetSolo(MixerChannel *self, bool solo);
