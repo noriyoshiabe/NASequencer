@@ -1,0 +1,51 @@
+#pragma once
+
+#include "MidiSource.h"
+#include "NAArray.h"
+
+typedef enum {
+    MidiSourceDescriptionErrorNoError,
+    MidiSourceDescriptionErrorFileNotFound,
+    MidiSourceDescriptionErrorUnsupportedVersion,
+    MidiSourceDescriptionErrorInvalidFileFormat,
+} MidiSourceDescriptionError;
+
+typedef struct _MidiSourceDescription {
+    const char *name;
+    const char *filepath;
+    const bool available;
+    const MidiSourceDescriptionError error;
+} MidiSourceDescription;
+
+typedef struct _MidiSourceManagerObserverCallbacks {
+    void (*onLoadMidiSourceDescription)(void *receiver, MidiSourceDescription *description);
+    void (*onUnloadMidiSourceDescription)(void *receiver, MidiSourceDescription *description);
+} MidiSourceManagerObserverCallbacks;
+
+typedef struct _MidiSourceManager MidiSourceManagerObserver;
+
+extern MidiSourceManager *MidiSourceManagerSharedInstance();
+extern void MidiSourceManagerAddObserver(MidiSourceManager *self, void *receiver, MidiSourceManagerObserverCallbacks *callbacks);
+extern void MidiSourceManagerRemoveObserver(MidiSourceManager *self, void *receiver);
+extern void MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(MidiSourceManager *self, const char *filepath);
+extern void MidiSourceManagerUnloadMidiSourceDescription(MidiSourceManager *self, MidiSourceDescription *description);
+extern MidiSource *MidiSourceManagerCreateMidiSource(MidiSourceManager *self, MidiSourceDescription *description);
+extern NAArray *MidiSourceManagerGetDescriptions(MidiSourceManager *self);
+
+extern MidiSource NotAvailableMidiSource;
+
+static inline const char *MidiSourceDescriptionError2String(MidiSourceDescriptionError error)
+{
+#define CASE(error) case error: return &(#error[5])
+    switch (error) {
+    CASE(MidiSourceDescriptionErrorNoError);
+    CASE(MidiSourceDescriptionErrorFileNotFound);
+    CASE(MidiSourceDescriptionErrorUnsupportedVersion);
+    CASE(MidiSourceDescriptionErrorInvalidFileFormat);
+    default:
+       break;
+    }
+
+    return "Unknown error";
+#undef CASE
+}
