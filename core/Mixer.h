@@ -3,6 +3,7 @@
 #include "MidiEvent.h"
 #include "NAArray.h"
 #include "MidiSource.h"
+#include "MidiSourceManager.h"
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -12,7 +13,7 @@ typedef struct _MixerChannel MixerChannel;
 
 typedef struct _MixerObserverCallbacks {
     void (*onChannelStatusChange)(void *receiver, MixerChannel *channel);
-    void (*onAvailableMidisourceChange)(void *receiver, NAArray *midiSources);
+    void (*onAvailableMidiSourceChange)(void *receiver, NAArray *descriptions);
     void (*onLevelUpdate)(void *receiver);
 } MixerObserverCallbacks;
 
@@ -33,6 +34,7 @@ extern void MixerSendReverb(Mixer *self, ReverbEvent *event);
 extern NAArray *MixerGetChannels(Mixer *self);
 
 extern int MixerChannelGetNumber(MixerChannel *self);
+extern MidiSourceDescription *MixerChannelGetMidiSourceDescription(MixerChannel *self);
 extern int MixerChannelGetPresetCount(MixerChannel *self);
 extern PresetInfo **MixerChannelGetPresetInfos(MixerChannel *self);
 extern PresetInfo *MixerChannelGetPresetInfo(MixerChannel *self);
@@ -44,6 +46,7 @@ extern int MixerChannelGetReverbSend(MixerChannel *self);
 extern bool MixerChannelGetMute(MixerChannel *self);
 extern bool MixerChannelGetSolo(MixerChannel *self);
 
+extern void MixerChannelSetMidiSourceDescription(MixerChannel *self, MidiSourceDescription *description);
 extern void MixerChannelSetPresetInfo(MixerChannel *self, PresetInfo *presetInfo);
 extern void MixerChannelSetVolume(MixerChannel *self, int value);
 extern void MixerChannelSetPan(MixerChannel *self, int value);

@@ -29,8 +29,10 @@ extern void MidiSourceManagerAddObserver(MidiSourceManager *self, void *receiver
 extern void MidiSourceManagerRemoveObserver(MidiSourceManager *self, void *receiver);
 extern void MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(MidiSourceManager *self, const char *filepath);
 extern void MidiSourceManagerUnloadMidiSourceDescription(MidiSourceManager *self, MidiSourceDescription *description);
-extern MidiSource *MidiSourceManagerCreateMidiSource(MidiSourceManager *self, MidiSourceDescription *description);
+extern MidiSource *MidiSourceManagerAllocMidiSource(MidiSourceManager *self, MidiSourceDescription *description);
+extern void MidiSourceManagerDeallocMidiSource(MidiSourceManager *self, MidiSource *souce);
 extern NAArray *MidiSourceManagerGetDescriptions(MidiSourceManager *self);
+extern NAArray *MidiSourceManagerGetAvailableDescriptions(MidiSourceManager *self);
 
 static inline const char *MidiSourceDescriptionError2String(MidiSourceDescriptionError error)
 {

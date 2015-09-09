@@ -1,5 +1,4 @@
 #include "Mixer.h"
-#include "MidiSourceManager.h"
 #include "AudioOut.h"
 #include "Define.h"
 #include "NAMap.h"
@@ -27,6 +26,7 @@ struct _Mixer {
 
 struct _MixerChannel {
     int number;
+    MidiSourceDescription *description;
     MidiSource *source;
     bool mute;
     bool solo;
@@ -42,6 +42,7 @@ typedef struct Observer {
 static MidiSourceManagerObserverCallbacks MixerMidiSourceManagerObserverCallbacks;
 
 static void MixerAudioCallback(void *receiver, AudioSample *buffer, uint32_t count);
+static void MixerMidiSourceCallback(void *receiver, MidiSource *source, MidiSourceEvent event, void *arg1, void *arg2);
 
 Mixer *MixerCreate()
 {
@@ -52,9 +53,9 @@ Mixer *MixerCreate()
     MidiSourceManager *manager = MidiSourceManagerSharedInstance();
     MidiSourceManagerAddObserver(manager, self, &MixerMidiSourceManagerObserverCallbacks);
 
-    NAArray *descriptions = MidiSourceManagerGetDescriptions(manager);
+    NAArray *descriptions = MidiSourceManagerGetAvailableDescriptions(manager);
     MidiSourceDescription *description = NAArrayGetValueAt(descriptions, 0);
-    MidiSource *source = MidiSourceManagerCreateMidiSource(manager, description);
+    MidiSource *source = MidiSourceManagerAllocMidiSource(manager, description);
 
     self->sourceMap = NAMapCreate(NAHashAddress, NULL, NULL);
     NAMapPut(self->sourceMap, description, source);
@@ -66,6 +67,7 @@ Mixer *MixerCreate()
     for (int i = 0; i < 16; ++i) {
         MixerChannel *channel = calloc(1, sizeof(MixerChannel));
         channel->number = i + 1;
+        channel->description = description;
         channel->source = source;
         channel->active = true;
         channel->mixer = self;
@@ -83,9 +85,14 @@ void MixerDestroy(Mixer *self)
     NAMessageQPost(self->msgQ, MixerMessageDestroy, NULL);
 }
 
-static void _DestroyMidiSource(MidiSource *source)
+static void _UnregisterCallback(Mixer *self, MidiSource *source, va_list argList)
 {
-    source->destroy(source);
+    source->unregisterCallback(source, MixerMidiSourceCallback, self);
+}
+
+static void _DeallocMidiSource(MidiSource *source)
+{
+    MidiSourceManagerDeallocMidiSource(MidiSourceManagerSharedInstance(), source);
 }
 
 static void _MixerDestroy(Mixer *self)
@@ -94,8 +101,10 @@ static void _MixerDestroy(Mixer *self)
 
     NAMessageQDestroy(self->msgQ);
 
-    NAMapTraverseValue(self->sourceMap, _DestroyMidiSource);
+    NAArrayTraverseWithContext(self->activeSources, self, _UnregisterCallback, NULL);
     NAArrayDestroy(self->activeSources);
+
+    NAMapTraverseValue(self->sourceMap, _DeallocMidiSource);
 
     NAArrayTraverse(self->observers, free);
     NAArrayDestroy(self->observers);
@@ -222,14 +231,23 @@ static void MixerProcessMessage(Mixer *self)
     case MixerMessageAttachSource:
         if (-1 == NAArrayFindFirstIndex(self->activeSources, msg.data, NAArrayAddressComparator)) {
             NAArrayAppend(self->activeSources, msg.data);
+
+            MidiSource *source = msg.data;
+            source->registerCallback(source, MixerMidiSourceCallback, self);
         }
         break;
     case MixerMessageDetachSource:
         {
-            int index = NAArrayFindFirstIndex(self->activeSources, msg.data, NAArrayAddressComparator);
+            MidiSource *source = msg.data;
+
+            int index = NAArrayFindFirstIndex(self->activeSources, source, NAArrayAddressComparator);
             if (-1 != index) {
                 NAArrayRemoveAt(self->activeSources, index);
+
+                source->unregisterCallback(source, MixerMidiSourceCallback, self);
             }
+
+            MidiSourceManagerDeallocMidiSource(MidiSourceManagerSharedInstance(), source);
         }
         break;
     case MixerMessageDestroy:
@@ -271,6 +289,61 @@ static void MixerAudioCallback(void *receiver, AudioSample *buffer, uint32_t cou
     MixerProcessMessage(self);
 }
 
+static void _MixerNotifyChannelStatusChange(Mixer *self, Observer *observer, va_list argList)
+{
+    observer->callbacks->onChannelStatusChange(observer->receiver, va_arg(argList, MixerChannel *));
+}
+
+static void MixerNotifyChannelStatusChange(Mixer *self, MixerChannel *channel)
+{
+    NAArrayTraverseWithContext(self->observers, _MixerNotifyChannelStatusChange, self, channel);
+}
+
+static void _MixerNotifyAvailableMidiSourceChange(Mixer *self, Observer *observer, va_list argList)
+{
+    observer->callbacks->onAvailableMidiSourceChange(observer->receiver, va_arg(argList, NAArray *));
+}
+
+static void MixerNotifyAvailableMidiSourceChange(Mixer *self, NAArray *descriptions)
+{
+    NAArrayTraverseWithContext(self->observers, _MixerNotifyAvailableMidiSourceChange, self, descriptions);
+}
+
+static void _MixerNotifyLevelUpdate(Mixer *self, Observer *observer, va_list argList)
+{
+    observer->callbacks->onLevelUpdate(observer->receiver);
+}
+
+static void MixerNotifyLevelUpdate(Mixer *self)
+{
+    NAArrayTraverseWithContext(self->observers, _MixerNotifyLevelUpdate, self, NULL);
+}
+
+static void MixerMidiSourceCallback(void *receiver, MidiSource *source, MidiSourceEvent event, void *arg1, void *arg2)
+{
+    Mixer *self = receiver;
+
+    switch (event) {
+    case MidiSourceEventChangeMasterVolume:
+        break;
+    case MidiSourceEventChangeVolume:
+    case MidiSourceEventChangePan:
+    case MidiSourceEventChangeChorusSend:
+    case MidiSourceEventChangeReverbSend:
+    case MidiSourceEventChangePreset:
+        {
+            uint8_t channel = *((uint8_t *)arg1);
+            MixerNotifyChannelStatusChange(self, NAArrayGetValueAt(self->channels, channel));
+        }
+        break;
+    case MidiSourceEventChangeLevelMater:
+        {
+            MixerNotifyLevelUpdate(self);
+        }
+        break;
+    }
+}
+
 static void MixerUpdateActiveChannles(Mixer *self)
 {
     bool soloExists = false;
@@ -286,14 +359,71 @@ static void MixerUpdateActiveChannles(Mixer *self)
 
     for (int i = 0; i < count; ++i) {
         MixerChannel *channel = channels[i];
-        channel->active = !channel->mute && (channel->solo || !soloExists);
+        bool active = !channel->mute && (channel->solo || !soloExists);
+        bool notify = channel->active != active;
+
+        channel->active = active;
+
+        if (notify) {
+            MixerNotifyChannelStatusChange(self, channel);
+        }
     }
 }
+
+static void MixerMidiSourceManagerOnLoadMidiSourceDescription(void *receiver, MidiSourceDescription *description)
+{
+    MidiSourceManager *manager = MidiSourceManagerSharedInstance();
+    MixerNotifyAvailableMidiSourceChange(receiver, MidiSourceManagerGetAvailableDescriptions(manager));
+}
+
+static void MixerMidiSourceManagerOnUnloadMidiSourceDescription(void *receiver, MidiSourceDescription *description)
+{
+    Mixer *self = receiver;
+
+    MidiSourceManager *manager = MidiSourceManagerSharedInstance();
+    NAArray *descriptions = MidiSourceManagerGetAvailableDescriptions(manager);
+
+    MidiSource *sourceToUnload = NAMapRemove(self->sourceMap, description);
+    if (sourceToUnload) {
+        MidiSourceDescription *defaultDescription = NAArrayGetValueAt(descriptions, 0);
+
+        int count = NAArrayCount(self->channels);
+        MixerChannel **channels = NAArrayGetValues(self->channels);
+        for (int i = 0; i < count; ++i) {
+            if (channels[i]->source == sourceToUnload) {
+                MidiSource *source = NAMapGet(self->sourceMap, description); 
+                if (!source) {
+                    source = MidiSourceManagerAllocMidiSource(manager, description);
+                    NAMapPut(self->sourceMap, description, source);
+                }
+
+                channels[i]->source = source;
+                channels[i]->description = description;
+
+                NAMessageQPost(self->msgQ, MixerMessageAttachSource, source);
+            }
+        }
+
+        NAMessageQPost(self->msgQ, MixerMessageDetachSource, sourceToUnload);
+    }
+
+    MixerNotifyAvailableMidiSourceChange(receiver, descriptions);
+}
+
+static MidiSourceManagerObserverCallbacks MixerMidiSourceManagerObserverCallbacks = {
+    MixerMidiSourceManagerOnLoadMidiSourceDescription,
+    MixerMidiSourceManagerOnUnloadMidiSourceDescription
+};
 
 
 int MixerChannelGetNumber(MixerChannel *self)
 {
     return self->number;
+}
+
+MidiSourceDescription *MixerChannelGetMidiSourceDescription(MixerChannel *self)
+{
+    return self->description;
 }
 
 int MixerChannelGetPresetCount(MixerChannel *self)
@@ -346,6 +476,21 @@ bool MixerChannelGetSolo(MixerChannel *self)
     return self->solo;
 }
 
+void MixerChannelSetMidiSourceDescription(MixerChannel *self, MidiSourceDescription *description)
+{
+    self->source = NAMapGet(self->mixer->sourceMap, description);
+
+    if (!self->source) {
+        MidiSourceManager *manager = MidiSourceManagerSharedInstance();
+        self->source = MidiSourceManagerAllocMidiSource(manager, description);
+        NAMapPut(self->mixer->sourceMap, description, self->source);
+    }
+
+    NAMessageQPost(self->mixer->msgQ, MixerMessageAttachSource, self->source);
+
+    MixerNotifyChannelStatusChange(self->mixer, self);
+}
+
 void MixerChannelSetPresetInfo(MixerChannel *self, PresetInfo *presetInfo)
 {
     self->source->setPresetInfo(self->source, self->number, presetInfo);
@@ -374,11 +519,13 @@ void MixerChannelSetReverbSend(MixerChannel *self, int value)
 void MixerChannelSetMute(MixerChannel *self, bool mute)
 {
     self->mute = mute;
+    MixerNotifyChannelStatusChange(self->mixer, self);
     MixerUpdateActiveChannles(self->mixer);
 }
 
 void MixerChannelSetSolo(MixerChannel *self, bool solo)
 {
     self->solo = solo;
+    MixerNotifyChannelStatusChange(self->mixer, self);
     MixerUpdateActiveChannles(self->mixer);
 }

@@ -121,7 +121,7 @@ static void registerCallback(void *_self, MidiSourceCallback function, void *rec
     ++self->callbackListLength;
 }
 
-static void ungisterCallback(void *_self, MidiSourceCallback function, void *receiver)
+static void unregisterCallback(void *_self, MidiSourceCallback function, void *receiver)
 {
     Synthesizer *self = _self;
 
@@ -254,7 +254,7 @@ Synthesizer *SynthesizerCreate(SoundFont *sf, double sampleRate)
     self->srcVtbl.isAvailable = isAvailable;
     self->srcVtbl.computeAudioSample = computeAudioSample;
     self->srcVtbl.registerCallback = registerCallback;
-    self->srcVtbl.ungisterCallback = ungisterCallback;
+    self->srcVtbl.unregisterCallback = unregisterCallback;
     self->srcVtbl.destroy = destroy;
     self->srcVtbl.getName = getName;
     self->srcVtbl.getPresetCount = getPresetCount;
