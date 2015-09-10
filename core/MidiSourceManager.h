@@ -19,6 +19,7 @@ typedef struct _MidiSourceDescription {
 
 typedef struct _MidiSourceManagerObserverCallbacks {
     void (*onLoadMidiSourceDescription)(void *receiver, MidiSourceDescription *description);
+    void (*onLoadAvailableMidiSourceDescription)(void *receiver, MidiSourceDescription *description);
     void (*onUnloadMidiSourceDescription)(void *receiver, MidiSourceDescription *description);
 } MidiSourceManagerObserverCallbacks;
 

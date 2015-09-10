@@ -19,6 +19,7 @@ set(SOURCES
   NAMidi.c
   Mixer.c
   Player.c
+  MidiSourceManager.c
 )
 
 if (APPLE)

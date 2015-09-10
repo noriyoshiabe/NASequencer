@@ -372,6 +372,10 @@ static void MixerUpdateActiveChannles(Mixer *self)
 
 static void MixerMidiSourceManagerOnLoadMidiSourceDescription(void *receiver, MidiSourceDescription *description)
 {
+}
+
+static void MixerMidiSourceManagerOnLoadAvailableMidiSourceDescription(void *receiver, MidiSourceDescription *description)
+{
     MidiSourceManager *manager = MidiSourceManagerSharedInstance();
     MixerNotifyAvailableMidiSourceChange(receiver, MidiSourceManagerGetAvailableDescriptions(manager));
 }
@@ -412,6 +416,7 @@ static void MixerMidiSourceManagerOnUnloadMidiSourceDescription(void *receiver, 
 
 static MidiSourceManagerObserverCallbacks MixerMidiSourceManagerObserverCallbacks = {
     MixerMidiSourceManagerOnLoadMidiSourceDescription,
+    MixerMidiSourceManagerOnLoadAvailableMidiSourceDescription,
     MixerMidiSourceManagerOnUnloadMidiSourceDescription
 };
 
