@@ -61,6 +61,11 @@ int NAArrayCount(NAArray *self)
     return self->count;
 }
 
+bool NAArrayIsEmpty(NAArray *self)
+{
+    return 0 == self->count;
+}
+
 void **NAArrayGetValues(NAArray *self)
 {
     return (void **)self->values;

@@ -11,6 +11,7 @@ typedef struct _NAArray NAArray;
 extern NAArray *NAArrayCreate(int initialCapacity, NADescription description);
 extern void NAArrayDestroy(NAArray *self);
 extern int NAArrayCount(NAArray *self);
+extern bool NAArrayIsEmpty(NAArray *self);
 extern void **NAArrayGetValues(NAArray *self);
 extern void *NAArrayGetValueAt(NAArray *self, int index);
 extern void NAArrayAppend(NAArray *self, void *value);

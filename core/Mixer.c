@@ -382,6 +382,10 @@ static void MixerMidiSourceManagerOnLoadAvailableMidiSourceDescription(void *rec
 
 static void MixerMidiSourceManagerOnUnloadMidiSourceDescription(void *receiver, MidiSourceDescription *description)
 {
+}
+
+static void MixerMidiSourceManagerOnUnloadAvailableMidiSourceDescription(void *receiver, MidiSourceDescription *description)
+{
     Mixer *self = receiver;
 
     MidiSourceManager *manager = MidiSourceManagerSharedInstance();
@@ -417,7 +421,8 @@ static void MixerMidiSourceManagerOnUnloadMidiSourceDescription(void *receiver, 
 static MidiSourceManagerObserverCallbacks MixerMidiSourceManagerObserverCallbacks = {
     MixerMidiSourceManagerOnLoadMidiSourceDescription,
     MixerMidiSourceManagerOnLoadAvailableMidiSourceDescription,
-    MixerMidiSourceManagerOnUnloadMidiSourceDescription
+    MixerMidiSourceManagerOnUnloadMidiSourceDescription,
+    MixerMidiSourceManagerOnUnloadAvailableMidiSourceDescription
 };
 
 
