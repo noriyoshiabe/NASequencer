@@ -154,14 +154,14 @@ void NAArrayTraverse(NAArray *self, void (*function)(void *))
 
 void NAArrayTraverseWithContext(NAArray *self, void *context, void (*function)(void *, void *, va_list), ...)
 {
-    va_list argList;
-    va_start(argList, function);
-
     for (int i = 0; i < self->count; ++i) {
-        function(context, (void *)self->values[i], argList);
-    }
+        va_list argList;
+        va_start(argList, function);
 
-    va_end(argList);
+        function(context, (void *)self->values[i], argList);
+
+        va_end(argList);
+    }
 }
 
 void NAArrayApplyAt(NAArray *self, int index, void (*function)(void *))
