@@ -39,7 +39,7 @@ extern MidiSourceDescription *MidiSourceManagerGetDefaultDescription(MidiSourceM
 
 static inline const char *MidiSourceDescriptionError2String(MidiSourceDescriptionError error)
 {
-#define CASE(error) case error: return &(#error[5])
+#define CASE(error) case error: return &(#error[26])
     switch (error) {
     CASE(MidiSourceDescriptionErrorNoError);
     CASE(MidiSourceDescriptionErrorFileNotFound);
