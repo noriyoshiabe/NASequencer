@@ -95,6 +95,26 @@ static void MidiSourceManagerNotifyLoadAvailableMidiSourceDescription(MidiSource
     NAArrayTraverseWithContext(self->observers, _MidiSourceManagerNotifyLoadAvailableMidiSourceDescription, self, description);
 }
 
+static void _MidiSourceManagerNotifyUnloadMidiSourceDescription(MidiSourceManager *self, Observer *observer, va_list argList)
+{
+    observer->callbacks->onUnloadMidiSourceDescription(observer->receiver, va_arg(argList, MidiSourceDescription *));
+}
+
+static void MidiSourceManagerNotifyUnloadMidiSourceDescription(MidiSourceManager *self, MidiSourceDescriptionImpl *description)
+{
+    NAArrayTraverseWithContext(self->observers, _MidiSourceManagerNotifyUnloadMidiSourceDescription, self, description);
+}
+
+static void _MidiSourceManagerNotifyUnloadAvailableMidiSourceDescription(MidiSourceManager *self, Observer *observer, va_list argList)
+{
+    observer->callbacks->onUnloadAvailableMidiSourceDescription(observer->receiver, va_arg(argList, MidiSourceDescription *));
+}
+
+static void MidiSourceManagerNotifyUnloadAvailableMidiSourceDescription(MidiSourceManager *self, MidiSourceDescriptionImpl *description)
+{
+    NAArrayTraverseWithContext(self->observers, _MidiSourceManagerNotifyUnloadAvailableMidiSourceDescription, self, description);
+}
+
 void MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(MidiSourceManager *self, const char *filepath)
 {
     MidiSourceDescriptionImpl *description = NAMapGet(self->descriptionMap, (char *)filepath);
@@ -132,8 +152,10 @@ void MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(MidiSourceManager *
 
             NAMapPut(self->sfSynthMap, description->sf, NAArrayCreate(4, NULL));
 
+            bool notifyUnloadDefault = 0 == NAArrayCount(self->availableDescriptions);
             NAArrayAppend(self->availableDescriptions, description);
             MidiSourceManagerNotifyLoadAvailableMidiSourceDescription(self, description);
+            MidiSourceManagerNotifyUnloadAvailableMidiSourceDescription(self, &DefaultMidiSourceDescription);
         }
     }
 
@@ -142,26 +164,6 @@ void MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(MidiSourceManager *
         NAMapPut(self->descriptionMap, description->filepath, description);
         MidiSourceManagerNotifyLoadMidiSourceDescription(self, description);
     }
-}
-
-static void _MidiSourceManagerNotifyUnloadMidiSourceDescription(MidiSourceManager *self, Observer *observer, va_list argList)
-{
-    observer->callbacks->onUnloadMidiSourceDescription(observer->receiver, va_arg(argList, MidiSourceDescription *));
-}
-
-static void MidiSourceManagerNotifyUnloadMidiSourceDescription(MidiSourceManager *self, MidiSourceDescriptionImpl *description)
-{
-    NAArrayTraverseWithContext(self->observers, _MidiSourceManagerNotifyUnloadMidiSourceDescription, self, description);
-}
-
-static void _MidiSourceManagerNotifyUnloadAvailableMidiSourceDescription(MidiSourceManager *self, Observer *observer, va_list argList)
-{
-    observer->callbacks->onUnloadAvailableMidiSourceDescription(observer->receiver, va_arg(argList, MidiSourceDescription *));
-}
-
-static void MidiSourceManagerNotifyUnloadAvailableMidiSourceDescription(MidiSourceManager *self, MidiSourceDescriptionImpl *description)
-{
-    NAArrayTraverseWithContext(self->observers, _MidiSourceManagerNotifyUnloadAvailableMidiSourceDescription, self, description);
 }
 
 static int MidiSourceDescriptionFindComparator(const void *description1, const void *description2)
