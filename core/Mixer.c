@@ -53,8 +53,7 @@ Mixer *MixerCreate()
     MidiSourceManager *manager = MidiSourceManagerSharedInstance();
     MidiSourceManagerAddObserver(manager, self, &MixerMidiSourceManagerObserverCallbacks);
 
-    NAArray *descriptions = MidiSourceManagerGetAvailableDescriptions(manager);
-    MidiSourceDescription *description = NAArrayGetValueAt(descriptions, 0);
+    MidiSourceDescription *description = MidiSourceManagerGetDefaultDescription(manager);
     MidiSource *source = MidiSourceManagerAllocMidiSource(manager, description);
 
     self->sourceMap = NAMapCreate(NAHashAddress, NULL, NULL);
@@ -393,20 +392,20 @@ static void MixerMidiSourceManagerOnUnloadAvailableMidiSourceDescription(void *r
 
     MidiSource *sourceToUnload = NAMapRemove(self->sourceMap, description);
     if (sourceToUnload) {
-        MidiSourceDescription *defaultDescription = NAArrayGetValueAt(descriptions, 0);
+        MidiSourceDescription *defaultDescription = MidiSourceManagerGetDefaultDescription(manager);
 
         int count = NAArrayCount(self->channels);
         MixerChannel **channels = NAArrayGetValues(self->channels);
         for (int i = 0; i < count; ++i) {
             if (channels[i]->source == sourceToUnload) {
-                MidiSource *source = NAMapGet(self->sourceMap, description); 
+                MidiSource *source = NAMapGet(self->sourceMap, defaultDescription); 
                 if (!source) {
-                    source = MidiSourceManagerAllocMidiSource(manager, description);
-                    NAMapPut(self->sourceMap, description, source);
+                    source = MidiSourceManagerAllocMidiSource(manager, defaultDescription);
+                    NAMapPut(self->sourceMap, defaultDescription, source);
                 }
 
                 channels[i]->source = source;
-                channels[i]->description = description;
+                channels[i]->description = defaultDescription;
 
                 NAMessageQPost(self->msgQ, MixerMessageAttachSource, source);
             }

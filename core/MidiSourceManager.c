@@ -31,6 +31,9 @@ typedef struct Observer {
 static MidiSourceDescriptionImpl *MidiSourceDescriptionImplCreate();
 static void MidiSourceDescriptionImplDestroy(MidiSourceDescriptionImpl *self);
 
+static MidiSource DefaultMidiSource;
+static MidiSourceDescriptionImpl DefaultMidiSourceDescription;
+
 static MidiSourceManager *_sharedInstance = NULL;
 
 static MidiSourceManager *MidiSourceManagerCreate()
@@ -41,8 +44,6 @@ static MidiSourceManager *MidiSourceManagerCreate()
     self->availableDescriptions = NAArrayCreate(4, NULL);
     self->descriptionMap = NAMapCreate(NAHashCString, NULL, NULL);
     self->sfSynthMap = NAMapCreate(NAHashAddress, NULL, NULL);
-
-    // TODO default midi source ?
     return self;
 }
 
@@ -190,6 +191,11 @@ void MidiSourceManagerUnloadMidiSourceDescription(MidiSourceManager *self, MidiS
 MidiSource *MidiSourceManagerAllocMidiSource(MidiSourceManager *self, MidiSourceDescription *_description)
 {
     MidiSourceDescriptionImpl *description = (MidiSourceDescriptionImpl *)_description;
+
+    if (&DefaultMidiSourceDescription == description) {
+        return &DefaultMidiSource;
+    }
+
     if (description->sf) {
         NAArray *midiSources = NAMapGet(self->sfSynthMap, description->sf);
         MidiSource *ret = (MidiSource *)SynthesizerCreate(description->sf, AudioOutGetSampleRate(AudioOutSharedInstance()));
@@ -205,7 +211,7 @@ static int MidiSourceFindComparator(const void *source1, const void *source2)
     return source1 - source2;
 }
 
-void MidiSourceManagerDeallocMidiSource(MidiSourceManager *self, MidiSource *souce)
+void MidiSourceManagerDeallocMidiSource(MidiSourceManager *self, MidiSource *source)
 {
     uint8_t iteratorBuffer[NAMapIteratorSize];
     NAIterator *iterator = NAMapGetIterator(self->sfSynthMap, iteratorBuffer);
@@ -214,12 +220,11 @@ void MidiSourceManagerDeallocMidiSource(MidiSourceManager *self, MidiSource *sou
         SoundFont *sf = entry->key;
         NAArray *sources = entry->value;
 
-        int index = NAArrayFindFirstIndex(sources, sf, MidiSourceFindComparator);
+        int index = NAArrayFindFirstIndex(sources, source, MidiSourceFindComparator);
         if (-1 != index) {
-            MidiSource *source = NAArrayGetValueAt(sources, index);
-            source->destroy(source);
-            
             NAArrayRemoveAt(sources, index);
+            source->destroy(source);
+
             if (NAArrayIsEmpty(sources)) {
                 SoundFontDestroy(sf);
                 NAArrayDestroy(sources);
@@ -241,6 +246,13 @@ NAArray *MidiSourceManagerGetAvailableDescriptions(MidiSourceManager *self)
     return self->availableDescriptions;
 }
 
+MidiSourceDescription *MidiSourceManagerGetDefaultDescription(MidiSourceManager *self)
+{
+    return 0 < NAArrayCount(self->availableDescriptions)
+        ? NAArrayGetValueAt(self->availableDescriptions, 0)
+        : (MidiSourceDescription *)&DefaultMidiSourceDescription;
+}
+
 static MidiSourceDescriptionImpl *MidiSourceDescriptionImplCreate()
 {
     MidiSourceDescriptionImpl *self = calloc(1, sizeof(MidiSourceDescriptionImpl));
@@ -260,3 +272,80 @@ static void MidiSourceDescriptionImplDestroy(MidiSourceDescriptionImpl *self)
 
     free(self);
 }
+
+
+static MidiSourceDescriptionImpl DefaultMidiSourceDescription = {
+    "N/A", "N/A", true, MidiSourceDescriptionErrorNoError, NULL
+};
+
+static PresetInfo DefaultMidiSourcePresetInfo = {
+    "N/A", 0, 0
+};
+
+static void DefaultMidiSourceSend(void *self, uint8_t *bytes, size_t length)
+{
+    printf("RX:");
+    for (int i = 0; i < length; ++i) {
+        printf(" %02X", bytes[i]);
+    }
+    printf("\n");
+}
+
+static bool DefaultMidiSourceIsAvailable(void *self) { return false; }
+static void DefaultMidiSourceComputeAudioSample(void *self, AudioSample *buffer, uint32_t count) { }
+static void DefaultMidiSourceRegisterCallback(void *self, MidiSourceCallback function, void *receiver) { }
+static void DefaultMidiSourceUnregisterCallback(void *self, MidiSourceCallback function, void *receiver) { }
+static void DefaultMidiSourceDestroy(void *self) { }
+static const char *DefaultMidiSourceGetName(void *self) { return "N/A"; }
+static int DefaultMidiSourceGetPresetCount(void *self) { return 1; }
+
+static PresetInfo **DefaultMidiSourceGetPresetInfos(void *self)
+{
+    static PresetInfo *infos[] = {&DefaultMidiSourcePresetInfo};
+    return infos;
+}
+
+static PresetInfo *DefaultMidiSourceGetPresetInfo(void *self, uint8_t channel)
+{
+    return &DefaultMidiSourcePresetInfo;
+}
+
+static void DefaultMidiSourceSetPresetInfo(void *self, uint8_t channel, PresetInfo *presetInfo) { }
+static Level DefaultMidiSourceGetMasterLevel(void *self) { return (Level){0, 0}; }
+static Level DefaultMidiSourceGetChannelLevel(void *self, uint8_t channel) { return (Level){0, 0}; }
+static void DefaultMidiSourceSetMasterVolume(void *self, int16_t cb) { }
+static void DefaultMidiSourceSetVolume(void *self, uint8_t channel, uint8_t value) { }
+static void DefaultMidiSourceSetPan(void *self, uint8_t channel, uint8_t value) { }
+static void DefaultMidiSourceSetChorusSend(void *self, uint8_t channel, uint8_t value) { }
+static void DefaultMidiSourceSetReverbSend(void *self, uint8_t channel, uint8_t value) { }
+static int16_t DefaultMidiSourceGetMasterVolume(void *self) { return 0; }
+static uint8_t DefaultMidiSourceGetVolume(void *self, uint8_t channel) { return 0; }
+static uint8_t DefaultMidiSourceGetPan(void *self, uint8_t channel) { return 0; }
+static uint8_t DefaultMidiSourceGetChorusSend(void *self, uint8_t channel) { return 0; }
+static uint8_t DefaultMidiSourceGetReverbSend(void *self, uint8_t channel) { return 0; }
+
+static MidiSource DefaultMidiSource = {
+    DefaultMidiSourceSend,
+    DefaultMidiSourceIsAvailable,
+    DefaultMidiSourceComputeAudioSample,
+    DefaultMidiSourceRegisterCallback,
+    DefaultMidiSourceUnregisterCallback,
+    DefaultMidiSourceDestroy,
+    DefaultMidiSourceGetName,
+    DefaultMidiSourceGetPresetCount,
+    DefaultMidiSourceGetPresetInfos,
+    DefaultMidiSourceGetPresetInfo,
+    DefaultMidiSourceSetPresetInfo,
+    DefaultMidiSourceGetMasterLevel,
+    DefaultMidiSourceGetChannelLevel,
+    DefaultMidiSourceSetMasterVolume,
+    DefaultMidiSourceSetVolume,
+    DefaultMidiSourceSetPan,
+    DefaultMidiSourceSetChorusSend,
+    DefaultMidiSourceSetReverbSend,
+    DefaultMidiSourceGetMasterVolume,
+    DefaultMidiSourceGetVolume,
+    DefaultMidiSourceGetPan,
+    DefaultMidiSourceGetChorusSend,
+    DefaultMidiSourceGetReverbSend,
+};

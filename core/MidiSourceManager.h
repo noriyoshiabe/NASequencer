@@ -35,6 +35,7 @@ extern MidiSource *MidiSourceManagerAllocMidiSource(MidiSourceManager *self, Mid
 extern void MidiSourceManagerDeallocMidiSource(MidiSourceManager *self, MidiSource *souce);
 extern NAArray *MidiSourceManagerGetDescriptions(MidiSourceManager *self);
 extern NAArray *MidiSourceManagerGetAvailableDescriptions(MidiSourceManager *self);
+extern MidiSourceDescription *MidiSourceManagerGetDefaultDescription(MidiSourceManager *self);
 
 static inline const char *MidiSourceDescriptionError2String(MidiSourceDescriptionError error)
 {
