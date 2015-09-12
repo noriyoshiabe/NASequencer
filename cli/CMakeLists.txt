@@ -5,6 +5,7 @@ project(namidi)
 find_library(LIBEDIT edit)
 
 add_subdirectory (../core ${CMAKE_CURRENT_BINARY_DIR}/core)
+add_subdirectory (../export ${CMAKE_CURRENT_BINARY_DIR}/export)
 
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}
@@ -13,6 +14,7 @@ include_directories(
   ../parser
   ../lib
   ../synthesizer
+  ../export
 )
 
 set(SOURCES
@@ -28,3 +30,4 @@ target_link_libraries(${PROJECT_NAME} namidi-sequence)
 target_link_libraries(${PROJECT_NAME} namidi-parser)
 target_link_libraries(${PROJECT_NAME} namidi-lib)
 target_link_libraries(${PROJECT_NAME} namidi-synthesizer)
+target_link_libraries(${PROJECT_NAME} namidi-export)

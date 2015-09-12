@@ -21,7 +21,7 @@ struct _CLI {
     sigjmp_buf jmpBuf;
 };
 
-extern void CLINAMidiOnParseFinish(void *receiver, Sequence *sequence)
+static void CLINAMidiOnParseFinish(void *receiver, Sequence *sequence)
 {
     printf("called %s\n", __FUNCTION__);
 
@@ -32,7 +32,7 @@ extern void CLINAMidiOnParseFinish(void *receiver, Sequence *sequence)
     PlayerPlay(NAMidiGetPlayer(self->namidi));
 }
 
-extern void CLINAMidiOnParseError(void *receiver, ParseError *error)
+static void CLINAMidiOnParseError(void *receiver, ParseError *error)
 {
     printf("%s: %d:%s %s - %d:%d\n", __FUNCTION__, error->kind, ParseErrorKind2String(error->kind), error->location.filepath, error->location.line, error->location.column);
 }

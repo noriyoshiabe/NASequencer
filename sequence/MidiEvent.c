@@ -124,3 +124,11 @@ void MidiEventDump(MidiEvent *self, int indent)
         break;
     }
 }
+
+int MidiEventComparator(const void *_event1, const void *_event2)
+{
+    const MidiEvent **event1 = (const MidiEvent **)_event1;
+    const MidiEvent **event2 = (const MidiEvent **)_event2;
+
+    return (*event1)->tick - (*event2)->tick;
+}

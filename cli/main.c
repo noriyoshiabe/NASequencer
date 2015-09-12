@@ -5,6 +5,7 @@
 #include <getopt.h>
 
 #include "CLI.h"
+#include "Exporter.h"
 #include "NAUtil.h"
 
 typedef enum {
@@ -85,7 +86,16 @@ int main(int argc, char **argv)
 
         switch (type) {
         case OutputFileTypeSMF:
-            printf("TODO: SMF output is not implemented yet. (-- )v\n");
+            {
+                Exporter *exporter = ExporterCreate(input, NULL);
+                bool success = ExporterWriteToSMF(exporter, output);
+                ExporterDestroy(exporter);
+
+                if (!success) {
+                    fprintf(stderr, "Export failed.\n");
+                    return -1;
+                }
+            }
             break;
         case OutputFileTypeMP3:
             if (!soundSource) {

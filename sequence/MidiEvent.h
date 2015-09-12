@@ -93,3 +93,4 @@ typedef struct _ReverbEvent {
 
 extern void *MidiEventAlloc(MidiEventType type, int tick, int extraSize);
 extern void MidiEventDump(MidiEvent *self, int indent);
+extern int MidiEventComparator(const void *event1, const void *event2);
