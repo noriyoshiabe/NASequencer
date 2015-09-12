@@ -41,7 +41,7 @@ static NAMidiObserverCallbacks CLINAMidiObserverCallbacks = {
     CLINAMidiOnParseError
 };
 
-CLI *CLICreate(const char *filepath)
+CLI *CLICreate(const char *filepath, const char *soundSource)
 {
     CLI *self = calloc(1, sizeof(CLI));
     self->filepath = filepath;
