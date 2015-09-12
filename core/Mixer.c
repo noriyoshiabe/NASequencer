@@ -295,7 +295,7 @@ static void _MixerNotifyChannelStatusChange(Mixer *self, Observer *observer, va_
 
 static void MixerNotifyChannelStatusChange(Mixer *self, MixerChannel *channel)
 {
-    NAArrayTraverseWithContext(self->observers, _MixerNotifyChannelStatusChange, self, channel);
+    NAArrayTraverseWithContext(self->observers, self, _MixerNotifyChannelStatusChange, channel);
 }
 
 static void _MixerNotifyAvailableMidiSourceChange(Mixer *self, Observer *observer, va_list argList)
@@ -305,7 +305,7 @@ static void _MixerNotifyAvailableMidiSourceChange(Mixer *self, Observer *observe
 
 static void MixerNotifyAvailableMidiSourceChange(Mixer *self, NAArray *descriptions)
 {
-    NAArrayTraverseWithContext(self->observers, _MixerNotifyAvailableMidiSourceChange, self, descriptions);
+    NAArrayTraverseWithContext(self->observers, self, _MixerNotifyAvailableMidiSourceChange, descriptions);
 }
 
 static void _MixerNotifyLevelUpdate(Mixer *self, Observer *observer, va_list argList)
@@ -315,7 +315,7 @@ static void _MixerNotifyLevelUpdate(Mixer *self, Observer *observer, va_list arg
 
 static void MixerNotifyLevelUpdate(Mixer *self)
 {
-    NAArrayTraverseWithContext(self->observers, _MixerNotifyLevelUpdate, self, NULL);
+    NAArrayTraverseWithContext(self->observers, self, _MixerNotifyLevelUpdate, NULL);
 }
 
 static void MixerMidiSourceCallback(void *receiver, MidiSource *source, MidiSourceEvent event, void *arg1, void *arg2)

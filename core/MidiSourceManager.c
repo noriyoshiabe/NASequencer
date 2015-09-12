@@ -82,7 +82,7 @@ static void _MidiSourceManagerNotifyLoadMidiSourceDescription(MidiSourceManager 
 
 static void MidiSourceManagerNotifyLoadMidiSourceDescription(MidiSourceManager *self, MidiSourceDescriptionImpl *description)
 {
-    NAArrayTraverseWithContext(self->observers, _MidiSourceManagerNotifyLoadMidiSourceDescription, self, description);
+    NAArrayTraverseWithContext(self->observers, self, _MidiSourceManagerNotifyLoadMidiSourceDescription, description);
 }
 
 static void _MidiSourceManagerNotifyLoadAvailableMidiSourceDescription(MidiSourceManager *self, Observer *observer, va_list argList)
@@ -92,7 +92,7 @@ static void _MidiSourceManagerNotifyLoadAvailableMidiSourceDescription(MidiSourc
 
 static void MidiSourceManagerNotifyLoadAvailableMidiSourceDescription(MidiSourceManager *self, MidiSourceDescriptionImpl *description)
 {
-    NAArrayTraverseWithContext(self->observers, _MidiSourceManagerNotifyLoadAvailableMidiSourceDescription, self, description);
+    NAArrayTraverseWithContext(self->observers, self, _MidiSourceManagerNotifyLoadAvailableMidiSourceDescription, description);
 }
 
 static void _MidiSourceManagerNotifyUnloadMidiSourceDescription(MidiSourceManager *self, Observer *observer, va_list argList)
@@ -102,7 +102,7 @@ static void _MidiSourceManagerNotifyUnloadMidiSourceDescription(MidiSourceManage
 
 static void MidiSourceManagerNotifyUnloadMidiSourceDescription(MidiSourceManager *self, MidiSourceDescriptionImpl *description)
 {
-    NAArrayTraverseWithContext(self->observers, _MidiSourceManagerNotifyUnloadMidiSourceDescription, self, description);
+    NAArrayTraverseWithContext(self->observers, self, _MidiSourceManagerNotifyUnloadMidiSourceDescription, description);
 }
 
 static void _MidiSourceManagerNotifyUnloadAvailableMidiSourceDescription(MidiSourceManager *self, Observer *observer, va_list argList)
@@ -112,7 +112,7 @@ static void _MidiSourceManagerNotifyUnloadAvailableMidiSourceDescription(MidiSou
 
 static void MidiSourceManagerNotifyUnloadAvailableMidiSourceDescription(MidiSourceManager *self, MidiSourceDescriptionImpl *description)
 {
-    NAArrayTraverseWithContext(self->observers, _MidiSourceManagerNotifyUnloadAvailableMidiSourceDescription, self, description);
+    NAArrayTraverseWithContext(self->observers, self, _MidiSourceManagerNotifyUnloadAvailableMidiSourceDescription, description);
 }
 
 void MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(MidiSourceManager *self, const char *filepath)
