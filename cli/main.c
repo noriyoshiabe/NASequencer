@@ -1,19 +1,13 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 #include <signal.h>
 #include <getopt.h>
 
 #include "CLI.h"
-#include "Exporter.h"
-#include "NAUtil.h"
 
-typedef enum {
-    OutputFileTypeSMF,
-    OutputFileTypeMP3,
-    OutputFileTypeUnknown,
-} OutputFileType;
-
+static void showError(CLIError error);
 static void showHelp();
 
 static struct option _options[] = {
@@ -48,9 +42,9 @@ int main(int argc, char **argv)
             break;
         case 'h':
             showHelp();
-            return 0;
+            return EXIT_SUCCESS;
         case '?':
-            return -1;
+            return EXIT_FAILURE;
         }
     }
 
@@ -58,66 +52,51 @@ int main(int argc, char **argv)
         input = argv[optind];
     }
 
+    _cli = CLICreate(input, soundSource);
+
+    CLIError error;
     if (output) {
-        if (!input) {
-            fprintf(stderr, "-o, --output option is specifid with no input source file\n");
-            return -1;
-        }
-
-        const char *ext = NAUtilGetFileExtenssion(output);
-        const struct {
-            const char *ext;
-            OutputFileType type;
-        } table[] = {
-            {"mid", OutputFileTypeSMF},
-            {"midi", OutputFileTypeSMF},
-            {"smf", OutputFileTypeSMF},
-            {"mp3", OutputFileTypeMP3},
-        };
-
-        OutputFileType type = OutputFileTypeUnknown;
-
-        for (int i = 0; i < sizeof(table) / sizeof(table[0]); ++i) {
-            if (0 == strcmp(table[i].ext, ext)) {
-                type = table[i].type;
-                break;
-            }
-        }
-
-        switch (type) {
-        case OutputFileTypeSMF:
-            {
-                Exporter *exporter = ExporterCreate(input, NULL);
-                bool success = ExporterWriteToSMF(exporter, output);
-                ExporterDestroy(exporter);
-
-                if (!success) {
-                    fprintf(stderr, "Export failed.\n");
-                    return -1;
-                }
-            }
-            break;
-        case OutputFileTypeMP3:
-            if (!soundSource) {
-                fprintf(stderr, "MP3 output requires valid synthesizer with -s, --sound-font option.\n");
-                return -1;
-            }
-            
-            printf("TODO: MP3 output is not implemented yet. (-- )v\n");
-            break;
-        case OutputFileTypeUnknown:
-            fprintf(stderr, "Unsupported output file type .%s\n", ext);
-            return -1;
-        }
+        error = CLIExport(_cli, output);
     }
     else {
         signal(SIGINT, signalHandler);
-        _cli = CLICreate(input, soundSource);
-        CLIRun(_cli);
-        CLIDestroy(_cli);
+        error = CLIRunShell(_cli);
     }
 
-    return 0;
+    CLIDestroy(_cli);
+
+    if (CLIErrorNoError != error) {
+        showError(error);
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
+}
+
+static void showError(CLIError error)
+{
+    switch (error) {
+    case CLIErrorNoError:
+        break;
+    case CLIErrorExportWithNoInputFile:
+        fprintf(stderr, "-o, --output option is specifid with no input source file\n");
+        break;
+    case CLIErrorExportWithUnsupportedFileType:
+        fprintf(stderr, "Unsupported output file type.\n");
+        break;
+    case CLIErrorExportWithParseFailed:
+        fprintf(stderr, "Parse failed.\n");
+        break;
+    case CLIErrorExportWithNoSoundSource:
+        fprintf(stderr, "WAV and MP3 output require valid sound source with -s, --sound-font option.\n");
+        break;
+    case CLIErrorExportWithSoundSourceLoadFailed:
+        fprintf(stderr, "Load sound source failed.\n");
+        break;
+    case CLIErrorExportWithCannotWriteToOutputFile:
+        fprintf(stderr, "Cannot write to output file.\n");
+        break;
+    }
 }
 
 static void showHelp()
@@ -125,8 +104,8 @@ static void showHelp()
     printf(
           "Usage: namidi [options] [file]\n"
           "Options:\n"
-          " -o, --outout <file>      Write output to SMF or MP3.\n"
-          "                          MP3 output requires valid synthesizer with -s, --sound-font option.\n"
+          " -o, --outout <file>      Write output to SMF, WAV or MP3.\n"
+          "                          WAV and MP3 output require valid synthesizer with -s, --sound-font option.\n"
           " -s, --sound-font <file>  Specify sound font file for synthesizer.\n"
           " -h, --help               This help text.\n"
           );

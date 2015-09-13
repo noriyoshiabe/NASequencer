@@ -128,6 +128,14 @@ void SMFWriterAppendTempo(SMFWriter *self, int32_t tick, float tempo)
     writeToTrack(self, 0, bytes, sizeof(bytes));
 }
 
+void SMFWriterAppendKey(SMFWriter *self, int32_t tick, uint8_t sf, uint8_t mi)
+{
+    writeDeltaTime(self, 0, tick);
+    uint8_t bytes[5] = {0xFF, 0x59, 0x02, sf, mi};
+
+    writeToTrack(self, 0, bytes, sizeof(bytes));
+}
+
 void SMFWriterAppendMarker(SMFWriter *self, int32_t tick, const char *text)
 {
     writeDeltaTime(self, 0, tick);
@@ -159,18 +167,20 @@ void SMFWriterAppendNoteOff(SMFWriter *self, int32_t tick, uint8_t channel, uint
     writeToTrack(self, channel, bytes, sizeof(bytes));
 }
 
-void SMFWriterAppendSound(SMFWriter *self, int32_t tick, uint8_t channel, uint8_t msb, uint8_t lsb, uint8_t programNo)
+void SMFWriterAppendControlChange(SMFWriter *self, int32_t tick, uint8_t channel, uint8_t ccNo, uint8_t value)
 {
-    uint8_t msbBytes[3] = {0xB0 | (channel - 1), 0x00, msb};
-    uint8_t lsbBytes[3] = {0xB0 | (channel - 1), 0x20, lsb};
-    uint8_t programNoBytes[2] = {0xC0 | (channel - 1), programNo};
+    uint8_t bytes[3] = {0xB0 | (channel - 1), ccNo, value};
 
     writeDeltaTime(self, channel, tick);
-    writeToTrack(self, channel, msbBytes, sizeof(msbBytes));
+    writeToTrack(self, channel, bytes, sizeof(bytes));
+}
+
+void SMFWriterAppendProgramChange(SMFWriter *self, int32_t tick, uint8_t channel, uint8_t programNo)
+{
+    uint8_t bytes[2] = {0xC0 | (channel - 1), programNo};
+
     writeDeltaTime(self, channel, tick);
-    writeToTrack(self, channel, lsbBytes, sizeof(lsbBytes));
-    writeDeltaTime(self, channel, tick);
-    writeToTrack(self, channel, programNoBytes, sizeof(programNoBytes));
+    writeToTrack(self, channel, bytes, sizeof(bytes));
 }
 
 static void appendTrackEnd(SMFWriter *self)

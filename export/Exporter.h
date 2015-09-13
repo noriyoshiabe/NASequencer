@@ -5,6 +5,6 @@
 
 typedef struct _Exporter Exporter;
 
-extern Exporter *ExporterCreate(const char *filepath, const char *soundSource);
+extern Exporter *ExporterCreate(Sequence *sequence);
 extern void ExporterDestroy(Exporter *self);
 extern bool ExporterWriteToSMF(Exporter *self, const char *filepath);

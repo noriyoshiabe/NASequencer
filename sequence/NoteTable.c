@@ -319,3 +319,38 @@ int NoteTableGetNoteNo(KeySign keySign, BaseNote baseNote, Accidental accidental
 
     return noteTable[keySign][baseNote][accidental] + (octave + 2) * 12;
 }
+
+void KeySignGetMidiExpression(KeySign keySign, uint8_t *sf, uint8_t *mi)
+{
+    const uint8_t table[KeySignSize][2] = {
+        {0x00, 0}, // KeySignCMajor
+        {0x01, 0}, // KeySignGMajor
+        {0x02, 0}, // KeySignDMajor
+        {0x03, 0}, // KeySignAMajor
+        {0x04, 0}, // KeySignEMajor
+        {0x05, 0}, // KeySignBMajor
+        {0xFF, 0}, // KeySignFMajor
+        {0xFE, 0}, // KeySignBFlatMajor
+        {0xFD, 0}, // KeySignEFlatMajor
+        {0xFC, 0}, // KeySignAFlatMajor
+        {0xFB, 0}, // KeySignDFlatMajor
+        {0xFA, 0}, // KeySignGFlatMajor
+        {0x06, 0}, // KeySignFSharpMajor
+        {0x00, 1}, // KeySignAMinor
+        {0x01, 1}, // KeySignEMinor
+        {0x02, 1}, // KeySignBMinor
+        {0x03, 1}, // KeySignFSharpMinor
+        {0x04, 1}, // KeySignCSharpMinor
+        {0x05, 1}, // KeySignGSharpMinor
+        {0xFF, 1}, // KeySignDMinor
+        {0xFE, 1}, // KeySignGMinor
+        {0xFD, 1}, // KeySignCMinor
+        {0xFC, 1}, // KeySignFMinor
+        {0xFB, 1}, // KeySignBFlatMinor
+        {0xFA, 1}, // KeySignEFlatMinor
+        {0x06, 1}, // KeySignDSharpMinor
+    };
+
+    *sf = table[keySign][0];
+    *mi = table[keySign][1];
+}

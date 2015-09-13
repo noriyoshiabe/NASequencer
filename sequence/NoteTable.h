@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdint.h>
 #include <stdbool.h>
 
 typedef enum {
@@ -62,6 +63,8 @@ typedef enum {
 
 extern KeySign NoteTableGetKeySign(char keyChar, bool sharp, bool flat, bool major);
 extern int NoteTableGetNoteNo(KeySign keySign, BaseNote baseNote, Accidental accidental, int octave);
+
+extern void KeySignGetMidiExpression(KeySign keySign, uint8_t *sf, uint8_t *mi);
 
 static inline char *KeySign2String(KeySign keySign)
 {

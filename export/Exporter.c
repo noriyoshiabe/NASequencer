@@ -2,57 +2,30 @@
 #include "NAMidi.h"
 #include "SMFWriter.h"
 #include "NAArray.h"
+#include "NASet.h"
 
 #include <stdlib.h>
 
 struct _Exporter {
-    const char *filepath;
-    const char *soundSource;
-    NAMidi *namidi;
     Sequence *sequence;
 };
 
-static void ExporterNAMidiOnParseFinish(void *receiver, Sequence *sequence)
-{
-    Exporter *self = receiver;
-    self->sequence = sequence;
-}
 
-static void ExporterNAMidiOnParseError(void *receiver, ParseError *error)
-{
-    printf("%s %s - %d:%d\n", ParseErrorKind2String(error->kind), error->location.filepath, error->location.line, error->location.column);
-}
-
-static NAMidiObserverCallbacks ExporterNAMidiObserverCallbacks = {
-    ExporterNAMidiOnParseFinish,
-    ExporterNAMidiOnParseError
-};
-
-
-Exporter *ExporterCreate(const char *filepath, const char *soundSource)
+Exporter *ExporterCreate(Sequence *sequence)
 {
     Exporter *self = calloc(1, sizeof(Exporter));
-    self->filepath = filepath;
-    self->soundSource = soundSource;
-    self->namidi = NAMidiCreate();
-    NAMidiAddObserver(self->namidi, self, &ExporterNAMidiObserverCallbacks);
+    self->sequence = SequenceRetain(sequence);
     return self;
 }
 
 void ExporterDestroy(Exporter *self)
 {
-    NAMidiDestroy(self->namidi);
+    SequenceRelease(self->sequence);
     free(self);
 }
 
 bool ExporterWriteToSMF(Exporter *self, const char *filepath)
 {
-    NAMidiParse(self->namidi, self->filepath);
-
-    if (!self->sequence) {
-        return false;
-    }
-
     SMFWriter *writer = SMFWriterCreate(filepath);
 
     int count;
@@ -61,7 +34,7 @@ bool ExporterWriteToSMF(Exporter *self, const char *filepath)
     count = NAArrayCount(self->sequence->events);
     events = NAArrayGetValues(self->sequence->events);
 
-    NAArray *noteOffEvents = NAArrayCreate(count, NULL);
+    NASet *noteOffEvents = NASetCreate(NAHashAddress, NULL);
     NAArray *toWrite = NAArrayCreate(((count * 2 / 1024) + 1) * 1024, NULL);
 
     for (int i = 0; i < count; ++i) {
@@ -69,8 +42,13 @@ bool ExporterWriteToSMF(Exporter *self, const char *filepath)
 
         if (MidiEventTypeNote == events[i]->type) {
             NoteEvent *noteOn = (NoteEvent *)events[i];
+
             NoteEvent *noteOff = MidiEventAlloc(MidiEventTypeNote, noteOn->tick + noteOn->gatetime, sizeof(NoteEvent) - sizeof(MidiEvent));
-            NAArrayAppend(noteOffEvents, noteOff);
+            noteOff->channel = noteOn->channel;
+            noteOff->noteNo = noteOn->noteNo;
+            noteOff->velocity = 0;
+
+            NASetAdd(noteOffEvents, noteOff);
             NAArrayAppend(toWrite, noteOff);
         }
     }
@@ -82,13 +60,83 @@ bool ExporterWriteToSMF(Exporter *self, const char *filepath)
 
     SMFWriterSetResolution(writer, TimeTableResolution(self->sequence->timeTable));
 
-
-
+    for (int i = 0; i < count; ++i) {
+        switch (events[i]->type) {
+        case MidiEventTypeNote:
+            {
+                NoteEvent *note = (NoteEvent *)events[i];
+                if (NASetContains(noteOffEvents, note)) {
+                    SMFWriterAppendNoteOff(writer, note->tick, note->channel, note->noteNo, note->velocity);
+                } else {
+                    SMFWriterAppendNoteOn(writer, note->tick, note->channel, note->noteNo, note->velocity);
+                }
+            }
+            break;
+        case MidiEventTypeTime:
+            {
+                TimeEvent *time = (TimeEvent *)events[i];
+                SMFWriterAppendTime(writer, time->tick, time->numerator, time->denominator);
+            }
+            break;
+        case MidiEventTypeKey:
+            {
+                KeyEvent *key = (KeyEvent *)events[i];
+                uint8_t sf, mi;
+                KeySignGetMidiExpression(key->keySign, &sf, &mi);
+                SMFWriterAppendKey(writer, key->tick, sf, mi);
+            }
+            break;
+        case MidiEventTypeTempo:
+            {
+                TempoEvent *tempo = (TempoEvent *)events[i];
+                SMFWriterAppendTempo(writer, tempo->tick, tempo->tempo);
+            }
+            break;
+        case MidiEventTypeMarker:
+            {
+                MarkerEvent *marker = (MarkerEvent *)events[i];
+                SMFWriterAppendMarker(writer, marker->tick, marker->text);
+            }
+            break;
+        case MidiEventTypeVoice:
+            {
+                VoiceEvent *voice = (VoiceEvent *)events[i];
+                SMFWriterAppendControlChange(writer, voice->tick, voice->channel, 0x00, voice->msb);
+                SMFWriterAppendControlChange(writer, voice->tick, voice->channel, 0x20, voice->lsb);
+                SMFWriterAppendProgramChange(writer, voice->tick, voice->channel, voice->programNo);
+            }
+            break;
+        case MidiEventTypeVolume:
+            {
+                VolumeEvent *event = (VolumeEvent *)events[i];
+                SMFWriterAppendControlChange(writer, event->tick, event->channel, 7, event->value);
+            }
+            break;
+        case MidiEventTypePan:
+            {
+                PanEvent *event = (PanEvent *)events[i];
+                SMFWriterAppendControlChange(writer, event->tick, event->channel, 10, event->value);
+            }
+            break;
+        case MidiEventTypeChorus:
+            {
+                ChorusEvent *event = (ChorusEvent *)events[i];
+                SMFWriterAppendControlChange(writer, event->tick, event->channel, 93, event->value);
+            }
+            break;
+        case MidiEventTypeReverb:
+            {
+                ReverbEvent *event = (ReverbEvent *)events[i];
+                SMFWriterAppendControlChange(writer, event->tick, event->channel, 91, event->value);
+            }
+            break;
+        }
+    }
 
     bool ret = SMFWriterSerialize(writer);
 
-    NAArrayTraverse(noteOffEvents, free);
-    NAArrayDestroy(noteOffEvents);
+    NASetTraverse(noteOffEvents, free);
+    NASetDestroy(noteOffEvents);
     NAArrayDestroy(toWrite);
 
     SequenceRelease(self->sequence);
