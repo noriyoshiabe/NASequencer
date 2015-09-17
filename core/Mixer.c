@@ -55,7 +55,7 @@ Mixer *MixerCreate(AudioOut *audioOut)
     MidiSourceManagerAddObserver(manager, self, &MixerMidiSourceManagerObserverCallbacks);
 
     MidiSourceDescription *description = MidiSourceManagerGetDefaultDescription(manager);
-    MidiSource *source = MidiSourceManagerAllocMidiSource(manager, description);
+    MidiSource *source = MidiSourceManagerAllocMidiSource(manager, description, self->audioOut->getSampleRate(self->audioOut));
 
     self->sourceMap = NAMapCreate(NAHashAddress, NULL, NULL);
     NAMapPut(self->sourceMap, description, source);
@@ -401,7 +401,7 @@ static void MixerMidiSourceManagerOnUnloadAvailableMidiSourceDescription(void *r
             if (channels[i]->source == sourceToUnload) {
                 MidiSource *source = NAMapGet(self->sourceMap, defaultDescription); 
                 if (!source) {
-                    source = MidiSourceManagerAllocMidiSource(manager, defaultDescription);
+                    source = MidiSourceManagerAllocMidiSource(manager, defaultDescription, self->audioOut->getSampleRate(self->audioOut));
                     NAMapPut(self->sourceMap, defaultDescription, source);
                 }
 
@@ -492,7 +492,8 @@ void MixerChannelSetMidiSourceDescription(MixerChannel *self, MidiSourceDescript
 
     if (!self->source) {
         MidiSourceManager *manager = MidiSourceManagerSharedInstance();
-        self->source = MidiSourceManagerAllocMidiSource(manager, description);
+        AudioOut *audioOut = self->mixer->audioOut;
+        self->source = MidiSourceManagerAllocMidiSource(manager, description, audioOut->getSampleRate(audioOut));
         NAMapPut(self->mixer->sourceMap, description, self->source);
     }
 
