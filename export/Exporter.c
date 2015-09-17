@@ -1,6 +1,7 @@
 #include "Exporter.h"
-#include "NAMidi.h"
 #include "SMFWriter.h"
+#include "AudioOut.h"
+#include "Mixer.h"
 #include "WaveWriter.h"
 #include "NAArray.h"
 #include "NASet.h"
@@ -12,6 +13,16 @@ struct _Exporter {
     NASet *noteOffEvents;
     NAArray *eventsToWrite;
 };
+
+typedef struct _ExporterAudioBuffer {
+    AudioOut audioOut;
+    void *receiver;
+    AudioCallback callback;
+    AudioSample buffer[64];
+} ExporterAudioBuffer;
+
+static ExporterAudioBuffer *ExporterAudioBufferCreate();
+static void ExporterAudioBufferDestroy(ExporterAudioBuffer *self);
 
 
 Exporter *ExporterCreate(Sequence *sequence)
@@ -166,12 +177,57 @@ bool ExporterWriteToWave(Exporter *self, const char *filepath)
 
     ExporterBuildEventsToWrite(self);
 
+    ExporterAudioBuffer *audioBuffer = ExporterAudioBufferCreate();
+    Mixer *mixer = MixerCreate((AudioOut *)audioBuffer);
+
     int count = NAArrayCount(self->eventsToWrite);
     MidiEvent **events = NAArrayGetValues(self->eventsToWrite);
 
     // TODO
 
     bool ret = WaveWriterSerialize(writer);
+
+    MixerDestroy(mixer);
+    ExporterAudioBufferDestroy(audioBuffer);
     WaveWriterDestroy(writer);
+
     return ret;
+}
+
+
+static double ExporterAudioBufferGetSampleRate(AudioOut *self);
+static void ExporterAudioBufferRegisterCallback(AudioOut *self, AudioCallback function, void *receiver);
+static void ExporterAudioBufferUnregisterCallback(AudioOut *self, AudioCallback function, void *receiver);
+
+static ExporterAudioBuffer *ExporterAudioBufferCreate()
+{
+    ExporterAudioBuffer *self = calloc(1, sizeof(ExporterAudioBuffer));
+    self->audioOut.getSampleRate = ExporterAudioBufferGetSampleRate;
+    self->audioOut.registerCallback = ExporterAudioBufferRegisterCallback;
+    self->audioOut.unregisterCallback = ExporterAudioBufferUnregisterCallback;
+    return self;
+}
+
+static void ExporterAudioBufferDestroy(ExporterAudioBuffer *self)
+{
+    free(self);
+}
+
+static double ExporterAudioBufferGetSampleRate(AudioOut *self)
+{
+    return 44100.0;
+}
+
+static void ExporterAudioBufferRegisterCallback(AudioOut *_self, AudioCallback function, void *receiver)
+{
+    ExporterAudioBuffer *self = (ExporterAudioBuffer *)_self;
+    self->callback = function;
+    self->receiver = receiver;
+}
+
+static void ExporterAudioBufferUnregisterCallback(AudioOut *_self, AudioCallback function, void *receiver)
+{
+    ExporterAudioBuffer *self = (ExporterAudioBuffer *)_self;
+    self->callback = NULL;
+    self->receiver = NULL;
 }
