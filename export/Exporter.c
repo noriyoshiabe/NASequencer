@@ -1,6 +1,7 @@
 #include "Exporter.h"
 #include "NAMidi.h"
 #include "SMFWriter.h"
+#include "WaveWriter.h"
 #include "NAArray.h"
 #include "NASet.h"
 
@@ -8,6 +9,8 @@
 
 struct _Exporter {
     Sequence *sequence;
+    NASet *noteOffEvents;
+    NAArray *eventsToWrite;
 };
 
 
@@ -20,8 +23,44 @@ Exporter *ExporterCreate(Sequence *sequence)
 
 void ExporterDestroy(Exporter *self)
 {
+    if (self->noteOffEvents) {
+        NASetTraverse(self->noteOffEvents, free);
+        NASetDestroy(self->noteOffEvents);
+    }
+
+    if (self->eventsToWrite) {
+        NAArrayDestroy(self->eventsToWrite);
+    }
+
     SequenceRelease(self->sequence);
     free(self);
+}
+
+static void ExporterBuildEventsToWrite(Exporter *self)
+{
+    int count = NAArrayCount(self->sequence->events);
+    MidiEvent **events = NAArrayGetValues(self->sequence->events);
+
+    self->noteOffEvents = NASetCreate(NAHashAddress, NULL);
+    self->eventsToWrite = NAArrayCreate(((count * 2 / 1024) + 1) * 1024, NULL);
+
+    for (int i = 0; i < count; ++i) {
+        NAArrayAppend(self->eventsToWrite, events[i]);
+
+        if (MidiEventTypeNote == events[i]->type) {
+            NoteEvent *noteOn = (NoteEvent *)events[i];
+
+            NoteEvent *noteOff = MidiEventAlloc(MidiEventTypeNote, noteOn->tick + noteOn->gatetime, sizeof(NoteEvent) - sizeof(MidiEvent));
+            noteOff->channel = noteOn->channel;
+            noteOff->noteNo = noteOn->noteNo;
+            noteOff->velocity = 0;
+
+            NASetAdd(self->noteOffEvents, noteOff);
+            NAArrayAppend(self->eventsToWrite, noteOff);
+        }
+    }
+
+    NAArraySort(self->eventsToWrite, MidiEventComparator);
 }
 
 bool ExporterWriteToSMF(Exporter *self, const char *filepath)
@@ -32,35 +71,10 @@ bool ExporterWriteToSMF(Exporter *self, const char *filepath)
         return false;
     }
 
-    int count;
-    MidiEvent **events;
+    ExporterBuildEventsToWrite(self);
 
-    count = NAArrayCount(self->sequence->events);
-    events = NAArrayGetValues(self->sequence->events);
-
-    NASet *noteOffEvents = NASetCreate(NAHashAddress, NULL);
-    NAArray *toWrite = NAArrayCreate(((count * 2 / 1024) + 1) * 1024, NULL);
-
-    for (int i = 0; i < count; ++i) {
-        NAArrayAppend(toWrite, events[i]);
-
-        if (MidiEventTypeNote == events[i]->type) {
-            NoteEvent *noteOn = (NoteEvent *)events[i];
-
-            NoteEvent *noteOff = MidiEventAlloc(MidiEventTypeNote, noteOn->tick + noteOn->gatetime, sizeof(NoteEvent) - sizeof(MidiEvent));
-            noteOff->channel = noteOn->channel;
-            noteOff->noteNo = noteOn->noteNo;
-            noteOff->velocity = 0;
-
-            NASetAdd(noteOffEvents, noteOff);
-            NAArrayAppend(toWrite, noteOff);
-        }
-    }
-
-    NAArraySort(toWrite, MidiEventComparator);
-
-    count = NAArrayCount(toWrite);
-    events = NAArrayGetValues(toWrite);
+    int count = NAArrayCount(self->eventsToWrite);
+    MidiEvent **events = NAArrayGetValues(self->eventsToWrite);
 
     SMFWriterSetResolution(writer, TimeTableResolution(self->sequence->timeTable));
 
@@ -69,7 +83,7 @@ bool ExporterWriteToSMF(Exporter *self, const char *filepath)
         case MidiEventTypeNote:
             {
                 NoteEvent *note = (NoteEvent *)events[i];
-                if (NASetContains(noteOffEvents, note)) {
+                if (NASetContains(self->noteOffEvents, note)) {
                     SMFWriterAppendNoteOff(writer, note->tick, note->channel, note->noteNo, note->velocity);
                 } else {
                     SMFWriterAppendNoteOn(writer, note->tick, note->channel, note->noteNo, note->velocity);
@@ -138,13 +152,26 @@ bool ExporterWriteToSMF(Exporter *self, const char *filepath)
     }
 
     bool ret = SMFWriterSerialize(writer);
-
-    NASetTraverse(noteOffEvents, free);
-    NASetDestroy(noteOffEvents);
-    NAArrayDestroy(toWrite);
-
-    SequenceRelease(self->sequence);
     SMFWriterDestroy(writer);
+    return ret;
+}
 
+bool ExporterWriteToWave(Exporter *self, const char *filepath)
+{
+    WaveWriter *writer = WaveWriterCreate();
+    if (!WaveWriterOpenFile(writer, filepath)) {
+        WaveWriterDestroy(writer);
+        return false;
+    }
+
+    ExporterBuildEventsToWrite(self);
+
+    int count = NAArrayCount(self->eventsToWrite);
+    MidiEvent **events = NAArrayGetValues(self->eventsToWrite);
+
+    // TODO
+
+    bool ret = WaveWriterSerialize(writer);
+    WaveWriterDestroy(writer);
     return ret;
 }

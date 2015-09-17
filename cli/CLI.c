@@ -42,7 +42,7 @@ CLI *CLICreate(const char *filepath, const char *soundSource)
 
 void CLIDestroy(CLI *self)
 {
-    MidiSourceManagerRemoveObserver(MidiSourceManagerSharedInstance(), self);
+    MidiSourceManagerRemoveObserver(self->manager, self);
     NAMidiRemoveObserver(self->namidi, self);
     NAMidiDestroy(self->namidi);
     free(self);
@@ -55,7 +55,7 @@ CLIError CLIRunShell(CLI *self)
     int historyCount = 0;
 
     if (self->soundSource) {
-        MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(MidiSourceManagerSharedInstance(), self->soundSource);
+        MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(self->manager, self->soundSource);
     }
 
     if (self->filepath) {
@@ -148,8 +148,18 @@ static CLIError CLIExportSMF(CLI *self, Sequence *sequence, const char *output)
 
 static CLIError CLIExportWAV(CLI *self, Sequence *sequence, const char *output)
 {
-    printf("TODO: WAV output is not implemented yet. (-- )v\n");
-    return CLIErrorNoError;
+    if (!self->soundSource) {
+        return CLIErrorExportWithNoSoundSource;
+    }
+
+    if (!MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(self->manager, self->soundSource)) {
+        return CLIErrorExportWithSoundSourceLoadFailed;
+    }
+
+    Exporter *exporter = ExporterCreate(sequence);
+    bool success = ExporterWriteToWave(exporter, output);
+    ExporterDestroy(exporter);
+    return success ? CLIErrorNoError : CLIErrorExportWithCannotWriteToOutputFile;
 }
 
 static CLIError CLIExportMP3(CLI *self, Sequence *sequence, const char *output)

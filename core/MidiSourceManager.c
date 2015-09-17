@@ -115,7 +115,7 @@ static void MidiSourceManagerNotifyUnloadAvailableMidiSourceDescription(MidiSour
     NAArrayTraverseWithContext(self->observers, self, _MidiSourceManagerNotifyUnloadAvailableMidiSourceDescription, description);
 }
 
-void MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(MidiSourceManager *self, const char *filepath)
+bool MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(MidiSourceManager *self, const char *filepath)
 {
     MidiSourceDescriptionImpl *description = NAMapGet(self->descriptionMap, (char *)filepath);
 
@@ -164,6 +164,8 @@ void MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(MidiSourceManager *
         NAMapPut(self->descriptionMap, description->filepath, description);
         MidiSourceManagerNotifyLoadMidiSourceDescription(self, description);
     }
+
+    return !!description->sf;
 }
 
 static int MidiSourceDescriptionFindComparator(const void *description1, const void *description2)

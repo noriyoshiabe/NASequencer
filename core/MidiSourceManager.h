@@ -29,7 +29,7 @@ typedef struct _MidiSourceManager MidiSourceManager;
 extern MidiSourceManager *MidiSourceManagerSharedInstance();
 extern void MidiSourceManagerAddObserver(MidiSourceManager *self, void *receiver, MidiSourceManagerObserverCallbacks *callbacks);
 extern void MidiSourceManagerRemoveObserver(MidiSourceManager *self, void *receiver);
-extern void MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(MidiSourceManager *self, const char *filepath);
+extern bool MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(MidiSourceManager *self, const char *filepath);
 extern void MidiSourceManagerUnloadMidiSourceDescription(MidiSourceManager *self, MidiSourceDescription *description);
 extern MidiSource *MidiSourceManagerAllocMidiSource(MidiSourceManager *self, MidiSourceDescription *description);
 extern void MidiSourceManagerDeallocMidiSource(MidiSourceManager *self, MidiSource *souce);
