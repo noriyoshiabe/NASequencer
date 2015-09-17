@@ -4,6 +4,7 @@
 #include "NAArray.h"
 #include "MidiSource.h"
 #include "MidiSourceManager.h"
+#include "AudioOut.h"
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -17,7 +18,7 @@ typedef struct _MixerObserverCallbacks {
     void (*onLevelUpdate)(void *receiver);
 } MixerObserverCallbacks;
 
-extern Mixer *MixerCreate();
+extern Mixer *MixerCreate(AudioOut *audioOut);
 extern void MixerDestroy(Mixer *self);
 extern void MixerAddObserver(Mixer *self, void *receiver, MixerObserverCallbacks *callbacks);
 extern void MixerRemoveObserver(Mixer *self, void *receiver);

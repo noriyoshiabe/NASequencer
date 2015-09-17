@@ -1,5 +1,6 @@
 #include "NAMidi.h"
 #include "FSWatcher.h"
+#include "AudioOut.h"
 #include "NAArray.h"
 #include "NAMap.h"
 
@@ -31,7 +32,7 @@ NAMidi *NAMidiCreate()
 {
     NAMidi *self = calloc(1, sizeof(NAMidi));
     self->observers = NAArrayCreate(4, NULL);
-    self->mixer = MixerCreate();
+    self->mixer = MixerCreate(AudioOutSharedInstance());
     self->player = PlayerCreate(self->mixer);
     return self;
 }

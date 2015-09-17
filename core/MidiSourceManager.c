@@ -202,7 +202,8 @@ MidiSource *MidiSourceManagerAllocMidiSource(MidiSourceManager *self, MidiSource
 
     if (description->sf) {
         NAArray *midiSources = NAMapGet(self->sfSynthMap, description->sf);
-        MidiSource *ret = (MidiSource *)SynthesizerCreate(description->sf, AudioOutGetSampleRate(AudioOutSharedInstance()));
+        AudioOut *audioOut = AudioOutSharedInstance();
+        MidiSource *ret = (MidiSource *)SynthesizerCreate(description->sf, audioOut->getSampleRate(audioOut));
         NAArrayAppend(midiSources, ret);
         return ret;
     }

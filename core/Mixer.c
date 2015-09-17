@@ -1,5 +1,4 @@
 #include "Mixer.h"
-#include "AudioOut.h"
 #include "Define.h"
 #include "NAMap.h"
 #include "NAMessageQ.h"
@@ -15,6 +14,7 @@ typedef enum _MixerMessage {
 } MixerMessage;
 
 struct _Mixer {
+    AudioOut *audioOut;
     NAArray *observers;
     NAArray *channels;
     Level level;
@@ -44,10 +44,11 @@ static MidiSourceManagerObserverCallbacks MixerMidiSourceManagerObserverCallback
 static void MixerAudioCallback(void *receiver, AudioSample *buffer, uint32_t count);
 static void MixerMidiSourceCallback(void *receiver, MidiSource *source, MidiSourceEvent event, void *arg1, void *arg2);
 
-Mixer *MixerCreate()
+Mixer *MixerCreate(AudioOut *audioOut)
 {
     Mixer *self = calloc(1, sizeof(Mixer));
 
+    self->audioOut = audioOut;
     self->observers = NAArrayCreate(4, NULL);
 
     MidiSourceManager *manager = MidiSourceManagerSharedInstance();
@@ -73,7 +74,7 @@ Mixer *MixerCreate()
         NAArrayAppend(self->channels, channel);
     }
 
-    AudioOutRegisterCallback(AudioOutSharedInstance(), MixerAudioCallback, self);
+    self->audioOut->registerCallback(self->audioOut, MixerAudioCallback, self);
 
     return self;
 }
@@ -96,7 +97,7 @@ static void _DeallocMidiSource(MidiSource *source)
 
 static void _MixerDestroy(Mixer *self)
 {
-    AudioOutUnregisterCallback(AudioOutSharedInstance(), MixerAudioCallback, self);
+    self->audioOut->unregisterCallback(self->audioOut, MixerAudioCallback, self);
 
     NAMessageQDestroy(self->msgQ);
 

@@ -8,19 +8,24 @@ typedef struct _Callback {
     AudioCallback function;
 } Callback;
 
-struct _AudioOut {
+typedef struct _AUAudioOut {
+    AudioOut audioOut;
     AudioUnit defaultOutputUnit;
     Callback *callbackList;
     int32_t callbackListLength;
     Float64 sampleRate;
-};
+} AUAudioOut;
 
-static AudioOut *_sharedInstance = NULL;
+static double AUAudioOutGetSampleRate(AudioOut *self);
+static void AUAudioOutRegisterCallback(AudioOut *self, AudioCallback function, void *receiver);
+static void AUAudioOutUnregisterCallback(AudioOut *self, AudioCallback function, void *receiver);
+
+static AUAudioOut *_sharedInstance = NULL;
 
 static OSStatus _RenderCallback(void *inRefCon, AudioUnitRenderActionFlags *ioActionFlags, const AudioTimeStamp *inTimeStamp,
         UInt32 inBusNumber, UInt32 inNumberFrames, AudioBufferList *ioData)
 {
-    AudioOut *self = inRefCon;
+    AUAudioOut *self = inRefCon;
 
     float *outL = ioData->mBuffers[0].mData;
     float *outR = ioData->mBuffers[1].mData;
@@ -46,9 +51,13 @@ static OSStatus _RenderCallback(void *inRefCon, AudioUnitRenderActionFlags *ioAc
     return noErr;
 }
 
-AudioOut *AudioOutCreate()
+static AUAudioOut *AUAudioOutCreate()
 {
-    AudioOut *self = calloc(1, sizeof(AudioOut));
+    AUAudioOut *self = calloc(1, sizeof(AUAudioOut));
+
+    self->audioOut.getSampleRate = AUAudioOutGetSampleRate;
+    self->audioOut.registerCallback = AUAudioOutRegisterCallback;
+    self->audioOut.unregisterCallback = AUAudioOutUnregisterCallback;
 
     AudioComponentDescription cd;
 	cd.componentType = kAudioUnitType_Output;
@@ -77,26 +86,31 @@ AudioOut *AudioOutCreate()
 AudioOut *AudioOutSharedInstance()
 {
     if (!_sharedInstance) {
-        _sharedInstance = AudioOutCreate();
+        _sharedInstance = AUAudioOutCreate();
     }
-    return _sharedInstance;
+    return (AudioOut *)_sharedInstance;
 }
 
-double AudioOutGetSampleRate(AudioOut *self)
+static double AUAudioOutGetSampleRate(AudioOut *_self)
 {
+    AUAudioOut *self = (AUAudioOut *)_self;
     return (float)self->sampleRate;
 }
 
-void AudioOutRegisterCallback(AudioOut *self, AudioCallback function, void *receiver)
+static void AUAudioOutRegisterCallback(AudioOut *_self, AudioCallback function, void *receiver)
 {
+    AUAudioOut *self = (AUAudioOut *)_self;
+
     self->callbackList = realloc(self->callbackList, sizeof(Callback) * self->callbackListLength + 1);
     self->callbackList[self->callbackListLength].function = function; 
     self->callbackList[self->callbackListLength].receiver = receiver; 
     ++self->callbackListLength;
 }
 
-void AudioOutUnregisterCallback(AudioOut *self, AudioCallback function, void *receiver)
+static void AUAudioOutUnregisterCallback(AudioOut *_self, AudioCallback function, void *receiver)
 {
+    AUAudioOut *self = (AUAudioOut *)_self;
+
     for (int i = 0; i < self->callbackListLength; ++i) {
         if (self->callbackList[i].function == function
                 && self->callbackList[i].receiver == receiver) {
