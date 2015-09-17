@@ -15,21 +15,30 @@ typedef struct _Track {
 } Track;
 
 struct _SMFWriter {
-    const char *filepath;
+    FILE *fp;
     uint16_t resolution;
     Track tracks[17];
     int trackNum;
 };
 
-SMFWriter *SMFWriterCreate(const char *filepath)
+SMFWriter *SMFWriterCreate()
 {
     SMFWriter *ret = calloc(1, sizeof(SMFWriter));
-    ret->filepath = filepath;
     return ret;
+}
+
+bool SMFWriterOpenFile(SMFWriter *self, const char *filepath)
+{
+    self->fp = fopen(filepath, "wb");
+    return !!self->fp;
 }
 
 void SMFWriterDestroy(SMFWriter *self)
 {
+    if (self->fp) {
+        fclose(self->fp);
+    }
+
     for (int i = 0; i < 17; ++i) {
         if (self->tracks[i].buffer) {
             free(self->tracks[i].buffer);
@@ -202,11 +211,6 @@ bool SMFWriterSerialize(SMFWriter *self)
 
     appendTrackEnd(self);
 
-    FILE *file = fopen(self->filepath, "wb");
-    if (!file) {
-        return ret;
-    }
-
     uint8_t fileHeader[14] = {
         'M', 'T', 'h', 'd',
         0x00, 0x00, 0x00, 0x06,
@@ -215,8 +219,8 @@ bool SMFWriterSerialize(SMFWriter *self)
         0x00FF & (self->resolution >> 8), 0x00FF & self->resolution
     };
 
-    fwrite(fileHeader, 1, sizeof(fileHeader), file);
-    if (ferror(file)) {
+    fwrite(fileHeader, 1, sizeof(fileHeader), self->fp);
+    if (ferror(self->fp)) {
         goto ERROR;
     }
 
@@ -232,13 +236,13 @@ bool SMFWriterSerialize(SMFWriter *self)
                 0x000000FF & track->length
             };
 
-            fwrite(trackHeader, 1, sizeof(trackHeader), file);
-            if (ferror(file)) {
+            fwrite(trackHeader, 1, sizeof(trackHeader), self->fp);
+            if (ferror(self->fp)) {
                 goto ERROR;
             }
 
-            fwrite(track->buffer, 1, track->length, file);
-            if (ferror(file)) {
+            fwrite(track->buffer, 1, track->length, self->fp);
+            if (ferror(self->fp)) {
                 goto ERROR;
             }
         }
@@ -247,6 +251,8 @@ bool SMFWriterSerialize(SMFWriter *self)
     ret = true;
 
 ERROR:
-    fclose(file);
+    fclose(self->fp);
+    self->fp = NULL;
+
     return ret;
 }

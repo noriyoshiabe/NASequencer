@@ -5,9 +5,10 @@
 
 typedef struct _SMFWriter SMFWriter;
 
-extern SMFWriter *SMFWriterCreate(const char *filepath);
+extern SMFWriter *SMFWriterCreate();
 extern void SMFWriterDestroy(SMFWriter *self);
 
+extern bool SMFWriterOpenFile(SMFWriter *self, const char *filepath);
 extern void SMFWriterSetResolution(SMFWriter *self, uint16_t resolution);
 extern void SMFWriterAppendTime(SMFWriter *self, int32_t tick, uint8_t numerator, uint8_t denominator);
 extern void SMFWriterAppendTempo(SMFWriter *self, int32_t tick, float tempo);

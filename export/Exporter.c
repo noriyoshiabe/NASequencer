@@ -26,7 +26,11 @@ void ExporterDestroy(Exporter *self)
 
 bool ExporterWriteToSMF(Exporter *self, const char *filepath)
 {
-    SMFWriter *writer = SMFWriterCreate(filepath);
+    SMFWriter *writer = SMFWriterCreate();
+    if (!SMFWriterOpenFile(writer, filepath)) {
+        SMFWriterDestroy(writer);
+        return false;
+    }
 
     int count;
     MidiEvent **events;
