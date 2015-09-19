@@ -43,6 +43,7 @@ static MidiSourceManagerObserverCallbacks MixerMidiSourceManagerObserverCallback
 
 static void MixerAudioCallback(void *receiver, AudioSample *buffer, uint32_t count);
 static void MixerMidiSourceCallback(void *receiver, MidiSource *source, MidiSourceEvent event, void *arg1, void *arg2);
+static void MixerProcessMessage(Mixer *self);
 
 Mixer *MixerCreate(AudioOut *audioOut)
 {
@@ -224,36 +225,34 @@ static void MixerProcessMessage(Mixer *self)
 {
     NAMessage msg;
 
-    if (!NAMessageQPeek(self->msgQ, &msg)) {
-        return;
-    }
+    while (NAMessageQPeek(self->msgQ, &msg)) {
+        switch (msg.kind) {
+        case MixerMessageAttachSource:
+            if (-1 == NAArrayFindFirstIndex(self->activeSources, msg.data, NAArrayAddressComparator)) {
+                NAArrayAppend(self->activeSources, msg.data);
 
-    switch (msg.kind) {
-    case MixerMessageAttachSource:
-        if (-1 == NAArrayFindFirstIndex(self->activeSources, msg.data, NAArrayAddressComparator)) {
-            NAArrayAppend(self->activeSources, msg.data);
-
-            MidiSource *source = msg.data;
-            source->registerCallback(source, MixerMidiSourceCallback, self);
-        }
-        break;
-    case MixerMessageDetachSource:
-        {
-            MidiSource *source = msg.data;
-
-            int index = NAArrayFindFirstIndex(self->activeSources, source, NAArrayAddressComparator);
-            if (-1 != index) {
-                NAArrayRemoveAt(self->activeSources, index);
-
-                source->unregisterCallback(source, MixerMidiSourceCallback, self);
+                MidiSource *source = msg.data;
+                source->registerCallback(source, MixerMidiSourceCallback, self);
             }
+            break;
+        case MixerMessageDetachSource:
+            {
+                MidiSource *source = msg.data;
 
-            MidiSourceManagerDeallocMidiSource(MidiSourceManagerSharedInstance(), source);
+                int index = NAArrayFindFirstIndex(self->activeSources, source, NAArrayAddressComparator);
+                if (-1 != index) {
+                    NAArrayRemoveAt(self->activeSources, index);
+
+                    source->unregisterCallback(source, MixerMidiSourceCallback, self);
+                }
+
+                MidiSourceManagerDeallocMidiSource(MidiSourceManagerSharedInstance(), source);
+            }
+            break;
+        case MixerMessageDestroy:
+            _MixerDestroy(self);
+            return;
         }
-        break;
-    case MixerMessageDestroy:
-        _MixerDestroy(self);
-        break;
     }
 }
 

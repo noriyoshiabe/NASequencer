@@ -303,6 +303,10 @@ static ExporterAudioBuffer *ExporterAudioBufferCreate(double sampleRate)
 
 static void ExporterAudioBufferDestroy(ExporterAudioBuffer *self)
 {
+    if (self->callback && self->receiver) {
+        self->callback(self->receiver, self->buffer, AUDIO_BUFFER_SIZE);
+    }
+
     free(self);
 }
 
