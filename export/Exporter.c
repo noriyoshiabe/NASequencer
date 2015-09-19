@@ -7,6 +7,10 @@
 #include "NASet.h"
 
 #include <stdlib.h>
+#include <string.h>
+#include <math.h>
+
+#define AUDIO_BUFFER_SIZE 64
 
 struct _Exporter {
     Sequence *sequence;
@@ -18,11 +22,14 @@ typedef struct _ExporterAudioBuffer {
     AudioOut audioOut;
     void *receiver;
     AudioCallback callback;
-    AudioSample buffer[64];
+    AudioSample buffer[AUDIO_BUFFER_SIZE];
 } ExporterAudioBuffer;
 
 static ExporterAudioBuffer *ExporterAudioBufferCreate();
 static void ExporterAudioBufferDestroy(ExporterAudioBuffer *self);
+static double ExporterAudioBufferGetSampleRate(AudioOut *self);
+static void ExporterAudioBufferRegisterCallback(AudioOut *self, AudioCallback function, void *receiver);
+static void ExporterAudioBufferUnregisterCallback(AudioOut *self, AudioCallback function, void *receiver);
 
 
 Exporter *ExporterCreate(Sequence *sequence)
@@ -167,6 +174,99 @@ bool ExporterWriteToSMF(Exporter *self, const char *filepath)
     return ret;
 }
 
+static void ExporterBuildAudioSample(Exporter *self, void (*callback)(Exporter *, ExporterAudioBuffer *, void *), void *context)
+{
+    ExporterAudioBuffer *audioBuffer = ExporterAudioBufferCreate();
+    Mixer *mixer = MixerCreate((AudioOut *)audioBuffer);
+
+    NAArray *noteOffEvents = NAArrayCreate(4, NULL);
+    double usecPerSample = 1.0 / ExporterAudioBufferGetSampleRate((AudioOut *)audioBuffer) * 1000.0 * 1000.0;
+    int32_t length = TimeTableLength(self->sequence->timeTable);
+
+    int bufferCount = 1;
+    int64_t prevUsec = 0;
+    int32_t tick = 0;
+    int index = 0;
+
+    do {
+        int64_t usec = usecPerSample * AUDIO_BUFFER_SIZE * bufferCount;
+
+        int32_t prevTick = TimeTableMicroSec2Tick(self->sequence->timeTable, prevUsec);
+        tick = TimeTableMicroSec2Tick(self->sequence->timeTable, usec);
+
+        for (int i = NAArrayCount(noteOffEvents) - 1; 0 <= i; --i) {
+            NoteEvent *event = NAArrayGetValueAt(noteOffEvents, i);
+            int offTick = event->tick + event->gatetime;
+            if (prevTick <= offTick && offTick < tick) {
+                MixerSendNoteOff(mixer, event);
+                NAArrayRemoveAt(noteOffEvents, i);
+            }
+        }
+
+        int count = NAArrayCount(self->eventsToWrite);
+        MidiEvent **events = NAArrayGetValues(self->eventsToWrite);
+        for (; index < count; ++index) {
+            MidiEvent *event = events[index];
+            if (prevTick <= event->tick && event->tick < tick) {
+                switch (event->type) {
+                case MidiEventTypeNote:
+                    MixerSendNoteOn(mixer, (NoteEvent *)event);
+                    NAArrayInsertAt(noteOffEvents, 0, event);
+                    break;
+                case MidiEventTypeVoice:
+                    MixerSendVoice(mixer, (VoiceEvent *)event);
+                    break;
+                case MidiEventTypeVolume:
+                    MixerSendVolume(mixer, (VolumeEvent *)event);
+                    break;
+                case MidiEventTypePan:
+                    MixerSendPan(mixer, (PanEvent *)event);
+                    break;
+                case MidiEventTypeChorus:
+                    MixerSendChorus(mixer, (ChorusEvent *)event);
+                    break;
+                case MidiEventTypeReverb:
+                    MixerSendReverb(mixer, (ReverbEvent *)event);
+                    break;
+                default:
+                    break;
+                }
+            }
+            else if (tick <= event->tick) {
+                break;
+            }
+        }
+
+        memset(audioBuffer->buffer, 0, sizeof(audioBuffer->buffer));
+        audioBuffer->callback(audioBuffer->receiver, audioBuffer->buffer, AUDIO_BUFFER_SIZE);
+        callback(self, audioBuffer, context);
+
+        prevUsec = usec;
+        ++bufferCount;
+    } while (tick < length);
+
+    NAArrayDestroy(noteOffEvents);
+    MixerDestroy(mixer);
+    ExporterAudioBufferDestroy(audioBuffer);
+}
+
+static void ExporterBuildAudioSampleCallbackWave(Exporter *self, ExporterAudioBuffer *audioBuffer, void *context)
+{
+    WaveWriter *writer = context;
+    int16_t samples[AUDIO_BUFFER_SIZE][2];
+
+    for (int i = 0; i < AUDIO_BUFFER_SIZE; ++i) {
+        samples[i][0] = round(0.0f <= audioBuffer->buffer[i].L
+                ? (double)audioBuffer->buffer[i].L * 32767.0
+                : (double)audioBuffer->buffer[i].L * 32768.0);
+        samples[i][1] = round(0.0f <= audioBuffer->buffer[i].R
+                ? (double)audioBuffer->buffer[i].R * 32767.0
+                : (double)audioBuffer->buffer[i].R * 32768.0);
+    }
+
+    WaveWriterAppendData(writer, (int32_t *)samples, AUDIO_BUFFER_SIZE);
+}
+
 bool ExporterWriteToWave(Exporter *self, const char *filepath)
 {
     WaveWriter *writer = WaveWriterCreate();
@@ -176,28 +276,13 @@ bool ExporterWriteToWave(Exporter *self, const char *filepath)
     }
 
     ExporterBuildEventsToWrite(self);
-
-    ExporterAudioBuffer *audioBuffer = ExporterAudioBufferCreate();
-    Mixer *mixer = MixerCreate((AudioOut *)audioBuffer);
-
-    int count = NAArrayCount(self->eventsToWrite);
-    MidiEvent **events = NAArrayGetValues(self->eventsToWrite);
-
-    // TODO
+    ExporterBuildAudioSample(self, ExporterBuildAudioSampleCallbackWave, writer);
 
     bool ret = WaveWriterSerialize(writer);
-
-    MixerDestroy(mixer);
-    ExporterAudioBufferDestroy(audioBuffer);
     WaveWriterDestroy(writer);
-
     return ret;
 }
 
-
-static double ExporterAudioBufferGetSampleRate(AudioOut *self);
-static void ExporterAudioBufferRegisterCallback(AudioOut *self, AudioCallback function, void *receiver);
-static void ExporterAudioBufferUnregisterCallback(AudioOut *self, AudioCallback function, void *receiver);
 
 static ExporterAudioBuffer *ExporterAudioBufferCreate()
 {
