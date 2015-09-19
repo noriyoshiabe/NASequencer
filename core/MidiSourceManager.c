@@ -155,7 +155,9 @@ bool MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(MidiSourceManager *
             bool notifyUnloadDefault = 0 == NAArrayCount(self->availableDescriptions);
             NAArrayAppend(self->availableDescriptions, description);
             MidiSourceManagerNotifyLoadAvailableMidiSourceDescription(self, description);
-            MidiSourceManagerNotifyUnloadAvailableMidiSourceDescription(self, &DefaultMidiSourceDescription);
+            if (notifyUnloadDefault) {
+                MidiSourceManagerNotifyUnloadAvailableMidiSourceDescription(self, &DefaultMidiSourceDescription);
+            }
         }
     }
 
