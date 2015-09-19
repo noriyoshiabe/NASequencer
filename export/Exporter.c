@@ -188,7 +188,7 @@ static void ExporterBuildAudioSample(Exporter *self, ExporterAudioBuffer *audioB
     int32_t tick = 0;
     int index = 0;
 
-    do {
+    while (tick < length) {
         int64_t usec = usecPerSample * AUDIO_BUFFER_SIZE * bufferCount;
 
         int32_t prevTick = TimeTableMicroSec2Tick(self->sequence->timeTable, prevUsec);
@@ -243,7 +243,7 @@ static void ExporterBuildAudioSample(Exporter *self, ExporterAudioBuffer *audioB
 
         prevUsec = usec;
         ++bufferCount;
-    } while (tick < length);
+    }
 
     NAArrayDestroy(noteOffEvents);
     MixerDestroy(mixer);
