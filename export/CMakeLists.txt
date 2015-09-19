@@ -14,6 +14,7 @@ include_directories(
 set(SOURCES
   Exporter.c
   SMFWriter.c
+  WaveWriter.c
 )
 
 add_library(${PROJECT_NAME} ${SOURCES})

@@ -23,9 +23,10 @@ typedef struct _ExporterAudioBuffer {
     void *receiver;
     AudioCallback callback;
     AudioSample buffer[AUDIO_BUFFER_SIZE];
+    double sampleRate;
 } ExporterAudioBuffer;
 
-static ExporterAudioBuffer *ExporterAudioBufferCreate();
+static ExporterAudioBuffer *ExporterAudioBufferCreate(double sampleRate);
 static void ExporterAudioBufferDestroy(ExporterAudioBuffer *self);
 static double ExporterAudioBufferGetSampleRate(AudioOut *self);
 static void ExporterAudioBufferRegisterCallback(AudioOut *self, AudioCallback function, void *receiver);
@@ -174,9 +175,8 @@ bool ExporterWriteToSMF(Exporter *self, const char *filepath)
     return ret;
 }
 
-static void ExporterBuildAudioSample(Exporter *self, void (*callback)(Exporter *, ExporterAudioBuffer *, void *), void *context)
+static void ExporterBuildAudioSample(Exporter *self, ExporterAudioBuffer *audioBuffer, void (*callback)(Exporter *, ExporterAudioBuffer *, void *), void *context)
 {
-    ExporterAudioBuffer *audioBuffer = ExporterAudioBufferCreate();
     Mixer *mixer = MixerCreate((AudioOut *)audioBuffer);
 
     NAArray *noteOffEvents = NAArrayCreate(4, NULL);
@@ -247,7 +247,6 @@ static void ExporterBuildAudioSample(Exporter *self, void (*callback)(Exporter *
 
     NAArrayDestroy(noteOffEvents);
     MixerDestroy(mixer);
-    ExporterAudioBufferDestroy(audioBuffer);
 }
 
 static void ExporterBuildAudioSampleCallbackWave(Exporter *self, ExporterAudioBuffer *audioBuffer, void *context)
@@ -276,20 +275,25 @@ bool ExporterWriteToWave(Exporter *self, const char *filepath)
     }
 
     ExporterBuildEventsToWrite(self);
-    ExporterBuildAudioSample(self, ExporterBuildAudioSampleCallbackWave, writer);
 
-    bool ret = WaveWriterSerialize(writer);
+    ExporterAudioBuffer *audioBuffer = ExporterAudioBufferCreate(44100.0);
+    ExporterBuildAudioSample(self, audioBuffer, ExporterBuildAudioSampleCallbackWave, writer);
+    ExporterAudioBufferDestroy(audioBuffer);
+
+    bool ret = WaveWriterSerialize(writer, 44100.0);
+
     WaveWriterDestroy(writer);
     return ret;
 }
 
 
-static ExporterAudioBuffer *ExporterAudioBufferCreate()
+static ExporterAudioBuffer *ExporterAudioBufferCreate(double sampleRate)
 {
     ExporterAudioBuffer *self = calloc(1, sizeof(ExporterAudioBuffer));
     self->audioOut.getSampleRate = ExporterAudioBufferGetSampleRate;
     self->audioOut.registerCallback = ExporterAudioBufferRegisterCallback;
     self->audioOut.unregisterCallback = ExporterAudioBufferUnregisterCallback;
+    self->sampleRate = sampleRate;
     return self;
 }
 
@@ -298,9 +302,10 @@ static void ExporterAudioBufferDestroy(ExporterAudioBuffer *self)
     free(self);
 }
 
-static double ExporterAudioBufferGetSampleRate(AudioOut *self)
+static double ExporterAudioBufferGetSampleRate(AudioOut *_self)
 {
-    return 44100.0;
+    ExporterAudioBuffer *self = (ExporterAudioBuffer *)_self;
+    return self->sampleRate;
 }
 
 static void ExporterAudioBufferRegisterCallback(AudioOut *_self, AudioCallback function, void *receiver)

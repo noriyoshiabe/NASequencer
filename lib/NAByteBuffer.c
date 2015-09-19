@@ -128,6 +128,11 @@ int NAByteBufferReadData(NAByteBuffer *self, void **data, int length)
     return length;
 }
 
+int NAByteBufferDataLength(NAByteBuffer *self)
+{
+    return self->writeCursor - self->readCursor;
+}
+
 void NAByteBufferSeekFirst(NAByteBuffer *self)
 {
     self->readCursor = 0;

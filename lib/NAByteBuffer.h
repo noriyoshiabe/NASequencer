@@ -14,6 +14,7 @@ extern int NAByteBufferReadInteger(NAByteBuffer *self, int *value);
 extern int NAByteBufferReadFloat(NAByteBuffer *self, float *value);
 extern int NAByteBufferReadData(NAByteBuffer *self, void **data, int length);
 
+extern int NAByteBufferDataLength(NAByteBuffer *self);
 extern void NAByteBufferSeekFirst(NAByteBuffer *self);
 
 #define NAByteBufferReadData(self, data, length) NAByteBufferReadData(self, (void *)data, length)
