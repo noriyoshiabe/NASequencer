@@ -2,6 +2,7 @@
 #include "SMFWriter.h"
 #include "AudioOut.h"
 #include "Mixer.h"
+#include "Define.h"
 #include "WaveWriter.h"
 #include "NAArray.h"
 #include "NASet.h"
@@ -255,12 +256,15 @@ static void ExporterBuildAudioSampleCallbackWave(Exporter *self, ExporterAudioBu
     int16_t samples[AUDIO_BUFFER_SIZE][2];
 
     for (int i = 0; i < AUDIO_BUFFER_SIZE; ++i) {
-        samples[i][0] = round(0.0f <= audioBuffer->buffer[i].L
+        int32_t L = round(0.0f <= audioBuffer->buffer[i].L
                 ? (double)audioBuffer->buffer[i].L * 32767.0
                 : (double)audioBuffer->buffer[i].L * 32768.0);
-        samples[i][1] = round(0.0f <= audioBuffer->buffer[i].R
+        int32_t R = round(0.0f <= audioBuffer->buffer[i].R
                 ? (double)audioBuffer->buffer[i].R * 32767.0
                 : (double)audioBuffer->buffer[i].R * 32768.0);
+
+        samples[i][0] = Clip(L, -32768, 32767);
+        samples[i][1] = Clip(R, -32768, 32767);
     }
 
     WaveWriterAppendData(writer, (int32_t *)samples, AUDIO_BUFFER_SIZE);
