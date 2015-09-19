@@ -58,7 +58,7 @@ Player *PlayerCreate(Mixer *mixer)
 {
     Player *self = calloc(1, sizeof(Player));
     self->observers = NAArrayCreate(4, NULL);
-    self->msgQ = NAMessageQCreate();
+    self->msgQ = NAMessageQCreate(8);
     self->mixer = mixer;
     self->playingNoteEvents = NASetCreate(NULL, NULL);
     self->location = LocationZero;

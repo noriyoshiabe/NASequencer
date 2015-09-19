@@ -60,7 +60,7 @@ Mixer *MixerCreate(AudioOut *audioOut)
     self->sourceMap = NAMapCreate(NAHashAddress, NULL, NULL);
     NAMapPut(self->sourceMap, description, source);
 
-    self->msgQ = NAMessageQCreate();
+    self->msgQ = NAMessageQCreate(32);
     self->activeSources = NAArrayCreate(2, NULL);
     NAArrayAppend(self->activeSources, source);
 

@@ -1,13 +1,14 @@
 #include "NAMessageQ.h"
 
 #include <stdlib.h>
+#include <math.h>
 #include <pthread.h>
 
-#define MSGQ_SIZE 8
-#define INC(idx) (++idx, idx &= ~MSGQ_SIZE)
+#define INC(idx, size) (++idx, idx &= ~size)
 
 struct _NAMessageQ {
-    NAMessage msgQ[MSGQ_SIZE];
+    NAMessage *msgQ;
+    int size;
     int count;
     int readIdx;
     int writeIdx;
@@ -15,9 +16,11 @@ struct _NAMessageQ {
     pthread_cond_t cond;
 };
 
-NAMessageQ *NAMessageQCreate()
+NAMessageQ *NAMessageQCreate(int size)
 {
     NAMessageQ *self = calloc(1, sizeof(NAMessageQ));
+    self->size = pow(2, ceil(log(size)/log(2)));
+    self->msgQ = calloc(self->size, sizeof(NAMessage));
     pthread_mutex_init(&self->mutex, NULL);
     pthread_cond_init(&self->cond, NULL);
     return self;
@@ -27,6 +30,7 @@ void NAMessageQDestroy(NAMessageQ *self)
 {
     pthread_mutex_destroy(&self->mutex);
     pthread_cond_destroy(&self->cond);
+    free(self->msgQ);
     free(self);
 }
 
@@ -34,14 +38,14 @@ bool NAMessageQPost(NAMessageQ *self, int kind, void *data)
 {
     pthread_mutex_lock(&self->mutex);
 
-    if (MSGQ_SIZE <= self->count) {
+    if (self->size <= self->count) {
         pthread_mutex_unlock(&self->mutex);
         return false;
     }
 
     self->msgQ[self->writeIdx].kind = kind;
     self->msgQ[self->writeIdx].data = data;
-    INC(self->writeIdx);
+    INC(self->writeIdx, self->size);
     ++self->count;
     pthread_cond_signal(&self->cond);
 
@@ -59,7 +63,7 @@ bool NAMessageQWait(NAMessageQ *self, NAMessage *message)
     }
 
     *message = self->msgQ[self->readIdx];
-    INC(self->readIdx);
+    INC(self->readIdx, self->size);
     --self->count;
 
     pthread_mutex_unlock(&self->mutex);
@@ -77,7 +81,7 @@ bool NAMessageQPeek(NAMessageQ *self, NAMessage *message)
     }
 
     *message = self->msgQ[self->readIdx];
-    INC(self->readIdx);
+    INC(self->readIdx, self->size);
     --self->count;
 
     pthread_mutex_unlock(&self->mutex);

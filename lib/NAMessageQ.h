@@ -9,7 +9,7 @@ typedef struct _NAMessage {
 
 typedef struct _NAMessageQ NAMessageQ;
 
-extern NAMessageQ *NAMessageQCreate();
+extern NAMessageQ *NAMessageQCreate(int size);
 extern void NAMessageQDestroy(NAMessageQ *self);
 extern bool NAMessageQPost(NAMessageQ *self, int kind, void *data);
 extern bool NAMessageQWait(NAMessageQ *self, NAMessage *message);
