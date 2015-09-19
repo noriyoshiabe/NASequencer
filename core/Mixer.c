@@ -62,6 +62,7 @@ Mixer *MixerCreate(AudioOut *audioOut)
 
     self->msgQ = NAMessageQCreate();
     self->activeSources = NAArrayCreate(2, NULL);
+    NAArrayAppend(self->activeSources, source);
 
     self->channels = NAArrayCreate(16, NULL);
     for (int i = 0; i < 16; ++i) {
