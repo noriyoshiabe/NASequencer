@@ -97,8 +97,8 @@ bool NAArrayInsertAt(NAArray *self, int index, void *value)
         self->values = realloc(self->values, self->capacity * sizeof(intptr_t));
     }
 
-
     NAArrayMemmovePointer(self->values + index + 1, self->values + index, self->count++ - index);
+    self->values[index] = (intptr_t)value;
     return true;
 }
 
