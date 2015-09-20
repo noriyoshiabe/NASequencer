@@ -26,6 +26,7 @@ struct _CLI {
 };
 
 static NAMidiObserverCallbacks CLINAMidiObserverCallbacks;
+static PlayerObserverCallbacks CLIPlayerObserverCallbacks;
 static MidiSourceManagerObserverCallbacks CLIMidiSourceManagerObserverCallbacks;
 
 static char **CLICompletion(const char *text, int start, int end);
@@ -39,6 +40,7 @@ CLI *CLICreate(const char *filepath, const char *soundSource)
     self->namidi = NAMidiCreate();
     self->manager = MidiSourceManagerSharedInstance();
     NAMidiAddObserver(self->namidi, self, &CLINAMidiObserverCallbacks);
+    PlayerAddObserver(NAMidiGetPlayer(self->namidi), self, &CLIPlayerObserverCallbacks);
     MidiSourceManagerAddObserver(self->manager, self, &CLIMidiSourceManagerObserverCallbacks);
     return self;
 }
@@ -203,6 +205,32 @@ static void CLINAMidiOnParseError(void *receiver, ParseError *error)
 static NAMidiObserverCallbacks CLINAMidiObserverCallbacks = {
     CLINAMidiOnParseFinish,
     CLINAMidiOnParseError
+};
+
+static void CLIPlayerOnNotifyClock(void *receiver, int tick, int64_t usec, Location location)
+{
+}
+
+static void CLIPlayerOnNotifyEvent(void *receiver, PlayerEvent event)
+{
+#if 0
+    printf("%s\n", PlayerEvent2String(event));
+#endif
+}
+
+static void CLIPlayerOnSendNoteOn(void *receiver, NoteEvent *event)
+{
+}
+
+static void CLIPlayerOnSendNoteOff(void *receiver, NoteEvent *event)
+{
+}
+
+static PlayerObserverCallbacks CLIPlayerObserverCallbacks = {
+    CLIPlayerOnNotifyClock,
+    CLIPlayerOnNotifyEvent,
+    CLIPlayerOnSendNoteOn,
+    CLIPlayerOnSendNoteOff
 };
 
 static void CLIMidiSourceManagerOnLoadMidiSourceDescription(void *receiver, MidiSourceDescription *description)
