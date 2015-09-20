@@ -131,6 +131,7 @@ void NAMidiParse(NAMidi *self, const char *filepath)
         }
 
         self->sequence = result.sequence;
+        PlayerSetSequence(self->player, self->sequence);
 
         NAArrayTraverseWithContext(self->observers, self, NAMidiNotifyParseFinish, self->sequence);
     }

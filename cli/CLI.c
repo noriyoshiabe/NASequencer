@@ -171,13 +171,7 @@ static CLIError CLIExportMP3(CLI *self, Sequence *sequence, const char *output)
 
 static void CLINAMidiOnParseFinish(void *receiver, Sequence *sequence)
 {
-    printf("called %s\n", __FUNCTION__);
-
     CLI *self = receiver;
-
-    // TODO remove
-    PlayerSetSequence(NAMidiGetPlayer(self->namidi), sequence);
-    PlayerPlay(NAMidiGetPlayer(self->namidi));
 }
 
 static void CLINAMidiOnParseError(void *receiver, ParseError *error)
