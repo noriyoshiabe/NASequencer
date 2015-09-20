@@ -29,6 +29,7 @@ static NAMidiObserverCallbacks CLINAMidiObserverCallbacks;
 static MidiSourceManagerObserverCallbacks CLIMidiSourceManagerObserverCallbacks;
 
 static char **CLICompletion(const char *text, int start, int end);
+static int CLICompletionEntry(const char *text, int state);
 
 CLI *CLICreate(const char *filepath, const char *soundSource)
 {
@@ -70,6 +71,7 @@ CLIError CLIRunShell(CLI *self)
 
     while (sigsetjmp(self->jmpBuf, 1));
 
+    rl_completion_entry_function = CLICompletionEntry;
     rl_attempted_completion_function = CLICompletion;
 
     while ((line = readline(PROMPT))) {
@@ -103,6 +105,11 @@ static char **CLICompletion(const char *text, int start, int end)
     else {
         return NULL;
     }
+}
+
+static int CLICompletionEntry(const char *text, int state)
+{
+    return 0;
 }
 
 void CLISigInt(CLI *self)
