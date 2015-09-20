@@ -28,6 +28,8 @@ struct _CLI {
 static NAMidiObserverCallbacks CLINAMidiObserverCallbacks;
 static MidiSourceManagerObserverCallbacks CLIMidiSourceManagerObserverCallbacks;
 
+static char **CLICompletion(const char *text, int start, int end);
+
 CLI *CLICreate(const char *filepath, const char *soundSource)
 {
     CLI *self = calloc(1, sizeof(CLI));
@@ -68,6 +70,8 @@ CLIError CLIRunShell(CLI *self)
 
     while (sigsetjmp(self->jmpBuf, 1));
 
+    rl_attempted_completion_function = CLICompletion;
+
     while ((line = readline(PROMPT))) {
         Command *cmd = CommandParse(line);
         CommandExecute(cmd, self->namidi);
@@ -89,6 +93,16 @@ CLIError CLIRunShell(CLI *self)
     clear_history();
 
     return CLIErrorNoError;
+}
+
+static char **CLICompletion(const char *text, int start, int end)
+{
+    if (0 == start) {
+        return rl_completion_matches(text, CommandCompletionEntry);
+    }
+    else {
+        return NULL;
+    }
 }
 
 void CLISigInt(CLI *self)

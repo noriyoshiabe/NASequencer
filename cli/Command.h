@@ -6,3 +6,4 @@ typedef struct _Command Command;
 
 extern Command *CommandParse(const char *line);
 extern void CommandExecute(Command *self, NAMidi *namidi);
+extern char *CommandCompletionEntry(const char *text, int state);

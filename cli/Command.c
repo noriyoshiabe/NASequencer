@@ -11,6 +11,13 @@ struct _Command {
     NAArray *argv;
 };
 
+typedef struct _CommandTable {
+    const char *cmd;
+    void (*execute)(Command *, NAMidi *);
+} CommandTable;
+
+static CommandTable commandTable[];
+
 static void CommandDestroy(Command *self);
 
 static void EmptyCommandExecute(Command *self, NAMidi *namidi)
@@ -77,20 +84,9 @@ Command *CommandParse(const char *line)
     void (*execute)(Command *, NAMidi *);
 
     if (0 < NAArrayCount(argv)) {
-        struct {
-            const char *cmd;
-            void (*execute)(Command *, NAMidi *);
-        } executeTable[] = {
-            {"play", PlayCommandExecute},
-            {"stop", StopCommandExecute},
-            {"rewind", RewindCommandExecute},
-            {"forward", ForwardCommandExecute},
-            {"backward", BackwardCommandExecute},
-        };
-
-        for (int i = 0; i < sizeof(executeTable) / sizeof(executeTable[0]); ++i) {
-            if (0 == strcmp(executeTable[i].cmd, NAArrayGetValueAt(argv, 0))) {
-                execute = executeTable[i].execute;
+        for (int i = 0; NULL != commandTable[i].cmd; ++i) {
+            if (0 == strcmp(commandTable[i].cmd, NAArrayGetValueAt(argv, 0))) {
+                execute = commandTable[i].execute;
                 break;
             }
         }
@@ -118,3 +114,34 @@ static void CommandDestroy(Command *self)
     NAArrayDestroy(self->argv);
     free(self);
 }
+
+char *CommandCompletionEntry(const char *text, int state)
+{
+    static int index, length;
+
+    if (0 == state) {
+        index = 0;
+        length = strlen(text);
+    }
+
+    const char *cmd;
+    while ((cmd = commandTable[index].cmd)) {
+        ++index;
+
+        if (0 == strncmp(text, cmd, length)) {
+            return strdup(cmd);
+        }
+    }
+
+    return NULL;
+}
+
+static CommandTable commandTable[] = {
+    {"play", PlayCommandExecute},
+    {"stop", StopCommandExecute},
+    {"rewind", RewindCommandExecute},
+    {"forward", ForwardCommandExecute},
+    {"backward", BackwardCommandExecute},
+
+    {NULL, NULL}
+};
