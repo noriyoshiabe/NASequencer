@@ -16,6 +16,7 @@ typedef enum _PlayerMessage {
     PlayerMessageRewind,
     PlayerMessageForward,
     PlayerMessageBackward,
+    PlayerMessageSeek,
     PlayerMessageDestroy,
 } PlayerMessage;
 
@@ -137,6 +138,13 @@ void PlayerForward(Player *self)
 void PlayerBackWard(Player *self)
 {
     NAMessageQPost(self->msgQ, PlayerMessageBackward, NULL);
+}
+
+void PlayerSeek(Player *self, int measure)
+{
+    int *pmeasure = malloc(sizeof(int));
+    *pmeasure = measure;
+    NAMessageQPost(self->msgQ, PlayerMessageSeek, pmeasure);
 }
 
 bool PlayerIsPlaying(Player *self)
@@ -278,6 +286,22 @@ static void PlayerProcessMessage(Player *self, PlayerMessage message, void *data
             PlayerTriggerEvent(self, PlayerEventBackward);
         }
         break;
+    case PlayerMessageSeek:
+        if (self->sequence) {
+            int *measure = data;
+            int32_t tick = TimeTableTickByMeasure(self->sequence->timeTable, *measure);
+            Location location = TimeTableTick2Location(self->sequence->timeTable, tick);
+
+            free(measure);
+
+            self->usec = TimeTableTick2MicroSec(self->sequence->timeTable, tick);
+            self->offset = self->usec;
+            self->start = currentMicroSec();
+
+            PlayerUpdateClock(self, tick, self->usec, location);
+            PlayerTriggerEvent(self, PlayerEventSeek);
+        }
+        break;
     case PlayerMessageDestroy:
         // NOP
         break;
@@ -297,27 +321,26 @@ static void PlayerProcessEvent(Player *self, PlayerEvent event)
         self->index = 0;
         break;
     case PlayerEventForward:
+    case PlayerEventBackward:
+    case PlayerEventSeek:
         {
             PlayerSendAllNoteOff(self);
 
             int count = NAArrayCount(self->sequence->events);
             MidiEvent **events = NAArrayGetValues(self->sequence->events);
-            for (; self->index < count; ++self->index) {
-                if (self->tick <= events[self->index]->tick) {
-                    break;
+
+            if (self->tick > events[self->index]->tick) {
+                for (; self->index < count; ++self->index) {
+                    if (self->tick <= events[self->index]->tick) {
+                        break;
+                    }
                 }
             }
-        }
-        break;
-    case PlayerEventBackward:
-        {
-            PlayerSendAllNoteOff(self);
-
-            int count = NAArrayCount(self->sequence->events);
-            MidiEvent **events = NAArrayGetValues(self->sequence->events);
-            for (self->index = MAX(0, MIN(self->index - 1, count - 1)); 0 < self->index; --self->index) {
-                if (self->tick > events[self->index]->tick) {
-                    break;
+            else if (self->tick < events[self->index]->tick) {
+                for (self->index = MAX(0, MIN(self->index - 1, count - 1)); 0 < self->index; --self->index) {
+                    if (self->tick > events[self->index]->tick) {
+                        break;
+                    }
                 }
             }
         }

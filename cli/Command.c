@@ -59,6 +59,30 @@ static void BackwardCommandExecute(Command *self, NAMidi *namidi)
     PlayerBackWard(player);
 }
 
+static void SeekCommandExecute(Command *self, NAMidi *namidi)
+{
+    if (2 > NAArrayCount(self->argv)) {
+        fprintf(stderr, "measure number is missing.\n");
+        return;
+    }
+
+    char *err;
+    char *text = NAArrayGetValueAt(self->argv, 1);
+    long measure = strtol(text, &err, 10);
+    if ('\0' != *err) {
+        fprintf(stderr, "cannot parse measure number. %s\n", text);
+        return;
+    }
+
+    if (1 > measure) {
+        fprintf(stderr, "invalid measure number. %ld\n", measure);
+        return;
+    }
+
+    Player *player = NAMidiGetPlayer(namidi);
+    PlayerSeek(player, measure);
+}
+
 static Command *CommandCreate(void (*execute)(Command *, NAMidi *), NAArray *argv)
 {
     Command *self = calloc(1, sizeof(Command));
@@ -142,6 +166,7 @@ static CommandTable commandTable[] = {
     {"rewind", RewindCommandExecute},
     {"forward", ForwardCommandExecute},
     {"backward", BackwardCommandExecute},
+    {"seek", SeekCommandExecute},
 
     {NULL, NULL}
 };

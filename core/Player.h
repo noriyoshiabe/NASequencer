@@ -11,6 +11,7 @@ typedef enum {
     PlayerEventRewind,
     PlayerEventForward,
     PlayerEventBackward,
+    PlayerEventSeek,
     PlayerEventReachEnd,
 } PlayerEvent;
 
@@ -35,6 +36,7 @@ extern void PlayerPlayPause(Player *self);
 extern void PlayerRewind(Player *self);
 extern void PlayerForward(Player *self);
 extern void PlayerBackWard(Player *self);
+extern void PlayerSeek(Player *self, int measure);
 
 extern bool PlayerIsPlaying(Player *self);
 extern uint64_t PlayerGetUsec(Player *self);
@@ -49,6 +51,7 @@ static inline const char *PlayerEvent2String(PlayerEvent event)
     CASE(PlayerEventRewind);
     CASE(PlayerEventForward);
     CASE(PlayerEventBackward);
+    CASE(PlayerEventSeek);
     CASE(PlayerEventReachEnd);
     }
     return "Unknown player event";
