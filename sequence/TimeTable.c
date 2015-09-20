@@ -247,7 +247,7 @@ static void TimeTableRefreshMeasureFrom(TimeTable *self, int index)
     int count = NAArrayCount(self->timeSignRecords);
     TimeSignRecord **records = NAArrayGetValues(self->timeSignRecords);
 
-    TimeSignRecord *previous = 0 < index ? records[index - 1] : &((TimeSignRecord){0});
+    TimeSignRecord *previous = 0 < index ? records[index - 1] : &((TimeSignRecord){ .measureEnd = 1 });
     for (int i = index; i < count; ++i) {
         records[i]->measureStart = previous->measureEnd;
         records[i]->measureLength = self->resolution * 4 / records[i]->timeSign.denominator * records[i]->timeSign.numerator;
