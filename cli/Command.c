@@ -1,4 +1,5 @@
 #include "Command.h"
+#include "PianoRollView.h"
 #include "NAArray.h"
 
 #include <stdio.h>
@@ -81,6 +82,62 @@ static void SeekCommandExecute(Command *self, NAMidi *namidi)
 
     Player *player = NAMidiGetPlayer(namidi);
     PlayerSeek(player, measure);
+}
+
+static void ShowCommandExecute(Command *self, NAMidi *namidi)
+{
+    char *err, *text;
+
+    int from = -1;
+    int length = -1;
+
+    int count = NAArrayCount(self->argv);
+    if (1 < count) {
+        text = NAArrayGetValueAt(self->argv, 1);
+        long number = strtol(text, &err, 10);
+
+        if ('\0' != *err) {
+            fprintf(stderr, "cannot parse measure number of from. %s\n", text);
+            return;
+        }
+
+        if (1 > number) {
+            fprintf(stderr, "invalid measure number. %ld\n", number);
+            return;
+        }
+
+        from = number;
+    }
+
+    if (2 < count) {
+        text = NAArrayGetValueAt(self->argv, 2);
+        long number = strtol(text, &err, 10);
+
+        if ('\0' != *err) {
+            fprintf(stderr, "cannot parse length. %s\n", text);
+            return;
+        }
+
+        if (1 > number) {
+            fprintf(stderr, "invalid length. %ld\n", number);
+            return;
+        }
+
+        length = number;
+    }
+
+    PianoRollView *view = PianoRollViewCreate(namidi);
+
+    if (-1 != from) {
+        PianoRollViewSetFrom(view, from);
+    }
+
+    if (-1 != length) {
+        PianoRollViewSetLength(view, length);
+    }
+
+    PianoRollViewRender(view);
+    PianoRollViewDestroy(view);
 }
 
 static Command *CommandCreate(void (*execute)(Command *, NAMidi *), NAArray *argv)
@@ -167,6 +224,7 @@ static CommandTable commandTable[] = {
     {"forward", ForwardCommandExecute},
     {"backward", BackwardCommandExecute},
     {"seek", SeekCommandExecute},
+    {"show", ShowCommandExecute},
 
     {NULL, NULL}
 };

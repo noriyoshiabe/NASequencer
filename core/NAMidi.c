@@ -165,6 +165,11 @@ Player *NAMidiGetPlayer(NAMidi *self)
     return self->player;
 }
 
+Sequence *NAMidiGetSequence(NAMidi *self)
+{
+    return self->sequence;
+}
+
 static void NAMidiFSWatcherOnFileChanged(void *receiver, const char *changedFile)
 {
     NAMidi *self = receiver;

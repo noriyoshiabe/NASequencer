@@ -21,3 +21,4 @@ extern void NAMidiParse(NAMidi *self, const char *filepath);
 
 extern Player *NAMidiGetPlayer(NAMidi *self);
 extern Mixer *NAMidiGetMixer(NAMidi *self);
+extern Sequence *NAMidiGetSequence(NAMidi *self);
