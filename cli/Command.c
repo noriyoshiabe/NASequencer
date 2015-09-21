@@ -8,59 +8,59 @@
 #include <alloca.h>
 
 struct _Command {
-    void (*execute)(Command *self, NAMidi *namidi);
+    void (*execute)(Command *self, CLI *cli);
     NAArray *argv;
 };
 
 typedef struct _CommandTable {
     const char *cmd;
-    void (*execute)(Command *, NAMidi *);
+    void (*execute)(Command *, CLI *);
 } CommandTable;
 
 static CommandTable commandTable[];
 
 static void CommandDestroy(Command *self);
 
-static void EmptyCommandExecute(Command *self, NAMidi *namidi)
+static void EmptyCommandExecute(Command *self, CLI *cli)
 {
 }
 
-static void UnknownCommandExecute(Command *self, NAMidi *namidi)
+static void UnknownCommandExecute(Command *self, CLI *cli)
 {
     printf("Unknown command: %s\n", NAArrayGetValueAt(self->argv, 0));
 }
 
-static void PlayCommandExecute(Command *self, NAMidi *namidi)
+static void PlayCommandExecute(Command *self, CLI *cli)
 {
-    Player *player = NAMidiGetPlayer(namidi);
+    Player *player = NAMidiGetPlayer(CLIGetNAMidi(cli));
     PlayerPlay(player);
 }
 
-static void StopCommandExecute(Command *self, NAMidi *namidi)
+static void StopCommandExecute(Command *self, CLI *cli)
 {
-    Player *player = NAMidiGetPlayer(namidi);
+    Player *player = NAMidiGetPlayer(CLIGetNAMidi(cli));
     PlayerStop(player);
 }
 
-static void RewindCommandExecute(Command *self, NAMidi *namidi)
+static void RewindCommandExecute(Command *self, CLI *cli)
 {
-    Player *player = NAMidiGetPlayer(namidi);
+    Player *player = NAMidiGetPlayer(CLIGetNAMidi(cli));
     PlayerRewind(player);
 }
 
-static void ForwardCommandExecute(Command *self, NAMidi *namidi)
+static void ForwardCommandExecute(Command *self, CLI *cli)
 {
-    Player *player = NAMidiGetPlayer(namidi);
+    Player *player = NAMidiGetPlayer(CLIGetNAMidi(cli));
     PlayerForward(player);
 }
 
-static void BackwardCommandExecute(Command *self, NAMidi *namidi)
+static void BackwardCommandExecute(Command *self, CLI *cli)
 {
-    Player *player = NAMidiGetPlayer(namidi);
+    Player *player = NAMidiGetPlayer(CLIGetNAMidi(cli));
     PlayerBackWard(player);
 }
 
-static void SeekCommandExecute(Command *self, NAMidi *namidi)
+static void SeekCommandExecute(Command *self, CLI *cli)
 {
     if (2 > NAArrayCount(self->argv)) {
         fprintf(stderr, "measure number is missing.\n");
@@ -80,11 +80,11 @@ static void SeekCommandExecute(Command *self, NAMidi *namidi)
         return;
     }
 
-    Player *player = NAMidiGetPlayer(namidi);
+    Player *player = NAMidiGetPlayer(CLIGetNAMidi(cli));
     PlayerSeek(player, measure);
 }
 
-static void ShowCommandExecute(Command *self, NAMidi *namidi)
+static void ShowCommandExecute(Command *self, CLI *cli)
 {
     char *err, *text;
 
@@ -126,21 +126,13 @@ static void ShowCommandExecute(Command *self, NAMidi *namidi)
         length = number;
     }
 
-    PianoRollView *view = PianoRollViewCreate(namidi);
-
-    if (-1 != from) {
-        PianoRollViewSetFrom(view, from);
-    }
-
-    if (-1 != length) {
-        PianoRollViewSetLength(view, length);
-    }
-
+    PianoRollView *view = CLIGetPianoRollView(cli);
+    PianoRollViewSetFrom(view, from);
+    PianoRollViewSetLength(view, length);
     PianoRollViewRender(view);
-    PianoRollViewDestroy(view);
 }
 
-static Command *CommandCreate(void (*execute)(Command *, NAMidi *), NAArray *argv)
+static Command *CommandCreate(void (*execute)(Command *, CLI *), NAArray *argv)
 {
     Command *self = calloc(1, sizeof(Command));
     self->execute = execute;
@@ -162,7 +154,7 @@ Command *CommandParse(const char *line)
         s = NULL;
     }
 
-    void (*execute)(Command *, NAMidi *);
+    void (*execute)(Command *, CLI *);
 
     if (0 < NAArrayCount(argv)) {
         for (int i = 0; NULL != commandTable[i].cmd; ++i) {
@@ -183,9 +175,9 @@ Command *CommandParse(const char *line)
     return CommandCreate(execute, argv);
 }
 
-void CommandExecute(Command *self, NAMidi *namidi)
+void CommandExecute(Command *self, CLI *cli)
 {
-    self->execute(self, namidi);
+    self->execute(self, cli);
     CommandDestroy(self);
 }
 

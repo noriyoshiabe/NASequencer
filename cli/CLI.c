@@ -1,5 +1,4 @@
 #include "CLI.h"
-#include "NAMidi.h"
 #include "Parser.h"
 #include "Command.h"
 #include "Exporter.h"
@@ -22,6 +21,7 @@ struct _CLI {
     const char *soundSource;
     NAMidi *namidi;
     MidiSourceManager *manager;
+    PianoRollView *pianoRollView;
     sigjmp_buf jmpBuf;
 };
 
@@ -39,6 +39,7 @@ CLI *CLICreate(const char *filepath, const char *soundSource)
     self->soundSource = soundSource;
     self->namidi = NAMidiCreate();
     self->manager = MidiSourceManagerSharedInstance();
+    self->pianoRollView = PianoRollViewCreate(self->namidi);
     NAMidiAddObserver(self->namidi, self, &CLINAMidiObserverCallbacks);
     PlayerAddObserver(NAMidiGetPlayer(self->namidi), self, &CLIPlayerObserverCallbacks);
     MidiSourceManagerAddObserver(self->manager, self, &CLIMidiSourceManagerObserverCallbacks);
@@ -47,6 +48,7 @@ CLI *CLICreate(const char *filepath, const char *soundSource)
 
 void CLIDestroy(CLI *self)
 {
+    PianoRollViewDestroy(self->pianoRollView);
     MidiSourceManagerRemoveObserver(self->manager, self);
     NAMidiRemoveObserver(self->namidi, self);
     NAMidiDestroy(self->namidi);
@@ -78,7 +80,7 @@ CLIError CLIRunShell(CLI *self)
 
     while ((line = readline(PROMPT))) {
         Command *cmd = CommandParse(line);
-        CommandExecute(cmd, self->namidi);
+        CommandExecute(cmd, self);
 
         if ('\0' != line[0]) {
             add_history(line);
@@ -189,6 +191,16 @@ static CLIError CLIExportMP3(CLI *self, Sequence *sequence, const char *output)
 {
     printf("TODO: MP3 output is not implemented yet. (-- )v\n");
     return CLIErrorNoError;
+}
+
+NAMidi *CLIGetNAMidi(CLI *self)
+{
+    return self->namidi;
+}
+
+PianoRollView *CLIGetPianoRollView(CLI *self)
+{
+    return self->pianoRollView;
 }
 
 

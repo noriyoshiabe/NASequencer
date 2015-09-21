@@ -1,5 +1,8 @@
 #pragma once
 
+#include "NAMidi.h"
+#include "PianoRollView.h"
+
 #include <stdbool.h>
 
 typedef enum {
@@ -20,3 +23,6 @@ extern void CLIDestroy(CLI *self);
 extern CLIError CLIRunShell(CLI *self);
 extern void CLISigInt(CLI *self);
 extern CLIError CLIExport(CLI *self, const char *output);
+
+extern NAMidi *CLIGetNAMidi(CLI *self);
+extern PianoRollView *CLIGetPianoRollView(CLI *self);
