@@ -21,6 +21,7 @@ set(SOURCES
   main.c
   CLI.c
   Command.c
+  PianoRollView.c
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
