@@ -35,9 +35,6 @@ struct _PianoRollView {
     Track tracks[16];
 };
 
-static NAMidiObserverCallbacks PianoRollViewNAMidiObserverCallbacks;
-
-
 PianoRollView *PianoRollViewCreate(NAMidi *namidi)
 {
     PianoRollView *self = calloc(1, sizeof(PianoRollView));
@@ -45,7 +42,6 @@ PianoRollView *PianoRollViewCreate(NAMidi *namidi)
     self->from = -1;
     self->length = -1;
     self->columnStep = 120;
-    NAMidiAddObserver(self->namidi, self, &PianoRollViewNAMidiObserverCallbacks);
 
     for (int i = 0; i < 16; ++i) {
         self->tracks[i].channel = i + 1;
@@ -67,7 +63,6 @@ void PianoRollViewDestroy(PianoRollView *self)
         SequenceRelease(self->sequence);
     }
 
-    NAMidiRemoveObserver(self->namidi, self);
     free(self);
 }
 
@@ -252,12 +247,16 @@ static void PianoRollViewRenderTrack(PianoRollView *self, RenderContext *context
     }
 }
 
-static void PianoRollViewNAMidiOnParseFinish(void *receiver, Sequence *sequence)
+void PianoRollViewSetSequence(PianoRollView *self, Sequence *sequence)
 {
-    PianoRollView *self = receiver;
-    
     if (self->sequence) {
         SequenceRelease(self->sequence);
+        for (int i = 0; i < 16; ++i) {
+            NAArrayDestroy(self->tracks[i].events);
+            self->tracks[i].events = NAArrayCreate(32, NULL);
+            self->tracks[i].noteRange.low = 127;
+            self->tracks[i].noteRange.high = 0;
+        }
     }
 
     self->sequence = SequenceRetain(sequence);
@@ -285,15 +284,4 @@ static void PianoRollViewNAMidiOnParseFinish(void *receiver, Sequence *sequence)
 
         track->noteRange.high = MIN(127, track->noteRange.high);
     }
-
-    PianoRollViewRender(self);
 }
-
-static void PianoRollViewNAMidiOnParseError(void *receiver, ParseError *error)
-{
-}
-
-static NAMidiObserverCallbacks PianoRollViewNAMidiObserverCallbacks = {
-    PianoRollViewNAMidiOnParseFinish,
-    PianoRollViewNAMidiOnParseError
-};

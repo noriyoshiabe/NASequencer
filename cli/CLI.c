@@ -23,6 +23,7 @@ struct _CLI {
     MidiSourceManager *manager;
     PianoRollView *pianoRollView;
     sigjmp_buf jmpBuf;
+    bool prompted;
 };
 
 static NAMidiObserverCallbacks CLINAMidiObserverCallbacks;
@@ -78,6 +79,7 @@ CLIError CLIRunShell(CLI *self)
     rl_completion_entry_function = CLICompletionEntry;
     rl_attempted_completion_function = CLICompletion;
 
+    self->prompted = true;
     while ((line = readline(PROMPT))) {
         Command *cmd = CommandParse(line);
         CommandExecute(cmd, self);
@@ -207,11 +209,36 @@ PianoRollView *CLIGetPianoRollView(CLI *self)
 static void CLINAMidiOnParseFinish(void *receiver, Sequence *sequence)
 {
     CLI *self = receiver;
+    PianoRollViewSetSequence(self->pianoRollView, sequence);
+
+    if (self->prompted) {
+        fprintf(stdout, "\n");
+    }
+
+    fprintf(stdout, "parse finished.\n");
+
+    PianoRollViewRender(self->pianoRollView);
+
+    if (self->prompted) {
+        fprintf(stdout, PROMPT);
+        fflush(stdout);
+    }
 }
 
 static void CLINAMidiOnParseError(void *receiver, ParseError *error)
 {
-    printf("%s: %d:%s %s - %d:%d\n", __FUNCTION__, error->kind, ParseErrorKind2String(error->kind), error->location.filepath, error->location.line, error->location.column);
+    CLI *self = receiver;
+
+    if (self->prompted) {
+        fprintf(stderr, "\n");
+    }
+
+    fprintf(stderr, "parse error. %d:%s %s - %d:%d\n", error->kind, ParseErrorKind2String(error->kind), error->location.filepath, error->location.line, error->location.column);
+
+    if (self->prompted) {
+        fprintf(stderr, PROMPT);
+        fflush(stderr);
+    }
 }
 
 static NAMidiObserverCallbacks CLINAMidiObserverCallbacks = {
