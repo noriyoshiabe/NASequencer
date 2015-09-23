@@ -22,7 +22,8 @@ struct _CLI {
     NAMidi *namidi;
     MidiSourceManager *manager;
     PianoRollView *pianoRollView;
-    sigjmp_buf jmpBuf;
+    sigjmp_buf sigjmpBuf;
+    jmp_buf jmpBuf;
     bool prompted;
 };
 
@@ -74,7 +75,11 @@ CLIError CLIRunShell(CLI *self)
     sprintf(historyFile, "%s/.namidi_history", getenv("HOME"));
     read_history(historyFile);
 
-    while (sigsetjmp(self->jmpBuf, 1));
+    while (sigsetjmp(self->sigjmpBuf, 1));
+
+    if (setjmp(self->jmpBuf)) {
+        goto EXIT;
+    }
 
     rl_completion_entry_function = CLICompletionEntry;
     rl_attempted_completion_function = CLICompletion;
@@ -95,6 +100,7 @@ CLIError CLIRunShell(CLI *self)
         free(line);
     }
 
+EXIT:
     printf("\n");
 
     write_history(historyFile);
@@ -121,7 +127,12 @@ static int CLICompletionEntry(const char *text, int state)
 void CLISigInt(CLI *self)
 {
     printf("\n");
-    siglongjmp(self->jmpBuf, 1);
+    siglongjmp(self->sigjmpBuf, 1);
+}
+
+void CLIExit(CLI *self)
+{
+    longjmp(self->jmpBuf, 1);
 }
 
 static CLIError CLIExportSMF(CLI *self, Sequence *sequence, const char *output);

@@ -22,6 +22,7 @@ extern CLI *CLICreate(const char *filepath, const char *soundSource);
 extern void CLIDestroy(CLI *self);
 extern CLIError CLIRunShell(CLI *self);
 extern void CLISigInt(CLI *self);
+extern void CLIExit(CLI *self);
 extern CLIError CLIExport(CLI *self, const char *output);
 
 extern NAMidi *CLIGetNAMidi(CLI *self);

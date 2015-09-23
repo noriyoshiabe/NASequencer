@@ -132,6 +132,12 @@ static void ShowCommandExecute(Command *self, CLI *cli)
     PianoRollViewRender(view);
 }
 
+static void ExitCommandExecute(Command *self, CLI *cli)
+{
+    free(self);
+    CLIExit(cli);
+}
+
 static Command *CommandCreate(void (*execute)(Command *, CLI *), NAArray *argv)
 {
     Command *self = calloc(1, sizeof(Command));
@@ -217,6 +223,7 @@ static CommandTable commandTable[] = {
     {"backward", BackwardCommandExecute},
     {"seek", SeekCommandExecute},
     {"show", ShowCommandExecute},
+    {"exit", ExitCommandExecute},
 
     {NULL, NULL}
 };
