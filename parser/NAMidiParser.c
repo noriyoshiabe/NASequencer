@@ -680,6 +680,11 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context
                 NAByteBufferSeekFirst(copy->buffer);
 
                 success = NAMidiParserParseStatement(self, copy);
+
+                for (int i = 0; i < 16; ++i) {
+                    context->tracks[i].tick = copy->tracks[i].tick;
+                }
+
                 BuildContextDestroy(copy);
             }
             break;
