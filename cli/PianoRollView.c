@@ -81,9 +81,10 @@ void PianoRollViewSetLength(PianoRollView *self, int length)
     self->length = length;
 }
 
-#define MEASURE_COLUMN_OFFSET 15
+#define MEASURE_COLUMN_OFFSET 14
 
 static void PianoRollViewRenderMeasure(PianoRollView *self, RenderContext *context);
+static void PianoRollViewRenderTrack(PianoRollView *self, RenderContext *context, Track *track);
 
 void PianoRollViewRender(PianoRollView *self)
 {
@@ -113,15 +114,20 @@ void PianoRollViewRender(PianoRollView *self)
         context.to = MIN(to, tickTo);
 
         PianoRollViewRenderMeasure(self, &context);
+        for (int i = 0; i < 16; ++i) {
+            PianoRollViewRenderTrack(self, &context, &self->tracks[i]);
+        }
 
         measure = location.m;
         tick = TimeTableTickByMeasure(self->sequence->timeTable, measure);
+
+        printf("\n");
     }
 }
 
 static void PianoRollViewRenderMeasure(PianoRollView *self, RenderContext *context)
 {
-    char *buffer = alloca(context->w.ws_col) + 1;
+    char *buffer = alloca(context->w.ws_col + 1);
     memset(buffer, ' ', context->w.ws_col);
     buffer[context->w.ws_col] = '\0';
     buffer[MEASURE_COLUMN_OFFSET - 2] = '|';
@@ -147,6 +153,50 @@ static void PianoRollViewRenderMeasure(PianoRollView *self, RenderContext *conte
     printf("\n");
 }
 
+static void PianoRollViewRenderTrack(PianoRollView *self, RenderContext *context, Track *track)
+{
+    if (0 == NAArrayCount(track->events)) {
+        return;
+    }
+
+    int lineCount = track->noteRange.high - track->noteRange.low + 1;
+    char buffer[lineCount][context->w.ws_col + 1];
+    for (int i = 0; i < lineCount; ++i) {
+        memset(buffer[i], ' ', context->w.ws_col);
+        buffer[i][context->w.ws_col] = '\0';
+        buffer[i][MEASURE_COLUMN_OFFSET - 2] = '|';
+        buffer[i][4] = '|';
+
+        if (0 == i) {
+            char channel[4];
+            snprintf(channel, 4, "CH%d", track->channel);
+            strncpy(buffer[i], channel, strlen(channel));
+        }
+    }
+
+    //for (int i = 0; i < lineCount; ++i) {
+    //    char noteLabel[]
+    //    buffer[i][5]
+    //}
+
+    int offset = 0;
+
+    for (int tick = context->from; tick < context->to; tick += self->columnStep) {
+        Location location = TimeTableTick2Location(self->sequence->timeTable, tick);
+        if (1 == location.b && 0 == location.t) {
+            for (int i = 0; i < lineCount; ++i) {
+                buffer[i][MEASURE_COLUMN_OFFSET + offset] = '.';
+            }
+        }
+
+        ++offset;
+    }
+
+    for (int i = 0; i < lineCount; ++i) {
+        printf("%s\n", buffer[i]);
+    }
+}
+
 static void PianoRollViewNAMidiOnParseFinish(void *receiver, Sequence *sequence)
 {
     PianoRollView *self = receiver;
@@ -168,6 +218,20 @@ static void PianoRollViewNAMidiOnParseFinish(void *receiver, Sequence *sequence)
             track->noteRange.high = MAX(track->noteRange.high, note->noteNo);
             NAArrayAppend(track->events, event);
         }
+    }
+
+    for (int i = 0; i < 16; ++i) {
+        Track *track = &self->tracks[i];
+        track->noteRange.low = (track->noteRange.low / 12) * 12;
+        if (0 != track->noteRange.high % 12) {
+            track->noteRange.high = (track->noteRange.high / 12) * 12 + 12;
+        }
+
+        if (track->noteRange.low == track->noteRange.high) {
+            track->noteRange.high += 12;
+        }
+
+        track->noteRange.high = MIN(127, track->noteRange.high);
     }
 
     PianoRollViewRender(self);
