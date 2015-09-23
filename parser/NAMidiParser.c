@@ -690,6 +690,7 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context
         case StatementTypeTrack:
             {
                 NAByteBufferReadInteger(context->buffer, &context->track);
+                tick = &context->tracks[context->track].tick;
             }
             break;
         case StatementTypeChannel:
