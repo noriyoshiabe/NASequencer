@@ -114,8 +114,21 @@ void PianoRollViewRender(PianoRollView *self)
         context.to = MIN(to, tickTo);
 
         PianoRollViewRenderMeasure(self, &context);
+
+        bool first = true;
         for (int i = 0; i < 16; ++i) {
-            PianoRollViewRenderTrack(self, &context, &self->tracks[i]);
+            if (0 < NAArrayCount(self->tracks[i].events)) {
+                if (!first) {
+                    int column = MEASURE_COLUMN_OFFSET + (context.to - context.from) / self->columnStep;
+                    for (int j = 0; j < column; ++j) {
+                        printf("-");
+                    }
+                    printf("\n");
+                }
+
+                PianoRollViewRenderTrack(self, &context, &self->tracks[i]);
+                first = false;
+            }
         }
 
         measure = location.m;
@@ -153,12 +166,27 @@ static void PianoRollViewRenderMeasure(PianoRollView *self, RenderContext *conte
     printf("\n");
 }
 
+static const char *NoteNo2NoteLabel(int noteNo)
+{
+    const char *labels[] = {
+        "C-2", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
+        "C-1", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
+        "C0" , "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
+        "C1",  "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
+        "C2",  "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
+        "C3",  "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
+        "C4",  "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
+        "C5",  "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
+        "C6",  "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
+        "C7",  "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
+        "C8",  "C#", "D", "D#", "E", "F", "F#",
+    };
+
+    return labels[noteNo];
+}
+
 static void PianoRollViewRenderTrack(PianoRollView *self, RenderContext *context, Track *track)
 {
-    if (0 == NAArrayCount(track->events)) {
-        return;
-    }
-
     int lineCount = track->noteRange.high - track->noteRange.low + 1;
     char buffer[lineCount][context->w.ws_col + 1];
     for (int i = 0; i < lineCount; ++i) {
@@ -168,16 +196,18 @@ static void PianoRollViewRenderTrack(PianoRollView *self, RenderContext *context
         buffer[i][4] = '|';
 
         if (0 == i) {
-            char channel[4];
-            snprintf(channel, 4, "CH%d", track->channel);
+            char channel[5];
+            snprintf(channel, 5, "Ch%d", track->channel);
             strncpy(buffer[i], channel, strlen(channel));
         }
     }
 
-    //for (int i = 0; i < lineCount; ++i) {
-    //    char noteLabel[]
-    //    buffer[i][5]
-    //}
+    for (int i = 0; i < lineCount; ++i) {
+        int noteNo = track->noteRange.high - i;
+        char label[8];
+        sprintf(label, "%03d:%s", noteNo, NoteNo2NoteLabel(noteNo));
+        strncpy(&buffer[i][5], label, strlen(label));
+    }
 
     int offset = 0;
 
@@ -190,6 +220,31 @@ static void PianoRollViewRenderTrack(PianoRollView *self, RenderContext *context
         }
 
         ++offset;
+    }
+
+    int *index = &context->indices[track->channel - 1];
+    int count = NAArrayCount(track->events);
+    NoteEvent **events = NAArrayGetValues(track->events);
+    for (; *index < count; ++(*index)) {
+        NoteEvent *note = events[*index];
+        if (context->to <= note->tick) {
+            break;
+        }
+
+        for (int tick = note->tick; tick < note->tick + note->gatetime; tick += self->columnStep) {
+            if (tick < context->from) {
+                continue;
+            }
+
+            int offset = MEASURE_COLUMN_OFFSET + (tick - context->from) / self->columnStep;
+            int line = track->noteRange.high - note->noteNo;
+            if (tick == note->tick) {
+                buffer[line][offset] = 'x';
+            }
+            else {
+                buffer[line][offset] = '-';
+            }
+        }
     }
 
     for (int i = 0; i < lineCount; ++i) {
@@ -223,12 +278,9 @@ static void PianoRollViewNAMidiOnParseFinish(void *receiver, Sequence *sequence)
     for (int i = 0; i < 16; ++i) {
         Track *track = &self->tracks[i];
         track->noteRange.low = (track->noteRange.low / 12) * 12;
-        if (0 != track->noteRange.high % 12) {
-            track->noteRange.high = (track->noteRange.high / 12) * 12 + 12;
-        }
 
-        if (track->noteRange.low == track->noteRange.high) {
-            track->noteRange.high += 12;
+        if (12 > track->noteRange.high - track->noteRange.low) {
+            track->noteRange.high = track->noteRange.low + 12;
         }
 
         track->noteRange.high = MIN(127, track->noteRange.high);
