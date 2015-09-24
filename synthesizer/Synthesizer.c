@@ -334,7 +334,6 @@ void SynthesizerDestroy(Synthesizer *self)
     ReverbDestroy(self->reverb);
 
     VoicePoolDestroy(self->voicePool);
-    SoundFontDestroy(self->sf);
 
     free(self);
 }

@@ -1,6 +1,5 @@
 #include "MidiSourceManager.h"
 #include "Synthesizer.h"
-#include "AudioOut.h"
 #include "NAMap.h"
 #include "NASet.h"
 
@@ -12,7 +11,7 @@ struct _MidiSourceManager {
     NAArray *descriptions;
     NAArray *availableDescriptions;
     NAMap *descriptionMap;
-    NAMap *sfSynthMap;
+    NAMap *midiSourceMap;
 };
 
 typedef struct _MidiSourceDescriptionImpl {
@@ -43,7 +42,7 @@ static MidiSourceManager *MidiSourceManagerCreate()
     self->descriptions = NAArrayCreate(4, NULL);
     self->availableDescriptions = NAArrayCreate(4, NULL);
     self->descriptionMap = NAMapCreate(NAHashCString, NULL, NULL);
-    self->sfSynthMap = NAMapCreate(NAHashAddress, NULL, NULL);
+    self->midiSourceMap = NAMapCreate(NAHashAddress, NULL, NULL);
     return self;
 }
 
@@ -150,8 +149,6 @@ bool MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(MidiSourceManager *
             description->name = strdup(description->sf->INAM);
             description->available = true;
 
-            NAMapPut(self->sfSynthMap, description->sf, NAArrayCreate(4, NULL));
-
             bool notifyUnloadDefault = 0 == NAArrayCount(self->availableDescriptions);
             NAArrayAppend(self->availableDescriptions, description);
             MidiSourceManagerNotifyLoadAvailableMidiSourceDescription(self, description);
@@ -181,16 +178,18 @@ void MidiSourceManagerUnloadMidiSourceDescription(MidiSourceManager *self, MidiS
 
     index = NAArrayFindFirstIndex(self->descriptions, description, MidiSourceDescriptionFindComparator);
     if (-1 != index) {
-        NAArrayApplyAt(self->descriptions, index, MidiSourceDescriptionImplDestroy);
         NAArrayRemoveAt(self->descriptions, index);
         MidiSourceManagerNotifyUnloadMidiSourceDescription(self, (MidiSourceDescriptionImpl *)description);
     }
 
     index = NAArrayFindFirstIndex(self->availableDescriptions, description, MidiSourceDescriptionFindComparator);
     if (-1 != index) {
-        NAArrayApplyAt(self->availableDescriptions, index, MidiSourceDescriptionImplDestroy);
         NAArrayRemoveAt(self->availableDescriptions, index);
         MidiSourceManagerNotifyUnloadAvailableMidiSourceDescription(self, (MidiSourceDescriptionImpl *)description);
+    }
+
+    if (!NAMapContainsKey(self->midiSourceMap, description)) {
+        MidiSourceDescriptionImplDestroy((MidiSourceDescriptionImpl *)description);
     }
 }
 
@@ -203,8 +202,12 @@ MidiSource *MidiSourceManagerAllocMidiSource(MidiSourceManager *self, MidiSource
     }
 
     if (description->sf) {
-        NAArray *midiSources = NAMapGet(self->sfSynthMap, description->sf);
-        AudioOut *audioOut = AudioOutSharedInstance();
+        NAArray *midiSources = NAMapGet(self->midiSourceMap, description);
+        if (!midiSources) {
+            midiSources = NAArrayCreate(4, NULL);
+            NAMapPut(self->midiSourceMap, description, midiSources);
+        }
+
         MidiSource *ret = (MidiSource *)SynthesizerCreate(description->sf, sampleRate);
         NAArrayAppend(midiSources, ret);
         return ret;
@@ -213,29 +216,27 @@ MidiSource *MidiSourceManagerAllocMidiSource(MidiSourceManager *self, MidiSource
     return NULL;
 }
 
-static int MidiSourceFindComparator(const void *source1, const void *source2)
-{
-    return source1 - source2;
-}
-
 void MidiSourceManagerDeallocMidiSource(MidiSourceManager *self, MidiSource *source)
 {
     uint8_t iteratorBuffer[NAMapIteratorSize];
-    NAIterator *iterator = NAMapGetIterator(self->sfSynthMap, iteratorBuffer);
+    NAIterator *iterator = NAMapGetIterator(self->midiSourceMap, iteratorBuffer);
     while (iterator->hasNext(iterator)) {
         NAMapEntry *entry = iterator->next(iterator);
-        SoundFont *sf = entry->key;
+        MidiSourceDescriptionImpl *description = entry->key;
         NAArray *sources = entry->value;
 
-        int index = NAArrayFindFirstIndex(sources, source, MidiSourceFindComparator);
+        int index = NAArrayFindFirstIndex(sources, source, NAArrayAddressComparator);
         if (-1 != index) {
             NAArrayRemoveAt(sources, index);
             source->destroy(source);
 
             if (NAArrayIsEmpty(sources)) {
-                SoundFontDestroy(sf);
                 NAArrayDestroy(sources);
                 iterator->remove(iterator);
+
+                if (-1 == NAArrayFindFirstIndex(self->descriptions, description, NAArrayAddressComparator)) {
+                    MidiSourceDescriptionImplDestroy(description);
+                }
             }
 
             break;
@@ -275,6 +276,10 @@ static void MidiSourceDescriptionImplDestroy(MidiSourceDescriptionImpl *self)
 
     if (self->filepath) {
         free(self->filepath);
+    }
+
+    if (self->sf) {
+        SoundFontDestroy(self->sf);
     }
 
     free(self);
