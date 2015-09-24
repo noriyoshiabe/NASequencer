@@ -165,7 +165,7 @@ static PresetInfo **getPresetInfos(void *_self)
 static PresetInfo *getPresetInfo(void *_self, uint8_t channel)
 {
     Synthesizer *self = _self;
-    Preset **result = bsearch(self->channels[channel].preset, self->presets, self->presetCount, sizeof(Preset *), PresetComparator);
+    Preset **result = bsearch(&self->channels[channel].preset, self->presets, self->presetCount, sizeof(Preset *), PresetComparator);
     int index = (int)(result - self->presets);
     return self->presetInfos[index];
 }
