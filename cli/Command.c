@@ -132,6 +132,64 @@ static void ShowCommandExecute(Command *self, CLI *cli)
     PianoRollViewRender(view);
 }
 
+static void SynthCommandExecute(Command *self, CLI *cli)
+{
+    MidiSourceManager *manager = MidiSourceManagerSharedInstance();
+    NAArray *descriptions = MidiSourceManagerGetAvailableDescriptions(manager);
+    
+    printf("available synthesizers:\n");
+    printf("------------------------------------\n");
+    
+    int count = NAArrayCount(descriptions);
+    MidiSourceDescription **values = NAArrayGetValues(descriptions);
+    for (int i = 0; i < count; ++i) {
+        MidiSourceDescription *description = values[i];
+        printf("%d:%s:%s\n", i, description->name, description->filepath);
+    }
+}
+
+static void PresetCommandExecute(Command *self, CLI *cli)
+{
+    MidiSourceManager *manager = MidiSourceManagerSharedInstance();
+    NAArray *descriptions = MidiSourceManagerGetAvailableDescriptions(manager);
+
+    int count = NAArrayCount(self->argv);
+    if (2 > count) {
+        fprintf(stderr, "index of synthesizers is missing.\n");
+        return;
+    }
+
+    char *err;
+    char *text = NAArrayGetValueAt(self->argv, 1);
+    long index = strtol(text, &err, 10);
+
+    if ('\0' != *err) {
+        fprintf(stderr, "cannot parse index of synthesizers. %s\n", text);
+        return;
+    }
+
+    if (index < 0 || NAArrayCount(descriptions) <= index) {
+        fprintf(stderr, "index of synthesizers is out of range. %ld\n", index);
+        return;
+    }
+
+    MidiSourceDescription *description = NAArrayGetValueAt(descriptions, index);
+
+    printf("presets for %s:\n", description->name);
+    printf("------------------------------------\n");
+    MidiSource *source = MidiSourceManagerAllocMidiSource(manager, description, 44100.0);
+
+    int presetCount = source->getPresetCount(source);
+    PresetInfo **presetInfos = source->getPresetInfos(source);
+    for (int j = 0; j < presetCount; ++j) {
+        PresetInfo *info = presetInfos[j];
+        printf("%d:%d:%d:%s\n", 
+                (info->bankNo >> 8) & 0xFF, info->bankNo & 0xFF, info->programNo, info->name);
+    }
+
+    MidiSourceManagerDeallocMidiSource(manager, source);
+}
+
 static void ExitCommandExecute(Command *self, CLI *cli)
 {
     free(self);
@@ -223,6 +281,8 @@ static CommandTable commandTable[] = {
     {"backward", BackwardCommandExecute},
     {"seek", SeekCommandExecute},
     {"show", ShowCommandExecute},
+    {"synth", SynthCommandExecute},
+    {"preset", PresetCommandExecute},
     {"exit", ExitCommandExecute},
 
     {NULL, NULL}
