@@ -464,32 +464,32 @@ PresetInfo **MixerChannelGetPresetInfos(MixerChannel *self)
 
 PresetInfo *MixerChannelGetPresetInfo(MixerChannel *self)
 {
-    return self->source->getPresetInfo(self->source, self->number);
+    return self->source->getPresetInfo(self->source, self->number - 1);
 }
 
 Level MixerChannelGetLevel(MixerChannel *self)
 {
-    return self->source->getChannelLevel(self->source, self->number);
+    return self->source->getChannelLevel(self->source, self->number - 1);
 }
 
 int MixerChannelGetVolume(MixerChannel *self)
 {
-    return self->source->getVolume(self->source, self->number);
+    return self->source->getVolume(self->source, self->number - 1);
 }
 
 int MixerChannelGetPan(MixerChannel *self)
 {
-    return self->source->getPan(self->source, self->number);
+    return self->source->getPan(self->source, self->number - 1);
 }
 
 int MixerChannelGetChorusSend(MixerChannel *self)
 {
-    return self->source->getChorusSend(self->source, self->number);
+    return self->source->getChorusSend(self->source, self->number - 1);
 }
 
 int MixerChannelGetReverbSend(MixerChannel *self)
 {
-    return self->source->getReverbSend(self->source, self->number);
+    return self->source->getReverbSend(self->source, self->number - 1);
 }
 
 bool MixerChannelGetMute(MixerChannel *self)

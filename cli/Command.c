@@ -190,6 +190,86 @@ static void PresetCommandExecute(Command *self, CLI *cli)
     MidiSourceManagerDeallocMidiSource(manager, source);
 }
 
+static void StatusCommandExecute(Command *self, CLI *cli)
+{
+    const struct {
+        const char *label;
+        int width;
+    } table[] = {
+        {"Ch", 3},
+        {"Midi Source", 40},
+        {"Preset", 20},
+        {"Volume", 6},
+        {"Pan", 6},
+        {"Chorus", 6},
+        {"Reverb", 6},
+        {"Mute", 4},
+        {"Solo", 4},
+    };
+
+    for (int i = 0; i < sizeof(table)/sizeof(table[0]); ++i) {
+        printf("%-*s%s", table[i].width, table[i].label, i == sizeof(table)/sizeof(table[0]) - 1 ? "\n" : " | ");
+    }
+
+    for (int i = 0; i < sizeof(table)/sizeof(table[0]); ++i) {
+        for (int j = 0; j < table[i].width; ++j) {
+            printf("-");
+        }
+
+        printf("%s", i == sizeof(table)/sizeof(table[0]) - 1 ? "\n" : "-|-");
+    }
+
+    Mixer *mixer = NAMidiGetMixer(CLIGetNAMidi(cli));
+    NAArray *array = MixerGetChannels(mixer);
+    int count = NAArrayCount(array);
+    MixerChannel **channels = NAArrayGetValues(array);
+    for (int i = 0; i < count; ++i) {
+        MixerChannel *channel = channels[i];
+        for (int j = 0; j < sizeof(table)/sizeof(table[0]); ++j) {
+            char text[64];
+            int width = table[j].width;
+            int limit = width + 1;
+            switch (j) {
+            case 0:
+                snprintf(text, limit, "%*d", width, MixerChannelGetNumber(channel));
+                break;
+            case 1:
+                {
+                    MidiSourceDescription *description = MixerChannelGetMidiSourceDescription(channel);
+                    snprintf(text, limit, "%-*s", width, description->name);
+                }
+                break;
+            case 2:
+                {
+                    PresetInfo *preset = MixerChannelGetPresetInfo(channel);
+                    snprintf(text, limit, "%-*s", width, preset->name);
+                }
+                break;
+            case 3:
+                snprintf(text, limit, "%*d", width, MixerChannelGetVolume(channel));
+                break;
+            case 4:
+                snprintf(text, limit, "%*d", width, MixerChannelGetPan(channel) - 64);
+                break;
+            case 5:
+                snprintf(text, limit, "%*d", width, MixerChannelGetChorusSend(channel));
+                break;
+            case 6:
+                snprintf(text, limit, "%*d", width, MixerChannelGetReverbSend(channel));
+                break;
+            case 7:
+                snprintf(text, limit, "%*s", width, MixerChannelGetMute(channel) ? "ON" : "OFF");
+                break;
+            case 8:
+                snprintf(text, limit, "%*s", width, MixerChannelGetSolo(channel) ? "ON" : "OFF");
+                break;
+            }
+
+            printf("%s%s", text, j == sizeof(table)/sizeof(table[0]) - 1 ? "\n" : " | ");
+        }
+    }
+}
+
 static void ExitCommandExecute(Command *self, CLI *cli)
 {
     free(self);
@@ -283,6 +363,7 @@ static CommandTable commandTable[] = {
     {"show", ShowCommandExecute},
     {"synth", SynthCommandExecute},
     {"preset", PresetCommandExecute},
+    {"status", StatusCommandExecute},
     {"exit", ExitCommandExecute},
 
     {NULL, NULL}
