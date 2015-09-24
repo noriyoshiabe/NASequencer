@@ -27,6 +27,7 @@ typedef struct _RenderContext {
 
 struct _PianoRollView {
     NAMidi *namidi;
+    int channel;
     int from;
     int length;
     int columnStep;
@@ -39,6 +40,7 @@ PianoRollView *PianoRollViewCreate(NAMidi *namidi)
 {
     PianoRollView *self = calloc(1, sizeof(PianoRollView));
     self->namidi = namidi;
+    self->channel = -1;
     self->from = -1;
     self->length = -1;
     self->columnStep = 120;
@@ -64,6 +66,11 @@ void PianoRollViewDestroy(PianoRollView *self)
     }
 
     free(self);
+}
+
+void PianoRollViewSetChannel(PianoRollView *self, int channel)
+{
+    self->channel = channel;
 }
 
 void PianoRollViewSetFrom(PianoRollView *self, int from)
@@ -112,6 +119,10 @@ void PianoRollViewRender(PianoRollView *self)
 
         bool first = true;
         for (int i = 0; i < 16; ++i) {
+            if (-1 != self->channel && i + 1 != self->channel) {
+                continue;
+            }
+
             if (0 < NAArrayCount(self->tracks[i].events)) {
                 if (!first) {
                     int column = MEASURE_COLUMN_OFFSET + (context.to - context.from) / self->columnStep;

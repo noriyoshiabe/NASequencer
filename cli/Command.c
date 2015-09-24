@@ -88,12 +88,22 @@ static void ShowCommandExecute(Command *self, CLI *cli)
 {
     char *err, *text;
 
+    int channel = -1;
     int from = -1;
     int length = -1;
 
     int count = NAArrayCount(self->argv);
     if (1 < count) {
         text = NAArrayGetValueAt(self->argv, 1);
+        long number = strtol(text, &err, 10);
+
+        if ('\0' == *err && 1 <= number && number <= 16) {
+            channel = number;
+        }
+    }
+
+    if (2 < count) {
+        text = NAArrayGetValueAt(self->argv, 2);
         long number = strtol(text, &err, 10);
 
         if ('\0' != *err) {
@@ -109,8 +119,8 @@ static void ShowCommandExecute(Command *self, CLI *cli)
         from = number;
     }
 
-    if (2 < count) {
-        text = NAArrayGetValueAt(self->argv, 2);
+    if (3 < count) {
+        text = NAArrayGetValueAt(self->argv, 3);
         long number = strtol(text, &err, 10);
 
         if ('\0' != *err) {
@@ -127,6 +137,7 @@ static void ShowCommandExecute(Command *self, CLI *cli)
     }
 
     PianoRollView *view = CLIGetPianoRollView(cli);
+    PianoRollViewSetChannel(view, channel);
     PianoRollViewSetFrom(view, from);
     PianoRollViewSetLength(view, length);
     PianoRollViewRender(view);
