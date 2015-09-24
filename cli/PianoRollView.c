@@ -98,10 +98,6 @@ void PianoRollViewRender(PianoRollView *self)
 
     int measure = MAX(1, self->from);
 
-    int length = -1 == self->length
-        ? TimeTableLength(self->sequence->timeTable)
-        : MIN(self->length, TimeTableLength(self->sequence->timeTable));
-
     int tick = TimeTableTickByMeasure(self->sequence->timeTable, measure);
     int to = -1 == self->length
         ? TimeTableLength(self->sequence->timeTable)

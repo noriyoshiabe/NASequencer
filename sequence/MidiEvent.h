@@ -23,6 +23,13 @@ typedef struct _MidiEvent {
     int tick;
 } MidiEvent;
 
+typedef struct _ChannelEvent {
+    MidiEventType type;
+    int id;
+    int tick;
+    int channel;
+} ChannelEvent;
+
 typedef struct _NoteEvent {
     MidiEventType type;
     int id;
@@ -115,3 +122,27 @@ typedef struct _SynthEvent {
 extern void *MidiEventAlloc(MidiEventType type, int id, int tick, int extraSize);
 extern void MidiEventDump(MidiEvent *self, int indent);
 extern int MidiEventComparator(const void *event1, const void *event2);
+
+static inline char *MidiEventType2String(MidiEventType type)
+{
+#define CASE(type) case type: return &(#type[13])
+    switch (type) {
+    CASE(MidiEventTypeNote);
+    CASE(MidiEventTypeTempo);
+    CASE(MidiEventTypeTime);
+    CASE(MidiEventTypeKey);
+    CASE(MidiEventTypeMarker);
+    CASE(MidiEventTypeVoice);
+    CASE(MidiEventTypeVolume);
+    CASE(MidiEventTypePan);
+    CASE(MidiEventTypeChorus);
+    CASE(MidiEventTypeReverb);
+    CASE(MidiEventTypeSynth);
+
+    default:
+       break;
+    }
+
+    return "Unknown event type";
+#undef CASE
+}

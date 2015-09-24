@@ -244,12 +244,13 @@ static void CLINAMidiOnParseFinish(void *receiver, Sequence *sequence)
 
     fprintf(stdout, "parse finished.\n");
 
+    PianoRollViewSetSequence(self->pianoRollView, sequence);
+    EventListViewSetSequence(self->eventListView, sequence);
+
     if (self->activeView == self->pianoRollView) {
-        PianoRollViewSetSequence(self->pianoRollView, sequence);
         PianoRollViewRender(self->pianoRollView);
     }
     else if (self->activeView == self->eventListView) {
-        EventListViewSetSequence(self->eventListView, sequence);
         EventListViewRender(self->eventListView);
     }
 
