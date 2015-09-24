@@ -153,7 +153,8 @@ bool ExporterWriteToSMF(Exporter *self, const char *filepath)
         case MidiEventTypePan:
             {
                 PanEvent *event = (PanEvent *)events[i];
-                SMFWriterAppendControlChange(writer, event->tick, event->channel, 10, event->value);
+                int value = Clip(event->value + 64, 0, 127);
+                SMFWriterAppendControlChange(writer, event->tick, event->channel, 10, value);
             }
             break;
         case MidiEventTypeChorus:

@@ -196,7 +196,8 @@ void MixerSendPan(Mixer *self, PanEvent *event)
 {
     MixerChannel *channel = NAArrayGetValueAt(self->channels, event->channel - 1);
     if (channel->active) {
-        channel->source->setPan(channel->source, channel->number, event->value);
+        int value = Clip(event->value + 64, 0, 127);
+        channel->source->setPan(channel->source, channel->number, value);
     }
 }
 
