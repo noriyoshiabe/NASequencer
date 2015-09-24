@@ -49,6 +49,7 @@ static void postProcess(YYLTYPE *yylloc, yyscan_t scanner, StatementType type, .
 %token TRACK
 %token CHANNEL
 %token VOICE
+%token SYNTH
 %token VOLUME
 %token PAN
 %token CHORUS
@@ -96,6 +97,7 @@ statement
     | TRACK INTEGER                 { Process(&@$, StatementTypeTrack, $2); }
     | CHANNEL INTEGER               { Process(&@$, StatementTypeChannel, $2); }
     | VOICE INTEGER INTEGER INTEGER { Process(&@$, StatementTypeVoice, $2, $3, $4); }
+    | SYNTH STRING                  { Process(&@$, StatementTypeSynth, $2); }
     | VOLUME INTEGER                { Process(&@$, StatementTypeVolume, $2); }
     | PAN INTEGER                   { Process(&@$, StatementTypePan, $2); }
     | PAN PLUS INTEGER              { Process(&@$, StatementTypePan, $3); }
@@ -156,6 +158,7 @@ static void postProcess(YYLTYPE *yylloc, yyscan_t scanner, StatementType type, .
     case StatementTypeMarker:
     case StatementTypePattern:
     case StatementTypePatternDefine:
+    case StatementTypeSynth:
     case StatementTypeKey:
     case StatementTypeNote:
     case StatementTypeInclude:

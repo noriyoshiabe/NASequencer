@@ -38,6 +38,9 @@ void *MidiEventAlloc(MidiEventType type, int tick, int extraSize)
     case MidiEventTypeReverb:
         size = sizeof(ReverbEvent);
         break;
+    case MidiEventTypeSynth:
+        size = sizeof(SynthEvent) + extraSize;
+        break;
     }
 
     MidiEvent *ret = calloc(1, size);
@@ -120,6 +123,13 @@ void MidiEventDump(MidiEvent *self, int indent)
             ReverbEvent *self = _self;
             printf("Reverb: tick=%d channel=%d value=%d\n",
                     self->tick, self->channel, self->value);
+        }
+        break;
+    case MidiEventTypeSynth:
+        {
+            SynthEvent *self = _self;
+            printf("Synth: tick=%d identifier=%s\n",
+                    self->tick, self->identifier);
         }
         break;
     }

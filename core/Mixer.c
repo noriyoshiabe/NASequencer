@@ -216,6 +216,21 @@ void MixerSendReverb(Mixer *self, ReverbEvent *event)
     }
 }
 
+void MixerSendSynth(Mixer *self, SynthEvent *event)
+{
+    MixerChannel *channel = NAArrayGetValueAt(self->channels, event->channel - 1);
+    NAArray *availableDescriptions = MidiSourceManagerGetAvailableDescriptions(MidiSourceManagerSharedInstance());
+    int count = NAArrayCount(availableDescriptions);
+    MidiSourceDescription **descriptions = NAArrayGetValues(availableDescriptions);
+    for (int i = 0; i < count; ++i) {
+        MidiSourceDescription *description = descriptions[i];
+        if (0 == strcmp(description->name, event->identifier)) {
+            MixerChannelSetMidiSourceDescription(channel, description);
+            break;
+        }
+    }
+}
+
 NAArray *MixerGetChannels(Mixer *self)
 {
     return self->channels;

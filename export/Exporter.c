@@ -168,6 +168,9 @@ bool ExporterWriteToSMF(Exporter *self, const char *filepath)
                 SMFWriterAppendControlChange(writer, event->tick, event->channel, 91, event->value);
             }
             break;
+        case MidiEventTypeSynth:
+            // not support
+            break;
         }
     }
 
@@ -228,6 +231,9 @@ static void ExporterBuildAudioSample(Exporter *self, ExporterAudioBuffer *audioB
                     break;
                 case MidiEventTypeReverb:
                     MixerSendReverb(mixer, (ReverbEvent *)event);
+                    break;
+                case MidiEventTypeSynth:
+                    MixerSendSynth(mixer, (SynthEvent *)event);
                     break;
                 default:
                     break;

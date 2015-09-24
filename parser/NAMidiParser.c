@@ -341,6 +341,14 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             }
         }
         break;
+    case StatementTypeSynth:
+        {
+            char *string = va_arg(argList, char *);
+            header.length = strlen(string) + 1;
+            NAByteBufferWriteData(self->context->buffer, &header, sizeof(StatementHeader));
+            NAByteBufferWriteString(self->context->buffer, string);
+        }
+        break;
     case StatementTypeVolume:
         {
             int volume = va_arg(argList, int);
@@ -710,6 +718,16 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context
                 NAByteBufferReadInteger(context->buffer, &event->msb);
                 NAByteBufferReadInteger(context->buffer, &event->lsb);
                 NAByteBufferReadInteger(context->buffer, &event->programNo);
+                NAArrayAppend(sequence->events, event);
+            }
+            break;
+        case StatementTypeSynth:
+            {
+                char *identifier;
+                NAByteBufferReadString(context->buffer, &identifier);
+                SynthEvent *event = MidiEventAlloc(MidiEventTypeSynth, *tick, strlen(identifier) + 1);
+                event->channel = context->tracks[context->track].channel;
+                strcpy(event->identifier, identifier);
                 NAArrayAppend(sequence->events, event);
             }
             break;

@@ -31,6 +31,7 @@ extern void MixerSendVolume(Mixer *self, VolumeEvent *event);
 extern void MixerSendPan(Mixer *self, PanEvent *event);
 extern void MixerSendChorus(Mixer *self, ChorusEvent *event);
 extern void MixerSendReverb(Mixer *self, ReverbEvent *event);
+extern void MixerSendSynth(Mixer *self, SynthEvent *event);
 
 extern NAArray *MixerGetChannels(Mixer *self);
 

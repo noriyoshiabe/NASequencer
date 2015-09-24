@@ -13,6 +13,8 @@ typedef enum {
     MidiEventTypePan,
     MidiEventTypeChorus,
     MidiEventTypeReverb,
+
+    MidiEventTypeSynth,
 } MidiEventType;
 
 typedef struct _MidiEvent {
@@ -90,6 +92,13 @@ typedef struct _ReverbEvent {
     int channel;
     int value;
 } ReverbEvent;
+
+typedef struct _SynthEvent {
+    MidiEventType type;
+    int tick;
+    int channel;
+    char identifier[];
+} SynthEvent;
 
 extern void *MidiEventAlloc(MidiEventType type, int tick, int extraSize);
 extern void MidiEventDump(MidiEvent *self, int indent);

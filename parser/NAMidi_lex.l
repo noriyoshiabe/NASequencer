@@ -43,6 +43,7 @@ END            end
 TRACK          track
 CHANNEL        channel
 VOICE          voice
+SYNTH          synth
 VOLUME         volume
 PAN            pan
 CHORUS         chorus
@@ -88,6 +89,7 @@ LINE_COMMENT   (\/\/|==|--).*$
 {TRACK}          { return TRACK; }
 {CHANNEL}        { return CHANNEL; }
 {VOICE}          { return VOICE; }
+{SYNTH}          { return SYNTH; }
 {VOLUME}         { return VOLUME; }
 {PAN}            { return PAN; }
 {CHORUS}         { return CHORUS; }

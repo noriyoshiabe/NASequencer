@@ -21,6 +21,7 @@ typedef enum {
     StatementTypeTrack,
     StatementTypeChannel,
     StatementTypeVoice,
+    StatementTypeSynth,
     StatementTypeVolume,
     StatementTypePan,
     StatementTypeChorus,
@@ -57,6 +58,7 @@ static inline const char *StatementType2String(StatementType type)
     CASE(StatementTypeTrack);
     CASE(StatementTypeChannel);
     CASE(StatementTypeVoice);
+    CASE(StatementTypeSynth);
     CASE(StatementTypeVolume);
     CASE(StatementTypePan);
     CASE(StatementTypeChorus);
