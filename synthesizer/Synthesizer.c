@@ -183,8 +183,8 @@ static Level getChannelLevel(void *self, uint8_t channel)
 static void setPresetInfo(void *_self, uint8_t channel, PresetInfo *presetInfo)
 {
     Synthesizer *self = _self;
-    SynthesizerControlChange(self, channel, CC_BankSelect_MSB, 0x00FF & (presetInfo->bankNo >> 8));
-    SynthesizerControlChange(self, channel, CC_BankSelect_LSB, 0x00FF & presetInfo->bankNo);
+    SynthesizerControlChange(self, channel, CC_BankSelect_MSB, 0x007F & (presetInfo->bankNo >> 7));
+    SynthesizerControlChange(self, channel, CC_BankSelect_LSB, 0x007F & presetInfo->bankNo);
     SynthesizerProgramChange(self, channel, presetInfo->programNo);
 }
 

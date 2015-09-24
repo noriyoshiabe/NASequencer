@@ -184,7 +184,7 @@ static void PresetCommandExecute(Command *self, CLI *cli)
     for (int j = 0; j < presetCount; ++j) {
         PresetInfo *info = presetInfos[j];
         printf("%d:%d:%d:%s\n", 
-                (info->bankNo >> 8) & 0xFF, info->bankNo & 0xFF, info->programNo, info->name);
+                (info->bankNo >> 7) & 0x7F, info->bankNo & 0x7F, info->programNo, info->name);
     }
 
     MidiSourceManagerDeallocMidiSource(manager, source);
