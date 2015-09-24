@@ -22,6 +22,8 @@ struct _CLI {
     NAMidi *namidi;
     MidiSourceManager *manager;
     PianoRollView *pianoRollView;
+    EventListView *eventListView;
+    void *activeView;
     sigjmp_buf sigjmpBuf;
     jmp_buf jmpBuf;
     bool prompted;
@@ -42,6 +44,8 @@ CLI *CLICreate(const char *filepath, const char **soundSources)
     self->namidi = NAMidiCreate();
     self->manager = MidiSourceManagerSharedInstance();
     self->pianoRollView = PianoRollViewCreate(self->namidi);
+    self->eventListView = EventListViewCreate(self->namidi);
+    self->activeView = self->pianoRollView;
     NAMidiAddObserver(self->namidi, self, &CLINAMidiObserverCallbacks);
     PlayerAddObserver(NAMidiGetPlayer(self->namidi), self, &CLIPlayerObserverCallbacks);
     MidiSourceManagerAddObserver(self->manager, self, &CLIMidiSourceManagerObserverCallbacks);
@@ -51,6 +55,7 @@ CLI *CLICreate(const char *filepath, const char **soundSources)
 void CLIDestroy(CLI *self)
 {
     PianoRollViewDestroy(self->pianoRollView);
+    EventListViewDestroy(self->eventListView);
     MidiSourceManagerRemoveObserver(self->manager, self);
     NAMidiRemoveObserver(self->namidi, self);
     NAMidiDestroy(self->namidi);
@@ -218,11 +223,20 @@ PianoRollView *CLIGetPianoRollView(CLI *self)
     return self->pianoRollView;
 }
 
+EventListView *CLIGetEventListView(CLI *self)
+{
+    return self->eventListView;
+}
+
+void CLISetActiveView(CLI *self, void *view)
+{
+    self->activeView = view;
+}
+
 
 static void CLINAMidiOnParseFinish(void *receiver, Sequence *sequence)
 {
     CLI *self = receiver;
-    PianoRollViewSetSequence(self->pianoRollView, sequence);
 
     if (self->prompted) {
         fprintf(stdout, "\n");
@@ -230,7 +244,14 @@ static void CLINAMidiOnParseFinish(void *receiver, Sequence *sequence)
 
     fprintf(stdout, "parse finished.\n");
 
-    PianoRollViewRender(self->pianoRollView);
+    if (self->activeView == self->pianoRollView) {
+        PianoRollViewSetSequence(self->pianoRollView, sequence);
+        PianoRollViewRender(self->pianoRollView);
+    }
+    else if (self->activeView == self->eventListView) {
+        EventListViewSetSequence(self->eventListView, sequence);
+        EventListViewRender(self->eventListView);
+    }
 
     if (self->prompted) {
         fprintf(stdout, PROMPT);

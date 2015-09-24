@@ -84,56 +84,67 @@ static void SeekCommandExecute(Command *self, CLI *cli)
     PlayerSeek(player, measure);
 }
 
-static void ShowCommandExecute(Command *self, CLI *cli)
+static bool ParseViewArgs(NAArray *argv, int *channel, int *from, int *length)
 {
     char *err, *text;
 
-    int channel = -1;
-    int from = -1;
-    int length = -1;
+    *channel = -1;
+    *from = -1;
+    *length = -1;
 
-    int count = NAArrayCount(self->argv);
+    int count = NAArrayCount(argv);
     if (1 < count) {
-        text = NAArrayGetValueAt(self->argv, 1);
+        text = NAArrayGetValueAt(argv, 1);
         long number = strtol(text, &err, 10);
 
         if ('\0' == *err && 1 <= number && number <= 16) {
-            channel = number;
+            *channel = number;
         }
     }
 
     if (2 < count) {
-        text = NAArrayGetValueAt(self->argv, 2);
+        text = NAArrayGetValueAt(argv, 2);
         long number = strtol(text, &err, 10);
 
         if ('\0' != *err) {
             fprintf(stderr, "cannot parse measure number of from. %s\n", text);
-            return;
+            return false;
         }
 
         if (1 > number) {
             fprintf(stderr, "invalid measure number. %ld\n", number);
-            return;
+            return false;
         }
 
-        from = number;
+        *from = number;
     }
 
     if (3 < count) {
-        text = NAArrayGetValueAt(self->argv, 3);
+        text = NAArrayGetValueAt(argv, 3);
         long number = strtol(text, &err, 10);
 
         if ('\0' != *err) {
             fprintf(stderr, "cannot parse length. %s\n", text);
-            return;
+            return false;
         }
 
         if (1 > number) {
             fprintf(stderr, "invalid length. %ld\n", number);
-            return;
+            return false;
         }
 
-        length = number;
+        *length = number;
+    }
+
+    return true;
+}
+
+static void ShowCommandExecute(Command *self, CLI *cli)
+{
+    int channel, from, length;
+
+    if (!ParseViewArgs(self->argv, &channel, &from, &length)) {
+        return;
     }
 
     PianoRollView *view = CLIGetPianoRollView(cli);
@@ -141,6 +152,25 @@ static void ShowCommandExecute(Command *self, CLI *cli)
     PianoRollViewSetFrom(view, from);
     PianoRollViewSetLength(view, length);
     PianoRollViewRender(view);
+
+    CLISetActiveView(cli, view);
+}
+
+static void ListCommandExecute(Command *self, CLI *cli)
+{
+    int channel, from, length;
+
+    if (!ParseViewArgs(self->argv, &channel, &from, &length)) {
+        return;
+    }
+
+    EventListView *view = CLIGetEventListView(cli);
+    EventListViewSetChannel(view, channel);
+    EventListViewSetFrom(view, from);
+    EventListViewSetLength(view, length);
+    EventListViewRender(view);
+
+    CLISetActiveView(cli, view);
 }
 
 static void SynthCommandExecute(Command *self, CLI *cli)
@@ -443,6 +473,7 @@ static CommandTable commandTable[] = {
     {"backward", BackwardCommandExecute},
     {"seek", SeekCommandExecute},
     {"show", ShowCommandExecute},
+    {"list", ListCommandExecute},
     {"synth", SynthCommandExecute},
     {"preset", PresetCommandExecute},
     {"status", StatusCommandExecute},
