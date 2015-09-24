@@ -32,6 +32,7 @@ typedef struct _BuildContext {
 
     Sequence *sequence;
 
+    int id;
     int track;
     int transpose;
     KeySign keySign;
@@ -665,7 +666,7 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context
             {
                 char *marker;
                 NAByteBufferReadString(context->buffer, &marker);
-                MarkerEvent *event = MidiEventAlloc(MidiEventTypeMarker, *tick, strlen(marker) + 1);
+                MarkerEvent *event = MidiEventAlloc(MidiEventTypeMarker, ++context->id, *tick, strlen(marker) + 1);
                 strcpy(event->text, marker);
                 NAArrayAppend(sequence->events, event);
             }
@@ -692,6 +693,7 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context
                 for (int i = 0; i < 16; ++i) {
                     context->tracks[i].tick = copy->tracks[i].tick;
                 }
+                context->id = copy->id;
 
                 BuildContextDestroy(copy);
             }
@@ -713,7 +715,7 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context
             break;
         case StatementTypeVoice:
             {
-                VoiceEvent *event = MidiEventAlloc(MidiEventTypeVoice, *tick, sizeof(VoiceEvent) - sizeof(MidiEvent));
+                VoiceEvent *event = MidiEventAlloc(MidiEventTypeVoice, ++context->id, *tick, sizeof(VoiceEvent) - sizeof(MidiEvent));
                 event->channel = context->tracks[context->track].channel;
                 NAByteBufferReadInteger(context->buffer, &event->msb);
                 NAByteBufferReadInteger(context->buffer, &event->lsb);
@@ -725,7 +727,7 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context
             {
                 char *identifier;
                 NAByteBufferReadString(context->buffer, &identifier);
-                SynthEvent *event = MidiEventAlloc(MidiEventTypeSynth, *tick, strlen(identifier) + 1);
+                SynthEvent *event = MidiEventAlloc(MidiEventTypeSynth, ++context->id, *tick, strlen(identifier) + 1);
                 event->channel = context->tracks[context->track].channel;
                 strcpy(event->identifier, identifier);
                 NAArrayAppend(sequence->events, event);
@@ -733,28 +735,28 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context
             break;
         case StatementTypeVolume:
             {
-                VolumeEvent *event = MidiEventAlloc(MidiEventTypeVolume, *tick, sizeof(VolumeEvent) - sizeof(MidiEvent));
+                VolumeEvent *event = MidiEventAlloc(MidiEventTypeVolume, ++context->id, *tick, sizeof(VolumeEvent) - sizeof(MidiEvent));
                 event->channel = context->tracks[context->track].channel;
                 NAByteBufferReadInteger(context->buffer, &event->value);
             }
             break;
         case StatementTypePan:
             {
-                PanEvent *event = MidiEventAlloc(MidiEventTypePan, *tick, sizeof(PanEvent) - sizeof(MidiEvent));
+                PanEvent *event = MidiEventAlloc(MidiEventTypePan, ++context->id, *tick, sizeof(PanEvent) - sizeof(MidiEvent));
                 event->channel = context->tracks[context->track].channel;
                 NAByteBufferReadInteger(context->buffer, &event->value);
             }
             break;
         case StatementTypeChorus:
             {
-                ChorusEvent *event = MidiEventAlloc(MidiEventTypeChorus, *tick, sizeof(ChorusEvent) - sizeof(MidiEvent));
+                ChorusEvent *event = MidiEventAlloc(MidiEventTypeChorus, ++context->id, *tick, sizeof(ChorusEvent) - sizeof(MidiEvent));
                 event->channel = context->tracks[context->track].channel;
                 NAByteBufferReadInteger(context->buffer, &event->value);
             }
             break;
         case StatementTypeReverb:
             {
-                ReverbEvent *event = MidiEventAlloc(MidiEventTypeReverb, *tick, sizeof(ReverbEvent) - sizeof(MidiEvent));
+                ReverbEvent *event = MidiEventAlloc(MidiEventTypeReverb, ++context->id, *tick, sizeof(ReverbEvent) - sizeof(MidiEvent));
                 event->channel = context->tracks[context->track].channel;
                 NAByteBufferReadInteger(context->buffer, &event->value);
             }
@@ -801,7 +803,7 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context
                     context->tracks[context->track].velocity = velocity;
                 }
 
-                NoteEvent *event = MidiEventAlloc(MidiEventTypeNote, *tick, sizeof(NoteEvent) - sizeof(MidiEvent));
+                NoteEvent *event = MidiEventAlloc(MidiEventTypeNote, ++context->id, *tick, sizeof(NoteEvent) - sizeof(MidiEvent));
                 event->noteNo = noteNo;
                 event->channel = context->tracks[context->track].channel;
                 event->gatetime = context->tracks[context->track].gatetime;

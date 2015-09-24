@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void *MidiEventAlloc(MidiEventType type, int tick, int extraSize)
+void *MidiEventAlloc(MidiEventType type, int id, int tick, int extraSize)
 {
     int size;
 
@@ -45,6 +45,7 @@ void *MidiEventAlloc(MidiEventType type, int tick, int extraSize)
 
     MidiEvent *ret = calloc(1, size);
     ret->type = type;
+    ret->id = id;
     ret->tick = tick;
     return ret;
 }
@@ -58,78 +59,78 @@ void MidiEventDump(MidiEvent *self, int indent)
     case MidiEventTypeNote:
         {
             NoteEvent *self = _self;
-            printf("Note: tick=%d channel=%d noteNo=%d gatetime=%d velocity=%d\n",
-                    self->tick, self->channel, self->noteNo, self->gatetime, self->velocity);
+            printf("Note: id=%d tick=%d channel=%d noteNo=%d gatetime=%d velocity=%d\n",
+                    self->id, self->tick, self->channel, self->noteNo, self->gatetime, self->velocity);
         }
         break;
     case MidiEventTypeTempo:
         {
             TempoEvent *self = _self;
-            printf("Tempo: tick=%d tempo=%f\n",
-                    self->tick, self->tempo);
+            printf("Tempo: id=%d tick=%d tempo=%f\n",
+                    self->id, self->tick, self->tempo);
         }
         break;
     case MidiEventTypeTime:
         {
             TimeEvent *self = _self;
-            printf("Time: tick=%d time=%d/%d\n",
-                    self->tick, self->numerator, self->denominator);
+            printf("Time: id=%d tick=%d time=%d/%d\n",
+                    self->id, self->tick, self->numerator, self->denominator);
         }
         break;
     case MidiEventTypeKey:
         {
             KeyEvent *self = _self;
-            printf("Key: tick=%d key=%s\n",
-                    self->tick, KeySign2String(self->keySign));
+            printf("Key: id=%d tick=%d key=%s\n",
+                    self->id, self->tick, KeySign2String(self->keySign));
         }
         break;
     case MidiEventTypeMarker:
         {
             MarkerEvent *self = _self;
-            printf("Marker: tick=%d text=%s\n",
-                    self->tick, self->text);
+            printf("Marker: id=%d tick=%d text=%s\n",
+                    self->id, self->tick, self->text);
         }
         break;
     case MidiEventTypeVoice:
         {
             VoiceEvent *self = _self;
-            printf("Voice: tick=%d channel=%d msb=%d lsb=%d programNo=%d\n",
-                    self->tick, self->channel, self->msb, self->lsb, self->programNo);
+            printf("Voice: id=%d tick=%d channel=%d msb=%d lsb=%d programNo=%d\n",
+                    self->id, self->tick, self->channel, self->msb, self->lsb, self->programNo);
         }
         break;
     case MidiEventTypeVolume:
         {
             VolumeEvent *self = _self;
-            printf("Volume: tick=%d channel=%d value=%d\n",
-                    self->tick, self->channel, self->value);
+            printf("Volume: id=%d tick=%d channel=%d value=%d\n",
+                    self->id, self->tick, self->channel, self->value);
         }
         break;
     case MidiEventTypePan:
         {
             PanEvent *self = _self;
-            printf("Pan: tick=%d channel=%d value=%d\n",
-                    self->tick, self->channel, self->value);
+            printf("Pan: id=%d tick=%d channel=%d value=%d\n",
+                    self->id, self->tick, self->channel, self->value);
         }
         break;
     case MidiEventTypeChorus:
         {
             ChorusEvent *self = _self;
-            printf("Chorus: tick=%d channel=%d value=%d\n",
-                    self->tick, self->channel, self->value);
+            printf("Chorus: id=%d tick=%d channel=%d value=%d\n",
+                    self->id, self->tick, self->channel, self->value);
         }
         break;
     case MidiEventTypeReverb:
         {
             ReverbEvent *self = _self;
-            printf("Reverb: tick=%d channel=%d value=%d\n",
-                    self->tick, self->channel, self->value);
+            printf("Reverb: id=%d tick=%d channel=%d value=%d\n",
+                    self->id, self->tick, self->channel, self->value);
         }
         break;
     case MidiEventTypeSynth:
         {
             SynthEvent *self = _self;
-            printf("Synth: tick=%d identifier=%s\n",
-                    self->tick, self->identifier);
+            printf("Synth: id=%d tick=%d identifier=%s\n",
+                    self->id, self->tick, self->identifier);
         }
         break;
     }
@@ -140,5 +141,6 @@ int MidiEventComparator(const void *_event1, const void *_event2)
     const MidiEvent **event1 = (const MidiEvent **)_event1;
     const MidiEvent **event2 = (const MidiEvent **)_event2;
 
-    return (*event1)->tick - (*event2)->tick;
+    int result = (*event1)->tick - (*event2)->tick;
+    return 0 != result ? result : (*event1)->id - (*event2)->id;
 }

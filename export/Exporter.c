@@ -70,7 +70,7 @@ static void ExporterBuildEventsToWrite(Exporter *self)
         if (MidiEventTypeNote == events[i]->type) {
             NoteEvent *noteOn = (NoteEvent *)events[i];
 
-            NoteEvent *noteOff = MidiEventAlloc(MidiEventTypeNote, noteOn->tick + noteOn->gatetime, sizeof(NoteEvent) - sizeof(MidiEvent));
+            NoteEvent *noteOff = MidiEventAlloc(MidiEventTypeNote, noteOn->id, noteOn->tick + noteOn->gatetime, sizeof(NoteEvent) - sizeof(MidiEvent));
             noteOff->channel = noteOn->channel;
             noteOff->noteNo = noteOn->noteNo;
             noteOff->velocity = 0;
