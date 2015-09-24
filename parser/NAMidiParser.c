@@ -199,6 +199,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             int resolution = va_arg(argList, int);
             if (!isValidRange(resolution, 1, 9600)) {
                 NAMidiParserError(self, line, column, ParseErrorKindInvalidValue);
+                success = false;
             }
             else {
                 header.length = sizeof(int);
@@ -220,6 +221,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             double tempo = va_arg(argList, double);
             if (!isValidRange(tempo, 30.0, 300.0)) {
                 NAMidiParserError(self, line, column, ParseErrorKindInvalidValue);
+                success = false;
             }
             else {
                 header.length = sizeof(float);
@@ -234,6 +236,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             int denominator = va_arg(argList, int);
             if (1 > numerator || 1 > denominator || !isPowerOf2(denominator)) {
                 NAMidiParserError(self, line, column, ParseErrorKindInvalidValue);
+                success = false;
             }
             else {
                 header.length = sizeof(int) * 2;
@@ -248,6 +251,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             int measure = va_arg(argList, int);
             if (!isValidRange(measure, 1, ParserMeasureMax)) {
                 NAMidiParserError(self, line, column, ParseErrorKindInvalidValue);
+                success = false;
             }
             else {
                 header.length = sizeof(int);
@@ -301,6 +305,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             int track = va_arg(argList, int);
             if (!isValidRange(track, 1, 16)) {
                 NAMidiParserError(self, line, column, ParseErrorKindInvalidValue);
+                success = false;
             }
             else {
                 header.length = sizeof(int);
@@ -314,6 +319,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             int channel = va_arg(argList, int);
             if (!isValidRange(channel, 1, 16)) {
                 NAMidiParserError(self, line, column, ParseErrorKindInvalidValue);
+                success = false;
             }
             else {
                 header.length = sizeof(int);
@@ -332,6 +338,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
                     || !isValidRange(lsb, 0, 127)
                     || !isValidRange(programNo, 0, 127)) {
                 NAMidiParserError(self, line, column, ParseErrorKindInvalidValue);
+                success = false;
             }
             else {
                 header.length = sizeof(int) * 3;
@@ -355,6 +362,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             int volume = va_arg(argList, int);
             if (!isValidRange(volume, 0, 127)) {
                 NAMidiParserError(self, line, column, ParseErrorKindInvalidValue);
+                success = false;
             }
             else {
                 header.length = sizeof(int);
@@ -368,6 +376,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             int pan = va_arg(argList, int);
             if (!isValidRange(pan, -64, 64)) {
                 NAMidiParserError(self, line, column, ParseErrorKindInvalidValue);
+                success = false;
             }
             else {
                 header.length = sizeof(int);
@@ -381,6 +390,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             int chorus = va_arg(argList, int);
             if (!isValidRange(chorus, 0, 127)) {
                 NAMidiParserError(self, line, column, ParseErrorKindInvalidValue);
+                success = false;
             }
             else {
                 header.length = sizeof(int);
@@ -394,6 +404,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             int reverb = va_arg(argList, int);
             if (!isValidRange(reverb, 0, 127)) {
                 NAMidiParserError(self, line, column, ParseErrorKindInvalidValue);
+                success = false;
             }
             else {
                 header.length = sizeof(int);
@@ -407,6 +418,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             int transpose = va_arg(argList, int);
             if (!isValidRange(transpose, -64, 64)) {
                 NAMidiParserError(self, line, column, ParseErrorKindInvalidValue);
+                success = false;
             }
             else {
                 header.length = sizeof(int);
@@ -427,6 +439,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             KeySign keySign = NoteTableGetKeySign(keyChar, sharp, flat, major);
             if (KeySignInvalid == keySign) {
                 NAMidiParserError(self, line, column, ParseErrorKindInvalidValue);
+                success = false;
             }
             else {
                 header.length = sizeof(int);
@@ -473,6 +486,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
                     || !isValidRange(velocity, -1, 127)
                     || !isValidRange(octave, -2, 8)) {
                 NAMidiParserError(self, line, column, ParseErrorKindInvalidValue);
+                success = false;
             }
             else {
                 header.length = sizeof(int) * 6;
@@ -491,6 +505,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             int step = va_arg(argList, int);
             if (!isValidRange(step, 0, 65535)) {
                 NAMidiParserError(self, line, column, ParseErrorKindInvalidValue);
+                success = false;
             }
             else {
                 header.length = sizeof(int);
