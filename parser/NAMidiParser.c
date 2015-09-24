@@ -642,17 +642,19 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context
             break;
         case StatementTypeTempo:
             {
-                float tempo;
-                NAByteBufferReadFloat(context->buffer, &tempo);
-                TimeTableAddTempo(sequence->timeTable, *tick, tempo);
+                TempoEvent *event = MidiEventAlloc(MidiEventTypeTempo, ++context->id, *tick, sizeof(TempoEvent) - sizeof(MidiEvent));
+                NAByteBufferReadFloat(context->buffer, &event->tempo);
+                NAArrayAppend(sequence->events, event);
+                TimeTableAddTempo(sequence->timeTable, *tick, event->tempo);
             }
             break;
         case StatementTypeTimeSign:
             {
-                int numerator, denominator;
-                NAByteBufferReadInteger(context->buffer, &numerator);
-                NAByteBufferReadInteger(context->buffer, &denominator);
-                TimeTableAddTimeSign(sequence->timeTable, *tick, (TimeSign){numerator, denominator});
+                TimeEvent *event = MidiEventAlloc(MidiEventTypeTime, ++context->id, *tick, sizeof(TimeEvent) - sizeof(MidiEvent));
+                NAByteBufferReadInteger(context->buffer, &event->numerator);
+                NAByteBufferReadInteger(context->buffer, &event->denominator);
+                NAArrayAppend(sequence->events, event);
+                TimeTableAddTimeSign(sequence->timeTable, *tick, (TimeSign){event->numerator, event->denominator});
             }
             break;
         case StatementTypeMeasure:
@@ -738,6 +740,7 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context
                 VolumeEvent *event = MidiEventAlloc(MidiEventTypeVolume, ++context->id, *tick, sizeof(VolumeEvent) - sizeof(MidiEvent));
                 event->channel = context->tracks[context->track].channel;
                 NAByteBufferReadInteger(context->buffer, &event->value);
+                NAArrayAppend(sequence->events, event);
             }
             break;
         case StatementTypePan:
@@ -745,6 +748,7 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context
                 PanEvent *event = MidiEventAlloc(MidiEventTypePan, ++context->id, *tick, sizeof(PanEvent) - sizeof(MidiEvent));
                 event->channel = context->tracks[context->track].channel;
                 NAByteBufferReadInteger(context->buffer, &event->value);
+                NAArrayAppend(sequence->events, event);
             }
             break;
         case StatementTypeChorus:
@@ -752,6 +756,7 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context
                 ChorusEvent *event = MidiEventAlloc(MidiEventTypeChorus, ++context->id, *tick, sizeof(ChorusEvent) - sizeof(MidiEvent));
                 event->channel = context->tracks[context->track].channel;
                 NAByteBufferReadInteger(context->buffer, &event->value);
+                NAArrayAppend(sequence->events, event);
             }
             break;
         case StatementTypeReverb:
@@ -759,6 +764,7 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context
                 ReverbEvent *event = MidiEventAlloc(MidiEventTypeReverb, ++context->id, *tick, sizeof(ReverbEvent) - sizeof(MidiEvent));
                 event->channel = context->tracks[context->track].channel;
                 NAByteBufferReadInteger(context->buffer, &event->value);
+                NAArrayAppend(sequence->events, event);
             }
             break;
         case StatementTypeTranspose:
