@@ -28,7 +28,10 @@ static void signalHandler(int signal)
 int main(int argc, char **argv)
 {
     int opt;
-    const char *soundSource = NULL;
+    
+    const char *soundSources[8] = {NULL};
+    int index = 0;
+
     const char *output = NULL;
     const char *input = NULL;
 
@@ -38,7 +41,7 @@ int main(int argc, char **argv)
             output = optarg;
             break;
         case 's':
-            soundSource = optarg;
+            soundSources[index++] = optarg;
             break;
         case 'h':
             showHelp();
@@ -52,7 +55,7 @@ int main(int argc, char **argv)
         input = argv[optind];
     }
 
-    _cli = CLICreate(input, soundSource);
+    _cli = CLICreate(input, soundSources);
 
     CLIError error;
     if (output) {

@@ -18,7 +18,7 @@
 
 struct _CLI {
     const char *filepath;
-    const char *soundSource;
+    const char **soundSources;
     NAMidi *namidi;
     MidiSourceManager *manager;
     PianoRollView *pianoRollView;
@@ -34,11 +34,11 @@ static MidiSourceManagerObserverCallbacks CLIMidiSourceManagerObserverCallbacks;
 static char **CLICompletion(const char *text, int start, int end);
 static int CLICompletionEntry(const char *text, int state);
 
-CLI *CLICreate(const char *filepath, const char *soundSource)
+CLI *CLICreate(const char *filepath, const char **soundSources)
 {
     CLI *self = calloc(1, sizeof(CLI));
     self->filepath = filepath;
-    self->soundSource = soundSource;
+    self->soundSources = soundSources;
     self->namidi = NAMidiCreate();
     self->manager = MidiSourceManagerSharedInstance();
     self->pianoRollView = PianoRollViewCreate(self->namidi);
@@ -63,8 +63,8 @@ CLIError CLIRunShell(CLI *self)
     char *line = NULL;
     int historyCount = 0;
 
-    if (self->soundSource) {
-        MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(self->manager, self->soundSource);
+    for (const char **source = self->soundSources; NULL != *source; ++source) {
+        MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(self->manager, *source);
     }
 
     if (self->filepath) {
@@ -186,12 +186,14 @@ static CLIError CLIExportSMF(CLI *self, Sequence *sequence, const char *output)
 
 static CLIError CLIExportWAV(CLI *self, Sequence *sequence, const char *output)
 {
-    if (!self->soundSource) {
+    if (!self->soundSources[0]) {
         return CLIErrorExportWithNoSoundSource;
     }
 
-    if (!MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(self->manager, self->soundSource)) {
-        return CLIErrorExportWithSoundSourceLoadFailed;
+    for (const char **source = self->soundSources; NULL != *source; ++source) {
+        if (!MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(self->manager, *source)) {
+            return CLIErrorExportWithSoundSourceLoadFailed;
+        }
     }
 
     Exporter *exporter = ExporterCreate(sequence);

@@ -18,7 +18,7 @@ typedef enum {
 
 typedef struct _CLI CLI;
 
-extern CLI *CLICreate(const char *filepath, const char *soundSource);
+extern CLI *CLICreate(const char *filepath, const char **soundSources);
 extern void CLIDestroy(CLI *self);
 extern CLIError CLIRunShell(CLI *self);
 extern void CLISigInt(CLI *self);
