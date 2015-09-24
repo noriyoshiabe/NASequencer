@@ -134,17 +134,51 @@ static void ShowCommandExecute(Command *self, CLI *cli)
 
 static void SynthCommandExecute(Command *self, CLI *cli)
 {
+    const struct {
+        const char *label;
+        int width;
+    } table[] = {
+        {"Idx", 3},
+        {"Identifier", 40},
+        {"Filepath", 64},
+    };
+
+    for (int i = 0; i < sizeof(table)/sizeof(table[0]); ++i) {
+        printf("%-*s%s", table[i].width, table[i].label, i == sizeof(table)/sizeof(table[0]) - 1 ? "\n" : " | ");
+    }
+
+    for (int i = 0; i < sizeof(table)/sizeof(table[0]); ++i) {
+        for (int j = 0; j < table[i].width; ++j) {
+            printf("-");
+        }
+
+        printf("%s", i == sizeof(table)/sizeof(table[0]) - 1 ? "\n" : "-|-");
+    }
+    
     MidiSourceManager *manager = MidiSourceManagerSharedInstance();
     NAArray *descriptions = MidiSourceManagerGetAvailableDescriptions(manager);
-    
-    printf("available synthesizers:\n");
-    printf("------------------------------------\n");
-    
     int count = NAArrayCount(descriptions);
     MidiSourceDescription **values = NAArrayGetValues(descriptions);
     for (int i = 0; i < count; ++i) {
         MidiSourceDescription *description = values[i];
-        printf("%d:%s:%s\n", i, description->name, description->filepath);
+        for (int j = 0; j < sizeof(table)/sizeof(table[0]); ++j) {
+            char text[128];
+            int width = table[j].width;
+            int limit = width + 1;
+            switch (j) {
+            case 0:
+                snprintf(text, limit, "%*d", width, i);
+                break;
+            case 1:
+                snprintf(text, limit, "%-*s", width, description->name);
+                break;
+            case 2:
+                snprintf(text, limit, "%-*s", width, description->filepath);
+                break;
+            }
+
+            printf("%s%s", text, j == sizeof(table)/sizeof(table[0]) - 1 ? "\n" : " | ");
+        }
     }
 }
 
@@ -173,18 +207,55 @@ static void PresetCommandExecute(Command *self, CLI *cli)
         return;
     }
 
+    const struct {
+        const char *label;
+        int width;
+    } table[] = {
+        {"Name", 20},
+        {"MSB", 3},
+        {"LSB", 3},
+        {"Prg", 3},
+    };
+
+    for (int i = 0; i < sizeof(table)/sizeof(table[0]); ++i) {
+        printf("%-*s%s", table[i].width, table[i].label, i == sizeof(table)/sizeof(table[0]) - 1 ? "\n" : " | ");
+    }
+
+    for (int i = 0; i < sizeof(table)/sizeof(table[0]); ++i) {
+        for (int j = 0; j < table[i].width; ++j) {
+            printf("-");
+        }
+
+        printf("%s", i == sizeof(table)/sizeof(table[0]) - 1 ? "\n" : "-|-");
+    }
+
     MidiSourceDescription *description = NAArrayGetValueAt(descriptions, index);
-
-    printf("presets for %s:\n", description->name);
-    printf("------------------------------------\n");
     MidiSource *source = MidiSourceManagerAllocMidiSource(manager, description, 44100.0);
-
     int presetCount = source->getPresetCount(source);
     PresetInfo **presetInfos = source->getPresetInfos(source);
-    for (int j = 0; j < presetCount; ++j) {
-        PresetInfo *info = presetInfos[j];
-        printf("%d:%d:%d:%s\n", 
-                (info->bankNo >> 7) & 0x7F, info->bankNo & 0x7F, info->programNo, info->name);
+    for (int i = 0; i < presetCount; ++i) {
+        PresetInfo *info = presetInfos[i];
+        for (int j = 0; j < sizeof(table)/sizeof(table[0]); ++j) {
+            char text[64];
+            int width = table[j].width;
+            int limit = width + 1;
+            switch (j) {
+            case 0:
+                snprintf(text, limit, "%-*s", width, info->name);
+                break;
+            case 1:
+                snprintf(text, limit, "%*d", width, (info->bankNo >> 7) & 0x7F);
+                break;
+            case 2:
+                snprintf(text, limit, "%*d", width, info->bankNo & 0x7F);
+                break;
+            case 3:
+                snprintf(text, limit, "%*d", width, info->programNo);
+                break;
+            }
+
+            printf("%s%s", text, j == sizeof(table)/sizeof(table[0]) - 1 ? "\n" : " | ");
+        }
     }
 
     MidiSourceManagerDeallocMidiSource(manager, source);
@@ -196,7 +267,7 @@ static void StatusCommandExecute(Command *self, CLI *cli)
         const char *label;
         int width;
     } table[] = {
-        {"Ch", 3},
+        {"Ch", 2},
         {"Midi Source", 40},
         {"Preset", 20},
         {"Volume", 6},
