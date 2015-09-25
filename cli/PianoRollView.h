@@ -9,5 +9,6 @@ extern void PianoRollViewDestroy(PianoRollView *self);
 extern void PianoRollViewSetChannel(PianoRollView *self, int channel);
 extern void PianoRollViewSetFrom(PianoRollView *self, int from);
 extern void PianoRollViewSetLength(PianoRollView *self, int length);
+extern void PianoRollViewSetStep(PianoRollView *self, int step);
 extern void PianoRollViewRender(PianoRollView *self);
 extern void PianoRollViewSetSequence(PianoRollView *self, Sequence *sequence);

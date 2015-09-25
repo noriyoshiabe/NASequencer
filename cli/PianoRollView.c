@@ -83,6 +83,11 @@ void PianoRollViewSetLength(PianoRollView *self, int length)
     self->length = length;
 }
 
+void PianoRollViewSetStep(PianoRollView *self, int step)
+{
+    self->columnStep = step;
+}
+
 #define MEASURE_COLUMN_OFFSET 14
 
 static void PianoRollViewRenderMeasure(PianoRollView *self, RenderContext *context);
@@ -148,17 +153,19 @@ static void PianoRollViewRenderMeasure(PianoRollView *self, RenderContext *conte
     buffer[MEASURE_COLUMN_OFFSET - 2] = '|';
 
     int offset = 0;
+    int prevMeasure = 0;
 
     for (int tick = context->from; tick < context->to; tick += self->columnStep) {
         Location location = TimeTableTick2Location(self->sequence->timeTable, tick);
 
-        if (1 == location.b && 0 == location.t) {
+        if (prevMeasure != location.m) {
             char number[4];
             snprintf(number, 4, "%d", location.m);
             strncpy(buffer + MEASURE_COLUMN_OFFSET + offset, number, strlen(number));
         }
 
         ++offset;
+        prevMeasure = location.m;
     }
 
     printf("%s\n", buffer);
@@ -212,16 +219,18 @@ static void PianoRollViewRenderTrack(PianoRollView *self, RenderContext *context
     }
 
     int offset = 0;
+    int prevMeasure = 0;
 
     for (int tick = context->from; tick < context->to; tick += self->columnStep) {
         Location location = TimeTableTick2Location(self->sequence->timeTable, tick);
-        if (1 == location.b && 0 == location.t) {
+        if (prevMeasure != location.m) {
             for (int i = 0; i < lineCount; ++i) {
                 buffer[i][MEASURE_COLUMN_OFFSET + offset] = '.';
             }
         }
 
         ++offset;
+        prevMeasure = location.m;
     }
 
     int *index = &context->indices[track->channel - 1];

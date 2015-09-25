@@ -156,6 +156,29 @@ static void ShowCommandExecute(Command *self, CLI *cli)
     CLISetActiveView(cli, view);
 }
 
+static void StepCommandExecute(Command *self, CLI *cli)
+{
+    char *err, *text;
+
+    int step = 120;
+
+    int count = NAArrayCount(self->argv);
+    if (1 < count) {
+        text = NAArrayGetValueAt(self->argv, 1);
+        long number = strtol(text, &err, 10);
+
+        if ('\0' == *err && 0 < number) {
+            step = number;
+        }
+    }
+
+    PianoRollView *view = CLIGetPianoRollView(cli);
+    PianoRollViewSetStep(view, step);
+    PianoRollViewRender(view);
+
+    CLISetActiveView(cli, view);
+}
+
 static void ListCommandExecute(Command *self, CLI *cli)
 {
     int channel, from, length;
@@ -473,6 +496,7 @@ static CommandTable commandTable[] = {
     {"backward", BackwardCommandExecute},
     {"seek", SeekCommandExecute},
     {"show", ShowCommandExecute},
+    {"step", StepCommandExecute},
     {"list", ListCommandExecute},
     {"synth", SynthCommandExecute},
     {"preset", PresetCommandExecute},
