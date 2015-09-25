@@ -265,7 +265,7 @@ static void TimeTableRefreshUsecFrom(TimeTable *self, int index)
     for (int i = index; i < count; ++i) {
         double usecPerTick = 60 * 1000 * 1000 / records[i]->tempo / self->resolution;
         records[i]->usecStart = previous->usecEnd;
-        records[i]->usecEnd = records[i]->usecStart + round((records[i]->tickEnd - records[i]->tickStart) / usecPerTick);
+        records[i]->usecEnd = records[i]->usecStart + round((records[i]->tickEnd - records[i]->tickStart) * usecPerTick);
         previous = records[i];
     }
 }
