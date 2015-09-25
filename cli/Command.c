@@ -405,6 +405,76 @@ static void StatusCommandExecute(Command *self, CLI *cli)
     }
 }
 
+static void MuteCommandExecute(Command *self, CLI *cli)
+{
+    char *err, *text;
+
+    int channel = -1;
+
+    int count = NAArrayCount(self->argv);
+    if (1 < count) {
+        text = NAArrayGetValueAt(self->argv, 1);
+        long number = strtol(text, &err, 10);
+
+        if ('\0' == *err && 1 <= number && number <= 16) {
+            channel = number;
+        }
+    }
+
+    Mixer *mixer = NAMidiGetMixer(CLIGetNAMidi(cli));
+    NAArray *array = MixerGetChannels(mixer);
+
+    if (-1 != channel) {
+        MixerChannel *mixerChannel = NAArrayGetValueAt(array, channel - 1);
+        bool mute = MixerChannelGetMute(mixerChannel);
+        MixerChannelSetMute(mixerChannel, !mute);
+    }
+    else {
+        int count = NAArrayCount(array);
+        MixerChannel **channels = NAArrayGetValues(array);
+        for (int i = 0; i < count; ++i) {
+            MixerChannelSetMute(channels[i], false);
+        }
+    }
+
+    StatusCommandExecute(self, cli);
+}
+
+static void SoloCommandExecute(Command *self, CLI *cli)
+{
+    char *err, *text;
+
+    int channel = -1;
+
+    int count = NAArrayCount(self->argv);
+    if (1 < count) {
+        text = NAArrayGetValueAt(self->argv, 1);
+        long number = strtol(text, &err, 10);
+
+        if ('\0' == *err && 1 <= number && number <= 16) {
+            channel = number;
+        }
+    }
+
+    Mixer *mixer = NAMidiGetMixer(CLIGetNAMidi(cli));
+    NAArray *array = MixerGetChannels(mixer);
+
+    if (-1 != channel) {
+        MixerChannel *mixerChannel = NAArrayGetValueAt(array, channel - 1);
+        bool solo = MixerChannelGetSolo(mixerChannel);
+        MixerChannelSetSolo(mixerChannel, !solo);
+    }
+    else {
+        int count = NAArrayCount(array);
+        MixerChannel **channels = NAArrayGetValues(array);
+        for (int i = 0; i < count; ++i) {
+            MixerChannelSetSolo(channels[i], false);
+        }
+    }
+
+    StatusCommandExecute(self, cli);
+}
+
 static void ExitCommandExecute(Command *self, CLI *cli)
 {
     free(self);
@@ -501,6 +571,8 @@ static CommandTable commandTable[] = {
     {"synth", SynthCommandExecute},
     {"preset", PresetCommandExecute},
     {"status", StatusCommandExecute},
+    {"mute", MuteCommandExecute},
+    {"solo", SoloCommandExecute},
     {"exit", ExitCommandExecute},
 
     {NULL, NULL}
