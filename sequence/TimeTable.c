@@ -239,7 +239,7 @@ int32_t TimeTableMicroSec2Tick(TimeTable *self, int64_t usec)
     int i = NAArrayBSearchIndex(self->tempoRecords, &usec, TempoRecordFindByUsecComparator);
 
     double usecPerTick = 60 * 1000 * 1000 / records[i]->tempo / self->resolution;
-    return round(records[i]->tickStart + usec / usecPerTick);
+    return round(records[i]->tickStart + (usec - records[i]->usecStart) / usecPerTick);
 }
 
 static void TimeTableRefreshMeasureFrom(TimeTable *self, int index)
