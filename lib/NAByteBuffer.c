@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/param.h>
 
 #undef NAByteBufferReadData
 
@@ -124,6 +125,7 @@ int NAByteBufferReadData(NAByteBuffer *self, void **data, int length)
     }
 
     *data = (void *)(self->buffer + self->readCursor);
+    length = MIN(length, self->writeCursor - self->readCursor);
     self->readCursor += length;
     return length;
 }

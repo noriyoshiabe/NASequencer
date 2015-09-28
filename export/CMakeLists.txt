@@ -17,4 +17,13 @@ set(SOURCES
   WaveWriter.c
 )
 
+if (APPLE)
+  set(SOURCES ${SOURCES} osx/AACWriter.c)
+endif (APPLE)
+
 add_library(${PROJECT_NAME} ${SOURCES})
+
+if (APPLE)
+  find_library(AUDIO_TOOLBOX AudioToolbox)
+  target_link_libraries(${PROJECT_NAME} ${AUDIO_TOOLBOX})
+endif (APPLE)

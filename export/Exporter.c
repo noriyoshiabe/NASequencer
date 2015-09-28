@@ -4,6 +4,7 @@
 #include "Mixer.h"
 #include "Define.h"
 #include "WaveWriter.h"
+#include "AACWriter.h"
 #include "NAArray.h"
 #include "NASet.h"
 
@@ -180,7 +181,7 @@ bool ExporterWriteToSMF(Exporter *self, const char *filepath)
     return ret;
 }
 
-static void ExporterBuildAudioSample(Exporter *self, ExporterAudioBuffer *audioBuffer, void (*callback)(Exporter *, ExporterAudioBuffer *, void *), void *context)
+static void ExporterBuildAudioSample(Exporter *self, ExporterAudioBuffer *audioBuffer, void (*callback)(Exporter *, int32_t *, int, void *), void *context)
 {
     Mixer *mixer = MixerCreate((AudioOut *)audioBuffer);
 
@@ -192,6 +193,8 @@ static void ExporterBuildAudioSample(Exporter *self, ExporterAudioBuffer *audioB
     int64_t prevUsec = 0;
     int32_t tick = 0;
     int index = 0;
+
+    int16_t samples[AUDIO_BUFFER_SIZE][2];
 
     while (tick < length) {
         int64_t usec = usecPerSample * AUDIO_BUFFER_SIZE * bufferCount;
@@ -247,7 +250,20 @@ static void ExporterBuildAudioSample(Exporter *self, ExporterAudioBuffer *audioB
 
         memset(audioBuffer->buffer, 0, sizeof(audioBuffer->buffer));
         audioBuffer->callback(audioBuffer->receiver, audioBuffer->buffer, AUDIO_BUFFER_SIZE);
-        callback(self, audioBuffer, context);
+
+        for (int i = 0; i < AUDIO_BUFFER_SIZE; ++i) {
+            int32_t L = round(0.0f <= audioBuffer->buffer[i].L
+                    ? (double)audioBuffer->buffer[i].L * 32767.0
+                    : (double)audioBuffer->buffer[i].L * 32768.0);
+            int32_t R = round(0.0f <= audioBuffer->buffer[i].R
+                    ? (double)audioBuffer->buffer[i].R * 32767.0
+                    : (double)audioBuffer->buffer[i].R * 32768.0);
+
+            samples[i][0] = Clip(L, -32768, 32767);
+            samples[i][1] = Clip(R, -32768, 32767);
+        }
+
+        callback(self, (int32_t *)samples, AUDIO_BUFFER_SIZE, context);
 
         prevUsec = usec;
         ++bufferCount;
@@ -257,24 +273,10 @@ static void ExporterBuildAudioSample(Exporter *self, ExporterAudioBuffer *audioB
     MixerDestroy(mixer);
 }
 
-static void ExporterBuildAudioSampleCallbackWave(Exporter *self, ExporterAudioBuffer *audioBuffer, void *context)
+static void ExporterBuildAudioSampleCallbackWave(Exporter *self, int32_t *data, int count, void *context)
 {
     WaveWriter *writer = context;
-    int16_t samples[AUDIO_BUFFER_SIZE][2];
-
-    for (int i = 0; i < AUDIO_BUFFER_SIZE; ++i) {
-        int32_t L = round(0.0f <= audioBuffer->buffer[i].L
-                ? (double)audioBuffer->buffer[i].L * 32767.0
-                : (double)audioBuffer->buffer[i].L * 32768.0);
-        int32_t R = round(0.0f <= audioBuffer->buffer[i].R
-                ? (double)audioBuffer->buffer[i].R * 32767.0
-                : (double)audioBuffer->buffer[i].R * 32768.0);
-
-        samples[i][0] = Clip(L, -32768, 32767);
-        samples[i][1] = Clip(R, -32768, 32767);
-    }
-
-    WaveWriterAppendData(writer, (int32_t *)samples, AUDIO_BUFFER_SIZE);
+    WaveWriterAppendData(writer, data, count);
 }
 
 bool ExporterWriteToWave(Exporter *self, const char *filepath)
@@ -294,6 +296,32 @@ bool ExporterWriteToWave(Exporter *self, const char *filepath)
     bool ret = WaveWriterSerialize(writer, 44100.0);
 
     WaveWriterDestroy(writer);
+    return ret;
+}
+
+static void ExporterBuildAudioSampleCallbackAAC(Exporter *self, int32_t *data, int count, void *context)
+{
+    AACWriter *writer = context;
+    AACWriterAppendData(writer, data, count);
+}
+
+bool ExporterWriteToAAC(Exporter *self, const char *filepath)
+{
+    AACWriter *writer = AACWriterCreate(44100.0);
+    if (!AACWriterOpenFile(writer, filepath)) {
+        AACWriterDestroy(writer);
+        return false;
+    }
+
+    ExporterBuildEventsToWrite(self);
+
+    ExporterAudioBuffer *audioBuffer = ExporterAudioBufferCreate(44100.0);
+    ExporterBuildAudioSample(self, audioBuffer, ExporterBuildAudioSampleCallbackAAC, writer);
+    ExporterAudioBufferDestroy(audioBuffer);
+
+    bool ret = AACWriterSerialize(writer);
+
+    AACWriterDestroy(writer);
     return ret;
 }
 

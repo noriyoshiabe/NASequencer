@@ -142,7 +142,7 @@ void CLIExit(CLI *self)
 
 static CLIError CLIExportSMF(CLI *self, Sequence *sequence, const char *output);
 static CLIError CLIExportWAV(CLI *self, Sequence *sequence, const char *output);
-static CLIError CLIExportMP3(CLI *self, Sequence *sequence, const char *output);
+static CLIError CLIExportAAC(CLI *self, Sequence *sequence, const char *output);
 
 CLIError CLIExport(CLI *self, const char *output)
 {
@@ -165,7 +165,7 @@ CLIError CLIExport(CLI *self, const char *output)
         {"smf", CLIExportSMF},
         {"wav", CLIExportWAV},
         {"wave", CLIExportWAV},
-        {"mp3", CLIExportMP3},
+        {"m4a", CLIExportAAC},
     };
 
     CLIError error = CLIErrorExportWithUnsupportedFileType;
@@ -207,10 +207,22 @@ static CLIError CLIExportWAV(CLI *self, Sequence *sequence, const char *output)
     return success ? CLIErrorNoError : CLIErrorExportWithCannotWriteToOutputFile;
 }
 
-static CLIError CLIExportMP3(CLI *self, Sequence *sequence, const char *output)
+static CLIError CLIExportAAC(CLI *self, Sequence *sequence, const char *output)
 {
-    printf("TODO: MP3 output is not implemented yet. (-- )v\n");
-    return CLIErrorNoError;
+    if (!self->soundSources[0]) {
+        return CLIErrorExportWithNoSoundSource;
+    }
+
+    for (const char **source = self->soundSources; NULL != *source; ++source) {
+        if (!MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(self->manager, *source)) {
+            return CLIErrorExportWithSoundSourceLoadFailed;
+        }
+    }
+
+    Exporter *exporter = ExporterCreate(sequence);
+    bool success = ExporterWriteToAAC(exporter, output);
+    ExporterDestroy(exporter);
+    return success ? CLIErrorNoError : CLIErrorExportWithCannotWriteToOutputFile;
 }
 
 NAMidi *CLIGetNAMidi(CLI *self)
