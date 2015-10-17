@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 #define OUTPUT_BUF_SIZE 32768
+#define LPCM_BYTES_PER_PACKET (2 * 2)
 
 struct _AACWriter {
     double sampleRate;
@@ -14,6 +15,7 @@ struct _AACWriter {
     AudioFileID destinationFileID;
     UInt32 outputSizePerPacket;
     UInt32 numOutputPackets;
+    UInt32 maxPackets;
     AudioStreamPacketDescription *outputPacketDescriptions;
 };
 
@@ -54,7 +56,7 @@ bool AACWriterOpenFile(AACWriter *self, const char *filepath)
         .mFormatID = kAudioFormatLinearPCM,
         .mChannelsPerFrame = 2,
         .mBitsPerChannel = 16,
-        .mBytesPerPacket = 2 * 2,
+        .mBytesPerPacket = LPCM_BYTES_PER_PACKET,
         .mBytesPerFrame = 2 * 2,
         .mFramesPerPacket = 1,
         .mFormatFlags = kLinearPCMFormatFlagIsPacked | kLinearPCMFormatFlagIsSignedInteger,
@@ -94,6 +96,7 @@ bool AACWriterOpenFile(AACWriter *self, const char *filepath)
     self->outputBuffer = malloc(OUTPUT_BUF_SIZE);
     self->numOutputPackets = OUTPUT_BUF_SIZE / self->outputSizePerPacket;
     self->outputPacketDescriptions = calloc(self->numOutputPackets, sizeof(AudioStreamPacketDescription));
+    self->maxPackets = OUTPUT_BUF_SIZE / srcFormat.mBytesPerPacket;
 
     CFStringRef _string = CFStringCreateWithCString(NULL, filepath, kCFStringEncodingUTF8);
     CFURLRef url = CFURLCreateWithFileSystemPath(NULL, _string, kCFURLPOSIXPathStyle, false);
@@ -123,7 +126,7 @@ static bool AACWriterWriteCookie(AACWriter *self)
     if (noErr != err) {
         return false;
     }
-
+    
     return noErr == AudioFileSetProperty(self->destinationFileID, kAudioFilePropertyMagicCookieData, cookieSize, cookie);
 }
 
@@ -132,19 +135,18 @@ static OSStatus AACWriterEncoderDataProc(AudioConverterRef inAudioConverter, UIn
 {
     AACWriter *self = inUserData;
 	
-	if (*ioNumberDataPackets > self->numOutputPackets) {
-    //    *ioNumberDataPackets = self->numOutputPackets;
+	if (*ioNumberDataPackets > self->maxPackets) {
+        *ioNumberDataPackets = self->maxPackets;
     }
-    printf("-- %d\n", *ioNumberDataPackets);
 
     void *data;
-    int outNumBytes = NAByteBufferReadData(self->buffer, &data, OUTPUT_BUF_SIZE);
+    int outNumBytes = NAByteBufferReadData(self->buffer, &data, *ioNumberDataPackets * LPCM_BYTES_PER_PACKET);
 
 	ioData->mBuffers[0].mData = data;
 	ioData->mBuffers[0].mDataByteSize = outNumBytes;
 	ioData->mBuffers[0].mNumberChannels = 2;
 
-    //*outDataPacketDescription = NULL;
+    *outDataPacketDescription = NULL;
 
     return noErr;
 }
@@ -199,16 +201,16 @@ bool AACWriterSerialize(AACWriter *self)
         return false;
     }
 
-    AudioBufferList fillBufList;
-    fillBufList.mNumberBuffers = 1;
-    fillBufList.mBuffers[0].mNumberChannels = 2;
-    fillBufList.mBuffers[0].mDataByteSize = OUTPUT_BUF_SIZE;
-    fillBufList.mBuffers[0].mData = self->outputBuffer;
-
     SInt64 outputFilePos = 0;
     UInt32 ioOutputDataPackets = self->numOutputPackets;
 
     while (0 < ioOutputDataPackets) {
+        AudioBufferList fillBufList;
+        fillBufList.mNumberBuffers = 1;
+        fillBufList.mBuffers[0].mNumberChannels = 2;
+        fillBufList.mBuffers[0].mDataByteSize = OUTPUT_BUF_SIZE;
+        fillBufList.mBuffers[0].mData = self->outputBuffer;
+
         err = AudioConverterFillComplexBuffer(self->converter, AACWriterEncoderDataProc, self, &ioOutputDataPackets, &fillBufList, self->outputPacketDescriptions);
         if (noErr != err) {
             return false;
@@ -216,7 +218,6 @@ bool AACWriterSerialize(AACWriter *self)
 
         UInt32 inNumBytes = fillBufList.mBuffers[0].mDataByteSize;
         err = AudioFileWritePackets(self->destinationFileID, false, inNumBytes, self->outputPacketDescriptions, outputFilePos, &ioOutputDataPackets, self->outputBuffer);
-        printf("----------- %d\n", outputFilePos);
         if (noErr != err) {
             return false;
         }
