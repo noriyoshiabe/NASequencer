@@ -181,6 +181,14 @@ CLIError CLIExport(CLI *self, const char *output)
     return error;
 }
 
+static void CLIExporterProgressCallback(void *_self, int progress)
+{
+    for (int i = 0; i < progress; ++i) {
+        fprintf(stderr, ".");
+    }
+    fprintf(stderr, "%d%%%s", progress, 100 == progress ? "\n" : "\r");
+}
+
 static CLIError CLIExportSMF(CLI *self, Sequence *sequence, const char *output)
 {
     Exporter *exporter = ExporterCreate(sequence);
@@ -202,6 +210,7 @@ static CLIError CLIExportWAV(CLI *self, Sequence *sequence, const char *output)
     }
 
     Exporter *exporter = ExporterCreate(sequence);
+    ExporterSetProgressCallback(exporter, CLIExporterProgressCallback, self);
     bool success = ExporterWriteToWave(exporter, output);
     ExporterDestroy(exporter);
     return success ? CLIErrorNoError : CLIErrorExportWithCannotWriteToOutputFile;
@@ -220,6 +229,7 @@ static CLIError CLIExportAAC(CLI *self, Sequence *sequence, const char *output)
     }
 
     Exporter *exporter = ExporterCreate(sequence);
+    ExporterSetProgressCallback(exporter, CLIExporterProgressCallback, self);
     bool success = ExporterWriteToAAC(exporter, output);
     ExporterDestroy(exporter);
     return success ? CLIErrorNoError : CLIErrorExportWithCannotWriteToOutputFile;

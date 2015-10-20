@@ -18,6 +18,8 @@ struct _Exporter {
     Sequence *sequence;
     NASet *noteOffEvents;
     NAArray *eventsToWrite;
+    ExporterProgressCallback progressCallback;
+    void *receiver;
 };
 
 typedef struct _ExporterAudioBuffer {
@@ -40,6 +42,12 @@ Exporter *ExporterCreate(Sequence *sequence)
     Exporter *self = calloc(1, sizeof(Exporter));
     self->sequence = SequenceRetain(sequence);
     return self;
+}
+
+void ExporterSetProgressCallback(Exporter *self, ExporterProgressCallback callback, void *receiver)
+{
+    self->progressCallback = callback;
+    self->receiver = receiver;
 }
 
 void ExporterDestroy(Exporter *self)
@@ -98,6 +106,8 @@ bool ExporterWriteToSMF(Exporter *self, const char *filepath)
     MidiEvent **events = NAArrayGetValues(self->eventsToWrite);
 
     SMFWriterSetResolution(writer, TimeTableResolution(self->sequence->timeTable));
+
+    int progress = -1;
 
     for (int i = 0; i < count; ++i) {
         switch (events[i]->type) {
@@ -174,6 +184,14 @@ bool ExporterWriteToSMF(Exporter *self, const char *filepath)
             // not support
             break;
         }
+
+        int _progress = i * 100 / (count - 1);
+        if (progress != _progress) {
+            progress = _progress;
+            if (self->progressCallback) {
+                self->progressCallback(self->receiver, progress);
+            }
+        }
     }
 
     bool ret = SMFWriterSerialize(writer);
@@ -192,6 +210,7 @@ static void ExporterBuildAudioSample(Exporter *self, ExporterAudioBuffer *audioB
     int64_t prevUsec = 0;
     int32_t tick = 0;
     int index = 0;
+    int progress = -1;
 
     int16_t samples[AUDIO_BUFFER_SIZE][2];
 
@@ -267,6 +286,14 @@ static void ExporterBuildAudioSample(Exporter *self, ExporterAudioBuffer *audioB
 
         prevUsec = usec;
         ++bufferCount;
+
+        int _progress = tick * 100 / (length - 1);
+        if (progress != _progress) {
+            progress = _progress;
+            if (self->progressCallback) {
+                self->progressCallback(self->receiver, progress);
+            }
+        }
     }
 
     MixerDestroy(mixer);
