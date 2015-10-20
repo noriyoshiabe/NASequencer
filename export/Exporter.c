@@ -185,7 +185,6 @@ static void ExporterBuildAudioSample(Exporter *self, ExporterAudioBuffer *audioB
 {
     Mixer *mixer = MixerCreate((AudioOut *)audioBuffer);
 
-    NAArray *noteOffEvents = NAArrayCreate(4, NULL);
     double usecPerSample = 1.0 / ExporterAudioBufferGetSampleRate((AudioOut *)audioBuffer) * 1000.0 * 1000.0;
     int32_t length = TimeTableLength(self->sequence->timeTable);
 
@@ -202,15 +201,6 @@ static void ExporterBuildAudioSample(Exporter *self, ExporterAudioBuffer *audioB
         int32_t prevTick = TimeTableMicroSec2Tick(self->sequence->timeTable, prevUsec);
         tick = TimeTableMicroSec2Tick(self->sequence->timeTable, usec);
 
-        for (int i = NAArrayCount(noteOffEvents) - 1; 0 <= i; --i) {
-            NoteEvent *event = NAArrayGetValueAt(noteOffEvents, i);
-            int offTick = event->tick + event->gatetime;
-            if (prevTick <= offTick && offTick < tick) {
-                MixerSendNoteOff(mixer, event);
-                NAArrayRemoveAt(noteOffEvents, i);
-            }
-        }
-
         int count = NAArrayCount(self->eventsToWrite);
         MidiEvent **events = NAArrayGetValues(self->eventsToWrite);
         for (; index < count; ++index) {
@@ -218,8 +208,11 @@ static void ExporterBuildAudioSample(Exporter *self, ExporterAudioBuffer *audioB
             if (prevTick <= event->tick && event->tick < tick) {
                 switch (event->type) {
                 case MidiEventTypeNote:
-                    MixerSendNoteOn(mixer, (NoteEvent *)event);
-                    NAArrayInsertAt(noteOffEvents, 0, event);
+                    if (NASetContains(self->noteOffEvents, event)) {
+                        MixerSendNoteOff(mixer, (NoteEvent *)event);
+                    } else {
+                        MixerSendNoteOn(mixer, (NoteEvent *)event);
+                    }
                     break;
                 case MidiEventTypeVoice:
                     MixerSendVoice(mixer, (VoiceEvent *)event);
@@ -269,7 +262,6 @@ static void ExporterBuildAudioSample(Exporter *self, ExporterAudioBuffer *audioB
         ++bufferCount;
     }
 
-    NAArrayDestroy(noteOffEvents);
     MixerDestroy(mixer);
 }
 
