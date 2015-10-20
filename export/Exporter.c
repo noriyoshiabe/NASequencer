@@ -197,6 +197,13 @@ static void ExporterBuildAudioSample(Exporter *self, ExporterAudioBuffer *audioB
 
     while (tick < length) {
         int64_t usec = usecPerSample * AUDIO_BUFFER_SIZE * bufferCount;
+#if 0
+#include <sys/time.h>
+        int sec = usec / 1000000;
+        struct timeval tv;
+        gettimeofday(&tv, NULL);
+        printf("%d%% %d:%02d now=%ld\n", (tick * 100) / length, sec / 60, sec % 60, tv.tv_sec);
+#endif
 
         int32_t prevTick = TimeTableMicroSec2Tick(self->sequence->timeTable, prevUsec);
         tick = TimeTableMicroSec2Tick(self->sequence->timeTable, usec);
