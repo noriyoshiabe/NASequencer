@@ -5,6 +5,8 @@
 
 #include <stdbool.h>
 
+#define ParserMeasureMax 9999
+
 typedef enum {
     ParseErrorKindUnsupportedFileType,
     ParseErrorKindFileNotFound,

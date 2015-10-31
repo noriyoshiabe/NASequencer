@@ -1,5 +1,6 @@
 #include "Parser.h"
 #include "NAMidiParser.h"
+#include "ABCParser.h"
 #include "NAUtil.h"
 
 #include <stdlib.h>
@@ -12,6 +13,7 @@ static ParserFactory FindParserFactory(const char *filepath)
         ParserFactory factory;
     } parserTable[] = {
         {"namidi", NAMidiParserCreate},
+        {"abc", ABCParserCreate},
     };
 
     for (int i = 0; i < sizeof(parserTable) / sizeof(parserTable[0]); ++i) {

@@ -9,6 +9,10 @@ FLEX_TARGET(NAMidi_lex NAMidi_lex.l ${CMAKE_CURRENT_SOURCE_DIR}/NAMidi_lex.c)
 BISON_TARGET(NAMidi_yacc NAMidi_yacc.y ${CMAKE_CURRENT_SOURCE_DIR}/NAMidi_yacc.c)
 ADD_FLEX_BISON_DEPENDENCY(NAMidi_lex NAMidi_yacc)
 
+FLEX_TARGET(ABC_lex ABC_lex.l ${CMAKE_CURRENT_SOURCE_DIR}/ABC_lex.c)
+BISON_TARGET(ABC_yacc ABC_yacc.y ${CMAKE_CURRENT_SOURCE_DIR}/ABC_yacc.c)
+ADD_FLEX_BISON_DEPENDENCY(ABC_lex ABC_yacc)
+
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}
   ../sequence
@@ -18,6 +22,13 @@ include_directories(
 set(SOURCES
   Parser.c
   NAMidiParser.c
+  ABCParser.c
 )
 
-add_library(${PROJECT_NAME} ${SOURCES} ${FLEX_NAMidi_lex_OUTPUTS} ${BISON_NAMidi_yacc_OUTPUTS})
+add_library(${PROJECT_NAME}
+  ${SOURCES}
+  ${FLEX_NAMidi_lex_OUTPUTS}
+  ${BISON_NAMidi_yacc_OUTPUTS}
+  ${FLEX_ABC_lex_OUTPUTS}
+  ${BISON_ABC_yacc_OUTPUTS}
+)
