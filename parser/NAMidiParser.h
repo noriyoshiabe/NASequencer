@@ -13,6 +13,9 @@ typedef enum {
     StatementTypeMarker,
     StatementTypePattern,
     StatementTypePatternDefine,
+    StatementTypeContext,
+    StatementTypeContextDefault,
+    StatementTypeContextEnd,
     StatementTypeEnd,
     StatementTypeTrack,
     StatementTypeChannel,
@@ -50,6 +53,9 @@ static inline const char *StatementType2String(StatementType type)
     CASE(StatementTypeMarker);
     CASE(StatementTypePattern);
     CASE(StatementTypePatternDefine);
+    CASE(StatementTypeContext);
+    CASE(StatementTypeContextDefault);
+    CASE(StatementTypeContextEnd);
     CASE(StatementTypeEnd);
     CASE(StatementTypeTrack);
     CASE(StatementTypeChannel);

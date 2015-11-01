@@ -50,12 +50,17 @@ CHORUS         chorus
 REVERB         reverb
 TRANSPOSE      transpose
 KEY            key
+DEFAULT        default
 
 PLUS           "+"
 MINUS          "-"
 DIVISION       "/"
 COLON          ":"
 SEMICOLON      ";"
+LPAREN         "("
+RPAREN         ")"
+LCURLY         "{"
+RCURLY         "}"
 
 INCLUDE        include
 
@@ -96,11 +101,17 @@ LINE_COMMENT   (\/\/|==|--).*$
 {REVERB}         { return REVERB; }
 {TRANSPOSE}      { return TRANSPOSE; }
 {KEY}            { return KEY; }
+{DEFAULT}        { return DEFAULT; }
 
 {PLUS}           { return PLUS; }
 {MINUS}          { return MINUS; }
 {DIVISION}       { return DIVISION; }
 {COLON}          { return COLON; }
+
+{LPAREN}         { return LPAREN; }
+{RPAREN}         { return RPAREN; }
+{LCURLY}         { return LCURLY; }
+{RCURLY}         { return RCURLY; }
 
 {INCLUDE}        { return INCLUDE; }
 

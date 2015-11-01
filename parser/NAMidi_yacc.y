@@ -56,12 +56,17 @@ static void postProcess(YYLTYPE *yylloc, yyscan_t scanner, StatementType type, .
 %token REVERB
 %token TRANSPOSE
 %token KEY
+%token DEFAULT
 
 %token PLUS
 %token MINUS
 %token DIVISION
 %token COLON
 %token SEMICOLON
+%token LPAREN
+%token RPAREN
+%token LCURLY
+%token RCURLY
 
 %token INCLUDE
 
@@ -91,8 +96,13 @@ statement
     | TIME INTEGER DIVISION INTEGER { Process(&@$, StatementTypeTimeSign, $2, $4); }
     | INTEGER COLON                 { Process(&@$, StatementTypeMeasure, $1); }
     | MARKER STRING                 { Process(&@$, StatementTypeMarker, $2); }
-    | IDENTIFIER                    { Process(&@$, StatementTypePattern, $1); }
+    | IDENTIFIER                    { Process(&@$, StatementTypePattern, $1, NULL); }
+    | IDENTIFIER LPAREN IDENTIFIER RPAREN
+                                    { Process(&@$, StatementTypePattern, $1, $3); }
     | DEFINE IDENTIFIER             { Process(&@$, StatementTypePatternDefine, $2); }
+    | IDENTIFIER LCURLY             { Process(&@$, StatementTypeContext, $1); }
+    | DEFAULT LCURLY                { Process(&@$, StatementTypeContextDefault, NULL); }
+    | RCURLY                        { Process(&@$, StatementTypeContextEnd, NULL); }
     | END                           { Process(&@$, StatementTypeEnd, NULL); }
     | TRACK INTEGER                 { Process(&@$, StatementTypeTrack, $2); }
     | CHANNEL INTEGER               { Process(&@$, StatementTypeChannel, $2); }

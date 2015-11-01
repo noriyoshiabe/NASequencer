@@ -40,6 +40,10 @@ typedef struct _Context {
         int gatetime;
         int velocity;
     } tracks[16];
+    struct {
+        char *pattern;
+        char *current;
+    } ctx;
 
     bool shallowCopy;
 } Context;
@@ -218,9 +222,40 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
     case StatementTypePattern:
         {
             char *string = va_arg(argList, char *);
+            char *context = va_arg(argList, char *);
+            
+            header.length = strlen(string) + 1;
+            if (context) {
+                header.length += strlen(context) + 1;
+            }
+
+            NAByteBufferWriteData(self->context->buffer, &header, sizeof(StatementHeader));
+            NAByteBufferWriteString(self->context->buffer, string);
+            if (context) {
+                NAByteBufferWriteString(self->context->buffer, context);
+            }
+        }
+        break;
+    case StatementTypeContext:
+        {
+            char *string = va_arg(argList, char *);
             header.length = strlen(string) + 1;
             NAByteBufferWriteData(self->context->buffer, &header, sizeof(StatementHeader));
             NAByteBufferWriteString(self->context->buffer, string);
+        }
+        break;
+    case StatementTypeContextDefault:
+        {
+            char *string = "default";
+            header.length = strlen(string) + 1;
+            NAByteBufferWriteData(self->context->buffer, &header, sizeof(StatementHeader));
+            NAByteBufferWriteString(self->context->buffer, string);
+        }
+        break;
+    case StatementTypeContextEnd:
+        {
+            header.length = 0;
+            NAByteBufferWriteData(self->context->buffer, &header, sizeof(StatementHeader));
         }
         break;
     case StatementTypePatternDefine:
@@ -527,6 +562,33 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Seq
     int *tick = &context->tracks[context->track].tick;
 
     while (NAByteBufferReadData(context->buffer, &header, sizeof(StatementHeader))) {
+        bool skip = false;
+
+        switch (header->type) {
+        case StatementTypeContext:
+        case StatementTypeContextDefault:
+        case StatementTypeContextEnd:
+            break;
+        default:
+            if (context->ctx.pattern) {
+                if (context->ctx.current && 0 != strcmp(context->ctx.pattern, context->ctx.current)) {
+                    skip = true;
+                }
+            }
+            else {
+                if (context->ctx.current && 0 != strcmp("default", context->ctx.current)) {
+                    skip = true;
+                }
+            }
+            break;
+        }
+
+        if (skip) {
+            void *vp;
+            NAByteBufferReadData(context->buffer, &vp, header->length);
+            continue;
+        }
+
         switch (header->type) {
         case StatementTypeResolution:
             {
@@ -579,7 +641,7 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Seq
         case StatementTypePattern:
             {
                 char *patternIdentifier;
-                NAByteBufferReadString(context->buffer, &patternIdentifier);
+                int readLength = NAByteBufferReadString(context->buffer, &patternIdentifier);
                 Context *pattern = NAMapGet(context->patternMap, patternIdentifier);
                 if (!pattern) {
                     NAMidiParserError(self, header->location.line, header->location.column, ParseErrorKindPatternMissing);
@@ -591,7 +653,13 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Seq
                 copy->buffer = pattern->buffer;
                 copy->patternMap = pattern->patternMap;
                 copy->patternIdentifiers = pattern->patternIdentifiers;
+
+                if (readLength < header->length) {
+                    NAByteBufferReadString(context->buffer, &copy->ctx.pattern);
+                }
+
                 NAByteBufferSeekFirst(copy->buffer);
+                copy->ctx.current = NULL;
 
                 success = NAMidiParserParseStatement(self, copy, sequence);
 
@@ -601,6 +669,34 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Seq
                 context->id = copy->id;
 
                 ContextDestroy(copy);
+            }
+            break;
+        case StatementTypeContext:
+        case StatementTypeContextDefault:
+            {
+                if (context->ctx.current) {
+                    NAMidiParserError(self, header->location.line, header->location.column, ParseErrorKindUnexpectedContextStart);
+                    success = false;
+                }
+                else {
+                    NAByteBufferReadString(context->buffer, &context->ctx.current);
+                    char *c = context->ctx.current;
+                    while (*c) {
+                        *c = tolower(*c);
+                        ++c;
+                    }
+                }
+            }
+            break;
+        case StatementTypeContextEnd:
+            {
+                if (!context->ctx.current) {
+                    NAMidiParserError(self, header->location.line, header->location.column, ParseErrorKindUnexpectedContextEnd);
+                    success = false;
+                }
+                else {
+                    context->ctx.current = NULL;
+                }
             }
             break;
         case StatementTypePatternDefine:
@@ -735,6 +831,10 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Seq
             break;
         default:
             // never reach
+            break;
+        }
+
+        if (!success) {
             break;
         }
     }
