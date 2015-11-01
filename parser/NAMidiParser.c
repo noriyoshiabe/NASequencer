@@ -99,7 +99,6 @@ static void NAMidiParserDestroy(void *self);
 
 static bool NAMidiParserParseFileInternal(NAMidiParser *self, const char *filepath, int line, int column);
 static bool NAMidiParserBuildSequence(NAMidiParser *self);
-static bool NAMidiParserParseBuildContext(NAMidiParser *self, BuildContext *context, char *name);
 static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context);
 
 struct _NAMidiParser {
@@ -553,80 +552,15 @@ void NAMidiParserError(NAMidiParser *self, int line, int column, ParseErrorKind 
     self->result->error.location.filepath = self->currentFile;
 }
 
-#if 0
-static void BuildContextDump(BuildContext *self, char *name, int indent)
-{
-    if (name) {
-        for (int i = 0; i < indent; ++i) printf(" ");
-        printf("-- pattern [%s] buffer --\n", name);
-    }
-    else {
-        for (int i = 0; i < indent; ++i) printf(" ");
-        printf("-- song buffer --\n");
-    }
-
-    StatementHeader *header;
-    void *data;
-
-    while (NAByteBufferReadData(self->buffer, &header, sizeof(StatementHeader))) {
-        for (int i = 0; i < indent; ++i) printf(" ");
-        printf("statement: %s - %d [%s %d %d]\n",
-                StatementType2String(header->type),
-                header->length, header->location.filepath, header->location.line, header->location.column);
-        NAByteBufferReadData(self->buffer, &data, header->length);
-    }
-
-    int count = NAArrayCount(self->patternIdentifiers);
-    char **identifiers = NAArrayGetValues(self->patternIdentifiers);
-    for (int i = 0; i < count; ++i) {
-        BuildContext *context = NAMapGet(self->patternContexts, identifiers[i]);
-        BuildContextDump(context, identifiers[i], indent + 2);
-    }
-
-    NAByteBufferSeekFirst(self->buffer);
-}
-#endif
-
 static bool NAMidiParserBuildSequence(NAMidiParser *self)
 {
-#if 0
-    BuildContextDump(self->context, NULL, 0);
-#endif
+    self->context->sequence = SequenceCreate();
 
-    bool success = NAMidiParserParseBuildContext(self, self->context, "Song");
+    bool success = NAMidiParserParseStatement(self, self->context);
+    TimeTableSetLength(self->context->sequence->timeTable, BuildContextGetLength(self->context));
+    SequenceSortEvents(self->context->sequence);
+
     self->result->sequence = self->context->sequence;
-#if 0
-    SequenceDump(self->result->sequence, 0);
-#endif
-    return success;
-}
-
-static bool NAMidiParserParseBuildContext(NAMidiParser *self, BuildContext *context, char *name)
-{
-    bool success = true;
-
-    Sequence *sequence = SequenceCreate();
-    sequence->title = strdup(name);
-
-    context->sequence = sequence;
-
-    int count = NAArrayCount(context->patternIdentifiers);
-    char **identifiers = NAArrayGetValues(context->patternIdentifiers);
-    for (int i = 0; i < count; ++i) {
-        BuildContext *patternContext = NAMapGet(context->patternContexts, identifiers[i]);
-        success = NAMidiParserParseBuildContext(self, patternContext, identifiers[i]);
-        if (!success) {
-            return false;
-        }
-
-        TimeTableSetLength(patternContext->sequence->timeTable, BuildContextGetLength(patternContext));
-        SequenceSortEvents(patternContext->sequence);
-        NAArrayAppend(sequence->children, patternContext->sequence);
-    }
-
-    success = NAMidiParserParseStatement(self, context);
-    TimeTableSetLength(sequence->timeTable, BuildContextGetLength(context));
-    SequenceSortEvents(sequence);
     return success;
 }
 

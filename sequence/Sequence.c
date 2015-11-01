@@ -12,7 +12,6 @@ Sequence *SequenceCreate()
     SequenceImpl *self = calloc(1, sizeof(SequenceImpl));
     self->sequence.timeTable = TimeTableCreate();
     self->sequence.events = NAArrayCreate(32, NULL);
-    self->sequence.children = NAArrayCreate(8, NULL);
     self->rerCount = 1;
 
     return (Sequence *)self;
@@ -31,9 +30,6 @@ void SequenceRelease(Sequence *self)
 
         NAArrayTraverse(self->events, free);
         NAArrayDestroy(self->events);
-
-        NAArrayTraverse(self->children, SequenceRelease);
-        NAArrayDestroy(self->children);
     }
 }
 
@@ -70,16 +66,5 @@ void SequenceDump(Sequence *self, int indent)
     values = NAArrayGetValues(self->events);
     for (int i = 0; i < count; ++i) {
         MidiEventDump(values[i], indent);
-    }
-
-    printf("\n");
-    printf("%*s", indent, "");
-    printf("Pattern:\n");
-    printf("%*s", indent, "");
-    printf("-------------------------\n");
-    count = NAArrayCount(self->children);
-    values = NAArrayGetValues(self->children);
-    for (int i = 0; i < count; ++i) {
-        SequenceDump(values[i], indent + 8);
     }
 }

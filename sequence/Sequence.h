@@ -10,7 +10,6 @@ struct _Sequence {
     char *title;
     TimeTable *timeTable;
     NAArray *events;
-    NAArray *children;
 };
 
 extern Sequence *SequenceCreate();
