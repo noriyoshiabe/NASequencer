@@ -22,7 +22,7 @@
 extern int NAMidi_parse(yyscan_t scanner);
 
 typedef struct _StatementHeader {
-    StatementType type;
+    NAMidiStatementType type;
     ParseLocation location;
     int length;
 } StatementHeader;
@@ -143,7 +143,7 @@ static void NAMidiParserDestroy(void *_self)
     free(self);
 }
 
-bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType type, va_list argList)
+bool NAMidiParserProcess(NAMidiParser *self, int line, int column, NAMidiStatementType type, va_list argList)
 {
     bool success = true;
 
@@ -154,7 +154,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
     header.location.filepath = self->currentFile;
 
     switch (type) {
-    case StatementTypeResolution:
+    case NAMidiStatementTypeResolution:
         {
             int resolution = va_arg(argList, int);
             if (!isValidRange(resolution, 1, 9600)) {
@@ -168,7 +168,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             }
         }
         break;
-    case StatementTypeTitle:
+    case NAMidiStatementTypeTitle:
         {
             char *string = va_arg(argList, char *);
             header.length = strlen(string) + 1;
@@ -176,7 +176,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             NAByteBufferWriteString(self->context->buffer, string);
         }
         break;
-    case StatementTypeTempo:
+    case NAMidiStatementTypeTempo:
         {
             double tempo = va_arg(argList, double);
             if (!isValidRange(tempo, 30.0, 300.0)) {
@@ -190,7 +190,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             }
         }
         break;
-    case StatementTypeTimeSign:
+    case NAMidiStatementTypeTimeSign:
         {
             int numerator = va_arg(argList, int);
             int denominator = va_arg(argList, int);
@@ -206,8 +206,8 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             }
         }
         break;
-    case StatementTypeMarker:
-    case StatementTypePattern:
+    case NAMidiStatementTypeMarker:
+    case NAMidiStatementTypePattern:
         {
             char *string = va_arg(argList, char *);
             char *context = va_arg(argList, char *);
@@ -224,7 +224,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             }
         }
         break;
-    case StatementTypeContext:
+    case NAMidiStatementTypeContext:
         {
             char *string = va_arg(argList, char *);
             header.length = strlen(string) + 1;
@@ -232,7 +232,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             NAByteBufferWriteString(self->context->buffer, string);
         }
         break;
-    case StatementTypeContextDefault:
+    case NAMidiStatementTypeContextDefault:
         {
             char *string = "default";
             header.length = strlen(string) + 1;
@@ -240,13 +240,13 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             NAByteBufferWriteString(self->context->buffer, string);
         }
         break;
-    case StatementTypeContextEnd:
+    case NAMidiStatementTypeContextEnd:
         {
             header.length = 0;
             NAByteBufferWriteData(self->context->buffer, &header, sizeof(StatementHeader));
         }
         break;
-    case StatementTypePatternDefine:
+    case NAMidiStatementTypePatternDefine:
         {
             char *patternIdentifier = strdup(va_arg(argList, char *));
 
@@ -265,7 +265,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             self->context = buildContext;
         }
         break;
-    case StatementTypeEnd:
+    case NAMidiStatementTypeEnd:
         {
             Context *buildContext = NAStackPop(self->contextStack);
             if (!buildContext) {
@@ -277,7 +277,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             self->context = buildContext;
         }
         break;
-    case StatementTypeChannel:
+    case NAMidiStatementTypeChannel:
         {
             int channel = va_arg(argList, int);
             if (!isValidRange(channel, 1, 16)) {
@@ -291,7 +291,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             }
         }
         break;
-    case StatementTypeVoice:
+    case NAMidiStatementTypeVoice:
         {
             int msb = va_arg(argList, int);
             int lsb = va_arg(argList, int);
@@ -312,7 +312,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             }
         }
         break;
-    case StatementTypeSynth:
+    case NAMidiStatementTypeSynth:
         {
             char *string = va_arg(argList, char *);
             header.length = strlen(string) + 1;
@@ -320,7 +320,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             NAByteBufferWriteString(self->context->buffer, string);
         }
         break;
-    case StatementTypeVolume:
+    case NAMidiStatementTypeVolume:
         {
             int volume = va_arg(argList, int);
             if (!isValidRange(volume, 0, 127)) {
@@ -334,7 +334,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             }
         }
         break;
-    case StatementTypePan:
+    case NAMidiStatementTypePan:
         {
             int pan = va_arg(argList, int);
             if (!isValidRange(pan, -64, 64)) {
@@ -348,7 +348,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             }
         }
         break;
-    case StatementTypeChorus:
+    case NAMidiStatementTypeChorus:
         {
             int chorus = va_arg(argList, int);
             if (!isValidRange(chorus, 0, 127)) {
@@ -362,7 +362,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             }
         }
         break;
-    case StatementTypeReverb:
+    case NAMidiStatementTypeReverb:
         {
             int reverb = va_arg(argList, int);
             if (!isValidRange(reverb, 0, 127)) {
@@ -376,7 +376,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             }
         }
         break;
-    case StatementTypeTranspose:
+    case NAMidiStatementTypeTranspose:
         {
             int transpose = va_arg(argList, int);
             if (!isValidRange(transpose, -64, 64)) {
@@ -390,7 +390,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             }
         }
         break;
-    case StatementTypeKey:
+    case NAMidiStatementTypeKey:
         {
             char *keyString = va_arg(argList, char *);
 
@@ -411,7 +411,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             }
         }
         break;
-    case StatementTypeNote:
+    case NAMidiStatementTypeNote:
         {
             const BaseNote noteTable[] = {
                 BaseNote_A, BaseNote_B, BaseNote_C,
@@ -469,7 +469,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             }
         }
         break;
-    case StatementTypeRest:
+    case NAMidiStatementTypeRest:
         {
             int step = va_arg(argList, int);
             if (!isValidRange(step, 0, 65535)) {
@@ -483,7 +483,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             }
         }
         break;
-    case StatementTypeInclude:
+    case NAMidiStatementTypeInclude:
         {
             char *filename = va_arg(argList, char *);
             char *directory = dirname((char *)self->currentFile);
@@ -545,9 +545,9 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Seq
         bool skip = false;
 
         switch (header->type) {
-        case StatementTypeContext:
-        case StatementTypeContextDefault:
-        case StatementTypeContextEnd:
+        case NAMidiStatementTypeContext:
+        case NAMidiStatementTypeContextDefault:
+        case NAMidiStatementTypeContextEnd:
             break;
         default:
             if (context->ctx.pattern) {
@@ -570,14 +570,14 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Seq
         }
 
         switch (header->type) {
-        case StatementTypeResolution:
+        case NAMidiStatementTypeResolution:
             {
                 int resolution;
                 NAByteBufferReadInteger(context->buffer, &resolution);
                 TimeTableSetResolution(sequence->timeTable, resolution);
             }
             break;
-        case StatementTypeTitle:
+        case NAMidiStatementTypeTitle:
             {
                 char *title;
                 NAByteBufferReadString(context->buffer, &title);
@@ -585,7 +585,7 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Seq
                 sequence->title = strdup(title);
             }
             break;
-        case StatementTypeTempo:
+        case NAMidiStatementTypeTempo:
             {
                 TempoEvent *event = MidiEventAlloc(MidiEventTypeTempo, ++context->id, *tick, sizeof(TempoEvent) - sizeof(MidiEvent));
                 NAByteBufferReadFloat(context->buffer, &event->tempo);
@@ -593,7 +593,7 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Seq
                 TimeTableAddTempo(sequence->timeTable, *tick, event->tempo);
             }
             break;
-        case StatementTypeTimeSign:
+        case NAMidiStatementTypeTimeSign:
             {
                 TimeEvent *event = MidiEventAlloc(MidiEventTypeTime, ++context->id, *tick, sizeof(TimeEvent) - sizeof(MidiEvent));
                 NAByteBufferReadInteger(context->buffer, &event->numerator);
@@ -602,7 +602,7 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Seq
                 TimeTableAddTimeSign(sequence->timeTable, *tick, (TimeSign){event->numerator, event->denominator});
             }
             break;
-        case StatementTypeMarker:
+        case NAMidiStatementTypeMarker:
             {
                 char *marker;
                 NAByteBufferReadString(context->buffer, &marker);
@@ -611,7 +611,7 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Seq
                 NAArrayAppend(sequence->events, event);
             }
             break;
-        case StatementTypePattern:
+        case NAMidiStatementTypePattern:
             {
                 char *patternIdentifier;
                 int readLength = NAByteBufferReadString(context->buffer, &patternIdentifier);
@@ -644,8 +644,8 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Seq
                 ContextDestroy(copy);
             }
             break;
-        case StatementTypeContext:
-        case StatementTypeContextDefault:
+        case NAMidiStatementTypeContext:
+        case NAMidiStatementTypeContextDefault:
             {
                 if (context->ctx.current) {
                     NAMidiParserError(self, header->location.line, header->location.column, ParseErrorKindUnexpectedContextStart);
@@ -661,7 +661,7 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Seq
                 }
             }
             break;
-        case StatementTypeContextEnd:
+        case NAMidiStatementTypeContextEnd:
             {
                 if (!context->ctx.current) {
                     NAMidiParserError(self, header->location.line, header->location.column, ParseErrorKindUnexpectedContextEnd);
@@ -672,17 +672,17 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Seq
                 }
             }
             break;
-        case StatementTypePatternDefine:
-        case StatementTypeEnd:
+        case NAMidiStatementTypePatternDefine:
+        case NAMidiStatementTypeEnd:
             // never reach
             break;
-        case StatementTypeChannel:
+        case NAMidiStatementTypeChannel:
             {
                 NAByteBufferReadInteger(context->buffer, &context->channel);
                 tick = &context->channels[context->channel].tick;
             }
             break;
-        case StatementTypeVoice:
+        case NAMidiStatementTypeVoice:
             {
                 VoiceEvent *event = MidiEventAlloc(MidiEventTypeVoice, ++context->id, *tick, sizeof(VoiceEvent) - sizeof(MidiEvent));
                 event->channel = context->channel;
@@ -692,7 +692,7 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Seq
                 NAArrayAppend(sequence->events, event);
             }
             break;
-        case StatementTypeSynth:
+        case NAMidiStatementTypeSynth:
             {
                 char *identifier;
                 NAByteBufferReadString(context->buffer, &identifier);
@@ -702,7 +702,7 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Seq
                 NAArrayAppend(sequence->events, event);
             }
             break;
-        case StatementTypeVolume:
+        case NAMidiStatementTypeVolume:
             {
                 VolumeEvent *event = MidiEventAlloc(MidiEventTypeVolume, ++context->id, *tick, sizeof(VolumeEvent) - sizeof(MidiEvent));
                 event->channel = context->channel;
@@ -710,7 +710,7 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Seq
                 NAArrayAppend(sequence->events, event);
             }
             break;
-        case StatementTypePan:
+        case NAMidiStatementTypePan:
             {
                 PanEvent *event = MidiEventAlloc(MidiEventTypePan, ++context->id, *tick, sizeof(PanEvent) - sizeof(MidiEvent));
                 event->channel = context->channel;
@@ -718,7 +718,7 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Seq
                 NAArrayAppend(sequence->events, event);
             }
             break;
-        case StatementTypeChorus:
+        case NAMidiStatementTypeChorus:
             {
                 ChorusEvent *event = MidiEventAlloc(MidiEventTypeChorus, ++context->id, *tick, sizeof(ChorusEvent) - sizeof(MidiEvent));
                 event->channel = context->channel;
@@ -726,7 +726,7 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Seq
                 NAArrayAppend(sequence->events, event);
             }
             break;
-        case StatementTypeReverb:
+        case NAMidiStatementTypeReverb:
             {
                 ReverbEvent *event = MidiEventAlloc(MidiEventTypeReverb, ++context->id, *tick, sizeof(ReverbEvent) - sizeof(MidiEvent));
                 event->channel = context->channel;
@@ -734,17 +734,17 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Seq
                 NAArrayAppend(sequence->events, event);
             }
             break;
-        case StatementTypeTranspose:
+        case NAMidiStatementTypeTranspose:
             {
                 NAByteBufferReadInteger(context->buffer, &context->transpose);
             }
             break;
-        case StatementTypeKey:
+        case NAMidiStatementTypeKey:
             {
                 NAByteBufferReadInteger(context->buffer, &context->keySign);
             }
             break;
-        case StatementTypeNote:
+        case NAMidiStatementTypeNote:
             {
                 BaseNote baseNote;
                 Accidental accidental;
@@ -794,14 +794,14 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Seq
                 *tick += step;
             }
             break;
-        case StatementTypeRest:
+        case NAMidiStatementTypeRest:
             {
                 int step;
                 NAByteBufferReadInteger(context->buffer, &step);
                 *tick += step;
             }
             break;
-        case StatementTypeInclude:
+        case NAMidiStatementTypeInclude:
             // never reach
             break;
         default:
