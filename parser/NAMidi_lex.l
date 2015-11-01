@@ -64,7 +64,7 @@ INCLUDE        include
 
 KEY_SIGN       [cdefgab](#|b)?(maj|min)
 NOTE           [cdefgab](#|##|b|bb|n)?(\-?[[:digit:]]{1,2})?
-IDENTIFIER     [_[:alpha:]][_\-[:alnum:]]+
+IDENTIFIER     [_\-[:alnum:]]+
 
 EOL            \n
 
