@@ -64,7 +64,7 @@ RCURLY         "}"
 INCLUDE        include
 
 KEY_SIGN       [cdefgab](#|b)?(maj|min)
-NOTE           [cdefgab](#|b|n)?\-?[[:digit:]]{1,2}
+NOTE           [cdefgab](#|##|b|bb|n)?(\-?[[:digit:]]{1,2})?
 IDENTIFIER     [_[:alpha:]][_\-[:alnum:]]+
 
 EOL            \n

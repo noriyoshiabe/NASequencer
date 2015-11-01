@@ -55,7 +55,9 @@ typedef enum {
 typedef enum {
     AccidentalNone,
     AccidentalSharp,
+    AccidentalDoubleSharp,
     AccidentalFlat,
+    AccidentalDoubleFlat,
     AccidentalNatural,
 
     AccidentalSize,

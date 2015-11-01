@@ -17,6 +17,8 @@
 #define isPowerOf2(x) ((x != 0) && ((x & (x - 1)) == 0))
 #define isValidRange(v, from, to) (from <= v && v <= to)
 
+#define OCTAVE_NONE -99
+
 extern int NAMidi_parse(yyscan_t scanner);
 
 typedef struct _StatementHeader {
@@ -38,6 +40,7 @@ typedef struct _Context {
         int tick;
         int gatetime;
         int velocity;
+        int octave;
     } channels[16];
     struct {
         char *pattern;
@@ -434,22 +437,28 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             BaseNote baseNote = noteTable[tolower(*pc) - 97];
             Accidental accidental = AccidentalNone;
 
-            switch (*(++pc)) {
-            case '#':
-                accidental = AccidentalSharp;
-                ++pc;
-                break;
-            case 'b':
-                accidental = AccidentalFlat;
-                ++pc;
-                break;
-            case 'n':
-                accidental = AccidentalNatural;
-                ++pc;
-                break;
-            }
+            int octave = OCTAVE_NONE;
+            char *c;
+            while (*(c = ++pc)) {
+                switch (*c) {
+                case '#':
+                    accidental = AccidentalSharp == accidental ? AccidentalDoubleSharp : AccidentalSharp;
+                    break;
+                case 'b':
+                    accidental = AccidentalFlat == accidental ? AccidentalDoubleFlat : AccidentalFlat;
+                    break;
+                case 'n':
+                    accidental = AccidentalNatural;
+                    break;
+                default:
+                    octave = atoi(c);
+                    break;
+                }
 
-            int octave = atoi(pc);
+                if (OCTAVE_NONE != octave) {
+                    break;
+                }
+            }
 
             int step = va_arg(argList, int);
             int gatetime = va_arg(argList, int);
@@ -458,7 +467,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             if (!isValidRange(step, -1, 65535)
                     || !isValidRange(gatetime, -1, 65535)
                     || !isValidRange(velocity, -1, 127)
-                    || !isValidRange(octave, -2, 8)) {
+                    || (OCTAVE_NONE != octave && !isValidRange(octave, -2, 8))) {
                 NAMidiParserError(self, line, column, ParseErrorKindInvalidValue);
                 success = false;
             }
@@ -769,6 +778,13 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Seq
                 NAByteBufferReadInteger(context->buffer, &gatetime);
                 NAByteBufferReadInteger(context->buffer, &velocity);
 
+                if (OCTAVE_NONE == octave) {
+                    octave = context->channels[context->channel].octave;
+                }
+                else {
+                    context->channels[context->channel].octave = octave;
+                }
+
                 int noteNo = NoteTableGetNoteNo(context->keySign, baseNote, accidental, octave);
                 if (!isValidRange(noteNo, 0, 127)) {
                     NAMidiParserError(self, header->location.line, header->location.column, ParseErrorKindInvalidNoteRange);
@@ -833,6 +849,7 @@ static Context *ContextCreate()
     for (int i = 0; i < 16; ++i) {
         self->channels[i].gatetime = 240;
         self->channels[i].velocity = 100;
+        self->channels[i].octave = 2;
     }
 
     return self;
