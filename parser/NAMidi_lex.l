@@ -40,7 +40,6 @@ TIME           time
 MARKER         marker
 DEFINE         define
 END            end
-TRACK          track
 CHANNEL        channel
 VOICE          voice
 SYNTH          synth
@@ -91,7 +90,6 @@ LINE_COMMENT   (\/\/|==|--).*$
 {MARKER}         { return MARKER; }
 {DEFINE}         { return DEFINE; }
 {END}            { return END; }
-{TRACK}          { return TRACK; }
 {CHANNEL}        { return CHANNEL; }
 {VOICE}          { return VOICE; }
 {SYNTH}          { return SYNTH; }

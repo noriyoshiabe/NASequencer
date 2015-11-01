@@ -31,15 +31,14 @@ typedef struct _Context {
     NAArray *patternIdentifiers;
 
     int id;
-    int track;
+    int channel;
     int transpose;
     KeySign keySign;
     struct {
-        int channel;
         int tick;
         int gatetime;
         int velocity;
-    } tracks[16];
+    } channels[16];
     struct {
         char *pattern;
         char *current;
@@ -287,20 +286,6 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             }
 
             self->context = buildContext;
-        }
-        break;
-    case StatementTypeTrack:
-        {
-            int track = va_arg(argList, int);
-            if (!isValidRange(track, 1, 16)) {
-                NAMidiParserError(self, line, column, ParseErrorKindInvalidValue);
-                success = false;
-            }
-            else {
-                header.length = sizeof(int);
-                NAByteBufferWriteData(self->context->buffer, &header, sizeof(StatementHeader));
-                NAByteBufferWriteInteger(self->context->buffer, track);
-            }
         }
         break;
     case StatementTypeChannel:
@@ -559,7 +544,7 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Seq
     bool success = true;
     StatementHeader *header;
 
-    int *tick = &context->tracks[context->track].tick;
+    int *tick = &context->channels[context->channel].tick;
 
     while (NAByteBufferReadData(context->buffer, &header, sizeof(StatementHeader))) {
         bool skip = false;
@@ -664,7 +649,7 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Seq
                 success = NAMidiParserParseStatement(self, copy, sequence);
 
                 for (int i = 0; i < 16; ++i) {
-                    context->tracks[i].tick = copy->tracks[i].tick;
+                    context->channels[i].tick = copy->channels[i].tick;
                 }
                 context->id = copy->id;
 
@@ -703,21 +688,16 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Seq
         case StatementTypeEnd:
             // never reach
             break;
-        case StatementTypeTrack:
-            {
-                NAByteBufferReadInteger(context->buffer, &context->track);
-                tick = &context->tracks[context->track].tick;
-            }
-            break;
         case StatementTypeChannel:
             {
-                NAByteBufferReadInteger(context->buffer, &context->tracks[context->track].channel);
+                NAByteBufferReadInteger(context->buffer, &context->channel);
+                tick = &context->channels[context->channel].tick;
             }
             break;
         case StatementTypeVoice:
             {
                 VoiceEvent *event = MidiEventAlloc(MidiEventTypeVoice, ++context->id, *tick, sizeof(VoiceEvent) - sizeof(MidiEvent));
-                event->channel = context->tracks[context->track].channel;
+                event->channel = context->channel;
                 NAByteBufferReadInteger(context->buffer, &event->msb);
                 NAByteBufferReadInteger(context->buffer, &event->lsb);
                 NAByteBufferReadInteger(context->buffer, &event->programNo);
@@ -729,7 +709,7 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Seq
                 char *identifier;
                 NAByteBufferReadString(context->buffer, &identifier);
                 SynthEvent *event = MidiEventAlloc(MidiEventTypeSynth, ++context->id, *tick, strlen(identifier) + 1);
-                event->channel = context->tracks[context->track].channel;
+                event->channel = context->channel;
                 strcpy(event->identifier, identifier);
                 NAArrayAppend(sequence->events, event);
             }
@@ -737,7 +717,7 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Seq
         case StatementTypeVolume:
             {
                 VolumeEvent *event = MidiEventAlloc(MidiEventTypeVolume, ++context->id, *tick, sizeof(VolumeEvent) - sizeof(MidiEvent));
-                event->channel = context->tracks[context->track].channel;
+                event->channel = context->channel;
                 NAByteBufferReadInteger(context->buffer, &event->value);
                 NAArrayAppend(sequence->events, event);
             }
@@ -745,7 +725,7 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Seq
         case StatementTypePan:
             {
                 PanEvent *event = MidiEventAlloc(MidiEventTypePan, ++context->id, *tick, sizeof(PanEvent) - sizeof(MidiEvent));
-                event->channel = context->tracks[context->track].channel;
+                event->channel = context->channel;
                 NAByteBufferReadInteger(context->buffer, &event->value);
                 NAArrayAppend(sequence->events, event);
             }
@@ -753,7 +733,7 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Seq
         case StatementTypeChorus:
             {
                 ChorusEvent *event = MidiEventAlloc(MidiEventTypeChorus, ++context->id, *tick, sizeof(ChorusEvent) - sizeof(MidiEvent));
-                event->channel = context->tracks[context->track].channel;
+                event->channel = context->channel;
                 NAByteBufferReadInteger(context->buffer, &event->value);
                 NAArrayAppend(sequence->events, event);
             }
@@ -761,7 +741,7 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Seq
         case StatementTypeReverb:
             {
                 ReverbEvent *event = MidiEventAlloc(MidiEventTypeReverb, ++context->id, *tick, sizeof(ReverbEvent) - sizeof(MidiEvent));
-                event->channel = context->tracks[context->track].channel;
+                event->channel = context->channel;
                 NAByteBufferReadInteger(context->buffer, &event->value);
                 NAArrayAppend(sequence->events, event);
             }
@@ -801,18 +781,18 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Seq
                 }
 
                 if (-1 != gatetime) {
-                    context->tracks[context->track].gatetime = gatetime;
+                    context->channels[context->channel].gatetime = gatetime;
                 }
 
                 if (-1 != velocity) {
-                    context->tracks[context->track].velocity = velocity;
+                    context->channels[context->channel].velocity = velocity;
                 }
 
                 NoteEvent *event = MidiEventAlloc(MidiEventTypeNote, ++context->id, *tick, sizeof(NoteEvent) - sizeof(MidiEvent));
                 event->noteNo = noteNo;
-                event->channel = context->tracks[context->track].channel;
-                event->gatetime = context->tracks[context->track].gatetime;
-                event->velocity = context->tracks[context->track].velocity;
+                event->channel = context->channel;
+                event->gatetime = context->channels[context->channel].gatetime;
+                event->velocity = context->channels[context->channel].velocity;
 
                 NAArrayAppend(sequence->events, event);
 
@@ -851,9 +831,8 @@ static Context *ContextCreate()
     self->patternIdentifiers = NAArrayCreate(16, NADescriptionCString);
 
     for (int i = 0; i < 16; ++i) {
-        self->tracks[i].channel = 1;
-        self->tracks[i].gatetime = 240;
-        self->tracks[i].velocity = 100;
+        self->channels[i].gatetime = 240;
+        self->channels[i].velocity = 100;
     }
 
     return self;
@@ -886,7 +865,7 @@ static int ContextGetLength(Context *self)
 {
     int length = 0;
     for (int i = 0; i < 16; ++i) {
-        length = MAX(length, self->tracks[i].tick);
+        length = MAX(length, self->channels[i].tick);
     }
     return length;
 }

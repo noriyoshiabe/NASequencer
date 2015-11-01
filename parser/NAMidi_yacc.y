@@ -46,7 +46,6 @@ static void postProcess(YYLTYPE *yylloc, yyscan_t scanner, StatementType type, .
 %token MARKER
 %token DEFINE
 %token END
-%token TRACK
 %token CHANNEL
 %token VOICE
 %token SYNTH
@@ -104,7 +103,6 @@ statement
     | DEFAULT LCURLY                { Process(&@$, StatementTypeContextDefault, NULL); }
     | RCURLY                        { Process(&@$, StatementTypeContextEnd, NULL); }
     | END                           { Process(&@$, StatementTypeEnd, NULL); }
-    | TRACK INTEGER                 { Process(&@$, StatementTypeTrack, $2); }
     | CHANNEL INTEGER               { Process(&@$, StatementTypeChannel, $2); }
     | VOICE INTEGER INTEGER INTEGER { Process(&@$, StatementTypeVoice, $2, $3, $4); }
     | SYNTH STRING                  { Process(&@$, StatementTypeSynth, $2); }

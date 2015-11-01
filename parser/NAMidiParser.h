@@ -17,7 +17,6 @@ typedef enum {
     StatementTypeContextDefault,
     StatementTypeContextEnd,
     StatementTypeEnd,
-    StatementTypeTrack,
     StatementTypeChannel,
     StatementTypeVoice,
     StatementTypeSynth,
@@ -57,7 +56,6 @@ static inline const char *StatementType2String(StatementType type)
     CASE(StatementTypeContextDefault);
     CASE(StatementTypeContextEnd);
     CASE(StatementTypeEnd);
-    CASE(StatementTypeTrack);
     CASE(StatementTypeChannel);
     CASE(StatementTypeVoice);
     CASE(StatementTypeSynth);
