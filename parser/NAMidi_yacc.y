@@ -60,7 +60,6 @@ static void postProcess(YYLTYPE *yylloc, yyscan_t scanner, StatementType type, .
 %token PLUS
 %token MINUS
 %token DIVISION
-%token COLON
 %token SEMICOLON
 %token LPAREN
 %token RPAREN
@@ -93,7 +92,6 @@ statement
     | TEMPO FLOAT                   { Process(&@$, StatementTypeTempo, $2); }
     | TEMPO INTEGER                 { Process(&@$, StatementTypeTempo, (float)$2); }
     | TIME INTEGER DIVISION INTEGER { Process(&@$, StatementTypeTimeSign, $2, $4); }
-    | INTEGER COLON                 { Process(&@$, StatementTypeMeasure, $1); }
     | MARKER STRING                 { Process(&@$, StatementTypeMarker, $2); }
     | IDENTIFIER                    { Process(&@$, StatementTypePattern, $1, NULL); }
     | IDENTIFIER LPAREN IDENTIFIER RPAREN

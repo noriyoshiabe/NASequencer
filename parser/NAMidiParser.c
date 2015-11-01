@@ -206,20 +206,6 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
             }
         }
         break;
-    case StatementTypeMeasure:
-        {
-            int measure = va_arg(argList, int);
-            if (!isValidRange(measure, 1, ParserMeasureMax)) {
-                NAMidiParserError(self, line, column, ParseErrorKindInvalidValue);
-                success = false;
-            }
-            else {
-                header.length = sizeof(int);
-                NAByteBufferWriteData(self->context->buffer, &header, sizeof(StatementHeader));
-                NAByteBufferWriteInteger(self->context->buffer, measure);
-            }
-        }
-        break;
     case StatementTypeMarker:
     case StatementTypePattern:
         {
@@ -614,13 +600,6 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Seq
                 NAByteBufferReadInteger(context->buffer, &event->denominator);
                 NAArrayAppend(sequence->events, event);
                 TimeTableAddTimeSign(sequence->timeTable, *tick, (TimeSign){event->numerator, event->denominator});
-            }
-            break;
-        case StatementTypeMeasure:
-            {
-                int measure;
-                NAByteBufferReadInteger(context->buffer, &measure);
-                *tick = TimeTableTickByMeasure(sequence->timeTable, measure);
             }
             break;
         case StatementTypeMarker:

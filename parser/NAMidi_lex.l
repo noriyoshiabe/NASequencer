@@ -54,7 +54,6 @@ DEFAULT        default
 PLUS           "+"
 MINUS          "-"
 DIVISION       "/"
-COLON          ":"
 SEMICOLON      ";"
 LPAREN         "("
 RPAREN         ")"
@@ -104,7 +103,6 @@ LINE_COMMENT   (\/\/|==|--).*$
 {PLUS}           { return PLUS; }
 {MINUS}          { return MINUS; }
 {DIVISION}       { return DIVISION; }
-{COLON}          { return COLON; }
 
 {LPAREN}         { return LPAREN; }
 {RPAREN}         { return RPAREN; }

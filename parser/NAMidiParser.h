@@ -9,7 +9,6 @@ typedef enum {
     StatementTypeTitle,
     StatementTypeTempo,
     StatementTypeTimeSign,
-    StatementTypeMeasure,
     StatementTypeMarker,
     StatementTypePattern,
     StatementTypePatternDefine,
@@ -48,7 +47,6 @@ static inline const char *StatementType2String(StatementType type)
     CASE(StatementTypeTitle);
     CASE(StatementTypeTempo);
     CASE(StatementTypeTimeSign);
-    CASE(StatementTypeMeasure);
     CASE(StatementTypeMarker);
     CASE(StatementTypePattern);
     CASE(StatementTypePatternDefine);
