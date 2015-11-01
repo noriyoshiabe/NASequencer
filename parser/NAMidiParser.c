@@ -25,12 +25,10 @@ typedef struct _StatementHeader {
     int length;
 } StatementHeader;
 
-typedef struct _BuildContext {
+typedef struct _Context {
     NAByteBuffer *buffer;
-    NAMap *patternContexts;
+    NAMap *patternMap;
     NAArray *patternIdentifiers;
-
-    Sequence *sequence;
 
     int id;
     int track;
@@ -44,62 +42,12 @@ typedef struct _BuildContext {
     } tracks[16];
 
     bool shallowCopy;
-} BuildContext;
+} Context;
 
-static BuildContext *BuildContextCreate()
-{
-    BuildContext *self = calloc(1, sizeof(BuildContext));
-    self->buffer = NAByteBufferCreate(1024);
-    self->patternContexts = NAMapCreate(NAHashCString, NADescriptionCString, NULL);
-    self->patternIdentifiers = NAArrayCreate(16, NADescriptionCString);
-
-    for (int i = 0; i < 16; ++i) {
-        self->tracks[i].channel = 1;
-        self->tracks[i].gatetime = 240;
-        self->tracks[i].velocity = 100;
-    }
-
-    return self;
-}
-
-static BuildContext *BuildContextCreateShallowCopy(BuildContext *self)
-{
-    BuildContext *copy = calloc(1, sizeof(BuildContext));
-    memcpy(copy, self, sizeof(BuildContext));
-    copy->shallowCopy = true;
-    return copy;
-}
-
-static void BuildContextDestroy(BuildContext *self)
-{
-    if (!self->shallowCopy) {
-        NAByteBufferDestroy(self->buffer);
-
-        NAMapTraverseValue(self->patternContexts, BuildContextDestroy);
-        NAMapDestroy(self->patternContexts);
-
-        NAArrayTraverse(self->patternIdentifiers, free);
-        NAArrayDestroy(self->patternIdentifiers);
-    }
-
-    free(self);
-}
-
-static int BuildContextGetLength(BuildContext *self)
-{
-    int length = 0;
-    for (int i = 0; i < 16; ++i) {
-        length = MAX(length, self->tracks[i].tick);
-    }
-    return length;
-}
-
-static bool NAMidiParserParseFile(void *self, const char *filepath);
-static void NAMidiParserDestroy(void *self);
-
-static bool NAMidiParserParseFileInternal(NAMidiParser *self, const char *filepath, int line, int column);
-static bool NAMidiParserBuildSequence(NAMidiParser *self);
-static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context);
+static Context *ContextCreate();
+static Context *ContextCreateShallowCopy(Context *self);
+static void ContextDestroy(Context *self);
+static int ContextGetLength(Context *self);
 
 struct _NAMidiParser {
     Parser interface;
@@ -108,9 +56,16 @@ struct _NAMidiParser {
     NASet *fileSet;
     NASet *readingFileSet;
     NAStack *fileStack;
-    BuildContext *context;
+    Context *context;
     NAStack *contextStack;
 };
+
+static bool NAMidiParserParseFile(void *self, const char *filepath);
+static void NAMidiParserDestroy(void *self);
+
+static bool NAMidiParserParseFileInternal(NAMidiParser *self, const char *filepath, int line, int column);
+static bool NAMidiParserBuildSequence(NAMidiParser *self);
+static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Sequence *sequence);
 
 Parser *NAMidiParserCreate(ParseResult *result)
 {
@@ -121,7 +76,7 @@ Parser *NAMidiParserCreate(ParseResult *result)
     self->fileSet = NASetCreate(NAHashCString, NADescriptionCString);
     self->fileStack = NAStackCreate(4);
     self->readingFileSet = NASetCreate(NAHashCString, NADescriptionCString);
-    self->context = BuildContextCreate();
+    self->context = ContextCreate();
     self->contextStack = NAStackCreate(4);
     return (Parser *)self;
 }
@@ -177,7 +132,7 @@ static void NAMidiParserDestroy(void *_self)
     NAStackDestroy(self->fileStack);
     NASetDestroy(self->fileSet);
     NASetDestroy(self->readingFileSet);
-    BuildContextDestroy(self->context);
+    ContextDestroy(self->context);
     NAStackDestroy(self->contextStack);
     free(self);
 }
@@ -272,15 +227,15 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
         {
             char *patternIdentifier = strdup(va_arg(argList, char *));
 
-            if (NAMapContainsKey(self->context->patternContexts, patternIdentifier)) {
+            if (NAMapContainsKey(self->context->patternMap, patternIdentifier)) {
                 NAMidiParserError(self, line, column, ParseErrorKindDuplicatePatternIdentifier);
                 free(patternIdentifier);
                 success = false;
                 break;
             }
 
-            BuildContext *buildContext = BuildContextCreate();
-            NAMapPut(self->context->patternContexts, patternIdentifier, buildContext);
+            Context *buildContext = ContextCreate();
+            NAMapPut(self->context->patternMap, patternIdentifier, buildContext);
             NAArrayAppend(self->context->patternIdentifiers, patternIdentifier);
 
             NAStackPush(self->contextStack, self->context);
@@ -289,7 +244,7 @@ bool NAMidiParserProcess(NAMidiParser *self, int line, int column, StatementType
         break;
     case StatementTypeEnd:
         {
-            BuildContext *buildContext = NAStackPop(self->contextStack);
+            Context *buildContext = NAStackPop(self->contextStack);
             if (!buildContext) {
                 NAMidiParserError(self, line, column, ParseErrorKindUnexpectedEnd);
                 success = false;
@@ -554,22 +509,21 @@ void NAMidiParserError(NAMidiParser *self, int line, int column, ParseErrorKind 
 
 static bool NAMidiParserBuildSequence(NAMidiParser *self)
 {
-    self->context->sequence = SequenceCreate();
+    Sequence *sequence = SequenceCreate();
 
-    bool success = NAMidiParserParseStatement(self, self->context);
-    TimeTableSetLength(self->context->sequence->timeTable, BuildContextGetLength(self->context));
-    SequenceSortEvents(self->context->sequence);
+    bool success = NAMidiParserParseStatement(self, self->context, sequence);
+    TimeTableSetLength(sequence->timeTable, ContextGetLength(self->context));
+    SequenceSortEvents(sequence);
 
-    self->result->sequence = self->context->sequence;
+    self->result->sequence = sequence;
     return success;
 }
 
-static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context)
+static bool NAMidiParserParseStatement(NAMidiParser *self, Context *context, Sequence *sequence)
 {
     bool success = true;
     StatementHeader *header;
 
-    Sequence *sequence = context->sequence;
     int *tick = &context->tracks[context->track].tick;
 
     while (NAByteBufferReadData(context->buffer, &header, sizeof(StatementHeader))) {
@@ -624,29 +578,29 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context
             break;
         case StatementTypePattern:
             {
-                char *pattern;
-                NAByteBufferReadString(context->buffer, &pattern);
-                BuildContext *patternContext = NAMapGet(context->patternContexts, pattern);
-                if (!patternContext) {
+                char *patternIdentifier;
+                NAByteBufferReadString(context->buffer, &patternIdentifier);
+                Context *pattern = NAMapGet(context->patternMap, patternIdentifier);
+                if (!pattern) {
                     NAMidiParserError(self, header->location.line, header->location.column, ParseErrorKindPatternMissing);
                     success = false;
                     break;
                 }
 
-                BuildContext *copy = BuildContextCreateShallowCopy(context);
-                copy->buffer = patternContext->buffer;
-                copy->patternContexts = patternContext->patternContexts;
-                copy->patternIdentifiers = patternContext->patternIdentifiers;
+                Context *copy = ContextCreateShallowCopy(context);
+                copy->buffer = pattern->buffer;
+                copy->patternMap = pattern->patternMap;
+                copy->patternIdentifiers = pattern->patternIdentifiers;
                 NAByteBufferSeekFirst(copy->buffer);
 
-                success = NAMidiParserParseStatement(self, copy);
+                success = NAMidiParserParseStatement(self, copy, sequence);
 
                 for (int i = 0; i < 16; ++i) {
                     context->tracks[i].tick = copy->tracks[i].tick;
                 }
                 context->id = copy->id;
 
-                BuildContextDestroy(copy);
+                ContextDestroy(copy);
             }
             break;
         case StatementTypePatternDefine:
@@ -786,4 +740,53 @@ static bool NAMidiParserParseStatement(NAMidiParser *self, BuildContext *context
     }
 
     return success;
+}
+
+
+static Context *ContextCreate()
+{
+    Context *self = calloc(1, sizeof(Context));
+    self->buffer = NAByteBufferCreate(1024);
+    self->patternMap = NAMapCreate(NAHashCString, NADescriptionCString, NULL);
+    self->patternIdentifiers = NAArrayCreate(16, NADescriptionCString);
+
+    for (int i = 0; i < 16; ++i) {
+        self->tracks[i].channel = 1;
+        self->tracks[i].gatetime = 240;
+        self->tracks[i].velocity = 100;
+    }
+
+    return self;
+}
+
+static Context *ContextCreateShallowCopy(Context *self)
+{
+    Context *copy = calloc(1, sizeof(Context));
+    memcpy(copy, self, sizeof(Context));
+    copy->shallowCopy = true;
+    return copy;
+}
+
+static void ContextDestroy(Context *self)
+{
+    if (!self->shallowCopy) {
+        NAByteBufferDestroy(self->buffer);
+
+        NAMapTraverseValue(self->patternMap, ContextDestroy);
+        NAMapDestroy(self->patternMap);
+
+        NAArrayTraverse(self->patternIdentifiers, free);
+        NAArrayDestroy(self->patternIdentifiers);
+    }
+
+    free(self);
+}
+
+static int ContextGetLength(Context *self)
+{
+    int length = 0;
+    for (int i = 0; i < 16; ++i) {
+        length = MAX(length, self->tracks[i].tick);
+    }
+    return length;
 }
