@@ -12,12 +12,12 @@ typedef enum {
     ParseErrorKindFileNotFound,
     ParseErrorKindSyntaxError,
     ParseErrorKindInvalidValue,
-
     ParseErrorKindCircularFileInclude,
+    ParseErrorKindInvalidNoteRange,
+
     ParseErrorKindUnexpectedEnd,
     ParseErrorKindDuplicatePatternIdentifier,
     ParseErrorKindPatternMissing,
-    ParseErrorKindInvalidNoteRange,
     ParseErrorKindUnexpectedContextStart,
     ParseErrorKindUnexpectedContextEnd,
 } ParseErrorKind;
@@ -49,12 +49,12 @@ static inline const char *ParseErrorKind2String(ParseErrorKind kind)
     CASE(ParseErrorKindFileNotFound);
     CASE(ParseErrorKindSyntaxError);
     CASE(ParseErrorKindInvalidValue);
-
     CASE(ParseErrorKindCircularFileInclude);
+    CASE(ParseErrorKindInvalidNoteRange);
+
     CASE(ParseErrorKindUnexpectedEnd);
     CASE(ParseErrorKindDuplicatePatternIdentifier);
     CASE(ParseErrorKindPatternMissing);
-    CASE(ParseErrorKindInvalidNoteRange);
     CASE(ParseErrorKindUnexpectedContextStart);
     CASE(ParseErrorKindUnexpectedContextEnd);
     default:
