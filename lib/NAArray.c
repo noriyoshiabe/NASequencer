@@ -112,6 +112,11 @@ bool NAArrayRemoveAt(NAArray *self, int index)
     return true;
 }
 
+void NAArrayRemoveAll(NAArray *self)
+{
+    self->count = 0;
+}
+
 void NAArraySort(NAArray *self, int (*comparator)(const void *, const void *))
 {
     qsort(self->values, self->count, sizeof(intptr_t), comparator);

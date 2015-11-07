@@ -17,6 +17,7 @@ extern void *NAArrayGetValueAt(NAArray *self, int index);
 extern void NAArrayAppend(NAArray *self, void *value);
 extern bool NAArrayInsertAt(NAArray *self, int index, void *value);
 extern bool NAArrayRemoveAt(NAArray *self, int index);
+extern void NAArrayRemoveAll(NAArray *self);
 extern void NAArraySort(NAArray *self, int (*comparator)(const void *, const void *));
 extern int NAArrayFindFirstIndex(NAArray *self, const void *key, int (*comparator)(const void *, const void *));
 extern int NAArrayFindLastIndex(NAArray *self, const void *key, int (*comparator)(const void *, const void *));

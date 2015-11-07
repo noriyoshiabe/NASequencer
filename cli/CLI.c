@@ -1,5 +1,5 @@
 #include "CLI.h"
-#include "Parser.h"
+#include "ParserProxy.h"
 #include "Command.h"
 #include "Exporter.h"
 #include "NAUtil.h"
@@ -150,9 +150,12 @@ CLIError CLIExport(CLI *self, const char *output)
         return CLIErrorExportWithNoInputFile;
     }
 
-    ParseResult result = {};
-    if (!ParserParseFile(self->filepath, &result)) {
-        fprintf(stderr, "%s %s - %d:%d\n", ParseErrorKind2String(result.error.kind), result.error.location.filepath, result.error.location.line, result.error.location.column);
+    ParserProxy *parser = ParserProxyCreate();
+    Sequence *sequence = NULL;
+    ParseError error;
+
+    if (!ParserProxyParseFile(parser, self->filepath, &sequence, &error, NULL)) {
+        fprintf(stderr, "%s:%d %s - %d:%d\n", ParseErrorKind2String(error.kind), error.error, error.location.filepath, error.location.line, error.location.column);
         return CLIErrorExportWithParseFailed;
     }
 
@@ -168,17 +171,18 @@ CLIError CLIExport(CLI *self, const char *output)
         {"m4a", CLIExportAAC},
     };
 
-    CLIError error = CLIErrorExportWithUnsupportedFileType;
+    CLIError ret = CLIErrorExportWithUnsupportedFileType;
     const char *ext = NAUtilGetFileExtenssion(output);
 
     for (int i = 0; i < sizeof(table) / sizeof(table[0]); ++i) {
         if (0 == strcmp(table[i].ext, ext)) {
-            error = table[i].function(self, result.sequence, output);
+            ret = table[i].function(self, sequence, output);
         }
     }
 
-    SequenceRelease(result.sequence);
-    return error;
+    SequenceRelease(sequence);
+    ParserProxyDestroy(parser);
+    return ret;
 }
 
 static void CLIExporterProgressCallback(void *_self, int progress)
@@ -290,7 +294,7 @@ static void CLINAMidiOnParseError(void *receiver, ParseError *error)
         fprintf(stderr, "\n");
     }
 
-    fprintf(stderr, "parse error. %d:%s %s - %d:%d\n", error->kind, ParseErrorKind2String(error->kind), error->location.filepath, error->location.line, error->location.column);
+    fprintf(stderr, "parse error. %s:%d %s - %d:%d\n", ParseErrorKind2String(error->kind), error->error, error->location.filepath, error->location.line, error->location.column);
 
     if (self->prompted) {
         fprintf(stderr, PROMPT);
