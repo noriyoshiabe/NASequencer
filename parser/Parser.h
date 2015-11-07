@@ -32,8 +32,8 @@ typedef struct _ParseError {
 } ParseError;
 
 typedef struct _Parser {
-    bool (*parseFile)(void *parser, const char *filepath);
-    void (*destroy)(void *parser);
+    bool (*parseFile)(void *self, const char *filepath);
+    void (*destroy)(void *self);
 } Parser;
 
 typedef struct _ParserCallbacks {

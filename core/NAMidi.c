@@ -97,7 +97,7 @@ static void NAMidiStopFileWatch(NAMidi *self)
 
 static void NAMidiStartFileWatch(NAMidi *self)
 {
-    if (!self->filepaths) {
+    if (0 == NAArrayCount(self->filepaths)) {
         return;
     }
 
