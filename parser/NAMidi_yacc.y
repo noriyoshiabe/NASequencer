@@ -162,14 +162,25 @@ static void postProcess(YYLTYPE *yylloc, yyscan_t scanner, NAMidiStatementType t
     switch (type) {
     case NAMidiStatementTypeTitle:
     case NAMidiStatementTypeMarker:
-    case NAMidiStatementTypePattern:
     case NAMidiStatementTypePatternDefine:
+    case NAMidiStatementTypeContext:
     case NAMidiStatementTypeSynth:
     case NAMidiStatementTypeKey:
     case NAMidiStatementTypeNote:
     case NAMidiStatementTypeInclude:
         va_start(argList, type);
         free(va_arg(argList, char *));
+        va_end(argList);
+        break;
+    case NAMidiStatementTypePattern:
+        va_start(argList, type);
+        free(va_arg(argList, char *));
+        {
+            char *p = va_arg(argList, char *);
+            if (p) {
+                free(p);
+            }
+        }
         va_end(argList);
         break;
     default:
