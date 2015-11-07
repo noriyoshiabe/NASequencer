@@ -1,7 +1,6 @@
 #pragma once
 
-typedef struct _SequenceBuilder SequenceBuilder;
-
-extern SequenceBuilder *SequenceBuilderCreate();
-extern void *SequenceBuilderBuild(SequenceBuilder *self);
-extern void SequenceBuilderDestroy(SequenceBuilder *self);
+typedef struct _SequenceBuilder {
+    void (*destroy)(void *self);
+    void *(*build)(void *self);
+} SequenceBuilder;

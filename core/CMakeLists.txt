@@ -20,6 +20,8 @@ set(SOURCES
   Mixer.c
   Player.c
   MidiSourceManager.c
+  ParserProxy.c
+  NAMidiSequenceBuilder.c
 )
 
 if (APPLE)

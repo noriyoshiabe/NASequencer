@@ -1,4 +1,6 @@
 #include "ParserProxy.h"
+#include "NAMidiParser.h"
+#include "NAMidiSequenceBuilder.h"
 #include "NAUtil.h"
 
 #include <stdlib.h>
@@ -9,12 +11,15 @@ struct _ParserProxy {
     NAArray *filepaths;
 };
 
+static ParserCallbacks ParserProxyParserCallbacks;
+
 static ParserFactory FindParserFactory(const char *filepath)
 {
     const struct {
         const char *extenstion;
         ParserFactory factory;
     } parserTable[] = {
+        {"namidi", NAMidiParserCreate},
     };
 
     for (int i = 0; i < sizeof(parserTable) / sizeof(parserTable[0]); ++i) {
@@ -49,20 +54,40 @@ bool ParserProxyParseFile(ParserProxy *self, const char *filepath, Sequence **se
     self->error = error;
     self->filepaths = filepaths;
 
-    SequenceBuilder *builder = SequenceBuilderCreate();
-    // TODO callback;
-    Parser *parser = factory(builder, NULL, self);
+    SequenceBuilder *builder = NAMidiSequenceBuilderCreate();
+    Parser *parser = factory(builder, &ParserProxyParserCallbacks, self);
     char *fullpath = NAUtilGetRealPath(filepath);
 
     bool success = parser->parseFile(parser, fullpath);
 
     if (success) {
-        *sequence = SequenceBuilderBuild(builder);
+        *sequence = builder->build(builder);
     }
 
-    SequenceBuilderDestroy(builder);
+    builder->destroy(builder);
     parser->destroy(parser);
     free(fullpath);
 
     return success;
 }
+
+static void ParserProxyParserOnReadFile(void *receiver, const char *filepath)
+{
+    ParserProxy *self = receiver;
+    if (self->filepaths) {
+        NAArrayAppend(self->filepaths, strdup(filepath));
+    }
+}
+
+static void ParserProxyParserOnParseError(void *receiver, ParseError *error)
+{
+    ParserProxy *self = receiver;
+    if (self->error) {
+        memcpy(self->error, error, sizeof(ParseError));
+    }
+}
+
+static ParserCallbacks ParserProxyParserCallbacks = {
+    ParserProxyParserOnReadFile,
+    ParserProxyParserOnParseError,
+};

@@ -38,7 +38,6 @@ typedef struct _Parser {
 
 typedef struct _ParserCallbacks {
     void (*onReadFile)(void *receiver, const char *filepath);
-    void (*onParseFinish)(void *receiver, void *sequence);
     void (*onParseError)(void *receiver, ParseError *error);
 } ParserCallbacks;
 
