@@ -10,6 +10,7 @@
 extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, Expression **expression, const char *message);
 
 #define PERSER() ((NAMidiParser *)NAMidi_get_extra(scanner))
+#define LOC(yylloc) (&(ParseLocation){filepath, yylloc.first_line, yylloc.first_column})
 
 %}
 
@@ -94,7 +95,7 @@ statement_list
                                                   $$ = $1;
                                               }
                                               else {
-                                                  $$ = NAMidiExprStatementList(PERSER(), filepath, &@$);
+                                                  $$ = NAMidiExprStatementList(PERSER(), LOC(@$));
                                                   ExpressionAddChild($$, $1);
                                               }
                                           }
@@ -112,26 +113,26 @@ statement_list
     ;
 
 statement
-    : TITLE STRING                        { $$ = NAMidiExprTitle(PERSER(), filepath, &@$, $2); }
-    | RESOLUTION INTEGER                  { $$ = NAMidiExprResolution(PERSER(), filepath, &@$, $2); }
-    | TEMPO FLOAT                         { $$ = NAMidiExprTempo(PERSER(), filepath, &@$, $2); }
-    | TEMPO INTEGER                       { $$ = NAMidiExprTempo(PERSER(), filepath, &@$, $2); }
-    | TIME INTEGER DIVISION INTEGER       { $$ = NAMidiExprTimeSign(PERSER(), filepath, &@$, $2, $4); }
-    | MARKER STRING                       { $$ = NAMidiExprMarker(PERSER(), filepath, &@$, $2); }
-    | CHANNEL INTEGER                     { $$ = NAMidiExprChannel(PERSER(), filepath, &@$, $2); }
-    | VOICE INTEGER INTEGER INTEGER       { $$ = NAMidiExprVoice(PERSER(), filepath, &@$, $2, $3, $4); }
-    | SYNTH STRING                        { $$ = NAMidiExprSynth(PERSER(), filepath, &@$, $2); }
-    | VOLUME INTEGER                      { $$ = NAMidiExprVolume(PERSER(), filepath, &@$, $2); }
-    | PAN INTEGER                         { $$ = NAMidiExprPan(PERSER(), filepath, &@$, $2); }
-    | PAN PLUS INTEGER                    { $$ = NAMidiExprPan(PERSER(), filepath, &@$, $3); }
-    | PAN MINUS INTEGER                   { $$ = NAMidiExprPan(PERSER(), filepath, &@$, $3); }
-    | CHORUS INTEGER                      { $$ = NAMidiExprChorus(PERSER(), filepath, &@$, $2); }
-    | REVERB INTEGER                      { $$ = NAMidiExprReverb(PERSER(), filepath, &@$, $2); }
-    | TRANSPOSE INTEGER                   { $$ = NAMidiExprTranspose(PERSER(), filepath, &@$, $2); }
-    | TRANSPOSE PLUS INTEGER              { $$ = NAMidiExprTranspose(PERSER(), filepath, &@$, $3); }
-    | TRANSPOSE MINUS INTEGER             { $$ = NAMidiExprTranspose(PERSER(), filepath, &@$, $3); }
-    | KEY KEY_SIGN                        { $$ = NAMidiExprKeySign(PERSER(), filepath, &@$, $2); }
-    | MINUS INTEGER                       { $$ = NAMidiExprRest(PERSER(), filepath, &@$, $2); }
+    : TITLE STRING                        { $$ = NAMidiExprTitle(PERSER(), LOC(@$), $2); }
+    | RESOLUTION INTEGER                  { $$ = NAMidiExprResolution(PERSER(), LOC(@$), $2); }
+    | TEMPO FLOAT                         { $$ = NAMidiExprTempo(PERSER(), LOC(@$), $2); }
+    | TEMPO INTEGER                       { $$ = NAMidiExprTempo(PERSER(), LOC(@$), $2); }
+    | TIME INTEGER DIVISION INTEGER       { $$ = NAMidiExprTimeSign(PERSER(), LOC(@$), $2, $4); }
+    | MARKER STRING                       { $$ = NAMidiExprMarker(PERSER(), LOC(@$), $2); }
+    | CHANNEL INTEGER                     { $$ = NAMidiExprChannel(PERSER(), LOC(@$), $2); }
+    | VOICE INTEGER INTEGER INTEGER       { $$ = NAMidiExprVoice(PERSER(), LOC(@$), $2, $3, $4); }
+    | SYNTH STRING                        { $$ = NAMidiExprSynth(PERSER(), LOC(@$), $2); }
+    | VOLUME INTEGER                      { $$ = NAMidiExprVolume(PERSER(), LOC(@$), $2); }
+    | PAN INTEGER                         { $$ = NAMidiExprPan(PERSER(), LOC(@$), $2); }
+    | PAN PLUS INTEGER                    { $$ = NAMidiExprPan(PERSER(), LOC(@$), $3); }
+    | PAN MINUS INTEGER                   { $$ = NAMidiExprPan(PERSER(), LOC(@$), $3); }
+    | CHORUS INTEGER                      { $$ = NAMidiExprChorus(PERSER(), LOC(@$), $2); }
+    | REVERB INTEGER                      { $$ = NAMidiExprReverb(PERSER(), LOC(@$), $2); }
+    | TRANSPOSE INTEGER                   { $$ = NAMidiExprTranspose(PERSER(), LOC(@$), $2); }
+    | TRANSPOSE PLUS INTEGER              { $$ = NAMidiExprTranspose(PERSER(), LOC(@$), $3); }
+    | TRANSPOSE MINUS INTEGER             { $$ = NAMidiExprTranspose(PERSER(), LOC(@$), $3); }
+    | KEY KEY_SIGN                        { $$ = NAMidiExprKeySign(PERSER(), LOC(@$), $2); }
+    | MINUS INTEGER                       { $$ = NAMidiExprRest(PERSER(), LOC(@$), $2); }
 
     | note
     | pattern
@@ -139,44 +140,44 @@ statement
     | context
 
     | INCLUDE STRING                      {
-                                              if (!NAMidiParserReadIncludeFile(PERSER(), filepath, @$.first_line, @$.first_column, $2, &$$)) {
+                                              if (!NAMidiParserReadIncludeFile(PERSER(), LOC(@$), $2, &$$)) {
                                                   YYABORT;
                                               }
                                           }
     ;
 
 note
-    : NOTE                                { $$ = NAMidiExprNote(PERSER(), filepath, &@$, $1, -1, -1, -1); }
-    | NOTE MINUS                          { $$ = NAMidiExprNote(PERSER(), filepath, &@$, $1, -1, -1, -1); }
-    | NOTE MINUS   MINUS                  { $$ = NAMidiExprNote(PERSER(), filepath, &@$, $1, -1, -1, -1); }
-    | NOTE MINUS   MINUS   MINUS          { $$ = NAMidiExprNote(PERSER(), filepath, &@$, $1, -1, -1, -1); }
-    | NOTE MINUS   MINUS   INTEGER        { $$ = NAMidiExprNote(PERSER(), filepath, &@$, $1, -1, -1, $4); }
-    | NOTE MINUS   INTEGER                { $$ = NAMidiExprNote(PERSER(), filepath, &@$, $1, -1, $3, -1); }
-    | NOTE MINUS   INTEGER MINUS          { $$ = NAMidiExprNote(PERSER(), filepath, &@$, $1, -1, $3, -1); }
-    | NOTE MINUS   INTEGER INTEGER        { $$ = NAMidiExprNote(PERSER(), filepath, &@$, $1, -1, $3, $4); }
-    | NOTE INTEGER                        { $$ = NAMidiExprNote(PERSER(), filepath, &@$, $1, $2, -1, -1); }
-    | NOTE INTEGER INTEGER                { $$ = NAMidiExprNote(PERSER(), filepath, &@$, $1, $2, $3, -1); }
-    | NOTE INTEGER INTEGER INTEGER        { $$ = NAMidiExprNote(PERSER(), filepath, &@$, $1, $2, $3, $4); }
-    | NOTE INTEGER INTEGER MINUS          { $$ = NAMidiExprNote(PERSER(), filepath, &@$, $1, $2, $3, -1); }
-    | NOTE INTEGER MINUS                  { $$ = NAMidiExprNote(PERSER(), filepath, &@$, $1, $2, -1, -1); }
-    | NOTE INTEGER MINUS   INTEGER        { $$ = NAMidiExprNote(PERSER(), filepath, &@$, $1, $2, -1, $4); }
-    | NOTE INTEGER MINUS   MINUS          { $$ = NAMidiExprNote(PERSER(), filepath, &@$, $1, $2, -1, -1); }
+    : NOTE                                { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, -1, -1, -1); }
+    | NOTE MINUS                          { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, -1, -1, -1); }
+    | NOTE MINUS   MINUS                  { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, -1, -1, -1); }
+    | NOTE MINUS   MINUS   MINUS          { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, -1, -1, -1); }
+    | NOTE MINUS   MINUS   INTEGER        { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, -1, -1, $4); }
+    | NOTE MINUS   INTEGER                { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, -1, $3, -1); }
+    | NOTE MINUS   INTEGER MINUS          { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, -1, $3, -1); }
+    | NOTE MINUS   INTEGER INTEGER        { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, -1, $3, $4); }
+    | NOTE INTEGER                        { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, $2, -1, -1); }
+    | NOTE INTEGER INTEGER                { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, $2, $3, -1); }
+    | NOTE INTEGER INTEGER INTEGER        { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, $2, $3, $4); }
+    | NOTE INTEGER INTEGER MINUS          { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, $2, $3, -1); }
+    | NOTE INTEGER MINUS                  { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, $2, -1, -1); }
+    | NOTE INTEGER MINUS   INTEGER        { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, $2, -1, $4); }
+    | NOTE INTEGER MINUS   MINUS          { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, $2, -1, -1); }
     ;
 
 pattern
     : DEFINE IDENTIFIER statement_list END
-                                          { $$ = NAMidiExprPattern(PERSER(), filepath, &@$, $2, $3); }
+                                          { $$ = NAMidiExprPattern(PERSER(), LOC(@$), $2, $3); }
     ;
 
 pattern_expand
-    : IDENTIFIER                          { $$ = NAMidiExprPatternExpand(PERSER(), filepath, &@$, $1, NULL); }
+    : IDENTIFIER                          { $$ = NAMidiExprPatternExpand(PERSER(), LOC(@$), $1, NULL); }
     | IDENTIFIER LPAREN context_id_list RPAREN
-                                          { $$ = NAMidiExprPatternExpand(PERSER(), filepath, &@$, $1, $3); }
+                                          { $$ = NAMidiExprPatternExpand(PERSER(), LOC(@$), $1, $3); }
     ;
 
 context
     : context_id_list LCURLY statement_list RCURLY
-                                          { $$ = NAMidiExprContext(PERSER(), filepath, &@$, $1, $3); }
+                                          { $$ = NAMidiExprContext(PERSER(), LOC(@$), $1, $3); }
     ;
 
 context_id_list

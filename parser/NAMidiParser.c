@@ -22,7 +22,7 @@ struct _NAMidiParser {
     NASet *readingFileSet;
 };
 
-static bool NAMidiParserParseFileInternal(NAMidiParser *self, const char *filepath, int line, int column, Expression **expression);
+static bool NAMidiParserParseFileInternal(NAMidiParser *self, const char *filepath, Expression **expression);
 static void NAMidiParserBuildPattenMap1(NAMidiParser *self, Expression *expression, NAMap *patternMap);
 static void NAMidiParserBuildPattenMap2(NAMidiParser *self, Expression *expression, NAMap *patternMap);
 
@@ -32,7 +32,7 @@ static bool NAMidiParserParseFile(void *_self, const char *filepath)
 
     Expression *expression;
 
-    if (!NAMidiParserParseFileInternal(self, filepath, 0, 0, &expression)) {
+    if (!NAMidiParserParseFileInternal(self, filepath, &expression)) {
         return false;
     }
 
@@ -50,35 +50,35 @@ static bool NAMidiParserParseFile(void *_self, const char *filepath)
     return true;
 }
 
-bool NAMidiParserReadIncludeFile(NAMidiParser *self, const char *filepath, int line, int column, char *includeFile, Expression **expression)
+bool NAMidiParserReadIncludeFile(NAMidiParser *self, ParseLocation *location, char *includeFile, Expression **expression)
 {
     if (0 != strcmp("namidi", NAUtilGetFileExtenssion(includeFile))) {
-        NAMidiParserError(self, filepath, line, column, ParseErrorKindGeneral, GeneralParseErrorUnsupportedFileType);
+        NAMidiParserError(self, location, ParseErrorKindGeneral, GeneralParseErrorUnsupportedFileType);
         free(includeFile);
         return false;
     }
 
-    char *directory = dirname((char *)filepath);
+    char *directory = dirname((char *)location->filepath);
     char *fullPath = NAUtilBuildPathWithDirectory(directory, includeFile);
 
     free(includeFile);
 
     if (NASetContains(self->readingFileSet, fullPath)) {
-        NAMidiParserError(self, filepath, line, column, ParseErrorKindGeneral, GeneralParseErrorCircularFileInclude);
+        NAMidiParserError(self, location, ParseErrorKindGeneral, GeneralParseErrorCircularFileInclude);
         free(fullPath);
         return false;
     }
 
-    bool success = NAMidiParserParseFileInternal(self, fullPath, 0, 0, expression);
+    bool success = NAMidiParserParseFileInternal(self, fullPath, expression);
     free(fullPath);
     return success;
 }
 
-static bool NAMidiParserParseFileInternal(NAMidiParser *self, const char *filepath, int line, int column, Expression **expression)
+static bool NAMidiParserParseFileInternal(NAMidiParser *self, const char *filepath, Expression **expression)
 {
     FILE *fp = fopen(filepath, "r");
     if (!fp) {
-        NAMidiParserError(self, filepath, line, column, ParseErrorKindGeneral, GeneralParseErrorFileNotFound);
+        NAMidiParserError(self, &(ParseLocation){filepath, 0, 0}, ParseErrorKindGeneral, GeneralParseErrorFileNotFound);
         return false;
     }
 
@@ -155,22 +155,13 @@ static void NAMidiParserBuildPattenMap2(NAMidiParser *self, Expression *expressi
 
 int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, Expression **expression, const char *message)
 {
-    NAMidiParserError(NAMidi_get_extra(scanner), filepath, yylloc->first_line, yylloc->first_column, ParseErrorKindGeneral, GeneralParseErrorSyntaxError);
+    NAMidiParserError(NAMidi_get_extra(scanner), &(ParseLocation){filepath, yylloc->first_line, yylloc->first_column}, ParseErrorKindGeneral, GeneralParseErrorSyntaxError);
     return 0;
 }
 
-void NAMidiParserError(NAMidiParser *self, const char *filepath, int line, int column, ParseErrorKind kind, int error)
+void NAMidiParserError(NAMidiParser *self, ParseLocation *location, ParseErrorKind kind, int error)
 {
-    ParseError err = {
-        .location = {
-            .filepath = filepath,
-            .line = line,
-            .column = column,
-        },
-        .kind = kind,
-        .error = error,
-    };
-
+    ParseError err = { .location = *location, .kind = kind, .error = error };
     self->callbacks->onParseError(self->receiver, &err);
 }
 

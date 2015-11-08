@@ -4,20 +4,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct _Location {
-    int line;
-    int column;
-} Location;
-
 static ExpressionVtbl _defaultVtbl;
 
-void *ExpressionCreate(const char *filepath, void *yylloc, int size, const char *identifier)
+void *ExpressionCreate(ParseLocation *location, int size, const char *identifier)
 {
     Expression *self = calloc(1, size);
     self->vtbl = _defaultVtbl;
-    self->location.filepath = filepath;
-    self->location.line = ((Location *)yylloc)->line;
-    self->location.column = ((Location *)yylloc)->column;
+    self->location = *location;
     self->identifier = identifier;
     return self;
 }
