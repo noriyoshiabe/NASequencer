@@ -60,7 +60,7 @@ static void SequenceBuilderAppendKey(void *self, int id, int tick, int sf, int m
 {
     Sequence *sequence = ((SequenceBuilderImpl *)self)->sequence;
 
-    KeyEvent *event = MidiEventAlloc(MidiEventTypeTime, id, tick, sizeof(KeyEvent) - sizeof(MidiEvent));
+    KeyEvent *event = MidiEventAlloc(MidiEventTypeKey, id, tick, sizeof(KeyEvent) - sizeof(MidiEvent));
     event->sf = sf;
     event->mi = mi;
     NAArrayAppend(sequence->events, event);

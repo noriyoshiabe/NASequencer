@@ -16,6 +16,7 @@ struct _NAMidiParser {
     Parser interface;
     ParserCallbacks *callbacks;
     void *receiver;
+    SequenceBuilder *builder;
 
     NASet *fileSet;
     NASet *readingFileSet;
@@ -173,6 +174,11 @@ void NAMidiParserError(NAMidiParser *self, const char *filepath, int line, int c
     self->callbacks->onParseError(self->receiver, &err);
 }
 
+SequenceBuilder *NAMidiParserGetBuilder(NAMidiParser *self)
+{
+    return self->builder;
+}
+
 static void NAMidiParserDestroy(void *_self)
 {
     NAMidiParser *self = _self;
@@ -189,6 +195,7 @@ Parser *NAMidiParserCreate(SequenceBuilder *builder, ParserCallbacks *callbacks,
     self->interface.destroy = NAMidiParserDestroy;
     self->callbacks = callbacks;
     self->receiver = receiver;
+    self->builder = builder;
     self->fileSet = NASetCreate(NAHashCString, NADescriptionCString);
     self->readingFileSet = NASetCreate(NAHashCString, NADescriptionCString);
     return (Parser *)self;

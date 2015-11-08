@@ -8,7 +8,7 @@
 
 extern void *NAMidiExprStatementList(NAMidiParser *parser, const char *filepath, void *yylloc);
 extern void *NAMidiExprTitle(NAMidiParser *parser, const char *filepath, void *yylloc, char *title);
-extern void *NAMidiExprResolution(NAMidiParser *parser, const char *filepath, void *yylloc, int reslution);
+extern void *NAMidiExprResolution(NAMidiParser *parser, const char *filepath, void *yylloc, int resolution);
 extern void *NAMidiExprTempo(NAMidiParser *parser, const char *filepath, void *yylloc, float tempo);
 extern void *NAMidiExprTimeSign(NAMidiParser *parser, const char *filepath, void *yylloc, int numerator, int denominator);
 extern void *NAMidiExprMarker(NAMidiParser *parser, const char *filepath, void *yylloc, char *marker);

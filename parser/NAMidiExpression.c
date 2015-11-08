@@ -73,23 +73,47 @@ static void TitleExprDestroy(void *_self)
     free(self);
 }
 
+static bool TitleExprParse(void *_self, void *visitor, void *_context)
+{
+    TitleExpr *self = _self;
+    SequenceBuilder *builder = NAMidiParserGetBuilder(visitor);
+    builder->setTitle(builder, self->title);
+    return true;
+}
+
 void *NAMidiExprTitle(NAMidiParser *parser, const char *filepath, void *yylloc, char *title)
 { __Trace__
     TitleExpr *self = ExpressionCreate(filepath, yylloc, sizeof(TitleExpr), "title");
     self->expr.vtbl.destroy = TitleExprDestroy;
+    self->expr.vtbl.parse = TitleExprParse;
     self->title = title;
     return self;
 }
 
 typedef struct _ResolutionExpr {
     Expression expr;
-    int reslution;
+    int resolution;
 } ResolutionExpr;
 
-void *NAMidiExprResolution(NAMidiParser *parser, const char *filepath, void *yylloc, int reslution)
+static bool ResolutionExprParse(void *_self, void *visitor, void *_context)
+{
+    ResolutionExpr *self = _self;
+    SequenceBuilder *builder = NAMidiParserGetBuilder(visitor);
+    builder->setResolution(builder, self->resolution);
+    return true;
+}
+
+void *NAMidiExprResolution(NAMidiParser *parser, const char *filepath, void *yylloc, int resolution)
 { __Trace__
+    if (!isValidRange(resolution, 1, 9600)) {
+        ParseLocation *location = yylloc;
+        NAMidiParserError(parser, filepath, location->line, location->column, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
+        return NULL;
+    }
+
     ResolutionExpr *self = ExpressionCreate(filepath, yylloc, sizeof(ResolutionExpr), "reslution");
-    self->reslution = reslution;
+    self->expr.vtbl.parse = ResolutionExprParse;
+    self->resolution = resolution;
     return self;
 }
 
@@ -98,9 +122,19 @@ typedef struct _TempoExpr {
     float tempo;
 } TempoExpr;
 
+static bool TempoExprParse(void *_self, void *visitor, void *_context)
+{
+    TempoExpr *self = _self;
+    NAMidiParserContext *context = _context;
+    SequenceBuilder *builder = NAMidiParserGetBuilder(visitor);
+    builder->appendTempo(builder, ++context->id, context->channels[context->channel].tick, self->tempo);
+    return true;
+}
+
 void *NAMidiExprTempo(NAMidiParser *parser, const char *filepath, void *yylloc, float tempo)
 { __Trace__
     TempoExpr *self = ExpressionCreate(filepath, yylloc, sizeof(TempoExpr), "tempo");
+    self->expr.vtbl.parse = TempoExprParse;
     self->tempo = tempo;
     return self;
 }
@@ -111,9 +145,19 @@ typedef struct _TimeSignExpr {
     int denominator;
 } TimeSignExpr;
 
+static bool TimeSignExprParse(void *_self, void *visitor, void *_context)
+{
+    TimeSignExpr *self = _self;
+    NAMidiParserContext *context = _context;
+    SequenceBuilder *builder = NAMidiParserGetBuilder(visitor);
+    builder->appendTimeSign(builder, ++context->id, context->channels[context->channel].tick, self->numerator, self->denominator);
+    return true;
+}
+
 void *NAMidiExprTimeSign(NAMidiParser *parser, const char *filepath, void *yylloc, int numerator, int denominator)
 { __Trace__
     TimeSignExpr *self = ExpressionCreate(filepath, yylloc, sizeof(TimeSignExpr), "time sign");
+    self->expr.vtbl.parse = TimeSignExprParse;
     self->numerator = numerator;
     self->denominator = denominator;
     return self;
@@ -131,10 +175,20 @@ static void MarkerExprDestroy(void *_self)
     free(self);
 }
 
+static bool MarkerExprParse(void *_self, void *visitor, void *_context)
+{
+    MarkerExpr *self = _self;
+    NAMidiParserContext *context = _context;
+    SequenceBuilder *builder = NAMidiParserGetBuilder(visitor);
+    builder->appendMarker(builder, ++context->id, context->channels[context->channel].tick, self->text);
+    return true;
+}
+
 void *NAMidiExprMarker(NAMidiParser *parser, const char *filepath, void *yylloc, char *marker)
 { __Trace__
     MarkerExpr *self = ExpressionCreate(filepath, yylloc, sizeof(MarkerExpr), "marker");
     self->expr.vtbl.destroy = MarkerExprDestroy;
+    self->expr.vtbl.parse = MarkerExprParse;
     self->text = marker;
     return self;
 }
@@ -144,9 +198,18 @@ typedef struct _ChannelExpr {
     int channel;
 } ChannelExpr;
 
+static bool ChannelExprParse(void *_self, void *visitor, void *_context)
+{
+    ChannelExpr *self = _self;
+    NAMidiParserContext *context = _context;
+    context->channel = self->channel;
+    return true;
+}
+
 void *NAMidiExprChannel(NAMidiParser *parser, const char *filepath, void *yylloc, int channel)
 { __Trace__
     ChannelExpr *self = ExpressionCreate(filepath, yylloc, sizeof(ChannelExpr), "channel");
+    self->expr.vtbl.parse = ChannelExprParse;
     self->channel = channel;
     return self;
 }
@@ -158,9 +221,19 @@ typedef struct _VoiceExpr {
     int programNo;
 } VoiceExpr;
 
+static bool VoiceExprParse(void *_self, void *visitor, void *_context)
+{
+    VoiceExpr *self = _self;
+    NAMidiParserContext *context = _context;
+    SequenceBuilder *builder = NAMidiParserGetBuilder(visitor);
+    builder->appendVoice(builder, ++context->id, context->channels[context->channel].tick, context->channel, self->msb, self->lsb, self->programNo);
+    return true;
+}
+
 void *NAMidiExprVoice(NAMidiParser *parser, const char *filepath, void *yylloc, int msb, int lsb, int programNo)
 { __Trace__
     VoiceExpr *self = ExpressionCreate(filepath, yylloc, sizeof(VoiceExpr), "voice");
+    self->expr.vtbl.parse = VoiceExprParse;
     self->msb = msb;
     self->lsb = lsb;
     self->programNo = programNo;
