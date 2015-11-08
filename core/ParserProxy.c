@@ -7,6 +7,7 @@
 #include <string.h>
 
 struct _ParserProxy {
+    Parser *parser;
     ParseError *error;
     NAArray *filepaths;
 };
@@ -31,13 +32,16 @@ static ParserFactory FindParserFactory(const char *filepath)
     return NULL;
 }
 
-extern ParserProxy *ParserProxyCreate()
+ParserProxy *ParserProxyCreate()
 {
     return calloc(0, sizeof(ParserProxy));
 }
 
 void ParserProxyDestroy(ParserProxy *self)
 {
+    if (self->parser) {
+        self->parser->destroy(self->parser);
+    }
     free(self);
 }
 
@@ -55,17 +59,16 @@ bool ParserProxyParseFile(ParserProxy *self, const char *filepath, Sequence **se
     self->filepaths = filepaths;
 
     SequenceBuilder *builder = SequenceBuilderCreate();
-    Parser *parser = factory(builder, &ParserProxyParserCallbacks, self);
+    self->parser = factory(builder, &ParserProxyParserCallbacks, self);
     char *fullpath = NAUtilGetRealPath(filepath);
 
-    bool success = parser->parseFile(parser, fullpath);
+    bool success = self->parser->parseFile(self->parser, fullpath);
 
     if (success) {
         *sequence = builder->build(builder);
     }
 
     builder->destroy(builder);
-    parser->destroy(parser);
     free(fullpath);
 
     return success;

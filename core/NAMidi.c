@@ -26,6 +26,7 @@ struct _NAMidi {
 
 static FSWatcherCallbacks NAMidiFSWatcherCallbacks;
 
+static void NAMidiSetFilePaths(NAMidi *self, NAArray *filepaths);
 static void NAMidiStopFileWatch(NAMidi *self);
 
 NAMidi *NAMidiCreate()
@@ -34,7 +35,6 @@ NAMidi *NAMidiCreate()
     self->observers = NAArrayCreate(4, NULL);
     self->mixer = MixerCreate(AudioOutSharedInstance());
     self->player = PlayerCreate(self->mixer);
-    self->filepaths = NAArrayCreate(4, NADescriptionCString);
     return self;
 }
 
@@ -43,9 +43,7 @@ void NAMidiDestroy(NAMidi *self)
     PlayerDestroy(self->player);
     MixerDestroy(self->mixer);
 
-    NAArrayTraverse(self->filepaths, free);
-    NAArrayDestroy(self->filepaths);
-
+    NAMidiSetFilePaths(self, NULL);
     NAMidiStopFileWatch(self);
     NAArrayTraverse(self->observers, free);
     NAArrayDestroy(self->observers);
@@ -87,6 +85,16 @@ static void NAMidiNotifyParseError(NAMidi *self, Observer *observer, va_list arg
     observer->callbacks->onParseError(observer->receiver, va_arg(argList, ParseError *));
 }
 
+static void NAMidiSetFilePaths(NAMidi *self, NAArray *filepaths)
+{
+    if (self->filepaths) {
+        NAArrayTraverse(self->filepaths, free);
+        NAArrayDestroy(self->filepaths);
+    }
+
+    self->filepaths = filepaths;
+}
+
 static void NAMidiStopFileWatch(NAMidi *self)
 {
     if (self->watcher) {
@@ -97,7 +105,7 @@ static void NAMidiStopFileWatch(NAMidi *self)
 
 static void NAMidiStartFileWatch(NAMidi *self)
 {
-    if (0 == NAArrayCount(self->filepaths)) {
+    if (!self->filepaths) {
         return;
     }
 
@@ -122,10 +130,9 @@ void NAMidiParse(NAMidi *self, const char *filepath)
     Sequence *sequence = NULL;
     ParseError error;
 
-    NAArrayTraverse(self->filepaths, free);
-    NAArrayRemoveAll(self->filepaths);
+    NAArray *filepaths = NAArrayCreate(4, NADescriptionCString);
 
-    if (!ParserProxyParseFile(parser, filepath, &sequence, &error, self->filepaths)) {
+    if (!ParserProxyParseFile(parser, filepath, &sequence, &error, filepaths)) {
         NAArrayTraverseWithContext(self->observers, self, NAMidiNotifyParseError, &error);
     }
     else {
@@ -138,6 +145,8 @@ void NAMidiParse(NAMidi *self, const char *filepath)
 
         NAArrayTraverseWithContext(self->observers, self, NAMidiNotifyParseFinish, sequence);
     }
+
+    NAMidiSetFilePaths(self, filepaths);
 
     if (self->watchEnable) {
         NAMidiStartFileWatch(self);

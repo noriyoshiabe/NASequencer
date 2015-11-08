@@ -19,16 +19,11 @@ struct _NAMidiParser {
 
     NASet *fileSet;
     NASet *readingFileSet;
-
-    NAMidiParserContext *context;
 };
 
 static bool NAMidiParserParseFileInternal(NAMidiParser *self, const char *filepath, int line, int column, Expression **expression);
 static void NAMidiParserBuildPattenMap1(NAMidiParser *self, Expression *expression, NAMap *patternMap);
 static void NAMidiParserBuildPattenMap2(NAMidiParser *self, Expression *expression, NAMap *patternMap);
-
-static NAMidiParserContext *NAMidiParserContextCreate();
-static void NAMidiParserContextDestroy(NAMidiParserContext *self);
 
 static bool NAMidiParserParseFile(void *_self, const char *filepath)
 {
@@ -36,18 +31,22 @@ static bool NAMidiParserParseFile(void *_self, const char *filepath)
 
     Expression *expression;
 
-    bool success = NAMidiParserParseFileInternal(self, filepath, 0, 0, &expression);
-
-    if (success) {
-        NAMidiParserBuildPattenMap1(self, expression, NULL);
-        NAMidiParserBuildPattenMap2(self, expression, NULL);
-        ExpressionParse(expression, NULL);
-        ExpressionDump(expression, 0);
-        // TODO Build Sequence
+    if (!NAMidiParserParseFileInternal(self, filepath, 0, 0, &expression)) {
+        return false;
     }
 
-    return success;
-    
+    NAMidiParserBuildPattenMap1(self, expression, NULL);
+    NAMidiParserBuildPattenMap2(self, expression, NULL);
+
+    if (!ExpressionParse(expression, self, NULL)) {
+        ExpressionDestroy(expression);
+        return false;
+    }
+
+    ExpressionDump(expression, 0);
+    // TODO Build Sequence
+
+    return true;
 }
 
 bool NAMidiParserReadIncludeFile(NAMidiParser *self, const char *filepath, int line, int column, const char *includeFile, Expression **expression)
@@ -139,8 +138,6 @@ static void NAMidiParserBuildPattenMap2(NAMidiParser *self, Expression *expressi
         }
 
         patternMap = _patternMap;
-
-        NAMapDescription(patternMap, stdout);
     }
 
     if (expression->children) {
@@ -176,6 +173,7 @@ void NAMidiParserError(NAMidiParser *self, const char *filepath, int line, int c
 static void NAMidiParserDestroy(void *_self)
 {
     NAMidiParser *self = _self;
+    NASetTraverse(self->fileSet, free);
     NASetDestroy(self->fileSet);
     NASetDestroy(self->readingFileSet);
     free(self);
@@ -191,4 +189,48 @@ Parser *NAMidiParserCreate(SequenceBuilder *builder, ParserCallbacks *callbacks,
     self->fileSet = NASetCreate(NAHashCString, NADescriptionCString);
     self->readingFileSet = NASetCreate(NAHashCString, NADescriptionCString);
     return (Parser *)self;
+}
+
+NAMidiParserContext *NAMidiParserContextCreate()
+{
+    NAMidiParserContext *self = calloc(1, sizeof(NAMidiParserContext));
+
+    for (int i = 0; i < 16; ++i) {
+        self->channels[i].gatetime = 240;
+        self->channels[i].velocity = 100;
+        self->channels[i].octave = 2;
+    }
+
+    self->contextIdList = NASetCreate(NAHashCString, NADescriptionCString);
+    self->expandingPatternList = NASetCreate(NAHashCString, NADescriptionCString);
+
+    return self;
+}
+
+NAMidiParserContext *NAMidiParserContextCreateCopy(NAMidiParserContext *self)
+{
+    NAMidiParserContext *copy = NAMidiParserContextCreate();
+    NASet *contextIdList = copy->contextIdList;
+    memcpy(copy, self, sizeof(NAMidiParserContext));
+    copy->contextIdList = contextIdList;
+
+    uint8_t iteratorBuffer[NASetIteratorSize];
+    NAIterator *iterator = NASetGetIterator(self->contextIdList, iteratorBuffer);
+    while (iterator->hasNext(iterator)) {
+        NASetAdd(copy->contextIdList, iterator->next(iterator));
+    }
+
+    copy->copy = true;
+    return copy;
+}
+
+
+void NAMidiParserContextDestroy(NAMidiParserContext *self)
+{
+    if (!self->copy) {
+        NASetDestroy(self->expandingPatternList);
+    }
+
+    NASetDestroy(self->contextIdList);
+    free(self);
 }

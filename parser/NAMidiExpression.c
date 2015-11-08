@@ -1,5 +1,6 @@
 #include "NAMidiExpression.h"
 #include "NoteTable.h"
+#include "NAUtil.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -29,10 +30,33 @@ static void StatementListExprDestroy(void *_self)
     free(self);
 }
 
+static bool StatementListExprParse(void *_self, void *visitor, void *_context)
+{
+    StatementListExpr *self = _self;
+    NAMidiParserContext *context = _context ? NAMidiParserContextCreateCopy(_context) : NAMidiParserContextCreate();
+    context->patternMap = self->patternMap;
+
+    bool success = true;
+
+    int count = NAArrayCount(self->expr.children);
+    void **values = NAArrayGetValues(self->expr.children);
+    for (int i = 0; i < count; ++i) {
+        if (!ExpressionParse(values[i], visitor, context)) {
+            success = false;
+            goto ERROR;
+        }
+    }
+
+ERROR:
+    NAMidiParserContextDestroy(context);
+    return success;
+}
+
 void *NAMidiExprStatementList(NAMidiParser *parser, const char *filepath, void *yylloc)
 { __Trace__
     StatementListExpr *self = ExpressionCreate(filepath, yylloc, sizeof(StatementListExpr), STATEMENT_LIST_ID);
     self->expr.vtbl.destroy = StatementListExprDestroy;
+    self->expr.vtbl.parse = StatementListExprParse;
     self->patternMap = NAMapCreate(NAHashCString, NADescriptionCString, NULL);
     return self;
 }
@@ -342,15 +366,43 @@ static void PatternExprExpandDestroy(void *_self)
 {
     PatternExpandExpr *self = _self;
     free(self->identifier);
-    NAArrayTraverse(self->contextIdList, free);
-    NAArrayDestroy(self->contextIdList);
+
+    if (self->contextIdList) {
+        NAArrayTraverse(self->contextIdList, free);
+        NAArrayDestroy(self->contextIdList);
+    }
+
     free(self);
+}
+
+static bool PatternExpandExprParse(void *_self, void *visitor, void *_context)
+{
+    PatternExpandExpr *self = _self;
+    NAMidiParserContext *context = _context;
+    Expression *pattern = NAMapGet(context->patternMap, self->identifier);
+    if (!pattern) {
+        ExpressionLocation *location = &self->expr.location;
+        NAMidiParserError(visitor, location->filepath, location->line, location->column, ParseErrorKindNAMidi, NAMidiParseErrorPatternMissing);
+        return false;
+    }
+
+    if (self->contextIdList) {
+        int count = NAArrayCount(self->contextIdList);
+        void **values = NAArrayGetValues(self->contextIdList);
+        for (int i = 0; i < count; ++i) {
+            NASetAdd(context->contextIdList, values[i]);
+        }
+    }
+
+    Expression *statementList = NAArrayGetValueAt(pattern->children, 0);
+    return ExpressionParse(statementList, visitor, context);
 }
 
 void *NAMidiExprPatternExpand(NAMidiParser *parser, const char *filepath, void *yylloc, const char *identifier, NAArray *idList)
 { __Trace__
     PatternExpandExpr *self = ExpressionCreate(filepath, yylloc, sizeof(PatternExpandExpr), "pattern expand");
     self->expr.vtbl.destroy = PatternExprExpandDestroy;
+    self->expr.vtbl.parse = PatternExpandExprParse;
     self->identifier = strdup(identifier);
     self->contextIdList = idList;
     return self;

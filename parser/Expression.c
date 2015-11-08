@@ -57,9 +57,9 @@ void ExpressionDump(Expression *self, int indent)
     }
 }
 
-bool ExpressionParse(Expression *self, void *context)
+bool ExpressionParse(Expression *self, void *visitor, void *context)
 {
-    return self->vtbl.parse(self, context);
+    return self->vtbl.parse(self, visitor, context);
 }
 
 static void _ExpressionDump(void *_self, int indent)
@@ -74,7 +74,7 @@ static void _ExpressionDestroy(void *self)
     free(self);
 }
 
-static bool _ExpressionParse(void *_self, void *context)
+static bool _ExpressionParse(void *_self, void *visitor, void *context)
 {
     Expression *self = _self;
     printf("parsed [%s]\n", self->identifier);
