@@ -34,7 +34,7 @@ static ParserFactory FindParserFactory(const char *filepath)
 
 ParserProxy *ParserProxyCreate()
 {
-    return calloc(0, sizeof(ParserProxy));
+    return calloc(1, sizeof(ParserProxy));
 }
 
 void ParserProxyDestroy(ParserProxy *self)
