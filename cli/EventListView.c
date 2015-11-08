@@ -62,6 +62,11 @@ static int NoteNo2Octave(int noteNo)
 
 void EventListViewRender(EventListView *self)
 {
+    if (!self->sequence) {
+        printf("sequence not built.\n");
+        return;
+    }
+
     const struct {
         const char *label;
         int width;

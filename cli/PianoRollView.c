@@ -95,6 +95,11 @@ static void PianoRollViewRenderTrack(PianoRollView *self, RenderContext *context
 
 void PianoRollViewRender(PianoRollView *self)
 {
+    if (!self->sequence) {
+        printf("sequence not built.\n");
+        return;
+    }
+
     RenderContext context;
     for (int i = 0; i < 16; ++i) {
         context.indices[i] = 0;
