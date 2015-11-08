@@ -1,6 +1,5 @@
 #include "NAMidiExpression.h"
 #include "NoteTable.h"
-#include "NAMap.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -389,9 +388,29 @@ bool NAMidiExprIsPattern(Expression *self)
     return self->identifier == PATTERN_ID;
 }
 
-void NAMidiExprStatementListAddPattern(void *_self, void *_pattern)
+NAMap *NAMidiExprStatementListGetPatternMap(void *_self)
 {
     StatementListExpr *self = _self;
-    PatternExpr *pattern = _pattern;
-    NAMapPut(self->patternMap, pattern->identifier, pattern);
+    return self->patternMap;
+}
+
+char *NAMidiExprPatternGetIdentifier(void *_self)
+{
+    PatternExpr *self = _self;
+    return self->identifier;
+}
+
+Expression *NAMidiExprStatementListMarge(Expression *self, Expression *statementList)
+{
+    int count = NAArrayCount(statementList->children);
+    void **values = NAArrayGetValues(statementList->children);
+    for (int i = 0; i < count; ++i) {
+        Expression *child = values[i];
+        child->parent = self;
+        NAArrayAppend(self->children, child);
+    }
+
+    NAArrayRemoveAll(statementList->children);
+    ExpressionDestroy(statementList);
+    return self;
 }

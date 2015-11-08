@@ -102,10 +102,7 @@ statement_list
                                               if (!$2) YYABORT;
 
                                               if (NAMidiExprIsStatementList($2)) {
-                                                  NAArrayAppendAll($1->children, $2->children);
-                                                  NAArrayRemoveAll($2->children);
-                                                  ExpressionDestroy($2);
-                                                  $$ = $1;
+                                                  $$ = NAMidiExprStatementListMarge($1, $2);
                                               }
                                               else {
                                                   $$ = ExpressionAddChild($1, $2);

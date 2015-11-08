@@ -24,7 +24,8 @@ struct _NAMidiParser {
 };
 
 static bool NAMidiParserParseFileInternal(NAMidiParser *self, const char *filepath, int line, int column, Expression **expression);
-static void NAMidiParserBuildPattenMap(NAMidiParser *self, Expression *expression);
+static void NAMidiParserBuildPattenMap1(NAMidiParser *self, Expression *expression, NAMap *patternMap);
+static void NAMidiParserBuildPattenMap2(NAMidiParser *self, Expression *expression, NAMap *patternMap);
 
 static NAMidiParserContext *NAMidiParserContextCreate();
 static void NAMidiParserContextDestroy(NAMidiParserContext *self);
@@ -38,7 +39,8 @@ static bool NAMidiParserParseFile(void *_self, const char *filepath)
     bool success = NAMidiParserParseFileInternal(self, filepath, 0, 0, &expression);
 
     if (success) {
-        NAMidiParserBuildPattenMap(self, expression);
+        NAMidiParserBuildPattenMap1(self, expression, NULL);
+        NAMidiParserBuildPattenMap2(self, expression, NULL);
         ExpressionParse(expression, NULL);
         ExpressionDump(expression, 0);
         // TODO Build Sequence
@@ -102,19 +104,50 @@ static bool NAMidiParserParseFileInternal(NAMidiParser *self, const char *filepa
     return success;
 }
 
-static void NAMidiParserBuildPattenMap(NAMidiParser *self, Expression *expression)
+static void NAMidiParserBuildPattenMap1(NAMidiParser *self, Expression *expression, NAMap *patternMap)
 {
-    printf("---------- %s\n", expression->identifier);
+    if (NAMidiExprIsStatementList(expression)) {
+        patternMap = NAMidiExprStatementListGetPatternMap(expression);
+    }
 
     if (NAMidiExprIsPattern(expression)) {
-        NAMidiExprStatementListAddPattern(expression->parent, expression);
+        NAMapPut(patternMap, NAMidiExprPatternGetIdentifier(expression), expression);
     }
 
     if (expression->children) {
         int count = NAArrayCount(expression->children);
         void **values = NAArrayGetValues(expression->children);
         for (int i = 0; i < count; ++i) {
-            NAMidiParserBuildPattenMap(self, values[i]);
+            NAMidiParserBuildPattenMap1(self, values[i], patternMap);
+        }
+    }
+}
+
+static void NAMidiParserBuildPattenMap2(NAMidiParser *self, Expression *expression, NAMap *patternMap)
+{
+    if (NAMidiExprIsStatementList(expression)) {
+        NAMap *_patternMap = NAMidiExprStatementListGetPatternMap(expression);
+
+        if (patternMap) {
+            uint8_t iteratorBuffer[NAMapIteratorSize];
+            NAIterator *iterator = NAMapGetIterator(patternMap, iteratorBuffer);
+
+            while (iterator->hasNext(iterator)) {
+                NAMapEntry *entry = iterator->next(iterator);
+                NAMapPut(_patternMap, entry->key, entry->value);
+            }
+        }
+
+        patternMap = _patternMap;
+
+        NAMapDescription(patternMap, stdout);
+    }
+
+    if (expression->children) {
+        int count = NAArrayCount(expression->children);
+        void **values = NAArrayGetValues(expression->children);
+        for (int i = 0; i < count; ++i) {
+            NAMidiParserBuildPattenMap2(self, values[i], patternMap);
         }
     }
 }

@@ -2,6 +2,7 @@
 
 #include "Expression.h"
 #include "NAMidiParser.h"
+#include "NAMap.h"
 
 #include <stdbool.h>
 
@@ -28,4 +29,6 @@ extern void *NAMidiExprContext(NAMidiParser *parser, const char *filepath, void 
 
 extern bool NAMidiExprIsStatementList(Expression *self);
 extern bool NAMidiExprIsPattern(Expression *self);
-extern void NAMidiExprStatementListAddPattern(void *_self, void *_pattern);
+extern NAMap *NAMidiExprStatementListGetPatternMap(void *self);
+extern char *NAMidiExprPatternGetIdentifier(void *_self);
+extern Expression *NAMidiExprStatementListMarge(Expression *self, Expression *statementList);
