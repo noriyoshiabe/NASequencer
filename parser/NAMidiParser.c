@@ -49,15 +49,18 @@ static bool NAMidiParserParseFile(void *_self, const char *filepath)
     return true;
 }
 
-bool NAMidiParserReadIncludeFile(NAMidiParser *self, const char *filepath, int line, int column, const char *includeFile, Expression **expression)
+bool NAMidiParserReadIncludeFile(NAMidiParser *self, const char *filepath, int line, int column, char *includeFile, Expression **expression)
 {
     if (0 != strcmp("namidi", NAUtilGetFileExtenssion(includeFile))) {
         NAMidiParserError(self, filepath, line, column, ParseErrorKindGeneral, GeneralParseErrorUnsupportedFileType);
+        free(includeFile);
         return false;
     }
 
     char *directory = dirname((char *)filepath);
     char *fullPath = NAUtilBuildPathWithDirectory(directory, includeFile);
+
+    free(includeFile);
 
     if (NASetContains(self->readingFileSet, fullPath)) {
         NAMidiParserError(self, filepath, line, column, ParseErrorKindGeneral, GeneralParseErrorCircularFileInclude);
@@ -209,10 +212,10 @@ NAMidiParserContext *NAMidiParserContextCreate()
 
 NAMidiParserContext *NAMidiParserContextCreateCopy(NAMidiParserContext *self)
 {
-    NAMidiParserContext *copy = NAMidiParserContextCreate();
-    NASet *contextIdList = copy->contextIdList;
+    NAMidiParserContext *copy = calloc(1, sizeof(NAMidiParserContext));
+
     memcpy(copy, self, sizeof(NAMidiParserContext));
-    copy->contextIdList = contextIdList;
+    copy->contextIdList = NASetCreate(NAHashCString, NADescriptionCString);
 
     uint8_t iteratorBuffer[NASetIteratorSize];
     NAIterator *iterator = NASetGetIterator(self->contextIdList, iteratorBuffer);

@@ -27,7 +27,7 @@ static inline const char *NAMidiParseError2String(NAMidiParseError error)
 #include "NASet.h"
 
 typedef struct _NAMidiParser NAMidiParser;
-extern bool NAMidiParserReadIncludeFile(NAMidiParser *self, const char *filepath, int line, int column, const char *includeFile, Expression **expression);
+extern bool NAMidiParserReadIncludeFile(NAMidiParser *self, const char *filepath, int line, int column, char *includeFile, Expression **expression);
 extern void NAMidiParserError(NAMidiParser *self, const char *filepath, int line, int column, ParseErrorKind kind, int error);
 
 typedef struct _NAMidiParserContext {

@@ -73,11 +73,11 @@ static void TitleExprDestroy(void *_self)
     free(self);
 }
 
-void *NAMidiExprTitle(NAMidiParser *parser, const char *filepath, void *yylloc, const char *title)
+void *NAMidiExprTitle(NAMidiParser *parser, const char *filepath, void *yylloc, char *title)
 { __Trace__
     TitleExpr *self = ExpressionCreate(filepath, yylloc, sizeof(TitleExpr), "title");
     self->expr.vtbl.destroy = TitleExprDestroy;
-    self->title = strdup(title);
+    self->title = title;
     return self;
 }
 
@@ -131,11 +131,11 @@ static void MarkerExprDestroy(void *_self)
     free(self);
 }
 
-void *NAMidiExprMarker(NAMidiParser *parser, const char *filepath, void *yylloc, const char *marker)
+void *NAMidiExprMarker(NAMidiParser *parser, const char *filepath, void *yylloc, char *marker)
 { __Trace__
     MarkerExpr *self = ExpressionCreate(filepath, yylloc, sizeof(MarkerExpr), "marker");
     self->expr.vtbl.destroy = MarkerExprDestroy;
-    self->text = strdup(marker);
+    self->text = marker;
     return self;
 }
 
@@ -179,11 +179,11 @@ static void SynthExprDestroy(void *_self)
     free(self);
 }
 
-void *NAMidiExprSynth(NAMidiParser *parser, const char *filepath, void *yylloc, const char *identifier)
+void *NAMidiExprSynth(NAMidiParser *parser, const char *filepath, void *yylloc, char *identifier)
 { __Trace__
     SynthExpr *self = ExpressionCreate(filepath, yylloc, sizeof(SynthExpr), "synth");
     self->expr.vtbl.destroy = SynthExprDestroy;
-    self->identifier = strdup(identifier);
+    self->identifier = identifier;
     return self;
 }
 
@@ -240,7 +240,7 @@ typedef struct _KeySignExpr {
     KeySign keySign;
 } KeySignExpr;
 
-void *NAMidiExprKeySign(NAMidiParser *parser, const char *filepath, void *yylloc, const char *keyString)
+void *NAMidiExprKeySign(NAMidiParser *parser, const char *filepath, void *yylloc, char *keyString)
 { __Trace__
     char keyChar = tolower(keyString[0]);
     bool sharp = NULL != strchr(keyString, '#');
@@ -256,6 +256,9 @@ void *NAMidiExprKeySign(NAMidiParser *parser, const char *filepath, void *yylloc
 
     KeySignExpr *self = ExpressionCreate(filepath, yylloc, sizeof(KeySignExpr), "key sign");
     self->keySign = keySign;
+
+    free(keyString);
+
     return self;
 }
 
@@ -281,20 +284,20 @@ typedef struct _NoteExpr {
     int velocity;
 } NoteExpr;
 
-void *NAMidiExprNote(NAMidiParser *parser, const char *filepath, void *yylloc, const char *noteString, int step, int gatetime, int velocity)
+void *NAMidiExprNote(NAMidiParser *parser, const char *filepath, void *yylloc, char *noteString, int step, int gatetime, int velocity)
 { __Trace__
     const BaseNote noteTable[] = {
         BaseNote_A, BaseNote_B, BaseNote_C,
         BaseNote_D, BaseNote_E, BaseNote_F, BaseNote_G
     };
 
-    const char *pc = noteString;
+    char *pc = noteString;
 
     BaseNote baseNote = noteTable[tolower(*pc) - 97];
     Accidental accidental = AccidentalNone;
 
     int octave = OCTAVE_NONE;
-    const char *c;
+    char *c;
     while (*(c = ++pc)) {
         switch (*c) {
         case '#':
@@ -332,6 +335,9 @@ void *NAMidiExprNote(NAMidiParser *parser, const char *filepath, void *yylloc, c
     self->octave = octave;
     self->gatetime = gatetime;
     self->velocity = velocity;
+
+    free(noteString);
+
     return self;
 }
 
@@ -347,11 +353,11 @@ static void PatternExprDestroy(void *_self)
     free(self);
 }
 
-void *NAMidiExprPattern(NAMidiParser *parser, const char *filepath, void *yylloc, const char *identifier, Expression *statementList)
+void *NAMidiExprPattern(NAMidiParser *parser, const char *filepath, void *yylloc, char *identifier, Expression *statementList)
 { __Trace__
     PatternExpr *self = ExpressionCreate(filepath, yylloc, sizeof(PatternExpr), PATTERN_ID);
     self->expr.vtbl.destroy = PatternExprDestroy;
-    self->identifier = strdup(identifier);
+    self->identifier = identifier;
     ExpressionAddChild(&self->expr, statementList);
     return self;
 }
@@ -398,12 +404,12 @@ static bool PatternExpandExprParse(void *_self, void *visitor, void *_context)
     return ExpressionParse(statementList, visitor, context);
 }
 
-void *NAMidiExprPatternExpand(NAMidiParser *parser, const char *filepath, void *yylloc, const char *identifier, NAArray *idList)
+void *NAMidiExprPatternExpand(NAMidiParser *parser, const char *filepath, void *yylloc, char *identifier, NAArray *idList)
 { __Trace__
     PatternExpandExpr *self = ExpressionCreate(filepath, yylloc, sizeof(PatternExpandExpr), "pattern expand");
     self->expr.vtbl.destroy = PatternExprExpandDestroy;
     self->expr.vtbl.parse = PatternExpandExprParse;
-    self->identifier = strdup(identifier);
+    self->identifier = identifier;
     self->contextIdList = idList;
     return self;
 }

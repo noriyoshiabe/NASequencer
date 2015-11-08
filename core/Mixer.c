@@ -107,6 +107,7 @@ static void _MixerDestroy(Mixer *self)
     NAArrayDestroy(self->activeSources);
 
     NAMapTraverseValue(self->sourceMap, _DeallocMidiSource);
+    NAMapDestroy(self->sourceMap);
 
     NAArrayTraverse(self->observers, free);
     NAArrayDestroy(self->observers);

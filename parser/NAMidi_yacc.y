@@ -191,7 +191,7 @@ context_id_list
     ;
 
 context_id
-    : IDENTIFIER                          { $$ = strdup($1); }
+    : IDENTIFIER                          { $$ = $1; }
     | DEFAULT                             { $$ = strdup("default"); }
     ;
 

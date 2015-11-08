@@ -81,6 +81,7 @@ void PlayerDestroy(Player *self)
     NAArrayTraverse(self->observers, free);
     NAArrayDestroy(self->observers);
     NAMessageQDestroy(self->msgQ);
+    NASetDestroy(self->playingNoteEvents);
 
     free(self);
 }

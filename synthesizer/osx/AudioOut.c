@@ -101,7 +101,7 @@ static void AUAudioOutRegisterCallback(AudioOut *_self, AudioCallback function, 
 {
     AUAudioOut *self = (AUAudioOut *)_self;
 
-    self->callbackList = realloc(self->callbackList, sizeof(Callback) * self->callbackListLength + 1);
+    self->callbackList = realloc(self->callbackList, sizeof(Callback) * (self->callbackListLength + 1));
     self->callbackList[self->callbackListLength].function = function; 
     self->callbackList[self->callbackListLength].receiver = receiver; 
     ++self->callbackListLength;
