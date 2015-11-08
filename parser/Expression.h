@@ -1,5 +1,7 @@
 #pragma once
 
+#include "NAArray.h"
+
 typedef struct _ExpressionVtbl {
     void (*destroy)(void *self);
     void (*dump)(void *self, int indent);
@@ -16,16 +18,13 @@ typedef struct _Expression {
     } location;
 
     struct _Expression *parent;
-    struct _Expression *child;
-    struct _Expression *next;
-    struct _Expression *last;
+    NAArray *children;
 
     const char *debug;
 } Expression;
  
 extern Expression *ExpressionCreate(const char *filepath, void *yylloc, int size, const char *debug);
 extern Expression *ExpressionAddChild(Expression *self, Expression *child);
-extern Expression *ExpressionAddSibling(Expression *self, Expression *sibling);
 extern void ExpressionDestroy(Expression *self);
 extern void ExpressionDump(Expression *self, int indent);
 extern void ExpressionPrintLocation(void *self, int indent);

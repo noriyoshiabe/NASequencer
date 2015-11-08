@@ -15,6 +15,7 @@ extern bool NAArrayIsEmpty(NAArray *self);
 extern void **NAArrayGetValues(NAArray *self);
 extern void *NAArrayGetValueAt(NAArray *self, int index);
 extern void NAArrayAppend(NAArray *self, void *value);
+extern void NAArrayAppendAll(NAArray *self, NAArray *array);
 extern bool NAArrayInsertAt(NAArray *self, int index, void *value);
 extern bool NAArrayRemoveAt(NAArray *self, int index);
 extern void NAArrayRemoveAll(NAArray *self);

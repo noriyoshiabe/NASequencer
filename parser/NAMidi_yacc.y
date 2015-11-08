@@ -77,12 +77,29 @@ extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath,
  
 input
     :
-    | statement_list  { *expression = $1; }
+    | statement_list                      { *expression = $1; }
     ;
 
 statement_list
-    : statement
-    | statement_list statement { $$ = ExpressionAddSibling($1, $2); }
+    : statement                           {
+                                              if (0 == strcmp($1->debug, "statement list")) {
+                                                  $$ = $1;
+                                              }
+                                              else {
+                                                  $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "statement list");
+                                                  ExpressionAddChild($$, $1);
+                                              }
+                                          }
+    | statement_list statement            {
+                                              if (0 == strcmp($2->debug, "statement list")) {
+                                                  NAArrayAppendAll($1->children, $2->children);
+                                                  $$ = $1;
+                                              }
+                                              else {
+                                                  $$ = ExpressionAddChild($1, $2);
+                                              }
+                                          }
+
     ;
 
 statement
@@ -113,10 +130,11 @@ statement
     | context
 
     | INCLUDE STRING                      {
-                                               NAMidiParser *parser = NAMidi_get_extra(scanner);
-                                               if (!NAMidiParserReadIncludeFile(parser, filepath, @$.first_line, @$.first_column, $2, &$$)) {
-                                                   YYABORT;
-                                               }
+                                              NAMidiParser *parser = NAMidi_get_extra(scanner);
+                                              if (!NAMidiParserReadIncludeFile(parser, filepath, @$.first_line, @$.first_column, $2, &$$)) {
+                                                  YYABORT;
+                                              }
+                                              printf("------------ %s\n", $$->debug);
                                           }
     ;
 
@@ -141,34 +159,40 @@ note
 pattern
     : DEFINE IDENTIFIER statement_list END
                                           {
-                                               Expression *expr = ExpressionCreate(filepath, &@$, sizeof(Expression), "def pettern");
-                                               ExpressionAddChild(expr, $3);
-                                               $$ = expr;
+                                              Expression *expr = ExpressionCreate(filepath, &@$, sizeof(Expression), "pattern define");
+                                              ExpressionAddChild(expr, $3);
+                                              $$ = expr;
                                           }
     ;
 
 pattern_expand
     : IDENTIFIER                          { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "pattern"); }
     | IDENTIFIER LPAREN context_id_list RPAREN
-                                          { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "pattern + id_list"); }
+                                          {
+                                              $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "pattern");
+                                              ExpressionAddChild($$, $3);
+                                          }
     ;
 
 context
     : context_id_list LCURLY statement_list RCURLY
                                           {
-                                               Expression *expr = ExpressionCreate(filepath, &@$, sizeof(Expression), "context + id_list");
-                                               ExpressionAddChild(expr, $3);
-                                               $$ = expr;
+                                               $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "context");
+                                               ExpressionAddChild($$, $1);
+                                               ExpressionAddChild($$, $3);
                                           }
     ;
 
 context_id_list
-    : context_id
-    | context_id_list COMMA context_id    { $$ = ExpressionAddSibling($1, $3); }
+    : context_id                          {
+                                              $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "ctx id list");
+                                              ExpressionAddChild($$, $1);
+                                          }
+    | context_id_list COMMA context_id    { $$ = ExpressionAddChild($1, $3); }
     ;
 
 context_id
-    : IDENTIFIER                          { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "ctx id"); }
+    : IDENTIFIER                          { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "identifier"); }
     | DEFAULT                             { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "default"); }
     ;
 

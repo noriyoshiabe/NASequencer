@@ -24,43 +24,34 @@ Expression *ExpressionCreate(const char *filepath, void *yylloc, int size, const
 
 Expression *ExpressionAddChild(Expression *self, Expression *child)
 {
-    self->child = child;
-    child->parent = self;
-    return self;
-}
-
-Expression *ExpressionAddSibling(Expression *self, Expression *sibling)
-{
-    if (self->last) {
-        self->last->next = sibling;
-        self->last = sibling;
-    } else {
-        self->next = self->last = sibling;
+    if (!self->children) {
+        self->children = NAArrayCreate(4, NULL);
     }
+    NAArrayAppend(self->children, child);
 
+    child->parent = self;
     return self;
 }
 
 void ExpressionDestroy(Expression *self)
 {
-    for (Expression *expr = self; expr; ) {
-        Expression *toDestroy = expr;
-        expr = expr->next;
-
-        if (toDestroy->child) {
-            ExpressionDestroy(toDestroy->child);
-        }
-        toDestroy->vtbl->destroy(toDestroy);
+    if (self->children) {
+        NAArrayTraverse(self->children, ExpressionDestroy);
+        NAArrayDestroy(self->children);
     }
+
+    self->vtbl->destroy(self);
 }
 
 void ExpressionDump(Expression *self, int indent)
 {
-    for (Expression *expr = self; expr; expr = expr->next) {
-        expr->vtbl->dump(expr, indent);
+    self->vtbl->dump(self, indent);
 
-        if (expr->child) {
-            ExpressionDump(expr->child, indent + 4);
+    if (self->children) {
+        int count = NAArrayCount(self->children);
+        void **values = NAArrayGetValues(self->children);
+        for (int i = 0; i < count; ++i) {
+            ExpressionDump(values[i], indent + 4);
         }
     }
 }

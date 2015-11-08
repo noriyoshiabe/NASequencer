@@ -41,6 +41,13 @@ static intptr_t *NAArrayMemmovePointer(intptr_t *dst, const intptr_t *src, int c
 	return dst;
 }
 
+static intptr_t *NAArrayMemcpyPointer(intptr_t *dst, const intptr_t *src, int count)
+{
+    while (count--)
+        *dst++ = *src++;
+	return dst;
+}
+
 NAArray *NAArrayCreate(int initialCapacity, NADescription description)
 {
     NAArray *self = calloc(1, sizeof(NAArray));
@@ -84,6 +91,17 @@ void NAArrayAppend(NAArray *self, void *value)
     }
 
     self->values[self->count++] = (intptr_t)value;
+}
+
+void NAArrayAppendAll(NAArray *self, NAArray *array)
+{
+    while (self->capacity <= self->count + array->count) {
+        self->capacity *= 2;
+        self->values = realloc(self->values, self->capacity * sizeof(intptr_t));
+    }
+
+    NAArrayMemcpyPointer(&self->values[self->count], array->values, array->count);
+    self->count += array->count;
 }
 
 bool NAArrayInsertAt(NAArray *self, int index, void *value)
