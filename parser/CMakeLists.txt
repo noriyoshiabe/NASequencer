@@ -16,6 +16,7 @@ include_directories(
 
 set(SOURCES
   Expression.c
+  NAMidiExpression.c
   NAMidiParser.c
 )
 

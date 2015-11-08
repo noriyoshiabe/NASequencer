@@ -9,16 +9,16 @@ typedef struct _Location {
     int column;
 } Location;
 
-static ExpressionVtbl _TEST;
+static ExpressionVtbl _defaultVtbl;
 
-Expression *ExpressionCreate(const char *filepath, void *yylloc, int size, const char *debug)
+void *ExpressionCreate(const char *filepath, void *yylloc, int size, const char *identifier)
 {
     Expression *self = calloc(1, size);
-    self->vtbl = &_TEST;
+    self->vtbl = _defaultVtbl;
     self->location.filepath = filepath;
     self->location.line = ((Location *)yylloc)->line;
     self->location.column = ((Location *)yylloc)->column;
-    self->debug = debug;
+    self->identifier = identifier;
     return self;
 }
 
@@ -40,12 +40,13 @@ void ExpressionDestroy(Expression *self)
         NAArrayDestroy(self->children);
     }
 
-    self->vtbl->destroy(self);
+    self->vtbl.destroy(self);
 }
 
 void ExpressionDump(Expression *self, int indent)
 {
-    self->vtbl->dump(self, indent);
+    self->vtbl.dump(self, indent);
+    printf(" - %s:%d:%d\n", self->location.filepath, self->location.line, self->location.column);
 
     if (self->children) {
         int count = NAArrayCount(self->children);
@@ -56,30 +57,32 @@ void ExpressionDump(Expression *self, int indent)
     }
 }
 
-void ExpressionPrintLocation(void *_self, int indent)
+bool ExpressionParse(Expression *self, void *context)
 {
-    Expression *self = _self;
-    printf("%s:%d:%d", self->location.filepath, self->location.line, self->location.column);
+    return self->vtbl.parse(self, context);
 }
 
 static void _ExpressionDump(void *_self, int indent)
 {
     Expression *self = _self;
     printf("%*s", indent, "");
-    printf("[%s]", self->debug);
-    printf(" - ");
-    ExpressionPrintLocation(self, indent);
-    printf("\n");
+    printf("[%s]", self->identifier);
 }
 
-static void _ExpressionDestroy(void *_self)
+static void _ExpressionDestroy(void *self)
 {
-    Expression *self = _self;
     free(self);
 }
 
-static ExpressionVtbl _TEST = {
+static bool _ExpressionParse(void *_self, void *context)
+{
+    Expression *self = _self;
+    printf("parsed [%s]\n", self->identifier);
+    return true;
+}
+
+static ExpressionVtbl _defaultVtbl = {
     _ExpressionDestroy,
+    _ExpressionParse,
     _ExpressionDump,
-    NULL,
 };

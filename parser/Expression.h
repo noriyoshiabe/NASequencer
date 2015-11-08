@@ -1,15 +1,17 @@
 #pragma once
 
 #include "NAArray.h"
+#include <stdbool.h>
 
 typedef struct _ExpressionVtbl {
     void (*destroy)(void *self);
+    bool (*parse)(void *self, void *context);
     void (*dump)(void *self, int indent);
-    void (*parse)(void *self, void *context);
 } ExpressionVtbl;
 
 typedef struct _Expression {
-    ExpressionVtbl *vtbl;
+    ExpressionVtbl vtbl;
+    const char *identifier;
 
     struct {
         const char *filepath;
@@ -19,12 +21,10 @@ typedef struct _Expression {
 
     struct _Expression *parent;
     NAArray *children;
-
-    const char *debug;
 } Expression;
  
-extern Expression *ExpressionCreate(const char *filepath, void *yylloc, int size, const char *debug);
+extern void *ExpressionCreate(const char *filepath, void *yylloc, int size, const char *identifier);
 extern Expression *ExpressionAddChild(Expression *self, Expression *child);
 extern void ExpressionDestroy(Expression *self);
 extern void ExpressionDump(Expression *self, int indent);
-extern void ExpressionPrintLocation(void *self, int indent);
+extern bool ExpressionParse(Expression *self, void *context);
