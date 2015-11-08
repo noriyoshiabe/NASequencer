@@ -3,6 +3,7 @@
 #include "NAMidiParser.h"
 #include "NAMidi_yacc.h"
 #include "NAMidi_lex.h"
+#include "NAMidiExpression.h"
 
 #include <ctype.h>
 
@@ -26,6 +27,7 @@ extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath,
     float f;
     char *s;
     Expression *expression;
+    NAArray *array;
 }
 
 %token <i>INTEGER
@@ -71,7 +73,9 @@ extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath,
 %type <expression> statement_list statement
 %type <expression> note
 %type <expression> pattern pattern_expand
-%type <expression> context context_id_list context_id
+%type <expression> context
+%type <array>      context_id_list
+%type <s>          context_id
 
 %%
  
@@ -82,17 +86,21 @@ input
 
 statement_list
     : statement                           {
-                                              if (0 == strcmp($1->debug, "statement list")) {
+                                              if (!$1) YYABORT;
+
+                                              if (NAMidiExprIsStatementList($1)) {
                                                   $$ = $1;
                                               }
                                               else {
-                                                  $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "statement list");
+                                                  $$ = NAMidiExprStatementList(filepath, &@$);
                                                   ExpressionAddChild($$, $1);
                                               }
                                           }
     | statement_list statement            {
-                                              if (0 == strcmp($2->debug, "statement list")) {
-                                                  NAArrayAppendAll($1->children, $2->children);
+                                              if (!$2) YYABORT;
+
+                                              if (NAMidiExprIsStatementList($2)) {
+                                                  NAMidiExprStatementListAppend($1, $2);
                                                   $$ = $1;
                                               }
                                               else {
@@ -103,26 +111,26 @@ statement_list
     ;
 
 statement
-    : TITLE STRING                        { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "title"); }
-    | RESOLUTION INTEGER                  { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "reslution"); }
-    | TEMPO FLOAT                         { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "tempo f"); }
-    | TEMPO INTEGER                       { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "tempo i"); }
-    | TIME INTEGER DIVISION INTEGER       { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "time"); }
-    | MARKER STRING                       { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "marker"); }
-    | CHANNEL INTEGER                     { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "channel"); }
-    | VOICE INTEGER INTEGER INTEGER       { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "voice"); }
-    | SYNTH STRING                        { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "synth"); }
-    | VOLUME INTEGER                      { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "volume"); }
-    | PAN INTEGER                         { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "pan"); }
-    | PAN PLUS INTEGER                    { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "pan +"); }
-    | PAN MINUS INTEGER                   { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "pan -"); }
-    | CHORUS INTEGER                      { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "chorus"); }
-    | REVERB INTEGER                      { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "reverb"); }
-    | TRANSPOSE INTEGER                   { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "transpose"); }
-    | TRANSPOSE PLUS INTEGER              { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "transpose +"); }
-    | TRANSPOSE MINUS INTEGER             { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "transpose -"); }
-    | KEY KEY_SIGN                        { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "key"); }
-    | MINUS INTEGER                       { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "rest"); }
+    : TITLE STRING                        { $$ = NAMidiExprTitle(filepath, &@$, $2); }
+    | RESOLUTION INTEGER                  { $$ = NAMidiExprResolution(filepath, &@$, $2); }
+    | TEMPO FLOAT                         { $$ = NAMidiExprTempo(filepath, &@$, $2); }
+    | TEMPO INTEGER                       { $$ = NAMidiExprTempo(filepath, &@$, $2); }
+    | TIME INTEGER DIVISION INTEGER       { $$ = NAMidiExprTimeSign(filepath, &@$, $2, $4); }
+    | MARKER STRING                       { $$ = NAMidiExprMarker(filepath, &@$, $2); }
+    | CHANNEL INTEGER                     { $$ = NAMidiExprChannel(filepath, &@$, $2); }
+    | VOICE INTEGER INTEGER INTEGER       { $$ = NAMidiExprVoice(filepath, &@$, $2, $3, $4); }
+    | SYNTH STRING                        { $$ = NAMidiExprSynth(filepath, &@$, $2); }
+    | VOLUME INTEGER                      { $$ = NAMidiExprVolume(filepath, &@$, $2); }
+    | PAN INTEGER                         { $$ = NAMidiExprPan(filepath, &@$, $2); }
+    | PAN PLUS INTEGER                    { $$ = NAMidiExprPan(filepath, &@$, $3); }
+    | PAN MINUS INTEGER                   { $$ = NAMidiExprPan(filepath, &@$, $3); }
+    | CHORUS INTEGER                      { $$ = NAMidiExprChorus(filepath, &@$, $2); }
+    | REVERB INTEGER                      { $$ = NAMidiExprReverb(filepath, &@$, $2); }
+    | TRANSPOSE INTEGER                   { $$ = NAMidiExprTranspose(filepath, &@$, $2); }
+    | TRANSPOSE PLUS INTEGER              { $$ = NAMidiExprTranspose(filepath, &@$, $3); }
+    | TRANSPOSE MINUS INTEGER             { $$ = NAMidiExprTranspose(filepath, &@$, $3); }
+    | KEY KEY_SIGN                        { $$ = NAMidiExprKeySign(filepath, &@$, $2); }
+    | MINUS INTEGER                       { $$ = NAMidiExprRest(filepath, &@$, $2); }
 
     | note
     | pattern
@@ -134,66 +142,57 @@ statement
                                               if (!NAMidiParserReadIncludeFile(parser, filepath, @$.first_line, @$.first_column, $2, &$$)) {
                                                   YYABORT;
                                               }
-                                              printf("------------ %s\n", $$->debug);
                                           }
     ;
 
 note
-    : NOTE                                { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "note"); }
-    | NOTE MINUS                          { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "note"); }
-    | NOTE MINUS   MINUS                  { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "note"); }
-    | NOTE MINUS   MINUS   MINUS          { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "note"); }
-    | NOTE MINUS   MINUS   INTEGER        { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "note"); }
-    | NOTE MINUS   INTEGER                { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "note"); }
-    | NOTE MINUS   INTEGER MINUS          { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "note"); }
-    | NOTE MINUS   INTEGER INTEGER        { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "note"); }
-    | NOTE INTEGER                        { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "note"); }
-    | NOTE INTEGER INTEGER                { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "note"); }
-    | NOTE INTEGER INTEGER INTEGER        { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "note"); }
-    | NOTE INTEGER INTEGER MINUS          { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "note"); }
-    | NOTE INTEGER MINUS                  { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "note"); }
-    | NOTE INTEGER MINUS   INTEGER        { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "note"); }
-    | NOTE INTEGER MINUS   MINUS          { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "note"); }
+    : NOTE                                { $$ = NAMidiExprNote(filepath, &@$, $1, -1, -1, -1); }
+    | NOTE MINUS                          { $$ = NAMidiExprNote(filepath, &@$, $1, -1, -1, -1); }
+    | NOTE MINUS   MINUS                  { $$ = NAMidiExprNote(filepath, &@$, $1, -1, -1, -1); }
+    | NOTE MINUS   MINUS   MINUS          { $$ = NAMidiExprNote(filepath, &@$, $1, -1, -1, -1); }
+    | NOTE MINUS   MINUS   INTEGER        { $$ = NAMidiExprNote(filepath, &@$, $1, -1, -1, $4); }
+    | NOTE MINUS   INTEGER                { $$ = NAMidiExprNote(filepath, &@$, $1, -1, $3, -1); }
+    | NOTE MINUS   INTEGER MINUS          { $$ = NAMidiExprNote(filepath, &@$, $1, -1, $3, -1); }
+    | NOTE MINUS   INTEGER INTEGER        { $$ = NAMidiExprNote(filepath, &@$, $1, -1, $3, $4); }
+    | NOTE INTEGER                        { $$ = NAMidiExprNote(filepath, &@$, $1, $2, -1, -1); }
+    | NOTE INTEGER INTEGER                { $$ = NAMidiExprNote(filepath, &@$, $1, $2, $3, -1); }
+    | NOTE INTEGER INTEGER INTEGER        { $$ = NAMidiExprNote(filepath, &@$, $1, $2, $3, $4); }
+    | NOTE INTEGER INTEGER MINUS          { $$ = NAMidiExprNote(filepath, &@$, $1, $2, $3, -1); }
+    | NOTE INTEGER MINUS                  { $$ = NAMidiExprNote(filepath, &@$, $1, $2, -1, -1); }
+    | NOTE INTEGER MINUS   INTEGER        { $$ = NAMidiExprNote(filepath, &@$, $1, $2, -1, $4); }
+    | NOTE INTEGER MINUS   MINUS          { $$ = NAMidiExprNote(filepath, &@$, $1, $2, -1, -1); }
     ;
 
 pattern
     : DEFINE IDENTIFIER statement_list END
-                                          {
-                                              Expression *expr = ExpressionCreate(filepath, &@$, sizeof(Expression), "pattern define");
-                                              ExpressionAddChild(expr, $3);
-                                              $$ = expr;
-                                          }
+                                          { $$ = NAMidiExprPattern(filepath, &@$, $2, $3); }
     ;
 
 pattern_expand
-    : IDENTIFIER                          { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "pattern"); }
+    : IDENTIFIER                          { $$ = NAMidiExprPatternExpand(filepath, &@$, $1, NULL); }
     | IDENTIFIER LPAREN context_id_list RPAREN
-                                          {
-                                              $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "pattern");
-                                              ExpressionAddChild($$, $3);
-                                          }
+                                          { $$ = NAMidiExprPatternExpand(filepath, &@$, $1, $3); }
     ;
 
 context
     : context_id_list LCURLY statement_list RCURLY
-                                          {
-                                               $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "context");
-                                               ExpressionAddChild($$, $1);
-                                               ExpressionAddChild($$, $3);
-                                          }
+                                          { $$ = NAMidiExprContext(filepath, &@$, $1, $3); }
     ;
 
 context_id_list
     : context_id                          {
-                                              $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "ctx id list");
-                                              ExpressionAddChild($$, $1);
+                                              $$ = NAArrayCreate(4, NADescriptionCString);
+                                              NAArrayAppend($$, $1);
                                           }
-    | context_id_list COMMA context_id    { $$ = ExpressionAddChild($1, $3); }
+    | context_id_list COMMA context_id    {
+                                              $$ = $1;
+                                              NAArrayAppend($$, $3);
+                                          }
     ;
 
 context_id
-    : IDENTIFIER                          { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "identifier"); }
-    | DEFAULT                             { $$ = ExpressionCreate(filepath, &@$, sizeof(Expression), "default"); }
+    : IDENTIFIER                          { $$ = strdup($1); }
+    | DEFAULT                             { $$ = strdup("default"); }
     ;
 
 %%
