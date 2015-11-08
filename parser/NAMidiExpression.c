@@ -1,7 +1,12 @@
 #include "NAMidiExpression.h"
+#include "NoteTable.h"
 
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
+
+#define isValidRange(v, from, to) (from <= v && v <= to)
+#define OCTAVE_NONE -99
 
 static const char *STATEMENT_LIST_ID = "statement list";
 
@@ -9,7 +14,7 @@ typedef struct _StatementListExpr {
     Expression expr;
 } StatementListExpr;
 
-void *NAMidiExprStatementList(const char *filepath, void *yylloc)
+void *NAMidiExprStatementList(NAMidiParser *parser, const char *filepath, void *yylloc)
 {
     return ExpressionCreate(filepath, yylloc, sizeof(StatementListExpr), STATEMENT_LIST_ID);
 }
@@ -31,7 +36,7 @@ static void TitleExprDestroy(void *_self)
     free(self);
 }
 
-void *NAMidiExprTitle(const char *filepath, void *yylloc, const char *title)
+void *NAMidiExprTitle(NAMidiParser *parser, const char *filepath, void *yylloc, const char *title)
 {
     TitleExpr *self = ExpressionCreate(filepath, yylloc, sizeof(TitleExpr), "title");
     self->expr.vtbl.destroy = TitleExprDestroy;
@@ -44,7 +49,7 @@ typedef struct _ResolutionExpr {
     int reslution;
 } ResolutionExpr;
 
-void *NAMidiExprResolution(const char *filepath, void *yylloc, int reslution)
+void *NAMidiExprResolution(NAMidiParser *parser, const char *filepath, void *yylloc, int reslution)
 {
     ResolutionExpr *self = ExpressionCreate(filepath, yylloc, sizeof(ResolutionExpr), "reslution");
     self->reslution = reslution;
@@ -56,7 +61,7 @@ typedef struct _TempoExpr {
     float tempo;
 } TempoExpr;
 
-void *NAMidiExprTempo(const char *filepath, void *yylloc, float tempo)
+void *NAMidiExprTempo(NAMidiParser *parser, const char *filepath, void *yylloc, float tempo)
 {
     TempoExpr *self = ExpressionCreate(filepath, yylloc, sizeof(TempoExpr), "tempo");
     self->tempo = tempo;
@@ -69,7 +74,7 @@ typedef struct _TimeSignExpr {
     int denominator;
 } TimeSignExpr;
 
-void *NAMidiExprTimeSign(const char *filepath, void *yylloc, int numerator, int denominator)
+void *NAMidiExprTimeSign(NAMidiParser *parser, const char *filepath, void *yylloc, int numerator, int denominator)
 {
     TimeSignExpr *self = ExpressionCreate(filepath, yylloc, sizeof(TimeSignExpr), "time sign");
     self->numerator = numerator;
@@ -89,7 +94,7 @@ static void MarkerExprDestroy(void *_self)
     free(self);
 }
 
-void *NAMidiExprMarker(const char *filepath, void *yylloc, const char *marker)
+void *NAMidiExprMarker(NAMidiParser *parser, const char *filepath, void *yylloc, const char *marker)
 {
     MarkerExpr *self = ExpressionCreate(filepath, yylloc, sizeof(MarkerExpr), "marker");
     self->expr.vtbl.destroy = MarkerExprDestroy;
@@ -102,7 +107,7 @@ typedef struct _ChannelExpr {
     int channel;
 } ChannelExpr;
 
-void *NAMidiExprChannel(const char *filepath, void *yylloc, int channel)
+void *NAMidiExprChannel(NAMidiParser *parser, const char *filepath, void *yylloc, int channel)
 {
     ChannelExpr *self = ExpressionCreate(filepath, yylloc, sizeof(ChannelExpr), "channel");
     self->channel = channel;
@@ -116,7 +121,7 @@ typedef struct _VoiceExpr {
     int programNo;
 } VoiceExpr;
 
-void *NAMidiExprVoice(const char *filepath, void *yylloc, int msb, int lsb, int programNo)
+void *NAMidiExprVoice(NAMidiParser *parser, const char *filepath, void *yylloc, int msb, int lsb, int programNo)
 {
     VoiceExpr *self = ExpressionCreate(filepath, yylloc, sizeof(VoiceExpr), "voice");
     self->msb = msb;
@@ -137,7 +142,7 @@ static void SynthExprDestroy(void *_self)
     free(self);
 }
 
-void *NAMidiExprSynth(const char *filepath, void *yylloc, const char *identifier)
+void *NAMidiExprSynth(NAMidiParser *parser, const char *filepath, void *yylloc, const char *identifier)
 {
     SynthExpr *self = ExpressionCreate(filepath, yylloc, sizeof(SynthExpr), "synth");
     self->expr.vtbl.destroy = SynthExprDestroy;
@@ -150,7 +155,7 @@ typedef struct _VolumeExpr {
     int value;
 } VolumeExpr;
 
-void *NAMidiExprVolume(const char *filepath, void *yylloc, int value)
+void *NAMidiExprVolume(NAMidiParser *parser, const char *filepath, void *yylloc, int value)
 {
     VolumeExpr *self = ExpressionCreate(filepath, yylloc, sizeof(VolumeExpr), "volume");
     self->value = value;
@@ -159,7 +164,7 @@ void *NAMidiExprVolume(const char *filepath, void *yylloc, int value)
 
 typedef VolumeExpr PanExpr;
 
-void *NAMidiExprPan(const char *filepath, void *yylloc, int value)
+void *NAMidiExprPan(NAMidiParser *parser, const char *filepath, void *yylloc, int value)
 {
     PanExpr *self = ExpressionCreate(filepath, yylloc, sizeof(PanExpr), "pan");
     self->value = value;
@@ -168,7 +173,7 @@ void *NAMidiExprPan(const char *filepath, void *yylloc, int value)
 
 typedef VolumeExpr ChorusExpr;
 
-void *NAMidiExprChorus(const char *filepath, void *yylloc, int value)
+void *NAMidiExprChorus(NAMidiParser *parser, const char *filepath, void *yylloc, int value)
 {
     ChorusExpr *self = ExpressionCreate(filepath, yylloc, sizeof(ChorusExpr), "chorus");
     self->value = value;
@@ -177,7 +182,7 @@ void *NAMidiExprChorus(const char *filepath, void *yylloc, int value)
 
 typedef VolumeExpr ReverbExpr;
 
-void *NAMidiExprReverb(const char *filepath, void *yylloc, int value)
+void *NAMidiExprReverb(NAMidiParser *parser, const char *filepath, void *yylloc, int value)
 {
     ReverbExpr *self = ExpressionCreate(filepath, yylloc, sizeof(ReverbExpr), "reverb");
     self->value = value;
@@ -186,18 +191,116 @@ void *NAMidiExprReverb(const char *filepath, void *yylloc, int value)
 
 typedef VolumeExpr TransposeExpr;
 
-void *NAMidiExprTranspose(const char *filepath, void *yylloc, int value)
+void *NAMidiExprTranspose(NAMidiParser *parser, const char *filepath, void *yylloc, int value)
 {
     TransposeExpr *self = ExpressionCreate(filepath, yylloc, sizeof(TransposeExpr), "transpose");
     self->value = value;
     return self;
 }
 
-void *NAMidiExprKeySign(const char *filepath, void *yylloc, const char *keySign)
+typedef struct _KeySignExpr {
+    Expression expr;
+    KeySign keySign;
+} KeySignExpr;
+
+void *NAMidiExprKeySign(NAMidiParser *parser, const char *filepath, void *yylloc, const char *keyString)
+{
+    char keyChar = tolower(keyString[0]);
+    bool sharp = NULL != strchr(keyString, '#');
+    bool flat = NULL != strchr(keyString, 'b');
+    bool major = NULL == strstr(keyString, "min");
+
+    KeySign keySign = NoteTableGetKeySign(keyChar, sharp, flat, major);
+    if (KeySignInvalid == keySign) {
+        ParseLocation *location = yylloc;
+        NAMidiParserError(parser, filepath, location->line, location->column, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
+        return NULL;
+    }
+
+    KeySignExpr *self = ExpressionCreate(filepath, yylloc, sizeof(KeySignExpr), "key sign");
+    self->keySign = keySign;
+    return self;
+}
+
+typedef struct _RestExpr {
+    Expression expr;
+    int step;
+} RestExpr;
+
+void *NAMidiExprRest(NAMidiParser *parser, const char *filepath, void *yylloc, int step)
+{
+    RestExpr *self = ExpressionCreate(filepath, yylloc, sizeof(RestExpr), "rest");
+    self->step = step;
+    return self;
+}
+
+typedef struct _NoteExpr {
+    Expression expr;
+    int step;
+    BaseNote baseNote;
+    Accidental accidental;
+    int octave;
+    int gatetime;
+    int velocity;
+} NoteExpr;
+
+void *NAMidiExprNote(NAMidiParser *parser, const char *filepath, void *yylloc, const char *noteString, int step, int gatetime, int velocity)
+{
+    const BaseNote noteTable[] = {
+        BaseNote_A, BaseNote_B, BaseNote_C,
+        BaseNote_D, BaseNote_E, BaseNote_F, BaseNote_G
+    };
+
+    const char *pc = noteString;
+
+    BaseNote baseNote = noteTable[tolower(*pc) - 97];
+    Accidental accidental = AccidentalNone;
+
+    int octave = OCTAVE_NONE;
+    const char *c;
+    while (*(c = ++pc)) {
+        switch (*c) {
+        case '#':
+            accidental = AccidentalSharp == accidental ? AccidentalDoubleSharp : AccidentalSharp;
+            break;
+        case 'b':
+            accidental = AccidentalFlat == accidental ? AccidentalDoubleFlat : AccidentalFlat;
+            break;
+        case 'n':
+            accidental = AccidentalNatural;
+            break;
+        default:
+            octave = atoi(c);
+            break;
+        }
+
+        if (OCTAVE_NONE != octave) {
+            break;
+        }
+    }
+
+    if (!isValidRange(step, -1, 65535)
+            || !isValidRange(gatetime, -1, 65535)
+            || !isValidRange(velocity, -1, 127)
+            || (OCTAVE_NONE != octave && !isValidRange(octave, -2, 8))) {
+        ParseLocation *location = yylloc;
+        NAMidiParserError(parser, filepath, location->line, location->column, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
+        return NULL;
+    }
+
+    NoteExpr *self = ExpressionCreate(filepath, yylloc, sizeof(NoteExpr), "note");
+    self->step = step;
+    self->baseNote = baseNote;
+    self->accidental = accidental;
+    self->octave = octave;
+    self->gatetime = gatetime;
+    self->velocity = velocity;
+    return self;
+}
+
+void *NAMidiExprPattern(NAMidiParser *parser, const char *filepath, void *yylloc, const char *identifier, Expression *statementList)
 {
 }
-void *NAMidiExprRest(const char *filepath, void *yylloc, int step);
-void *NAMidiExprNote(const char *filepath, void *yylloc, const char *noteString, int step, int gatetime, int velocity);
-void *NAMidiExprPattern(const char *filepath, void *yylloc, const char *identifier, Expression *statementList);
-void *NAMidiExprPatternExpand(const char *filepath, void *yylloc, const char *identifier, NAArray *idList);
-void *NAMidiExprContext(const char *filepath, void *yylloc, NAArray *idList, Expression *statementList);
+
+void *NAMidiExprPatternExpand(NAMidiParser *parser, const char *filepath, void *yylloc, const char *identifier, NAArray *idList);
+void *NAMidiExprContext(NAMidiParser *parser, const char *filepath, void *yylloc, NAArray *idList, Expression *statementList);

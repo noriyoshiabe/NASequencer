@@ -21,7 +21,6 @@ struct _NAMidiParser {
 };
 
 static bool NAMidiParserParseFileInternal(NAMidiParser *self, const char *filepath, int line, int column, Expression **expression);
-static void NAMidiParserError(NAMidiParser *self, const char *filepath, int line, int column, ParseErrorKind kind, int error);
 
 static bool NAMidiParserParseFile(void *_self, const char *filepath)
 {
@@ -100,7 +99,7 @@ int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, Expres
     return 0;
 }
 
-static void NAMidiParserError(NAMidiParser *self, const char *filepath, int line, int column, ParseErrorKind kind, int error)
+void NAMidiParserError(NAMidiParser *self, const char *filepath, int line, int column, ParseErrorKind kind, int error)
 {
     ParseError err = {
         .location = {
