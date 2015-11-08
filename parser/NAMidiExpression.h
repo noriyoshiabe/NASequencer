@@ -27,3 +27,5 @@ extern void *NAMidiExprPatternExpand(NAMidiParser *parser, const char *filepath,
 extern void *NAMidiExprContext(NAMidiParser *parser, const char *filepath, void *yylloc, NAArray *idList, Expression *statementList);
 
 extern bool NAMidiExprIsStatementList(Expression *self);
+extern bool NAMidiExprIsPattern(Expression *self);
+extern void NAMidiExprStatementListAddPattern(void *_self, void *_pattern);

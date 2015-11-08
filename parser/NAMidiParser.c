@@ -1,6 +1,7 @@
 #include "NAMidiParser.h"
 #include "NAMidi_yacc.h"
 #include "NAMidi_lex.h"
+#include "NAMidiExpression.h"
 
 #include "NAUtil.h"
 #include "NASet.h"
@@ -18,9 +19,15 @@ struct _NAMidiParser {
 
     NASet *fileSet;
     NASet *readingFileSet;
+
+    NAMidiParserContext *context;
 };
 
 static bool NAMidiParserParseFileInternal(NAMidiParser *self, const char *filepath, int line, int column, Expression **expression);
+static void NAMidiParserBuildPattenMap(NAMidiParser *self, Expression *expression);
+
+static NAMidiParserContext *NAMidiParserContextCreate();
+static void NAMidiParserContextDestroy(NAMidiParserContext *self);
 
 static bool NAMidiParserParseFile(void *_self, const char *filepath)
 {
@@ -31,6 +38,8 @@ static bool NAMidiParserParseFile(void *_self, const char *filepath)
     bool success = NAMidiParserParseFileInternal(self, filepath, 0, 0, &expression);
 
     if (success) {
+        NAMidiParserBuildPattenMap(self, expression);
+        ExpressionParse(expression, NULL);
         ExpressionDump(expression, 0);
         // TODO Build Sequence
     }
@@ -91,6 +100,23 @@ static bool NAMidiParserParseFileInternal(NAMidiParser *self, const char *filepa
     fclose(fp);
 
     return success;
+}
+
+static void NAMidiParserBuildPattenMap(NAMidiParser *self, Expression *expression)
+{
+    printf("---------- %s\n", expression->identifier);
+
+    if (NAMidiExprIsPattern(expression)) {
+        NAMidiExprStatementListAddPattern(expression->parent, expression);
+    }
+
+    if (expression->children) {
+        int count = NAArrayCount(expression->children);
+        void **values = NAArrayGetValues(expression->children);
+        for (int i = 0; i < count; ++i) {
+            NAMidiParserBuildPattenMap(self, values[i]);
+        }
+    }
 }
 
 int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, Expression **expression, const char *message)
