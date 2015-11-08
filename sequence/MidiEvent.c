@@ -80,8 +80,8 @@ void MidiEventDump(MidiEvent *self, int indent)
     case MidiEventTypeKey:
         {
             KeyEvent *self = _self;
-            printf("Key: id=%d tick=%d key=%s\n",
-                    self->id, self->tick, KeySign2String(self->keySign));
+            printf("Key: id=%d tick=%d sf=%d mi=%d\n",
+                    self->id, self->tick, self->sf, self->mi);
         }
         break;
     case MidiEventTypeMarker:

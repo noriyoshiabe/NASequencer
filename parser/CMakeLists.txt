@@ -16,6 +16,7 @@ include_directories(
 
 set(SOURCES
   Expression.c
+  NoteTable.c
   NAMidiExpression.c
   NAMidiParser.c
 )

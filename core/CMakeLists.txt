@@ -21,7 +21,7 @@ set(SOURCES
   Player.c
   MidiSourceManager.c
   ParserProxy.c
-  NAMidiSequenceBuilder.c
+  SequenceBuilderImpl.c
 )
 
 if (APPLE)

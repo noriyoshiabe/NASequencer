@@ -130,9 +130,7 @@ bool ExporterWriteToSMF(Exporter *self, const char *filepath)
         case MidiEventTypeKey:
             {
                 KeyEvent *key = (KeyEvent *)events[i];
-                uint8_t sf, mi;
-                KeySignGetMidiExpression(key->keySign, &sf, &mi);
-                SMFWriterAppendKey(writer, key->tick, sf, mi);
+                SMFWriterAppendKey(writer, key->tick, key->sf, key->mi);
             }
             break;
         case MidiEventTypeTempo:

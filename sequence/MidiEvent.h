@@ -1,7 +1,5 @@
 #pragma once
 
-#include "NoteTable.h"
-
 typedef enum {
     MidiEventTypeNote,
     MidiEventTypeTempo,
@@ -59,7 +57,8 @@ typedef struct _KeyEvent {
     MidiEventType type;
     int id;
     int tick;
-    KeySign keySign;
+    int sf;
+    int mi;
 } KeyEvent;
 
 typedef struct _MarkerEvent {

@@ -1,6 +1,6 @@
 #include "ParserProxy.h"
 #include "NAMidiParser.h"
-#include "NAMidiSequenceBuilder.h"
+#include "SequenceBuilderImpl.h"
 #include "NAUtil.h"
 
 #include <stdlib.h>
@@ -54,7 +54,7 @@ bool ParserProxyParseFile(ParserProxy *self, const char *filepath, Sequence **se
     self->error = error;
     self->filepaths = filepaths;
 
-    SequenceBuilder *builder = NAMidiSequenceBuilderCreate();
+    SequenceBuilder *builder = SequenceBuilderCreate();
     Parser *parser = factory(builder, &ParserProxyParserCallbacks, self);
     char *fullpath = NAUtilGetRealPath(filepath);
 

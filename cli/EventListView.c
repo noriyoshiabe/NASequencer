@@ -1,4 +1,5 @@
 #include "EventListView.h"
+#include "NoteTable.h"
 
 #include <stdlib.h>
 #include <sys/param.h>
@@ -155,7 +156,7 @@ void EventListViewRender(EventListView *self)
         case MidiEventTypeKey:
             {
                 KeyEvent *_event = (void *)event;
-                sprintf(texts[6], "%s", KeySign2String(_event->keySign));
+                sprintf(texts[6], "%s", KeySign2String(NoteTableGetKeySignByMidiExpression(_event->sf, _event->mi)));
             }
             break;
         case MidiEventTypeMarker:
