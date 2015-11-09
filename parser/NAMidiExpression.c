@@ -31,7 +31,7 @@ static void StatementListExprDestroy(void *_self)
     free(self);
 }
 
-static bool StatementListExprParse(void *_self, void *visitor, void *_context)
+static bool StatementListExprParse(void *_self, void *parser, void *_context)
 {
     StatementListExpr *self = _self;
     NAMidiParserContext *context = _context ? NAMidiParserContextCreateCopy(_context) : NAMidiParserContextCreate();
@@ -42,14 +42,14 @@ static bool StatementListExprParse(void *_self, void *visitor, void *_context)
     int count = NAArrayCount(self->expr.children);
     void **values = NAArrayGetValues(self->expr.children);
     for (int i = 0; i < count; ++i) {
-        if (!ExpressionParse(values[i], visitor, context)) {
+        if (!ExpressionParse(values[i], parser, context)) {
             success = false;
             goto ERROR;
         }
     }
 
     if (!_context) {
-        SequenceBuilder *builder = NAMidiParserGetBuilder(visitor);
+        SequenceBuilder *builder = NAMidiParserGetBuilder(parser);
         builder->setLength(builder, NAMidiParserContextGetLength(context));
     }
 
@@ -79,10 +79,10 @@ static void TitleExprDestroy(void *_self)
     free(self);
 }
 
-static bool TitleExprParse(void *_self, void *visitor, void *_context)
+static bool TitleExprParse(void *_self, void *parser, void *_context)
 {
     TitleExpr *self = _self;
-    SequenceBuilder *builder = NAMidiParserGetBuilder(visitor);
+    SequenceBuilder *builder = NAMidiParserGetBuilder(parser);
     builder->setTitle(builder, self->title);
     return true;
 }
@@ -101,10 +101,10 @@ typedef struct _ResolutionExpr {
     int resolution;
 } ResolutionExpr;
 
-static bool ResolutionExprParse(void *_self, void *visitor, void *_context)
+static bool ResolutionExprParse(void *_self, void *parser, void *_context)
 {
     ResolutionExpr *self = _self;
-    SequenceBuilder *builder = NAMidiParserGetBuilder(visitor);
+    SequenceBuilder *builder = NAMidiParserGetBuilder(parser);
     builder->setResolution(builder, self->resolution);
     return true;
 }
@@ -127,11 +127,11 @@ typedef struct _TempoExpr {
     float tempo;
 } TempoExpr;
 
-static bool TempoExprParse(void *_self, void *visitor, void *_context)
+static bool TempoExprParse(void *_self, void *parser, void *_context)
 {
     TempoExpr *self = _self;
     NAMidiParserContext *context = _context;
-    SequenceBuilder *builder = NAMidiParserGetBuilder(visitor);
+    SequenceBuilder *builder = NAMidiParserGetBuilder(parser);
     builder->appendTempo(builder, ++context->id, context->channels[context->channel].tick, self->tempo);
     return true;
 }
@@ -155,11 +155,11 @@ typedef struct _TimeSignExpr {
     int denominator;
 } TimeSignExpr;
 
-static bool TimeSignExprParse(void *_self, void *visitor, void *_context)
+static bool TimeSignExprParse(void *_self, void *parser, void *_context)
 {
     TimeSignExpr *self = _self;
     NAMidiParserContext *context = _context;
-    SequenceBuilder *builder = NAMidiParserGetBuilder(visitor);
+    SequenceBuilder *builder = NAMidiParserGetBuilder(parser);
     builder->appendTimeSign(builder, ++context->id, context->channels[context->channel].tick, self->numerator, self->denominator);
     return true;
 }
@@ -190,11 +190,11 @@ static void MarkerExprDestroy(void *_self)
     free(self);
 }
 
-static bool MarkerExprParse(void *_self, void *visitor, void *_context)
+static bool MarkerExprParse(void *_self, void *parser, void *_context)
 {
     MarkerExpr *self = _self;
     NAMidiParserContext *context = _context;
-    SequenceBuilder *builder = NAMidiParserGetBuilder(visitor);
+    SequenceBuilder *builder = NAMidiParserGetBuilder(parser);
     builder->appendMarker(builder, ++context->id, context->channels[context->channel].tick, self->text);
     return true;
 }
@@ -213,7 +213,7 @@ typedef struct _ChannelExpr {
     int channel;
 } ChannelExpr;
 
-static bool ChannelExprParse(void *_self, void *visitor, void *_context)
+static bool ChannelExprParse(void *_self, void *parser, void *_context)
 {
     ChannelExpr *self = _self;
     NAMidiParserContext *context = _context;
@@ -241,11 +241,11 @@ typedef struct _VoiceExpr {
     int programNo;
 } VoiceExpr;
 
-static bool VoiceExprParse(void *_self, void *visitor, void *_context)
+static bool VoiceExprParse(void *_self, void *parser, void *_context)
 {
     VoiceExpr *self = _self;
     NAMidiParserContext *context = _context;
-    SequenceBuilder *builder = NAMidiParserGetBuilder(visitor);
+    SequenceBuilder *builder = NAMidiParserGetBuilder(parser);
     builder->appendVoice(builder, ++context->id, context->channels[context->channel].tick, context->channel, self->msb, self->lsb, self->programNo);
     return true;
 }
@@ -277,11 +277,11 @@ static void SynthExprDestroy(void *_self)
     free(self);
 }
 
-static bool SynthExprParse(void *_self, void *visitor, void *_context)
+static bool SynthExprParse(void *_self, void *parser, void *_context)
 {
     SynthExpr *self = _self;
     NAMidiParserContext *context = _context;
-    SequenceBuilder *builder = NAMidiParserGetBuilder(visitor);
+    SequenceBuilder *builder = NAMidiParserGetBuilder(parser);
     builder->appendSynth(builder, ++context->id, context->channels[context->channel].tick, context->channel, self->identifier);
     return true;
 }
@@ -300,11 +300,11 @@ typedef struct _VolumeExpr {
     int value;
 } VolumeExpr;
 
-static bool VolumeExprParse(void *_self, void *visitor, void *_context)
+static bool VolumeExprParse(void *_self, void *parser, void *_context)
 {
     VolumeExpr *self = _self;
     NAMidiParserContext *context = _context;
-    SequenceBuilder *builder = NAMidiParserGetBuilder(visitor);
+    SequenceBuilder *builder = NAMidiParserGetBuilder(parser);
     builder->appendVolume(builder, ++context->id, context->channels[context->channel].tick, context->channel, self->value);
     return true;
 }
@@ -323,11 +323,11 @@ void *NAMidiExprVolume(NAMidiParser *parser, ParseLocation *location, int value)
 
 typedef VolumeExpr PanExpr;
 
-static bool PanExprParse(void *_self, void *visitor, void *_context)
+static bool PanExprParse(void *_self, void *parser, void *_context)
 {
     PanExpr *self = _self;
     NAMidiParserContext *context = _context;
-    SequenceBuilder *builder = NAMidiParserGetBuilder(visitor);
+    SequenceBuilder *builder = NAMidiParserGetBuilder(parser);
     builder->appendPan(builder, ++context->id, context->channels[context->channel].tick, context->channel, self->value);
     return true;
 }
@@ -346,11 +346,11 @@ void *NAMidiExprPan(NAMidiParser *parser, ParseLocation *location, int value)
 
 typedef VolumeExpr ChorusExpr;
 
-static bool ChorusExprParse(void *_self, void *visitor, void *_context)
+static bool ChorusExprParse(void *_self, void *parser, void *_context)
 {
     ChorusExpr *self = _self;
     NAMidiParserContext *context = _context;
-    SequenceBuilder *builder = NAMidiParserGetBuilder(visitor);
+    SequenceBuilder *builder = NAMidiParserGetBuilder(parser);
     builder->appendChorus(builder, ++context->id, context->channels[context->channel].tick, context->channel, self->value);
     return true;
 }
@@ -369,11 +369,11 @@ void *NAMidiExprChorus(NAMidiParser *parser, ParseLocation *location, int value)
 
 typedef VolumeExpr ReverbExpr;
 
-static bool ReverbExprParse(void *_self, void *visitor, void *_context)
+static bool ReverbExprParse(void *_self, void *parser, void *_context)
 {
     ReverbExpr *self = _self;
     NAMidiParserContext *context = _context;
-    SequenceBuilder *builder = NAMidiParserGetBuilder(visitor);
+    SequenceBuilder *builder = NAMidiParserGetBuilder(parser);
     builder->appendReverb(builder, ++context->id, context->channels[context->channel].tick, context->channel, self->value);
     return true;
 }
@@ -392,7 +392,7 @@ void *NAMidiExprReverb(NAMidiParser *parser, ParseLocation *location, int value)
 
 typedef VolumeExpr TransposeExpr;
 
-static bool TransposeExprParse(void *_self, void *visitor, void *_context)
+static bool TransposeExprParse(void *_self, void *parser, void *_context)
 {
     TransposeExpr *self = _self;
     NAMidiParserContext *context = _context;
@@ -417,7 +417,7 @@ typedef struct _KeySignExpr {
     KeySign keySign;
 } KeySignExpr;
 
-static bool KeySignExprParse(void *_self, void *visitor, void *_context)
+static bool KeySignExprParse(void *_self, void *parser, void *_context)
 {
     KeySignExpr *self = _self;
     NAMidiParserContext *context = _context;
@@ -452,7 +452,7 @@ typedef struct _RestExpr {
     int step;
 } RestExpr;
 
-static bool RestExprParse(void *_self, void *visitor, void *_context)
+static bool RestExprParse(void *_self, void *parser, void *_context)
 {
     RestExpr *self = _self;
     NAMidiParserContext *context = _context;
@@ -482,18 +482,18 @@ typedef struct _NoteExpr {
     int velocity;
 } NoteExpr;
 
-static bool NoteExprParse(void *_self, void *visitor, void *_context)
+static bool NoteExprParse(void *_self, void *parser, void *_context)
 {
     NoteExpr *self = _self;
     NAMidiParserContext *context = _context;
-    SequenceBuilder *builder = NAMidiParserGetBuilder(visitor);
+    SequenceBuilder *builder = NAMidiParserGetBuilder(parser);
 
     int octave = OCTAVE_NONE != self->octave ? self->octave : context->channels[context->channel].octave;
     context->channels[context->channel].octave = octave;
 
     int noteNo = NoteTableGetNoteNo(context->keySign, self->baseNote, self->accidental, octave);
     if (!isValidRange(noteNo, 0, 127)) {
-        NAMidiParserError(visitor, &self->expr.location, ParseErrorKindGeneral, GeneralParseErrorInvalidNoteRange);
+        NAMidiParserError(parser, &self->expr.location, ParseErrorKindGeneral, GeneralParseErrorInvalidNoteRange);
         return false;
     }
 
@@ -609,13 +609,13 @@ static void PatternExprExpandDestroy(void *_self)
     free(self);
 }
 
-static bool PatternExpandExprParse(void *_self, void *visitor, void *_context)
+static bool PatternExpandExprParse(void *_self, void *parser, void *_context)
 {
     PatternExpandExpr *self = _self;
     NAMidiParserContext *context = _context;
     Expression *pattern = NAMapGet(context->patternMap, self->identifier);
     if (!pattern) {
-        NAMidiParserError(visitor, &self->expr.location, ParseErrorKindNAMidi, NAMidiParseErrorPatternMissing);
+        NAMidiParserError(parser, &self->expr.location, ParseErrorKindNAMidi, NAMidiParseErrorPatternMissing);
         return false;
     }
 
@@ -628,7 +628,7 @@ static bool PatternExpandExprParse(void *_self, void *visitor, void *_context)
     }
 
     Expression *statementList = NAArrayGetValueAt(pattern->children, 0);
-    return ExpressionParse(statementList, visitor, context);
+    return ExpressionParse(statementList, parser, context);
 }
 
 void *NAMidiExprPatternExpand(NAMidiParser *parser, ParseLocation *location, char *identifier, NAArray *idList)
