@@ -5,6 +5,7 @@
 #include "NAIterator.h"
 
 #include <stdbool.h>
+#include <alloca.h>
 
 typedef struct _NAMap NAMap;
 

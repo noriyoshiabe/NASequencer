@@ -1,11 +1,11 @@
 #pragma once
 
-#include <stdbool.h>
-#include <stdarg.h>
-
 #include "NADescription.h"
 #include "NAIterator.h"
-#include "alloca.h"
+
+#include <stdbool.h>
+#include <stdarg.h>
+#include <alloca.h>
 
 typedef struct _NAArray NAArray;
 
