@@ -129,8 +129,7 @@ static void NAMidiParserBuildPattenMap2(NAMidiParser *self, Expression *expressi
         NAMap *_patternMap = NAMidiExprStatementListGetPatternMap(expression);
 
         if (patternMap) {
-            uint8_t iteratorBuffer[NAMapIteratorSize];
-            NAIterator *iterator = NAMapGetIterator(patternMap, iteratorBuffer);
+            NAIterator *iterator = NAMapGetIterator(patternMap);
 
             while (iterator->hasNext(iterator)) {
                 NAMapEntry *entry = iterator->next(iterator);

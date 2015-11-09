@@ -6,6 +6,7 @@
 
 #undef NAMapTraverseKey
 #undef NAMapTraverseValue
+#undef NAMapGetIterator
 
 typedef struct _Entry {
     void *key;

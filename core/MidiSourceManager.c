@@ -218,8 +218,7 @@ MidiSource *MidiSourceManagerAllocMidiSource(MidiSourceManager *self, MidiSource
 
 void MidiSourceManagerDeallocMidiSource(MidiSourceManager *self, MidiSource *source)
 {
-    uint8_t iteratorBuffer[NAMapIteratorSize];
-    NAIterator *iterator = NAMapGetIterator(self->midiSourceMap, iteratorBuffer);
+    NAIterator *iterator = NAMapGetIterator(self->midiSourceMap);
     while (iterator->hasNext(iterator)) {
         NAMapEntry *entry = iterator->next(iterator);
         MidiSourceDescriptionImpl *description = entry->key;
