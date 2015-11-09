@@ -6,6 +6,7 @@
 #include <string.h>
 #include <ctype.h>
 
+#define isPowerOf2(x) ((x != 0) && ((x & (x - 1)) == 0))
 #define isValidRange(v, from, to) (from <= v && v <= to)
 #define OCTAVE_NONE -99
 
@@ -132,6 +133,11 @@ static bool TempoExprParse(void *_self, void *visitor, void *_context)
 
 void *NAMidiExprTempo(NAMidiParser *parser, ParseLocation *location, float tempo)
 { __Trace__
+    if (!isValidRange(tempo, 30.0, 300.0)) {
+        NAMidiParserError(parser, location, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
+        return NULL;
+    }
+
     TempoExpr *self = ExpressionCreate(location, sizeof(TempoExpr), "tempo");
     self->expr.vtbl.parse = TempoExprParse;
     self->tempo = tempo;
@@ -155,6 +161,11 @@ static bool TimeSignExprParse(void *_self, void *visitor, void *_context)
 
 void *NAMidiExprTimeSign(NAMidiParser *parser, ParseLocation *location, int numerator, int denominator)
 { __Trace__
+    if (1 > numerator || 1 > denominator || !isPowerOf2(denominator)) {
+        NAMidiParserError(parser, location, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
+        return NULL;
+    }
+
     TimeSignExpr *self = ExpressionCreate(location, sizeof(TimeSignExpr), "time sign");
     self->expr.vtbl.parse = TimeSignExprParse;
     self->numerator = numerator;
@@ -207,6 +218,11 @@ static bool ChannelExprParse(void *_self, void *visitor, void *_context)
 
 void *NAMidiExprChannel(NAMidiParser *parser, ParseLocation *location, int channel)
 { __Trace__
+    if (!isValidRange(channel, 1, 16)) {
+        NAMidiParserError(parser, location, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
+        return NULL;
+    }
+
     ChannelExpr *self = ExpressionCreate(location, sizeof(ChannelExpr), "channel");
     self->expr.vtbl.parse = ChannelExprParse;
     self->channel = channel;
@@ -231,6 +247,11 @@ static bool VoiceExprParse(void *_self, void *visitor, void *_context)
 
 void *NAMidiExprVoice(NAMidiParser *parser, ParseLocation *location, int msb, int lsb, int programNo)
 { __Trace__
+    if (!isValidRange(msb, 0, 127) || !isValidRange(lsb, 0, 127) || !isValidRange(programNo, 0, 127)) {
+        NAMidiParserError(parser, location, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
+        return NULL;
+    }
+
     VoiceExpr *self = ExpressionCreate(location, sizeof(VoiceExpr), "voice");
     self->expr.vtbl.parse = VoiceExprParse;
     self->msb = msb;
@@ -266,6 +287,10 @@ typedef struct _VolumeExpr {
 
 void *NAMidiExprVolume(NAMidiParser *parser, ParseLocation *location, int value)
 { __Trace__
+    if (!isValidRange(value, 0, 127)) {
+        NAMidiParserError(parser, location, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
+    }
+
     VolumeExpr *self = ExpressionCreate(location, sizeof(VolumeExpr), "volume");
     self->value = value;
     return self;
@@ -275,6 +300,10 @@ typedef VolumeExpr PanExpr;
 
 void *NAMidiExprPan(NAMidiParser *parser, ParseLocation *location, int value)
 { __Trace__
+    if (!isValidRange(value, -64, 64)) {
+        NAMidiParserError(parser, location, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
+    }
+
     PanExpr *self = ExpressionCreate(location, sizeof(PanExpr), "pan");
     self->value = value;
     return self;
@@ -284,6 +313,10 @@ typedef VolumeExpr ChorusExpr;
 
 void *NAMidiExprChorus(NAMidiParser *parser, ParseLocation *location, int value)
 { __Trace__
+    if (!isValidRange(value, 0, 127)) {
+        NAMidiParserError(parser, location, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
+    }
+
     ChorusExpr *self = ExpressionCreate(location, sizeof(ChorusExpr), "chorus");
     self->value = value;
     return self;
@@ -293,6 +326,10 @@ typedef VolumeExpr ReverbExpr;
 
 void *NAMidiExprReverb(NAMidiParser *parser, ParseLocation *location, int value)
 { __Trace__
+    if (!isValidRange(value, 0, 127)) {
+        NAMidiParserError(parser, location, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
+    }
+
     ReverbExpr *self = ExpressionCreate(location, sizeof(ReverbExpr), "reverb");
     self->value = value;
     return self;
@@ -302,6 +339,10 @@ typedef VolumeExpr TransposeExpr;
 
 void *NAMidiExprTranspose(NAMidiParser *parser, ParseLocation *location, int value)
 { __Trace__
+    if (!isValidRange(value, -64, 64)) {
+        NAMidiParserError(parser, location, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
+    }
+
     TransposeExpr *self = ExpressionCreate(location, sizeof(TransposeExpr), "transpose");
     self->value = value;
     return self;
@@ -340,6 +381,10 @@ typedef struct _RestExpr {
 
 void *NAMidiExprRest(NAMidiParser *parser, ParseLocation *location, int step)
 { __Trace__
+    if (!isValidRange(step, 0, 65535)) {
+        NAMidiParserError(parser, location, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
+    }
+
     RestExpr *self = ExpressionCreate(location, sizeof(RestExpr), "rest");
     self->step = step;
     return self;
