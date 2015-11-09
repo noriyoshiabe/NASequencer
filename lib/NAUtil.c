@@ -5,6 +5,7 @@
 #include <string.h>
 #include <libgen.h>
 #include <limits.h>
+#include <ctype.h>
 
 char *NAUtilGetRealPath(const char *filepath)
 {
@@ -37,4 +38,14 @@ const char *NAUtilGetFileExtenssion(const char *filepath)
     }
 
     return dot + 1;
+}
+
+char *NAUtilToLowerCase(char *string)
+{
+    char *c = string;
+    while (*c) {
+        *c = tolower(*c);
+        ++c;
+    }
+    return string;
 }

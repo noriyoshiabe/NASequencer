@@ -34,7 +34,9 @@ static void StatementListExprDestroy(void *_self)
 static bool StatementListExprParse(void *_self, void *parser, void *_context)
 {
     StatementListExpr *self = _self;
-    NAMidiParserContext *context = _context ? NAMidiParserContextCreateCopy(_context) : NAMidiParserContextCreate();
+    NAMidiParserContext *parent = _context;
+
+    NAMidiParserContext *context = parent ? NAMidiParserContextCreateCopy(parent) : NAMidiParserContextCreate();
     context->patternMap = self->patternMap;
 
     bool success = true;
@@ -48,7 +50,14 @@ static bool StatementListExprParse(void *_self, void *parser, void *_context)
         }
     }
 
-    if (!_context) {
+    if (parent) {
+        parent->id = context->id;
+
+        for (int i = 0; i < 16; ++i) {
+            parent->channels[i].tick = context->channels[i].tick;
+        }
+    }
+    else {
         SequenceBuilder *builder = NAMidiParserGetBuilder(parser);
         builder->setLength(builder, NAMidiParserContextGetLength(context));
     }
@@ -581,10 +590,17 @@ static void PatternExprDestroy(void *_self)
     free(self);
 }
 
+static bool PatternExprParse(void *_self, void *parser, void *_context)
+{
+    // Pattern map is pre-built by parser
+    return true;
+}
+
 void *NAMidiExprPattern(NAMidiParser *parser, ParseLocation *location, char *identifier, Expression *statementList)
 { __Trace__
     PatternExpr *self = ExpressionCreate(location, sizeof(PatternExpr), PATTERN_ID);
     self->expr.vtbl.destroy = PatternExprDestroy;
+    self->expr.vtbl.parse = PatternExprParse;
     self->identifier = identifier;
     ExpressionAddChild(&self->expr, statementList);
     return self;
@@ -654,11 +670,37 @@ static void ContextExprExpandDestroy(void *_self)
     free(self);
 }
 
+static bool ContextExprParse(void *_self, void *parser, void *_context)
+{
+    ContextExpr *self = _self;
+    NAMidiParserContext *context = _context;
+
+    uint8_t iteratorBuffer[NAArrayIteratorSize];
+    NAIterator *iterator = NAArrayGetIterator(self->contextIdList, iteratorBuffer);
+    while (iterator->hasNext(iterator)) {
+        if (NASetContains(context->contextIdList, iterator->next(iterator))) {
+            Expression *statementList = NAArrayGetValueAt(self->expr.children, 0);
+            return ExpressionParse(statementList, parser, context);
+        }
+    }
+
+    return true;
+}
+
 void *NAMidiExprContext(NAMidiParser *parser, ParseLocation *location, NAArray *idList, Expression *statementList)
 { __Trace__
     ContextExpr *self = ExpressionCreate(location, sizeof(ContextExpr), "context");
     self->expr.vtbl.destroy = ContextExprExpandDestroy;
-    self->contextIdList = idList;
+    self->expr.vtbl.parse = ContextExprParse;
+
+    if (idList) {
+        self->contextIdList = idList;
+    }
+    else {
+        self->contextIdList = NAArrayCreate(1, NADescriptionCString);
+        NAArrayAppend(self->contextIdList, strdup("default"));
+    }
+
     ExpressionAddChild(&self->expr, statementList);
     return self;
 }

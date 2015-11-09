@@ -4,6 +4,7 @@
 #include "NAMidi_yacc.h"
 #include "NAMidi_lex.h"
 #include "NAMidiExpression.h"
+#include "NAUtil.h"
 
 #include <ctype.h>
 
@@ -79,6 +80,7 @@ extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath,
 %type <expression> context
 %type <array>      context_id_list
 %type <s>          context_id
+%type <s>          identifier
 
 %%
  
@@ -165,13 +167,13 @@ note
     ;
 
 pattern
-    : DEFINE IDENTIFIER statement_list END
+    : DEFINE identifier statement_list END
                                           { $$ = NAMidiExprPattern(PERSER(), LOC(@$), $2, $3); }
     ;
 
 pattern_expand
-    : IDENTIFIER                          { $$ = NAMidiExprPatternExpand(PERSER(), LOC(@$), $1, NULL); }
-    | IDENTIFIER LPAREN context_id_list RPAREN
+    : identifier                          { $$ = NAMidiExprPatternExpand(PERSER(), LOC(@$), $1, NULL); }
+    | identifier LPAREN context_id_list RPAREN
                                           { $$ = NAMidiExprPatternExpand(PERSER(), LOC(@$), $1, $3); }
     ;
 
@@ -192,8 +194,12 @@ context_id_list
     ;
 
 context_id
-    : IDENTIFIER                          { $$ = $1; }
+    : identifier                          { $$ = $1; }
     | DEFAULT                             { $$ = strdup("default"); }
+    ;
+
+identifier
+    : IDENTIFIER                          { $$ = NAUtilToLowerCase($1); }
     ;
 
 %%

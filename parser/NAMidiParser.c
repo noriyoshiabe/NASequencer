@@ -45,9 +45,6 @@ static bool NAMidiParserParseFile(void *_self, const char *filepath)
         return false;
     }
 
-    ExpressionDump(expression, 0);
-    // TODO Build Sequence
-
     return true;
 }
 
