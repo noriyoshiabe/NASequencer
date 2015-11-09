@@ -6,6 +6,7 @@
 #include <string.h>
 
 #undef NASetTraverse
+#undef NASetGetIterator
 
 typedef struct _Entry {
     void *value;

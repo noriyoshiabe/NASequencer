@@ -433,8 +433,7 @@ static void PlayerSendNoteOn(Player *self, NoteEvent *event)
 
 static void PlayerScanNoteOff(Player *self, int prevTick, int tick)
 {
-    uint8_t iteratorBuffer[NASetIteratorSize];
-    NAIterator *iterator = NASetGetIterator(self->playingNoteEvents, iteratorBuffer);
+    NAIterator *iterator = NASetGetIterator(self->playingNoteEvents);
     while (iterator->hasNext(iterator)) {
         NoteEvent *event = iterator->next(iterator);
         int offTick = event->tick + event->gatetime;
@@ -448,8 +447,7 @@ static void PlayerScanNoteOff(Player *self, int prevTick, int tick)
 
 static void PlayerSendAllNoteOff(Player *self)
 {
-    uint8_t iteratorBuffer[NASetIteratorSize];
-    NAIterator *iterator = NASetGetIterator(self->playingNoteEvents, iteratorBuffer);
+    NAIterator *iterator = NASetGetIterator(self->playingNoteEvents);
     while (iterator->hasNext(iterator)) {
         NoteEvent *event = iterator->next(iterator);
         MixerSendNoteOff(self->mixer, event);

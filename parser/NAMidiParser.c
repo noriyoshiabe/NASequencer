@@ -211,8 +211,7 @@ NAMidiParserContext *NAMidiParserContextCreateCopy(NAMidiParserContext *self)
     memcpy(copy, self, sizeof(NAMidiParserContext));
     copy->contextIdList = NASetCreate(NAHashCString, NADescriptionCString);
 
-    uint8_t iteratorBuffer[NASetIteratorSize];
-    NAIterator *iterator = NASetGetIterator(self->contextIdList, iteratorBuffer);
+    NAIterator *iterator = NASetGetIterator(self->contextIdList);
     while (iterator->hasNext(iterator)) {
         NASetAdd(copy->contextIdList, iterator->next(iterator));
     }
