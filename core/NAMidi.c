@@ -105,12 +105,10 @@ static void NAMidiStopFileWatch(NAMidi *self)
 
 static void NAMidiStartFileWatch(NAMidi *self)
 {
-    if (!self->filepaths) {
-        return;
-    }
+    NAMidiStopFileWatch(self);
 
-    if (self->watcher) {
-        NAMidiStopFileWatch(self);
+    if (!self->filepaths || NAArrayIsEmpty(self->filepaths)) {
+        return;
     }
 
     self->watcher = FSWatcherCreate(&NAMidiFSWatcherCallbacks, self);
@@ -127,7 +125,7 @@ void NAMidiParse(NAMidi *self, const char *filepath)
 {
     ParserProxy *parser = ParserProxyCreate();
     Sequence *sequence = NULL;
-    ParseError error;
+    ParseError error = {};
 
     NAArray *filepaths = NAArrayCreate(4, NADescriptionCString);
 

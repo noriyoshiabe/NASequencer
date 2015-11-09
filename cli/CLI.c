@@ -26,7 +26,7 @@ struct _CLI {
     void *activeView;
     sigjmp_buf sigjmpBuf;
     jmp_buf jmpBuf;
-    bool prompted;
+    bool prompt;
 };
 
 static NAMidiObserverCallbacks CLINAMidiObserverCallbacks;
@@ -86,11 +86,12 @@ CLIError CLIRunShell(CLI *self)
         goto EXIT;
     }
 
-    rl_completion_entry_function = CLICompletionEntry;
     rl_attempted_completion_function = CLICompletion;
 
-    self->prompted = true;
+    self->prompt = true;
     while ((line = readline(PROMPT))) {
+        self->prompt = false;
+
         Command *cmd = CommandParse(line);
         CommandExecute(cmd, self);
 
@@ -103,6 +104,8 @@ CLIError CLIRunShell(CLI *self)
         }
 
         free(line);
+
+        self->prompt = true;
     }
 
 EXIT:
@@ -152,7 +155,7 @@ CLIError CLIExport(CLI *self, const char *output)
 
     ParserProxy *parser = ParserProxyCreate();
     Sequence *sequence = NULL;
-    ParseError error;
+    ParseError error = {};
 
     if (!ParserProxyParseFile(parser, self->filepath, &sequence, &error, NULL)) {
         fprintf(stderr, "%s:%d %s - %d:%d\n", ParseErrorKind2String(error.kind), error.error, error.location.filepath, error.location.line, error.location.column);
@@ -264,7 +267,7 @@ static void CLINAMidiOnParseFinish(void *receiver, Sequence *sequence)
 {
     CLI *self = receiver;
 
-    if (self->prompted) {
+    if (self->prompt) {
         fprintf(stdout, "\n");
     }
 
@@ -280,7 +283,7 @@ static void CLINAMidiOnParseFinish(void *receiver, Sequence *sequence)
         EventListViewRender(self->eventListView);
     }
 
-    if (self->prompted) {
+    if (self->prompt) {
         fprintf(stdout, PROMPT);
         fflush(stdout);
     }
@@ -290,13 +293,13 @@ static void CLINAMidiOnParseError(void *receiver, ParseError *error)
 {
     CLI *self = receiver;
 
-    if (self->prompted) {
+    if (self->prompt) {
         fprintf(stderr, "\n");
     }
 
     fprintf(stderr, "parse error. %s:%d %s - %d:%d\n", ParseErrorKind2String(error->kind), error->error, error->location.filepath, error->location.line, error->location.column);
 
-    if (self->prompted) {
+    if (self->prompt) {
         fprintf(stderr, PROMPT);
         fflush(stderr);
     }

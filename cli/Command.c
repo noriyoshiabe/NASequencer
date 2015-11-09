@@ -30,6 +30,18 @@ static void UnknownCommandExecute(Command *self, CLI *cli)
     printf("Unknown command: %s\n", NAArrayGetValueAt(self->argv, 0));
 }
 
+static void SourceCommandExecute(Command *self, CLI *cli)
+{
+    if (2 > NAArrayCount(self->argv)) {
+        fprintf(stderr, "filepath is missing.\n");
+        return;
+    }
+
+    NAMidi *namidi = CLIGetNAMidi(cli);
+    NAMidiSetWatchEnable(namidi, true);
+    NAMidiParse(namidi, NAArrayGetValueAt(self->argv, 1));
+}
+
 static void PlayCommandExecute(Command *self, CLI *cli)
 {
     Player *player = NAMidiGetPlayer(CLIGetNAMidi(cli));
@@ -556,6 +568,7 @@ char *CommandCompletionEntry(const char *text, int state)
 }
 
 static CommandTable commandTable[] = {
+    {"source", SourceCommandExecute},
     {"play", PlayCommandExecute},
     {"stop", StopCommandExecute},
     {"rewind", RewindCommandExecute},
