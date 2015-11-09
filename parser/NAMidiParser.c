@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <libgen.h>
+#include <sys/param.h>
 
 extern int NAMidi_parse(yyscan_t scanner, const char *filepath, Expression **expression);
 
@@ -225,7 +226,6 @@ NAMidiParserContext *NAMidiParserContextCreateCopy(NAMidiParserContext *self)
     return copy;
 }
 
-
 void NAMidiParserContextDestroy(NAMidiParserContext *self)
 {
     if (!self->copy) {
@@ -234,4 +234,13 @@ void NAMidiParserContextDestroy(NAMidiParserContext *self)
 
     NASetDestroy(self->contextIdList);
     free(self);
+}
+
+int NAMidiParserContextGetLength(NAMidiParserContext *self)
+{
+    int length = 0;
+    for (int i = 0; i < 16; ++i) {
+        length = MAX(length, self->channels[i].tick);
+    }
+    return length;
 }

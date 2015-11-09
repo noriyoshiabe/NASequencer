@@ -48,6 +48,11 @@ static bool StatementListExprParse(void *_self, void *visitor, void *_context)
         }
     }
 
+    if (!_context) {
+        SequenceBuilder *builder = NAMidiParserGetBuilder(visitor);
+        builder->setLength(builder, NAMidiParserContextGetLength(context));
+    }
+
 ERROR:
     NAMidiParserContextDestroy(context);
     return success;
@@ -272,10 +277,20 @@ static void SynthExprDestroy(void *_self)
     free(self);
 }
 
+static bool SynthExprParse(void *_self, void *visitor, void *_context)
+{
+    SynthExpr *self = _self;
+    NAMidiParserContext *context = _context;
+    SequenceBuilder *builder = NAMidiParserGetBuilder(visitor);
+    builder->appendSynth(builder, ++context->id, context->channels[context->channel].tick, context->channel, self->identifier);
+    return true;
+}
+
 void *NAMidiExprSynth(NAMidiParser *parser, ParseLocation *location, char *identifier)
 { __Trace__
     SynthExpr *self = ExpressionCreate(location, sizeof(SynthExpr), "synth");
     self->expr.vtbl.destroy = SynthExprDestroy;
+    self->expr.vtbl.parse = SynthExprParse;
     self->identifier = identifier;
     return self;
 }
@@ -285,6 +300,15 @@ typedef struct _VolumeExpr {
     int value;
 } VolumeExpr;
 
+static bool VolumeExprParse(void *_self, void *visitor, void *_context)
+{
+    VolumeExpr *self = _self;
+    NAMidiParserContext *context = _context;
+    SequenceBuilder *builder = NAMidiParserGetBuilder(visitor);
+    builder->appendVolume(builder, ++context->id, context->channels[context->channel].tick, context->channel, self->value);
+    return true;
+}
+
 void *NAMidiExprVolume(NAMidiParser *parser, ParseLocation *location, int value)
 { __Trace__
     if (!isValidRange(value, 0, 127)) {
@@ -292,11 +316,21 @@ void *NAMidiExprVolume(NAMidiParser *parser, ParseLocation *location, int value)
     }
 
     VolumeExpr *self = ExpressionCreate(location, sizeof(VolumeExpr), "volume");
+    self->expr.vtbl.parse = VolumeExprParse;
     self->value = value;
     return self;
 }
 
 typedef VolumeExpr PanExpr;
+
+static bool PanExprParse(void *_self, void *visitor, void *_context)
+{
+    PanExpr *self = _self;
+    NAMidiParserContext *context = _context;
+    SequenceBuilder *builder = NAMidiParserGetBuilder(visitor);
+    builder->appendPan(builder, ++context->id, context->channels[context->channel].tick, context->channel, self->value);
+    return true;
+}
 
 void *NAMidiExprPan(NAMidiParser *parser, ParseLocation *location, int value)
 { __Trace__
@@ -305,11 +339,21 @@ void *NAMidiExprPan(NAMidiParser *parser, ParseLocation *location, int value)
     }
 
     PanExpr *self = ExpressionCreate(location, sizeof(PanExpr), "pan");
+    self->expr.vtbl.parse = PanExprParse;
     self->value = value;
     return self;
 }
 
 typedef VolumeExpr ChorusExpr;
+
+static bool ChorusExprParse(void *_self, void *visitor, void *_context)
+{
+    ChorusExpr *self = _self;
+    NAMidiParserContext *context = _context;
+    SequenceBuilder *builder = NAMidiParserGetBuilder(visitor);
+    builder->appendChorus(builder, ++context->id, context->channels[context->channel].tick, context->channel, self->value);
+    return true;
+}
 
 void *NAMidiExprChorus(NAMidiParser *parser, ParseLocation *location, int value)
 { __Trace__
@@ -318,11 +362,21 @@ void *NAMidiExprChorus(NAMidiParser *parser, ParseLocation *location, int value)
     }
 
     ChorusExpr *self = ExpressionCreate(location, sizeof(ChorusExpr), "chorus");
+    self->expr.vtbl.parse = ChorusExprParse;
     self->value = value;
     return self;
 }
 
 typedef VolumeExpr ReverbExpr;
+
+static bool ReverbExprParse(void *_self, void *visitor, void *_context)
+{
+    ReverbExpr *self = _self;
+    NAMidiParserContext *context = _context;
+    SequenceBuilder *builder = NAMidiParserGetBuilder(visitor);
+    builder->appendReverb(builder, ++context->id, context->channels[context->channel].tick, context->channel, self->value);
+    return true;
+}
 
 void *NAMidiExprReverb(NAMidiParser *parser, ParseLocation *location, int value)
 { __Trace__
@@ -331,11 +385,20 @@ void *NAMidiExprReverb(NAMidiParser *parser, ParseLocation *location, int value)
     }
 
     ReverbExpr *self = ExpressionCreate(location, sizeof(ReverbExpr), "reverb");
+    self->expr.vtbl.parse = ReverbExprParse;
     self->value = value;
     return self;
 }
 
 typedef VolumeExpr TransposeExpr;
+
+static bool TransposeExprParse(void *_self, void *visitor, void *_context)
+{
+    TransposeExpr *self = _self;
+    NAMidiParserContext *context = _context;
+    context->transpose = self->value;
+    return true;
+}
 
 void *NAMidiExprTranspose(NAMidiParser *parser, ParseLocation *location, int value)
 { __Trace__
@@ -344,6 +407,7 @@ void *NAMidiExprTranspose(NAMidiParser *parser, ParseLocation *location, int val
     }
 
     TransposeExpr *self = ExpressionCreate(location, sizeof(TransposeExpr), "transpose");
+    self->expr.vtbl.parse = TransposeExprParse;
     self->value = value;
     return self;
 }
@@ -352,6 +416,14 @@ typedef struct _KeySignExpr {
     Expression expr;
     KeySign keySign;
 } KeySignExpr;
+
+static bool KeySignExprParse(void *_self, void *visitor, void *_context)
+{
+    KeySignExpr *self = _self;
+    NAMidiParserContext *context = _context;
+    context->keySign = self->keySign;
+    return true;
+}
 
 void *NAMidiExprKeySign(NAMidiParser *parser, ParseLocation *location, char *keyString)
 { __Trace__
@@ -367,6 +439,7 @@ void *NAMidiExprKeySign(NAMidiParser *parser, ParseLocation *location, char *key
     }
 
     KeySignExpr *self = ExpressionCreate(location, sizeof(KeySignExpr), "key sign");
+    self->expr.vtbl.parse = KeySignExprParse;
     self->keySign = keySign;
 
     free(keyString);
@@ -379,6 +452,14 @@ typedef struct _RestExpr {
     int step;
 } RestExpr;
 
+static bool RestExprParse(void *_self, void *visitor, void *_context)
+{
+    RestExpr *self = _self;
+    NAMidiParserContext *context = _context;
+    context->channels[context->channel].tick += self->step;
+    return true;
+}
+
 void *NAMidiExprRest(NAMidiParser *parser, ParseLocation *location, int step)
 { __Trace__
     if (!isValidRange(step, 0, 65535)) {
@@ -386,6 +467,7 @@ void *NAMidiExprRest(NAMidiParser *parser, ParseLocation *location, int step)
     }
 
     RestExpr *self = ExpressionCreate(location, sizeof(RestExpr), "rest");
+    self->expr.vtbl.parse = RestExprParse;
     self->step = step;
     return self;
 }
@@ -399,6 +481,35 @@ typedef struct _NoteExpr {
     int gatetime;
     int velocity;
 } NoteExpr;
+
+static bool NoteExprParse(void *_self, void *visitor, void *_context)
+{
+    NoteExpr *self = _self;
+    NAMidiParserContext *context = _context;
+    SequenceBuilder *builder = NAMidiParserGetBuilder(visitor);
+
+    int octave = OCTAVE_NONE != self->octave ? self->octave : context->channels[context->channel].octave;
+    context->channels[context->channel].octave = octave;
+
+    int noteNo = NoteTableGetNoteNo(context->keySign, self->baseNote, self->accidental, octave);
+    if (!isValidRange(noteNo, 0, 127)) {
+        NAMidiParserError(visitor, &self->expr.location, ParseErrorKindGeneral, GeneralParseErrorInvalidNoteRange);
+        return false;
+    }
+
+    int step = -1 != self->step ? self->step : 0;
+
+    int gatetime = -1 != self->gatetime ? self->gatetime : context->channels[context->channel].gatetime;
+    context->channels[context->channel].gatetime = gatetime;
+
+    int velocity = -1 != self->velocity ? self->velocity : context->channels[context->channel].velocity;
+    context->channels[context->channel].velocity = velocity;
+
+    builder->appendNote(builder, ++context->id, context->channels[context->channel].tick, context->channel, noteNo, gatetime, velocity);
+    context->channels[context->channel].tick += step;
+
+    return true;
+}
 
 void *NAMidiExprNote(NAMidiParser *parser, ParseLocation *location, char *noteString, int step, int gatetime, int velocity)
 { __Trace__
@@ -444,6 +555,8 @@ void *NAMidiExprNote(NAMidiParser *parser, ParseLocation *location, char *noteSt
     }
 
     NoteExpr *self = ExpressionCreate(location, sizeof(NoteExpr), "note");
+    self->expr.vtbl.parse = NoteExprParse;
+
     self->step = step;
     self->baseNote = baseNote;
     self->accidental = accidental;

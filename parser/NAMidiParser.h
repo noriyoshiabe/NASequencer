@@ -55,3 +55,4 @@ typedef struct _NAMidiParserContext {
 extern NAMidiParserContext *NAMidiParserContextCreate();
 extern NAMidiParserContext *NAMidiParserContextCreateCopy(NAMidiParserContext *self);
 extern void NAMidiParserContextDestroy(NAMidiParserContext *self);
+extern int NAMidiParserContextGetLength(NAMidiParserContext *self);
