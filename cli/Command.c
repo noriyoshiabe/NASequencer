@@ -356,10 +356,9 @@ static void StatusCommandExecute(Command *self, CLI *cli)
 
     Mixer *mixer = NAMidiGetMixer(CLIGetNAMidi(cli));
     NAArray *array = MixerGetChannels(mixer);
-    int count = NAArrayCount(array);
-    MixerChannel **channels = NAArrayGetValues(array);
-    for (int i = 0; i < count; ++i) {
-        MixerChannel *channel = channels[i];
+    NAIterator *iterator = NAArrayGetIterator(array);
+    while (iterator->hasNext(iterator)) {
+        MixerChannel *channel = iterator->next(iterator);
         for (int j = 0; j < sizeof(table)/sizeof(table[0]); ++j) {
             char text[64];
             int width = table[j].width;
@@ -430,10 +429,9 @@ static void MuteCommandExecute(Command *self, CLI *cli)
         MixerChannelSetMute(mixerChannel, !mute);
     }
     else {
-        int count = NAArrayCount(array);
-        MixerChannel **channels = NAArrayGetValues(array);
-        for (int i = 0; i < count; ++i) {
-            MixerChannelSetMute(channels[i], false);
+        NAIterator *iterator = NAArrayGetIterator(array);
+        while (iterator->hasNext(iterator)) {
+            MixerChannelSetMute(iterator->next(iterator), false);
         }
     }
 
@@ -465,10 +463,9 @@ static void SoloCommandExecute(Command *self, CLI *cli)
         MixerChannelSetSolo(mixerChannel, !solo);
     }
     else {
-        int count = NAArrayCount(array);
-        MixerChannel **channels = NAArrayGetValues(array);
-        for (int i = 0; i < count; ++i) {
-            MixerChannelSetSolo(channels[i], false);
+        NAIterator *iterator = NAArrayGetIterator(array);
+        while (iterator->hasNext(iterator)) {
+            MixerChannelSetSolo(iterator->next(iterator), false);
         }
     }
 

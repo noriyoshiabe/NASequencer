@@ -222,10 +222,9 @@ void MixerSendSynth(Mixer *self, SynthEvent *event)
 {
     MixerChannel *channel = NAArrayGetValueAt(self->channels, event->channel - 1);
     NAArray *availableDescriptions = MidiSourceManagerGetAvailableDescriptions(MidiSourceManagerSharedInstance());
-    int count = NAArrayCount(availableDescriptions);
-    MidiSourceDescription **descriptions = NAArrayGetValues(availableDescriptions);
-    for (int i = 0; i < count; ++i) {
-        MidiSourceDescription *description = descriptions[i];
+    NAIterator *iterator = NAArrayGetIterator(availableDescriptions);
+    while (iterator->hasNext(iterator)) {
+        MidiSourceDescription *description = iterator->next(iterator);
         if (0 == strcmp(description->name, event->identifier)) {
             MixerChannelSetMidiSourceDescription(channel, description);
             break;
@@ -284,10 +283,10 @@ static void MixerAudioCallback(void *receiver, AudioSample *buffer, uint32_t cou
         *p++ = (AudioSample){0, 0};
     }
 
-    int sourceCount = NAArrayCount(self->activeSources);
-    MidiSource **sources = NAArrayGetValues(self->activeSources);
-    for (int i = 0; i < sourceCount; ++i) {
-        sources[i]->computeAudioSample(sources[i], samples, count);
+    NAIterator *iterator = NAArrayGetIterator(self->activeSources);
+    while (iterator->hasNext(iterator)) {
+        MidiSource *source = iterator->next(iterator);
+        source->computeAudioSample(source, samples, count);
     }
 
     AudioSample valueLevel = {0, 0};
@@ -363,19 +362,21 @@ static void MixerMidiSourceCallback(void *receiver, MidiSource *source, MidiSour
 
 static void MixerUpdateActiveChannles(Mixer *self)
 {
+    NAIterator *iterator;
     bool soloExists = false;
 
-    int count = NAArrayCount(self->channels);
-    MixerChannel **channels = NAArrayGetValues(self->channels);
-    for (int i = 0; i < count; ++i) {
-        if (channels[i]->solo) {
+    iterator = NAArrayGetIterator(self->channels);
+    while (iterator->hasNext(iterator)) {
+        MixerChannel *channel = iterator->next(iterator);
+        if (channel->solo) {
             soloExists = true;
             break;
         }
     }
 
-    for (int i = 0; i < count; ++i) {
-        MixerChannel *channel = channels[i];
+    iterator = NAArrayGetIterator(self->channels);
+    while (iterator->hasNext(iterator)) {
+        MixerChannel *channel = iterator->next(iterator);
         bool active = !channel->mute && (channel->solo || !soloExists);
         bool notify = channel->active != active;
 
@@ -412,18 +413,18 @@ static void MixerMidiSourceManagerOnUnloadAvailableMidiSourceDescription(void *r
     if (sourceToUnload) {
         MidiSourceDescription *defaultDescription = MidiSourceManagerGetDefaultDescription(manager);
 
-        int count = NAArrayCount(self->channels);
-        MixerChannel **channels = NAArrayGetValues(self->channels);
-        for (int i = 0; i < count; ++i) {
-            if (channels[i]->source == sourceToUnload) {
+        NAIterator *iterator = NAArrayGetIterator(self->channels);
+        while (iterator->hasNext(iterator)) {
+            MixerChannel *channel = iterator->next(iterator);
+            if (channel->source == sourceToUnload) {
                 MidiSource *source = NAMapGet(self->sourceMap, defaultDescription); 
                 if (!source) {
                     source = MidiSourceManagerAllocMidiSource(manager, defaultDescription, self->audioOut->getSampleRate(self->audioOut));
                     NAMapPut(self->sourceMap, defaultDescription, source);
                 }
 
-                channels[i]->source = source;
-                channels[i]->description = defaultDescription;
+                channel->source = source;
+                channel->description = defaultDescription;
 
                 NAMessageQPost(self->msgQ, MixerMessageAttachSource, source);
             }

@@ -115,10 +115,9 @@ static void NAMidiStartFileWatch(NAMidi *self)
 
     self->watcher = FSWatcherCreate(&NAMidiFSWatcherCallbacks, self);
 
-    int count = NAArrayCount(self->filepaths);
-    char **values = NAArrayGetValues(self->filepaths);
-    for (int i = 0; i < count; ++i) {
-        FSWatcherRegisterFilepath(self->watcher, values[i]);
+    NAIterator *iterator = NAArrayGetIterator(self->filepaths);
+    while (iterator->hasNext(iterator)) {
+        FSWatcherRegisterFilepath(self->watcher, iterator->next(iterator));
     }
 
     FSWatcherStart(self->watcher);
@@ -185,8 +184,7 @@ Sequence *NAMidiGetSequence(NAMidi *self)
 static void NAMidiFSWatcherOnFileChanged(void *receiver, const char *changedFile)
 {
     NAMidi *self = receiver;
-    char **filepaths = NAArrayGetValues(self->filepaths);
-    NAMidiParse(self, filepaths[0]);
+    NAMidiParse(self, NAArrayGetValueAt(self->filepaths, 0));
 }
 
 static void NAMidiFSWatcherOnError(void *receiver, int error, const char *message)

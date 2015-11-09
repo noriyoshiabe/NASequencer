@@ -68,16 +68,16 @@ void ExporterDestroy(Exporter *self)
 static void ExporterBuildEventsToWrite(Exporter *self)
 {
     int count = NAArrayCount(self->sequence->events);
-    MidiEvent **events = NAArrayGetValues(self->sequence->events);
-
-    self->noteOffEvents = NASetCreate(NAHashAddress, NULL);
     self->eventsToWrite = NAArrayCreate(((count * 2 / 1024) + 1) * 1024, NULL);
+    self->noteOffEvents = NASetCreate(NAHashAddress, NULL);
 
-    for (int i = 0; i < count; ++i) {
-        NAArrayAppend(self->eventsToWrite, events[i]);
+    NAIterator *iterator = NAArrayGetIterator(self->sequence->events);
+    while (iterator->hasNext(iterator)) {
+        MidiEvent *event = iterator->next(iterator);
+        NAArrayAppend(self->eventsToWrite, event);
 
-        if (MidiEventTypeNote == events[i]->type) {
-            NoteEvent *noteOn = (NoteEvent *)events[i];
+        if (MidiEventTypeNote == event->type) {
+            NoteEvent *noteOn = (NoteEvent *)event;
 
             NoteEvent *noteOff = MidiEventAlloc(MidiEventTypeNote, noteOn->id, noteOn->tick + noteOn->gatetime, sizeof(NoteEvent) - sizeof(MidiEvent));
             noteOff->channel = noteOn->channel;

@@ -282,10 +282,9 @@ void PianoRollViewSetSequence(PianoRollView *self, Sequence *sequence)
 
     self->sequence = SequenceRetain(sequence);
 
-    int count = NAArrayCount(sequence->events);
-    MidiEvent **events = NAArrayGetValues(sequence->events);
-    for (int i = 0; i < count; ++i) {
-        MidiEvent *event = events[i];
+    NAIterator *iterator = NAArrayGetIterator(sequence->events);
+    while (iterator->hasNext(iterator)) {
+        MidiEvent *event = iterator->next(iterator);
         if (MidiEventTypeNote == event->type) {
             NoteEvent *note = (NoteEvent *)event;
             Track *track = &self->tracks[note->channel - 1];

@@ -42,10 +42,9 @@ void ExpressionDump(Expression *self, int indent)
     printf(" - %s:%d:%d\n", self->location.filepath, self->location.line, self->location.column);
 
     if (self->children) {
-        int count = NAArrayCount(self->children);
-        void **values = NAArrayGetValues(self->children);
-        for (int i = 0; i < count; ++i) {
-            ExpressionDump(values[i], indent + 4);
+        NAIterator *iterator = NAArrayGetIterator(self->children);
+        while (iterator->hasNext(iterator)) {
+            ExpressionDump(iterator->next(iterator), indent + 4);
         }
     }
 }

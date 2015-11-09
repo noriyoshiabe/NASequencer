@@ -338,8 +338,7 @@ void TempoRecordDump(TempoRecord *self, int indent)
 
 void TimeTableDump(TimeTable *self, int indent)
 {
-    int count;
-    void **values;
+    NAIterator *iterator;
 
     printf("\n");
     printf("%*s", indent, "");
@@ -351,19 +350,17 @@ void TimeTableDump(TimeTable *self, int indent)
     printf("TimeSign:\n");
     printf("%*s", indent, "");
     printf("-------------------------\n");
-    count = NAArrayCount(self->timeSignRecords);
-    values = NAArrayGetValues(self->timeSignRecords);
-    for (int i = 0; i < count; ++i) {
-        TimeSignRecordDump(values[i], indent);
+    iterator = NAArrayGetIterator(self->timeSignRecords);
+    while (iterator->hasNext(iterator)) {
+        TimeSignRecordDump(iterator->next(iterator), indent);
     }
     printf("\n");
     printf("%*s", indent, "");
     printf("Tempo:\n");
     printf("%*s", indent, "");
     printf("-------------------------\n");
-    count = NAArrayCount(self->tempoRecords);
-    values = NAArrayGetValues(self->tempoRecords);
-    for (int i = 0; i < count; ++i) {
-        TempoRecordDump(values[i], indent);
+    iterator = NAArrayGetIterator(self->tempoRecords);
+    while (iterator->hasNext(iterator)) {
+        TempoRecordDump(iterator->next(iterator), indent);
     }
 }

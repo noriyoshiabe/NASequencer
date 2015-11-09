@@ -48,9 +48,6 @@ void SequenceSortEvents(Sequence *self)
 
 void SequenceDump(Sequence *self, int indent)
 {
-    int count;
-    void **values;
-
     printf("\n");
     printf("%*s", indent, "");
     printf("Sequence: %s\n", self->title);
@@ -64,9 +61,8 @@ void SequenceDump(Sequence *self, int indent)
     printf("Event:\n");
     printf("%*s", indent, "");
     printf("-------------------------\n");
-    count = NAArrayCount(self->events);
-    values = NAArrayGetValues(self->events);
-    for (int i = 0; i < count; ++i) {
-        MidiEventDump(values[i], indent);
+    NAIterator *iterator = NAArrayGetIterator(self->events);
+    while (iterator->hasNext(iterator)) {
+        MidiEventDump(iterator->next(iterator), indent);
     }
 }

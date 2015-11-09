@@ -116,10 +116,9 @@ static void NAMidiParserBuildPattenMap1(NAMidiParser *self, Expression *expressi
     }
 
     if (expression->children) {
-        int count = NAArrayCount(expression->children);
-        void **values = NAArrayGetValues(expression->children);
-        for (int i = 0; i < count; ++i) {
-            NAMidiParserBuildPattenMap1(self, values[i], patternMap);
+        NAIterator *iterator = NAArrayGetIterator(expression->children);
+        while (iterator->hasNext(iterator)) {
+            NAMidiParserBuildPattenMap1(self, iterator->next(iterator), patternMap);
         }
     }
 }
@@ -143,10 +142,9 @@ static void NAMidiParserBuildPattenMap2(NAMidiParser *self, Expression *expressi
     }
 
     if (expression->children) {
-        int count = NAArrayCount(expression->children);
-        void **values = NAArrayGetValues(expression->children);
-        for (int i = 0; i < count; ++i) {
-            NAMidiParserBuildPattenMap2(self, values[i], patternMap);
+        NAIterator *iterator = NAArrayGetIterator(expression->children);
+        while (iterator->hasNext(iterator)) {
+            NAMidiParserBuildPattenMap2(self, iterator->next(iterator), patternMap);
         }
     }
 }

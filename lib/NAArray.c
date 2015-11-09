@@ -8,6 +8,7 @@
 #undef NAArrayTraverse
 #undef NAArrayTraverseWithContext
 #undef NAArrayApplyAt
+#undef NAArrayGetIterator
 
 struct _NAArray {
     int capacity;

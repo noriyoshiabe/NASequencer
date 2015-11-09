@@ -41,10 +41,9 @@ static bool StatementListExprParse(void *_self, void *parser, void *_context)
 
     bool success = true;
 
-    int count = NAArrayCount(self->expr.children);
-    void **values = NAArrayGetValues(self->expr.children);
-    for (int i = 0; i < count; ++i) {
-        if (!ExpressionParse(values[i], parser, context)) {
+    NAIterator *iterator = NAArrayGetIterator(self->expr.children);
+    while (iterator->hasNext(iterator)) {
+        if (!ExpressionParse(iterator->next(iterator), parser, context)) {
             success = false;
             goto ERROR;
         }
@@ -636,10 +635,9 @@ static bool PatternExpandExprParse(void *_self, void *parser, void *_context)
     }
 
     if (self->contextIdList) {
-        int count = NAArrayCount(self->contextIdList);
-        void **values = NAArrayGetValues(self->contextIdList);
-        for (int i = 0; i < count; ++i) {
-            NASetAdd(context->contextIdList, values[i]);
+        NAIterator *iterator = NAArrayGetIterator(self->contextIdList);
+        while (iterator->hasNext(iterator)) {
+            NASetAdd(context->contextIdList, iterator->next(iterator));
         }
     }
 
@@ -675,8 +673,7 @@ static bool ContextExprParse(void *_self, void *parser, void *_context)
     ContextExpr *self = _self;
     NAMidiParserContext *context = _context;
 
-    uint8_t iteratorBuffer[NAArrayIteratorSize];
-    NAIterator *iterator = NAArrayGetIterator(self->contextIdList, iteratorBuffer);
+    NAIterator *iterator = NAArrayGetIterator(self->contextIdList);
     while (iterator->hasNext(iterator)) {
         if (NASetContains(context->contextIdList, iterator->next(iterator))) {
             Expression *statementList = NAArrayGetValueAt(self->expr.children, 0);
@@ -729,10 +726,9 @@ char *NAMidiExprPatternGetIdentifier(void *_self)
 
 Expression *NAMidiExprStatementListMarge(Expression *self, Expression *statementList)
 {
-    int count = NAArrayCount(statementList->children);
-    void **values = NAArrayGetValues(statementList->children);
-    for (int i = 0; i < count; ++i) {
-        Expression *child = values[i];
+    NAIterator *iterator = NAArrayGetIterator(statementList->children);
+    while (iterator->hasNext(iterator)) {
+        Expression *child = iterator->next(iterator);
         child->parent = self;
         NAArrayAppend(self->children, child);
     }

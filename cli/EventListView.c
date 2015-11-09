@@ -101,11 +101,9 @@ void EventListViewRender(EventListView *self)
         ? TimeTableLength(self->sequence->timeTable)
         : TimeTableTickByMeasure(self->sequence->timeTable, measure + self->length);
 
-    int count = NAArrayCount(self->sequence->events);
-    MidiEvent **events = NAArrayGetValues(self->sequence->events);
-
-    for (int i = 0; i < count; ++i) {
-        MidiEvent *event = events[i];
+    NAIterator *iterator = NAArrayGetIterator(self->sequence->events);
+    while (iterator->hasNext(iterator)) {
+        MidiEvent *event = iterator->next(iterator);
 
         if (event->tick < from || to <= event->tick) {
             continue;

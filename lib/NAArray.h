@@ -5,6 +5,7 @@
 
 #include "NADescription.h"
 #include "NAIterator.h"
+#include "alloca.h"
 
 typedef struct _NAArray NAArray;
 
@@ -36,3 +37,4 @@ extern const int NAArrayIteratorSize;
 #define NAArrayTraverse(self, function) NAArrayTraverse(self, (void *)function)
 #define NAArrayTraverseWithContext(self, context, function, ...) NAArrayTraverseWithContext(self, context, (void *)function, __VA_ARGS__)
 #define NAArrayApplyAt(self, index, function) NAArrayApplyAt(self, index, (void *)function)
+#define NAArrayGetIterator(self) NAArrayGetIterator(self, alloca(NAArrayIteratorSize))
