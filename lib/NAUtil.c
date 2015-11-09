@@ -6,6 +6,7 @@
 #include <libgen.h>
 #include <limits.h>
 #include <ctype.h>
+#include <sys/stat.h>
 
 char *NAUtilGetRealPath(const char *filepath)
 {
@@ -48,4 +49,10 @@ char *NAUtilToLowerCase(char *string)
         ++c;
     }
     return string;
+}
+
+extern bool NAUtilIsDirectory(char *path)
+{
+    struct stat s;
+    return 0 == stat(path, &s) && s.st_mode & S_IFDIR;
 }

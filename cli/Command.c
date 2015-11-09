@@ -484,6 +484,46 @@ static void SoloCommandExecute(Command *self, CLI *cli)
     StatusCommandExecute(self, cli);
 }
 
+static void LoadCommandExecute(Command *self, CLI *cli)
+{
+    if (2 > NAArrayCount(self->argv)) {
+        fprintf(stderr, "filepath is missing.\n");
+        return;
+    }
+
+    MidiSourceManager *manager = MidiSourceManagerSharedInstance();
+    if (!MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(manager, NAArrayGetValueAt(self->argv, 1))) {
+        fprintf(stderr, "load sound source failed.\n");
+    }
+}
+
+static void UnloadCommandExecute(Command *self, CLI *cli)
+{
+    if (2 > NAArrayCount(self->argv)) {
+        fprintf(stderr, "filepath is missing.\n");
+        return;
+    }
+
+    MidiSourceManager *manager = MidiSourceManagerSharedInstance();
+    NAArray *descriptions = MidiSourceManagerGetAvailableDescriptions(manager);
+
+    char *err;
+    char *text = NAArrayGetValueAt(self->argv, 1);
+    long index = strtol(text, &err, 10);
+
+    if ('\0' != *err) {
+        fprintf(stderr, "cannot parse index of synthesizers. %s\n", text);
+        return;
+    }
+
+    if (index < 0 || NAArrayCount(descriptions) <= index) {
+        fprintf(stderr, "index of synthesizers is out of range. %ld\n", index);
+        return;
+    }
+
+    MidiSourceManagerUnloadMidiSourceDescription(manager, NAArrayGetValueAt(descriptions, index));
+}
+
 static void ExitCommandExecute(Command *self, CLI *cli)
 {
     free(self);
@@ -506,8 +546,18 @@ Command *CommandParse(const char *line)
 
     NAArray *argv = NAArrayCreate(4, NADescriptionCString);
 
+    char *c;
+    while ((c = strstr(str, "\\ "))) {
+        memmove(c + 1, c + 2, strlen(c + 2) + 1);
+    }
+
     char *saveptr, *token, *s = str;
     while ((token = strtok_r(s, " ", &saveptr))) {
+        for (int i = 0; token[i]; ++i) {
+            if (token[i] == '\\') {
+                token[i] = ' ';
+            }
+        }
         NAArrayAppend(argv, strdup(token));
         s = NULL;
     }
@@ -583,6 +633,8 @@ static CommandTable commandTable[] = {
     {"status", StatusCommandExecute},
     {"mute", MuteCommandExecute},
     {"solo", SoloCommandExecute},
+    {"load", LoadCommandExecute},
+    {"unload", UnloadCommandExecute},
     {"exit", ExitCommandExecute},
 
     {NULL, NULL}

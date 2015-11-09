@@ -34,7 +34,6 @@ static PlayerObserverCallbacks CLIPlayerObserverCallbacks;
 static MidiSourceManagerObserverCallbacks CLIMidiSourceManagerObserverCallbacks;
 
 static char **CLICompletion(const char *text, int start, int end);
-static int CLICompletionEntry(const char *text, int state);
 
 CLI *CLICreate(const char *filepath, const char **soundSources)
 {
@@ -120,16 +119,51 @@ EXIT:
 static char **CLICompletion(const char *text, int start, int end)
 {
     if (0 == start) {
+        rl_completion_append_character = ' ';
         return rl_completion_matches(text, CommandCompletionEntry);
     }
     else {
-        return NULL;
-    }
-}
+        rl_completion_append_character = '\0';
 
-static int CLICompletionEntry(const char *text, int state)
-{
-    return 0;
+        char **matches = rl_completion_matches(text, rl_filename_completion_function);
+        for (int i = 0; matches && matches[i]; ++i) {
+            if (NAUtilIsDirectory(matches[i])) {
+                char *str = malloc(strlen(matches[i]) + 2);
+                strcpy(str, matches[i]);
+                if (str[strlen(str) - 1] != '/') {
+                    strcat(str, "/");
+                }
+                free(matches[i]);
+                matches[i] = str;
+            }
+
+            int count = 0;
+            for (int j = 0; matches[i][j]; ++j) {
+                if (matches[i][j] == ' ') {
+                    ++count;
+                }
+            }
+
+            if (0 < count) {
+                char *str = malloc(strlen(matches[i]) + count + 1);
+                str[0] = '\0';
+
+                char *saveptr, *token, *s = matches[i];
+                while ((token = strtok_r(s, " ", &saveptr))) {
+                    strcat(str, token);
+                    if (0 < count--) {
+                        strcat(str, "\\ ");
+                    }
+                    s = NULL;
+                }
+
+                free(matches[i]);
+                matches[i] = str;
+            }
+        }
+
+        return matches;
+    }
 }
 
 void CLISigInt(CLI *self)
