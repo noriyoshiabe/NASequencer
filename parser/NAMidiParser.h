@@ -4,6 +4,8 @@
 
 typedef enum {
     NAMidiParseErrorPatternMissing,
+    NAMidiParseErrorDuplicatePatternIdentifier,
+    NAMidiParseErrorCircularPatternReference,
 } NAMidiParseError;
 
 extern Parser *NAMidiParserCreate(SequenceBuilder *builder, ParserCallbacks *callbacks, void *receiver);
@@ -13,6 +15,8 @@ static inline const char *NAMidiParseError2String(NAMidiParseError error)
 #define CASE(error) case error: return &(#error[16])
     switch (error) {
     CASE(NAMidiParseErrorPatternMissing);
+    CASE(NAMidiParseErrorDuplicatePatternIdentifier);
+    CASE(NAMidiParseErrorCircularPatternReference);
     default:
        break;
     }

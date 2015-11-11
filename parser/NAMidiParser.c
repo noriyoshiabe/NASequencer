@@ -24,7 +24,7 @@ struct _NAMidiParser {
 };
 
 static bool NAMidiParserParseFileInternal(NAMidiParser *self, const char *filepath, Expression **expression);
-static void NAMidiParserBuildPattenMap1(NAMidiParser *self, Expression *expression, NAMap *patternMap);
+static bool NAMidiParserBuildPattenMap1(NAMidiParser *self, Expression *expression, NAMap *patternMap);
 static void NAMidiParserBuildPattenMap2(NAMidiParser *self, Expression *expression, NAMap *patternMap);
 
 static bool NAMidiParserParseFile(void *_self, const char *filepath)
@@ -37,7 +37,10 @@ static bool NAMidiParserParseFile(void *_self, const char *filepath)
         return false;
     }
 
-    NAMidiParserBuildPattenMap1(self, expression, NULL);
+    if (!NAMidiParserBuildPattenMap1(self, expression, NULL)) {
+        return false;
+    }
+
     NAMidiParserBuildPattenMap2(self, expression, NULL);
 
     if (!ExpressionParse(expression, self, NULL)) {
@@ -105,22 +108,33 @@ static bool NAMidiParserParseFileInternal(NAMidiParser *self, const char *filepa
     return success;
 }
 
-static void NAMidiParserBuildPattenMap1(NAMidiParser *self, Expression *expression, NAMap *patternMap)
+static bool NAMidiParserBuildPattenMap1(NAMidiParser *self, Expression *expression, NAMap *patternMap)
 {
     if (NAMidiExprIsStatementList(expression)) {
         patternMap = NAMidiExprStatementListGetPatternMap(expression);
     }
 
     if (NAMidiExprIsPattern(expression)) {
-        NAMapPut(patternMap, NAMidiExprPatternGetIdentifier(expression), expression);
+        char *identifier = NAMidiExprPatternGetIdentifier(expression);
+        if (NAMapContainsKey(patternMap, identifier)) {
+            NAMidiParserError(self, &expression->location, ParseErrorKindNAMidi, NAMidiParseErrorDuplicatePatternIdentifier);
+            return false;
+        }
+        else {
+            NAMapPut(patternMap, identifier, expression);
+        }
     }
 
     if (expression->children) {
         NAIterator *iterator = NAArrayGetIterator(expression->children);
         while (iterator->hasNext(iterator)) {
-            NAMidiParserBuildPattenMap1(self, iterator->next(iterator), patternMap);
+            if (!NAMidiParserBuildPattenMap1(self, iterator->next(iterator), patternMap)) {
+                return false;
+            }
         }
     }
+
+    return true;
 }
 
 static void NAMidiParserBuildPattenMap2(NAMidiParser *self, Expression *expression, NAMap *patternMap)
@@ -198,7 +212,7 @@ NAMidiParserContext *NAMidiParserContextCreate()
     }
 
     self->contextIdList = NASetCreate(NAHashCString, NADescriptionCString);
-    self->expandingPatternList = NASetCreate(NAHashCString, NADescriptionCString);
+    self->expandingPatternList = NASetCreate(NAHashAddress, NADescriptionAddress);
 
     return self;
 }

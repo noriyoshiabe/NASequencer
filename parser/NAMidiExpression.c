@@ -629,8 +629,14 @@ static bool PatternExpandExprParse(void *_self, void *parser, void *_context)
     PatternExpandExpr *self = _self;
     NAMidiParserContext *context = _context;
     Expression *pattern = NAMapGet(context->patternMap, self->identifier);
+
     if (!pattern) {
         NAMidiParserError(parser, &self->expr.location, ParseErrorKindNAMidi, NAMidiParseErrorPatternMissing);
+        return false;
+    }
+
+    if (NASetContains(context->expandingPatternList, pattern)) {
+        NAMidiParserError(parser, &self->expr.location, ParseErrorKindNAMidi, NAMidiParseErrorCircularPatternReference);
         return false;
     }
 
@@ -641,8 +647,14 @@ static bool PatternExpandExprParse(void *_self, void *parser, void *_context)
         }
     }
 
+    NASetAdd(context->expandingPatternList, pattern);
+
     Expression *statementList = NAArrayGetValueAt(pattern->children, 0);
-    return ExpressionParse(statementList, parser, context);
+    bool ret = ExpressionParse(statementList, parser, context);
+
+    NASetRemove(context->expandingPatternList, pattern);
+
+    return ret;
 }
 
 void *NAMidiExprPatternExpand(NAMidiParser *parser, ParseLocation *location, char *identifier, NAArray *idList)
