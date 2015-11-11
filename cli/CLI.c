@@ -192,7 +192,7 @@ CLIError CLIExport(CLI *self, const char *output)
     ParseError error = {};
 
     if (!ParserProxyParseFile(parser, self->filepath, &sequence, &error, NULL)) {
-        fprintf(stderr, "%s:%d %s - %d:%d\n", ParseErrorKind2String(error.kind), error.error, error.location.filepath, error.location.line, error.location.column);
+        fprintf(stderr, "parse error. %s - %s:%d:%d\n", ParserProxyErrorDetail(&error), error.location.filepath, error.location.line, error.location.column);
         return CLIErrorExportWithParseFailed;
     }
 
@@ -331,7 +331,7 @@ static void CLINAMidiOnParseError(void *receiver, ParseError *error)
         fprintf(stderr, "\n");
     }
 
-    fprintf(stderr, "parse error. %s:%d %s - %d:%d\n", ParseErrorKind2String(error->kind), error->error, error->location.filepath, error->location.line, error->location.column);
+    fprintf(stderr, "parse error. %s - %s:%d:%d\n", ParserProxyErrorDetail(error), error->location.filepath, error->location.line, error->location.column);
 
     if (self->prompt) {
         fprintf(stderr, PROMPT);

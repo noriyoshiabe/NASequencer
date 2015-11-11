@@ -10,7 +10,7 @@ extern Parser *NAMidiParserCreate(SequenceBuilder *builder, ParserCallbacks *cal
 
 static inline const char *NAMidiParseError2String(NAMidiParseError error)
 {
-#define CASE(error) case error: return &(#error[11])
+#define CASE(error) case error: return &(#error[16])
     switch (error) {
     CASE(NAMidiParseErrorPatternMissing);
     default:

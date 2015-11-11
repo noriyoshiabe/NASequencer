@@ -90,6 +90,22 @@ static void ParserProxyParserOnParseError(void *receiver, ParseError *error)
     }
 }
 
+const char *ParserProxyErrorDetail(ParseError *error)
+{
+    switch (error->kind) {
+    case ParseErrorKindGeneral:
+        return GeneralParseError2String(error->error);
+        break;
+    case ParseErrorKindNAMidi:
+        return NAMidiParseError2String(error->error);
+    case ParseErrorKindABC:
+    case ParseErrorKindMML:
+        return "TODO";
+    default:
+        return "Unknown error";
+    }
+}
+
 static ParserCallbacks ParserProxyParserCallbacks = {
     ParserProxyParserOnReadFile,
     ParserProxyParserOnParseError,

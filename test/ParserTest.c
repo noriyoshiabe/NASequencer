@@ -1,5 +1,4 @@
 #include "ParserProxy.h"
-#include "NAMidiParser.h"
 #include "SequenceBuilder.h"
 #include "NAUtil.h"
 #include "NAArray.h"
@@ -17,25 +16,7 @@ int main(int argc, char **argv)
 
     bool success = ParserProxyParseFile(parser, filepath, &sequence, &error, filepaths);
     if (!success) {
-        const char *detail;
-
-        switch (error.kind) {
-        case ParseErrorKindGeneral:
-            detail = GeneralParseError2String(error.error);
-            break;
-        case ParseErrorKindNAMidi:
-            detail = NAMidiParseError2String(error.error);
-            break;
-        case ParseErrorKindABC:
-        case ParseErrorKindMML:
-            detail = "TODO";
-            break;
-        default:
-            break;
-        }
-
-        fprintf(stderr, "parse error. %s:%s - %s:%d:%d\n",
-                ParseErrorKind2String(error.kind), detail,
+        fprintf(stderr, "parse error. %s - %s:%d:%d\n", ParserProxyErrorDetail(&error),
                 error.location.filepath, error.location.line, error.location.column);
     }
     else {
