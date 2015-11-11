@@ -55,6 +55,7 @@ extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath,
 %token TRANSPOSE
 %token KEY
 %token DEFAULT
+%token REST
 
 %token PLUS
 %token MINUS
@@ -134,7 +135,7 @@ statement
     | TRANSPOSE PLUS INTEGER              { $$ = NAMidiExprTranspose(PERSER(), LOC(@$), $3); }
     | TRANSPOSE MINUS INTEGER             { $$ = NAMidiExprTranspose(PERSER(), LOC(@$), $3); }
     | KEY KEY_SIGN                        { $$ = NAMidiExprKeySign(PERSER(), LOC(@$), $2); }
-    | MINUS INTEGER                       { $$ = NAMidiExprRest(PERSER(), LOC(@$), $2); }
+    | REST INTEGER                        { $$ = NAMidiExprRest(PERSER(), LOC(@$), $2); }
 
     | note
     | pattern

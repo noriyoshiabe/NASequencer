@@ -51,6 +51,7 @@ REVERB         reverb
 TRANSPOSE      transpose
 KEY            key
 DEFAULT        default
+REST           r|rest
 
 PLUS           "+"
 MINUS          "-"
@@ -101,6 +102,7 @@ LINE_COMMENT   (\/\/|==|--).*$
 {TRANSPOSE}      { return TRANSPOSE; }
 {KEY}            { return KEY; }
 {DEFAULT}        { return DEFAULT; }
+{REST}           { return REST; }
 
 {PLUS}           { return PLUS; }
 {MINUS}          { return MINUS; }
