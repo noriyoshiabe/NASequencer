@@ -1,10 +1,14 @@
 cmake_minimum_required(VERSION 3.2)
 
-project(namidi)
+project(namidi-cli)
 
 find_library(LIBEDIT edit)
 
 add_subdirectory (../core ${CMAKE_CURRENT_BINARY_DIR}/core)
+add_subdirectory (../sequence ${CMAKE_CURRENT_BINARY_DIR}/sequence)
+add_subdirectory (../parser ${CMAKE_CURRENT_BINARY_DIR}/parser)
+add_subdirectory (../lib ${CMAKE_CURRENT_BINARY_DIR}/lib)
+add_subdirectory (../synthesizer ${CMAKE_CURRENT_BINARY_DIR}/synthesizer)
 add_subdirectory (../export ${CMAKE_CURRENT_BINARY_DIR}/export)
 
 include_directories(

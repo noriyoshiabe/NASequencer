@@ -57,20 +57,19 @@ int main(int argc, char **argv)
     AudioOut *audioOut = AudioOutSharedInstance();
 
     SoundFont *sf = SoundFontRead(argv[1], NULL);
-    Synthesizer *synth = SynthesizerCreate(sf, AudioOutGetSampleRate(audioOut));
+    Synthesizer *synth = SynthesizerCreate(sf, audioOut->getSampleRate(audioOut));
 
-    AudioOutRegisterCallback(audioOut, _AudioCallback, synth);
+    audioOut->registerCallback(audioOut, _AudioCallback, synth);
 
     MidiSource *midiSrc = (MidiSource *)synth;
     midiSrc->registerCallback(midiSrc, _MidiSourceCallback, NULL);
     midiSrc->setMasterVolume(midiSrc, 0);
 
     int presetCount = midiSrc->getPresetCount(midiSrc);
-    PresetList presetList[presetCount];
-    midiSrc->getPresetList(midiSrc, presetList);
+    PresetInfo **presetInfos = midiSrc->getPresetInfos(midiSrc);
 
     for (int i = 0; i < presetCount; ++i) {
-        PresetList *preset = &presetList[i];
+        PresetInfo *preset = presetInfos[i];
         printf("preset: name=%s bankNo=%d, programNo=%d\n", preset->name, preset->bankNo, preset->programNo);
     }
 
@@ -118,7 +117,7 @@ int main(int argc, char **argv)
                             presetIndex = 0;
                         }
 
-                        PresetList *preset = &presetList[presetIndex];
+                        PresetInfo *preset = presetInfos[presetIndex];
 
                         bytes[0] = 0xB0;
                         bytes[1] = 0x00;
@@ -144,7 +143,7 @@ int main(int argc, char **argv)
                             presetIndex = presetCount - 1;
                         }
 
-                        PresetList *preset = &presetList[presetIndex];
+                        PresetInfo *preset = presetInfos[presetIndex];
 
                         bytes[0] = 0xB0;
                         bytes[1] = 0x00;
@@ -259,7 +258,7 @@ int main(int argc, char **argv)
 
     getch(); /* consume the character */
 
-    AudioOutUnregisterCallback(audioOut, _AudioCallback, synth);
+    audioOut->unregisterCallback(audioOut, _AudioCallback, synth);
     SynthesizerDestroy(synth);
     return 0;
 }

@@ -1,0 +1,43 @@
+title 'title test'
+resolution 480
+tempo 120.0
+time 4/4
+marker 'marker test'
+channel 10
+voice 0 120 0
+synth 'GeneralUser GS Live-Audigy v1.44'
+pan 64
+chorus 127
+reverb 127
+transpose +1
+key D#min
+
+C1 
+D1 240
+E1 240 240
+F1 240 240 127
+G1 -
+A1 - 240
+B1 - - 127
+
+C2 240
+R  240
+D2 240
+
+define pattern-test
+  C1 240
+  D1 240
+
+  default {
+    E1 240
+  }
+  context {
+    E2 240
+  }
+end
+
+pattern-test
+pattern-test(context)
+
+include 'include.namidi'
+patten-include
