@@ -37,7 +37,7 @@ static char **CLICompletion(const char *text, int start, int end);
 CLI *CLICreate(const char *filepath, const char **soundSources)
 {
     CLI *self = calloc(1, sizeof(CLI));
-    self->filepath = strdup(filepath);
+    self->filepath = filepath ? strdup(filepath) : NULL;
     self->namidi = NAMidiCreate();
     self->manager = MidiSourceManagerSharedInstance();
     self->pianoRollView = PianoRollViewCreate(self->namidi);
