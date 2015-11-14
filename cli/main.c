@@ -6,9 +6,10 @@
 #include <getopt.h>
 
 #include "CLI.h"
+#include "NAUtil.h"
 
-static void showError(CLIError error);
 static void showHelp();
+static bool isAudioFileType(const char *filepath);
 
 static struct option _options[] = {
     { "output", required_argument, NULL, 'o'},
@@ -55,51 +56,31 @@ int main(int argc, char **argv)
         input = argv[optind];
     }
 
+    if (output) {
+        if (!input) {
+            fprintf(stderr, "-o, --output option is specifid with no input source file\n");
+            return EXIT_FAILURE;
+        }
+
+        if (isAudioFileType(output) && !soundSources[0]) {
+            fprintf(stderr, "WAV and MP3 output require valid sound source with -s, --sound-font option.\n");
+            return EXIT_FAILURE;
+        }
+    }
+
     _cli = CLICreate(input, soundSources);
 
-    CLIError error;
+    bool success;
     if (output) {
-        error = CLIExport(_cli, output);
+        success = CLIExport(_cli, output);
     }
     else {
         signal(SIGINT, signalHandler);
-        error = CLIRunShell(_cli);
+        success = CLIRunShell(_cli);
     }
 
     CLIDestroy(_cli);
-
-    if (CLIErrorNoError != error) {
-        showError(error);
-        return EXIT_FAILURE;
-    }
-
-    return EXIT_SUCCESS;
-}
-
-static void showError(CLIError error)
-{
-    switch (error) {
-    case CLIErrorNoError:
-        break;
-    case CLIErrorExportWithNoInputFile:
-        fprintf(stderr, "-o, --output option is specifid with no input source file\n");
-        break;
-    case CLIErrorExportWithUnsupportedFileType:
-        fprintf(stderr, "Unsupported output file type.\n");
-        break;
-    case CLIErrorExportWithParseFailed:
-        fprintf(stderr, "Parse failed.\n");
-        break;
-    case CLIErrorExportWithNoSoundSource:
-        fprintf(stderr, "WAV and MP3 output require valid sound source with -s, --sound-font option.\n");
-        break;
-    case CLIErrorExportWithSoundSourceLoadFailed:
-        fprintf(stderr, "Load sound source failed.\n");
-        break;
-    case CLIErrorExportWithCannotWriteToOutputFile:
-        fprintf(stderr, "Cannot write to output file.\n");
-        break;
-    }
+    return success ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 static void showHelp()
@@ -112,4 +93,22 @@ static void showHelp()
           " -s, --sound-font <file>  Specify sound font file for synthesizer.\n"
           " -h, --help               This help text.\n"
           );
+}
+
+static bool isAudioFileType(const char *filepath)
+{
+    const char *exts[] = {
+        "wav",
+        "wave",
+        "m4a"
+    };
+
+    const char *ext = NAUtilGetFileExtenssion(filepath);
+    for (int i = 0; i < sizeof(exts) / sizeof(exts[0]); ++i) {
+        if (0 == strcmp(exts[i], ext)) {
+            return true;
+        }
+    }
+
+    return false;
 }

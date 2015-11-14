@@ -37,9 +37,13 @@ static void SourceCommandExecute(Command *self, CLI *cli)
         return;
     }
 
+    const char *filepath = NAArrayGetValueAt(self->argv, 1);
+
     NAMidi *namidi = CLIGetNAMidi(cli);
     NAMidiSetWatchEnable(namidi, true);
-    NAMidiParse(namidi, NAArrayGetValueAt(self->argv, 1));
+    NAMidiParse(namidi, filepath);
+
+    CLISetFilepath(cli, filepath);
 }
 
 static void PlayCommandExecute(Command *self, CLI *cli)
@@ -487,7 +491,7 @@ static void SoloCommandExecute(Command *self, CLI *cli)
 static void LoadCommandExecute(Command *self, CLI *cli)
 {
     if (2 > NAArrayCount(self->argv)) {
-        fprintf(stderr, "filepath is missing.\n");
+        fprintf(stderr, "sound source filepath is missing.\n");
         return;
     }
 
@@ -500,7 +504,7 @@ static void LoadCommandExecute(Command *self, CLI *cli)
 static void UnloadCommandExecute(Command *self, CLI *cli)
 {
     if (2 > NAArrayCount(self->argv)) {
-        fprintf(stderr, "filepath is missing.\n");
+        fprintf(stderr, "index of synthesizers is missing.\n");
         return;
     }
 
@@ -522,6 +526,16 @@ static void UnloadCommandExecute(Command *self, CLI *cli)
     }
 
     MidiSourceManagerUnloadMidiSourceDescription(manager, NAArrayGetValueAt(descriptions, index));
+}
+
+static void ExportCommandExecute(Command *self, CLI *cli)
+{
+    if (2 > NAArrayCount(self->argv)) {
+        fprintf(stderr, "output filepath is missing.\n");
+        return;
+    }
+
+    CLIExport(cli, NAArrayGetValueAt(self->argv, 1));
 }
 
 static void ExitCommandExecute(Command *self, CLI *cli)
@@ -635,6 +649,7 @@ static CommandTable commandTable[] = {
     {"solo", SoloCommandExecute},
     {"load", LoadCommandExecute},
     {"unload", UnloadCommandExecute},
+    {"export", ExportCommandExecute},
     {"exit", ExitCommandExecute},
 
     {NULL, NULL}

@@ -17,8 +17,7 @@
 #define MAX_HISTORY 100
 
 struct _CLI {
-    const char *filepath;
-    const char **soundSources;
+    char *filepath;
     NAMidi *namidi;
     MidiSourceManager *manager;
     PianoRollView *pianoRollView;
@@ -38,8 +37,7 @@ static char **CLICompletion(const char *text, int start, int end);
 CLI *CLICreate(const char *filepath, const char **soundSources)
 {
     CLI *self = calloc(1, sizeof(CLI));
-    self->filepath = filepath;
-    self->soundSources = soundSources;
+    self->filepath = strdup(filepath);
     self->namidi = NAMidiCreate();
     self->manager = MidiSourceManagerSharedInstance();
     self->pianoRollView = PianoRollViewCreate(self->namidi);
@@ -48,6 +46,11 @@ CLI *CLICreate(const char *filepath, const char **soundSources)
     NAMidiAddObserver(self->namidi, self, &CLINAMidiObserverCallbacks);
     PlayerAddObserver(NAMidiGetPlayer(self->namidi), self, &CLIPlayerObserverCallbacks);
     MidiSourceManagerAddObserver(self->manager, self, &CLIMidiSourceManagerObserverCallbacks);
+
+    for (const char **source = soundSources; NULL != *source; ++source) {
+        MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(self->manager, *source);
+    }
+
     return self;
 }
 
@@ -58,18 +61,19 @@ void CLIDestroy(CLI *self)
     MidiSourceManagerRemoveObserver(self->manager, self);
     NAMidiRemoveObserver(self->namidi, self);
     NAMidiDestroy(self->namidi);
+
+    if (self->filepath) {
+        free(self->filepath);
+    }
+
     free(self);
 }
 
-CLIError CLIRunShell(CLI *self)
+bool CLIRunShell(CLI *self)
 {
     char historyFile[PATH_MAX];
     char *line = NULL;
     int historyCount = 0;
-
-    for (const char **source = self->soundSources; NULL != *source; ++source) {
-        MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(self->manager, *source);
-    }
 
     if (self->filepath) {
         NAMidiSetWatchEnable(self->namidi, true);
@@ -113,7 +117,7 @@ EXIT:
     write_history(historyFile);
     clear_history();
 
-    return CLIErrorNoError;
+    return true;
 }
 
 static char **CLICompletion(const char *text, int start, int end)
@@ -177,28 +181,30 @@ void CLIExit(CLI *self)
     longjmp(self->jmpBuf, 1);
 }
 
-static CLIError CLIExportSMF(CLI *self, Sequence *sequence, const char *output);
-static CLIError CLIExportWAV(CLI *self, Sequence *sequence, const char *output);
-static CLIError CLIExportAAC(CLI *self, Sequence *sequence, const char *output);
+static bool CLIExportSMF(CLI *self, Sequence *sequence, const char *output);
+static bool CLIExportWAV(CLI *self, Sequence *sequence, const char *output);
+static bool CLIExportAAC(CLI *self, Sequence *sequence, const char *output);
 
-CLIError CLIExport(CLI *self, const char *output)
+bool CLIExport(CLI *self, const char *output)
 {
     if (!self->filepath) {
-        return CLIErrorExportWithNoInputFile;
+        fprintf(stderr, "no input source file\n");
+        return false;
     }
 
     ParserProxy *parser = ParserProxyCreate();
     Sequence *sequence = NULL;
     ParseError error = {};
+    bool success = false;
 
     if (!ParserProxyParseFile(parser, self->filepath, &sequence, &error, NULL)) {
         fprintf(stderr, "parse error. %s - %s:%d:%d\n", ParserProxyErrorDetail(&error), error.location.filepath, error.location.line, error.location.column);
-        return CLIErrorExportWithParseFailed;
+        goto ERROR;
     }
 
     const struct {
         const char *ext;
-        CLIError (*function)(CLI *, Sequence *sequence, const char *);
+        bool (*function)(CLI *, Sequence *sequence, const char *);
     } table[] = {
         {"mid", CLIExportSMF},
         {"midi", CLIExportSMF},
@@ -208,18 +214,30 @@ CLIError CLIExport(CLI *self, const char *output)
         {"m4a", CLIExportAAC},
     };
 
-    CLIError ret = CLIErrorExportWithUnsupportedFileType;
+    bool (*function)(CLI *, Sequence *sequence, const char *) = NULL;
     const char *ext = NAUtilGetFileExtenssion(output);
 
     for (int i = 0; i < sizeof(table) / sizeof(table[0]); ++i) {
         if (0 == strcmp(table[i].ext, ext)) {
-            ret = table[i].function(self, sequence, output);
+            function = table[i].function;
+            break;
         }
     }
 
-    SequenceRelease(sequence);
+    if (!function) {
+        fprintf(stderr, "unsupported output file type.\n");
+        goto ERROR;
+    }
+
+    success = function(self, sequence, output);
+
+ERROR:
+    if (sequence) {
+        SequenceRelease(sequence);
+    }
     ParserProxyDestroy(parser);
-    return ret;
+
+    return success;
 }
 
 static void CLIExporterProgressCallback(void *_self, int progress)
@@ -230,50 +248,52 @@ static void CLIExporterProgressCallback(void *_self, int progress)
     fprintf(stderr, "%d%%%s", progress, 100 == progress ? "\n" : "\r");
 }
 
-static CLIError CLIExportSMF(CLI *self, Sequence *sequence, const char *output)
+static bool CLIHasSoundSource(CLI *self)
+{
+    NAArray *descriptions = MidiSourceManagerGetAvailableDescriptions(self->manager);
+    return 0 < NAArrayCount(descriptions);
+}
+
+static bool CLIExportSMF(CLI *self, Sequence *sequence, const char *output)
 {
     Exporter *exporter = ExporterCreate(sequence);
     bool success = ExporterWriteToSMF(exporter, output);
     ExporterDestroy(exporter);
-    return success ? CLIErrorNoError : CLIErrorExportWithCannotWriteToOutputFile;
+    return success;
 }
 
-static CLIError CLIExportWAV(CLI *self, Sequence *sequence, const char *output)
+static bool CLIExportWAV(CLI *self, Sequence *sequence, const char *output)
 {
-    if (!self->soundSources[0]) {
-        return CLIErrorExportWithNoSoundSource;
-    }
-
-    for (const char **source = self->soundSources; NULL != *source; ++source) {
-        if (!MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(self->manager, *source)) {
-            return CLIErrorExportWithSoundSourceLoadFailed;
-        }
+    if (!CLIHasSoundSource(self)) {
+        fprintf(stderr, "no synthesizer is loaded.\n");
+        return false;
     }
 
     Exporter *exporter = ExporterCreate(sequence);
     ExporterSetProgressCallback(exporter, CLIExporterProgressCallback, self);
     bool success = ExporterWriteToWave(exporter, output);
+    if (!success) {
+        fprintf(stderr, "cannot write to output file.\n");
+    }
     ExporterDestroy(exporter);
-    return success ? CLIErrorNoError : CLIErrorExportWithCannotWriteToOutputFile;
+    return success;
 }
 
-static CLIError CLIExportAAC(CLI *self, Sequence *sequence, const char *output)
+static bool CLIExportAAC(CLI *self, Sequence *sequence, const char *output)
 {
-    if (!self->soundSources[0]) {
-        return CLIErrorExportWithNoSoundSource;
-    }
-
-    for (const char **source = self->soundSources; NULL != *source; ++source) {
-        if (!MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(self->manager, *source)) {
-            return CLIErrorExportWithSoundSourceLoadFailed;
-        }
+    if (!CLIHasSoundSource(self)) {
+        fprintf(stderr, "no synthesizer is loaded.\n");
+        return false;
     }
 
     Exporter *exporter = ExporterCreate(sequence);
     ExporterSetProgressCallback(exporter, CLIExporterProgressCallback, self);
     bool success = ExporterWriteToAAC(exporter, output);
+    if (!success) {
+        fprintf(stderr, "cannot write to output file.\n");
+    }
     ExporterDestroy(exporter);
-    return success ? CLIErrorNoError : CLIErrorExportWithCannotWriteToOutputFile;
+    return success;
 }
 
 NAMidi *CLIGetNAMidi(CLI *self)
@@ -294,6 +314,14 @@ EventListView *CLIGetEventListView(CLI *self)
 void CLISetActiveView(CLI *self, void *view)
 {
     self->activeView = view;
+}
+
+void CLISetFilepath(CLI *self, const char *filepath)
+{
+    if (self->filepath) {
+        free(self->filepath);
+    }
+    self->filepath = strdup(filepath);
 }
 
 
