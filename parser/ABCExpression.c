@@ -1,0 +1,205 @@
+#include "ABCExpression.h"
+#include "NoteTable.h"
+#include "NAUtil.h"
+
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+#define isValidRange(v, from, to) (from <= v && v <= to)
+
+#if 0
+#define __Trace__ printf("%s - %s:%d:%d\n", __func__, filepath, ((int *)yylloc)[0], ((int *)yylloc)[1]);
+#else
+#define __Trace__
+#endif
+
+static const char *STATEMENT_LIST_ID = "statement list";
+
+typedef struct _StatementListExpr {
+    Expression expr;
+} StatementListExpr;
+
+static void StatementListExprDestroy(void *_self)
+{
+    StatementListExpr *self = _self;
+    free(self);
+}
+
+static bool StatementListExprParse(void *_self, void *parser, void *_context)
+{
+    StatementListExpr *self = _self;
+    ABCParserContext *parent = _context;
+
+    ABCParserContext *context = parent ? parent : ABCParserContextCreate();
+
+    bool success = true;
+
+    NAIterator *iterator = NAArrayGetIterator(self->expr.children);
+    while (iterator->hasNext(iterator)) {
+        if (!ExpressionParse(iterator->next(iterator), parser, context)) {
+            success = false;
+            goto ERROR;
+        }
+    }
+
+    if (!parent) {
+        SequenceBuilder *builder = ABCParserGetBuilder(parser);
+        builder->setLength(builder, ABCParserContextGetLength(context));
+    }
+
+ERROR:
+    if (!parent) {
+        ABCParserContextDestroy(context);
+    }
+
+    return success;
+}
+
+void *ABCExprStatementList(ABCParser *parser, ParseLocation *location)
+{ __Trace__
+    StatementListExpr *self = ExpressionCreate(location, sizeof(StatementListExpr), STATEMENT_LIST_ID);
+    self->expr.vtbl.destroy = StatementListExprDestroy;
+    self->expr.vtbl.parse = StatementListExprParse;
+    return self;
+}
+
+typedef struct _EOLExpr {
+    Expression expr;
+} EOLExpr;
+
+static void EOLExprDestroy(void *self)
+{
+    free(self);
+}
+
+static bool EOLExprParse(void *_self, void *parser, void *_context)
+{
+    StatementListExpr *self = _self;
+    ABCParserContext *context = _context;
+
+    // TODO
+    printf("EOL\n");
+    return true;
+}
+
+void *ABCExprEOL(ABCParser *parser, ParseLocation *location)
+{ __Trace__
+    EOLExpr *self = ExpressionCreate(location, sizeof(EOLExpr), "eol");
+    self->expr.vtbl.destroy = EOLExprDestroy;
+    self->expr.vtbl.parse = EOLExprParse;
+    return self;
+}
+
+typedef struct _NoteExpr {
+    Expression expr;
+    int step;
+    BaseNote baseNote;
+    Accidental accidental;
+    int octave;
+    int gatetime;
+} NoteExpr;
+
+static bool NoteExprParse(void *_self, void *parser, void *_context)
+{
+    NoteExpr *self = _self;
+    ABCParserContext *context = _context;
+    SequenceBuilder *builder = ABCParserGetBuilder(parser);
+
+    int noteNo = NoteTableGetNoteNo(context->keySign, self->baseNote, self->accidental, self->octave)
+        + context->transpose;
+    if (!isValidRange(noteNo, 0, 127)) {
+        ABCParserError(parser, &self->expr.location, ParseErrorKindGeneral, GeneralParseErrorInvalidNoteRange);
+        return false;
+    }
+
+    int step = self->step; // TODO chord
+    int gatetime = self->gatetime;
+    int velocity = 127; // TODO from context
+
+    builder->appendNote(builder, ++context->id, context->channels[context->channel].tick, context->channel, noteNo, gatetime, velocity);
+    context->channels[context->channel].tick += step;
+
+    return true;
+}
+
+void *ABCExprNote(ABCParser *parser, ParseLocation *location, char *noteString)
+{ __Trace__
+    NoteExpr *self = NULL;
+
+    const BaseNote noteTable[] = {
+        BaseNote_A, BaseNote_B, BaseNote_C,
+        BaseNote_D, BaseNote_E, BaseNote_F, BaseNote_G
+    };
+
+    char *pc = noteString;
+
+    BaseNote baseNote = noteTable[tolower(*pc) - 97];
+    Accidental accidental = AccidentalNone;
+    int octave = isupper(*pc) ? 2 : 3;
+
+    char *c;
+    while (*(c = ++pc)) {
+        switch (*c) {
+        case ',':
+            if (3 == octave) {
+                ABCParserError(parser, location, ParseErrorKindABC, ABCParseErrorIllegalOctaveDown);
+                goto ERROR;
+            }
+            --octave;
+            break;
+        case '\'':
+            if (2 == octave) {
+                ABCParserError(parser, location, ParseErrorKindABC, ABCParseErrorIllegalOctaveUp);
+                goto ERROR;
+            }
+            ++octave;
+            break;
+        case '^':
+            accidental = AccidentalSharp == accidental ? AccidentalDoubleSharp : AccidentalSharp;
+            break;
+        case '_':
+            accidental = AccidentalFlat == accidental ? AccidentalDoubleFlat : AccidentalFlat;
+            break;
+        case '=':
+            accidental = AccidentalNatural;
+            break;
+        }
+    }
+
+    int step = 240; // TODO length
+    int gatetime = 240; // TODO length
+
+    self = ExpressionCreate(location, sizeof(NoteExpr), "note");
+    self->expr.vtbl.parse = NoteExprParse;
+
+    self->step = step;
+    self->baseNote = baseNote;
+    self->accidental = accidental;
+    self->gatetime = gatetime;
+    self->octave = octave;
+
+ERROR:
+    free(noteString);
+
+    return self;
+}
+
+bool ABCExprIsStatementList(Expression *self)
+{
+    return self->identifier == STATEMENT_LIST_ID;
+}
+
+Expression *ABCExprStatementListMarge(Expression *self, Expression *statementList)
+{
+    NAIterator *iterator = NAArrayGetIterator(statementList->children);
+    while (iterator->hasNext(iterator)) {
+        Expression *child = iterator->next(iterator);
+        child->parent = self;
+        NAArrayAppend(self->children, child);
+    }
+
+    NAArrayRemoveAll(statementList->children);
+    ExpressionDestroy(statementList);
+    return self;
+}

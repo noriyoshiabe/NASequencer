@@ -1,5 +1,6 @@
 #include "ParserProxy.h"
 #include "NAMidiParser.h"
+#include "ABCParser.h"
 #include "SequenceBuilderImpl.h"
 #include "NAUtil.h"
 
@@ -21,6 +22,7 @@ static ParserFactory FindParserFactory(const char *filepath)
         ParserFactory factory;
     } parserTable[] = {
         {"namidi", NAMidiParserCreate},
+        {"abc", ABCParserCreate},
     };
 
     for (int i = 0; i < sizeof(parserTable) / sizeof(parserTable[0]); ++i) {
@@ -95,10 +97,10 @@ const char *ParserProxyErrorDetail(ParseError *error)
     switch (error->kind) {
     case ParseErrorKindGeneral:
         return GeneralParseError2String(error->error);
-        break;
     case ParseErrorKindNAMidi:
         return NAMidiParseError2String(error->error);
     case ParseErrorKindABC:
+        return ABCParseError2String(error->error);
     case ParseErrorKindMML:
         return "TODO";
     default:
