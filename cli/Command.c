@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <alloca.h>
+#include <sys/param.h>
 
 struct _Command {
     void (*execute)(Command *self, CLI *cli);
@@ -15,6 +16,8 @@ struct _Command {
 typedef struct _CommandTable {
     const char *cmd;
     void (*execute)(Command *, CLI *);
+    const char *synopsis;
+    const char *description;
 } CommandTable;
 
 static CommandTable commandTable[];
@@ -431,9 +434,17 @@ static void MuteCommandExecute(Command *self, CLI *cli)
         text = NAArrayGetValueAt(self->argv, 1);
         long number = strtol(text, &err, 10);
 
-        if ('\0' == *err && 1 <= number && number <= 16) {
-            channel = number;
+        if ('\0' != *err) {
+            fprintf(stderr, "cannot parse channel. %s\n", text);
+            return;
         }
+
+        if (number < 1 || 16 < number) {
+            fprintf(stderr, "channel is out of range [1-16]. %s\n", text);
+            return;
+        }
+
+        channel = number;
     }
 
     Mixer *mixer = NAMidiGetMixer(CLIGetNAMidi(cli));
@@ -465,9 +476,17 @@ static void SoloCommandExecute(Command *self, CLI *cli)
         text = NAArrayGetValueAt(self->argv, 1);
         long number = strtol(text, &err, 10);
 
-        if ('\0' == *err && 1 <= number && number <= 16) {
-            channel = number;
+        if ('\0' != *err) {
+            fprintf(stderr, "cannot parse channel. %s\n", text);
+            return;
         }
+
+        if (number < 1 || 16 < number) {
+            fprintf(stderr, "channel is out of range [1-16]. %s\n", text);
+            return;
+        }
+
+        channel = number;
     }
 
     Mixer *mixer = NAMidiGetMixer(CLIGetNAMidi(cli));
@@ -536,6 +555,35 @@ static void ExportCommandExecute(Command *self, CLI *cli)
     }
 
     CLIExport(cli, NAArrayGetValueAt(self->argv, 1));
+}
+
+static void HelpCommandExecute(Command *self, CLI *cli)
+{
+    printf("\n");
+
+    int maxSynopsisWidth = 0;
+    for (int i = 0; commandTable[i].cmd; ++i) {
+        maxSynopsisWidth = MAX(maxSynopsisWidth, strlen(commandTable[i].synopsis));
+    }
+
+    for (int i = 0; commandTable[i].cmd; ++i) {
+        printf("%s", commandTable[i].synopsis);
+
+        char *description = strdup(commandTable[i].description);
+        char *saveptr, *token, *s = description;
+        while ((token = strtok_r(s, "\n", &saveptr))) {
+            if (s) {
+                printf("%*s  - %s\n", maxSynopsisWidth - (int)strlen(commandTable[i].synopsis), "", token);
+            }
+            else {
+                printf("%*s    %s\n", maxSynopsisWidth, "", token);
+            }
+            s = NULL;
+        }
+        free(description);
+    }
+
+    printf("\n");
 }
 
 static void ExitCommandExecute(Command *self, CLI *cli)
@@ -632,25 +680,26 @@ char *CommandCompletionEntry(const char *text, int state)
 }
 
 static CommandTable commandTable[] = {
-    {"source", SourceCommandExecute},
-    {"play", PlayCommandExecute},
-    {"stop", StopCommandExecute},
-    {"rewind", RewindCommandExecute},
-    {"forward", ForwardCommandExecute},
-    {"backward", BackwardCommandExecute},
-    {"seek", SeekCommandExecute},
-    {"show", ShowCommandExecute},
-    {"step", StepCommandExecute},
-    {"list", ListCommandExecute},
-    {"synth", SynthCommandExecute},
-    {"preset", PresetCommandExecute},
-    {"status", StatusCommandExecute},
-    {"mute", MuteCommandExecute},
-    {"solo", SoloCommandExecute},
-    {"load", LoadCommandExecute},
-    {"unload", UnloadCommandExecute},
-    {"export", ExportCommandExecute},
-    {"exit", ExitCommandExecute},
+    {"source", SourceCommandExecute, "source <file>", "parse DSL source and build new sequence."},
+    {"play", PlayCommandExecute, "play", "play sequence."},
+    {"stop", StopCommandExecute, "stop", "stop playing."},
+    {"rewind", RewindCommandExecute, "rewind", "rewind playing position."},
+    {"forward", ForwardCommandExecute, "forward", "forward playing position to next measure."},
+    {"backward", BackwardCommandExecute, "backward", "forward playing position to previous measure or head of current measue."},
+    {"seek", SeekCommandExecute, "seek <measure number>", "seek playing position to measure number."},
+    {"show", ShowCommandExecute, "show [from [length]]", "show piano roll.\nstart with the measure if 'from' is specifid.\nlimit displaying measures if 'length' is specifid."},
+    {"step", StepCommandExecute, "step <step per column>", "adjust length of console column for piano roll."},
+    {"list", ListCommandExecute, "list [from [length]]", "show event list.\nstart with the measure if 'from' is specifid.\nlimit displaying measures if 'length' is specifid."},
+    {"synth", SynthCommandExecute, "synth", "list synthesizers loaded currently."},
+    {"preset", PresetCommandExecute, "preset <index>", "list presets of synthesizer specifid by index of synthesizers list."},
+    {"status", StatusCommandExecute, "status", "show channel statuses."},
+    {"mute", MuteCommandExecute, "mute [channel]", "enable channel's mute.\ndisable all channel's mute unless channel number is specifid."},
+    {"solo", SoloCommandExecute, "solo [channel]", "enable channel's solo.\ndisable all channel's solo unless channel number is specifid."},
+    {"load", LoadCommandExecute, "load <file>", "load synthesizer.\nsupported file type is currently .sf2 only."},
+    {"unload", UnloadCommandExecute, "unload <index>", "unload synthesizer specifid by index of synthesizers list."},
+    {"export", ExportCommandExecute, "export <file>", "export sequence.\nsupported file types are currently .smf, .mid, .midi, .wav, .wave and .m4a."},
+    {"help", HelpCommandExecute, "help", "display this help."},
+    {"exit", ExitCommandExecute, "exit", "exit namidi."},
 
-    {NULL, NULL}
+    {NULL, NULL, NULL, NULL}
 };
