@@ -6,6 +6,8 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}
   ../sequence
   ../parser
+  ../parser/namidi
+  ../parser/abc
   ../lib
   ../synthesizer
 )
