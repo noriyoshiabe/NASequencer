@@ -499,7 +499,8 @@ static bool NoteExprParse(void *_self, void *parser, void *_context)
     int octave = OCTAVE_NONE != self->octave ? self->octave : context->channels[context->channel].octave;
     context->channels[context->channel].octave = octave;
 
-    int noteNo = NoteTableGetNoteNo(context->keySign, self->baseNote, self->accidental, octave);
+    int noteNo = NoteTableGetNoteNo(context->keySign, self->baseNote, self->accidental, octave)
+        + context->transpose;
     if (!isValidRange(noteNo, 0, 127)) {
         NAMidiParserError(parser, &self->expr.location, ParseErrorKindGeneral, GeneralParseErrorInvalidNoteRange);
         return false;
@@ -559,6 +560,7 @@ void *NAMidiExprNote(NAMidiParser *parser, ParseLocation *location, char *noteSt
             || !isValidRange(velocity, -1, 127)
             || (OCTAVE_NONE != octave && !isValidRange(octave, -2, 8))) {
         NAMidiParserError(parser, location, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
+        free(noteString);
         return NULL;
     }
 

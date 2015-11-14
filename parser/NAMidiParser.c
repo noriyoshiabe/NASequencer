@@ -211,6 +211,7 @@ NAMidiParserContext *NAMidiParserContextCreate()
         self->channels[i].octave = 2;
     }
 
+    self->channel = 1;
     self->contextIdList = NASetCreate(NAHashCString, NADescriptionCString);
     self->expandingPatternList = NASetCreate(NAHashAddress, NADescriptionAddress);
 

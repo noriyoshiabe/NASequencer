@@ -4,13 +4,14 @@
 #include "NAMidi_yacc.h"
 #include "NAMidi_lex.h"
 #include "NAMidiExpression.h"
+#include "NAArray.h"
 #include "NAUtil.h"
 
 #include <ctype.h>
 
 extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, Expression **expression, const char *message);
 
-#define PERSER() ((NAMidiParser *)NAMidi_get_extra(scanner))
+#define PERSER() (NAMidi_get_extra(scanner))
 #define LOC(yylloc) (&(ParseLocation){filepath, yylloc.first_line, yylloc.first_column})
 
 %}
