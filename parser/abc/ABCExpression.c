@@ -142,6 +142,12 @@ void *ABCExprVersion(ABCParser *parser, ParseLocation *location, char *version)
     return self;
 }
 
+void *ABCExprReferenceNumber(ABCParser *parser, ParseLocation *location, int number)
+{
+    // Unsupported
+    return ExpressionCreate(location, sizeof(Expression), "reference number");
+}
+
 typedef struct _NoteExpr {
     Expression expr;
     int step;

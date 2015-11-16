@@ -24,26 +24,33 @@
 %option bison-bridge
 %option bison-locations
 
-WSPACE         [[:blank:]]+
+NONZERO            [1-9]
+DIGIT              [[:digit:]]
+INTEGER            {NONZERO}{DIGIT}*|0
+WSPACE             [[:blank:]]+
 
-EOL            \n
+EOL                \n
 
-VERSION        %abc-.+$
-NOTE           [cdefgabCDEFGAB][,|']?([\^|_]{1,2}|=)?
+VERSION            %abc-.+$
+REFERENCE_NUMBER   X:
+NOTE               [cdefgabCDEFGAB][,|']?([\^|_]{1,2}|=)?
 
-LINE_COMMENT   %.*$
+LINE_COMMENT       %.*$
 
 %%
 
-{WSPACE}         { }
+{WSPACE}           { }
 
-{EOL}            { return EOL; }
+{INTEGER}          { yylval->i = atoi(yytext); return INTEGER; }
 
-{VERSION}        { yylval->s = strdup(yytext + 5); return VERSION; }
-{NOTE}           { yylval->s = strdup(yytext); return NOTE; }
+{EOL}              { return EOL; }
 
-{LINE_COMMENT}   { }
+{VERSION}          { yylval->s = strdup(yytext + 5); return VERSION; }
+{REFERENCE_NUMBER} { return REFERENCE_NUMBER; }
+{NOTE}             { yylval->s = strdup(yytext); return NOTE; }
 
-.                { return 1; }
+{LINE_COMMENT}     { }
+
+.                  { return 1; }
 
 %%

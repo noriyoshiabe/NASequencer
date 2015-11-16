@@ -68,8 +68,10 @@ static void _ExpressionDestroy(void *self)
 
 static bool _ExpressionParse(void *_self, void *visitor, void *context)
 {
+#if 0
     Expression *self = _self;
     printf("parsed [%s]\n", self->identifier);
+#endif
     return true;
 }
 
