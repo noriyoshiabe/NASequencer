@@ -54,15 +54,15 @@ char *NAUtilToLowerCase(char *string)
 char *NAUtilTrimWhiteSpace(char *string)
 {
     int len = strlen(string);
-    for (int i = len - 1; 0 <= i && ' ' == string[i]; --i) {
-        string[i] = '\0';
-        --len;
+    char *pc = string;
+    for (pc = string + len - 1; string <= pc && isspace(*pc); --pc) {
+        *pc = '\0';
     }
 
-    char *str = string;
-    while (isspace(*str)) str++;
+    pc = string;
+    while (isspace(*pc)) ++pc;
 
-    memmove(string, str, len + 1);
+    memmove(string, pc, len + 1);
     return string;
 }
 
