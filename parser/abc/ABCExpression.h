@@ -7,6 +7,7 @@
 
 extern void *ABCExprStatementList(ABCParser *parser, ParseLocation *location);
 extern void *ABCExprEOL(ABCParser *parser, ParseLocation *location);
+extern void *ABCExprVersion(ABCParser *parser, ParseLocation *location, char *version);
 extern void *ABCExprNote(ABCParser *parser, ParseLocation *location, char *noteString);
 
 extern bool ABCExprIsStatementList(Expression *self);

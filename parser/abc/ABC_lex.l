@@ -26,9 +26,10 @@
 
 WSPACE         [[:blank:]]+
 
-NOTE           [cdefgabCDEFGAB][,|']?([\^|_]{1,2}|=)?
-
 EOL            \n
+
+VERSION        %abc-.+$
+NOTE           [cdefgabCDEFGAB][,|']?([\^|_]{1,2}|=)?
 
 LINE_COMMENT   %.*$
 
@@ -36,9 +37,10 @@ LINE_COMMENT   %.*$
 
 {WSPACE}         { }
 
-{NOTE}           { yylval->s = strdup(yytext); return NOTE; }
-
 {EOL}            { return EOL; }
+
+{VERSION}        { yylval->s = strdup(yytext + 5); return VERSION; }
+{NOTE}           { yylval->s = strdup(yytext); return NOTE; }
 
 {LINE_COMMENT}   { }
 

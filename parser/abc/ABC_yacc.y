@@ -30,9 +30,9 @@ extern int ABC_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, Ex
     Expression *expression;
 }
 
-%token <s>NOTE
-
 %token EOL
+%token <s>VERSION
+%token <s>NOTE
 
 %type <expression> statement_list statement
 
@@ -70,6 +70,7 @@ statement_list
 
 statement
     : EOL                                 { $$ = ABCExprEOL(PERSER(), LOC(@$)); }
+    | VERSION                             { $$ = ABCExprVersion(PERSER(), LOC(@$), $1); }
     | NOTE                                { $$ = ABCExprNote(PERSER(), LOC(@$), $1); }
     ;
 

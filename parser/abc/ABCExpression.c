@@ -91,6 +91,57 @@ void *ABCExprEOL(ABCParser *parser, ParseLocation *location)
     return self;
 }
 
+typedef struct _VersionExpr {
+    Expression expr;
+    char *version;
+} VersionExpr;
+
+static void VersionExprDestroy(void *_self)
+{
+    VersionExpr *self = _self;
+    free(self->version);
+    free(self);
+}
+
+static bool VersionExprParse(void *_self, void *parser, void *_context)
+{
+    VersionExpr *self = _self;
+    ABCParserContext *context = _context;
+    if (context->version.text) {
+        ABCParserError(parser, &self->expr.location, ParseErrorKindABC, ABCParseErrorUnexpectedVersionExpression);
+        return false;
+    }
+
+    context->version.text = self->version;
+
+    char *buffer = alloca(strlen(self->version) + 1);
+    strcpy(buffer, self->version);
+
+    char *saveptr, *token, *s = buffer;
+    for (int i = 0; (token = strtok_r(s, ".", &saveptr)); ++i) {
+        int *ver = 0 == i ? &context->version.major : &context->version.minor;
+        char *err;
+        *ver = strtol(token, &err, 10);
+        if ('\0' != *err) {
+            ABCParserError(parser, &self->expr.location, ParseErrorKindABC, ABCParseErrorUnrecognisedVersion);
+            return false;
+        }
+        s = NULL;
+    }
+
+    context->strict = 2 <= context->version.major && 1 <= context->version.minor;
+    return true;
+}
+
+void *ABCExprVersion(ABCParser *parser, ParseLocation *location, char *version)
+{ __Trace__
+    VersionExpr *self = ExpressionCreate(location, sizeof(VersionExpr), "version");
+    self->expr.vtbl.destroy = VersionExprDestroy;
+    self->expr.vtbl.parse = VersionExprParse;
+    self->version = version;
+    return self;
+}
+
 typedef struct _NoteExpr {
     Expression expr;
     int step;

@@ -3,7 +3,8 @@
 #include "Parser.h"
 
 typedef enum {
-    ABCParseErrorUnsupportedVersion,
+    ABCParseErrorUnrecognisedVersion,
+    ABCParseErrorUnexpectedVersionExpression,
     ABCParseErrorIllegalOctaveDown,
     ABCParseErrorIllegalOctaveUp,
 } ABCParseError;
@@ -14,7 +15,8 @@ static inline const char *ABCParseError2String(ABCParseError error)
 {
 #define CASE(error) case error: return &(#error[13])
     switch (error) {
-    CASE(ABCParseErrorUnsupportedVersion);
+    CASE(ABCParseErrorUnrecognisedVersion);
+    CASE(ABCParseErrorUnexpectedVersionExpression);
     CASE(ABCParseErrorIllegalOctaveDown);
     CASE(ABCParseErrorIllegalOctaveUp);
     default:
@@ -41,6 +43,13 @@ typedef struct _ABCParserContext {
     struct {
         int tick;
     } channels[16];
+
+    bool strict;
+    struct {
+        int major;
+        int minor;
+        const char *text;
+    } version;
 } ABCParserContext;
 
 extern ABCParserContext *ABCParserContextCreate();
