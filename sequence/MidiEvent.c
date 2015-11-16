@@ -20,6 +20,9 @@ void *MidiEventAlloc(MidiEventType type, int id, int tick, int extraSize)
     case MidiEventTypeKey:
         size = sizeof(KeyEvent);
         break;
+    case MidiEventTypeTitle:
+        size = sizeof(TitleEvent) + extraSize;
+        break;
     case MidiEventTypeMarker:
         size = sizeof(MarkerEvent) + extraSize;
         break;
@@ -84,6 +87,13 @@ void MidiEventDump(MidiEvent *self, int indent)
                     self->id, self->tick, self->sf, self->mi);
         }
         break;
+    case MidiEventTypeTitle:
+        {
+            TitleEvent *self = _self;
+            printf("Title: id=%d tick=%d text=%s\n",
+                    self->id, self->tick, self->text);
+        }
+        break;
     case MidiEventTypeMarker:
         {
             MarkerEvent *self = _self;
@@ -144,3 +154,9 @@ int MidiEventComparator(const void *_event1, const void *_event2)
     int result = (*event1)->tick - (*event2)->tick;
     return 0 != result ? result : (*event1)->id - (*event2)->id;
 }
+
+int MidiEventIDComparator(const void *event1, const void *event2)
+{
+    return ((const MidiEvent *)event1)->id - ((const MidiEvent *)event2)->id;
+}
+

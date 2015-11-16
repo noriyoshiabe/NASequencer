@@ -50,8 +50,6 @@ static bool StatementListExprParse(void *_self, void *parser, void *_context)
     }
 
     if (parent) {
-        parent->id = context->id;
-
         for (int i = 0; i < 16; ++i) {
             parent->channels[i].tick = context->channels[i].tick;
         }
@@ -140,7 +138,7 @@ static bool TempoExprParse(void *_self, void *parser, void *_context)
     TempoExpr *self = _self;
     NAMidiParserContext *context = _context;
     SequenceBuilder *builder = NAMidiParserGetBuilder(parser);
-    builder->appendTempo(builder, ++context->id, context->channels[context->channel].tick, self->tempo);
+    builder->appendTempo(builder, context->channels[context->channel].tick, self->tempo);
     return true;
 }
 
@@ -168,7 +166,7 @@ static bool TimeSignExprParse(void *_self, void *parser, void *_context)
     TimeSignExpr *self = _self;
     NAMidiParserContext *context = _context;
     SequenceBuilder *builder = NAMidiParserGetBuilder(parser);
-    builder->appendTimeSign(builder, ++context->id, context->channels[context->channel].tick, self->numerator, self->denominator);
+    builder->appendTimeSign(builder, context->channels[context->channel].tick, self->numerator, self->denominator);
     return true;
 }
 
@@ -203,7 +201,7 @@ static bool MarkerExprParse(void *_self, void *parser, void *_context)
     MarkerExpr *self = _self;
     NAMidiParserContext *context = _context;
     SequenceBuilder *builder = NAMidiParserGetBuilder(parser);
-    builder->appendMarker(builder, ++context->id, context->channels[context->channel].tick, self->text);
+    builder->appendMarker(builder, context->channels[context->channel].tick, self->text);
     return true;
 }
 
@@ -254,7 +252,7 @@ static bool VoiceExprParse(void *_self, void *parser, void *_context)
     VoiceExpr *self = _self;
     NAMidiParserContext *context = _context;
     SequenceBuilder *builder = NAMidiParserGetBuilder(parser);
-    builder->appendVoice(builder, ++context->id, context->channels[context->channel].tick, context->channel, self->msb, self->lsb, self->programNo);
+    builder->appendVoice(builder, context->channels[context->channel].tick, context->channel, self->msb, self->lsb, self->programNo);
     return true;
 }
 
@@ -290,7 +288,7 @@ static bool SynthExprParse(void *_self, void *parser, void *_context)
     SynthExpr *self = _self;
     NAMidiParserContext *context = _context;
     SequenceBuilder *builder = NAMidiParserGetBuilder(parser);
-    builder->appendSynth(builder, ++context->id, context->channels[context->channel].tick, context->channel, self->identifier);
+    builder->appendSynth(builder, context->channels[context->channel].tick, context->channel, self->identifier);
     return true;
 }
 
@@ -313,7 +311,7 @@ static bool VolumeExprParse(void *_self, void *parser, void *_context)
     VolumeExpr *self = _self;
     NAMidiParserContext *context = _context;
     SequenceBuilder *builder = NAMidiParserGetBuilder(parser);
-    builder->appendVolume(builder, ++context->id, context->channels[context->channel].tick, context->channel, self->value);
+    builder->appendVolume(builder, context->channels[context->channel].tick, context->channel, self->value);
     return true;
 }
 
@@ -336,7 +334,7 @@ static bool PanExprParse(void *_self, void *parser, void *_context)
     PanExpr *self = _self;
     NAMidiParserContext *context = _context;
     SequenceBuilder *builder = NAMidiParserGetBuilder(parser);
-    builder->appendPan(builder, ++context->id, context->channels[context->channel].tick, context->channel, self->value);
+    builder->appendPan(builder, context->channels[context->channel].tick, context->channel, self->value);
     return true;
 }
 
@@ -359,7 +357,7 @@ static bool ChorusExprParse(void *_self, void *parser, void *_context)
     ChorusExpr *self = _self;
     NAMidiParserContext *context = _context;
     SequenceBuilder *builder = NAMidiParserGetBuilder(parser);
-    builder->appendChorus(builder, ++context->id, context->channels[context->channel].tick, context->channel, self->value);
+    builder->appendChorus(builder, context->channels[context->channel].tick, context->channel, self->value);
     return true;
 }
 
@@ -382,7 +380,7 @@ static bool ReverbExprParse(void *_self, void *parser, void *_context)
     ReverbExpr *self = _self;
     NAMidiParserContext *context = _context;
     SequenceBuilder *builder = NAMidiParserGetBuilder(parser);
-    builder->appendReverb(builder, ++context->id, context->channels[context->channel].tick, context->channel, self->value);
+    builder->appendReverb(builder, context->channels[context->channel].tick, context->channel, self->value);
     return true;
 }
 
@@ -514,7 +512,7 @@ static bool NoteExprParse(void *_self, void *parser, void *_context)
     int velocity = -1 != self->velocity ? self->velocity : context->channels[context->channel].velocity;
     context->channels[context->channel].velocity = velocity;
 
-    builder->appendNote(builder, ++context->id, context->channels[context->channel].tick, context->channel, noteNo, gatetime, velocity);
+    builder->appendNote(builder, context->channels[context->channel].tick, context->channel, noteNo, gatetime, velocity);
     context->channels[context->channel].tick += step;
 
     return true;

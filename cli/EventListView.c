@@ -162,6 +162,12 @@ void EventListViewRender(EventListView *self)
                 sprintf(texts[6], "%s", KeySign2String(NoteTableGetKeySignByMidiExpression(_event->sf, _event->mi)));
             }
             break;
+        case MidiEventTypeTitle:
+            {
+                TitleEvent *_event = (void *)event;
+                sprintf(texts[6], "%s", _event->text);
+            }
+            break;
         case MidiEventTypeMarker:
             {
                 MarkerEvent *_event = (void *)event;

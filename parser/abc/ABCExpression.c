@@ -174,7 +174,7 @@ static bool NoteExprParse(void *_self, void *parser, void *_context)
     int gatetime = self->gatetime;
     int velocity = 127; // TODO from context
 
-    builder->appendNote(builder, ++context->id, context->channels[context->channel].tick, context->channel, noteNo, gatetime, velocity);
+    builder->appendNote(builder, context->channels[context->channel].tick, context->channel, noteNo, gatetime, velocity);
     context->channels[context->channel].tick += step;
 
     return true;

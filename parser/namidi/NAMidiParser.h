@@ -37,7 +37,6 @@ extern void NAMidiParserError(NAMidiParser *self, ParseLocation *location, Parse
 extern SequenceBuilder *NAMidiParserGetBuilder(NAMidiParser *self);
 
 typedef struct _NAMidiParserContext {
-    int id;
     int channel;
     int transpose;
     KeySign keySign;

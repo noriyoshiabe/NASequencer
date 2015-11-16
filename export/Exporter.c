@@ -139,6 +139,12 @@ bool ExporterWriteToSMF(Exporter *self, const char *filepath)
                 SMFWriterAppendTempo(writer, tempo->tick, tempo->tempo);
             }
             break;
+        case MidiEventTypeTitle:
+            {
+                TitleEvent *title = (TitleEvent *)events[i];
+                SMFWriterAppendTitle(writer, title->tick, title->text);
+            }
+            break;
         case MidiEventTypeMarker:
             {
                 MarkerEvent *marker = (MarkerEvent *)events[i];

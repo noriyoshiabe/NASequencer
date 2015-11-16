@@ -5,6 +5,7 @@ typedef enum {
     MidiEventTypeTempo,
     MidiEventTypeTime,
     MidiEventTypeKey,
+    MidiEventTypeTitle,
     MidiEventTypeMarker,
     MidiEventTypeVoice,
     MidiEventTypeVolume,
@@ -60,6 +61,13 @@ typedef struct _KeyEvent {
     int sf;
     int mi;
 } KeyEvent;
+
+typedef struct _TitleEvent {
+    MidiEventType type;
+    int id;
+    int tick;
+    char text[];
+} TitleEvent;
 
 typedef struct _MarkerEvent {
     MidiEventType type;
@@ -121,6 +129,7 @@ typedef struct _SynthEvent {
 extern void *MidiEventAlloc(MidiEventType type, int id, int tick, int extraSize);
 extern void MidiEventDump(MidiEvent *self, int indent);
 extern int MidiEventComparator(const void *event1, const void *event2);
+extern int MidiEventIDComparator(const void *event1, const void *event2);
 
 static inline char *MidiEventType2String(MidiEventType type)
 {
@@ -130,6 +139,7 @@ static inline char *MidiEventType2String(MidiEventType type)
     CASE(MidiEventTypeTempo);
     CASE(MidiEventTypeTime);
     CASE(MidiEventTypeKey);
+    CASE(MidiEventTypeTitle);
     CASE(MidiEventTypeMarker);
     CASE(MidiEventTypeVoice);
     CASE(MidiEventTypeVolume);

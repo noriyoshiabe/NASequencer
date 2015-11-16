@@ -36,7 +36,6 @@ extern void ABCParserError(ABCParser *self, ParseLocation *location, ParseErrorK
 extern SequenceBuilder *ABCParserGetBuilder(ABCParser *self);
 
 typedef struct _ABCParserContext {
-    int id;
     int channel;
     int transpose;
     KeySign keySign;
