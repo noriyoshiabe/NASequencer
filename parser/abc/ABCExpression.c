@@ -142,10 +142,45 @@ void *ABCExprVersion(ABCParser *parser, ParseLocation *location, char *version)
     return self;
 }
 
-void *ABCExprReferenceNumber(ABCParser *parser, ParseLocation *location, int number)
+void *ABCExprReferenceNumber(ABCParser *parser, ParseLocation *location, char *numberString)
 {
     // Unsupported
+    free(numberString);
+
     return ExpressionCreate(location, sizeof(Expression), "reference number");
+}
+
+typedef struct _TuneTitleExpr {
+    Expression expr;
+    char *title;
+} TuneTitleExpr;
+
+static void TuneTitleExprDestroy(void *_self)
+{
+    TuneTitleExpr *self = _self;
+    free(self->title);
+    free(self);
+}
+
+static bool TuneTitleExprParse(void *_self, void *parser, void *_context)
+{
+    TuneTitleExpr *self = _self;
+
+    if (0 < strlen(self->title)) {
+        SequenceBuilder *builder = ABCParserGetBuilder(parser);
+        builder->setTitle(builder, self->title);
+    }
+
+    return true;
+}
+
+void *ABCExprTuneTitle(ABCParser *parser, ParseLocation *location, char *title)
+{ __Trace__
+    TuneTitleExpr *self = ExpressionCreate(location, sizeof(TuneTitleExpr), "tune title");
+    self->expr.vtbl.destroy = TuneTitleExprDestroy;
+    self->expr.vtbl.parse = TuneTitleExprParse;
+    self->title = NAUtilTrimWhiteSpace(title);
+    return self;
 }
 
 typedef struct _NoteExpr {

@@ -51,6 +51,21 @@ char *NAUtilToLowerCase(char *string)
     return string;
 }
 
+char *NAUtilTrimWhiteSpace(char *string)
+{
+    int len = strlen(string);
+    for (int i = len - 1; 0 <= i && ' ' == string[i]; --i) {
+        string[i] = '\0';
+        --len;
+    }
+
+    char *str = string;
+    while (isspace(*str)) str++;
+
+    memmove(string, str, len + 1);
+    return string;
+}
+
 extern bool NAUtilIsDirectory(char *path)
 {
     struct stat s;

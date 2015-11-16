@@ -24,15 +24,13 @@
 %option bison-bridge
 %option bison-locations
 
-NONZERO            [1-9]
-DIGIT              [[:digit:]]
-INTEGER            {NONZERO}{DIGIT}*|0
 WSPACE             [[:blank:]]+
 
 EOL                \n
 
 VERSION            %abc-.+$
-REFERENCE_NUMBER   X:
+REFERENCE_NUMBER   X:.*$
+TUNE_TITLE         T:.*$
 NOTE               [cdefgabCDEFGAB][,|']?([\^|_]{1,2}|=)?
 
 LINE_COMMENT       %.*$
@@ -41,12 +39,11 @@ LINE_COMMENT       %.*$
 
 {WSPACE}           { }
 
-{INTEGER}          { yylval->i = atoi(yytext); return INTEGER; }
-
 {EOL}              { return EOL; }
 
 {VERSION}          { yylval->s = strdup(yytext + 5); return VERSION; }
-{REFERENCE_NUMBER} { return REFERENCE_NUMBER; }
+{REFERENCE_NUMBER} { yylval->s = strdup(yytext + 2); return REFERENCE_NUMBER; }
+{TUNE_TITLE}       { yylval->s = strdup(yytext + 2); return TUNE_TITLE; }
 {NOTE}             { yylval->s = strdup(yytext); return NOTE; }
 
 {LINE_COMMENT}     { }
