@@ -428,6 +428,12 @@ static bool KeySignExprParse(void *_self, void *parser, void *_context)
     KeySignExpr *self = _self;
     NAMidiParserContext *context = _context;
     context->keySign = self->keySign;
+
+    uint8_t sf, mi;
+    KeySignGetMidiExpression(self->keySign, &sf, &mi);
+
+    SequenceBuilder *builder = NAMidiParserGetBuilder(parser);
+    builder->appendKey(builder, context->channels[context->channel].tick, sf, mi);
     return true;
 }
 
