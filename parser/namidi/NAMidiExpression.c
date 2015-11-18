@@ -440,9 +440,11 @@ static bool KeySignExprParse(void *_self, void *parser, void *_context)
 void *NAMidiExprKeySign(NAMidiParser *parser, ParseLocation *location, char *keyString)
 { __Trace__
     char keyChar = tolower(keyString[0]);
-    bool sharp = NULL != strchr(keyString, '#');
-    bool flat = NULL != strchr(keyString, 'b');
-    bool major = NULL == strstr(keyString, "min");
+    bool sharp = NULL != strchr(&keyString[1], '#');
+    bool flat = NULL != strchr(&keyString[1], 'b');
+    bool major = NULL == strstr(&keyString[1], "min");
+
+    free(keyString);
 
     KeySign keySign = NoteTableGetKeySign(keyChar, sharp, flat, major);
     if (KeySignInvalid == keySign) {
@@ -453,8 +455,6 @@ void *NAMidiExprKeySign(NAMidiParser *parser, ParseLocation *location, char *key
     KeySignExpr *self = ExpressionCreate(location, sizeof(KeySignExpr), "key sign");
     self->expr.vtbl.parse = KeySignExprParse;
     self->keySign = keySign;
-
-    free(keyString);
 
     return self;
 }
