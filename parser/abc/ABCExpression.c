@@ -198,14 +198,178 @@ static bool KeyExprParse(void *_self, void *parser, void *_context)
     return true;
 }
 
-void *ABCExprKey(ABCParser *parser, ParseLocation *location, char *keyString)
+void *ABCExprKey(ABCParser *parser, ParseLocation *location, char *keyName, char *keyScale)
 { __Trace__
-    char keyChar = tolower(keyString[0]);
-    bool sharp = NULL != strchr(&keyString[1], '#');
-    bool flat = NULL != strchr(&keyString[1], 'b');
-    bool major = NULL == strstr(&keyString[1], "m");
+    NAUtilToLowerCase(keyName);
 
-    free(keyString);
+    char keyChar = keyName[0];
+    bool sharp = NULL != strchr(&keyName[1], '#');
+    bool flat = NULL != strchr(&keyName[1], 'b');
+    bool major = true;
+
+    free(keyName);
+    
+    if (keyScale) {
+        NAUtilToLowerCase(keyScale);
+
+        const struct {
+            const char *name;
+            bool major;
+        } scales[] = {
+            {"ma", true}, {"maj", true}, {"major", true},
+            {"m", false}, {"min", false}, {"minor", false},
+            {"ion", true}, {"ionian", true},
+            {"aeo", false}, {"aeolian", false},
+        };
+
+        for (int i = 0; i < sizeof(scales)/sizeof(scales[0]); ++i) {
+            if (0 == strcmp(keyScale, scales[i].name)) {
+                major = scales[i].major;
+                goto KEY_FOUND;
+            }
+        }
+
+        const struct {
+            const char *name;
+            const char *abbr;
+            struct {
+                struct {
+                    char keyChar;
+                    bool sharp;
+                    bool flat;
+                } normal;
+                struct {
+                    char keyChar;
+                    bool sharp;
+                    bool flat;
+                } mode;
+            } tbl[15];
+        } modes[] = {
+            {
+                "mixolydian", "mix",
+                {
+                    {{'c', true, false}, {'g', true, false}},
+                    {{'f', true, false}, {'c', true, false}},
+                    {{'b', false, false}, {'f', true, false}},
+                    {{'e', false, false}, {'b', false, false}},
+                    {{'a', false, false}, {'e', false, false}},
+                    {{'d', false, false}, {'a', false, false}},
+                    {{'g', false, false}, {'d', false, false}},
+                    {{'c', false, false}, {'g', false, false}},
+                    {{'f', false, false}, {'c', false, false}},
+                    {{'b', false, true}, {'f', false, false}},
+                    {{'e', false, true}, {'b', false, true}},
+                    {{'a', false, true}, {'e', false, true}},
+                    {{'d', false, true}, {'a', false, true}},
+                    {{'g', false, true}, {'d', false, true}},
+                    {{'c', false, true}, {'g', false, true}},
+                }
+            },
+            {
+                "dorian", "dor",
+                {
+                    {{'c', true, false}, {'d', true, false}},
+                    {{'f', true, false}, {'g', true, false}},
+                    {{'b', false, false}, {'c', true, false}},
+                    {{'e', false, false}, {'f', true, false}},
+                    {{'a', false, false}, {'b', false, false}},
+                    {{'d', false, false}, {'e', false, false}},
+                    {{'g', false, false}, {'a', false, false}},
+                    {{'c', false, false}, {'d', false, false}},
+                    {{'f', false, false}, {'g', false, false}},
+                    {{'b', false, true}, {'c', false, false}},
+                    {{'e', false, true}, {'f', false, false}},
+                    {{'a', false, true}, {'b', false, true}},
+                    {{'d', false, true}, {'e', false, true}},
+                    {{'g', false, true}, {'a', false, true}},
+                    {{'c', false, true}, {'d', false, true}},
+                }
+            },
+            {
+                "phrygian", "phr",
+                {
+                    {{'c', true, false}, {'e', true, false}},
+                    {{'f', true, false}, {'a', true, false}},
+                    {{'b', false, false}, {'d', true, false}},
+                    {{'e', false, false}, {'g', true, false}},
+                    {{'a', false, false}, {'c', true, false}},
+                    {{'d', false, false}, {'f', true, false}},
+                    {{'g', false, false}, {'b', false, false}},
+                    {{'c', false, false}, {'e', false, false}},
+                    {{'f', false, false}, {'a', false, false}},
+                    {{'b', false, true}, {'d', false, false}},
+                    {{'e', false, true}, {'g', false, false}},
+                    {{'a', false, true}, {'c', false, false}},
+                    {{'d', false, true}, {'f', false, false}},
+                    {{'g', false, true}, {'b', false, true}},
+                    {{'c', false, true}, {'e', false, true}},
+                }
+            },
+            {
+                "lydian", "lyd",
+                {
+                    {{'c', true, false}, {'f', true, false}},
+                    {{'f', true, false}, {'b', false, false}},
+                    {{'b', false, false}, {'e', false, false}},
+                    {{'e', false, false}, {'a', false, false}},
+                    {{'a', false, false}, {'d', false, false}},
+                    {{'d', false, false}, {'g', false, false}},
+                    {{'g', false, false}, {'c', false, false}},
+                    {{'c', false, false}, {'f', false, false}},
+                    {{'f', false, false}, {'b', false, true}},
+                    {{'b', false, true}, {'e', false, true}},
+                    {{'e', false, true}, {'a', false, true}},
+                    {{'a', false, true}, {'d', false, true}},
+                    {{'d', false, true}, {'g', false, true}},
+                    {{'g', false, true}, {'c', false, true}},
+                    {{'c', false, true}, {'f', false, true}},
+                }
+            },
+            {
+                "locrian", "loc",
+                {
+                    {{'c', true, false}, {'b', true, false}},
+                    {{'f', true, false}, {'e', true, false}},
+                    {{'b', false, false}, {'a', true, false}},
+                    {{'e', false, false}, {'d', true, false}},
+                    {{'a', false, false}, {'g', true, false}},
+                    {{'d', false, false}, {'c', true, false}},
+                    {{'g', false, false}, {'f', true, false}},
+                    {{'c', false, false}, {'b', false, false}},
+                    {{'f', false, false}, {'e', false, false}},
+                    {{'b', false, true}, {'a', false, false}},
+                    {{'e', false, true}, {'d', false, false}},
+                    {{'a', false, true}, {'g', false, false}},
+                    {{'d', false, true}, {'c', false, false}},
+                    {{'g', false, true}, {'f', false, false}},
+                    {{'c', false, true}, {'b', false, true}},
+                }
+            }
+        };
+
+        for (int i = 0; i < sizeof(modes)/sizeof(modes[0]); ++i) {
+            if (0 == strcmp(keyScale, modes[i].name)
+                    || 0 == strcmp(keyScale, modes[i].abbr)) {
+                for (int j = 0; j < 15; ++j) {
+                    if (modes[i].tbl[j].mode.keyChar == keyChar
+                            && modes[i].tbl[j].mode.sharp == sharp
+                            && modes[i].tbl[j].mode.flat == flat) {
+                        keyChar = modes[i].tbl[j].normal.keyChar;
+                        sharp = modes[i].tbl[j].normal.sharp;
+                        flat = modes[i].tbl[j].normal.flat;
+                        goto KEY_FOUND;
+                    }
+                }
+            }
+        }
+
+        ABCParserError(parser, location, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
+        free(keyScale);
+        return NULL;
+    }
+KEY_FOUND:
+
+    free(keyScale);
 
     KeySign keySign = NoteTableGetKeySign(keyChar, sharp, flat, major);
     if (KeySignInvalid == keySign) {

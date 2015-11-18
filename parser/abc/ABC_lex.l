@@ -34,7 +34,8 @@ TUNE_TITLE         T:.*$
 
 %x s_KEY
 KEY                K:
-KEY_SIGNATURE      [CDEFGAB](#|b)?m?
+KEY_NAME           [CDEFGAB](#|b)?
+KEY_SCALE          [a-zA-Z]+
 
 NOTE               [cdefgabCDEFGAB][,|']?([\^|_]{1,2}|=)?
 
@@ -50,7 +51,8 @@ LINE_COMMENT       %.*$
 {REFERENCE_NUMBER} { yylval->s = strdup(yytext + 2); return REFERENCE_NUMBER; }
 {TUNE_TITLE}       { yylval->s = strdup(yytext + 2); return TUNE_TITLE; }
 {KEY}              { BEGIN(s_KEY); return KEY; }
-<s_KEY>{KEY_SIGNATURE}   { yylval->s = strdup(yytext); return KEY_SIGNATURE; }
+<s_KEY>{KEY_NAME}  { yylval->s = strdup(yytext); return KEY_NAME; }
+<s_KEY>{KEY_SCALE} { yylval->s = strdup(yytext); return KEY_SCALE; }
 <s_KEY>{EOL}       { BEGIN(INITIAL); }
 {NOTE}             { yylval->s = strdup(yytext); return NOTE; }
 

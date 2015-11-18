@@ -7,8 +7,8 @@ KeySign NoteTableGetKeySign(char keyChar, bool sharp, bool flat, bool major)
     const KeySign table[7][3][2] = {
         { // c
             {KeySignCMajor,      KeySignCMinor},
-            {KeySignInvalid,     KeySignCSharpMinor},
-            {KeySignInvalid,     KeySignInvalid},
+            {KeySignCSharpMajor, KeySignCSharpMinor},
+            {KeySignCFlatMajor,  KeySignInvalid},
         },
         { // d
             {KeySignDMajor,      KeySignDMinor},
@@ -32,8 +32,8 @@ KeySign NoteTableGetKeySign(char keyChar, bool sharp, bool flat, bool major)
         },
         { // a
             {KeySignAMajor,      KeySignAMinor},
-            {KeySignInvalid,     KeySignInvalid},
-            {KeySignAFlatMajor,  KeySignInvalid},
+            {KeySignInvalid,     KeySignASharpMinor},
+            {KeySignAFlatMajor,  KeySignAFlatMinor},
         },
         { // b
             {KeySignBMajor,      KeySignBMinor},
@@ -57,6 +57,8 @@ int NoteTableGetNoteNo(KeySign keySign, BaseNote baseNote, Accidental accidental
         {1, 2, 4, 6, 8, 9, 11}, // AMajor
         {1, 3, 4, 6, 8, 9, 11}, // EMajor
         {1, 3, 4, 6, 8, 10, 11}, // BMajor
+        {1, 3, 5, 6, 8, 10, 11}, // FSharpMajor
+        {1, 3, 5, 6, 8, 10, 12}, // CSharpMajor
 
         {0, 2, 4, 5, 7, 9, 10}, // FMajor
         {0, 2, 3, 5, 7, 9, 10}, // BFlatMajor
@@ -64,8 +66,7 @@ int NoteTableGetNoteNo(KeySign keySign, BaseNote baseNote, Accidental accidental
         {0, 1, 3, 5, 7, 8, 10}, // AFlatMajor
         {0, 1, 3, 5, 6, 8, 10}, // DFlatMajor
         {-1, 1, 3, 5, 6, 8, 10}, // GFlatMajor
-
-        {1, 3, 5, 6, 8, 10, 11}, // FSharpMajor
+        {-1, 1, 3, 4, 6, 8, 10}, // CFlatMajor
 
         {0, 2, 4, 5, 7, 9, 11}, // AMinor
         {0, 2, 4, 6, 7, 9, 11}, // EMinor
@@ -73,14 +74,16 @@ int NoteTableGetNoteNo(KeySign keySign, BaseNote baseNote, Accidental accidental
         {1, 2, 4, 6, 8, 9, 11}, // FSharpMinor
         {1, 3, 4, 6, 8, 9, 11}, // CSharpMinor
         {1, 3, 4, 6, 8, 10, 11}, // GSharpMinor
+        {1, 3, 5, 6, 8, 10, 11}, // DSharpMinor
+        {1, 3, 5, 6, 8, 10, 12}, // ASharpMinor
+
         {0, 2, 4, 5, 7, 9, 10}, // DMinor
         {0, 2, 3, 5, 7, 9, 10}, // GMinor
         {0, 2, 3, 5, 7, 8, 10}, // CMinor
         {0, 1, 3, 5, 7, 8, 10}, // FMinor
         {0, 1, 3, 5, 6, 8, 10}, // BFlatMinor
         {-1, 1, 3, 5, 6, 8, 10}, // EFlatMinor
-
-        {1, 3, 5, 6, 8, 10, 11}, // DSharpMinor
+        {-1, 1, 3, 4, 6, 8, 10}, // AFlatMinor
     };
 
     int noteNo = noteTable[AccidentalNatural == accidental ? KeySignCMajor : keySign][baseNote];
@@ -111,26 +114,30 @@ static const uint8_t KeySignMidiExpressionTable[KeySignSize][2] = {
     {0x03, 0}, // KeySignAMajor
     {0x04, 0}, // KeySignEMajor
     {0x05, 0}, // KeySignBMajor
+    {0x06, 0}, // KeySignFSharpMajor
+    {0x07, 0}, // KeySignCSharpMajor
     {0xFF, 0}, // KeySignFMajor
     {0xFE, 0}, // KeySignBFlatMajor
     {0xFD, 0}, // KeySignEFlatMajor
     {0xFC, 0}, // KeySignAFlatMajor
     {0xFB, 0}, // KeySignDFlatMajor
     {0xFA, 0}, // KeySignGFlatMajor
-    {0x06, 0}, // KeySignFSharpMajor
+    {0xF0, 0}, // KeySignCFlatMajor
     {0x00, 1}, // KeySignAMinor
     {0x01, 1}, // KeySignEMinor
     {0x02, 1}, // KeySignBMinor
     {0x03, 1}, // KeySignFSharpMinor
     {0x04, 1}, // KeySignCSharpMinor
     {0x05, 1}, // KeySignGSharpMinor
+    {0x06, 1}, // KeySignDSharpMinor
+    {0x07, 1}, // KeySignASharpMinor
     {0xFF, 1}, // KeySignDMinor
     {0xFE, 1}, // KeySignGMinor
     {0xFD, 1}, // KeySignCMinor
     {0xFC, 1}, // KeySignFMinor
     {0xFB, 1}, // KeySignBFlatMinor
     {0xFA, 1}, // KeySignEFlatMinor
-    {0x06, 1}, // KeySignDSharpMinor
+    {0xF0, 1}, // KeySignAFlatMinor
 };
 
 void KeySignGetMidiExpression(KeySign keySign, uint8_t *sf, uint8_t *mi)

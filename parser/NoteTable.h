@@ -12,6 +12,8 @@ typedef enum {
     KeySignAMajor,
     KeySignEMajor,
     KeySignBMajor,
+    KeySignFSharpMajor,
+    KeySignCSharpMajor,
 
     KeySignFMajor,
     KeySignBFlatMajor,
@@ -19,8 +21,7 @@ typedef enum {
     KeySignAFlatMajor,
     KeySignDFlatMajor,
     KeySignGFlatMajor,
-
-    KeySignFSharpMajor,
+    KeySignCFlatMajor,
 
     KeySignAMinor,
     KeySignEMinor,
@@ -28,14 +29,16 @@ typedef enum {
     KeySignFSharpMinor,
     KeySignCSharpMinor,
     KeySignGSharpMinor,
+    KeySignDSharpMinor,
+    KeySignASharpMinor,
+
     KeySignDMinor,
     KeySignGMinor,
     KeySignCMinor,
     KeySignFMinor,
     KeySignBFlatMinor,
     KeySignEFlatMinor,
-
-    KeySignDSharpMinor,
+    KeySignAFlatMinor,
 
     KeySignSize
 } KeySign;
@@ -79,6 +82,8 @@ static inline char *KeySign2String(KeySign keySign)
     CASE(KeySignAMajor);
     CASE(KeySignEMajor);
     CASE(KeySignBMajor);
+    CASE(KeySignFSharpMajor);
+    CASE(KeySignCSharpMajor);
 
     CASE(KeySignFMajor);
     CASE(KeySignBFlatMajor);
@@ -86,8 +91,7 @@ static inline char *KeySign2String(KeySign keySign)
     CASE(KeySignAFlatMajor);
     CASE(KeySignDFlatMajor);
     CASE(KeySignGFlatMajor);
-
-    CASE(KeySignFSharpMajor);
+    CASE(KeySignCFlatMajor);
 
     CASE(KeySignAMinor);
     CASE(KeySignEMinor);
@@ -95,14 +99,15 @@ static inline char *KeySign2String(KeySign keySign)
     CASE(KeySignFSharpMinor);
     CASE(KeySignCSharpMinor);
     CASE(KeySignGSharpMinor);
+    CASE(KeySignDSharpMinor);
+    CASE(KeySignASharpMinor);
     CASE(KeySignDMinor);
     CASE(KeySignGMinor);
     CASE(KeySignCMinor);
     CASE(KeySignFMinor);
     CASE(KeySignBFlatMinor);
     CASE(KeySignEFlatMinor);
-
-    CASE(KeySignDSharpMinor);
+    CASE(KeySignAFlatMinor);
 
     default:
        break;
