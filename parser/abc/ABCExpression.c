@@ -200,14 +200,24 @@ static bool KeyExprParse(void *_self, void *parser, void *_context)
 
 void *ABCExprKey(ABCParser *parser, ParseLocation *location, char *keyName, char *keyScale)
 { __Trace__
-    NAUtilToLowerCase(keyName);
+    KeyExpr *self = NULL;
 
-    char keyChar = keyName[0];
-    bool sharp = NULL != strchr(&keyName[1], '#');
-    bool flat = NULL != strchr(&keyName[1], 'b');
+    char keyChar = 'c';
+    bool sharp = false;
+    bool flat = false;
     bool major = true;
 
-    free(keyName);
+    if (keyName) {
+        NAUtilToLowerCase(keyName);
+
+        if (0 == strcmp("none", keyName)) {
+            goto KEY_FOUND;
+        }
+
+        keyChar = keyName[0];
+        sharp = NULL != strchr(&keyName[1], '#');
+        flat = NULL != strchr(&keyName[1], 'b');
+    }
     
     if (keyScale) {
         NAUtilToLowerCase(keyScale);
@@ -354,9 +364,11 @@ void *ABCExprKey(ABCParser *parser, ParseLocation *location, char *keyName, char
                     if (modes[i].tbl[j].mode.keyChar == keyChar
                             && modes[i].tbl[j].mode.sharp == sharp
                             && modes[i].tbl[j].mode.flat == flat) {
+
                         keyChar = modes[i].tbl[j].normal.keyChar;
                         sharp = modes[i].tbl[j].normal.sharp;
                         flat = modes[i].tbl[j].normal.flat;
+
                         goto KEY_FOUND;
                     }
                 }
@@ -364,22 +376,30 @@ void *ABCExprKey(ABCParser *parser, ParseLocation *location, char *keyName, char
         }
 
         ABCParserError(parser, location, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
-        free(keyScale);
-        return NULL;
+        goto EXIT;
     }
-KEY_FOUND:
 
-    free(keyScale);
+KEY_FOUND:
+    ;
 
     KeySign keySign = NoteTableGetKeySign(keyChar, sharp, flat, major);
     if (KeySignInvalid == keySign) {
         ABCParserError(parser, location, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
-        return NULL;
+        goto EXIT;
     }
 
-    KeyExpr *self = ExpressionCreate(location, sizeof(KeyExpr), "key");
+    self = ExpressionCreate(location, sizeof(KeyExpr), "key");
     self->expr.vtbl.parse = KeyExprParse;
     self->keySign = keySign;
+
+EXIT:
+    if (keyName) {
+        free(keyName);
+    }
+
+    if (keyScale) {
+        free(keyScale);
+    }
 
     return self;
 }

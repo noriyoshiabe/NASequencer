@@ -77,6 +77,7 @@ statement
     : EOL                                 { $$ = ABCExprEOL(PERSER(), LOC(@$)); }
     | VERSION                             { $$ = ABCExprVersion(PERSER(), LOC(@$), $1); }
     | REFERENCE_NUMBER                    { $$ = ABCExprReferenceNumber(PERSER(), LOC(@$), $1); }
+    | KEY                                 { $$ = ABCExprKey(PERSER(), LOC(@$), NULL, NULL);}
     | KEY KEY_NAME                        { $$ = ABCExprKey(PERSER(), LOC(@$), $2, NULL);}
     | KEY KEY_NAME KEY_SCALE              { $$ = ABCExprKey(PERSER(), LOC(@$), $2, $3);}
     | TUNE_TITLE                          { $$ = ABCExprTuneTitle(PERSER(), LOC(@$), $1); }

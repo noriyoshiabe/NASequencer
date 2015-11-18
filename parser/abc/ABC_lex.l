@@ -34,7 +34,7 @@ TUNE_TITLE         T:.*$
 
 %x s_KEY
 KEY                K:
-KEY_NAME           [CDEFGAB](#|b)?
+KEY_NAME           [CDEFGAB](#|b)?|(?i:none)
 KEY_SCALE          [a-zA-Z]+
 
 NOTE               [cdefgabCDEFGAB][,|']?([\^|_]{1,2}|=)?
