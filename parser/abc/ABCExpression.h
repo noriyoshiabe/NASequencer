@@ -10,6 +10,7 @@ extern void *ABCExprEOL(ABCParser *parser, ParseLocation *location);
 extern void *ABCExprVersion(ABCParser *parser, ParseLocation *location, char *version);
 extern void *ABCExprReferenceNumber(ABCParser *parser, ParseLocation *location, char *numberString);
 extern void *ABCExprTuneTitle(ABCParser *parser, ParseLocation *location, char *title);
+extern void *ABCExprKey(ABCParser *parser, ParseLocation *location, char *keyString);
 extern void *ABCExprNote(ABCParser *parser, ParseLocation *location, char *noteString);
 
 extern bool ABCExprIsStatementList(Expression *self);

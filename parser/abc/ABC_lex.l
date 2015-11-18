@@ -31,6 +31,11 @@ EOL                \n
 VERSION            %abc-.+$
 REFERENCE_NUMBER   X:.*$
 TUNE_TITLE         T:.*$
+
+%x s_KEY
+KEY                K:
+KEY_SIGNATURE      [CDEFGAB](#|b)?m?
+
 NOTE               [cdefgabCDEFGAB][,|']?([\^|_]{1,2}|=)?
 
 LINE_COMMENT       %.*$
@@ -44,6 +49,9 @@ LINE_COMMENT       %.*$
 {VERSION}          { yylval->s = strdup(yytext + 5); return VERSION; }
 {REFERENCE_NUMBER} { yylval->s = strdup(yytext + 2); return REFERENCE_NUMBER; }
 {TUNE_TITLE}       { yylval->s = strdup(yytext + 2); return TUNE_TITLE; }
+{KEY}              { BEGIN(s_KEY); return KEY; }
+<s_KEY>{KEY_SIGNATURE}   { yylval->s = strdup(yytext); return KEY_SIGNATURE; }
+<s_KEY>{EOL}       { BEGIN(INITIAL); }
 {NOTE}             { yylval->s = strdup(yytext); return NOTE; }
 
 {LINE_COMMENT}     { }

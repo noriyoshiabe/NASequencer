@@ -75,11 +75,7 @@ static void EOLExprDestroy(void *self)
 
 static bool EOLExprParse(void *_self, void *parser, void *_context)
 {
-    StatementListExpr *self = _self;
-    ABCParserContext *context = _context;
-
     // TODO
-    printf("EOL\n");
     return true;
 }
 
@@ -143,7 +139,7 @@ void *ABCExprVersion(ABCParser *parser, ParseLocation *location, char *version)
 }
 
 void *ABCExprReferenceNumber(ABCParser *parser, ParseLocation *location, char *numberString)
-{
+{ __Trace__
     // Unsupported
     free(numberString);
 
@@ -180,6 +176,47 @@ void *ABCExprTuneTitle(ABCParser *parser, ParseLocation *location, char *title)
     self->expr.vtbl.destroy = TuneTitleExprDestroy;
     self->expr.vtbl.parse = TuneTitleExprParse;
     self->title = NAUtilTrimWhiteSpace(title);
+    return self;
+}
+
+typedef struct _KeyExpr {
+    Expression expr;
+    KeySign keySign;
+} KeyExpr;
+
+static bool KeyExprParse(void *_self, void *parser, void *_context)
+{
+    KeyExpr *self = _self;
+    ABCParserContext *context = _context;
+    context->keySign = self->keySign;
+
+    uint8_t sf, mi;
+    KeySignGetMidiExpression(self->keySign, &sf, &mi);
+
+    SequenceBuilder *builder = ABCParserGetBuilder(parser);
+    builder->appendKey(builder, context->channels[context->channel].tick, sf, mi);
+    return true;
+}
+
+void *ABCExprKey(ABCParser *parser, ParseLocation *location, char *keyString)
+{ __Trace__
+    char keyChar = tolower(keyString[0]);
+    bool sharp = NULL != strchr(&keyString[1], '#');
+    bool flat = NULL != strchr(&keyString[1], 'b');
+    bool major = NULL == strstr(&keyString[1], "m");
+
+    free(keyString);
+
+    KeySign keySign = NoteTableGetKeySign(keyChar, sharp, flat, major);
+    if (KeySignInvalid == keySign) {
+        ABCParserError(parser, location, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
+        return NULL;
+    }
+
+    KeyExpr *self = ExpressionCreate(location, sizeof(KeyExpr), "key");
+    self->expr.vtbl.parse = KeyExprParse;
+    self->keySign = keySign;
+
     return self;
 }
 

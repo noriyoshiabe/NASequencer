@@ -34,6 +34,8 @@ extern int ABC_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, Ex
 %token <s>VERSION
 %token <s>REFERENCE_NUMBER
 %token <s>TUNE_TITLE
+%token KEY
+%token <s>KEY_SIGNATURE
 %token <s>NOTE
 
 %type <expression> statement_list statement
@@ -74,6 +76,7 @@ statement
     : EOL                                 { $$ = ABCExprEOL(PERSER(), LOC(@$)); }
     | VERSION                             { $$ = ABCExprVersion(PERSER(), LOC(@$), $1); }
     | REFERENCE_NUMBER                    { $$ = ABCExprReferenceNumber(PERSER(), LOC(@$), $1); }
+    | KEY KEY_SIGNATURE                   { $$ = ABCExprKey(PERSER(), LOC(@$), $2);}
     | TUNE_TITLE                          { $$ = ABCExprTuneTitle(PERSER(), LOC(@$), $1); }
     | NOTE                                { $$ = ABCExprNote(PERSER(), LOC(@$), $1); }
     ;
