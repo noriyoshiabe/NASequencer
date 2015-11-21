@@ -38,7 +38,7 @@ extern SequenceBuilder *ABCParserGetBuilder(ABCParser *self);
 typedef struct _ABCParserContext {
     int channel;
     int transpose;
-    KeySign keySign;
+    NoteTable *noteTable;
     struct {
         int tick;
     } channels[16];

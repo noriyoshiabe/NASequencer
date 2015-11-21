@@ -39,7 +39,7 @@ extern SequenceBuilder *NAMidiParserGetBuilder(NAMidiParser *self);
 typedef struct _NAMidiParserContext {
     int channel;
     int transpose;
-    KeySign keySign;
+    NoteTable *noteTable;
     struct {
         int tick;
         int gatetime;

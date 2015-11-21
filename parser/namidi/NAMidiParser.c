@@ -205,6 +205,8 @@ NAMidiParserContext *NAMidiParserContextCreate()
 {
     NAMidiParserContext *self = calloc(1, sizeof(NAMidiParserContext));
 
+    self->noteTable = NoteTableCreate(BaseNote_C, false, false, ModeMajor);
+
     for (int i = 0; i < 16; ++i) {
         self->channels[i].gatetime = 240;
         self->channels[i].velocity = 100;
@@ -225,6 +227,8 @@ NAMidiParserContext *NAMidiParserContextCreateCopy(NAMidiParserContext *self)
     memcpy(copy, self, sizeof(NAMidiParserContext));
     copy->contextIdList = NASetCreate(NAHashCString, NADescriptionCString);
 
+    NoteTableRetain(copy->noteTable);
+
     NAIterator *iterator = NASetGetIterator(self->contextIdList);
     while (iterator->hasNext(iterator)) {
         NASetAdd(copy->contextIdList, iterator->next(iterator));
@@ -236,6 +240,8 @@ NAMidiParserContext *NAMidiParserContextCreateCopy(NAMidiParserContext *self)
 
 void NAMidiParserContextDestroy(NAMidiParserContext *self)
 {
+    NoteTableRelease(self->noteTable);
+
     if (!self->copy) {
         NASetDestroy(self->expandingPatternList);
     }

@@ -110,12 +110,14 @@ Parser *ABCParserCreate(SequenceBuilder *builder, ParserCallbacks *callbacks, vo
 ABCParserContext *ABCParserContextCreate()
 {
     ABCParserContext *self = calloc(1, sizeof(ABCParserContext));
+    self->noteTable = NoteTableCreate(BaseNote_C, false, false, ModeMajor);
     self->channel = 1;
     return self;
 }
 
 void ABCParserContextDestroy(ABCParserContext *self)
 {
+    NoteTableRelease(self->noteTable);
     free(self);
 }
 

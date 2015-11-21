@@ -19,6 +19,16 @@
 static const char *STATEMENT_LIST_ID = "statement list";
 static const char *PATTERN_ID = "pattern";
 
+static BaseNote KeyChar2BaseNote(char c)
+{
+    const BaseNote baseNoteTable[] = {
+        BaseNote_A, BaseNote_B, BaseNote_C,
+        BaseNote_D, BaseNote_E, BaseNote_F, BaseNote_G
+    };
+
+    return baseNoteTable[tolower(c) - 97];
+}
+
 typedef struct _StatementListExpr {
     Expression expr;
     NAMap *patternMap;
@@ -420,41 +430,51 @@ void *NAMidiExprTranspose(NAMidiParser *parser, ParseLocation *location, int val
 
 typedef struct _KeySignExpr {
     Expression expr;
-    KeySign keySign;
+    NoteTable *noteTable;
 } KeySignExpr;
+
+static void KeySignExprDestroy(void *_self)
+{
+    KeySignExpr *self = _self;
+    NoteTableRelease(self->noteTable);
+    free(self);
+}
 
 static bool KeySignExprParse(void *_self, void *parser, void *_context)
 {
     KeySignExpr *self = _self;
     NAMidiParserContext *context = _context;
-    context->keySign = self->keySign;
 
-    uint8_t sf, mi;
-    KeySignGetMidiExpression(self->keySign, &sf, &mi);
+    NoteTableRelease(context->noteTable);
+    context->noteTable = NoteTableRetain(self->noteTable);
+
+    MidiKeySign keysign = NoteTableGetMidiKeySign(self->noteTable);
 
     SequenceBuilder *builder = NAMidiParserGetBuilder(parser);
-    builder->appendKey(builder, context->channels[context->channel].tick, sf, mi);
+    builder->appendKey(builder, context->channels[context->channel].tick, keysign.sf, keysign.mi);
     return true;
 }
 
 void *NAMidiExprKeySign(NAMidiParser *parser, ParseLocation *location, char *keyString)
 { __Trace__
-    char keyChar = tolower(keyString[0]);
+    BaseNote baseNote = KeyChar2BaseNote(keyString[0]);
     bool sharp = NULL != strchr(&keyString[1], '#');
     bool flat = NULL != strchr(&keyString[1], 'b');
-    bool major = NULL == strstr(&keyString[1], "min");
+    Mode mode = NULL != strstr(&keyString[1], "min") ? ModeMinor : ModeMajor;
 
     free(keyString);
 
-    KeySign keySign = NoteTableGetKeySign(keyChar, sharp, flat, major);
-    if (KeySignInvalid == keySign) {
+    NoteTable *noteTable = NoteTableCreate(baseNote, sharp, flat, mode);
+    if (NoteTableHasUnusualKeySign(noteTable)) {
         NAMidiParserError(parser, location, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
+        NoteTableRelease(noteTable);
         return NULL;
     }
 
     KeySignExpr *self = ExpressionCreate(location, sizeof(KeySignExpr), "key sign");
+    self->expr.vtbl.destroy = KeySignExprDestroy;
     self->expr.vtbl.parse = KeySignExprParse;
-    self->keySign = keySign;
+    self->noteTable = noteTable;
 
     return self;
 }
@@ -503,7 +523,7 @@ static bool NoteExprParse(void *_self, void *parser, void *_context)
     int octave = OCTAVE_NONE != self->octave ? self->octave : context->channels[context->channel].octave;
     context->channels[context->channel].octave = octave;
 
-    int noteNo = NoteTableGetNoteNo(context->keySign, self->baseNote, self->accidental, octave)
+    int noteNo = NoteTableGetNoteNo(context->noteTable, self->baseNote, self->accidental, octave)
         + context->transpose;
     if (!isValidRange(noteNo, 0, 127)) {
         NAMidiParserError(parser, &self->expr.location, ParseErrorKindGeneral, GeneralParseErrorInvalidNoteRange);
@@ -526,14 +546,9 @@ static bool NoteExprParse(void *_self, void *parser, void *_context)
 
 void *NAMidiExprNote(NAMidiParser *parser, ParseLocation *location, char *noteString, int step, int gatetime, int velocity)
 { __Trace__
-    const BaseNote noteTable[] = {
-        BaseNote_A, BaseNote_B, BaseNote_C,
-        BaseNote_D, BaseNote_E, BaseNote_F, BaseNote_G
-    };
-
     char *pc = noteString;
 
-    BaseNote baseNote = noteTable[tolower(*pc) - 97];
+    BaseNote baseNote = KeyChar2BaseNote(*pc);
     Accidental accidental = AccidentalNone;
 
     int octave = OCTAVE_NONE;

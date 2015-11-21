@@ -16,6 +16,16 @@
 
 static const char *STATEMENT_LIST_ID = "statement list";
 
+static BaseNote KeyChar2BaseNote(char c)
+{
+    const BaseNote baseNoteTable[] = {
+        BaseNote_A, BaseNote_B, BaseNote_C,
+        BaseNote_D, BaseNote_E, BaseNote_F, BaseNote_G
+    };
+
+    return baseNoteTable[tolower(c) - 97];
+}
+
 typedef struct _StatementListExpr {
     Expression expr;
 } StatementListExpr;
@@ -181,20 +191,28 @@ void *ABCExprTuneTitle(ABCParser *parser, ParseLocation *location, char *title)
 
 typedef struct _KeyExpr {
     Expression expr;
-    KeySign keySign;
+    NoteTable *noteTable;
 } KeyExpr;
+
+static void KeyExprDestroy(void *_self)
+{
+    KeyExpr *self = _self;
+    NoteTableRelease(self->noteTable);
+    free(self);
+}
 
 static bool KeyExprParse(void *_self, void *parser, void *_context)
 {
     KeyExpr *self = _self;
     ABCParserContext *context = _context;
-    context->keySign = self->keySign;
 
-    uint8_t sf, mi;
-    KeySignGetMidiExpression(self->keySign, &sf, &mi);
+    NoteTableRelease(context->noteTable);
+    context->noteTable = NoteTableRetain(self->noteTable);
+
+    MidiKeySign keysign = NoteTableGetMidiKeySign(self->noteTable);
 
     SequenceBuilder *builder = ABCParserGetBuilder(parser);
-    builder->appendKey(builder, context->channels[context->channel].tick, sf, mi);
+    builder->appendKey(builder, context->channels[context->channel].tick, keysign.sf, keysign.mi);
     return true;
 }
 
@@ -202,10 +220,10 @@ void *ABCExprKey(ABCParser *parser, ParseLocation *location, char *keyName, char
 { __Trace__
     KeyExpr *self = NULL;
 
-    char keyChar = 'c';
+    BaseNote baseNote = BaseNote_C;
     bool sharp = false;
     bool flat = false;
-    bool major = true;
+    Mode mode = ModeMajor;
 
     if (keyName) {
         NAUtilToLowerCase(keyName);
@@ -214,7 +232,7 @@ void *ABCExprKey(ABCParser *parser, ParseLocation *location, char *keyName, char
             goto KEY_FOUND;
         }
 
-        keyChar = keyName[0];
+        baseNote = KeyChar2BaseNote(keyName[0]);
         sharp = NULL != strchr(&keyName[1], '#');
         flat = NULL != strchr(&keyName[1], 'b');
     }
@@ -224,154 +242,23 @@ void *ABCExprKey(ABCParser *parser, ParseLocation *location, char *keyName, char
 
         const struct {
             const char *name;
-            bool major;
+            Mode mode;
         } scales[] = {
-            {"ma", true}, {"maj", true}, {"major", true},
-            {"m", false}, {"min", false}, {"minor", false},
-            {"ion", true}, {"ionian", true},
-            {"aeo", false}, {"aeolian", false},
+            {"ma", ModeMajor}, {"maj", ModeMajor}, {"major", ModeMajor},
+            {"m", ModeMinor}, {"min", ModeMinor}, {"minor", ModeMinor},
+            {"ion", ModeIonian}, {"ionian", ModeIonian},
+            {"aeo", ModeAeolian}, {"aeolian", ModeAeolian},
+            {"mix", ModeMixolydian}, {"mixolydian", ModeMixolydian},
+            {"dor", ModeDorian}, {"dorian", ModeDorian},
+            {"phr", ModePhrygian}, {"phrygian", ModePhrygian},
+            {"lyd", ModeLydian}, {"lydian", ModeLydian},
+            {"loc", ModeLocrian}, {"locrian", ModeLocrian},
         };
 
         for (int i = 0; i < sizeof(scales)/sizeof(scales[0]); ++i) {
             if (0 == strcmp(keyScale, scales[i].name)) {
-                major = scales[i].major;
+                mode = scales[i].mode;
                 goto KEY_FOUND;
-            }
-        }
-
-        const struct {
-            const char *name;
-            const char *abbr;
-            struct {
-                struct {
-                    char keyChar;
-                    bool sharp;
-                    bool flat;
-                } normal;
-                struct {
-                    char keyChar;
-                    bool sharp;
-                    bool flat;
-                } mode;
-            } tbl[15];
-        } modes[] = {
-            {
-                "mixolydian", "mix",
-                {
-                    {{'c', true, false}, {'g', true, false}},
-                    {{'f', true, false}, {'c', true, false}},
-                    {{'b', false, false}, {'f', true, false}},
-                    {{'e', false, false}, {'b', false, false}},
-                    {{'a', false, false}, {'e', false, false}},
-                    {{'d', false, false}, {'a', false, false}},
-                    {{'g', false, false}, {'d', false, false}},
-                    {{'c', false, false}, {'g', false, false}},
-                    {{'f', false, false}, {'c', false, false}},
-                    {{'b', false, true}, {'f', false, false}},
-                    {{'e', false, true}, {'b', false, true}},
-                    {{'a', false, true}, {'e', false, true}},
-                    {{'d', false, true}, {'a', false, true}},
-                    {{'g', false, true}, {'d', false, true}},
-                    {{'c', false, true}, {'g', false, true}},
-                }
-            },
-            {
-                "dorian", "dor",
-                {
-                    {{'c', true, false}, {'d', true, false}},
-                    {{'f', true, false}, {'g', true, false}},
-                    {{'b', false, false}, {'c', true, false}},
-                    {{'e', false, false}, {'f', true, false}},
-                    {{'a', false, false}, {'b', false, false}},
-                    {{'d', false, false}, {'e', false, false}},
-                    {{'g', false, false}, {'a', false, false}},
-                    {{'c', false, false}, {'d', false, false}},
-                    {{'f', false, false}, {'g', false, false}},
-                    {{'b', false, true}, {'c', false, false}},
-                    {{'e', false, true}, {'f', false, false}},
-                    {{'a', false, true}, {'b', false, true}},
-                    {{'d', false, true}, {'e', false, true}},
-                    {{'g', false, true}, {'a', false, true}},
-                    {{'c', false, true}, {'d', false, true}},
-                }
-            },
-            {
-                "phrygian", "phr",
-                {
-                    {{'c', true, false}, {'e', true, false}},
-                    {{'f', true, false}, {'a', true, false}},
-                    {{'b', false, false}, {'d', true, false}},
-                    {{'e', false, false}, {'g', true, false}},
-                    {{'a', false, false}, {'c', true, false}},
-                    {{'d', false, false}, {'f', true, false}},
-                    {{'g', false, false}, {'b', false, false}},
-                    {{'c', false, false}, {'e', false, false}},
-                    {{'f', false, false}, {'a', false, false}},
-                    {{'b', false, true}, {'d', false, false}},
-                    {{'e', false, true}, {'g', false, false}},
-                    {{'a', false, true}, {'c', false, false}},
-                    {{'d', false, true}, {'f', false, false}},
-                    {{'g', false, true}, {'b', false, true}},
-                    {{'c', false, true}, {'e', false, true}},
-                }
-            },
-            {
-                "lydian", "lyd",
-                {
-                    {{'c', true, false}, {'f', true, false}},
-                    {{'f', true, false}, {'b', false, false}},
-                    {{'b', false, false}, {'e', false, false}},
-                    {{'e', false, false}, {'a', false, false}},
-                    {{'a', false, false}, {'d', false, false}},
-                    {{'d', false, false}, {'g', false, false}},
-                    {{'g', false, false}, {'c', false, false}},
-                    {{'c', false, false}, {'f', false, false}},
-                    {{'f', false, false}, {'b', false, true}},
-                    {{'b', false, true}, {'e', false, true}},
-                    {{'e', false, true}, {'a', false, true}},
-                    {{'a', false, true}, {'d', false, true}},
-                    {{'d', false, true}, {'g', false, true}},
-                    {{'g', false, true}, {'c', false, true}},
-                    {{'c', false, true}, {'f', false, true}},
-                }
-            },
-            {
-                "locrian", "loc",
-                {
-                    {{'c', true, false}, {'b', true, false}},
-                    {{'f', true, false}, {'e', true, false}},
-                    {{'b', false, false}, {'a', true, false}},
-                    {{'e', false, false}, {'d', true, false}},
-                    {{'a', false, false}, {'g', true, false}},
-                    {{'d', false, false}, {'c', true, false}},
-                    {{'g', false, false}, {'f', true, false}},
-                    {{'c', false, false}, {'b', false, false}},
-                    {{'f', false, false}, {'e', false, false}},
-                    {{'b', false, true}, {'a', false, false}},
-                    {{'e', false, true}, {'d', false, false}},
-                    {{'a', false, true}, {'g', false, false}},
-                    {{'d', false, true}, {'c', false, false}},
-                    {{'g', false, true}, {'f', false, false}},
-                    {{'c', false, true}, {'b', false, true}},
-                }
-            }
-        };
-
-        for (int i = 0; i < sizeof(modes)/sizeof(modes[0]); ++i) {
-            if (0 == strcmp(keyScale, modes[i].name)
-                    || 0 == strcmp(keyScale, modes[i].abbr)) {
-                for (int j = 0; j < 15; ++j) {
-                    if (modes[i].tbl[j].mode.keyChar == keyChar
-                            && modes[i].tbl[j].mode.sharp == sharp
-                            && modes[i].tbl[j].mode.flat == flat) {
-
-                        keyChar = modes[i].tbl[j].normal.keyChar;
-                        sharp = modes[i].tbl[j].normal.sharp;
-                        flat = modes[i].tbl[j].normal.flat;
-
-                        goto KEY_FOUND;
-                    }
-                }
             }
         }
 
@@ -382,15 +269,17 @@ void *ABCExprKey(ABCParser *parser, ParseLocation *location, char *keyName, char
 KEY_FOUND:
     ;
 
-    KeySign keySign = NoteTableGetKeySign(keyChar, sharp, flat, major);
-    if (KeySignInvalid == keySign) {
+    NoteTable *noteTable = NoteTableCreate(baseNote, sharp, flat, mode);
+    if (NoteTableHasUnusualKeySign(noteTable)) {
         ABCParserError(parser, location, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
+        NoteTableRelease(noteTable);
         goto EXIT;
     }
 
     self = ExpressionCreate(location, sizeof(KeyExpr), "key");
+    self->expr.vtbl.destroy = KeyExprDestroy;
     self->expr.vtbl.parse = KeyExprParse;
-    self->keySign = keySign;
+    self->noteTable = noteTable;
 
 EXIT:
     if (keyName) {
@@ -419,7 +308,7 @@ static bool NoteExprParse(void *_self, void *parser, void *_context)
     ABCParserContext *context = _context;
     SequenceBuilder *builder = ABCParserGetBuilder(parser);
 
-    int noteNo = NoteTableGetNoteNo(context->keySign, self->baseNote, self->accidental, self->octave)
+    int noteNo = NoteTableGetNoteNo(context->noteTable, self->baseNote, self->accidental, self->octave)
         + context->transpose;
     if (!isValidRange(noteNo, 0, 127)) {
         ABCParserError(parser, &self->expr.location, ParseErrorKindGeneral, GeneralParseErrorInvalidNoteRange);
@@ -439,15 +328,9 @@ static bool NoteExprParse(void *_self, void *parser, void *_context)
 void *ABCExprNote(ABCParser *parser, ParseLocation *location, char *noteString)
 { __Trace__
     NoteExpr *self = NULL;
-
-    const BaseNote noteTable[] = {
-        BaseNote_A, BaseNote_B, BaseNote_C,
-        BaseNote_D, BaseNote_E, BaseNote_F, BaseNote_G
-    };
-
     char *pc = noteString;
 
-    BaseNote baseNote = noteTable[tolower(*pc) - 97];
+    BaseNote baseNote = KeyChar2BaseNote(*pc);
     Accidental accidental = AccidentalNone;
     int octave = isupper(*pc) ? 2 : 3;
 

@@ -1,93 +1,154 @@
 #include "NoteTable.h"
 
-KeySign NoteTableGetKeySign(char keyChar, bool sharp, bool flat, bool major)
-{
-#define Index(c) (99 > c ? c - 92 : c - 99)
+#include <stdlib.h>
 
-    const KeySign table[7][3][2] = {
-        { // c
-            {KeySignCMajor,      KeySignCMinor},
-            {KeySignCSharpMajor, KeySignCSharpMinor},
-            {KeySignCFlatMajor,  KeySignInvalid},
-        },
-        { // d
-            {KeySignDMajor,      KeySignDMinor},
-            {KeySignInvalid,     KeySignDSharpMinor},
-            {KeySignDFlatMajor,  KeySignInvalid},
-        },
-        { // e
-            {KeySignEMajor,      KeySignEMinor},
-            {KeySignInvalid,     KeySignInvalid},
-            {KeySignEFlatMajor,  KeySignEFlatMinor},
-        },
-        { // f
-            {KeySignFMajor,      KeySignFMinor},
-            {KeySignFSharpMajor, KeySignFSharpMinor},
-            {KeySignInvalid,     KeySignInvalid},
-        },
-        { // g
-            {KeySignGMajor,      KeySignGMinor},
-            {KeySignInvalid,     KeySignGSharpMinor},
-            {KeySignGFlatMajor,  KeySignInvalid},
-        },
-        { // a
-            {KeySignAMajor,      KeySignAMinor},
-            {KeySignInvalid,     KeySignASharpMinor},
-            {KeySignAFlatMajor,  KeySignAFlatMinor},
-        },
-        { // b
-            {KeySignBMajor,      KeySignBMinor},
-            {KeySignInvalid,     KeySignInvalid},
-            {KeySignBFlatMajor,  KeySignBFlatMinor},
-        },
+struct _NoteTable {
+    int refCount;
+    MidiKeySign midiKeySign;
+    int baseNote2Sf[7];
+    bool unusualKey;
+};
+
+NoteTable *NoteTableCreate(BaseNote baseNote, bool sharp, bool flat, Mode mode)
+{
+    NoteTable *self = calloc(1, sizeof(NoteTable));
+    ++self->refCount;
+
+    const int noteSf[] = {
+        0,  // C
+        2,  // D
+        4,  // E
+        -1, // F
+        1,  // G
+        3,  // A
+        5   // B
     };
 
-    int sharpFlatIdx = sharp ? 1 : flat ? 2 : 0;
-    int majorMinorIdx = major ? 0 : 1;
+    int sf = noteSf[baseNote];
+    if (sharp) {
+        sf += 7;
+    }
+    else if (flat) {
+        sf -= 7;
+    }
 
-    return table[Index(keyChar)][sharpFlatIdx][majorMinorIdx];
+    const int modeShift[] = {
+        0,  // Major
+        -3, // Minor
+        0,  // Ionian
+        -3, // Aeolian
+        -1, // Mixolydian
+        -2, // Dorian
+        -4, // Phrygian
+        1,  // Lydian
+        -5, // Locrian
+        0,  // Explicit
+    };
+
+    sf += modeShift[mode];
+
+    self->unusualKey = sf < -7 || 7 < sf;
+    self->midiKeySign.sf = -7 > sf ? sf + 12 : 7 < sf ? sf - 12 : sf;
+    self->midiKeySign.mi = ModeMinor == mode ? 1 : 0;
+
+    if (0 < self->midiKeySign.sf) {
+        int sharpCount = self->midiKeySign.sf;
+        for (int i = 0; i < sharpCount; ++i) {
+            switch (i + 1) {
+            case 1: self->baseNote2Sf[BaseNote_F] = 1; break;
+            case 2: self->baseNote2Sf[BaseNote_C] = 1; break;
+            case 3: self->baseNote2Sf[BaseNote_G] = 1; break;
+            case 4: self->baseNote2Sf[BaseNote_D] = 1; break;
+            case 5: self->baseNote2Sf[BaseNote_A] = 1; break;
+            case 6: self->baseNote2Sf[BaseNote_E] = 1; break;
+            case 7: self->baseNote2Sf[BaseNote_B] = 1; break;
+            default: break;
+            }
+        }
+    }
+    else if (0 > self->midiKeySign.sf) {
+        int flatCount = -self->midiKeySign.sf;
+        for (int i = 0; i < flatCount; ++i) {
+            switch (i + 1) {
+            case 1: self->baseNote2Sf[BaseNote_B] = -1; break;
+            case 2: self->baseNote2Sf[BaseNote_E] = -1; break;
+            case 3: self->baseNote2Sf[BaseNote_A] = -1; break;
+            case 4: self->baseNote2Sf[BaseNote_D] = -1; break;
+            case 5: self->baseNote2Sf[BaseNote_G] = -1; break;
+            case 6: self->baseNote2Sf[BaseNote_C] = -1; break;
+            case 7: self->baseNote2Sf[BaseNote_F] = -1; break;
+            default: break;
+            }
+        }
+    }
+
+    return self;
 }
 
-int NoteTableGetNoteNo(KeySign keySign, BaseNote baseNote, Accidental accidental, int octave)
+NoteTable *NoteTableRetain(NoteTable *self)
 {
-    const int noteTable[KeySignSize][BaseNoteSize] = {
-        {0, 2, 4, 5, 7, 9, 11}, // CMajor
-        {0, 2, 4, 6, 7, 9, 11}, // GMajor
-        {1, 2, 4, 6, 7, 9, 11}, // DMajor
-        {1, 2, 4, 6, 8, 9, 11}, // AMajor
-        {1, 3, 4, 6, 8, 9, 11}, // EMajor
-        {1, 3, 4, 6, 8, 10, 11}, // BMajor
-        {1, 3, 5, 6, 8, 10, 11}, // FSharpMajor
-        {1, 3, 5, 6, 8, 10, 12}, // CSharpMajor
+    ++self->refCount;
+    return self;
+}
 
-        {0, 2, 4, 5, 7, 9, 10}, // FMajor
-        {0, 2, 3, 5, 7, 9, 10}, // BFlatMajor
-        {0, 2, 3, 5, 7, 8, 10}, // EFlatMajor
-        {0, 1, 3, 5, 7, 8, 10}, // AFlatMajor
-        {0, 1, 3, 5, 6, 8, 10}, // DFlatMajor
-        {-1, 1, 3, 5, 6, 8, 10}, // GFlatMajor
-        {-1, 1, 3, 4, 6, 8, 10}, // CFlatMajor
+void NoteTableRelease(NoteTable *self)
+{
+    if (0 == --self->refCount) {
+        free(self);
+    }
+}
 
-        {0, 2, 4, 5, 7, 9, 11}, // AMinor
-        {0, 2, 4, 6, 7, 9, 11}, // EMinor
-        {1, 2, 4, 6, 7, 9, 11}, // BMinor
-        {1, 2, 4, 6, 8, 9, 11}, // FSharpMinor
-        {1, 3, 4, 6, 8, 9, 11}, // CSharpMinor
-        {1, 3, 4, 6, 8, 10, 11}, // GSharpMinor
-        {1, 3, 5, 6, 8, 10, 11}, // DSharpMinor
-        {1, 3, 5, 6, 8, 10, 12}, // ASharpMinor
+bool NoteTableHasUnusualKeySign(NoteTable *self)
+{
+    return self->unusualKey;
+}
 
-        {0, 2, 4, 5, 7, 9, 10}, // DMinor
-        {0, 2, 3, 5, 7, 9, 10}, // GMinor
-        {0, 2, 3, 5, 7, 8, 10}, // CMinor
-        {0, 1, 3, 5, 7, 8, 10}, // FMinor
-        {0, 1, 3, 5, 6, 8, 10}, // BFlatMinor
-        {-1, 1, 3, 5, 6, 8, 10}, // EFlatMinor
-        {-1, 1, 3, 4, 6, 8, 10}, // AFlatMinor
+void NoteTableAppendAccidental(NoteTable *self, BaseNote baseNote, Accidental accidental)
+{
+    switch (accidental) {
+    case AccidentalSharp:
+        self->baseNote2Sf[baseNote] = 1;
+        break;
+    case AccidentalDoubleSharp:
+        self->baseNote2Sf[baseNote] = 2;
+        break;
+    case AccidentalFlat:
+        self->baseNote2Sf[baseNote] = -1;
+        break;
+    case AccidentalDoubleFlat:
+        self->baseNote2Sf[baseNote] = -2;
+        break;
+    case AccidentalNatural:
+        self->baseNote2Sf[baseNote] = 0;
+        break;
+    default:
+        break;
+    }
+}
+
+MidiKeySign NoteTableGetMidiKeySign(NoteTable *self)
+{
+    return self->midiKeySign;
+}
+
+int NoteTableGetNoteNo(NoteTable *self, BaseNote baseNote, Accidental accidental, int octave)
+{
+    const int naturalNoteNo[] = {
+        0, // C
+        2, // D
+        4, // E
+        5, // F
+        7, // G
+        9, // A
+        11 // B
     };
 
-    int noteNo = noteTable[AccidentalNatural == accidental ? KeySignCMajor : keySign][baseNote];
+    int noteNo = naturalNoteNo[baseNote];
+
     switch (accidental) {
+    case AccidentalNone:
+        noteNo += self->baseNote2Sf[baseNote];
+        break;
     case AccidentalSharp:
         noteNo += 1;
         break;
@@ -100,59 +161,57 @@ int NoteTableGetNoteNo(KeySign keySign, BaseNote baseNote, Accidental accidental
     case AccidentalDoubleFlat:
         noteNo -= 2;
         break;
-    default:
+    case AccidentalNatural:
         break;
     }
 
     return noteNo + (octave + 2) * 12;
 }
 
-static const uint8_t KeySignMidiExpressionTable[KeySignSize][2] = {
-    {0x00, 0}, // KeySignCMajor
-    {0x01, 0}, // KeySignGMajor
-    {0x02, 0}, // KeySignDMajor
-    {0x03, 0}, // KeySignAMajor
-    {0x04, 0}, // KeySignEMajor
-    {0x05, 0}, // KeySignBMajor
-    {0x06, 0}, // KeySignFSharpMajor
-    {0x07, 0}, // KeySignCSharpMajor
-    {0xFF, 0}, // KeySignFMajor
-    {0xFE, 0}, // KeySignBFlatMajor
-    {0xFD, 0}, // KeySignEFlatMajor
-    {0xFC, 0}, // KeySignAFlatMajor
-    {0xFB, 0}, // KeySignDFlatMajor
-    {0xFA, 0}, // KeySignGFlatMajor
-    {0xF0, 0}, // KeySignCFlatMajor
-    {0x00, 1}, // KeySignAMinor
-    {0x01, 1}, // KeySignEMinor
-    {0x02, 1}, // KeySignBMinor
-    {0x03, 1}, // KeySignFSharpMinor
-    {0x04, 1}, // KeySignCSharpMinor
-    {0x05, 1}, // KeySignGSharpMinor
-    {0x06, 1}, // KeySignDSharpMinor
-    {0x07, 1}, // KeySignASharpMinor
-    {0xFF, 1}, // KeySignDMinor
-    {0xFE, 1}, // KeySignGMinor
-    {0xFD, 1}, // KeySignCMinor
-    {0xFC, 1}, // KeySignFMinor
-    {0xFB, 1}, // KeySignBFlatMinor
-    {0xFA, 1}, // KeySignEFlatMinor
-    {0xF0, 1}, // KeySignAFlatMinor
-};
-
-void KeySignGetMidiExpression(KeySign keySign, uint8_t *sf, uint8_t *mi)
+const char *MidiKeySign2String(MidiKeySign keySign)
 {
-    *sf = KeySignMidiExpressionTable[keySign][0];
-    *mi = KeySignMidiExpressionTable[keySign][1];
-}
+    struct {
+        int8_t sf;
+        int8_t mi;
+        const char *name;
+    } keySignTable[] = {
+        {0x00, 0, "C Major"},
+        {0x01, 0, "G Major"},
+        {0x02, 0, "D Major"},
+        {0x03, 0, "A Major"},
+        {0x04, 0, "E Major"},
+        {0x05, 0, "B Major"},
+        {0x06, 0, "F# Major"},
+        {0x07, 0, "C# Major"},
+        {0xFF, 0, "F Major"},
+        {0xFE, 0, "Bb Major"},
+        {0xFD, 0, "Eb Major"},
+        {0xFC, 0, "Ab Major"},
+        {0xFB, 0, "Db Major"},
+        {0xFA, 0, "Gb Major"},
+        {0xF0, 0, "Cb Major"},
+        {0x00, 1, "A Minor"},
+        {0x01, 1, "E Minor"},
+        {0x02, 1, "B Minor"},
+        {0x03, 1, "F# Minor"},
+        {0x04, 1, "C# Minor"},
+        {0x05, 1, "G# Minor"},
+        {0x06, 1, "D# Minor"},
+        {0x07, 1, "A# Minor"},
+        {0xFF, 1, "D Minor"},
+        {0xFE, 1, "G Minor"},
+        {0xFD, 1, "C Minor"},
+        {0xFC, 1, "F Minor"},
+        {0xFB, 1, "Bb Minor"},
+        {0xFA, 1, "Eb Minor"},
+        {0xF0, 1, "Ab Minor"},
+    };
 
-KeySign NoteTableGetKeySignByMidiExpression(uint8_t sf, uint8_t mi)
-{
-    for (int i = 0; i < sizeof(KeySignMidiExpressionTable)/ sizeof(KeySignMidiExpressionTable)[0]; ++i) {
-        if (KeySignMidiExpressionTable[i][0] == sf && KeySignMidiExpressionTable[i][1] == mi) {
-            return (KeySign)i;
+    for (int i = 0; i < sizeof(keySignTable)/ sizeof(keySignTable)[0]; ++i) {
+        if (keySignTable[i].sf == keySign.sf && keySignTable[i].mi == keySign.mi) {
+            return keySignTable[i].name;
         }
     }
 
-    return KeySignInvalid;
+    return "Unknown key singature";
 }

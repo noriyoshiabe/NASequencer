@@ -4,46 +4,6 @@
 #include <stdbool.h>
 
 typedef enum {
-    KeySignInvalid = -1,
-
-    KeySignCMajor,
-    KeySignGMajor,
-    KeySignDMajor,
-    KeySignAMajor,
-    KeySignEMajor,
-    KeySignBMajor,
-    KeySignFSharpMajor,
-    KeySignCSharpMajor,
-
-    KeySignFMajor,
-    KeySignBFlatMajor,
-    KeySignEFlatMajor,
-    KeySignAFlatMajor,
-    KeySignDFlatMajor,
-    KeySignGFlatMajor,
-    KeySignCFlatMajor,
-
-    KeySignAMinor,
-    KeySignEMinor,
-    KeySignBMinor,
-    KeySignFSharpMinor,
-    KeySignCSharpMinor,
-    KeySignGSharpMinor,
-    KeySignDSharpMinor,
-    KeySignASharpMinor,
-
-    KeySignDMinor,
-    KeySignGMinor,
-    KeySignCMinor,
-    KeySignFMinor,
-    KeySignBFlatMinor,
-    KeySignEFlatMinor,
-    KeySignAFlatMinor,
-
-    KeySignSize
-} KeySign;
-
-typedef enum {
     BaseNote_C,
     BaseNote_D,
     BaseNote_E,
@@ -51,8 +11,6 @@ typedef enum {
     BaseNote_G,
     BaseNote_A,
     BaseNote_B,
-
-    BaseNoteSize
 } BaseNote;
 
 typedef enum {
@@ -62,57 +20,35 @@ typedef enum {
     AccidentalFlat,
     AccidentalDoubleFlat,
     AccidentalNatural,
-
-    AccidentalSize,
 } Accidental;
 
-extern KeySign NoteTableGetKeySign(char keyChar, bool sharp, bool flat, bool major);
-extern int NoteTableGetNoteNo(KeySign keySign, BaseNote baseNote, Accidental accidental, int octave);
+typedef enum {
+    ModeMajor,
+    ModeMinor,
 
-extern void KeySignGetMidiExpression(KeySign keySign, uint8_t *sf, uint8_t *mi);
-extern KeySign NoteTableGetKeySignByMidiExpression(uint8_t sf, uint8_t mi);
+    ModeIonian,
+    ModeAeolian,
+    ModeMixolydian,
+    ModeDorian,
+    ModePhrygian,
+    ModeLydian,
+    ModeLocrian,
 
-static inline char *KeySign2String(KeySign keySign)
-{
-#define CASE(keySign) case keySign: return &(#keySign[7])
-    switch (keySign) {
-    CASE(KeySignCMajor);
-    CASE(KeySignGMajor);
-    CASE(KeySignDMajor);
-    CASE(KeySignAMajor);
-    CASE(KeySignEMajor);
-    CASE(KeySignBMajor);
-    CASE(KeySignFSharpMajor);
-    CASE(KeySignCSharpMajor);
+    ModeExplicit,
+} Mode;
 
-    CASE(KeySignFMajor);
-    CASE(KeySignBFlatMajor);
-    CASE(KeySignEFlatMajor);
-    CASE(KeySignAFlatMajor);
-    CASE(KeySignDFlatMajor);
-    CASE(KeySignGFlatMajor);
-    CASE(KeySignCFlatMajor);
+typedef struct _MidiKeySign {
+    int8_t sf;
+    int8_t mi;
+} MidiKeySign;
 
-    CASE(KeySignAMinor);
-    CASE(KeySignEMinor);
-    CASE(KeySignBMinor);
-    CASE(KeySignFSharpMinor);
-    CASE(KeySignCSharpMinor);
-    CASE(KeySignGSharpMinor);
-    CASE(KeySignDSharpMinor);
-    CASE(KeySignASharpMinor);
-    CASE(KeySignDMinor);
-    CASE(KeySignGMinor);
-    CASE(KeySignCMinor);
-    CASE(KeySignFMinor);
-    CASE(KeySignBFlatMinor);
-    CASE(KeySignEFlatMinor);
-    CASE(KeySignAFlatMinor);
+typedef struct _NoteTable NoteTable;
 
-    default:
-       break;
-    }
-
-    return "Unknown key sign";
-#undef CASE
-}
+extern NoteTable *NoteTableCreate(BaseNote baseNote, bool sharp, bool flat, Mode mode);
+extern NoteTable *NoteTableRetain(NoteTable *self);
+extern void NoteTableRelease(NoteTable *self);
+extern bool NoteTableHasUnusualKeySign(NoteTable *self);
+extern void NoteTableAppendAccidental(NoteTable *self, BaseNote baseNote, Accidental accidental);
+extern MidiKeySign NoteTableGetMidiKeySign(NoteTable *self);
+extern int NoteTableGetNoteNo(NoteTable *self, BaseNote baseNote, Accidental accidental, int octave);
+extern const char *MidiKeySign2String(MidiKeySign keySign);
