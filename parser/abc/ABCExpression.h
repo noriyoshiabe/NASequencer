@@ -2,6 +2,7 @@
 
 #include "Expression.h"
 #include "ABCParser.h"
+#include "NAArray.h"
 
 #include <stdbool.h>
 
@@ -10,8 +11,11 @@ extern void *ABCExprEOL(ABCParser *parser, ParseLocation *location);
 extern void *ABCExprVersion(ABCParser *parser, ParseLocation *location, char *version);
 extern void *ABCExprReferenceNumber(ABCParser *parser, ParseLocation *location, char *numberString);
 extern void *ABCExprTuneTitle(ABCParser *parser, ParseLocation *location, char *title);
-extern void *ABCExprKey(ABCParser *parser, ParseLocation *location, char *keyName, char *keyScale);
+extern void *ABCExprKeyExprList(ABCParser *parser, ParseLocation *location);
+extern void *ABCExprKeySign(ABCParser *parser, ParseLocation *location, char *tonicString, char *mode, NAArray *accidentals);
 extern void *ABCExprNote(ABCParser *parser, ParseLocation *location, char *noteString);
 
 extern bool ABCExprIsStatementList(Expression *self);
 extern Expression *ABCExprStatementListMarge(Expression *self, Expression *statementList);
+extern bool ABCExprIsKeyExprList(Expression *self);
+extern Expression *ABCExprKeyExprListMarge(Expression *self, Expression *statementList);

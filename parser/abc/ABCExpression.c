@@ -15,6 +15,7 @@
 #endif
 
 static const char *STATEMENT_LIST_ID = "statement list";
+static const char *KEY_EXPR_LIST_ID = "key expr list";
 
 static BaseNote KeyChar2BaseNote(char c)
 {
@@ -189,21 +190,41 @@ void *ABCExprTuneTitle(ABCParser *parser, ParseLocation *location, char *title)
     return self;
 }
 
-typedef struct _KeyExpr {
+static bool KeyExprListExprParse(void *_self, void *parser, void *context)
+{
+    Expression *self = _self;
+    NAIterator *iterator = NAArrayGetIterator(self->children);
+    while (iterator->hasNext(iterator)) {
+        if (!ExpressionParse(iterator->next(iterator), parser, context)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+void *ABCExprKeyExprList(ABCParser *parser, ParseLocation *location)
+{ __Trace__
+    Expression *self = ExpressionCreate(location, sizeof(Expression), KEY_EXPR_LIST_ID);
+    self->vtbl.parse = KeyExprListExprParse;
+    return self;
+}
+
+typedef struct _KeySignExpr {
     Expression expr;
     NoteTable *noteTable;
-} KeyExpr;
+} KeySignExpr;
 
-static void KeyExprDestroy(void *_self)
+static void KeySignExprDestroy(void *_self)
 {
-    KeyExpr *self = _self;
+    KeySignExpr *self = _self;
     NoteTableRelease(self->noteTable);
     free(self);
 }
 
-static bool KeyExprParse(void *_self, void *parser, void *_context)
+static bool KeySignExprParse(void *_self, void *parser, void *_context)
 {
-    KeyExpr *self = _self;
+    KeySignExpr *self = _self;
     ABCParserContext *context = _context;
 
     NoteTableRelease(context->noteTable);
@@ -216,29 +237,29 @@ static bool KeyExprParse(void *_self, void *parser, void *_context)
     return true;
 }
 
-void *ABCExprKey(ABCParser *parser, ParseLocation *location, char *keyName, char *keyScale)
+void *ABCExprKeySign(ABCParser *parser, ParseLocation *location, char *tonicString, char *modeString, NAArray *accidentals)
 { __Trace__
-    KeyExpr *self = NULL;
+    KeySignExpr *self = NULL;
 
     BaseNote baseNote = BaseNote_C;
     bool sharp = false;
     bool flat = false;
     Mode mode = ModeMajor;
 
-    if (keyName) {
-        NAUtilToLowerCase(keyName);
+    if (tonicString) {
+        NAUtilToLowerCase(tonicString);
 
-        if (0 == strcmp("none", keyName)) {
+        if (0 == strcmp("none", tonicString)) {
             goto KEY_FOUND;
         }
 
-        baseNote = KeyChar2BaseNote(keyName[0]);
-        sharp = NULL != strchr(&keyName[1], '#');
-        flat = NULL != strchr(&keyName[1], 'b');
+        baseNote = KeyChar2BaseNote(tonicString[0]);
+        sharp = NULL != strchr(&tonicString[1], '#');
+        flat = NULL != strchr(&tonicString[1], 'b');
     }
     
-    if (keyScale) {
-        NAUtilToLowerCase(keyScale);
+    if (modeString) {
+        NAUtilToLowerCase(modeString);
 
         const struct {
             const char *name;
@@ -253,10 +274,11 @@ void *ABCExprKey(ABCParser *parser, ParseLocation *location, char *keyName, char
             {"phr", ModePhrygian}, {"phrygian", ModePhrygian},
             {"lyd", ModeLydian}, {"lydian", ModeLydian},
             {"loc", ModeLocrian}, {"locrian", ModeLocrian},
+            {"exp", ModeMajor}, {"explicit", ModeMajor},
         };
 
         for (int i = 0; i < sizeof(scales)/sizeof(scales[0]); ++i) {
-            if (0 == strcmp(keyScale, scales[i].name)) {
+            if (0 == strcmp(modeString, scales[i].name)) {
                 mode = scales[i].mode;
                 goto KEY_FOUND;
             }
@@ -276,18 +298,54 @@ KEY_FOUND:
         goto EXIT;
     }
 
-    self = ExpressionCreate(location, sizeof(KeyExpr), "key");
-    self->expr.vtbl.destroy = KeyExprDestroy;
-    self->expr.vtbl.parse = KeyExprParse;
+    if (accidentals) {
+        NAIterator *iterator = NAArrayGetIterator(accidentals);
+        while (iterator->hasNext(iterator)) {
+            char *accidentalString = iterator->next(iterator);
+            char *pc = accidentalString;
+            char c;
+
+            BaseNote baseNote = BaseNote_C;
+            Accidental accidental = AccidentalNone;
+
+            while ((c = *(pc++))) {
+                switch (c) {
+                case '^':
+                    accidental = AccidentalSharp == accidental ? AccidentalDoubleSharp : AccidentalSharp;
+                    break;
+                case '_':
+                    accidental = AccidentalFlat == accidental ? AccidentalDoubleFlat : AccidentalFlat;
+                    break;
+                case '=':
+                    accidental = AccidentalNatural;
+                    break;
+                default:
+                    baseNote = KeyChar2BaseNote(tolower(c));
+                    break;
+                }
+            }
+
+            NoteTableAppendAccidental(noteTable, baseNote, accidental);
+        }
+    }
+
+    self = ExpressionCreate(location, sizeof(KeySignExpr), "key sign");
+    self->expr.vtbl.destroy = KeySignExprDestroy;
+    self->expr.vtbl.parse = KeySignExprParse;
     self->noteTable = noteTable;
 
 EXIT:
-    if (keyName) {
-        free(keyName);
+    if (tonicString) {
+        free(tonicString);
     }
 
-    if (keyScale) {
-        free(keyScale);
+    if (modeString) {
+        free(modeString);
+    }
+
+    if (accidentals) {
+        NAArrayTraverse(accidentals, free);
+        NAArrayDestroy(accidentals);
     }
 
     return self;
@@ -387,6 +445,25 @@ bool ABCExprIsStatementList(Expression *self)
 }
 
 Expression *ABCExprStatementListMarge(Expression *self, Expression *statementList)
+{
+    NAIterator *iterator = NAArrayGetIterator(statementList->children);
+    while (iterator->hasNext(iterator)) {
+        Expression *child = iterator->next(iterator);
+        child->parent = self;
+        NAArrayAppend(self->children, child);
+    }
+
+    NAArrayRemoveAll(statementList->children);
+    ExpressionDestroy(statementList);
+    return self;
+}
+
+bool ABCExprIsKeyExprList(Expression *self)
+{
+    return self->identifier == KEY_EXPR_LIST_ID;
+}
+
+Expression *ABCExprKeyExprListMarge(Expression *self, Expression *statementList)
 {
     NAIterator *iterator = NAArrayGetIterator(statementList->children);
     while (iterator->hasNext(iterator)) {

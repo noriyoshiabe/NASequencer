@@ -4,6 +4,7 @@
 #include "ABC_yacc.h"
 #include "ABC_lex.h"
 #include "ABCExpression.h"
+#include "NAArray.h"
 
 extern int ABC_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, Expression **expression, const char *message);
 
@@ -28,6 +29,7 @@ extern int ABC_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, Ex
     float f;
     char *s;
     Expression *expression;
+    NAArray *array;
 }
 
 %token EOL
@@ -35,11 +37,14 @@ extern int ABC_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, Ex
 %token <s>REFERENCE_NUMBER
 %token <s>TUNE_TITLE
 %token KEY
-%token <s>KEY_NAME
-%token <s>KEY_SCALE
+%token <s>KEY_TONIC
+%token <s>KEY_MODE
+%token <s>KEY_ACCIDENTAL
 %token <s>NOTE
 
 %type <expression> statement_list statement
+%type <expression> key_expr_list key_expr
+%type <array>      key_accidental_list
 
 %%
  
@@ -77,11 +82,52 @@ statement
     : EOL                                 { $$ = ABCExprEOL(PERSER(), LOC(@$)); }
     | VERSION                             { $$ = ABCExprVersion(PERSER(), LOC(@$), $1); }
     | REFERENCE_NUMBER                    { $$ = ABCExprReferenceNumber(PERSER(), LOC(@$), $1); }
-    | KEY                                 { $$ = ABCExprKey(PERSER(), LOC(@$), NULL, NULL);}
-    | KEY KEY_NAME                        { $$ = ABCExprKey(PERSER(), LOC(@$), $2, NULL);}
-    | KEY KEY_NAME KEY_SCALE              { $$ = ABCExprKey(PERSER(), LOC(@$), $2, $3);}
+    | KEY key_expr_list                   { $$ = $2; }
     | TUNE_TITLE                          { $$ = ABCExprTuneTitle(PERSER(), LOC(@$), $1); }
     | NOTE                                { $$ = ABCExprNote(PERSER(), LOC(@$), $1); }
+    ;
+
+key_expr_list
+    :                                     { $$ = ABCExprKeyExprList(PERSER(), LOC(@$)); }
+    | key_expr                            {
+                                              if (!$1) YYABORT;
+
+                                              if (ABCExprIsKeyExprList($1)) {
+                                                  $$ = $1;
+                                              }
+                                              else {
+                                                  $$ = ABCExprKeyExprList(PERSER(), LOC(@$));
+                                                  ExpressionAddChild($$, $1);
+                                              }
+                                          }
+    | key_expr_list key_expr              {
+                                              if (!$2) YYABORT;
+
+                                              if (ABCExprIsKeyExprList($2)) {
+                                                  $$ = ABCExprKeyExprListMarge($1, $2);
+                                              }
+                                              else {
+                                                  $$ = ExpressionAddChild($1, $2);
+                                              }
+                                          }
+    ;
+
+key_expr
+    : KEY_TONIC                           { $$ = ABCExprKeySign(PERSER(), LOC(@$), $1, NULL, NULL); }
+    | KEY_TONIC KEY_MODE                  { $$ = ABCExprKeySign(PERSER(), LOC(@$), $1, $2, NULL); }
+    | KEY_TONIC KEY_MODE key_accidental_list
+                                          { $$ = ABCExprKeySign(PERSER(), LOC(@$), $1, $2, $3); }
+    | KEY_TONIC key_accidental_list       { $$ = ABCExprKeySign(PERSER(), LOC(@$), $1, NULL, $2); }
+
+key_accidental_list
+    : KEY_ACCIDENTAL                      {
+                                              $$ = NAArrayCreate(4, NADescriptionCString);
+                                              NAArrayAppend($$, $1);
+                                          }
+    | key_accidental_list KEY_ACCIDENTAL  {
+                                              $$ = $1;
+                                              NAArrayAppend($$, $2);
+                                          }
     ;
 
 %%
