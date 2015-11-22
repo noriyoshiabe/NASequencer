@@ -1,40 +1,41 @@
-#include "ParserProxy.h"
-#include "SequenceBuilder.h"
-#include "NAUtil.h"
-#include "NAArray.h"
+#include "Parser.h"
+#include "Sequence.h"
+#include "SequenceBuilderImpl.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
+static ParserCallbacks ParserTestCallbacks;
+
 int main(int argc, char **argv)
 {
-    ParserProxy *parser = ParserProxyCreate();
     Sequence *sequence = NULL;
-    ParseError error = {};
-    NAArray *filepaths = NAArrayCreate(4, NADescriptionCString);
-    char *filepath = NAUtilGetRealPath(argv[1]);
+    ParseInfo *info = NULL;
 
-    bool success = ParserProxyParseFile(parser, filepath, &sequence, &error, filepaths);
-    if (!success) {
-        fprintf(stderr, "parse error. %s - %s:%d:%d\n", ParserProxyErrorDetail(&error),
-                error.location.filepath, error.location.line, error.location.column);
-    }
-    else {
-        SequenceDump(sequence, 0);
-        SequenceRelease(sequence);
+    SequenceBuilder *builder = SequenceBuilderCreate();
+    Parser *parser = ParserCreate(builder, &ParserTestCallbacks, NULL);
+    bool success = ParserParseFile(parser, argv[1], (void **)&sequence, &info);
+    ParserDestroy(parser);
 
-        printf("\nfrom:\n");
-
-        NAIterator *iterator = NAArrayGetIterator(filepaths);
-        while (iterator->hasNext(iterator)) {
-            printf("  %s\n", iterator->next(iterator));
-        }
-    }
-
-
-    NAArrayTraverse(filepaths, free);
-    NAArrayDestroy(filepaths);
-    ParserProxyDestroy(parser);
+    SequenceDump(sequence, 0);
+    SequenceRelease(sequence);
+    ParseInfoRelease(info);
 
     return success ? 0 : 1;
 }
+
+static void ParserTestOnReadFile(void *receiver, const char *filepath)
+{
+    fprintf(stderr, "reading %s\n", filepath);
+}
+
+static void ParserTestOnParseError(void *receiver, const ParseError *error)
+{
+    fprintf(stderr, "parse error. %s - %s:%d:%d\n", ParseError2String(error), error->location.filepath, error->location.line, error->location.column);
+}
+
+static ParserCallbacks ParserTestCallbacks = {
+    ParserTestOnReadFile,
+    ParserTestOnParseError,
+};
+
