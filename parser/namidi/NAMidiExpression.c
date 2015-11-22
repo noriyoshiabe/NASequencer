@@ -76,10 +76,9 @@ ERROR:
 
 void *NAMidiExprStatementList(NAMidiParser *parser, ParseLocation *location)
 { __Trace__
-    StatementListExpr *self = ExpressionCreate(location, sizeof(StatementListExpr), STATEMENT_LIST_ID);
+    StatementListExpr *self = ExpressionCreateListExpr(location, sizeof(StatementListExpr), STATEMENT_LIST_ID);
     self->expr.vtbl.destroy = StatementListExprDestroy;
     self->expr.vtbl.parse = StatementListExprParse;
-    self->expr.isList = true;
     self->patternMap = NAMapCreate(NAHashCString, NADescriptionCString, NULL);
     return self;
 }

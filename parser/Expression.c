@@ -15,10 +15,19 @@ void *ExpressionCreate(ParseLocation *location, int size, const char *identifier
     return self;
 }
 
+void *ExpressionCreateListExpr(ParseLocation *location, int size, const char *identifier)
+{
+    Expression *self = ExpressionCreate(location, size, identifier);
+    self->isList = true;
+    return self;
+}
+
 Expression *ExpressionAddChild(Expression *self, Expression *child)
 {
+    bool isIdenticalListType = self->isList && child->isList && self->identifier == child->identifier;
+
     if (!self->children) {
-        if (self->isList && child->isList && child->children) {
+        if (isIdenticalListType && child->children) {
             ExpressionDestroy(self);
             return child;
         }
@@ -26,7 +35,7 @@ Expression *ExpressionAddChild(Expression *self, Expression *child)
         self->children = NAArrayCreate(4, NULL);
     }
 
-    if (self->isList && child->isList && child->children) {
+    if (isIdenticalListType && child->children) {
         NAIterator *iterator = NAArrayGetIterator(child->children);
         while (iterator->hasNext(iterator)) {
             Expression *childExpr = iterator->next(iterator);

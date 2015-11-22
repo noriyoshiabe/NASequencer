@@ -20,6 +20,7 @@ typedef struct _Expression {
 } Expression;
  
 extern void *ExpressionCreate(ParseLocation *location, int size, const char *identifier);
+extern void *ExpressionCreateListExpr(ParseLocation *location, int size, const char *identifier);
 extern Expression *ExpressionAddChild(Expression *self, Expression *child);
 extern void ExpressionDestroy(Expression *self);
 extern void ExpressionDump(Expression *self, int indent);

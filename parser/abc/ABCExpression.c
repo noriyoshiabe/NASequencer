@@ -69,7 +69,7 @@ ERROR:
 
 void *ABCExprStatementList(ABCParser *parser, ParseLocation *location)
 { __Trace__
-    StatementListExpr *self = ExpressionCreate(location, sizeof(StatementListExpr), STATEMENT_LIST_ID);
+    StatementListExpr *self = ExpressionCreateListExpr(location, sizeof(StatementListExpr), STATEMENT_LIST_ID);
     self->expr.vtbl.destroy = StatementListExprDestroy;
     self->expr.vtbl.parse = StatementListExprParse;
     return self;
