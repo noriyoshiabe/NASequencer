@@ -1,5 +1,4 @@
 #include "CLI.h"
-#include "ParserProxy.h"
 #include "Command.h"
 #include "Exporter.h"
 #include "NAUtil.h"
@@ -181,6 +180,10 @@ void CLIExit(CLI *self)
     longjmp(self->jmpBuf, 1);
 }
 
+#include "Parser.h"
+#include "SequenceBuilderImpl.h"
+#include "BuildInformation.h"
+
 static bool CLIExportSMF(CLI *self, Sequence *sequence, const char *output);
 static bool CLIExportWAV(CLI *self, Sequence *sequence, const char *output);
 static bool CLIExportAAC(CLI *self, Sequence *sequence, const char *output);
@@ -192,16 +195,25 @@ bool CLIExport(CLI *self, const char *output)
         return false;
     }
 
-    ParserProxy *parser = ParserProxyCreate();
+    SequenceBuilder *builder = SequenceBuilderCreate();
+    Parser *parser = ParserCreate(builder);
     Sequence *sequence = NULL;
-    ParseError error = {};
-    bool success = false;
+    BuildInformation *info = NULL;
 
-    if (!ParserProxyParseFile(parser, self->filepath, &sequence, &error, NULL)) {
-        fprintf(stderr, "parse error. %s - %s:%d:%d\n", ParserProxyErrorDetail(&error), error.location.filepath, error.location.line, error.location.column);
+    bool success = ParserParseFile(parser, self->filepath, (void **)&sequence, (void **)&info);
+
+    ParserDestroy(parser);
+    builder->destroy(builder);
+    
+    if (!success) {
+        NAIterator *iterator = NAArrayGetIterator(info->errors);
+        while (iterator->hasNext(iterator)) {
+            ParseError *error = iterator->next(iterator);
+            fprintf(stderr, "parse error. %s - %s:%d:%d\n", ParseError2String(error), error->location.filepath, error->location.line, error->location.column);
+        }
         goto ERROR;
     }
-
+            
     const struct {
         const char *ext;
         bool (*function)(CLI *, Sequence *sequence, const char *);
@@ -235,7 +247,10 @@ ERROR:
     if (sequence) {
         SequenceRelease(sequence);
     }
-    ParserProxyDestroy(parser);
+
+    if (info) {
+        BuildInformationRelease(info);
+    }
 
     return success;
 }
@@ -325,7 +340,7 @@ void CLISetFilepath(CLI *self, const char *filepath)
 }
 
 
-static void CLINAMidiOnParseFinish(void *receiver, Sequence *sequence)
+static void CLINAMidiOnParseFinish(void *receiver, Sequence *sequence, BuildInformation *info)
 {
     CLI *self = receiver;
 
@@ -345,31 +360,20 @@ static void CLINAMidiOnParseFinish(void *receiver, Sequence *sequence)
         EventListViewRender(self->eventListView);
     }
 
+    NAIterator *iterator = NAArrayGetIterator(info->errors);
+    while (iterator->hasNext(iterator)) {
+        ParseError *error = iterator->next(iterator);
+        fprintf(stderr, "parse error. %s - %s:%d:%d\n", ParseError2String(error), error->location.filepath, error->location.line, error->location.column);
+    }
+
     if (self->prompt) {
         fprintf(stdout, PROMPT);
         fflush(stdout);
     }
 }
 
-static void CLINAMidiOnParseError(void *receiver, ParseError *error)
-{
-    CLI *self = receiver;
-
-    if (self->prompt) {
-        fprintf(stderr, "\n");
-    }
-
-    fprintf(stderr, "parse error. %s - %s:%d:%d\n", ParserProxyErrorDetail(error), error->location.filepath, error->location.line, error->location.column);
-
-    if (self->prompt) {
-        fprintf(stderr, PROMPT);
-        fflush(stderr);
-    }
-}
-
 static NAMidiObserverCallbacks CLINAMidiObserverCallbacks = {
     CLINAMidiOnParseFinish,
-    CLINAMidiOnParseError
 };
 
 static void CLIPlayerOnNotifyClock(void *receiver, int tick, int64_t usec, Location location)

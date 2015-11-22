@@ -67,7 +67,7 @@ bool ParserParseFile(Parser *self, const char *filepath, void **sequence, void *
     return success;
 }
 
-const char *ParserError2String(ParseError *error)
+const char *ParseError2String(ParseError *error)
 {
     switch (error->kind) {
     case ParseErrorKindGeneral:

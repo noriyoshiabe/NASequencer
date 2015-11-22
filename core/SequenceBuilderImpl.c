@@ -1,5 +1,6 @@
 #include "SequenceBuilderImpl.h"
 #include "Sequence.h"
+#include "BuildInformation.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -7,6 +8,7 @@
 typedef struct _SequenceBuilderImpl {
     SequenceBuilder interface;
     Sequence *sequence;
+    BuildInformation *info;
     int id;
     TitleEvent *titleEvent;
 } SequenceBuilderImpl;
@@ -14,9 +16,15 @@ typedef struct _SequenceBuilderImpl {
 static void SequenceBuilderDestroy(void *_self)
 {
     SequenceBuilderImpl *self = _self;
+    
     if (self->sequence) {
         SequenceRelease(self->sequence);
     }
+
+    if (self->info) {
+        BuildInformationRelease(self->info);
+    }
+
     free(self);
 }
 
@@ -182,12 +190,36 @@ static void SequenceBuilderSetLength(void *_self, int length)
     TimeTableSetLength(sequence->timeTable, length);
 }
 
-static void *SequenceBuilderBuild(void *_self)
+static void SequenceBuilderAppendFilepath(void *_self, const char *filepath)
+{
+    SequenceBuilderImpl *self = _self;
+    NAArrayAppend(self->info->filepaths, strdup(filepath));
+}
+
+static void SequenceBuilderAppendError(void *_self, void *_error)
+{
+    SequenceBuilderImpl *self = _self;
+    ParseError *error = _error;
+    ParseError *copy = malloc(sizeof(ParseError));
+    memcpy(copy, error, sizeof(ParseError));
+    copy->location.filepath = (char *)strdup(error->location.filepath);
+    NAArrayAppend(self->info->errors, copy);
+}
+
+static void *SequenceBuilderBuildSequence(void *_self)
 {
     SequenceBuilderImpl *self = _self;
     SequenceSortEvents(self->sequence);
     Sequence *ret = self->sequence;
     self->sequence = NULL;
+    return ret;
+}
+
+static void *SequenceBuilderBuildInforamtion(void *_self)
+{
+    SequenceBuilderImpl *self = _self;
+    BuildInformation *ret = self->info;
+    self->info = NULL;
     return ret;
 }
 
@@ -210,8 +242,15 @@ SequenceBuilder *SequenceBuilderCreate()
     self->interface.appendChorus = SequenceBuilderAppendChorus;
     self->interface.appendReverb = SequenceBuilderAppendReverb;
     self->interface.setLength = SequenceBuilderSetLength;
-    self->interface.build = SequenceBuilderBuild;
+
+    self->interface.appendFilepath = SequenceBuilderAppendFilepath;
+    self->interface.appendError = SequenceBuilderAppendError;
+
+    self->interface.buildSequence = SequenceBuilderBuildSequence;
+    self->interface.buildInfomation = SequenceBuilderBuildInforamtion;
 
     self->sequence = SequenceCreate();
+    self->info = BuildInformationCreate();
+
     return (SequenceBuilder *)self;
 }

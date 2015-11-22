@@ -17,8 +17,8 @@ set(SOURCES
   Mixer.c
   Player.c
   MidiSourceManager.c
-  ParserProxy.c
   SequenceBuilderImpl.c
+  BuildInformation.c
 )
 
 if (APPLE)

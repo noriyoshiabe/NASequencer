@@ -43,7 +43,7 @@ typedef struct _Parser Parser;
 extern Parser *ParserCreate(SequenceBuilder *builder);
 extern void ParserDestroy(Parser *self);
 extern bool ParserParseFile(Parser *self, const char *filepath, void **sequence, void **info);
-extern const char *ParserError2String(ParseError *error);
+extern const char *ParseError2String(ParseError *error);
 
 static inline const char *ParseErrorKind2String(ParseErrorKind kind)
 {
