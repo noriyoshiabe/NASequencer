@@ -34,7 +34,7 @@ TUNE_TITLE         T:.*$
 
 %x s_KEY
 KEY                K:
-KEY_TONIC          [CDEFGAB](#|b)?|(?i:none)
+KEY_TONIC          [CDEFGAB](#|b)?|(?i:none)|(?i:hp)
 KEY_MODE           [a-zA-Z]+
 KEY_ACCIDENTAL     (\^{1,2}|_{1,2}|=)[cdefgabCDEFGAB]
 

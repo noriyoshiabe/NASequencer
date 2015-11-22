@@ -253,6 +253,11 @@ void *ABCExprKeySign(ABCParser *parser, ParseLocation *location, char *tonicStri
             goto KEY_FOUND;
         }
 
+        if (0 == strcmp("hp", tonicString)) {
+            baseNote = BaseNote_D;
+            goto KEY_FOUND;
+        }
+
         baseNote = KeyChar2BaseNote(tonicString[0]);
         sharp = NULL != strchr(&tonicString[1], '#');
         flat = NULL != strchr(&tonicString[1], 'b');
