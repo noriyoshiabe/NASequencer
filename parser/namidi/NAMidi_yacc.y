@@ -87,13 +87,13 @@ extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath,
 %%
  
 input
-    :
-    | statement_list                      { *expression = $1; }
+    : statement_list                      { *expression = $1; }
     ;
 
 statement_list
-    : statement                           { if (!$1) YYABORT; $$ = ExpressionAddChild(NAMidiExprStatementList(PERSER(), LOC(@$)), $1); }
-    | statement_list statement            { if (!$2) YYABORT; $$ = ExpressionAddChild($1, $2); }
+    :                                     { $$ = NAMidiExprStatementList(PERSER(), LOC(@$)); }
+    | statement                           { if (!$1) YYERROR; $$ = ExpressionAddChild(NAMidiExprStatementList(PERSER(), LOC(@$)), $1); }
+    | statement_list statement            { if (!$2) YYERROR; $$ = ExpressionAddChild($1, $2); }
     ;
 
 statement
@@ -123,7 +123,9 @@ statement
     | pattern_expand
     | context
 
-    | INCLUDE STRING                      { if (!NAMidiParserReadIncludeFile(PERSER(), LOC(@$), $2, &$$)) YYABORT; }
+    | INCLUDE STRING                      { if (!NAMidiParserReadIncludeFile(PERSER(), LOC(@$), $2, &$$)) YYERROR; }
+
+    | error                               { $$ = ExpressionCreateSkip(LOC(@$)); }
     ;
 
 note

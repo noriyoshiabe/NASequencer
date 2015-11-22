@@ -250,21 +250,11 @@ static void CLINAMidiOnReadFile(void *receiver, const char *filepath)
 
 static void CLINAMidiOnParseError(void *receiver, const ParseError *error)
 {
-    CLI *self = receiver;
-
-    fprintf(stderr, "parse error. %s - %s:%d:%d\n", ParseError2String(error), error->location.filepath, error->location.line, error->location.column);
-
-    if (self->prompt) {
-        fprintf(stderr, PROMPT);
-        fflush(stderr);
-    }    
 }
 
 static void CLINAMidiOnParseFinish(void *receiver, Sequence *sequence, ParseInfo *info)
 {
     CLI *self = receiver;
-
-    fprintf(stdout, "parse finished.\n");
 
     PianoRollViewSetSequence(self->pianoRollView, sequence);
     EventListViewSetSequence(self->eventListView, sequence);
@@ -274,6 +264,14 @@ static void CLINAMidiOnParseFinish(void *receiver, Sequence *sequence, ParseInfo
     }
     else if (self->activeView == self->eventListView) {
         EventListViewRender(self->eventListView);
+    }
+
+    fprintf(stdout, "parse finished.\n");
+
+    NAIterator *iterator = NAArrayGetIterator(info->errors);
+    while (iterator->hasNext(iterator)) {
+        ParseError *error = iterator->next(iterator);
+        fprintf(stderr, "parse error. %s - %s:%d:%d\n", ParseError2String(error), error->location.filepath, error->location.line, error->location.column);
     }
 
     if (self->prompt) {

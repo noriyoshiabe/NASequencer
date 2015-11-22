@@ -46,11 +46,13 @@ static bool StatementListExprParse(void *_self, void *parser, void *_context)
 
     bool success = true;
 
-    NAIterator *iterator = NAArrayGetIterator(self->expr.children);
-    while (iterator->hasNext(iterator)) {
-        if (!ExpressionParse(iterator->next(iterator), parser, context)) {
-            success = false;
-            goto ERROR;
+    if (self->expr.children) {
+        NAIterator *iterator = NAArrayGetIterator(self->expr.children);
+        while (iterator->hasNext(iterator)) {
+            if (!ExpressionParse(iterator->next(iterator), parser, context)) {
+                success = false;
+                goto ERROR;
+            }
         }
     }
 
@@ -116,7 +118,7 @@ static bool VersionExprParse(void *_self, void *parser, void *_context)
     ABCParserContext *context = _context;
     if (context->version.text) {
         ABCParserError(parser, &self->expr.location, ParseErrorKindABC, ABCParseErrorUnexpectedVersionExpression);
-        return false;
+        return true;
     }
 
     context->version.text = self->version;
@@ -131,7 +133,7 @@ static bool VersionExprParse(void *_self, void *parser, void *_context)
         *ver = strtol(token, &err, 10);
         if ('\0' != *err) {
             ABCParserError(parser, &self->expr.location, ParseErrorKindABC, ABCParseErrorUnrecognisedVersion);
-            return false;
+            return true;
         }
         s = NULL;
     }
@@ -375,7 +377,7 @@ static bool NoteExprParse(void *_self, void *parser, void *_context)
         + context->transpose;
     if (!isValidRange(noteNo, 0, 127)) {
         ABCParserError(parser, &self->expr.location, ParseErrorKindGeneral, GeneralParseErrorInvalidNoteRange);
-        return false;
+        return true;
     }
 
     int step = self->step; // TODO chord

@@ -67,6 +67,8 @@ void EventListViewRender(EventListView *self)
         return;
     }
 
+    printf("\n");
+
     const struct {
         const char *label;
         int width;
@@ -237,6 +239,8 @@ void EventListViewRender(EventListView *self)
             printf("%s%s", text, j == sizeof(table)/sizeof(table[0]) - 1 ? "\n" : " | ");
         }
     }
+
+    printf("\n");
 }
 
 void EventListViewSetSequence(EventListView *self, Sequence *sequence)

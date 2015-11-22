@@ -23,8 +23,8 @@ struct _NAMidiParser {
     NASet *readingFileSet;
 };
 
-static bool NAMidiParserParseFileInternal(NAMidiParser *self, const char *filepath, Expression **expression);
-static bool NAMidiParserBuildPattenMap1(NAMidiParser *self, Expression *expression, NAMap *patternMap);
+static bool NAMidiParserParseFileInternal(NAMidiParser *self, ParseLocation *location, const char *filepath, Expression **expression);
+static void NAMidiParserBuildPattenMap1(NAMidiParser *self, Expression *expression, NAMap *patternMap);
 static void NAMidiParserBuildPattenMap2(NAMidiParser *self, Expression *expression, NAMap *patternMap);
 
 static bool NAMidiParserParseFile(void *_self, const char *filepath)
@@ -33,22 +33,16 @@ static bool NAMidiParserParseFile(void *_self, const char *filepath)
 
     Expression *expression;
 
-    if (!NAMidiParserParseFileInternal(self, filepath, &expression)) {
+    if (!NAMidiParserParseFileInternal(self, &(ParseLocation){NULL, 0, 0}, filepath, &expression)) {
         return false;
     }
 
-    if (!NAMidiParserBuildPattenMap1(self, expression, NULL)) {
-        return false;
-    }
-
+    NAMidiParserBuildPattenMap1(self, expression, NULL);
     NAMidiParserBuildPattenMap2(self, expression, NULL);
 
-    if (!ExpressionParse(expression, self, NULL)) {
-        ExpressionDestroy(expression);
-        return false;
-    }
-
-    return true;
+    bool success = ExpressionParse(expression, self, NULL);
+    ExpressionDestroy(expression);
+    return success;
 }
 
 bool NAMidiParserReadIncludeFile(NAMidiParser *self, ParseLocation *location, char *includeFile, Expression **expression)
@@ -70,16 +64,16 @@ bool NAMidiParserReadIncludeFile(NAMidiParser *self, ParseLocation *location, ch
         return false;
     }
 
-    bool success = NAMidiParserParseFileInternal(self, fullPath, expression);
+    bool success = NAMidiParserParseFileInternal(self, location, fullPath, expression);
     free(fullPath);
     return success;
 }
 
-static bool NAMidiParserParseFileInternal(NAMidiParser *self, const char *filepath, Expression **expression)
+static bool NAMidiParserParseFileInternal(NAMidiParser *self, ParseLocation *location, const char *filepath, Expression **expression)
 {
     FILE *fp = fopen(filepath, "r");
     if (!fp) {
-        NAMidiParserError(self, &(ParseLocation){filepath, 0, 0}, ParseErrorKindGeneral, GeneralParseErrorFileNotFound);
+        NAMidiParserError(self, location, ParseErrorKindGeneral, GeneralParseErrorFileNotFound);
         return false;
     }
 
@@ -108,7 +102,7 @@ static bool NAMidiParserParseFileInternal(NAMidiParser *self, const char *filepa
     return success;
 }
 
-static bool NAMidiParserBuildPattenMap1(NAMidiParser *self, Expression *expression, NAMap *patternMap)
+static void NAMidiParserBuildPattenMap1(NAMidiParser *self, Expression *expression, NAMap *patternMap)
 {
     if (NAMidiExprIsStatementList(expression)) {
         patternMap = NAMidiExprStatementListGetPatternMap(expression);
@@ -118,7 +112,7 @@ static bool NAMidiParserBuildPattenMap1(NAMidiParser *self, Expression *expressi
         char *identifier = NAMidiExprPatternGetIdentifier(expression);
         if (NAMapContainsKey(patternMap, identifier)) {
             NAMidiParserError(self, &expression->location, ParseErrorKindNAMidi, NAMidiParseErrorDuplicatePatternIdentifier);
-            return false;
+            return;
         }
         else {
             NAMapPut(patternMap, identifier, expression);
@@ -128,13 +122,9 @@ static bool NAMidiParserBuildPattenMap1(NAMidiParser *self, Expression *expressi
     if (expression->children) {
         NAIterator *iterator = NAArrayGetIterator(expression->children);
         while (iterator->hasNext(iterator)) {
-            if (!NAMidiParserBuildPattenMap1(self, iterator->next(iterator), patternMap)) {
-                return false;
-            }
+            NAMidiParserBuildPattenMap1(self, iterator->next(iterator), patternMap);
         }
     }
-
-    return true;
 }
 
 static void NAMidiParserBuildPattenMap2(NAMidiParser *self, Expression *expression, NAMap *patternMap)

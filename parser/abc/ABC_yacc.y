@@ -49,12 +49,12 @@ extern int ABC_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, Ex
 %%
  
 input
-    :
-    | statement_list                      { *expression = $1; }
+    : statement_list                      { *expression = $1; }
     ;
 
 statement_list
-    : statement                           { if (!$1) YYABORT; $$ = ExpressionAddChild(ABCExprStatementList(PERSER(), LOC(@$)), $1); }
+    :                                     { $$ = ABCExprStatementList(PERSER(), LOC(@$)); }
+    | statement                           { if (!$1) YYABORT; $$ = ExpressionAddChild(ABCExprStatementList(PERSER(), LOC(@$)), $1); }
     | statement_list statement            { if (!$2) YYABORT; $$ = ExpressionAddChild($1, $2); }
     ;
 
@@ -65,6 +65,8 @@ statement
     | KEY key_expr_list                   { $$ = $2; }
     | TUNE_TITLE                          { $$ = ABCExprTuneTitle(PERSER(), LOC(@$), $1); }
     | NOTE                                { $$ = ABCExprNote(PERSER(), LOC(@$), $1); }
+
+    | error                               { $$ = ExpressionCreateSkip(LOC(@$)); }
     ;
 
 key_expr_list

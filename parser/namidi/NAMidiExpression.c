@@ -51,11 +51,13 @@ static bool StatementListExprParse(void *_self, void *parser, void *_context)
 
     bool success = true;
 
-    NAIterator *iterator = NAArrayGetIterator(self->expr.children);
-    while (iterator->hasNext(iterator)) {
-        if (!ExpressionParse(iterator->next(iterator), parser, context)) {
-            success = false;
-            goto ERROR;
+    if (self->expr.children) {
+        NAIterator *iterator = NAArrayGetIterator(self->expr.children);
+        while (iterator->hasNext(iterator)) {
+            if (!ExpressionParse(iterator->next(iterator), parser, context)) {
+                success = false;
+                goto ERROR;
+            }
         }
     }
 
@@ -71,6 +73,7 @@ static bool StatementListExprParse(void *_self, void *parser, void *_context)
 
 ERROR:
     NAMidiParserContextDestroy(context);
+
     return success;
 }
 
@@ -527,7 +530,7 @@ static bool NoteExprParse(void *_self, void *parser, void *_context)
         + context->transpose;
     if (!isValidRange(noteNo, 0, 127)) {
         NAMidiParserError(parser, &self->expr.location, ParseErrorKindGeneral, GeneralParseErrorInvalidNoteRange);
-        return false;
+        return true;
     }
 
     int step = -1 != self->step ? self->step : 0;
@@ -653,12 +656,12 @@ static bool PatternExpandExprParse(void *_self, void *parser, void *_context)
 
     if (!pattern) {
         NAMidiParserError(parser, &self->expr.location, ParseErrorKindNAMidi, NAMidiParseErrorPatternMissing);
-        return false;
+        return true;
     }
 
     if (NASetContains(context->expandingPatternList, pattern)) {
         NAMidiParserError(parser, &self->expr.location, ParseErrorKindNAMidi, NAMidiParseErrorCircularPatternReference);
-        return false;
+        return true;
     }
 
     if (self->contextIdList) {

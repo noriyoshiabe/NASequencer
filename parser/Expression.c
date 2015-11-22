@@ -22,6 +22,11 @@ void *ExpressionCreateListExpr(ParseLocation *location, int size, const char *id
     return self;
 }
 
+extern void *ExpressionCreateSkip(ParseLocation *location)
+{
+    return ExpressionCreate(location, sizeof(Expression), "skip");
+}
+
 Expression *ExpressionAddChild(Expression *self, Expression *child)
 {
     bool isIdenticalListType = self->isList && child->isList && self->identifier == child->identifier;

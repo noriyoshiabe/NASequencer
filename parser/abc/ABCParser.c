@@ -21,7 +21,7 @@ struct _ABCParser {
     NASet *fileSet;
 };
 
-static bool ABCParserParseFileInternal(ABCParser *self, const char *filepath, Expression **expression);
+static bool ABCParserParseFileInternal(ABCParser *self, ParseLocation *location, const char *filepath, Expression **expression);
 
 static bool ABCParserParseFile(void *_self, const char *filepath)
 {
@@ -29,23 +29,20 @@ static bool ABCParserParseFile(void *_self, const char *filepath)
 
     Expression *expression;
 
-    if (!ABCParserParseFileInternal(self, filepath, &expression)) {
+    if (!ABCParserParseFileInternal(self, &(ParseLocation){NULL, 0, 0}, filepath, &expression)) {
         return false;
     }
 
-    if (!ExpressionParse(expression, self, NULL)) {
-        ExpressionDestroy(expression);
-        return false;
-    }
-
-    return true;
+    bool success = ExpressionParse(expression, self, NULL);
+    ExpressionDestroy(expression);
+    return success;
 }
 
-static bool ABCParserParseFileInternal(ABCParser *self, const char *filepath, Expression **expression)
+static bool ABCParserParseFileInternal(ABCParser *self, ParseLocation *location, const char *filepath, Expression **expression)
 {
     FILE *fp = fopen(filepath, "r");
     if (!fp) {
-        ABCParserError(self, &(ParseLocation){filepath, 0, 0}, ParseErrorKindGeneral, GeneralParseErrorFileNotFound);
+        ABCParserError(self, location, ParseErrorKindGeneral, GeneralParseErrorFileNotFound);
         return false;
     }
 
