@@ -18,5 +18,9 @@ typedef struct _SequenceBuilder {
     void (*appendReverb)(void *self, int tick, int channel, int value);
     void (*setLength)(void *self, int length);
 
-    void *(*build)(void *self);
+    void (*appendFilepath)(void *self, const char *filepath);
+    void (*appendError)(void *self, void *error);
+
+    void *(*buildSequence)(void *self);
+    void *(*buildInfomation)(void *self);
 } SequenceBuilder;

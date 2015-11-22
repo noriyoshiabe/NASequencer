@@ -15,6 +15,7 @@ include_directories(
 set(SOURCES
   Expression.c
   NoteTable.c
+  Parser.c
 )
 
 add_library(${PROJECT_NAME} ${SOURCES})

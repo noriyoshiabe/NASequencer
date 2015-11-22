@@ -9,7 +9,7 @@ typedef enum {
     ABCParseErrorIllegalOctaveUp,
 } ABCParseError;
 
-extern Parser *ABCParserCreate(SequenceBuilder *builder, ParserCallbacks *callbacks, void *receiver);
+extern DSLParser *ABCParserCreate(SequenceBuilder *builder);
 
 static inline const char *ABCParseError2String(ABCParseError error)
 {

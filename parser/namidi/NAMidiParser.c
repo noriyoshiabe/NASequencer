@@ -14,9 +14,7 @@
 extern int NAMidi_parse(yyscan_t scanner, const char *filepath, Expression **expression);
 
 struct _NAMidiParser {
-    Parser interface;
-    ParserCallbacks *callbacks;
-    void *receiver;
+    DSLParser interface;
     SequenceBuilder *builder;
 
     NASet *fileSet;
@@ -87,7 +85,7 @@ static bool NAMidiParserParseFileInternal(NAMidiParser *self, const char *filepa
     if (!(copiedFilePath = NASetGet(self->fileSet, (char *)filepath))) {
         copiedFilePath = strdup(filepath);
         NASetAdd(self->fileSet, copiedFilePath);
-        self->callbacks->onReadFile(self->receiver, copiedFilePath);
+        self->builder->appendFilepath(self->builder, copiedFilePath);
     }
 
     NASetAdd(self->readingFileSet, copiedFilePath);
@@ -171,7 +169,7 @@ int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, Expres
 void NAMidiParserError(NAMidiParser *self, ParseLocation *location, ParseErrorKind kind, int error)
 {
     ParseError err = { .location = *location, .kind = kind, .error = error };
-    self->callbacks->onParseError(self->receiver, &err);
+    self->builder->appendError(self->builder, &err);
 }
 
 SequenceBuilder *NAMidiParserGetBuilder(NAMidiParser *self)
@@ -188,17 +186,15 @@ static void NAMidiParserDestroy(void *_self)
     free(self);
 }
 
-Parser *NAMidiParserCreate(SequenceBuilder *builder, ParserCallbacks *callbacks, void *receiver)
+DSLParser *NAMidiParserCreate(SequenceBuilder *builder)
 {
     NAMidiParser *self = calloc(1, sizeof(NAMidiParser));
     self->interface.parseFile = NAMidiParserParseFile;
     self->interface.destroy = NAMidiParserDestroy;
-    self->callbacks = callbacks;
-    self->receiver = receiver;
     self->builder = builder;
     self->fileSet = NASetCreate(NAHashCString, NADescriptionCString);
     self->readingFileSet = NASetCreate(NAHashCString, NADescriptionCString);
-    return (Parser *)self;
+    return (DSLParser *)self;
 }
 
 NAMidiParserContext *NAMidiParserContextCreate()

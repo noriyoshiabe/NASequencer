@@ -31,17 +31,19 @@ typedef struct _ParseError {
     int error;
 } ParseError;
 
-typedef struct _Parser {
+typedef struct _DSLParser {
     bool (*parseFile)(void *self, const char *filepath);
     void (*destroy)(void *self);
-} Parser;
+} DSLParser;
 
-typedef struct _ParserCallbacks {
-    void (*onReadFile)(void *receiver, const char *filepath);
-    void (*onParseError)(void *receiver, ParseError *error);
-} ParserCallbacks;
+typedef DSLParser *(*DSLParserFactory)(SequenceBuilder *builder);
 
-typedef Parser *(*ParserFactory)(SequenceBuilder *builder, ParserCallbacks *callbacks, void *receiver);
+typedef struct _Parser Parser;
+
+extern Parser *ParserCreate(SequenceBuilder *builder);
+extern void ParserDestroy(Parser *self);
+extern bool ParserParseFile(Parser *self, const char *filepath, void **sequence, void **info);
+extern const char *ParserError2String(ParseError *error);
 
 static inline const char *ParseErrorKind2String(ParseErrorKind kind)
 {
