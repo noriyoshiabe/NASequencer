@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BuildInformation.h"
+#include "Parser.h"
 #include <stdbool.h>
 
 typedef enum {
@@ -14,7 +14,8 @@ typedef enum {
 typedef struct _Exporter Exporter;
 
 typedef struct _ExporterObserverCallbacks {
-    void (*onParseFinish)(void *receiver, BuildInformation *info);
+    void (*onParseError)(void *receiver, const ParseError *error);
+    void (*onParseFinish)(void *receiver, ParseInfo *info);
     void (*onProgress)(void *receiver, int progress);
 } ExporterObserverCallbacks;
 

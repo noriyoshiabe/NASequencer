@@ -14,6 +14,8 @@ extern int ABC_parse(yyscan_t scanner, const char *filepath, Expression **expres
 
 struct _ABCParser {
     DSLParser interface;
+    ParserCallbacks *callbacks;
+    void *receiver;
     SequenceBuilder *builder;
 
     NASet *fileSet;
@@ -51,7 +53,7 @@ static bool ABCParserParseFileInternal(ABCParser *self, const char *filepath, Ex
     if (!(copiedFilePath = NASetGet(self->fileSet, (char *)filepath))) {
         copiedFilePath = strdup(filepath);
         NASetAdd(self->fileSet, copiedFilePath);
-        self->builder->appendFilepath(self->builder, copiedFilePath);
+        self->callbacks->onReadFile(self->receiver, copiedFilePath);
     }
 
     yyscan_t scanner;
@@ -77,7 +79,7 @@ int ABC_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, Expressio
 void ABCParserError(ABCParser *self, ParseLocation *location, ParseErrorKind kind, int error)
 {
     ParseError err = { .location = *location, .kind = kind, .error = error };
-    self->builder->appendError(self->builder, &err);
+    self->callbacks->onParseError(self->receiver, &err);
 }
 
 SequenceBuilder *ABCParserGetBuilder(ABCParser *self)
@@ -93,11 +95,13 @@ static void ABCParserDestroy(void *_self)
     free(self);
 }
 
-DSLParser *ABCParserCreate(SequenceBuilder *builder)
+DSLParser *ABCParserCreate(SequenceBuilder *builder, ParserCallbacks *callbacks, void *receiver)
 {
     ABCParser *self = calloc(1, sizeof(ABCParser));
     self->interface.parseFile = ABCParserParseFile;
     self->interface.destroy = ABCParserDestroy;
+    self->callbacks = callbacks;
+    self->receiver = receiver;
     self->builder = builder;
     self->fileSet = NASetCreate(NAHashCString, NADescriptionCString);
     return (DSLParser *)self;

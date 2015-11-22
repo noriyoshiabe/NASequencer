@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Sequence.h"
-#include "BuildInformation.h"
 #include "Parser.h"
 #include "Mixer.h"
 #include "Player.h"
@@ -9,7 +8,10 @@
 typedef struct _NAMidi NAMidi;
 
 typedef struct _NAMidiObserverCallbacks {
-    void (*onParseFinish)(void *receiver, Sequence *sequence, BuildInformation *info);
+    void (*onBeforeParse)(void *receiver, bool fileChanged);
+    void (*onReadFile)(void *receiver, const char *filepath);
+    void (*onParseError)(void *receiver, const ParseError *error);
+    void (*onParseFinish)(void *receiver, Sequence *sequence, ParseInfo *info);
 } NAMidiObserverCallbacks;
 
 extern NAMidi *NAMidiCreate();

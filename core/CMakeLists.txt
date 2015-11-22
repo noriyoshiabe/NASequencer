@@ -18,7 +18,6 @@ set(SOURCES
   Player.c
   MidiSourceManager.c
   SequenceBuilderImpl.c
-  BuildInformation.c
 )
 
 if (APPLE)

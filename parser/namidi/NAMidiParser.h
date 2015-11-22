@@ -8,7 +8,7 @@ typedef enum {
     NAMidiParseErrorCircularPatternReference,
 } NAMidiParseError;
 
-extern DSLParser *NAMidiParserCreate(SequenceBuilder *builder);
+extern DSLParser *NAMidiParserCreate(SequenceBuilder *builder, ParserCallbacks *callbacks, void *receiver);
 
 static inline const char *NAMidiParseError2String(NAMidiParseError error)
 {

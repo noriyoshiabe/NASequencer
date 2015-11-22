@@ -236,13 +236,33 @@ void CLISetFilepath(CLI *self, const char *filepath)
 }
 
 
-static void CLINAMidiOnParseFinish(void *receiver, Sequence *sequence, BuildInformation *info)
+static void CLINAMidiOnBeforeParse(void *receiver, bool fileChanged)
+{
+    if (fileChanged) {
+        fprintf(stdout, "\n");
+    }
+}
+
+static void CLINAMidiOnReadFile(void *receiver, const char *filepath)
+{
+    fprintf(stdout, "reading %s.\n", filepath);
+}
+
+static void CLINAMidiOnParseError(void *receiver, const ParseError *error)
 {
     CLI *self = receiver;
 
+    fprintf(stderr, "parse error. %s - %s:%d:%d\n", ParseError2String(error), error->location.filepath, error->location.line, error->location.column);
+
     if (self->prompt) {
-        fprintf(stdout, "\n");
-    }
+        fprintf(stderr, PROMPT);
+        fflush(stderr);
+    }    
+}
+
+static void CLINAMidiOnParseFinish(void *receiver, Sequence *sequence, ParseInfo *info)
+{
+    CLI *self = receiver;
 
     fprintf(stdout, "parse finished.\n");
 
@@ -256,12 +276,6 @@ static void CLINAMidiOnParseFinish(void *receiver, Sequence *sequence, BuildInfo
         EventListViewRender(self->eventListView);
     }
 
-    NAIterator *iterator = NAArrayGetIterator(info->errors);
-    while (iterator->hasNext(iterator)) {
-        ParseError *error = iterator->next(iterator);
-        fprintf(stderr, "parse error. %s - %s:%d:%d\n", ParseError2String(error), error->location.filepath, error->location.line, error->location.column);
-    }
-
     if (self->prompt) {
         fprintf(stdout, PROMPT);
         fflush(stdout);
@@ -269,6 +283,9 @@ static void CLINAMidiOnParseFinish(void *receiver, Sequence *sequence, BuildInfo
 }
 
 static NAMidiObserverCallbacks CLINAMidiObserverCallbacks = {
+    CLINAMidiOnBeforeParse,
+    CLINAMidiOnReadFile,
+    CLINAMidiOnParseError,
     CLINAMidiOnParseFinish,
 };
 
@@ -333,13 +350,13 @@ static MidiSourceManagerObserverCallbacks CLIMidiSourceManagerObserverCallbacks 
     CLIMidiSourceManagerOnUnloadAvailableMidiSourceDescription,
 };
 
-static void CLIExporterOnParseFinish(void *_self, BuildInformation *info)
+static void CLIExporterOnParseError(void *receiver, const ParseError *error)
 {
-    NAIterator *iterator = NAArrayGetIterator(info->errors);
-    while (iterator->hasNext(iterator)) {
-        ParseError *error = iterator->next(iterator);
-        fprintf(stderr, "parse error. %s - %s:%d:%d\n", ParseError2String(error), error->location.filepath, error->location.line, error->location.column);
-    }
+    fprintf(stderr, "parse error. %s - %s:%d:%d\n", ParseError2String(error), error->location.filepath, error->location.line, error->location.column);
+}
+
+static void CLIExporterOnParseFinish(void *_self, ParseInfo *info)
+{
 }
 
 static void CLIExporterOnProgress(void *_self, int progress)
@@ -351,6 +368,7 @@ static void CLIExporterOnProgress(void *_self, int progress)
 }
 
 static ExporterObserverCallbacks CLIExporterObserverCallbacks = {
+    CLIExporterOnParseError,
     CLIExporterOnParseFinish,
     CLIExporterOnProgress,
 };

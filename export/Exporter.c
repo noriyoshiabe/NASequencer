@@ -39,6 +39,8 @@ static double ExporterAudioBufferGetSampleRate(AudioOut *self);
 static void ExporterAudioBufferRegisterCallback(AudioOut *self, AudioCallback function, void *receiver);
 static void ExporterAudioBufferUnregisterCallback(AudioOut *self, AudioCallback function, void *receiver);
 
+static ParserCallbacks ExporterParserCallbacks;
+
 
 Exporter *ExporterCreate(ExporterObserverCallbacks *callbacks, void *receiver)
 {
@@ -109,11 +111,11 @@ ExporterError ExporterExport(Exporter *self, const char *filepath, const char *o
     ExporterError ret = ExporterErrorNoError;
 
     SequenceBuilder *builder = SequenceBuilderCreate();
-    Parser *parser = ParserCreate(builder);
+    Parser *parser = ParserCreate(builder, &ExporterParserCallbacks, self);
     Sequence *sequence = NULL;
-    BuildInformation *info = NULL;
+    ParseInfo *info = NULL;
 
-    bool success = ParserParseFile(parser, filepath, (void **)&sequence, (void **)&info);
+    bool success = ParserParseFile(parser, filepath, (void **)&sequence, &info);
 
     ParserDestroy(parser);
     builder->destroy(builder);
@@ -134,7 +136,7 @@ ExporterError ExporterExport(Exporter *self, const char *filepath, const char *o
 
 EXIT:
     SequenceRelease(sequence);
-    BuildInformationRelease(info);
+    ParseInfoRelease(info);
 
     return ret;
 }
@@ -424,6 +426,21 @@ bool ExporterWriteToAAC(Exporter *self, const char *filepath)
     AACWriterDestroy(writer);
     return ret;
 }
+
+static void ExporterParserOnReadFile(void *receiver, const char *filepath)
+{
+}
+
+static void ExporterParserOnParseError(void *receiver, const ParseError *error)
+{
+    Exporter *self = receiver;
+    self->callbacks->onParseError(self->receiver, error);
+}
+
+static ParserCallbacks ExporterParserCallbacks = {
+    ExporterParserOnReadFile,
+    ExporterParserOnParseError,
+};
 
 
 static ExporterAudioBuffer *ExporterAudioBufferCreate(double sampleRate)

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SequenceBuilder.h"
+#include "NAArray.h"
 #include <stdbool.h>
 
 typedef enum {
@@ -31,19 +32,36 @@ typedef struct _ParseError {
     int error;
 } ParseError;
 
+typedef struct _ParseInfo {
+    NAArray *filepaths;
+    NAArray *errors;
+} ParseInfo;
+
+extern ParseError *ParseErrorCreate(const ParseLocation *location, ParseErrorKind kind, int error);
+extern void ParseErrorDestroy(ParseError *self);
+
+extern ParseInfo *ParseInfoCreate();
+extern ParseInfo *ParseInfoRetain(ParseInfo *self);
+extern void ParseInfoRelease(ParseInfo *self);
+
+typedef struct _ParserCallbacks {
+    void (*onReadFile)(void *receiver, const char *filepath);
+    void (*onParseError)(void *receiver, const ParseError *error);
+} ParserCallbacks;
+
 typedef struct _DSLParser {
     bool (*parseFile)(void *self, const char *filepath);
     void (*destroy)(void *self);
 } DSLParser;
 
-typedef DSLParser *(*DSLParserFactory)(SequenceBuilder *builder);
+typedef DSLParser *(*DSLParserFactory)(SequenceBuilder *builder, ParserCallbacks *callbacks, void *receiver);
 
 typedef struct _Parser Parser;
 
-extern Parser *ParserCreate(SequenceBuilder *builder);
+extern Parser *ParserCreate(SequenceBuilder *builder, ParserCallbacks *callbacks, void *receiver);
 extern void ParserDestroy(Parser *self);
-extern bool ParserParseFile(Parser *self, const char *filepath, void **sequence, void **info);
-extern const char *ParseError2String(ParseError *error);
+extern bool ParserParseFile(Parser *self, const char *filepath, void **sequence, ParseInfo **info);
+extern const char *ParseError2String(const ParseError *error);
 
 static inline const char *ParseErrorKind2String(ParseErrorKind kind)
 {
