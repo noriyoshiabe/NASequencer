@@ -16,6 +16,7 @@ typedef struct _Expression {
     ParseLocation location;
     struct _Expression *parent;
     NAArray *children;
+    bool isList;
 } Expression;
  
 extern void *ExpressionCreate(ParseLocation *location, int size, const char *identifier);

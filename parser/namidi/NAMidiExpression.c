@@ -79,6 +79,7 @@ void *NAMidiExprStatementList(NAMidiParser *parser, ParseLocation *location)
     StatementListExpr *self = ExpressionCreate(location, sizeof(StatementListExpr), STATEMENT_LIST_ID);
     self->expr.vtbl.destroy = StatementListExprDestroy;
     self->expr.vtbl.parse = StatementListExprParse;
+    self->expr.isList = true;
     self->patternMap = NAMapCreate(NAHashCString, NADescriptionCString, NULL);
     return self;
 }
@@ -755,18 +756,4 @@ char *NAMidiExprPatternGetIdentifier(void *_self)
 {
     PatternExpr *self = _self;
     return self->identifier;
-}
-
-Expression *NAMidiExprStatementListMarge(Expression *self, Expression *statementList)
-{
-    NAIterator *iterator = NAArrayGetIterator(statementList->children);
-    while (iterator->hasNext(iterator)) {
-        Expression *child = iterator->next(iterator);
-        child->parent = self;
-        NAArrayAppend(self->children, child);
-    }
-
-    NAArrayRemoveAll(statementList->children);
-    ExpressionDestroy(statementList);
-    return self;
 }

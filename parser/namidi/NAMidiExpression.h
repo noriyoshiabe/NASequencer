@@ -31,4 +31,3 @@ extern bool NAMidiExprIsStatementList(Expression *self);
 extern bool NAMidiExprIsPattern(Expression *self);
 extern NAMap *NAMidiExprStatementListGetPatternMap(void *self);
 extern char *NAMidiExprPatternGetIdentifier(void *_self);
-extern Expression *NAMidiExprStatementListMarge(Expression *self, Expression *statementList);

@@ -18,11 +18,30 @@ void *ExpressionCreate(ParseLocation *location, int size, const char *identifier
 Expression *ExpressionAddChild(Expression *self, Expression *child)
 {
     if (!self->children) {
+        if (self->isList && child->isList && child->children) {
+            ExpressionDestroy(self);
+            return child;
+        }
+
         self->children = NAArrayCreate(4, NULL);
     }
-    NAArrayAppend(self->children, child);
 
-    child->parent = self;
+    if (self->isList && child->isList && child->children) {
+        NAIterator *iterator = NAArrayGetIterator(child->children);
+        while (iterator->hasNext(iterator)) {
+            Expression *childExpr = iterator->next(iterator);
+            childExpr->parent = self;
+            NAArrayAppend(self->children, childExpr);
+        }
+
+        NAArrayRemoveAll(child->children);
+        ExpressionDestroy(child);
+    }
+    else {
+        NAArrayAppend(self->children, child);
+        child->parent = self;
+    }
+
     return self;
 }
 

@@ -54,28 +54,8 @@ input
     ;
 
 statement_list
-    : statement                           {
-                                              if (!$1) YYABORT;
-
-                                              if (ABCExprIsStatementList($1)) {
-                                                  $$ = $1;
-                                              }
-                                              else {
-                                                  $$ = ABCExprStatementList(PERSER(), LOC(@$));
-                                                  ExpressionAddChild($$, $1);
-                                              }
-                                          }
-    | statement_list statement            {
-                                              if (!$2) YYABORT;
-
-                                              if (ABCExprIsStatementList($2)) {
-                                                  $$ = ABCExprStatementListMarge($1, $2);
-                                              }
-                                              else {
-                                                  $$ = ExpressionAddChild($1, $2);
-                                              }
-                                          }
-
+    : statement                           { if (!$1) YYABORT; $$ = ExpressionAddChild(ABCExprStatementList(PERSER(), LOC(@$)), $1); }
+    | statement_list statement            { if (!$2) YYABORT; $$ = ExpressionAddChild($1, $2); }
     ;
 
 statement
@@ -89,27 +69,8 @@ statement
 
 key_expr_list
     :                                     { $$ = ABCExprKeyExprList(PERSER(), LOC(@$)); }
-    | key_expr                            {
-                                              if (!$1) YYABORT;
-
-                                              if (ABCExprIsKeyExprList($1)) {
-                                                  $$ = $1;
-                                              }
-                                              else {
-                                                  $$ = ABCExprKeyExprList(PERSER(), LOC(@$));
-                                                  ExpressionAddChild($$, $1);
-                                              }
-                                          }
-    | key_expr_list key_expr              {
-                                              if (!$2) YYABORT;
-
-                                              if (ABCExprIsKeyExprList($2)) {
-                                                  $$ = ABCExprKeyExprListMarge($1, $2);
-                                              }
-                                              else {
-                                                  $$ = ExpressionAddChild($1, $2);
-                                              }
-                                          }
+    | key_expr                            { if (!$1) YYABORT; $$ = ExpressionAddChild(ABCExprKeyExprList(PERSER(), LOC(@$)), $1); }
+    | key_expr_list key_expr              { if (!$2) YYABORT; $$ = ExpressionAddChild($1, $2); }
     ;
 
 key_expr
@@ -120,14 +81,8 @@ key_expr
     | KEY_TONIC key_accidental_list       { $$ = ABCExprKeySign(PERSER(), LOC(@$), $1, NULL, $2); }
 
 key_accidental_list
-    : KEY_ACCIDENTAL                      {
-                                              $$ = NAArrayCreate(4, NADescriptionCString);
-                                              NAArrayAppend($$, $1);
-                                          }
-    | key_accidental_list KEY_ACCIDENTAL  {
-                                              $$ = $1;
-                                              NAArrayAppend($$, $2);
-                                          }
+    : KEY_ACCIDENTAL                      { $$ = NAArrayCreate(4, NADescriptionCString); NAArrayAppend($$, $1); }
+    | key_accidental_list KEY_ACCIDENTAL  { $$ = $1; NAArrayAppend($$, $2); }
     ;
 
 %%

@@ -92,28 +92,8 @@ input
     ;
 
 statement_list
-    : statement                           {
-                                              if (!$1) YYABORT;
-
-                                              if (NAMidiExprIsStatementList($1)) {
-                                                  $$ = $1;
-                                              }
-                                              else {
-                                                  $$ = NAMidiExprStatementList(PERSER(), LOC(@$));
-                                                  ExpressionAddChild($$, $1);
-                                              }
-                                          }
-    | statement_list statement            {
-                                              if (!$2) YYABORT;
-
-                                              if (NAMidiExprIsStatementList($2)) {
-                                                  $$ = NAMidiExprStatementListMarge($1, $2);
-                                              }
-                                              else {
-                                                  $$ = ExpressionAddChild($1, $2);
-                                              }
-                                          }
-
+    : statement                           { if (!$1) YYABORT; $$ = ExpressionAddChild(NAMidiExprStatementList(PERSER(), LOC(@$)), $1); }
+    | statement_list statement            { if (!$2) YYABORT; $$ = ExpressionAddChild($1, $2); }
     ;
 
 statement
@@ -143,11 +123,7 @@ statement
     | pattern_expand
     | context
 
-    | INCLUDE STRING                      {
-                                              if (!NAMidiParserReadIncludeFile(PERSER(), LOC(@$), $2, &$$)) {
-                                                  YYABORT;
-                                              }
-                                          }
+    | INCLUDE STRING                      { if (!NAMidiParserReadIncludeFile(PERSER(), LOC(@$), $2, &$$)) YYABORT; }
     ;
 
 note
@@ -185,14 +161,8 @@ context
     ;
 
 context_id_list
-    : context_id                          {
-                                              $$ = NAArrayCreate(4, NADescriptionCString);
-                                              NAArrayAppend($$, $1);
-                                          }
-    | context_id_list COMMA context_id    {
-                                              $$ = $1;
-                                              NAArrayAppend($$, $3);
-                                          }
+    : context_id                          { $$ = NAArrayCreate(4, NADescriptionCString); NAArrayAppend($$, $1); }
+    | context_id_list COMMA context_id    { $$ = $1; NAArrayAppend($$, $3); }
     ;
 
 context_id
