@@ -697,7 +697,7 @@ static CommandTable commandTable[] = {
     {"solo", SoloCommandExecute, "solo [channel]", "enable channel's solo.\ndisable all channel's solo unless channel number is specifid."},
     {"load", LoadCommandExecute, "load <file>", "load synthesizer.\nsupported file type is currently .sf2 only."},
     {"unload", UnloadCommandExecute, "unload <index>", "unload synthesizer specifid by index of synthesizers list."},
-    {"export", ExportCommandExecute, "export <file>", "export sequence.\nsupported file types are currently .smf, .mid, .midi, .wav, .wave and .m4a."},
+    {"export", ExportCommandExecute, "export <file>", "export sequence.\nsupported file types are currently .smf, .mid, .midi, .wav, .wave .m4a and .aac."},
     {"help", HelpCommandExecute, "help", "display this help."},
     {"exit", ExitCommandExecute, "exit", "exit namidi."},
 

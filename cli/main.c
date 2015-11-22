@@ -88,8 +88,8 @@ static void showHelp()
     printf(
           "Usage: namidi [options] [file]\n"
           "Options:\n"
-          " -o, --outout <file>      Write output to SMF, WAV or MP3.\n"
-          "                          WAV and MP3 output require valid synthesizer with -s, --sound-font option.\n"
+          " -o, --outout <file>      Write output to SMF, WAV or AAC.\n"
+          "                          WAV and AAC output require valid synthesizer with -s, --sound-font option.\n"
           " -s, --sound-font <file>  Specify sound font file for synthesizer.\n"
           " -h, --help               This help text.\n"
           );
@@ -100,7 +100,8 @@ static bool isAudioFileType(const char *filepath)
     const char *exts[] = {
         "wav",
         "wave",
-        "m4a"
+        "m4a",
+        "aac",
     };
 
     const char *ext = NAUtilGetFileExtenssion(filepath);

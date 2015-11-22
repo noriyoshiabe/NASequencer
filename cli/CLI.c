@@ -30,6 +30,7 @@ struct _CLI {
 static NAMidiObserverCallbacks CLINAMidiObserverCallbacks;
 static PlayerObserverCallbacks CLIPlayerObserverCallbacks;
 static MidiSourceManagerObserverCallbacks CLIMidiSourceManagerObserverCallbacks;
+static ExporterObserverCallbacks CLIExporterObserverCallbacks;
 
 static char **CLICompletion(const char *text, int start, int end);
 
@@ -180,135 +181,30 @@ void CLIExit(CLI *self)
     longjmp(self->jmpBuf, 1);
 }
 
-#include "Parser.h"
-#include "SequenceBuilderImpl.h"
-#include "BuildInformation.h"
-
-static bool CLIExportSMF(CLI *self, Sequence *sequence, const char *output);
-static bool CLIExportWAV(CLI *self, Sequence *sequence, const char *output);
-static bool CLIExportAAC(CLI *self, Sequence *sequence, const char *output);
-
 bool CLIExport(CLI *self, const char *output)
 {
-    if (!self->filepath) {
-        fprintf(stderr, "no input source file\n");
-        return false;
-    }
-
-    SequenceBuilder *builder = SequenceBuilderCreate();
-    Parser *parser = ParserCreate(builder);
-    Sequence *sequence = NULL;
-    BuildInformation *info = NULL;
-
-    bool success = ParserParseFile(parser, self->filepath, (void **)&sequence, (void **)&info);
-
-    ParserDestroy(parser);
-    builder->destroy(builder);
+    Exporter *exporter = ExporterCreate(&CLIExporterObserverCallbacks, self);
+    ExporterError error = ExporterExport(exporter, self->filepath, output);
+    ExporterDestroy(exporter);
     
-    if (!success) {
-        NAIterator *iterator = NAArrayGetIterator(info->errors);
-        while (iterator->hasNext(iterator)) {
-            ParseError *error = iterator->next(iterator);
-            fprintf(stderr, "parse error. %s - %s:%d:%d\n", ParseError2String(error), error->location.filepath, error->location.line, error->location.column);
-        }
-        goto ERROR;
-    }
-            
-    const struct {
-        const char *ext;
-        bool (*function)(CLI *, Sequence *sequence, const char *);
-    } table[] = {
-        {"mid", CLIExportSMF},
-        {"midi", CLIExportSMF},
-        {"smf", CLIExportSMF},
-        {"wav", CLIExportWAV},
-        {"wave", CLIExportWAV},
-        {"m4a", CLIExportAAC},
-    };
-
-    bool (*function)(CLI *, Sequence *sequence, const char *) = NULL;
-    const char *ext = NAUtilGetFileExtenssion(output);
-
-    for (int i = 0; i < sizeof(table) / sizeof(table[0]); ++i) {
-        if (0 == strcmp(table[i].ext, ext)) {
-            function = table[i].function;
-            break;
-        }
-    }
-
-    if (!function) {
+    switch (error) {
+    case ExporterErrorUnsupportedFileType:
         fprintf(stderr, "unsupported output file type.\n");
-        goto ERROR;
-    }
-
-    success = function(self, sequence, output);
-
-ERROR:
-    if (sequence) {
-        SequenceRelease(sequence);
-    }
-
-    if (info) {
-        BuildInformationRelease(info);
-    }
-
-    return success;
-}
-
-static void CLIExporterProgressCallback(void *_self, int progress)
-{
-    for (int i = 0; i < progress; ++i) {
-        fprintf(stderr, ".");
-    }
-    fprintf(stderr, "%d%%%s", progress, 100 == progress ? "\n" : "\r");
-}
-
-static bool CLIHasSoundSource(CLI *self)
-{
-    NAArray *descriptions = MidiSourceManagerGetAvailableDescriptions(self->manager);
-    return 0 < NAArrayCount(descriptions);
-}
-
-static bool CLIExportSMF(CLI *self, Sequence *sequence, const char *output)
-{
-    Exporter *exporter = ExporterCreate(sequence);
-    bool success = ExporterWriteToSMF(exporter, output);
-    ExporterDestroy(exporter);
-    return success;
-}
-
-static bool CLIExportWAV(CLI *self, Sequence *sequence, const char *output)
-{
-    if (!CLIHasSoundSource(self)) {
+        break;
+    case ExporterErrorNoSoundSource:
         fprintf(stderr, "no synthesizer is loaded.\n");
-        return false;
-    }
-
-    Exporter *exporter = ExporterCreate(sequence);
-    ExporterSetProgressCallback(exporter, CLIExporterProgressCallback, self);
-    bool success = ExporterWriteToWave(exporter, output);
-    if (!success) {
+        break;
+    case ExporterErrorParseFailed:
+        fprintf(stderr, "parse failed.\n");
+        break;
+    case ExporterErrorCouldNotWriteFile:
         fprintf(stderr, "cannot write to output file.\n");
-    }
-    ExporterDestroy(exporter);
-    return success;
-}
-
-static bool CLIExportAAC(CLI *self, Sequence *sequence, const char *output)
-{
-    if (!CLIHasSoundSource(self)) {
-        fprintf(stderr, "no synthesizer is loaded.\n");
-        return false;
+        break;
+    default:
+        break;
     }
 
-    Exporter *exporter = ExporterCreate(sequence);
-    ExporterSetProgressCallback(exporter, CLIExporterProgressCallback, self);
-    bool success = ExporterWriteToAAC(exporter, output);
-    if (!success) {
-        fprintf(stderr, "cannot write to output file.\n");
-    }
-    ExporterDestroy(exporter);
-    return success;
+    return ExporterErrorNoError == error;
 }
 
 NAMidi *CLIGetNAMidi(CLI *self)
@@ -435,4 +331,26 @@ static MidiSourceManagerObserverCallbacks CLIMidiSourceManagerObserverCallbacks 
     CLIMidiSourceManagerOnLoadAvailableMidiSourceDescription,
     CLIMidiSourceManagerOnUnloadMidiSourceDescription,
     CLIMidiSourceManagerOnUnloadAvailableMidiSourceDescription,
+};
+
+static void CLIExporterOnParseFinish(void *_self, BuildInformation *info)
+{
+    NAIterator *iterator = NAArrayGetIterator(info->errors);
+    while (iterator->hasNext(iterator)) {
+        ParseError *error = iterator->next(iterator);
+        fprintf(stderr, "parse error. %s - %s:%d:%d\n", ParseError2String(error), error->location.filepath, error->location.line, error->location.column);
+    }
+}
+
+static void CLIExporterOnProgress(void *_self, int progress)
+{
+    for (int i = 0; i < progress; ++i) {
+        fprintf(stderr, ".");
+    }
+    fprintf(stderr, "%d%%%s", progress, 100 == progress ? "\n" : "\r");
+}
+
+static ExporterObserverCallbacks CLIExporterObserverCallbacks = {
+    CLIExporterOnParseFinish,
+    CLIExporterOnProgress,
 };

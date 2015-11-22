@@ -1,4 +1,6 @@
 #include "Exporter.h"
+#include "Sequence.h"
+#include "SequenceBuilderImpl.h"
 #include "SMFWriter.h"
 #include "AudioOut.h"
 #include "Mixer.h"
@@ -7,6 +9,7 @@
 #include "AACWriter.h"
 #include "NAArray.h"
 #include "NASet.h"
+#include "NAUtil.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -18,7 +21,7 @@ struct _Exporter {
     Sequence *sequence;
     NASet *noteOffEvents;
     NAArray *eventsToWrite;
-    ExporterProgressCallback progressCallback;
+    ExporterObserverCallbacks *callbacks;
     void *receiver;
 };
 
@@ -37,17 +40,12 @@ static void ExporterAudioBufferRegisterCallback(AudioOut *self, AudioCallback fu
 static void ExporterAudioBufferUnregisterCallback(AudioOut *self, AudioCallback function, void *receiver);
 
 
-Exporter *ExporterCreate(Sequence *sequence)
+Exporter *ExporterCreate(ExporterObserverCallbacks *callbacks, void *receiver)
 {
     Exporter *self = calloc(1, sizeof(Exporter));
-    self->sequence = SequenceRetain(sequence);
-    return self;
-}
-
-void ExporterSetProgressCallback(Exporter *self, ExporterProgressCallback callback, void *receiver)
-{
-    self->progressCallback = callback;
+    self->callbacks = callbacks;
     self->receiver = receiver;
+    return self;
 }
 
 void ExporterDestroy(Exporter *self)
@@ -61,8 +59,84 @@ void ExporterDestroy(Exporter *self)
         NAArrayDestroy(self->eventsToWrite);
     }
 
-    SequenceRelease(self->sequence);
     free(self);
+}
+
+static bool ExporterWriteToSMF(Exporter *self, const char *filepath);
+static bool ExporterWriteToWave(Exporter *self, const char *filepath);
+static bool ExporterWriteToAAC(Exporter *self, const char *filepath);
+
+static bool HasSoundSource()
+{
+    MidiSourceManager *manager = MidiSourceManagerSharedInstance();
+    NAArray *descriptions = MidiSourceManagerGetAvailableDescriptions(manager);
+    return 0 < NAArrayCount(descriptions);
+}
+
+ExporterError ExporterExport(Exporter *self, const char *filepath, const char *output)
+{
+    const struct {
+        const char *ext;
+        bool (*function)(Exporter *, const char *);
+        bool needSoundSource;
+    } table[] = {
+        {"mid", ExporterWriteToSMF, false},
+        {"midi", ExporterWriteToSMF, false},
+        {"smf", ExporterWriteToSMF, false},
+        {"wav", ExporterWriteToWave, true},
+        {"wave", ExporterWriteToWave, true},
+        {"m4a", ExporterWriteToAAC, true},
+        {"aac", ExporterWriteToAAC, true},
+    };
+
+    bool (*function)(Exporter *, const char *) = NULL;
+    const char *ext = NAUtilGetFileExtenssion(output);
+
+    for (int i = 0; i < sizeof(table) / sizeof(table[0]); ++i) {
+        if (0 == strcmp(table[i].ext, ext)) {
+            function = table[i].function;
+            if (table[i].needSoundSource && !HasSoundSource()) {
+                return ExporterErrorNoSoundSource;
+            }
+            break;
+        }
+    }
+
+    if (!function) {
+        return ExporterErrorUnsupportedFileType;
+    }
+
+    ExporterError ret = ExporterErrorNoError;
+
+    SequenceBuilder *builder = SequenceBuilderCreate();
+    Parser *parser = ParserCreate(builder);
+    Sequence *sequence = NULL;
+    BuildInformation *info = NULL;
+
+    bool success = ParserParseFile(parser, filepath, (void **)&sequence, (void **)&info);
+
+    ParserDestroy(parser);
+    builder->destroy(builder);
+
+    self->callbacks->onParseFinish(self->receiver, info);
+
+    if (!success) {
+        ret = ExporterErrorParseFailed;
+        goto EXIT;
+    }
+
+    self->sequence = sequence;
+
+    success = function(self, output);
+    if (!success) {
+        ret = ExporterErrorCouldNotWriteFile;
+    }
+
+EXIT:
+    SequenceRelease(sequence);
+    BuildInformationRelease(info);
+
+    return ret;
 }
 
 static void ExporterBuildEventsToWrite(Exporter *self)
@@ -192,9 +266,7 @@ bool ExporterWriteToSMF(Exporter *self, const char *filepath)
         int _progress = i * 100 / (count - 1);
         if (progress != _progress) {
             progress = _progress;
-            if (self->progressCallback) {
-                self->progressCallback(self->receiver, progress);
-            }
+            self->callbacks->onProgress(self->receiver, progress);
         }
     }
 
@@ -294,9 +366,7 @@ static void ExporterBuildAudioSample(Exporter *self, ExporterAudioBuffer *audioB
         int _progress = tick * 100 / (length - 1);
         if (progress != _progress) {
             progress = _progress;
-            if (self->progressCallback) {
-                self->progressCallback(self->receiver, progress);
-            }
+            self->callbacks->onProgress(self->receiver, progress);
         }
     }
 
