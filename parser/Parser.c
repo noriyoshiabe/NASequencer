@@ -166,5 +166,6 @@ void ParseInfoRelease(ParseInfo *_self)
         NAArrayTraverse(self->info.errors, ParseErrorDestroy);
         NAArrayDestroy(self->info.filepaths);
         NAArrayDestroy(self->info.errors);
+        free(self);
     }
 }
