@@ -257,7 +257,7 @@ static void CLINAMidiOnParseError(void *receiver, const ParseError *error)
 {
 }
 
-static void CLINAMidiOnParseFinish(void *receiver, Sequence *sequence, ParseInfo *info)
+static void CLINAMidiOnParseFinish(void *receiver, bool success, Sequence *sequence, ParseInfo *info)
 {
     CLI *self = receiver;
 
@@ -271,7 +271,12 @@ static void CLINAMidiOnParseFinish(void *receiver, Sequence *sequence, ParseInfo
         EventListViewRender(self->eventListView);
     }
 
-    fprintf(stdout, "parse finished.\n");
+    if (success) {
+        fprintf(stdout, "parse finished.\n");
+    }
+    else {
+        fprintf(stdout, "parse failed.\n");
+    }
 
     NAIterator *iterator = NAArrayGetIterator(info->errors);
     while (iterator->hasNext(iterator)) {
