@@ -3,8 +3,11 @@
 #include "Parser.h"
 
 typedef enum {
-    ABCParseErrorUnrecognisedVersion,
+    ABCParseErrorUnrecognisedVersion = ParseErrorKindABC,
     ABCParseErrorUnexpectedVersionExpression,
+    ABCParseErrorInvalidKeyMode,
+    ABCParseErrorInvalidKeySign,
+    ABCParseErrorInvalidNoteNumber,
     ABCParseErrorIllegalOctaveDown,
     ABCParseErrorIllegalOctaveUp,
 } ABCParseError;
@@ -17,6 +20,9 @@ static inline const char *ABCParseError2String(ABCParseError error)
     switch (error) {
     CASE(ABCParseErrorUnrecognisedVersion);
     CASE(ABCParseErrorUnexpectedVersionExpression);
+    CASE(ABCParseErrorInvalidKeyMode);
+    CASE(ABCParseErrorInvalidKeySign);
+    CASE(ABCParseErrorInvalidNoteNumber);
     CASE(ABCParseErrorIllegalOctaveDown);
     CASE(ABCParseErrorIllegalOctaveUp);
     default:
@@ -32,7 +38,7 @@ static inline const char *ABCParseError2String(ABCParseError error)
 #include "SequenceBuilder.h"
 
 typedef struct _ABCParser ABCParser;
-extern void ABCParserError(ABCParser *self, ParseLocation *location, ParseErrorKind kind, int error);
+extern void ABCParserError(ABCParser *self, ParseLocation *location, int code, ...);
 extern SequenceBuilder *ABCParserGetBuilder(ABCParser *self);
 
 typedef struct _ABCParserContext {

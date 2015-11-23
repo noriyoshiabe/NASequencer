@@ -9,7 +9,7 @@
 extern int ABC_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, Expression **expression, const char *message);
 
 #define PERSER() (ABC_get_extra(scanner))
-#define LOC(yylloc) (&(ParseLocation){filepath, yylloc.first_line, yylloc.first_column})
+#define LOC(yylloc) (&(ParseLocation){(char *)filepath, yylloc.first_line, yylloc.first_column})
 
 %}
 

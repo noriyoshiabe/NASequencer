@@ -1,6 +1,7 @@
 #include "ABCExpression.h"
 #include "NoteTable.h"
 #include "NAUtil.h"
+#include "NACString.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -117,7 +118,7 @@ static bool VersionExprParse(void *_self, void *parser, void *_context)
     VersionExpr *self = _self;
     ABCParserContext *context = _context;
     if (context->version.text) {
-        ABCParserError(parser, &self->expr.location, ParseErrorKindABC, ABCParseErrorUnexpectedVersionExpression);
+        ABCParserError(parser, &self->expr.location, ABCParseErrorUnexpectedVersionExpression, context->version.text, NULL);
         return true;
     }
 
@@ -132,7 +133,7 @@ static bool VersionExprParse(void *_self, void *parser, void *_context)
         char *err;
         *ver = strtol(token, &err, 10);
         if ('\0' != *err) {
-            ABCParserError(parser, &self->expr.location, ParseErrorKindABC, ABCParseErrorUnrecognisedVersion);
+            ABCParserError(parser, &self->expr.location, ABCParseErrorUnrecognisedVersion, self->version, NULL);
             return true;
         }
         s = NULL;
@@ -249,24 +250,26 @@ void *ABCExprKeySign(ABCParser *parser, ParseLocation *location, char *tonicStri
     Mode mode = ModeMajor;
 
     if (tonicString) {
-        NAUtilToLowerCase(tonicString);
+        char *_tonicString = NACStringDuplicate(tonicString);
+        NAUtilToLowerCase(_tonicString);
 
-        if (0 == strcmp("none", tonicString)) {
+        if (0 == strcmp("none", _tonicString)) {
             goto KEY_FOUND;
         }
 
-        if (0 == strcmp("hp", tonicString)) {
+        if (0 == strcmp("hp", _tonicString)) {
             baseNote = BaseNote_D;
             goto KEY_FOUND;
         }
 
-        baseNote = KeyChar2BaseNote(tonicString[0]);
-        sharp = NULL != strchr(&tonicString[1], '#');
-        flat = NULL != strchr(&tonicString[1], 'b');
+        baseNote = KeyChar2BaseNote(_tonicString[0]);
+        sharp = NULL != strchr(&_tonicString[1], '#');
+        flat = NULL != strchr(&_tonicString[1], 'b');
     }
     
     if (modeString) {
-        NAUtilToLowerCase(modeString);
+        char *_modeString = NACStringDuplicate(modeString);
+        NAUtilToLowerCase(_modeString);
 
         const struct {
             const char *name;
@@ -285,13 +288,13 @@ void *ABCExprKeySign(ABCParser *parser, ParseLocation *location, char *tonicStri
         };
 
         for (int i = 0; i < sizeof(scales)/sizeof(scales[0]); ++i) {
-            if (0 == strcmp(modeString, scales[i].name)) {
+            if (0 == strcmp(_modeString, scales[i].name)) {
                 mode = scales[i].mode;
                 goto KEY_FOUND;
             }
         }
 
-        ABCParserError(parser, location, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
+        ABCParserError(parser, location, ABCParseErrorInvalidKeyMode, modeString, NULL);
         goto EXIT;
     }
 
@@ -300,7 +303,7 @@ KEY_FOUND:
 
     NoteTable *noteTable = NoteTableCreate(baseNote, sharp, flat, mode);
     if (NoteTableHasUnusualKeySign(noteTable)) {
-        ABCParserError(parser, location, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
+        ABCParserError(parser, location, ABCParseErrorInvalidKeySign, tonicString, modeString, NULL);
         NoteTableRelease(noteTable);
         goto EXIT;
     }
@@ -365,7 +368,15 @@ typedef struct _NoteExpr {
     Accidental accidental;
     int octave;
     int gatetime;
+    char *noteString;
 } NoteExpr;
+
+static void NoteExprDestroy(void *_self)
+{
+    NoteExpr *self = _self;
+    free(self->noteString);
+    free(self);
+}
 
 static bool NoteExprParse(void *_self, void *parser, void *_context)
 {
@@ -376,7 +387,8 @@ static bool NoteExprParse(void *_self, void *parser, void *_context)
     int noteNo = NoteTableGetNoteNo(context->noteTable, self->baseNote, self->accidental, self->octave)
         + context->transpose;
     if (!isValidRange(noteNo, 0, 127)) {
-        ABCParserError(parser, &self->expr.location, ParseErrorKindGeneral, GeneralParseErrorInvalidNoteRange);
+        ABCParserError(parser, &self->expr.location, ParseErrorKindABC, ABCParseErrorInvalidNoteNumber,
+                NACStringFromInteger(noteNo), self->noteString, NULL);
         return true;
     }
 
@@ -392,7 +404,6 @@ static bool NoteExprParse(void *_self, void *parser, void *_context)
 
 void *ABCExprNote(ABCParser *parser, ParseLocation *location, char *noteString)
 { __Trace__
-    NoteExpr *self = NULL;
     char *pc = noteString;
 
     BaseNote baseNote = KeyChar2BaseNote(*pc);
@@ -404,14 +415,14 @@ void *ABCExprNote(ABCParser *parser, ParseLocation *location, char *noteString)
         switch (*c) {
         case ',':
             if (3 == octave) {
-                ABCParserError(parser, location, ParseErrorKindABC, ABCParseErrorIllegalOctaveDown);
+                ABCParserError(parser, location, ABCParseErrorIllegalOctaveDown, noteString, NULL);
                 goto ERROR;
             }
             --octave;
             break;
         case '\'':
             if (2 == octave) {
-                ABCParserError(parser, location, ParseErrorKindABC, ABCParseErrorIllegalOctaveUp);
+                ABCParserError(parser, location, ABCParseErrorIllegalOctaveUp, noteString, NULL);
                 goto ERROR;
             }
             ++octave;
@@ -431,7 +442,8 @@ void *ABCExprNote(ABCParser *parser, ParseLocation *location, char *noteString)
     int step = 240; // TODO length
     int gatetime = 240; // TODO length
 
-    self = ExpressionCreate(location, sizeof(NoteExpr), "note");
+    NoteExpr *self = ExpressionCreate(location, sizeof(NoteExpr), "note");
+    self->expr.vtbl.destroy = NoteExprDestroy;
     self->expr.vtbl.parse = NoteExprParse;
 
     self->step = step;
@@ -440,10 +452,14 @@ void *ABCExprNote(ABCParser *parser, ParseLocation *location, char *noteString)
     self->gatetime = gatetime;
     self->octave = octave;
 
+    self->noteString = noteString;
+
+    return self;
+
 ERROR:
     free(noteString);
 
-    return self;
+    return NULL;
 }
 
 bool ABCExprIsStatementList(Expression *self)

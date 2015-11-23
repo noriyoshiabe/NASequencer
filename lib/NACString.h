@@ -1,0 +1,12 @@
+#pragma once
+
+#include <alloca.h>
+#include <string.h>
+
+extern char *NACStringFromInteger(int i, char *buffer, int size);
+extern char *NACStringFromFloat(float f, int point, char *buffer, int size);
+extern char *NACStringDuplicate(char *str, char *buffer);
+
+#define NACStringFromInteger(i) NACStringFromInteger(i, alloca(32), 32)
+#define NACStringFromFloat(f, p) NACStringFromFloat(f, p, alloca(32), 32)
+#define NACStringDuplicate(s) NACStringDuplicate(s, alloca(strlen(s) + 1))

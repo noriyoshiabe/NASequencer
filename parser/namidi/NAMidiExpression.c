@@ -1,6 +1,7 @@
 #include "NAMidiExpression.h"
 #include "NoteTable.h"
 #include "NAUtil.h"
+#include "NACString.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -131,11 +132,11 @@ static bool ResolutionExprParse(void *_self, void *parser, void *_context)
 void *NAMidiExprResolution(NAMidiParser *parser, ParseLocation *location, int resolution)
 { __Trace__
     if (!isValidRange(resolution, 1, 9600)) {
-        NAMidiParserError(parser, location, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
+        NAMidiParserError(parser, location, NAMidiParseErrorInvalidResolution, NACStringFromInteger(resolution), NULL);
         return NULL;
     }
 
-    ResolutionExpr *self = ExpressionCreate(location, sizeof(ResolutionExpr), "reslution");
+    ResolutionExpr *self = ExpressionCreate(location, sizeof(ResolutionExpr), "resolution");
     self->expr.vtbl.parse = ResolutionExprParse;
     self->resolution = resolution;
     return self;
@@ -158,7 +159,7 @@ static bool TempoExprParse(void *_self, void *parser, void *_context)
 void *NAMidiExprTempo(NAMidiParser *parser, ParseLocation *location, float tempo)
 { __Trace__
     if (!isValidRange(tempo, 30.0, 300.0)) {
-        NAMidiParserError(parser, location, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
+        NAMidiParserError(parser, location, NAMidiParseErrorInvalidTempo, NACStringFromFloat(tempo, 2), NULL);
         return NULL;
     }
 
@@ -186,7 +187,7 @@ static bool TimeSignExprParse(void *_self, void *parser, void *_context)
 void *NAMidiExprTimeSign(NAMidiParser *parser, ParseLocation *location, int numerator, int denominator)
 { __Trace__
     if (1 > numerator || 1 > denominator || !isPowerOf2(denominator)) {
-        NAMidiParserError(parser, location, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
+        NAMidiParserError(parser, location, NAMidiParseErrorInvalidTimeSign, NACStringFromInteger(numerator), NACStringFromInteger(denominator), NULL);
         return NULL;
     }
 
@@ -243,7 +244,7 @@ static bool ChannelExprParse(void *_self, void *parser, void *_context)
 void *NAMidiExprChannel(NAMidiParser *parser, ParseLocation *location, int channel)
 { __Trace__
     if (!isValidRange(channel, 1, 16)) {
-        NAMidiParserError(parser, location, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
+        NAMidiParserError(parser, location, NAMidiParseErrorInvalidChannel, NACStringFromInteger(channel), NULL);
         return NULL;
     }
 
@@ -272,7 +273,8 @@ static bool VoiceExprParse(void *_self, void *parser, void *_context)
 void *NAMidiExprVoice(NAMidiParser *parser, ParseLocation *location, int msb, int lsb, int programNo)
 { __Trace__
     if (!isValidRange(msb, 0, 127) || !isValidRange(lsb, 0, 127) || !isValidRange(programNo, 0, 127)) {
-        NAMidiParserError(parser, location, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
+        NAMidiParserError(parser, location, NAMidiParseErrorInvalidVoice,
+                NACStringFromInteger(msb), NACStringFromInteger(lsb), NACStringFromInteger(programNo), NULL);
         return NULL;
     }
 
@@ -331,7 +333,8 @@ static bool VolumeExprParse(void *_self, void *parser, void *_context)
 void *NAMidiExprVolume(NAMidiParser *parser, ParseLocation *location, int value)
 { __Trace__
     if (!isValidRange(value, 0, 127)) {
-        NAMidiParserError(parser, location, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
+        NAMidiParserError(parser, location, NAMidiParseErrorInvalidVolume, NACStringFromInteger(value), NULL);
+        return NULL;
     }
 
     VolumeExpr *self = ExpressionCreate(location, sizeof(VolumeExpr), "volume");
@@ -354,7 +357,8 @@ static bool PanExprParse(void *_self, void *parser, void *_context)
 void *NAMidiExprPan(NAMidiParser *parser, ParseLocation *location, int value)
 { __Trace__
     if (!isValidRange(value, -64, 64)) {
-        NAMidiParserError(parser, location, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
+        NAMidiParserError(parser, location, NAMidiParseErrorInvalidPan, NACStringFromInteger(value), NULL);
+        return NULL;
     }
 
     PanExpr *self = ExpressionCreate(location, sizeof(PanExpr), "pan");
@@ -377,7 +381,8 @@ static bool ChorusExprParse(void *_self, void *parser, void *_context)
 void *NAMidiExprChorus(NAMidiParser *parser, ParseLocation *location, int value)
 { __Trace__
     if (!isValidRange(value, 0, 127)) {
-        NAMidiParserError(parser, location, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
+        NAMidiParserError(parser, location, NAMidiParseErrorInvalidChorus, NACStringFromInteger(value), NULL);
+        return NULL;
     }
 
     ChorusExpr *self = ExpressionCreate(location, sizeof(ChorusExpr), "chorus");
@@ -400,7 +405,8 @@ static bool ReverbExprParse(void *_self, void *parser, void *_context)
 void *NAMidiExprReverb(NAMidiParser *parser, ParseLocation *location, int value)
 { __Trace__
     if (!isValidRange(value, 0, 127)) {
-        NAMidiParserError(parser, location, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
+        NAMidiParserError(parser, location, NAMidiParseErrorInvalidReverb, NACStringFromInteger(value), NULL);
+        return NULL;
     }
 
     ReverbExpr *self = ExpressionCreate(location, sizeof(ReverbExpr), "reverb");
@@ -422,7 +428,8 @@ static bool TransposeExprParse(void *_self, void *parser, void *_context)
 void *NAMidiExprTranspose(NAMidiParser *parser, ParseLocation *location, int value)
 { __Trace__
     if (!isValidRange(value, -64, 64)) {
-        NAMidiParserError(parser, location, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
+        NAMidiParserError(parser, location, NAMidiParseErrorInvalidTranspose, NACStringFromInteger(value), NULL);
+        return NULL;
     }
 
     TransposeExpr *self = ExpressionCreate(location, sizeof(TransposeExpr), "transpose");
@@ -469,7 +476,7 @@ void *NAMidiExprKeySign(NAMidiParser *parser, ParseLocation *location, char *key
 
     NoteTable *noteTable = NoteTableCreate(baseNote, sharp, flat, mode);
     if (NoteTableHasUnusualKeySign(noteTable)) {
-        NAMidiParserError(parser, location, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
+        NAMidiParserError(parser, location, NAMidiParseErrorInvalidKeySign, keyString, NULL);
         NoteTableRelease(noteTable);
         return NULL;
     }
@@ -498,7 +505,8 @@ static bool RestExprParse(void *_self, void *parser, void *_context)
 void *NAMidiExprRest(NAMidiParser *parser, ParseLocation *location, int step)
 { __Trace__
     if (!isValidRange(step, 0, 65535)) {
-        NAMidiParserError(parser, location, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
+        NAMidiParserError(parser, location, NAMidiParseErrorInvalidStep, NACStringFromInteger(step), NULL);
+        return NULL;
     }
 
     RestExpr *self = ExpressionCreate(location, sizeof(RestExpr), "rest");
@@ -515,7 +523,15 @@ typedef struct _NoteExpr {
     int octave;
     int gatetime;
     int velocity;
+    char *noteString;
 } NoteExpr;
+
+static void NoteExprDestroy(void *_self)
+{
+    NoteExpr *self = _self;
+    free(self->noteString);
+    free(self);
+}
 
 static bool NoteExprParse(void *_self, void *parser, void *_context)
 {
@@ -529,7 +545,7 @@ static bool NoteExprParse(void *_self, void *parser, void *_context)
     int noteNo = NoteTableGetNoteNo(context->noteTable, self->baseNote, self->accidental, octave)
         + context->transpose;
     if (!isValidRange(noteNo, 0, 127)) {
-        NAMidiParserError(parser, &self->expr.location, ParseErrorKindGeneral, GeneralParseErrorInvalidNoteRange);
+        NAMidiParserError(parser, &self->expr.location, NAMidiParseErrorInvalidNoteNumber, NACStringFromInteger(noteNo), self->noteString, NULL);
         return true;
     }
 
@@ -577,16 +593,28 @@ void *NAMidiExprNote(NAMidiParser *parser, ParseLocation *location, char *noteSt
         }
     }
 
-    if (!isValidRange(step, -1, 65535)
-            || !isValidRange(gatetime, -1, 65535)
-            || !isValidRange(velocity, -1, 127)
-            || (OCTAVE_NONE != octave && !isValidRange(octave, -2, 8))) {
-        NAMidiParserError(parser, location, ParseErrorKindGeneral, GeneralParseErrorInvalidValue);
-        free(noteString);
-        return NULL;
+    if (OCTAVE_NONE != octave && !isValidRange(octave, -2, 8)) {
+        NAMidiParserError(parser, location, NAMidiParseErrorInvalidOctave, NACStringFromInteger(octave), noteString, NULL);
+        goto ERROR;
+    }
+
+    if (!isValidRange(step, -1, 65535)) {
+        NAMidiParserError(parser, location, NAMidiParseErrorInvalidStep, NACStringFromInteger(step), NULL);
+        goto ERROR;
+    }
+
+    if (!isValidRange(gatetime, -1, 65535)) {
+        NAMidiParserError(parser, location, NAMidiParseErrorInvalidGatetime, NACStringFromInteger(gatetime), NULL);
+        goto ERROR;
+    }
+
+    if (!isValidRange(velocity, -1, 127)) {
+        NAMidiParserError(parser, location, NAMidiParseErrorInvalidVelocity, NACStringFromInteger(velocity), NULL);
+        goto ERROR;
     }
 
     NoteExpr *self = ExpressionCreate(location, sizeof(NoteExpr), "note");
+    self->expr.vtbl.destroy = NoteExprDestroy;
     self->expr.vtbl.parse = NoteExprParse;
 
     self->step = step;
@@ -596,9 +624,13 @@ void *NAMidiExprNote(NAMidiParser *parser, ParseLocation *location, char *noteSt
     self->gatetime = gatetime;
     self->velocity = velocity;
 
-    free(noteString);
+    self->noteString = noteString;
 
     return self;
+
+ERROR:
+    free(noteString);
+    return NULL;
 }
 
 typedef struct _PatternExpr {
@@ -655,12 +687,12 @@ static bool PatternExpandExprParse(void *_self, void *parser, void *_context)
     Expression *pattern = NAMapGet(context->patternMap, self->identifier);
 
     if (!pattern) {
-        NAMidiParserError(parser, &self->expr.location, ParseErrorKindNAMidi, NAMidiParseErrorPatternMissing);
+        NAMidiParserError(parser, &self->expr.location, NAMidiParseErrorPatternMissing, self->identifier, NULL);
         return true;
     }
 
     if (NASetContains(context->expandingPatternList, pattern)) {
-        NAMidiParserError(parser, &self->expr.location, ParseErrorKindNAMidi, NAMidiParseErrorCircularPatternReference);
+        NAMidiParserError(parser, &self->expr.location, NAMidiParseErrorCircularPatternReference, self->identifier, NULL);
         return true;
     }
 

@@ -388,45 +388,61 @@ static ExporterObserverCallbacks CLIExporterObserverCallbacks = {
 static char *CLIFormatParseError(CLI *self, const ParseError *error)
 {
     char location[256];
-    snprintf(location, 256, "%s:%d:%d", error->location.filepath, error->location.line, error->location.column);
+    char head[32];
 
-    switch (error->kind) {
-    case ParseErrorKindGeneral:
-        switch (error->error) {
-        case GeneralParseErrorUnsupportedFileType:
-        case GeneralParseErrorFileNotFound:
-        case GeneralParseErrorSyntaxError:
-        case GeneralParseErrorInvalidValue:
-        case GeneralParseErrorCircularFileInclude:
-        case GeneralParseErrorInvalidNoteRange:
-        default:
-            break;
-        }
+    snprintf(location, 256, "%s:%d:%d", error->location.filepath, error->location.line, error->location.column);
+    snprintf(head, 32, "[ERROR:%d]", error->code);
+
+    switch (error->code) {
+    case GeneralParseErrorUnsupportedFileType:
+    case GeneralParseErrorFileNotFound:
+    case GeneralParseErrorSyntaxError:
+        // TODO
         break;
-    case ParseErrorKindNAMidi:
-        switch (error->error) {
-        case NAMidiParseErrorPatternMissing:
-        case NAMidiParseErrorDuplicatePatternIdentifier:
-        case NAMidiParseErrorCircularPatternReference:
-        default:
-            break;
-        }
+    case NAMidiParseErrorInvalidResolution:
+    case NAMidiParseErrorInvalidTempo:
+    case NAMidiParseErrorInvalidTimeSign:
+    case NAMidiParseErrorInvalidChannel:
+    case NAMidiParseErrorInvalidVoice:
+    case NAMidiParseErrorInvalidVolume:
+    case NAMidiParseErrorInvalidPan:
+    case NAMidiParseErrorInvalidChorus:
+    case NAMidiParseErrorInvalidReverb:
+    case NAMidiParseErrorInvalidTranspose:
+    case NAMidiParseErrorInvalidKeySign:
+    case NAMidiParseErrorInvalidStep:
+    case NAMidiParseErrorInvalidNoteNumber:
+    case NAMidiParseErrorInvalidOctave:
+    case NAMidiParseErrorInvalidGatetime:
+    case NAMidiParseErrorInvalidVelocity:
+    case NAMidiParseErrorUnsupportedFileTypeInclude:
+    case NAMidiParseErrorIncludeFileNotFound:
+    case NAMidiParseErrorCircularFileInclude:
+    case NAMidiParseErrorPatternMissing:
+    case NAMidiParseErrorDuplicatePatternIdentifier:
+    case NAMidiParseErrorCircularPatternReference:
+        // TODO
         break;
-    case ParseErrorKindABC:
-        switch (error->error) {
-        case ABCParseErrorUnrecognisedVersion:
-        case ABCParseErrorUnexpectedVersionExpression:
-        case ABCParseErrorIllegalOctaveDown:
-        case ABCParseErrorIllegalOctaveUp:
-        default:
-            break;
-        }
-        break;
-    case ParseErrorKindMML:
+    case ABCParseErrorUnrecognisedVersion:
+    case ABCParseErrorUnexpectedVersionExpression:
+    case ABCParseErrorInvalidKeyMode:
+    case ABCParseErrorInvalidKeySign:
+    case ABCParseErrorInvalidNoteNumber:
+    case ABCParseErrorIllegalOctaveDown:
+    case ABCParseErrorIllegalOctaveUp:
+        // TODO
         break;
     default:
         break;
     }
 
-    return NAUtilFormatString("[%s] kind:%d error:%d at %s\n", ParseError2String(error), error->kind, error->error, location);
+    char params[256] = {0};
+    for (int i = 0; i < 4 && error->infos[i]; ++i) {
+        if (0 < i) {
+            strcat(params, ",");
+        }
+        strcat(params, error->infos[i]);
+    }
+
+    return NAUtilFormatString("%s %s %s at %s\n", head, ParseError2String(error), params, location);
 }

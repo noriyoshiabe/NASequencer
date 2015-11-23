@@ -21,7 +21,7 @@ struct _ABCParser {
     NASet *fileSet;
 };
 
-static bool ABCParserParseFileInternal(ABCParser *self, ParseLocation *location, const char *filepath, Expression **expression);
+static bool ABCParserParseFileInternal(ABCParser *self, const char *filepath, Expression **expression);
 
 static bool ABCParserParseFile(void *_self, const char *filepath)
 {
@@ -29,7 +29,8 @@ static bool ABCParserParseFile(void *_self, const char *filepath)
 
     Expression *expression;
 
-    if (!ABCParserParseFileInternal(self, &(ParseLocation){NULL, 0, 0}, filepath, &expression)) {
+    if (!ABCParserParseFileInternal(self, filepath, &expression)) {
+        ABCParserError(self, NULL, GeneralParseErrorFileNotFound, filepath, NULL);
         return false;
     }
 
@@ -38,11 +39,10 @@ static bool ABCParserParseFile(void *_self, const char *filepath)
     return success;
 }
 
-static bool ABCParserParseFileInternal(ABCParser *self, ParseLocation *location, const char *filepath, Expression **expression)
+static bool ABCParserParseFileInternal(ABCParser *self, const char *filepath, Expression **expression)
 {
     FILE *fp = fopen(filepath, "r");
     if (!fp) {
-        ABCParserError(self, location, ParseErrorKindGeneral, GeneralParseErrorFileNotFound);
         return false;
     }
 
@@ -69,14 +69,19 @@ static bool ABCParserParseFileInternal(ABCParser *self, ParseLocation *location,
 
 int ABC_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, Expression **expression, const char *message)
 {
-    ABCParserError(ABC_get_extra(scanner), &(ParseLocation){filepath, yylloc->first_line, yylloc->first_column}, ParseErrorKindGeneral, GeneralParseErrorSyntaxError);
+    ParseLocation location = {(char *)filepath, yylloc->first_line, yylloc->first_column};
+    ABCParserError(ABC_get_extra(scanner), &location, GeneralParseErrorSyntaxError, ABC_get_text(scanner), NULL);
     return 0;
 }
 
-void ABCParserError(ABCParser *self, ParseLocation *location, ParseErrorKind kind, int error)
+void ABCParserError(ABCParser *self, ParseLocation *location, int code, ...)
 {
-    ParseError err = { .location = *location, .kind = kind, .error = error };
-    self->callbacks->onParseError(self->receiver, &err);
+    va_list argList;
+    va_start(argList, code);
+    ParseError *error = ParseErrorCreateWithArgs(location, code, argList);
+    va_end(argList);
+
+    self->callbacks->onParseError(self->receiver, error);
 }
 
 SequenceBuilder *ABCParserGetBuilder(ABCParser *self)

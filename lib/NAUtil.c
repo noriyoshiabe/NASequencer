@@ -34,11 +34,17 @@ const char *NAUtilGetFileExtenssion(const char *filepath)
 {
     const char *dot = strrchr(filepath, '.');
     
-    if(!dot || dot == filepath) {
+    if (!dot || dot == filepath) {
         return "";
     }
 
     return dot + 1;
+}
+
+const char *NAUtilGetLastPathComponent(const char *filepath)
+{
+    const char *slash = strrchr(filepath, '/');
+    return slash ? slash + 1 : filepath;
 }
 
 char *NAUtilToLowerCase(char *string)

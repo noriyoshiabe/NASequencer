@@ -9,6 +9,7 @@
 extern char *NAUtilGetRealPath(const char *filepath);
 extern char *NAUtilBuildPathWithDirectory(const char *directory, const char *filename);
 extern const char *NAUtilGetFileExtenssion(const char *filepath);
+extern const char *NAUtilGetLastPathComponent(const char *filepath);
 extern char *NAUtilToLowerCase(char *string);
 extern char *NAUtilTrimWhiteSpace(char *string);
 extern bool NAUtilIsDirectory(char *path);

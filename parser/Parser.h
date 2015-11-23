@@ -3,33 +3,31 @@
 #include "SequenceBuilder.h"
 #include "NAArray.h"
 #include <stdbool.h>
+#include <stdarg.h>
 
 typedef enum {
-    ParseErrorKindGeneral,
-    ParseErrorKindNAMidi,
-    ParseErrorKindABC,
-    ParseErrorKindMML,
+    ParseErrorKindGeneral = 1000,
+    ParseErrorKindNAMidi = 2000,
+    ParseErrorKindABC = 3000,
+    ParseErrorKindMML = 4000,
 } ParseErrorKind;
 
 typedef enum {
-    GeneralParseErrorUnsupportedFileType,
+    GeneralParseErrorUnsupportedFileType = ParseErrorKindGeneral,
     GeneralParseErrorFileNotFound,
     GeneralParseErrorSyntaxError,
-    GeneralParseErrorInvalidValue,
-    GeneralParseErrorCircularFileInclude,
-    GeneralParseErrorInvalidNoteRange,
 } GeneralParseError;
 
 typedef struct _ParseLocation {
-    const char *filepath;
+    char *filepath;
     int line;
     int column;
 } ParseLocation;
 
 typedef struct _ParseError {
     ParseLocation location;
-    ParseErrorKind kind;
-    int error;
+    int code;
+    char *infos[4];
 } ParseError;
 
 typedef struct _ParseInfo {
@@ -37,7 +35,8 @@ typedef struct _ParseInfo {
     NAArray *errors;
 } ParseInfo;
 
-extern ParseError *ParseErrorCreate(const ParseLocation *location, ParseErrorKind kind, int error);
+extern ParseError *ParseErrorCreate(const ParseLocation *location, int code, ...);
+extern ParseError *ParseErrorCreateWithArgs(const ParseLocation *location, int code, va_list argList);
 extern void ParseErrorDestroy(ParseError *self);
 
 extern ParseInfo *ParseInfoCreate();
@@ -86,9 +85,6 @@ static inline const char *GeneralParseError2String(GeneralParseError error)
     CASE(GeneralParseErrorUnsupportedFileType);
     CASE(GeneralParseErrorFileNotFound);
     CASE(GeneralParseErrorSyntaxError);
-    CASE(GeneralParseErrorInvalidValue);
-    CASE(GeneralParseErrorCircularFileInclude);
-    CASE(GeneralParseErrorInvalidNoteRange);
     default:
        break;
     }

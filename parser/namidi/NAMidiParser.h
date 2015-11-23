@@ -3,6 +3,25 @@
 #include "Parser.h"
 
 typedef enum {
+    NAMidiParseErrorInvalidResolution = ParseErrorKindNAMidi,
+    NAMidiParseErrorInvalidTempo,
+    NAMidiParseErrorInvalidTimeSign,
+    NAMidiParseErrorInvalidChannel,
+    NAMidiParseErrorInvalidVoice,
+    NAMidiParseErrorInvalidVolume,
+    NAMidiParseErrorInvalidPan,
+    NAMidiParseErrorInvalidChorus,
+    NAMidiParseErrorInvalidReverb,
+    NAMidiParseErrorInvalidTranspose,
+    NAMidiParseErrorInvalidKeySign,
+    NAMidiParseErrorInvalidStep,
+    NAMidiParseErrorInvalidNoteNumber,
+    NAMidiParseErrorInvalidOctave,
+    NAMidiParseErrorInvalidGatetime,
+    NAMidiParseErrorInvalidVelocity,
+    NAMidiParseErrorUnsupportedFileTypeInclude,
+    NAMidiParseErrorIncludeFileNotFound,
+    NAMidiParseErrorCircularFileInclude,
     NAMidiParseErrorPatternMissing,
     NAMidiParseErrorDuplicatePatternIdentifier,
     NAMidiParseErrorCircularPatternReference,
@@ -14,6 +33,25 @@ static inline const char *NAMidiParseError2String(NAMidiParseError error)
 {
 #define CASE(error) case error: return &(#error[16])
     switch (error) {
+    CASE(NAMidiParseErrorInvalidResolution);
+    CASE(NAMidiParseErrorInvalidTempo);
+    CASE(NAMidiParseErrorInvalidTimeSign);
+    CASE(NAMidiParseErrorInvalidChannel);
+    CASE(NAMidiParseErrorInvalidVoice);
+    CASE(NAMidiParseErrorInvalidVolume);
+    CASE(NAMidiParseErrorInvalidPan);
+    CASE(NAMidiParseErrorInvalidChorus);
+    CASE(NAMidiParseErrorInvalidReverb);
+    CASE(NAMidiParseErrorInvalidTranspose);
+    CASE(NAMidiParseErrorInvalidKeySign);
+    CASE(NAMidiParseErrorInvalidStep);
+    CASE(NAMidiParseErrorInvalidNoteNumber);
+    CASE(NAMidiParseErrorInvalidOctave);
+    CASE(NAMidiParseErrorInvalidGatetime);
+    CASE(NAMidiParseErrorInvalidVelocity);
+    CASE(NAMidiParseErrorUnsupportedFileTypeInclude);
+    CASE(NAMidiParseErrorIncludeFileNotFound);
+    CASE(NAMidiParseErrorCircularFileInclude);
     CASE(NAMidiParseErrorPatternMissing);
     CASE(NAMidiParseErrorDuplicatePatternIdentifier);
     CASE(NAMidiParseErrorCircularPatternReference);
@@ -33,7 +71,7 @@ static inline const char *NAMidiParseError2String(NAMidiParseError error)
 
 typedef struct _NAMidiParser NAMidiParser;
 extern bool NAMidiParserReadIncludeFile(NAMidiParser *self, ParseLocation *location, char *includeFile, Expression **expression);
-extern void NAMidiParserError(NAMidiParser *self, ParseLocation *location, ParseErrorKind kind, int error);
+extern void NAMidiParserError(NAMidiParser *self, ParseLocation *location, int code, ...);
 extern SequenceBuilder *NAMidiParserGetBuilder(NAMidiParser *self);
 
 typedef struct _NAMidiParserContext {

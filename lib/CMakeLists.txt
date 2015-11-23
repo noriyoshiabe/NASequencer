@@ -16,6 +16,7 @@ set(SOURCES
   NAStack.c
   NAUtil.c
   NAMessageQ.c
+  NACString.c
 )
 
 add_library(${PROJECT_NAME} ${SOURCES})

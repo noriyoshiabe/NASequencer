@@ -5,6 +5,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 
 struct _Parser {
     DSLParser *parser;
@@ -16,7 +17,7 @@ struct _Parser {
 
 static ParserCallbacks ParserDSLParserCallbacks;
 
-static DSLParserFactory FindDSLParserFactory(const char *filepath)
+static DSLParserFactory FindDSLParserFactory(const char *ext)
 {
     const struct {
         const char *extenstion;
@@ -27,7 +28,7 @@ static DSLParserFactory FindDSLParserFactory(const char *filepath)
     };
 
     for (int i = 0; i < sizeof(parserTable) / sizeof(parserTable[0]); ++i) {
-        if (0 == strcmp(parserTable[i].extenstion, NAUtilGetFileExtenssion(filepath))) {
+        if (0 == strcmp(parserTable[i].extenstion, ext)) {
             return parserTable[i].factory;
         }
     }
@@ -59,9 +60,10 @@ bool ParserParseFile(Parser *self, const char *filepath, void **sequence, ParseI
 
     self->info = ParseInfoCreate();
 
-    DSLParserFactory factory = FindDSLParserFactory(filepath);
+    const char *ext = NAUtilGetFileExtenssion(filepath);
+    DSLParserFactory factory = FindDSLParserFactory(ext);
     if (!factory) {
-        ParseError *error = ParseErrorCreate(&((ParseLocation){filepath, 0, 0}), ParseErrorKindGeneral, GeneralParseErrorUnsupportedFileType);
+        ParseError *error = ParseErrorCreate(NULL, GeneralParseErrorUnsupportedFileType, ext, NULL);
         NAArrayAppend(self->info->errors, error);
         self->callbacks->onParseError(self->receiver, error);
     }
@@ -88,9 +90,8 @@ static void ParserDSLParserOnReadFile(void *receiver, const char *filepath)
 static void ParserDSLParserOnParseError(void *receiver, const ParseError *error)
 {
     Parser *self = receiver;
-    ParseError *_error = ParseErrorCreate(&error->location, error->kind, error->error);
-    NAArrayAppend(self->info->errors, _error);
-    self->callbacks->onParseError(self->receiver, _error);
+    NAArrayAppend(self->info->errors, (ParseError *)error);
+    self->callbacks->onParseError(self->receiver, error);
 }
 
 static ParserCallbacks ParserDSLParserCallbacks = {
@@ -101,13 +102,13 @@ static ParserCallbacks ParserDSLParserCallbacks = {
 
 const char *ParseError2String(const ParseError *error)
 {
-    switch (error->kind) {
+    switch (error->code - error->code % 1000) {
     case ParseErrorKindGeneral:
-        return GeneralParseError2String(error->error);
+        return GeneralParseError2String(error->code);
     case ParseErrorKindNAMidi:
-        return NAMidiParseError2String(error->error);
+        return NAMidiParseError2String(error->code);
     case ParseErrorKindABC:
-        return ABCParseError2String(error->error);
+        return ABCParseError2String(error->code);
     case ParseErrorKindMML:
         return "TODO";
     default:
@@ -115,24 +116,49 @@ const char *ParseError2String(const ParseError *error)
     }
 }
 
-ParseError *ParseErrorCreate(const ParseLocation *location, ParseErrorKind kind, int error)
+ParseError *ParseErrorCreate(const ParseLocation *location, int code, ...)
+{
+    va_list argList;
+    va_start(argList, code);
+    ParseError *self = ParseErrorCreateWithArgs(location, code, argList);
+    va_end(argList);
+
+    return self;
+}
+
+ParseError *ParseErrorCreateWithArgs(const ParseLocation *location, int code, va_list argList)
 {
     ParseError *self = calloc(1, sizeof(ParseError));
-    if (location->filepath) {
+
+    if (location) {
         self->location.filepath = strdup(location->filepath);
+        self->location.line = location->line;
+        self->location.column = location->column;
     }
-    self->location.line = location->line;
-    self->location.column = location->column;
-    self->kind = kind;
-    self->error = error;
+
+    self->code = code;
+
+    const char *str;
+    for (int i = 0; i < 4 && (str = va_arg(argList, const char *)); ++i) {
+        self->infos[i] = strdup(str);
+    }
+
     return self;
 }
 
 void ParseErrorDestroy(ParseError *self)
 {
     if (self->location.filepath) {
-        free((char *)self->location.filepath);
+        free(self->location.filepath);
     }
+
+    for (int i = 0; i < 4; ++i) {
+        if (!self->infos[i]) {
+            break;
+        }
+        free(self->infos[i]);
+    }
+
     free(self);
 }
 
