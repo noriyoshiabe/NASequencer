@@ -1,6 +1,5 @@
 #include "ABCExpression.h"
 #include "NoteTable.h"
-#include "NAUtil.h"
 #include "NACString.h"
 
 #include <stdlib.h>
@@ -189,7 +188,7 @@ void *ABCExprTuneTitle(ABCParser *parser, ParseLocation *location, char *title)
     TuneTitleExpr *self = ExpressionCreate(location, sizeof(TuneTitleExpr), "tune title");
     self->expr.vtbl.destroy = TuneTitleExprDestroy;
     self->expr.vtbl.parse = TuneTitleExprParse;
-    self->title = NAUtilTrimWhiteSpace(title);
+    self->title = NACStringTrimWhiteSpace(title);
     return self;
 }
 
@@ -254,7 +253,7 @@ void *ABCExprKeySign(ABCParser *parser, ParseLocation *location, char *tonicStri
 
     if (tonicString) {
         char *_tonicString = NACStringDuplicate(tonicString);
-        NAUtilToLowerCase(_tonicString);
+        NACStringToLowerCase(_tonicString);
 
         if (0 == strcmp("none", _tonicString)) {
             goto KEY_FOUND;
@@ -272,7 +271,7 @@ void *ABCExprKeySign(ABCParser *parser, ParseLocation *location, char *tonicStri
     
     if (modeString) {
         char *_modeString = NACStringDuplicate(modeString);
-        NAUtilToLowerCase(_modeString);
+        NACStringToLowerCase(_modeString);
 
         const struct {
             const char *name;

@@ -5,7 +5,7 @@
 #include "NAMidi_lex.h"
 #include "NAMidiExpression.h"
 #include "NAArray.h"
-#include "NAUtil.h"
+#include "NACString.h"
 
 #include <ctype.h>
 
@@ -174,7 +174,7 @@ context_id
     ;
 
 identifier
-    : IDENTIFIER                          { $$ = NAUtilToLowerCase($1); }
+    : IDENTIFIER                          { $$ = NACStringToLowerCase($1); }
     ;
 
 %%

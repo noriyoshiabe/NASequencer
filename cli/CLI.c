@@ -6,6 +6,7 @@
 #include "ABCParser.h"
 
 #include "NAUtil.h"
+#include "NACString.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -444,5 +445,5 @@ static char *CLIFormatParseError(CLI *self, const ParseError *error)
         strcat(params, error->infos[i]);
     }
 
-    return NAUtilFormatString("%s %s %s at %s\n", head, ParseError2String(error), params, location);
+    return NACStringFormat("%s %s %s at %s\n", head, ParseError2String(error), params, location);
 }

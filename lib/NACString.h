@@ -3,6 +3,10 @@
 #include <alloca.h>
 #include <string.h>
 
+extern char *NACStringFormat(const char *format, ...);
+extern char *NACStringToLowerCase(char *string);
+extern char *NACStringTrimWhiteSpace(char *string);
+
 extern char *NACStringFromInteger(int i, char *buffer, int size);
 extern char *NACStringFromFloat(float f, int point, char *buffer, int size);
 extern char *NACStringDuplicate(char *str, char *buffer);
