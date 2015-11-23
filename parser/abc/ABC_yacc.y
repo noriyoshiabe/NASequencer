@@ -10,6 +10,7 @@ extern int ABC_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, Ex
 
 #define PERSER() (ABC_get_extra(scanner))
 #define LOC(yylloc) (&(ParseLocation){(char *)filepath, yylloc.first_line, yylloc.first_column})
+#define SKIP(yylloc) ExpressionCreateSkip(LOC(yylloc))
 
 %}
 
@@ -54,8 +55,8 @@ input
 
 statement_list
     :                                     { $$ = ABCExprStatementList(PERSER(), LOC(@$)); }
-    | statement                           { if (!$1) YYABORT; $$ = ExpressionAddChild(ABCExprStatementList(PERSER(), LOC(@$)), $1); }
-    | statement_list statement            { if (!$2) YYABORT; $$ = ExpressionAddChild($1, $2); }
+    | statement                           { if (!$1) $1 = SKIP(@$); $$ = ExpressionAddChild(ABCExprStatementList(PERSER(), LOC(@$)), $1); }
+    | statement_list statement            { if (!$2) $2 = SKIP(@$); $$ = ExpressionAddChild($1, $2); }
     ;
 
 statement
@@ -66,13 +67,13 @@ statement
     | TUNE_TITLE                          { $$ = ABCExprTuneTitle(PERSER(), LOC(@$), $1); }
     | NOTE                                { $$ = ABCExprNote(PERSER(), LOC(@$), $1); }
 
-    | error                               { $$ = ExpressionCreateSkip(LOC(@$)); }
+    | error                               { $$ = SKIP(@$); }
     ;
 
 key_expr_list
     :                                     { $$ = ABCExprKeyExprList(PERSER(), LOC(@$)); }
-    | key_expr                            { if (!$1) YYABORT; $$ = ExpressionAddChild(ABCExprKeyExprList(PERSER(), LOC(@$)), $1); }
-    | key_expr_list key_expr              { if (!$2) YYABORT; $$ = ExpressionAddChild($1, $2); }
+    | key_expr                            { if (!$1) $1 = SKIP(@$); $$ = ExpressionAddChild(ABCExprKeyExprList(PERSER(), LOC(@$)), $1); }
+    | key_expr_list key_expr              { if (!$2) $2 = SKIP(@$); $$ = ExpressionAddChild($1, $2); }
     ;
 
 key_expr

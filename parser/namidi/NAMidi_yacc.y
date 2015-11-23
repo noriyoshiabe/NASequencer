@@ -13,6 +13,7 @@ extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath,
 
 #define PERSER() (NAMidi_get_extra(scanner))
 #define LOC(yylloc) (&(ParseLocation){(char *)filepath, yylloc.first_line, yylloc.first_column})
+#define SKIP(yylloc) ExpressionCreateSkip(LOC(yylloc))
 
 %}
 
@@ -92,8 +93,8 @@ input
 
 statement_list
     :                                     { $$ = NAMidiExprStatementList(PERSER(), LOC(@$)); }
-    | statement                           { if (!$1) YYERROR; $$ = ExpressionAddChild(NAMidiExprStatementList(PERSER(), LOC(@$)), $1); }
-    | statement_list statement            { if (!$2) YYERROR; $$ = ExpressionAddChild($1, $2); }
+    | statement                           { if (!$1) $1 = SKIP(@$); $$ = ExpressionAddChild(NAMidiExprStatementList(PERSER(), LOC(@$)), $1); }
+    | statement_list statement            { if (!$2) $2 = SKIP(@$); $$ = ExpressionAddChild($1, $2); }
     ;
 
 statement
@@ -125,7 +126,7 @@ statement
 
     | INCLUDE STRING                      { if (!NAMidiParserReadIncludeFile(PERSER(), LOC(@$), $2, &$$)) YYERROR; }
 
-    | error                               { $$ = ExpressionCreateSkip(LOC(@$)); }
+    | error                               { $$ = SKIP(@$); }
     ;
 
 note

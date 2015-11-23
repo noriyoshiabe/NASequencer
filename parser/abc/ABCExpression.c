@@ -196,10 +196,13 @@ void *ABCExprTuneTitle(ABCParser *parser, ParseLocation *location, char *title)
 static bool KeyExprListExprParse(void *_self, void *parser, void *context)
 {
     Expression *self = _self;
-    NAIterator *iterator = NAArrayGetIterator(self->children);
-    while (iterator->hasNext(iterator)) {
-        if (!ExpressionParse(iterator->next(iterator), parser, context)) {
-            return false;
+
+    if (self->children) {
+        NAIterator *iterator = NAArrayGetIterator(self->children);
+        while (iterator->hasNext(iterator)) {
+            if (!ExpressionParse(iterator->next(iterator), parser, context)) {
+                return false;
+            }
         }
     }
 
