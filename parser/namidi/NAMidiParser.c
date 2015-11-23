@@ -44,6 +44,9 @@ static bool NAMidiParserParseFile(void *_self, const char *filepath)
     NAMidiParserBuildPattenMap2(self, expression, NULL);
 
     bool success = ExpressionParse(expression, self, NULL);
+#if 0
+    ExpressionDump(expression, 0);
+#endif
     ExpressionDestroy(expression);
     return success;
 }

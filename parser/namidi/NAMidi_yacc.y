@@ -77,9 +77,9 @@ extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath,
 
 %token EOL
 
-%type <expression> statement_list statement
-%type <expression> note
-%type <expression> pattern pattern_expand
+%type <expression> statement_list statement single_statemnt
+%type <expression> include
+%type <expression> pattern
 %type <expression> context
 %type <array>      context_id_list
 %type <s>          context_id
@@ -93,11 +93,20 @@ input
 
 statement_list
     :                                     { $$ = NAMidiExprStatementList(PERSER(), LOC(@$)); }
+    | eos                                 { $$ = NAMidiExprStatementList(PERSER(), LOC(@$)); }
     | statement                           { if (!$1) $1 = SKIP(@$); $$ = ExpressionAddChild(NAMidiExprStatementList(PERSER(), LOC(@$)), $1); }
     | statement_list statement            { if (!$2) $2 = SKIP(@$); $$ = ExpressionAddChild($1, $2); }
     ;
 
 statement
+    : single_statemnt eos
+    | pattern
+    | context
+    | include eos
+    | error eos                           { $$ = SKIP(@$); }
+    ;
+
+single_statemnt
     : TITLE STRING                        { $$ = NAMidiExprTitle(PERSER(), LOC(@$), $2); }
     | RESOLUTION INTEGER                  { $$ = NAMidiExprResolution(PERSER(), LOC(@$), $2); }
     | TEMPO FLOAT                         { $$ = NAMidiExprTempo(PERSER(), LOC(@$), $2); }
@@ -118,19 +127,7 @@ statement
     | TRANSPOSE MINUS INTEGER             { $$ = NAMidiExprTranspose(PERSER(), LOC(@$), $3); }
     | KEY KEY_SIGN                        { $$ = NAMidiExprKeySign(PERSER(), LOC(@$), $2); }
     | REST INTEGER                        { $$ = NAMidiExprRest(PERSER(), LOC(@$), $2); }
-
-    | note
-    | pattern
-    | pattern_expand
-    | context
-
-    | INCLUDE STRING                      { if (!NAMidiParserReadIncludeFile(PERSER(), LOC(@$), $2, &$$)) YYERROR; }
-
-    | error                               { $$ = SKIP(@$); }
-    ;
-
-note
-    : NOTE                                { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, -1, -1, -1); }
+    | NOTE                                { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, -1, -1, -1); }
     | NOTE MINUS                          { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, -1, -1, -1); }
     | NOTE MINUS   MINUS                  { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, -1, -1, -1); }
     | NOTE MINUS   MINUS   MINUS          { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, -1, -1, -1); }
@@ -147,34 +144,49 @@ note
     | NOTE INTEGER MINUS   MINUS          { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, $2, -1, -1); }
     ;
 
-pattern
-    : DEFINE identifier statement_list END
-                                          { $$ = NAMidiExprPattern(PERSER(), LOC(@$), $2, $3); }
+include
+    : INCLUDE STRING                      { if (!NAMidiParserReadIncludeFile(PERSER(), LOC(@$), $2, &$$)) YYERROR; }
     ;
 
-pattern_expand
-    : identifier                          { $$ = NAMidiExprPatternExpand(PERSER(), LOC(@$), $1, NULL); }
-    | identifier LPAREN context_id_list RPAREN
-                                          { $$ = NAMidiExprPatternExpand(PERSER(), LOC(@$), $1, $3); }
+pattern
+    : DEFINE identifier eos statement_list END eos
+                                          { $$ = NAMidiExprPattern(PERSER(), LOC(@$), $2, $4); }
+    | identifier eos                      { $$ = NAMidiExprPatternExpand(PERSER(), LOC(@$), $1, NULL); }
+    | identifier opt LPAREN opt RPAREN eos    { $$ = NAMidiExprPatternExpand(PERSER(), LOC(@$), $1, NULL); }
+    | identifier opt LPAREN opt context_id_list RPAREN eos
+                                          { $$ = NAMidiExprPatternExpand(PERSER(), LOC(@$), $1, $5); }
     ;
 
 context
-    : context_id_list LCURLY statement_list RCURLY
-                                          { $$ = NAMidiExprContext(PERSER(), LOC(@$), $1, $3); }
+    : context_id_list LCURLY opt statement_list RCURLY opt
+                                          { $$ = NAMidiExprContext(PERSER(), LOC(@$), $1, $4); }
     ;
 
 context_id_list
-    : context_id                          { $$ = NAArrayCreate(4, NADescriptionCString); NAArrayAppend($$, $1); }
-    | context_id_list COMMA context_id    { $$ = $1; NAArrayAppend($$, $3); }
+    : context_id                              { $$ = NAArrayCreate(4, NADescriptionCString); NAArrayAppend($$, $1); }
+    | context_id_list COMMA opt context_id    { $$ = $1; NAArrayAppend($$, $4); }
     ;
 
 context_id
-    : identifier                          { $$ = $1; }
-    | DEFAULT                             { $$ = strdup("default"); }
+    : identifier opt                      { $$ = $1; }
+    | DEFAULT opt                         { $$ = strdup("default"); }
     ;
 
 identifier
     : IDENTIFIER                          { $$ = NACStringToLowerCase($1); }
+    ;
+
+eos
+    : EOL
+    | SEMICOLON
+    | eos EOL
+    | eos SEMICOLON
+    ;
+
+opt
+    :
+    | EOL
+    | opt EOL
     ;
 
 %%
