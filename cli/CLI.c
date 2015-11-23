@@ -1,6 +1,10 @@
 #include "CLI.h"
 #include "Command.h"
 #include "Exporter.h"
+#include "Parser.h"
+#include "NAMidiParser.h"
+#include "ABCParser.h"
+
 #include "NAUtil.h"
 
 #include <stdio.h>
@@ -33,6 +37,7 @@ static MidiSourceManagerObserverCallbacks CLIMidiSourceManagerObserverCallbacks;
 static ExporterObserverCallbacks CLIExporterObserverCallbacks;
 
 static char **CLICompletion(const char *text, int start, int end);
+static char *CLIFormatParseError(CLI *self, const ParseError *error);
 
 CLI *CLICreate(const char *filepath, const char **soundSources)
 {
@@ -271,7 +276,9 @@ static void CLINAMidiOnParseFinish(void *receiver, Sequence *sequence, ParseInfo
     NAIterator *iterator = NAArrayGetIterator(info->errors);
     while (iterator->hasNext(iterator)) {
         ParseError *error = iterator->next(iterator);
-        fprintf(stderr, "parse error. %s - %s:%d:%d\n", ParseError2String(error), error->location.filepath, error->location.line, error->location.column);
+        char *formatted = CLIFormatParseError(receiver, error);
+        fputs(formatted, stderr);
+        free(formatted);
     }
 
     if (self->prompt) {
@@ -350,7 +357,9 @@ static MidiSourceManagerObserverCallbacks CLIMidiSourceManagerObserverCallbacks 
 
 static void CLIExporterOnParseError(void *receiver, const ParseError *error)
 {
-    fprintf(stderr, "parse error. %s - %s:%d:%d\n", ParseError2String(error), error->location.filepath, error->location.line, error->location.column);
+    char *formatted = CLIFormatParseError(receiver, error);
+    fputs(formatted, stderr);
+    free(formatted);
 }
 
 static void CLIExporterOnParseFinish(void *_self, ParseInfo *info)
@@ -370,3 +379,49 @@ static ExporterObserverCallbacks CLIExporterObserverCallbacks = {
     CLIExporterOnParseFinish,
     CLIExporterOnProgress,
 };
+
+static char *CLIFormatParseError(CLI *self, const ParseError *error)
+{
+    char location[256];
+    snprintf(location, 256, "%s:%d:%d", error->location.filepath, error->location.line, error->location.column);
+
+    switch (error->kind) {
+    case ParseErrorKindGeneral:
+        switch (error->error) {
+        case GeneralParseErrorUnsupportedFileType:
+        case GeneralParseErrorFileNotFound:
+        case GeneralParseErrorSyntaxError:
+        case GeneralParseErrorInvalidValue:
+        case GeneralParseErrorCircularFileInclude:
+        case GeneralParseErrorInvalidNoteRange:
+        default:
+            break;
+        }
+        break;
+    case ParseErrorKindNAMidi:
+        switch (error->error) {
+        case NAMidiParseErrorPatternMissing:
+        case NAMidiParseErrorDuplicatePatternIdentifier:
+        case NAMidiParseErrorCircularPatternReference:
+        default:
+            break;
+        }
+        break;
+    case ParseErrorKindABC:
+        switch (error->error) {
+        case ABCParseErrorUnrecognisedVersion:
+        case ABCParseErrorUnexpectedVersionExpression:
+        case ABCParseErrorIllegalOctaveDown:
+        case ABCParseErrorIllegalOctaveUp:
+        default:
+            break;
+        }
+        break;
+    case ParseErrorKindMML:
+        break;
+    default:
+        break;
+    }
+
+    return NAUtilFormatString("[%s] kind:%d error:%d at %s\n", ParseError2String(error), error->kind, error->error, location);
+}

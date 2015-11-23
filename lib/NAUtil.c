@@ -66,8 +66,25 @@ char *NAUtilTrimWhiteSpace(char *string)
     return string;
 }
 
-extern bool NAUtilIsDirectory(char *path)
+bool NAUtilIsDirectory(char *path)
 {
     struct stat s;
     return 0 == stat(path, &s) && s.st_mode & S_IFDIR;
+}
+
+char *NAUtilFormatString(const char *format, ...)
+{
+    va_list argList;
+
+    va_start(argList, format);
+    int length = vsnprintf(NULL, 0, format, argList);
+    va_end(argList);
+
+    char *buffer = malloc(length + 1);
+
+    va_start(argList, format);
+    vsnprintf(buffer, length + 1, format, argList);
+    va_end(argList);
+
+    return buffer;
 }

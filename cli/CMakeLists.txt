@@ -16,6 +16,8 @@ include_directories(
   ../core
   ../sequence
   ../parser
+  ../parser/namidi
+  ../parser/abc
   ../lib
   ../synthesizer
   ../export
