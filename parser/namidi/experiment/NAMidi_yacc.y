@@ -6,7 +6,7 @@
 #include <ctype.h>
 
 extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, const char *message);
-extern void NAMidi_lex_set_error(yyscan_t scanner);
+extern void NAMidi_lex_set_error_until_eol(yyscan_t scanner);
 
 %}
 
@@ -24,95 +24,209 @@ extern void NAMidi_lex_set_error(yyscan_t scanner);
     int i;
     float f;
     char *s;
+    void *node;
+    void *list;
 }
 
 %token <i>INTEGER
 %token <f>FLOAT
 %token <s>STRING
 
-%token RESOLUTION
-%token TITLE
-%token TEMPO
-%token TIME
-%token MARKER
-%token DEFINE
-%token END
-%token CHANNEL
-%token VOICE
-%token SYNTH
-%token VOLUME
-%token PAN
-%token CHORUS
-%token REVERB
-%token TRANSPOSE
-%token KEY
-%token DEFAULT
-%token REST
-%token INCLUDE
+%token RESOLUTION TITLE TEMPO TIME KEY MARKER DEFINE END CHANNEL VOICE
+       SYNTH VOLUME PAN CHORUS REVERB TRANSPOSE DEFAULT REST INCLUDE
 
-%token <s>NOTE
-%token <s>KEY_SIGN
-%token <s>IDENTIFIER
+%token <s>NOTE KEY_SIGN IDENTIFIER
+
+%type <node> resolution title tempo time key marker channel voice synth volume
+             pan chorus reverb transpose rest note include pattern
+
+%type <node> define context
+
+%type <node> statement pattern_statement context_statement
+             note_param
+%type <list> statement_list pattern_statement_list context_statement_list
+             identifier_list note_param_list
 
 %%
  
-input
-    :
-    | tokens 
+statement_list
+    :                          { $$ = NULL; }
+    | statement                { $$ = NULL; }
+    | statement_list statement { $$ = NULL; }
+    | error                    { $$ = NULL; NAMidi_lex_set_error_until_eol(scanner); }
     ;
 
-tokens
-    : token {
-                 char *text = NAMidi_get_text(scanner);
-                 printf("-- %s\n", text[0] == '\n' ? "eol" : text);
-            }
-    | tokens token {
-                 char *text = NAMidi_get_text(scanner);
-                 printf("-- %s\n", text[0] == '\n' ? "eol" : text);
-            }
-    | error { NAMidi_lex_set_error(scanner); }
+pattern_statement_list
+    : pattern_statement                        { $$ = NULL; }
+    | pattern_statement_list pattern_statement { $$ = NULL; }
+    | error                                    { $$ = NULL; NAMidi_lex_set_error_until_eol(scanner); }
     ;
 
-token
-    : INTEGER
-    | FLOAT
-    | STRING
-   
-    | RESOLUTION
-    | TITLE
-    | TEMPO
-    | TIME
-    | MARKER
-    | DEFINE
-    | END
-    | CHANNEL
-    | VOICE
-    | SYNTH
-    | VOLUME
-    | PAN
-    | CHORUS
-    | REVERB
-    | TRANSPOSE
-    | KEY
-    | DEFAULT
-    | REST
-    | INCLUDE
+context_statement_list
+    : context_statement                        { $$ = NULL; }
+    | context_statement_list context_statement { $$ = NULL; }
+    | error                                    { $$ = NULL; NAMidi_lex_set_error_until_eol(scanner); }
+    ;
 
-    | NOTE
-    | KEY_SIGN
-    | IDENTIFIER
-    
-    | '+'
-    | '-'
-    | '/'
-    | '('
-    | ')'
-    | '{'
-    | '}'
-    | ','
-    | ';'
-    
-    
+statement
+    : resolution
+    | title
+    | tempo
+    | time
+    | key
+    | marker
+    | channel
+    | voice
+    | synth
+    | volume
+    | pan
+    | chorus
+    | reverb
+    | transpose
+    | rest
+    | note
+    | include
+    | pattern
+    | define
+    ;
+
+pattern_statement
+    : tempo
+    | time
+    | key
+    | marker
+    | channel
+    | voice
+    | synth
+    | volume
+    | pan
+    | chorus
+    | reverb
+    | transpose
+    | rest
+    | note
+    | pattern
+    | define
+    | context
+    ;
+
+context_statement
+    : tempo
+    | time
+    | key
+    | marker
+    | channel
+    | voice
+    | synth
+    | volume
+    | pan
+    | chorus
+    | reverb
+    | transpose
+    | rest
+    | note
+    ;
+
+resolution
+    : RESOLUTION INTEGER { $$ = NULL; }
+    ;
+
+title
+    : TITLE STRING { $$ = NULL; }
+    ;
+
+tempo
+    : TEMPO FLOAT { $$ = NULL; }
+    ;
+      
+time
+    : TIME INTEGER '/' INTEGER { $$ = NULL; }
+    ;
+      
+key
+    : KEY KEY_SIGN { $$ = NULL; }
+    ;
+
+marker
+    : MARKER STRING { $$ = NULL; }
+    ;
+
+channel
+    : CHANNEL INTEGER { $$ = NULL; }
+    ;
+
+voice
+    : VOICE INTEGER INTEGER INTEGER { $$ = NULL; }
+    ;
+
+synth
+    : SYNTH STRING { $$ = NULL; }
+    ;
+
+volume
+    : VOLUME INTEGER { $$ = NULL; }
+    ;
+
+pan
+    : PAN INTEGER     { $$ = NULL; }
+    | PAN '+' INTEGER { $$ = NULL; }
+    | PAN '-' INTEGER { $$ = NULL; }
+    ;
+
+chorus
+    : CHORUS INTEGER { $$ = NULL; }
+    ;
+
+reverb
+    : REVERB INTEGER { $$ = NULL; }
+    ;
+
+transpose
+    : TRANSPOSE INTEGER     { $$ = NULL; }
+    | TRANSPOSE '+' INTEGER { $$ = NULL; }
+    | TRANSPOSE '-' INTEGER { $$ = NULL; }
+    ;
+
+rest
+    : REST INTEGER { $$ = NULL; }
+    ;
+
+note
+    : NOTE note_param_list { $$ = NULL; } 
+    ;
+
+include
+    : INCLUDE STRING { $$ = NULL; }
+    ;
+
+pattern
+    : IDENTIFIER                         { $$ = NULL; }
+    | IDENTIFIER '(' identifier_list ')' { $$ = NULL; }
+    ;
+
+define
+    : DEFINE IDENTIFIER pattern_statement_list END { $$ = NULL; }
+    ;
+
+context
+    : identifier_list '{' context_statement_list '}' { $$ = NULL; }
+    ;
+
+identifier_list
+    :                                { $$ = NULL; }
+    | IDENTIFIER                     { $$ = NULL; } 
+    | identifier_list ',' IDENTIFIER { $$ = NULL; }
+    ;
+
+note_param_list
+    :                            { $$ = NULL; }
+    | note_param                 { $$ = NULL; }
+    | note_param_list note_param { $$ = NULL; }
+    ;
+
+note_param
+    : '-'     { $$ = NULL; }
+    | INTEGER { $$ = NULL; }
     ;
 
 %%

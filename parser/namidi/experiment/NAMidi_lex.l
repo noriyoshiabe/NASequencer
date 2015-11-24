@@ -74,6 +74,7 @@ LINE_COMMENT   (\/\/|==|--).*$
 {TITLE}          { return TITLE; }
 {TEMPO}          { return TEMPO; }
 {TIME}           { return TIME; }
+{KEY}            { return KEY; }
 {MARKER}         { return MARKER; }
 {DEFINE}         { return DEFINE; }
 {END}            { return END; }
@@ -85,7 +86,6 @@ LINE_COMMENT   (\/\/|==|--).*$
 {CHORUS}         { return CHORUS; }
 {REVERB}         { return REVERB; }
 {TRANSPOSE}      { return TRANSPOSE; }
-{KEY}            { return KEY; }
 {DEFAULT}        { return DEFAULT; }
 {REST}           { return REST; }
 {INCLUDE}        { return INCLUDE; }
@@ -121,7 +121,7 @@ LINE_COMMENT   (\/\/|==|--).*$
  
 %%
 
-void NAMidi_lex_set_error(yyscan_t scanner)
+void NAMidi_lex_set_error_until_eol(yyscan_t scanner)
 {
     yy_push_state(ERROR, scanner);
 }
