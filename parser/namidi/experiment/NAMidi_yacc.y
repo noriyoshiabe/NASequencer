@@ -8,6 +8,8 @@
 extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, const char *message);
 extern void NAMidi_lex_set_error_until_eol(yyscan_t scanner);
 
+#define __Trace__ printf("%d: -- %s\n", __LINE__, NAMidi_get_text(scanner));
+
 %}
 
 %name-prefix = "NAMidi_"
@@ -48,185 +50,189 @@ extern void NAMidi_lex_set_error_until_eol(yyscan_t scanner);
              identifier_list note_param_list
 
 %%
- 
+
+input
+    : statement_list { __Trace__ }
+    ;
+
 statement_list
-    :                          { $$ = NULL; }
-    | statement                { $$ = NULL; }
-    | statement_list statement { $$ = NULL; }
-    | error                    { $$ = NULL; NAMidi_lex_set_error_until_eol(scanner); }
+    :                          { __Trace__ $$ = NULL; }
+    | statement                { __Trace__ $$ = NULL; }
+    | statement_list statement { __Trace__ $$ = NULL; }
     ;
 
 pattern_statement_list
-    : pattern_statement                        { $$ = NULL; }
-    | pattern_statement_list pattern_statement { $$ = NULL; }
-    | error                                    { $$ = NULL; NAMidi_lex_set_error_until_eol(scanner); }
+    : pattern_statement                        { __Trace__ $$ = NULL; }
+    | pattern_statement_list pattern_statement { __Trace__ $$ = NULL; }
     ;
 
 context_statement_list
-    : context_statement                        { $$ = NULL; }
-    | context_statement_list context_statement { $$ = NULL; }
-    | error                                    { $$ = NULL; NAMidi_lex_set_error_until_eol(scanner); }
+    : context_statement                        { __Trace__ $$ = NULL; }
+    | context_statement_list context_statement { __Trace__ $$ = NULL; }
     ;
 
 statement
-    : resolution
-    | title
-    | tempo
-    | time
-    | key
-    | marker
-    | channel
-    | voice
-    | synth
-    | volume
-    | pan
-    | chorus
-    | reverb
-    | transpose
-    | rest
-    | note
-    | include
-    | pattern
-    | define
+    : resolution { __Trace__ }
+    | title      { __Trace__ }
+    | tempo      { __Trace__ }
+    | time       { __Trace__ }
+    | key        { __Trace__ }
+    | marker     { __Trace__ }
+    | channel    { __Trace__ }
+    | voice      { __Trace__ }
+    | synth      { __Trace__ }
+    | volume     { __Trace__ }
+    | pan        { __Trace__ }
+    | chorus     { __Trace__ }
+    | reverb     { __Trace__ }
+    | transpose  { __Trace__ }
+    | rest       { __Trace__ }
+    | note       { __Trace__ }
+    | include    { __Trace__ }
+    | pattern    { __Trace__ }
+    | define     { __Trace__ }
+    | error      { NAMidi_lex_set_error_until_eol(scanner); }
     ;
 
 pattern_statement
-    : tempo
-    | time
-    | key
-    | marker
-    | channel
-    | voice
-    | synth
-    | volume
-    | pan
-    | chorus
-    | reverb
-    | transpose
-    | rest
-    | note
-    | pattern
-    | define
-    | context
+    : tempo      { __Trace__ }
+    | time       { __Trace__ }
+    | key        { __Trace__ }
+    | marker     { __Trace__ }
+    | channel    { __Trace__ }
+    | voice      { __Trace__ }
+    | synth      { __Trace__ }
+    | volume     { __Trace__ }
+    | pan        { __Trace__ }
+    | chorus     { __Trace__ }
+    | reverb     { __Trace__ }
+    | transpose  { __Trace__ }
+    | rest       { __Trace__ }
+    | note       { __Trace__ }
+    | pattern    { __Trace__ }
+    | define     { __Trace__ }
+    | context    { __Trace__ }
+    | error      { NAMidi_lex_set_error_until_eol(scanner); }
     ;
 
 context_statement
-    : tempo
-    | time
-    | key
-    | marker
-    | channel
-    | voice
-    | synth
-    | volume
-    | pan
-    | chorus
-    | reverb
-    | transpose
-    | rest
-    | note
+    : tempo      { __Trace__ }
+    | time       { __Trace__ }
+    | key        { __Trace__ }
+    | marker     { __Trace__ }
+    | channel    { __Trace__ }
+    | voice      { __Trace__ }
+    | synth      { __Trace__ }
+    | volume     { __Trace__ }
+    | pan        { __Trace__ }
+    | chorus     { __Trace__ }
+    | reverb     { __Trace__ }
+    | transpose  { __Trace__ }
+    | rest       { __Trace__ }
+    | note       { __Trace__ }
+    | error      { NAMidi_lex_set_error_until_eol(scanner); }
     ;
 
 resolution
-    : RESOLUTION INTEGER { $$ = NULL; }
+    : RESOLUTION INTEGER { __Trace__ $$ = NULL; }
     ;
 
 title
-    : TITLE STRING { $$ = NULL; }
+    : TITLE STRING { __Trace__ $$ = NULL; }
     ;
 
 tempo
-    : TEMPO FLOAT { $$ = NULL; }
+    : TEMPO FLOAT { __Trace__ $$ = NULL; }
     ;
       
 time
-    : TIME INTEGER '/' INTEGER { $$ = NULL; }
+    : TIME INTEGER '/' INTEGER { __Trace__ $$ = NULL; }
     ;
       
 key
-    : KEY KEY_SIGN { $$ = NULL; }
+    : KEY KEY_SIGN { __Trace__ $$ = NULL; }
     ;
 
 marker
-    : MARKER STRING { $$ = NULL; }
+    : MARKER STRING { __Trace__ $$ = NULL; }
     ;
 
 channel
-    : CHANNEL INTEGER { $$ = NULL; }
+    : CHANNEL INTEGER { __Trace__ $$ = NULL; }
     ;
 
 voice
-    : VOICE INTEGER INTEGER INTEGER { $$ = NULL; }
+    : VOICE INTEGER INTEGER INTEGER { __Trace__ $$ = NULL; }
     ;
 
 synth
-    : SYNTH STRING { $$ = NULL; }
+    : SYNTH STRING { __Trace__ $$ = NULL; }
     ;
 
 volume
-    : VOLUME INTEGER { $$ = NULL; }
+    : VOLUME INTEGER { __Trace__ $$ = NULL; }
     ;
 
 pan
-    : PAN INTEGER     { $$ = NULL; }
-    | PAN '+' INTEGER { $$ = NULL; }
-    | PAN '-' INTEGER { $$ = NULL; }
+    : PAN INTEGER     { __Trace__ $$ = NULL; }
+    | PAN '+' INTEGER { __Trace__ $$ = NULL; }
+    | PAN '-' INTEGER { __Trace__ $$ = NULL; }
     ;
 
 chorus
-    : CHORUS INTEGER { $$ = NULL; }
+    : CHORUS INTEGER { __Trace__ $$ = NULL; }
     ;
 
 reverb
-    : REVERB INTEGER { $$ = NULL; }
+    : REVERB INTEGER { __Trace__ $$ = NULL; }
     ;
 
 transpose
-    : TRANSPOSE INTEGER     { $$ = NULL; }
-    | TRANSPOSE '+' INTEGER { $$ = NULL; }
-    | TRANSPOSE '-' INTEGER { $$ = NULL; }
+    : TRANSPOSE INTEGER     { __Trace__ $$ = NULL; }
+    | TRANSPOSE '+' INTEGER { __Trace__ $$ = NULL; }
+    | TRANSPOSE '-' INTEGER { __Trace__ $$ = NULL; }
     ;
 
 rest
-    : REST INTEGER { $$ = NULL; }
+    : REST INTEGER { __Trace__ $$ = NULL; }
     ;
 
 note
-    : NOTE note_param_list { $$ = NULL; } 
+    : NOTE note_param_list { __Trace__ $$ = NULL; } 
     ;
 
 include
-    : INCLUDE STRING { $$ = NULL; }
+    : INCLUDE STRING { __Trace__ $$ = NULL; }
     ;
 
 pattern
-    : IDENTIFIER                         { $$ = NULL; }
-    | IDENTIFIER '(' identifier_list ')' { $$ = NULL; }
+    : IDENTIFIER                         { __Trace__ $$ = NULL; }
+    | IDENTIFIER '(' identifier_list ')' { __Trace__ $$ = NULL; }
     ;
 
 define
-    : DEFINE IDENTIFIER pattern_statement_list END { $$ = NULL; }
+    : DEFINE IDENTIFIER pattern_statement_list END { __Trace__ $$ = NULL; }
     ;
 
 context
-    : identifier_list '{' context_statement_list '}' { $$ = NULL; }
+    : identifier_list '{' context_statement_list '}' { __Trace__ $$ = NULL; }
     ;
 
 identifier_list
-    :                                { $$ = NULL; }
-    | IDENTIFIER                     { $$ = NULL; } 
-    | identifier_list ',' IDENTIFIER { $$ = NULL; }
+    :                                { __Trace__ $$ = NULL; }
+    | IDENTIFIER                     { __Trace__ $$ = NULL; } 
+    | identifier_list ',' IDENTIFIER { __Trace__ $$ = NULL; }
     ;
 
 note_param_list
-    :                            { $$ = NULL; }
-    | note_param                 { $$ = NULL; }
-    | note_param_list note_param { $$ = NULL; }
+    :                            { __Trace__ $$ = NULL; }
+    | note_param                 { __Trace__ $$ = NULL; }
+    | note_param_list note_param { __Trace__ $$ = NULL; }
     ;
 
 note_param
-    : '-'     { $$ = NULL; }
-    | INTEGER { $$ = NULL; }
+    : '-'     { __Trace__ $$ = NULL; }
+    | INTEGER { __Trace__ $$ = NULL; }
     ;
 
 %%
