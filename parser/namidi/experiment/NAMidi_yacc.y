@@ -6,6 +6,7 @@
 #include <ctype.h>
 
 extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, const char *message);
+extern void NAMidi_lex_set_error(yyscan_t scanner);
 
 %}
 
@@ -47,24 +48,11 @@ extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath,
 %token KEY
 %token DEFAULT
 %token REST
-
-%token PLUS
-%token MINUS
-%token DIVISION
-%token SEMICOLON
-%token LPAREN
-%token RPAREN
-%token LCURLY
-%token RCURLY
-%token COMMA
-
 %token INCLUDE
 
-%token <s>IDENTIFIER
-%token <s>KEY_SIGN
 %token <s>NOTE
-
-%token EOL
+%token <s>KEY_SIGN
+%token <s>IDENTIFIER
 
 %%
  
@@ -82,11 +70,11 @@ tokens
                  char *text = NAMidi_get_text(scanner);
                  printf("-- %s\n", text[0] == '\n' ? "eol" : text);
             }
+    | error { NAMidi_lex_set_error(scanner); }
     ;
 
 token
-    : EOL
-    | INTEGER
+    : INTEGER
     | FLOAT
     | STRING
    
@@ -108,22 +96,23 @@ token
     | KEY
     | DEFAULT
     | REST
-    
-    | PLUS
-    | MINUS
-    | DIVISION
-    | SEMICOLON
-    | LPAREN
-    | RPAREN
-    | LCURLY
-    | RCURLY
-    | COMMA
-    
     | INCLUDE
-    
-    | IDENTIFIER
-    | KEY_SIGN
+
     | NOTE
+    | KEY_SIGN
+    | IDENTIFIER
+    
+    | '+'
+    | '-'
+    | '/'
+    | '('
+    | ')'
+    | '{'
+    | '}'
+    | ','
+    | ';'
+    
+    
     ;
 
 %%
