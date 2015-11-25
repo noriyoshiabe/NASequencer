@@ -1,6 +1,8 @@
 %{
   
+#include "NAMidiStatement.h"
 #include "NAMidi_yacc.h"
+
 #include <string.h>
 
 #define YY_USER_INIT \
