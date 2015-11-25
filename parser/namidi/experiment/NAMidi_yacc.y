@@ -44,10 +44,8 @@ extern void NAMidi_lex_set_error_until_eol(yyscan_t scanner);
 
 %type <node> define context
 
-%type <node> statement pattern_statement context_statement
-             note_param
-%type <list> statement_list pattern_statement_list context_statement_list
-             identifier_list note_param_list
+%type <node> statement note_param
+%type <list> statement_list identifier_list note_param_list
 
 %%
 
@@ -59,16 +57,6 @@ statement_list
     :                          { __Trace__ $$ = NULL; }
     | statement                { __Trace__ $$ = NULL; }
     | statement_list statement { __Trace__ $$ = NULL; }
-    ;
-
-pattern_statement_list
-    : pattern_statement                        { __Trace__ $$ = NULL; }
-    | pattern_statement_list pattern_statement { __Trace__ $$ = NULL; }
-    ;
-
-context_statement_list
-    : context_statement                        { __Trace__ $$ = NULL; }
-    | context_statement_list context_statement { __Trace__ $$ = NULL; }
     ;
 
 statement
@@ -91,45 +79,9 @@ statement
     | include    { __Trace__ }
     | pattern    { __Trace__ }
     | define     { __Trace__ }
-    | error      { NAMidi_lex_set_error_until_eol(scanner); }
-    ;
-
-pattern_statement
-    : tempo      { __Trace__ }
-    | time       { __Trace__ }
-    | key        { __Trace__ }
-    | marker     { __Trace__ }
-    | channel    { __Trace__ }
-    | voice      { __Trace__ }
-    | synth      { __Trace__ }
-    | volume     { __Trace__ }
-    | pan        { __Trace__ }
-    | chorus     { __Trace__ }
-    | reverb     { __Trace__ }
-    | transpose  { __Trace__ }
-    | rest       { __Trace__ }
-    | note       { __Trace__ }
-    | pattern    { __Trace__ }
-    | define     { __Trace__ }
     | context    { __Trace__ }
-    | error      { NAMidi_lex_set_error_until_eol(scanner); }
-    ;
 
-context_statement
-    : tempo      { __Trace__ }
-    | time       { __Trace__ }
-    | key        { __Trace__ }
-    | marker     { __Trace__ }
-    | channel    { __Trace__ }
-    | voice      { __Trace__ }
-    | synth      { __Trace__ }
-    | volume     { __Trace__ }
-    | pan        { __Trace__ }
-    | chorus     { __Trace__ }
-    | reverb     { __Trace__ }
-    | transpose  { __Trace__ }
-    | rest       { __Trace__ }
-    | note       { __Trace__ }
+    | ';'        { __Trace__ $$ = NULL; }
     | error      { NAMidi_lex_set_error_until_eol(scanner); }
     ;
 
@@ -211,11 +163,11 @@ pattern
     ;
 
 define
-    : DEFINE IDENTIFIER pattern_statement_list END { __Trace__ $$ = NULL; }
+    : DEFINE IDENTIFIER statement_list END { __Trace__ $$ = NULL; }
     ;
 
 context
-    : identifier_list '{' context_statement_list '}' { __Trace__ $$ = NULL; }
+    : identifier_list '{' statement_list '}' { __Trace__ $$ = NULL; }
     ;
 
 identifier_list
