@@ -3,6 +3,7 @@
 #include "NAMidiStatement.h"
 
 typedef struct _NAMidiStatementVisitor {
+    void (*visitRoot)(void *self, Root *stmt);
     void (*visitResolution)(void *self, Resolution *stmt);
     void (*visitTitle)(void *self, Title *stmt);
     void (*visitTempo)(void *self, Tempo *stmt);

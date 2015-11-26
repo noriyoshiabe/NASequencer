@@ -2,6 +2,10 @@
 
 #include "Node.h"
 
+typedef struct _Root {
+    Node node;
+} Root;
+
 typedef struct _Resolution {
     Node node;
     int resolution;

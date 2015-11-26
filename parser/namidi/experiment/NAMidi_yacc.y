@@ -9,13 +9,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, const char *message);
+extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, void **node, const char *message);
 extern void NAMidi_lex_set_error_until_eol(yyscan_t scanner);
 
-#define node(type) (NodeCreate(sizeof(type), #type, type##Accept, type##Destroy))
+#define node(type, yylloc) NodeCreate(sizeof(type), #type, filepath, yylloc.first_line, yylloc.first_column, type##Accept, type##Destroy)
 #define list() NAArrayCreate(4, NULL)
 #define listAppend(list, node) NAArrayAppend(list, node)
 
+static void RootAccept(void *self, void *visitor);
 static void ResolutionAccept(void *self, void *visitor);
 static void TitleAccept(void *self, void *visitor);
 static void TempoAccept(void *self, void *visitor);
@@ -39,6 +40,7 @@ static void ContextAccept(void *self, void *visitor);
 static void IdentifierAccept(void *self, void *visitor);
 static void NoteParamAccept(void *self, void *visitor);
 
+static void RootDestroy(void *self);
 static void ResolutionDestroy(void *self);
 static void TitleDestroy(void *self);
 static void TempoDestroy(void *self);
@@ -72,6 +74,7 @@ static void NoteParamDestroy(void *self);
 %lex-param   { yyscan_t scanner }
 %parse-param { yyscan_t scanner }
 %parse-param { const char *filepath }
+%parse-param { void **node }
 %locations
 
 %union {
@@ -103,6 +106,11 @@ static void NoteParamDestroy(void *self);
 
 input
     : statement_list
+        {
+            Root *n = node(Root, @$);
+            n->node.children = $1;
+            *node = n;
+        }
     ;
 
 statement_list
@@ -162,7 +170,7 @@ statement
 resolution
     : RESOLUTION INTEGER
         {
-            Resolution *n = node(Resolution);
+            Resolution *n = node(Resolution, @$);
             n->resolution = $2;
             $$ = n;
         }
@@ -171,7 +179,7 @@ resolution
 title
     : TITLE STRING
         {
-            Title *n = node(Title);
+            Title *n = node(Title, @$);
             n->title = $2;
             $$ = n;
         }
@@ -180,7 +188,7 @@ title
 tempo
     : TEMPO FLOAT
         {
-            Tempo *n = node(Tempo);
+            Tempo *n = node(Tempo, @$);
             n->tempo = $2;
             $$ = n;
         }
@@ -189,7 +197,7 @@ tempo
 time
     : TIME INTEGER '/' INTEGER
         {
-            Time *n = node(Time);
+            Time *n = node(Time, @$);
             n->numerator = $2;
             n->denominator = $4;
             $$ = n;
@@ -199,7 +207,7 @@ time
 key
     : KEY KEY_SIGN
         {
-            Key *n = node(Key);
+            Key *n = node(Key, @$);
             n->keyString = $2;
             $$ = n;
         }
@@ -208,7 +216,7 @@ key
 marker
     : MARKER STRING
         {
-            Marker *n = node(Marker);
+            Marker *n = node(Marker, @$);
             n->text = $2;
             $$ = n;
         }
@@ -217,7 +225,7 @@ marker
 channel
     : CHANNEL INTEGER
         {
-            Channel *n = node(Channel);
+            Channel *n = node(Channel, @$);
             n->number = $2;
             $$ = n;
         }
@@ -226,7 +234,7 @@ channel
 voice
     : VOICE INTEGER INTEGER INTEGER
         {
-            Voice *n = node(Voice);
+            Voice *n = node(Voice, @$);
             n->msb = $2;
             n->lsb = $3;
             n->programNo = $4;
@@ -237,7 +245,7 @@ voice
 synth
     : SYNTH STRING
         {
-            Synth *n = node(Synth);
+            Synth *n = node(Synth, @$);
             n->name = $2;
             $$ = n;
         }
@@ -246,7 +254,7 @@ synth
 volume
     : VOLUME INTEGER
         {
-            Volume *n = node(Volume);
+            Volume *n = node(Volume, @$);
             n->value = $2;
             $$ = n;
         }
@@ -255,19 +263,19 @@ volume
 pan
     : PAN INTEGER
         {
-            Pan *n = node(Pan);
+            Pan *n = node(Pan, @$);
             n->value = $2;
             $$ = n;
         }
     | PAN '+' INTEGER
         {
-            Pan *n = node(Pan);
+            Pan *n = node(Pan, @$);
             n->value = $3;
             $$ = n;
         }
     | PAN '-' INTEGER
         {
-            Pan *n = node(Pan);
+            Pan *n = node(Pan, @$);
             n->value = -$3;
             $$ = n;
         }
@@ -276,7 +284,7 @@ pan
 chorus
     : CHORUS INTEGER
         {
-            Chorus *n = node(Chorus);
+            Chorus *n = node(Chorus, @$);
             n->value = $2;
             $$ = n;
         }
@@ -285,7 +293,7 @@ chorus
 reverb
     : REVERB INTEGER
         {
-            Reverb *n = node(Reverb);
+            Reverb *n = node(Reverb, @$);
             n->value = $2;
             $$ = n;
         }
@@ -294,19 +302,19 @@ reverb
 transpose
     : TRANSPOSE INTEGER
         {
-            Transpose *n = node(Transpose);
+            Transpose *n = node(Transpose, @$);
             n->value = $2;
             $$ = n;
         }
     | TRANSPOSE '+' INTEGER
         {
-            Transpose *n = node(Transpose);
+            Transpose *n = node(Transpose, @$);
             n->value = $3;
             $$ = n;
         }
     | TRANSPOSE '-' INTEGER
         {
-            Transpose *n = node(Transpose);
+            Transpose *n = node(Transpose, @$);
             n->value = -$3;
             $$ = n;
         }
@@ -315,7 +323,7 @@ transpose
 rest
     : REST INTEGER
         {
-            Rest *n = node(Rest);
+            Rest *n = node(Rest, @$);
             n->step = $2;
             $$ = n;
         }
@@ -324,7 +332,7 @@ rest
 note
     : NOTE note_param_list
         {
-            Note *n = node(Note);
+            Note *n = node(Note, @$);
             n->noteString = $1;
             n->node.children = $2;
             $$ = n;
@@ -334,7 +342,7 @@ note
 include
     : INCLUDE STRING
         {
-            Include *n = node(Include);
+            Include *n = node(Include, @$);
             n->filepath = $2;
             $$ = n;
         }
@@ -343,14 +351,14 @@ include
 pattern
     : IDENTIFIER
         {
-            Pattern *n = node(Pattern);
+            Pattern *n = node(Pattern, @$);
             n->identifier = $1;
             n->node.children = list();
             $$ = n;
         }
     | IDENTIFIER '(' identifier_list ')'
         {
-            Pattern *n = node(Pattern);
+            Pattern *n = node(Pattern, @$);
             n->identifier = $1;
             n->node.children = $3;
             $$ = n;
@@ -360,7 +368,7 @@ pattern
 define
     : DEFINE IDENTIFIER statement_list END
         {
-            Define *n = node(Define);
+            Define *n = node(Define, @$);
             n->identifier = $2;
             n->node.children = $3;
             $$ = n;
@@ -370,7 +378,7 @@ define
 context
     : identifier_list '{' statement_list '}'
         {
-            Context *n = node(Context);
+            Context *n = node(Context, @$);
             n->ctxIdList = $1;
             n->node.children = $3;
             $$ = n;
@@ -397,7 +405,7 @@ identifier_list
 identifier
     : IDENTIFIER
         {
-            Identifier *n = node(Identifier);
+            Identifier *n = node(Identifier, @$);
             n->idString = $1;
             $$ = n;
         }
@@ -423,13 +431,13 @@ note_param_list
 note_param
     : '-'
         {
-            NoteParam *n = node(NoteParam);
+            NoteParam *n = node(NoteParam, @$);
             n->value = -1;
             $$ = n;
         }
     | INTEGER
         {
-            NoteParam *n = node(NoteParam);
+            NoteParam *n = node(NoteParam, @$);
             n->value = $1;
             $$ = n;
         }
@@ -453,6 +461,7 @@ note_param
 
 #define NOP do { } while (0)
 
+DeclareAccept(Root);
 DeclareAccept(Resolution);
 DeclareAccept(Title);
 DeclareAccept(Tempo);
@@ -476,6 +485,7 @@ DeclareAccept(Context);
 DeclareAccept(Identifier);
 DeclareAccept(NoteParam);
 
+DeclareDestroy(Root, NOP);
 DeclareDestroy(Resolution, NOP);
 DeclareDestroy(Title, free(self->title));
 DeclareDestroy(Tempo, NOP);

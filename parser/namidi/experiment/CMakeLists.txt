@@ -18,6 +18,7 @@ include_directories(
 
 set(SOURCES
   main.c
+  Node.c
 )
 
 add_executable(${PROJECT_NAME}

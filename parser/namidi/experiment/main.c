@@ -1,9 +1,10 @@
 #include "NAMidi_yacc.h"
 #include "NAMidi_lex.h"
+#include "Node.h"
 
 #include <stdio.h>
 
-extern int NAMidi_parse(yyscan_t scanner, const char *filepath);
+extern int NAMidi_parse(yyscan_t scanner, const char *filepath, void **node);
 
 int main(int argc, char **argv)
 {
@@ -17,7 +18,10 @@ int main(int argc, char **argv)
     YY_BUFFER_STATE state = NAMidi__create_buffer(fp, YY_BUF_SIZE, scanner);
     NAMidi__switch_to_buffer(state, scanner);
 
-    int ret = NAMidi_parse(scanner, argv[1]);
+    void *node = NULL;
+    int ret = NAMidi_parse(scanner, argv[1], &node);
+    NodeDump(node, 0);
+    NodeDestroy(node);
 
     NAMidi__delete_buffer(state, scanner);
     NAMidi_lex_destroy(scanner);
@@ -26,7 +30,7 @@ int main(int argc, char **argv)
     return ret;
 }
 
-int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, const char *message)
+int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, void **node, const char *message)
 {
     fprintf(stderr, "%s:%d:%d %s\n", filepath, yylloc->first_line, yylloc->first_column, message);
     return 0;
