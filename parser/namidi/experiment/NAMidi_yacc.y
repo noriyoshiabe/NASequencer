@@ -1,8 +1,10 @@
 %{
  
-#include "NAMidiParser.h"
 #include "NAMidi_yacc.h"
 #include "NAMidi_lex.h"
+
+#include "NAMidiStatement.h"
+#include "NAMidiStatementVisitor.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,39 +12,55 @@
 extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, const char *message);
 extern void NAMidi_lex_set_error_until_eol(yyscan_t scanner);
 
-#define __Trace__ printf("%d: -- %s\n", __LINE__, NAMidi_get_text(scanner));
+#define node(type) (NodeCreate(sizeof(type), #type, type##Accept, type##Destroy))
+#define list() NAArrayCreate(4, NULL)
+#define listAppend(list, node) NAArrayAppend(list, node)
 
-#define stmt(type) (StatementCreate(sizeof(type), #type, type##Accept, type##Destroy))
-#define list() NodeListCreate()
-#define listAppend(list, node) NodeListAppend(list, node)
-#define listDestroy(list) do { NodeListTraverse(list, StatementDestroy); free(list); } while (0)
+static void ResolutionAccept(void *self, void *visitor);
+static void TitleAccept(void *self, void *visitor);
+static void TempoAccept(void *self, void *visitor);
+static void TimeAccept(void *self, void *visitor);
+static void KeyAccept(void *self, void *visitor);
+static void MarkerAccept(void *self, void *visitor);
+static void ChannelAccept(void *self, void *visitor);
+static void VoiceAccept(void *self, void *visitor);
+static void SynthAccept(void *self, void *visitor);
+static void VolumeAccept(void *self, void *visitor);
+static void PanAccept(void *self, void *visitor);
+static void ChorusAccept(void *self, void *visitor);
+static void ReverbAccept(void *self, void *visitor);
+static void TransposeAccept(void *self, void *visitor);
+static void RestAccept(void *self, void *visitor);
+static void NoteAccept(void *self, void *visitor);
+static void IncludeAccept(void *self, void *visitor);
+static void PatternAccept(void *self, void *visitor);
+static void DefineAccept(void *self, void *visitor);
+static void ContextAccept(void *self, void *visitor);
+static void IdentifierAccept(void *self, void *visitor);
+static void NoteParamAccept(void *self, void *visitor);
 
-#define DeclareStatementPrototype(type) \
-    static void type##Accept(void *self, void *visitor); \
-    static void type##Destroy(void *self);
-
-DeclareStatementPrototype(Resolution);
-DeclareStatementPrototype(Title);
-DeclareStatementPrototype(Tempo);
-DeclareStatementPrototype(Time);
-DeclareStatementPrototype(Key);
-DeclareStatementPrototype(Marker);
-DeclareStatementPrototype(Channel);
-DeclareStatementPrototype(Voice);
-DeclareStatementPrototype(Synth);
-DeclareStatementPrototype(Volume);
-DeclareStatementPrototype(Pan);
-DeclareStatementPrototype(Chorus);
-DeclareStatementPrototype(Reverb);
-DeclareStatementPrototype(Transpose);
-DeclareStatementPrototype(Rest);
-DeclareStatementPrototype(Note);
-DeclareStatementPrototype(Include);
-DeclareStatementPrototype(Pattern);
-DeclareStatementPrototype(Define);
-DeclareStatementPrototype(Context);
-DeclareStatementPrototype(Identifier);
-DeclareStatementPrototype(NoteParam);
+static void ResolutionDestroy(void *self);
+static void TitleDestroy(void *self);
+static void TempoDestroy(void *self);
+static void TimeDestroy(void *self);
+static void KeyDestroy(void *self);
+static void MarkerDestroy(void *self);
+static void ChannelDestroy(void *self);
+static void VoiceDestroy(void *self);
+static void SynthDestroy(void *self);
+static void VolumeDestroy(void *self);
+static void PanDestroy(void *self);
+static void ChorusDestroy(void *self);
+static void ReverbDestroy(void *self);
+static void TransposeDestroy(void *self);
+static void RestDestroy(void *self);
+static void NoteDestroy(void *self);
+static void IncludeDestroy(void *self);
+static void PatternDestroy(void *self);
+static void DefineDestroy(void *self);
+static void ContextDestroy(void *self);
+static void IdentifierDestroy(void *self);
+static void NoteParamDestroy(void *self);
 
 %}
 
@@ -60,8 +78,8 @@ DeclareStatementPrototype(NoteParam);
     int i;
     float f;
     char *s;
-    Node *node;
-    NodeList *list;
+    void *node;
+    void *list;
 }
 
 %token <i>INTEGER
@@ -94,11 +112,17 @@ statement_list
         }
     | statement
         {
-            $$ = $1 ? listAppend(list(), $1) : list();
+            $$ = list();
+            if ($1) {
+                listAppend($$, $1);
+            }
         }
     | statement_list statement
         {
-            $$ = $2 ? listAppend($1, $2) : $1;
+            $$ = $1;
+            if ($2) {
+                listAppend($$, $2);
+            }
         }
     ;
 
@@ -138,218 +162,218 @@ statement
 resolution
     : RESOLUTION INTEGER
         {
-            Resolution *n = stmt(Resolution);
+            Resolution *n = node(Resolution);
             n->resolution = $2;
-            $$ = (Node *)n;
+            $$ = n;
         }
     ;
 
 title
     : TITLE STRING
         {
-            Title *n = stmt(Title);
+            Title *n = node(Title);
             n->title = $2;
-            $$ = (Node *)n;
+            $$ = n;
         }
     ;
 
 tempo
     : TEMPO FLOAT
         {
-            Tempo *n = stmt(Tempo);
+            Tempo *n = node(Tempo);
             n->tempo = $2;
-            $$ = (Node *)n;
+            $$ = n;
         }
     ;
       
 time
     : TIME INTEGER '/' INTEGER
         {
-            Time *n = stmt(Time);
+            Time *n = node(Time);
             n->numerator = $2;
             n->denominator = $4;
-            $$ = (Node *)n;
+            $$ = n;
         }
     ;
       
 key
     : KEY KEY_SIGN
         {
-            Key *n = stmt(Key);
+            Key *n = node(Key);
             n->keyString = $2;
-            $$ = (Node *)n;
+            $$ = n;
         }
     ;
 
 marker
     : MARKER STRING
         {
-            Marker *n = stmt(Marker);
+            Marker *n = node(Marker);
             n->text = $2;
-            $$ = (Node *)n;
+            $$ = n;
         }
     ;
 
 channel
     : CHANNEL INTEGER
         {
-            Channel *n = stmt(Channel);
+            Channel *n = node(Channel);
             n->number = $2;
-            $$ = (Node *)n;
+            $$ = n;
         }
     ;
 
 voice
     : VOICE INTEGER INTEGER INTEGER
         {
-            Voice *n = stmt(Voice);
+            Voice *n = node(Voice);
             n->msb = $2;
             n->lsb = $3;
             n->programNo = $4;
-            $$ = (Node *)n;
+            $$ = n;
         }
     ;
 
 synth
     : SYNTH STRING
         {
-            Synth *n = stmt(Synth);
+            Synth *n = node(Synth);
             n->name = $2;
-            $$ = (Node *)n;
+            $$ = n;
         }
     ;
 
 volume
     : VOLUME INTEGER
         {
-            Volume *n = stmt(Volume);
+            Volume *n = node(Volume);
             n->value = $2;
-            $$ = (Node *)n;
+            $$ = n;
         }
     ;
 
 pan
     : PAN INTEGER
         {
-            Pan *n = stmt(Pan);
+            Pan *n = node(Pan);
             n->value = $2;
-            $$ = (Node *)n;
+            $$ = n;
         }
     | PAN '+' INTEGER
         {
-            Pan *n = stmt(Pan);
+            Pan *n = node(Pan);
             n->value = $3;
-            $$ = (Node *)n;
+            $$ = n;
         }
     | PAN '-' INTEGER
         {
-            Pan *n = stmt(Pan);
+            Pan *n = node(Pan);
             n->value = -$3;
-            $$ = (Node *)n;
+            $$ = n;
         }
     ;
 
 chorus
     : CHORUS INTEGER
         {
-            Chorus *n = stmt(Chorus);
+            Chorus *n = node(Chorus);
             n->value = $2;
-            $$ = (Node *)n;
+            $$ = n;
         }
     ;
 
 reverb
     : REVERB INTEGER
         {
-            Reverb *n = stmt(Reverb);
+            Reverb *n = node(Reverb);
             n->value = $2;
-            $$ = (Node *)n;
+            $$ = n;
         }
     ;
 
 transpose
     : TRANSPOSE INTEGER
         {
-            Transpose *n = stmt(Transpose);
+            Transpose *n = node(Transpose);
             n->value = $2;
-            $$ = (Node *)n;
+            $$ = n;
         }
     | TRANSPOSE '+' INTEGER
         {
-            Transpose *n = stmt(Transpose);
+            Transpose *n = node(Transpose);
             n->value = $3;
-            $$ = (Node *)n;
+            $$ = n;
         }
     | TRANSPOSE '-' INTEGER
         {
-            Transpose *n = stmt(Transpose);
+            Transpose *n = node(Transpose);
             n->value = -$3;
-            $$ = (Node *)n;
+            $$ = n;
         }
     ;
 
 rest
     : REST INTEGER
         {
-            Rest *n = stmt(Rest);
+            Rest *n = node(Rest);
             n->step = $2;
-            $$ = (Node *)n;
+            $$ = n;
         }
     ;
 
 note
     : NOTE note_param_list
         {
-            Note *n = stmt(Note);
+            Note *n = node(Note);
             n->noteString = $1;
-            n->list = $2;
-            $$ = (Node *)n;
+            n->node.children = $2;
+            $$ = n;
         }
     ;
 
 include
     : INCLUDE STRING
         {
-            Include *n = stmt(Include);
+            Include *n = node(Include);
             n->filepath = $2;
-            $$ = (Node *)n;
+            $$ = n;
         }
     ;
 
 pattern
     : IDENTIFIER
         {
-            Pattern *n = stmt(Pattern);
+            Pattern *n = node(Pattern);
             n->identifier = $1;
-            n->list = list();
-            $$ = (Node *)n;
+            n->node.children = list();
+            $$ = n;
         }
     | IDENTIFIER '(' identifier_list ')'
         {
-            Pattern *n = stmt(Pattern);
+            Pattern *n = node(Pattern);
             n->identifier = $1;
-            n->list = $3;
-            $$ = (Node *)n;
+            n->node.children = $3;
+            $$ = n;
         }
     ;
 
 define
     : DEFINE IDENTIFIER statement_list END
         {
-            Define *n = stmt(Define);
+            Define *n = node(Define);
             n->identifier = $2;
-            n->list = $3;
-            $$ = (Node *)n;
+            n->node.children = $3;
+            $$ = n;
         }
     ;
 
 context
     : identifier_list '{' statement_list '}'
         {
-            Context *n = stmt(Context);
+            Context *n = node(Context);
             n->ctxIdList = $1;
-            n->list = $3;
-            $$ = (Node *)n;
+            n->node.children = $3;
+            $$ = n;
         }
     ;
 
@@ -360,20 +384,22 @@ identifier_list
         }
     | identifier
         {
-            $$ = listAppend(list(), $1);
+            $$ = list();
+            listAppend($$, $1);
         }
     | identifier_list ',' identifier
         {
-            $$ = listAppend($1, $3);
+            $$ = $1;
+            listAppend($$, $3);
         }
     ;
 
 identifier
     : IDENTIFIER
         {
-            Identifier *n = stmt(Identifier);
+            Identifier *n = node(Identifier);
             n->idString = $1;
-            $$ = (Node *)n;
+            $$ = n;
         }
     ;
 
@@ -384,26 +410,28 @@ note_param_list
         }
     | note_param
         {
-            $$ = listAppend(list(), $1);
+            $$ = list();
+            listAppend($$, $1);
         }
     | note_param_list note_param
         {
-            $$ = listAppend($1, $2);
+            $$ = $1;
+            listAppend($$, $2);
         }
     ;
 
 note_param
     : '-'
         {
-            NoteParam *n = stmt(NoteParam);
+            NoteParam *n = node(NoteParam);
             n->value = -1;
-            $$ = (Node *)n;
+            $$ = n;
         }
     | INTEGER
         {
-            NoteParam *n = stmt(NoteParam);
+            NoteParam *n = node(NoteParam);
             n->value = $1;
-            $$ = (Node *)n;
+            $$ = n;
         }
     ;
 
@@ -412,7 +440,7 @@ note_param
 #define DeclareAccept(type) \
     static void type##Accept(void *self, void *visitor) \
     { \
-        NAMidiParserVisit##type(visitor, self); \
+        ((NAMidiStatementVisitor *)visitor)->visit##type(visitor, self); \
     }
 
 #define DeclareDestroy(type, yield) \
@@ -463,10 +491,10 @@ DeclareDestroy(Chorus, NOP);
 DeclareDestroy(Reverb, NOP);
 DeclareDestroy(Transpose, NOP);
 DeclareDestroy(Rest, NOP);
-DeclareDestroy(Note, { free(self->noteString); listDestroy(self->list); });
+DeclareDestroy(Note, { free(self->noteString); });
 DeclareDestroy(Include, free(self->filepath));
-DeclareDestroy(Pattern, { free(self->identifier); listDestroy(self->list); });
-DeclareDestroy(Define, { free(self->identifier); listDestroy(self->list); });
-DeclareDestroy(Context, { listDestroy(self->ctxIdList); listDestroy(self->list); });
+DeclareDestroy(Pattern, { free(self->identifier); });
+DeclareDestroy(Define, { free(self->identifier); });
+DeclareDestroy(Context, { NAArrayTraverse(self->ctxIdList, NodeDestroy); NAArrayDestroy(self->ctxIdList); });
 DeclareDestroy(Identifier, free(self->idString));
 DeclareDestroy(NoteParam, NOP);

@@ -1,14 +1,13 @@
 #pragma once
 
+#include "NAArray.h"
+
 typedef struct _Node {
-    struct Node *next;
+    const char *type;
+    void (*accept)(void *self, void *visitor);
+    void (*destroy)(void *self);
+    NAArray *children;
 } Node;
 
-typedef struct _NodeList {
-    Node *head;
-    Node *tail;
-} NodeList;
-
-extern NodeList *NodeListCreate();
-extern NodeList *NodeListAppend(NodeList *self, Node *node);
-extern void NodeListTraverse(NodeList *self, void (*)(void *));
+extern void *NodeCreate(int size, const char *type, void (*accept)(void *, void *), void (*destroy)(void *));
+extern void NodeDestroy(void *self);

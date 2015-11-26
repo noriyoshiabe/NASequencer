@@ -1,120 +1,116 @@
 #pragma once
 
-#include "Statement.h"
+#include "Node.h"
 
 typedef struct _Resolution {
-    Statement stmt;
+    Node node;
     int resolution;
 } Resolution;
 
 typedef struct _Title {
-    Statement stmt;
+    Node node;
     char *title;
 } Title;
 
 typedef struct _Tempo {
-    Statement stmt;
+    Node node;
     float tempo;
 } Tempo;
 
 typedef struct _Time {
-    Statement stmt;
+    Node node;
     int numerator;
     int denominator;
 } Time;
 
 typedef struct _Key {
-    Statement stmt;
+    Node node;
     char *keyString;
 } Key;
 
 typedef struct _Marker {
-    Statement stmt;
+    Node node;
     char *text;
 } Marker;
 
 typedef struct _Channel {
-    Statement stmt;
+    Node node;
     int number;
 } Channel;
 
 typedef struct _Voice {
-    Statement stmt;
+    Node node;
     int msb;
     int lsb;
     int programNo;
 } Voice;
 
 typedef struct _Synth {
-    Statement stmt;
+    Node node;
     char *name;
 } Synth;
 
 typedef struct _Volume {
-    Statement stmt;
+    Node node;
     int value;
 } Volume;
 
 typedef struct _Pan {
-    Statement stmt;
+    Node node;
     int value;
 } Pan;
 
 typedef struct _Chorus {
-    Statement stmt;
+    Node node;
     int value;
 } Chorus;
 
 typedef struct _Reverb {
-    Statement stmt;
+    Node node;
     int value;
 } Reverb;
 
 typedef struct _Transpose {
-    Statement stmt;
+    Node node;
     int value;
 } Transpose;
 
 typedef struct _Rest {
-    Statement stmt;
+    Node node;
     int step;
 } Rest;
 
 typedef struct _Note {
-    Statement stmt;
+    Node node;
     char *noteString;
-    NodeList *list;
 } Note;
 
 typedef struct _Include {
-    Statement stmt;
+    Node node;
     char *filepath;
 } Include;
 
 typedef struct _Pattern {
-    Statement stmt;
+    Node node;
     char *identifier;
-    NodeList *list;
 } Pattern;
 
 typedef struct _Define {
-    Statement stmt;
+    Node node;
     char *identifier;
-    NodeList *list;
 } Define;
 
 typedef struct _Context {
-    Statement stmt;
-    NodeList *ctxIdList;
-    NodeList *list;
+    Node node;
+    NAArray *ctxIdList;
 } Context;
 
 typedef struct _Identifier {
-    Statement stmt;
+    Node node;
     char *idString;
 } Identifier;
 
 typedef struct _NoteParam {
-    Statement stmt;
+    Node node;
     int value;
 } NoteParam;
