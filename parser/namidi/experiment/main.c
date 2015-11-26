@@ -1,6 +1,8 @@
 #include "NAMidi_yacc.h"
 #include "NAMidi_lex.h"
 #include "Node.h"
+#include "NAMidiPreprocessor.h"
+#include "NAMidiComposer.h"
 
 #include <stdio.h>
 
@@ -18,9 +20,19 @@ int main(int argc, char **argv)
     YY_BUFFER_STATE state = NAMidi__create_buffer(fp, YY_BUF_SIZE, scanner);
     NAMidi__switch_to_buffer(state, scanner);
 
-    void *node = NULL;
-    int ret = NAMidi_parse(scanner, argv[1], &node);
+    Node *node = NULL;
+    int ret = NAMidi_parse(scanner, argv[1], (void **)&node);
     NodeDump(node, 0);
+
+    NAMidiPreprocessor *preprocessor = NAMidiPreprocessorCreate(NULL);
+    NAMidiComposer *composer = NAMidiComposerCreate(NULL);
+
+    node->accept(node, preprocessor);
+    node->accept(node, composer);
+
+    NAMidiPreprocessorDestroy(preprocessor);
+    NAMidiComposerDestroy(composer);
+
     NodeDestroy(node);
 
     NAMidi__delete_buffer(state, scanner);
