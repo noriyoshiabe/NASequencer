@@ -6,30 +6,31 @@
 #include "NAMap.h"
 
 typedef enum {
-    List,
-    Resolution,
-    Title,
-    Tempo,
-    Time,
-    Key,
-    Marker,
-    Channel,
-    Voice,
-    Synth,
-    Volume,
-    Pan,
-    Chorus,
-    Reverb,
-    Transpose,
-    Rest,
-    Note,
-    Pattern,
-    Context,
+    SEMTypeList,
+    SEMTypeResolution,
+    SEMTypeTitle,
+    SEMTypeTempo,
+    SEMTypeTime,
+    SEMTypeKey,
+    SEMTypeMarker,
+    SEMTypeChannel,
+    SEMTypeVoice,
+    SEMTypeSynth,
+    SEMTypeVolume,
+    SEMTypePan,
+    SEMTypeChorus,
+    SEMTypeReverb,
+    SEMTypeTranspose,
+    SEMTypeRest,
+    SEMTypeNote,
+    SEMTypePattern,
+    SEMTypeContext,
 } SEMType;
 
 typedef struct _SEMList {
     Node node;
     NAMap *patternMap;
+    char *identifier;
 } SEMList;
 
 typedef struct _SEMResolution {
@@ -121,6 +122,8 @@ typedef struct _SEMNote {
     char *noteString;
 } SEMNote;
 
+#define SEMNOTE_OCTAVE_NONE -99
+
 typedef struct _SEMPattern {
     Node node;
     char *identifier;
@@ -154,4 +157,4 @@ typedef struct _SEMVisitor {
     void (*visitContext)(void *self, SEMContext *sem);
 } SEMVisitor;
 
-extern void *NAMidiSEMNodeCreate(SEMType type, const char *filepath, int line, int column);
+extern void *NAMidiSEMNodeCreate(SEMType type, FileLocation *location);

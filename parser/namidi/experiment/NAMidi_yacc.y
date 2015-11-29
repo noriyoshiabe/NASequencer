@@ -8,7 +8,7 @@
 extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, void **node, const char *message);
 extern void NAMidi_lex_set_error_until_eol(yyscan_t scanner);
 
-#define node(type, yylloc) NAMidiASTNodeCreate(type, filepath, yylloc.first_line, yylloc.first_column)
+#define node(type, yylloc) NAMidiASTNodeCreate(ASTType##type, &((FileLocation){filepath, yylloc.first_line, yylloc.first_column}))
 #define list() NAArrayCreate(4, NULL)
 #define listAppend(list, node) NAArrayAppend(list, node)
 

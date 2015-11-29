@@ -20,17 +20,17 @@ int main(int argc, char **argv)
     YY_BUFFER_STATE state = NAMidi__create_buffer(fp, YY_BUF_SIZE, scanner);
     NAMidi__switch_to_buffer(state, scanner);
 
-    Node *node = NULL;
-    int ret = NAMidi_parse(scanner, argv[1], (void **)&node);
-    NodeDump(node, 0);
+    Node *ast = NULL;
+    int ret = NAMidi_parse(scanner, argv[1], (void **)&ast);
+    NodeDump(ast, 0);
 
     NAMidiASTParser *astParser = NAMidiASTParserCreate(NULL);
-
-    node->accept(node, astParser);
+    Node *sem = NAMidiASTParserBuildSemantics(astParser, ast);
+    NodeDump(sem, 0);
 
     NAMidiASTParserDestroy(astParser);
-
-    NodeDestroy(node);
+    NodeDestroy(ast);
+    NodeDestroy(sem);
 
     NAMidi__delete_buffer(state, scanner);
     NAMidi_lex_destroy(scanner);

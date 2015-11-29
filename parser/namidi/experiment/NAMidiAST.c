@@ -66,11 +66,11 @@ DeclareDestroy(Context, { NAArrayTraverse(self->ctxIdList, NodeDestroy); NAArray
 DeclareDestroy(Identifier, free(self->idString));
 DeclareDestroy(NoteParam, NOP);
 
-void *NAMidiASTNodeCreate(ASTType type, const char *filepath, int line, int column)
+void *NAMidiASTNodeCreate(ASTType type, FileLocation *location)
 {
 #define CASE(type) \
-    case type: \
-        return NodeCreate(sizeof(AST##type), #type, filepath, line, column, type##Accept, type##Destroy);
+    case ASTType##type: \
+        return NodeCreate(sizeof(AST##type), #type, location, type##Accept, type##Destroy);
 
     switch (type) {
     CASE(Root);

@@ -14,12 +14,12 @@ add_subdirectory (../../../lib ${CMAKE_CURRENT_BINARY_DIR}/lib)
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}
   ../../../lib
-  ../../
 )
 
 set(SOURCES
   main.c
-  ../../NoteTable.c
+  NoteTable.c
+  Parser.c
   Node.c
   NAMidiAST.c
   NAMidiASTParser.c

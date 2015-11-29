@@ -38,7 +38,7 @@ DeclareAccept(Note);
 DeclareAccept(Pattern);
 DeclareAccept(Context);
 
-DeclareDestroy(List, { NAMapTraverseValue(self->patternMap, NodeDestroy); NAMapDestroy(self->patternMap); });
+DeclareDestroy(List, { if (self->identifier) { free(self->identifier); } NAMapTraverseValue(self->patternMap, NodeDestroy); NAMapDestroy(self->patternMap); });
 DeclareDestroy(Resolution, NOP);
 DeclareDestroy(Title, free(self->title));
 DeclareDestroy(Tempo, NOP);
@@ -58,14 +58,13 @@ DeclareDestroy(Note, free(self->noteString));
 DeclareDestroy(Pattern, { free(self->identifier); NAArrayTraverse(self->ctxIdList, free); NAArrayDestroy(self->ctxIdList); });
 DeclareDestroy(Context, { NAArrayTraverse(self->ctxIdList, free); NAArrayDestroy(self->ctxIdList); });
 
-void *NAMidiSEMNodeCreate(SEMType type, const char *filepath, int line, int column)
+void *NAMidiSEMNodeCreate(SEMType type, FileLocation *location)
 {
 #define CASE(type) \
-    case type: \
-        return NodeCreate(sizeof(SEM##type), #type, filepath, line, column, type##Accept, type##Destroy);
+    case SEMType##type: \
+        return NodeCreate(sizeof(SEM##type), #type, location, type##Accept, type##Destroy);
 
     switch (type) {
-    CASE(List);
     CASE(Resolution);
     CASE(Title);
     CASE(Tempo);
@@ -82,8 +81,30 @@ void *NAMidiSEMNodeCreate(SEMType type, const char *filepath, int line, int colu
     CASE(Transpose);
     CASE(Rest);
     CASE(Note);
-    CASE(Pattern);
-    CASE(Context);
+
+    case SEMTypeList:
+        {
+            SEMList *n = NodeCreate(sizeof(SEMList), "List", location, ListAccept, ListDestroy);
+            n->node.children = NAArrayCreate(4, NULL);
+            n->patternMap = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
+            return n;
+        }
+
+    case SEMTypePattern:
+        {
+            SEMPattern *n = NodeCreate(sizeof(SEMPattern), "Pattern", location, ListAccept, ListDestroy);
+            n->node.children = NAArrayCreate(4, NULL);
+            n->ctxIdList = NAArrayCreate(4, NULL);
+            return n;
+        }
+
+    case SEMTypeContext:
+        {
+            SEMContext *n = NodeCreate(sizeof(SEMContext), "Context", location, ListAccept, ListDestroy);
+            n->node.children = NAArrayCreate(4, NULL);
+            n->ctxIdList = NAArrayCreate(4, NULL);
+            return n;
+        }
     }
 #undef CASE
 }

@@ -3,29 +3,29 @@
 #include "Node.h"
 
 typedef enum {
-    Root,
-    Resolution,
-    Title,
-    Tempo,
-    Time,
-    Key,
-    Marker,
-    Channel,
-    Voice,
-    Synth,
-    Volume,
-    Pan,
-    Chorus,
-    Reverb,
-    Transpose,
-    Rest,
-    Note,
-    Include,
-    Pattern,
-    Define,
-    Context,
-    Identifier,
-    NoteParam,
+    ASTTypeRoot,
+    ASTTypeResolution,
+    ASTTypeTitle,
+    ASTTypeTempo,
+    ASTTypeTime,
+    ASTTypeKey,
+    ASTTypeMarker,
+    ASTTypeChannel,
+    ASTTypeVoice,
+    ASTTypeSynth,
+    ASTTypeVolume,
+    ASTTypePan,
+    ASTTypeChorus,
+    ASTTypeReverb,
+    ASTTypeTranspose,
+    ASTTypeRest,
+    ASTTypeNote,
+    ASTTypeInclude,
+    ASTTypePattern,
+    ASTTypeDefine,
+    ASTTypeContext,
+    ASTTypeIdentifier,
+    ASTTypeNoteParam,
 } ASTType;
 
 typedef struct _ASTRoot {
@@ -171,4 +171,4 @@ typedef struct _ASTVisitor {
     void (*visitNoteParam)(void *self, ASTNoteParam *ast);
 } ASTVisitor;
 
-extern void *NAMidiASTNodeCreate(ASTType type, const char *filepath, int line, int column);
+extern void *NAMidiASTNodeCreate(ASTType type, FileLocation *location);
