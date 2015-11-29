@@ -133,6 +133,7 @@ typedef struct _SEMPattern {
 typedef struct _SEMContext {
     Node node;
     NAArray *ctxIdList;
+    SEMList *list;
 } SEMContext;
 
 typedef struct _SEMVisitor {

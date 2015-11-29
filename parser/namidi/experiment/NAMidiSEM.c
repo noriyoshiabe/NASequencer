@@ -56,13 +56,53 @@ DeclareDestroy(Transpose, NOP);
 DeclareDestroy(Rest, NOP);
 DeclareDestroy(Note, free(self->noteString));
 DeclareDestroy(Pattern, { free(self->identifier); NAArrayTraverse(self->ctxIdList, free); NAArrayDestroy(self->ctxIdList); });
-DeclareDestroy(Context, { NAArrayTraverse(self->ctxIdList, free); NAArrayDestroy(self->ctxIdList); });
+DeclareDestroy(Context, { NAArrayTraverse(self->ctxIdList, free); NAArrayDestroy(self->ctxIdList); NodeDestroy(self->list); });
+
+static void ListDump(void *_self, int indent)
+{
+    SEMList *self = _self;
+
+    NAIterator *iterator = NAMapGetIterator(self->patternMap);
+    while (iterator->hasNext(iterator)) {
+        NAMapEntry *entry = iterator->next(iterator);
+        printf("%*s", indent + 4, "");
+        printf("<pattern> %s\n", entry->key);
+        NodeDump(entry->value, indent + 4);
+    }
+}
+
+static void PatternDump(void *_self, int indent)
+{
+    SEMPattern *self = _self;
+
+    printf("%*s", indent + 4, "");
+    printf("<identifier> %s\n", self->identifier);
+
+    NAIterator *iterator = NAArrayGetIterator(self->ctxIdList);
+    while (iterator->hasNext(iterator)) {
+        printf("%*s", indent + 4, "");
+        printf("<context> %s\n", iterator->next(iterator));
+    }
+}
+
+static void ContextDump(void *_self, int indent)
+{
+    SEMContext *self = _self;
+
+    NAIterator *iterator = NAArrayGetIterator(self->ctxIdList);
+    while (iterator->hasNext(iterator)) {
+        printf("%*s", indent + 4, "");
+        printf("context: %s\n", iterator->next(iterator));
+    }
+
+    NodeDump(self->list, indent + 4);
+}
 
 void *NAMidiSEMNodeCreate(SEMType type, FileLocation *location)
 {
 #define CASE(type) \
     case SEMType##type: \
-        return NodeCreate(sizeof(SEM##type), #type, location, type##Accept, type##Destroy);
+        return NodeCreate(sizeof(SEM##type), #type, location, type##Accept, type##Destroy, NULL);
 
     switch (type) {
     CASE(Resolution);
@@ -84,7 +124,7 @@ void *NAMidiSEMNodeCreate(SEMType type, FileLocation *location)
 
     case SEMTypeList:
         {
-            SEMList *n = NodeCreate(sizeof(SEMList), "List", location, ListAccept, ListDestroy);
+            SEMList *n = NodeCreate(sizeof(SEMList), "List", location, ListAccept, ListDestroy, ListDump);
             n->node.children = NAArrayCreate(4, NULL);
             n->patternMap = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
             return n;
@@ -92,7 +132,7 @@ void *NAMidiSEMNodeCreate(SEMType type, FileLocation *location)
 
     case SEMTypePattern:
         {
-            SEMPattern *n = NodeCreate(sizeof(SEMPattern), "Pattern", location, ListAccept, ListDestroy);
+            SEMPattern *n = NodeCreate(sizeof(SEMPattern), "Pattern", location, PatternAccept, PatternDestroy, PatternDump);
             n->node.children = NAArrayCreate(4, NULL);
             n->ctxIdList = NAArrayCreate(4, NULL);
             return n;
@@ -100,7 +140,7 @@ void *NAMidiSEMNodeCreate(SEMType type, FileLocation *location)
 
     case SEMTypeContext:
         {
-            SEMContext *n = NodeCreate(sizeof(SEMContext), "Context", location, ListAccept, ListDestroy);
+            SEMContext *n = NodeCreate(sizeof(SEMContext), "Context", location, ContextAccept, ContextDestroy, ContextDump);
             n->node.children = NAArrayCreate(4, NULL);
             n->ctxIdList = NAArrayCreate(4, NULL);
             return n;

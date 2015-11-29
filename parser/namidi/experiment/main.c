@@ -3,6 +3,7 @@
 
 #include "Node.h"
 #include "NAMidiASTParser.h"
+#include "NAMidiSEMParser.h"
 
 #include <stdio.h>
 
@@ -28,7 +29,11 @@ int main(int argc, char **argv)
     Node *sem = NAMidiASTParserBuildSemantics(astParser, ast);
     NodeDump(sem, 0);
 
+    NAMidiSEMParser *semParser = NAMidiSEMParserCreate(NULL);
+    void *seq = NAMidiSEMParserBuildSequence(semParser, sem);
+
     NAMidiASTParserDestroy(astParser);
+    NAMidiSEMParserDestroy(semParser);
     NodeDestroy(ast);
     NodeDestroy(sem);
 

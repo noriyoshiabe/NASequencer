@@ -14,11 +14,12 @@ typedef struct _Node {
 
     void (*accept)(void *self, void *visitor);
     void (*destroy)(void *self);
+    void (*dump)(void *self, int indent);
 
     NAArray *children;
 } Node;
 
 extern void *NodeCreate(int size, const char *type, FileLocation *location,
-        void (*accept)(void *, void *), void (*destroy)(void *));
+        void (*accept)(void *, void *), void (*destroy)(void *), void (*dump)(void *, int));
 extern void NodeDestroy(void *self);
 extern void NodeDump(void *self, int indent);

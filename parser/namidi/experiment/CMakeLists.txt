@@ -24,6 +24,7 @@ set(SOURCES
   NAMidiAST.c
   NAMidiASTParser.c
   NAMidiSEM.c
+  NAMidiSEMParser.c
 )
 
 add_executable(${PROJECT_NAME}

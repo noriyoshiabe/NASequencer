@@ -70,7 +70,7 @@ void *NAMidiASTNodeCreate(ASTType type, FileLocation *location)
 {
 #define CASE(type) \
     case ASTType##type: \
-        return NodeCreate(sizeof(AST##type), #type, location, type##Accept, type##Destroy);
+        return NodeCreate(sizeof(AST##type), #type, location, type##Accept, type##Destroy, NULL);
 
     switch (type) {
     CASE(Root);

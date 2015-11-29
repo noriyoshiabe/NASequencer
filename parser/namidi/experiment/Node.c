@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 void *NodeCreate(int size, const char *type, FileLocation *location,
-        void (*accept)(void *, void *), void (*destroy)(void *))
+        void (*accept)(void *, void *), void (*destroy)(void *), void (*dump)(void *, int))
 {
     Node *self = calloc(1, size);
     self->type = type;
@@ -13,6 +13,7 @@ void *NodeCreate(int size, const char *type, FileLocation *location,
 
     self->accept = accept;
     self->destroy = destroy;
+    self->dump = dump;
     return self;
 }
 
@@ -34,6 +35,10 @@ void NodeDump(void *_self, int indent)
     Node *self = _self;
     printf("%*s", indent, "");
     printf("[%s] %s:%d:%d\n", self->type, self->location.filepath, self->location.line, self->location.column);
+
+    if (self->dump) {
+        self->dump(self, indent);
+    }
 
     if (self->children) {
         NAIterator *iterator = NAArrayGetIterator(self->children);

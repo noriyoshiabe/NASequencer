@@ -477,6 +477,7 @@ static void visitPattern(void *_self, ASTPattern *ast)
     NAMidiASTParser *self = _self;
 
     SEMPattern *sem = node(Pattern, ast);
+    sem->identifier = strdup(ast->identifier);
 
     NAIterator *iterator = NAArrayGetIterator(ast->node.children);
     while (iterator->hasNext(iterator)) {
@@ -520,11 +521,25 @@ static void visitContext(void *_self, ASTContext *ast)
 
     SEMContext *sem = node(Context, ast);
 
-    NAIterator *iterator = NAArrayGetIterator(ast->node.children);
+    NAIterator *iterator;
+
+    iterator = NAArrayGetIterator(ast->ctxIdList);
     while (iterator->hasNext(iterator)) {
         ASTIdentifier *node = iterator->next(iterator);
         NAArrayAppend(sem->ctxIdList, strdup(node->idString));
     }
+
+    sem->list = node(List, ast);
+    NAStackPush(self->listStack, self->currentList);
+    self->currentList = sem->list;
+
+    iterator = NAArrayGetIterator(ast->node.children);
+    while (iterator->hasNext(iterator)) {
+        Node *node = iterator->next(iterator);
+        node->accept(node, self);
+    }
+
+    self->currentList = NAStackPop(self->listStack);
 
     append(self->currentList, sem);
 }
