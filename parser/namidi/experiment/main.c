@@ -1,8 +1,8 @@
 #include "NAMidi_yacc.h"
 #include "NAMidi_lex.h"
+
 #include "Node.h"
-#include "NAMidiPreprocessor.h"
-#include "NAMidiComposer.h"
+#include "NAMidiASTParser.h"
 
 #include <stdio.h>
 
@@ -24,14 +24,11 @@ int main(int argc, char **argv)
     int ret = NAMidi_parse(scanner, argv[1], (void **)&node);
     NodeDump(node, 0);
 
-    NAMidiPreprocessor *preprocessor = NAMidiPreprocessorCreate(NULL);
-    NAMidiComposer *composer = NAMidiComposerCreate(NULL);
+    NAMidiASTParser *astParser = NAMidiASTParserCreate(NULL);
 
-    node->accept(node, preprocessor);
-    node->accept(node, composer);
+    node->accept(node, astParser);
 
-    NAMidiPreprocessorDestroy(preprocessor);
-    NAMidiComposerDestroy(composer);
+    NAMidiASTParserDestroy(astParser);
 
     NodeDestroy(node);
 

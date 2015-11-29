@@ -3,66 +3,14 @@
 #include "NAMidi_yacc.h"
 #include "NAMidi_lex.h"
 
-#include "NAMidiStatement.h"
-#include "NAMidiStatementVisitor.h"
-
-#include <stdio.h>
-#include <stdlib.h>
+#include "NAMidiAST.h"
 
 extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, void **node, const char *message);
 extern void NAMidi_lex_set_error_until_eol(yyscan_t scanner);
 
-#define node(type, yylloc) NodeCreate(sizeof(type), #type, filepath, yylloc.first_line, yylloc.first_column, type##Accept, type##Destroy)
+#define node(type, yylloc) NAMidiASTNodeCreate(type, filepath, yylloc.first_line, yylloc.first_column)
 #define list() NAArrayCreate(4, NULL)
 #define listAppend(list, node) NAArrayAppend(list, node)
-
-static void RootAccept(void *self, void *visitor);
-static void ResolutionAccept(void *self, void *visitor);
-static void TitleAccept(void *self, void *visitor);
-static void TempoAccept(void *self, void *visitor);
-static void TimeAccept(void *self, void *visitor);
-static void KeyAccept(void *self, void *visitor);
-static void MarkerAccept(void *self, void *visitor);
-static void ChannelAccept(void *self, void *visitor);
-static void VoiceAccept(void *self, void *visitor);
-static void SynthAccept(void *self, void *visitor);
-static void VolumeAccept(void *self, void *visitor);
-static void PanAccept(void *self, void *visitor);
-static void ChorusAccept(void *self, void *visitor);
-static void ReverbAccept(void *self, void *visitor);
-static void TransposeAccept(void *self, void *visitor);
-static void RestAccept(void *self, void *visitor);
-static void NoteAccept(void *self, void *visitor);
-static void IncludeAccept(void *self, void *visitor);
-static void PatternAccept(void *self, void *visitor);
-static void DefineAccept(void *self, void *visitor);
-static void ContextAccept(void *self, void *visitor);
-static void IdentifierAccept(void *self, void *visitor);
-static void NoteParamAccept(void *self, void *visitor);
-
-static void RootDestroy(void *self);
-static void ResolutionDestroy(void *self);
-static void TitleDestroy(void *self);
-static void TempoDestroy(void *self);
-static void TimeDestroy(void *self);
-static void KeyDestroy(void *self);
-static void MarkerDestroy(void *self);
-static void ChannelDestroy(void *self);
-static void VoiceDestroy(void *self);
-static void SynthDestroy(void *self);
-static void VolumeDestroy(void *self);
-static void PanDestroy(void *self);
-static void ChorusDestroy(void *self);
-static void ReverbDestroy(void *self);
-static void TransposeDestroy(void *self);
-static void RestDestroy(void *self);
-static void NoteDestroy(void *self);
-static void IncludeDestroy(void *self);
-static void PatternDestroy(void *self);
-static void DefineDestroy(void *self);
-static void ContextDestroy(void *self);
-static void IdentifierDestroy(void *self);
-static void NoteParamDestroy(void *self);
 
 %}
 
@@ -107,7 +55,7 @@ static void NoteParamDestroy(void *self);
 input
     : statement_list
         {
-            Root *n = node(Root, @$);
+            ASTRoot *n = node(Root, @$);
             n->node.children = $1;
             *node = n;
         }
@@ -170,7 +118,7 @@ statement
 resolution
     : RESOLUTION INTEGER
         {
-            Resolution *n = node(Resolution, @$);
+            ASTResolution *n = node(Resolution, @$);
             n->resolution = $2;
             $$ = n;
         }
@@ -179,7 +127,7 @@ resolution
 title
     : TITLE STRING
         {
-            Title *n = node(Title, @$);
+            ASTTitle *n = node(Title, @$);
             n->title = $2;
             $$ = n;
         }
@@ -188,7 +136,7 @@ title
 tempo
     : TEMPO FLOAT
         {
-            Tempo *n = node(Tempo, @$);
+            ASTTempo *n = node(Tempo, @$);
             n->tempo = $2;
             $$ = n;
         }
@@ -197,7 +145,7 @@ tempo
 time
     : TIME INTEGER '/' INTEGER
         {
-            Time *n = node(Time, @$);
+            ASTTime *n = node(Time, @$);
             n->numerator = $2;
             n->denominator = $4;
             $$ = n;
@@ -207,7 +155,7 @@ time
 key
     : KEY KEY_SIGN
         {
-            Key *n = node(Key, @$);
+            ASTKey *n = node(Key, @$);
             n->keyString = $2;
             $$ = n;
         }
@@ -216,7 +164,7 @@ key
 marker
     : MARKER STRING
         {
-            Marker *n = node(Marker, @$);
+            ASTMarker *n = node(Marker, @$);
             n->text = $2;
             $$ = n;
         }
@@ -225,7 +173,7 @@ marker
 channel
     : CHANNEL INTEGER
         {
-            Channel *n = node(Channel, @$);
+            ASTChannel *n = node(Channel, @$);
             n->number = $2;
             $$ = n;
         }
@@ -234,7 +182,7 @@ channel
 voice
     : VOICE INTEGER INTEGER INTEGER
         {
-            Voice *n = node(Voice, @$);
+            ASTVoice *n = node(Voice, @$);
             n->msb = $2;
             n->lsb = $3;
             n->programNo = $4;
@@ -245,7 +193,7 @@ voice
 synth
     : SYNTH STRING
         {
-            Synth *n = node(Synth, @$);
+            ASTSynth *n = node(Synth, @$);
             n->name = $2;
             $$ = n;
         }
@@ -254,7 +202,7 @@ synth
 volume
     : VOLUME INTEGER
         {
-            Volume *n = node(Volume, @$);
+            ASTVolume *n = node(Volume, @$);
             n->value = $2;
             $$ = n;
         }
@@ -263,19 +211,19 @@ volume
 pan
     : PAN INTEGER
         {
-            Pan *n = node(Pan, @$);
+            ASTPan *n = node(Pan, @$);
             n->value = $2;
             $$ = n;
         }
     | PAN '+' INTEGER
         {
-            Pan *n = node(Pan, @$);
+            ASTPan *n = node(Pan, @$);
             n->value = $3;
             $$ = n;
         }
     | PAN '-' INTEGER
         {
-            Pan *n = node(Pan, @$);
+            ASTPan *n = node(Pan, @$);
             n->value = -$3;
             $$ = n;
         }
@@ -284,7 +232,7 @@ pan
 chorus
     : CHORUS INTEGER
         {
-            Chorus *n = node(Chorus, @$);
+            ASTChorus *n = node(Chorus, @$);
             n->value = $2;
             $$ = n;
         }
@@ -293,7 +241,7 @@ chorus
 reverb
     : REVERB INTEGER
         {
-            Reverb *n = node(Reverb, @$);
+            ASTReverb *n = node(Reverb, @$);
             n->value = $2;
             $$ = n;
         }
@@ -302,19 +250,19 @@ reverb
 transpose
     : TRANSPOSE INTEGER
         {
-            Transpose *n = node(Transpose, @$);
+            ASTTranspose *n = node(Transpose, @$);
             n->value = $2;
             $$ = n;
         }
     | TRANSPOSE '+' INTEGER
         {
-            Transpose *n = node(Transpose, @$);
+            ASTTranspose *n = node(Transpose, @$);
             n->value = $3;
             $$ = n;
         }
     | TRANSPOSE '-' INTEGER
         {
-            Transpose *n = node(Transpose, @$);
+            ASTTranspose *n = node(Transpose, @$);
             n->value = -$3;
             $$ = n;
         }
@@ -323,7 +271,7 @@ transpose
 rest
     : REST INTEGER
         {
-            Rest *n = node(Rest, @$);
+            ASTRest *n = node(Rest, @$);
             n->step = $2;
             $$ = n;
         }
@@ -332,7 +280,7 @@ rest
 note
     : NOTE note_param_list
         {
-            Note *n = node(Note, @$);
+            ASTNote *n = node(Note, @$);
             n->noteString = $1;
             n->node.children = $2;
             $$ = n;
@@ -342,7 +290,7 @@ note
 include
     : INCLUDE STRING
         {
-            Include *n = node(Include, @$);
+            ASTInclude *n = node(Include, @$);
             n->filepath = $2;
             $$ = n;
         }
@@ -351,14 +299,14 @@ include
 pattern
     : IDENTIFIER
         {
-            Pattern *n = node(Pattern, @$);
+            ASTPattern *n = node(Pattern, @$);
             n->identifier = $1;
             n->node.children = list();
             $$ = n;
         }
     | IDENTIFIER '(' identifier_list ')'
         {
-            Pattern *n = node(Pattern, @$);
+            ASTPattern *n = node(Pattern, @$);
             n->identifier = $1;
             n->node.children = $3;
             $$ = n;
@@ -368,7 +316,7 @@ pattern
 define
     : DEFINE IDENTIFIER statement_list END
         {
-            Define *n = node(Define, @$);
+            ASTDefine *n = node(Define, @$);
             n->identifier = $2;
             n->node.children = $3;
             $$ = n;
@@ -378,7 +326,7 @@ define
 context
     : identifier_list '{' statement_list '}'
         {
-            Context *n = node(Context, @$);
+            ASTContext *n = node(Context, @$);
             n->ctxIdList = $1;
             n->node.children = $3;
             $$ = n;
@@ -405,7 +353,7 @@ identifier_list
 identifier
     : IDENTIFIER
         {
-            Identifier *n = node(Identifier, @$);
+            ASTIdentifier *n = node(Identifier, @$);
             n->idString = $1;
             $$ = n;
         }
@@ -431,80 +379,16 @@ note_param_list
 note_param
     : '-'
         {
-            NoteParam *n = node(NoteParam, @$);
+            ASTNoteParam *n = node(NoteParam, @$);
             n->value = -1;
             $$ = n;
         }
     | INTEGER
         {
-            NoteParam *n = node(NoteParam, @$);
+            ASTNoteParam *n = node(NoteParam, @$);
             n->value = $1;
             $$ = n;
         }
     ;
 
 %%
-
-#define DeclareAccept(type) \
-    static void type##Accept(void *self, void *visitor) \
-    { \
-        ((NAMidiStatementVisitor *)visitor)->visit##type(visitor, self); \
-    }
-
-#define DeclareDestroy(type, yield) \
-    static void type##Destroy(void *_self) \
-    { \
-        type *self = _self; \
-        yield; \
-        free(self); \
-    }
-
-#define NOP do { } while (0)
-
-DeclareAccept(Root);
-DeclareAccept(Resolution);
-DeclareAccept(Title);
-DeclareAccept(Tempo);
-DeclareAccept(Time);
-DeclareAccept(Key);
-DeclareAccept(Marker);
-DeclareAccept(Channel);
-DeclareAccept(Voice);
-DeclareAccept(Synth);
-DeclareAccept(Volume);
-DeclareAccept(Pan);
-DeclareAccept(Chorus);
-DeclareAccept(Reverb);
-DeclareAccept(Transpose);
-DeclareAccept(Rest);
-DeclareAccept(Note);
-DeclareAccept(Include);
-DeclareAccept(Pattern);
-DeclareAccept(Define);
-DeclareAccept(Context);
-DeclareAccept(Identifier);
-DeclareAccept(NoteParam);
-
-DeclareDestroy(Root, NOP);
-DeclareDestroy(Resolution, NOP);
-DeclareDestroy(Title, free(self->title));
-DeclareDestroy(Tempo, NOP);
-DeclareDestroy(Time, NOP);
-DeclareDestroy(Key, free(self->keyString));
-DeclareDestroy(Marker, free(self->text));
-DeclareDestroy(Channel, NOP);
-DeclareDestroy(Voice, NOP);
-DeclareDestroy(Synth, free(self->name));
-DeclareDestroy(Volume, NOP);
-DeclareDestroy(Pan, NOP);
-DeclareDestroy(Chorus, NOP);
-DeclareDestroy(Reverb, NOP);
-DeclareDestroy(Transpose, NOP);
-DeclareDestroy(Rest, NOP);
-DeclareDestroy(Note, { free(self->noteString); });
-DeclareDestroy(Include, free(self->filepath));
-DeclareDestroy(Pattern, { free(self->identifier); });
-DeclareDestroy(Define, { free(self->identifier); });
-DeclareDestroy(Context, { NAArrayTraverse(self->ctxIdList, NodeDestroy); NAArrayDestroy(self->ctxIdList); });
-DeclareDestroy(Identifier, free(self->idString));
-DeclareDestroy(NoteParam, NOP);

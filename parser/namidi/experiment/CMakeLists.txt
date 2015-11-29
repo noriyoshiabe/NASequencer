@@ -19,8 +19,8 @@ include_directories(
 set(SOURCES
   main.c
   Node.c
-  NAMidiPreprocessor.c
-  NAMidiComposer.c
+  NAMidiAST.c
+  NAMidiASTParser.c
 )
 
 add_executable(${PROJECT_NAME}
