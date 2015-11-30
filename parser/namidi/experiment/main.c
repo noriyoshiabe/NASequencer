@@ -29,7 +29,7 @@ int main(int argc, char **argv)
     Node *sem = NAMidiASTParserBuildSemantics(astParser, ast);
     NodeDump(sem, 0);
 
-    NAMidiSEMParser *semParser = NAMidiSEMParserCreate(NULL);
+    NAMidiSEMParser *semParser = NAMidiSEMParserCreate(NULL, NULL);
     void *seq = NAMidiSEMParserBuildSequence(semParser, sem);
 
     NAMidiASTParserDestroy(astParser);
