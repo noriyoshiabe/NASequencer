@@ -28,6 +28,9 @@ typedef struct _ParseResult {
     NAArray *errors;
 } ParseResult;
 
+extern ParseError *ParseErrorCreate();
+extern void ParseErrorDestroy(ParseError *self);
+
 extern ParseResult *ParseResultCreate();
 extern ParseResult *ParseResultRetain(ParseResult *self);
 extern void ParseResultRelease(ParseResult *self);

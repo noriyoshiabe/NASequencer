@@ -1,9 +1,10 @@
 #pragma once
 
-#include "ParseResult.h"
-#include "SequenceBuilder.h"
+#include "ParseContext.h"
 
 typedef struct _Driver {
-    ParseResult *(*parse)(SequenceBuilder *builder);
+    ParseResult *(*parse)(void *self, const char *filepath);
     void (*destroy)(void *self);
 } Driver;
+
+typedef Driver *(*DriverFactory)(ParseContext *context);
