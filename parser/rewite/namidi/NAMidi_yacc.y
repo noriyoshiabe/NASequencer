@@ -6,8 +6,11 @@
 #include "NAMidiParser.h"
 #include "NAMidiAST.h"
 
-extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, void **node, const char *message);
 extern void NAMidi_lex_set_error_until_eol(yyscan_t scanner);
+extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, void **node, const char *message);
+
+extern Node *NAMidiParserParseIncludeFile(void *self, FileLocation *location, const char *includeFile);
+extern void NAMidiParserSyntaxError(void *self, FileLocation *location, const char *token);
 
 #define node(type, yylloc) AST##type##Create(&((FileLocation){(char *)filepath, yylloc.first_line, yylloc.first_column}))
 #define list() NAArrayCreate(4, NULL)
@@ -294,6 +297,14 @@ include
             ASTInclude *n = node(Include, @$);
             n->filepath = $2;
             $$ = n;
+
+            FileLocation location = {(char *)filepath, @$.first_line, @$.first_column};
+            Node *node = NAMidiParserParseIncludeFile(NAMidi_get_extra(scanner), &location, $2);
+            if (node) {
+                n->node.children = node->children;
+                node->children = NULL;
+                NodeRelease(node);
+            }
         }
     ;
 
@@ -393,3 +404,10 @@ note_param
     ;
 
 %%
+
+int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, void **node, const char *message)
+{
+    FileLocation location = {(char *)filepath, yylloc->first_line, yylloc->first_column};
+    NAMidiParserSyntaxError(NAMidi_get_extra(scanner), &location, NAMidi_get_text(scanner));
+    return 0;
+}

@@ -17,6 +17,7 @@ include_directories(
 
 set(SOURCES
   NAMidiDriver.c
+  NAMidiParser.c
   NAMidiAST.c
   NAMidiSEM.c
 )
