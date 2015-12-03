@@ -1,6 +1,7 @@
 #pragma once
 
 #include "FileLocation.h"
+#include "NAArray.h"
 
 typedef struct _Node {
     const char *type;
@@ -13,5 +14,6 @@ typedef struct _Node {
     int refCount;
 } Node;
 
-extern Node *NodeRetain(Node *node);
-extern void NodeRelease(Node *node);
+extern void *NodeCreate(int size, const char *type, FileLocation *location);
+extern void *NodeRetain(void *self);
+extern void NodeRelease(void *self);
