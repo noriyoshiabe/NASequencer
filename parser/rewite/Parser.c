@@ -45,14 +45,14 @@ static Driver *ParserDriverCreate(Parser *self, const char *filepath)
     return NULL;
 }
 
-ParseResult *ParserParseFile(Parser *self, const char *filepath)
+void *ParserParseFile(Parser *self, const char *filepath, ParseInfo **info)
 {
     Driver *driver = ParserDriverCreate(self, filepath);
     if (!driver) {
-        return self->context->buildResult(self->context);
+        return self->context->buildResult(self->context, info);
     }
 
-    ParseResult *ret = driver->parse(driver, filepath);
+    void *ret = driver->parse(driver, filepath, info);
     driver->destroy(driver);
     return ret;
 }

@@ -3,7 +3,7 @@
 #include "ParseContext.h"
 
 typedef struct _Driver {
-    ParseResult *(*parse)(void *self, const char *filepath);
+    void *(*parse)(void *self, const char *filepath, ParseInfo **info);
     void (*destroy)(void *self);
 } Driver;
 

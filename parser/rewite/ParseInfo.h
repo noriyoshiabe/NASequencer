@@ -22,15 +22,14 @@ typedef struct _ParseError {
     NAArray *infos;
 } ParseError;
 
-typedef struct _ParseResult {
-    void *sequence;
+typedef struct _ParseInfo {
     NAArray *filepaths;
     NAArray *errors;
-} ParseResult;
+} ParseInfo;
 
 extern ParseError *ParseErrorCreate();
 extern void ParseErrorDestroy(ParseError *self);
 
-extern ParseResult *ParseResultCreate();
-extern ParseResult *ParseResultRetain(ParseResult *self);
-extern void ParseResultRelease(ParseResult *self);
+extern ParseInfo *ParseInfoCreate();
+extern ParseInfo *ParseInfoRetain(ParseInfo *self);
+extern void ParseInfoRelease(ParseInfo *self);

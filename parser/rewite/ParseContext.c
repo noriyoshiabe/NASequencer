@@ -38,18 +38,19 @@ static void ParseContextAppendFile(ParseContext *self, const char *filepath)
     }
 }
 
-static ParseResult *ParseContextBuildResult(ParseContext *self)
+static void *ParseContextBuildResult(ParseContext *self, ParseInfo **info)
 {
-    ParseResult *result = ParseResultCreate();
-    result->sequence = self->builder->build(self->builder);
+    if (info) {
+        *info = ParseInfoCreate();
 
-    result->filepaths = self->filepaths;
-    self->filepaths = NULL;
+        (*info)->filepaths = self->filepaths;
+        self->filepaths = NULL;
 
-    result->errors = self->errors;
-    self->errors = NULL;
+        (*info)->errors = self->errors;
+        self->errors = NULL;
+    }
 
-    return result;
+    return self->builder->build(self->builder);
 }
 
 ParseContext *ParseContextCreate(SequenceBuilder *builder)
@@ -59,6 +60,9 @@ ParseContext *ParseContextCreate(SequenceBuilder *builder)
     self->filepaths = NAArrayCreate(4, NADescriptionCString);
     self->errors = NAArrayCreate(4, NADescriptionAddress);
     self->_fileSet = NASetCreate(NAHashCString, NADescriptionCString);
+    self->appendError = ParseContextAppendError;
+    self->appendFile = ParseContextAppendFile;
+    self->buildResult = ParseContextBuildResult;
     return self;
 }
 

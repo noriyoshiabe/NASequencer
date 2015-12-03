@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ParseResult.h"
+#include "ParseInfo.h"
 #include "SequenceBuilder.h"
 #include "NASet.h"
 
@@ -12,7 +12,7 @@ struct _ParseContext {
 
     void (*appendError)(ParseContext *self, const FileLocation *location, int code, ...);
     void (*appendFile)(ParseContext *self, const char *filepath);
-    ParseResult *(*buildResult)(ParseContext *self);
+    void *(*buildResult)(ParseContext *self, ParseInfo **info);
 
     NASet *_fileSet;
 };

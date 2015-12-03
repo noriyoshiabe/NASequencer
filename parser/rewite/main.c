@@ -3,8 +3,10 @@
 int main(int argc, char **argv)
 {
     SequenceBuilder *builder = NULL;
+    ParseInfo *info = NULL;
     Parser *parser = ParserCreate(builder);
-    ParseResult *result = ParserParseFile(parser, argv[1]);
+    void *sequence = ParserParseFile(parser, argv[1], &info);
+    ParseInfoRelease(info);
     ParserDestroy(parser);
     return 0;
 };
