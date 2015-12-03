@@ -2,32 +2,6 @@
 
 #include "Node.h"
 
-typedef enum {
-    ASTTypeRoot,
-    ASTTypeResolution,
-    ASTTypeTitle,
-    ASTTypeTempo,
-    ASTTypeTime,
-    ASTTypeKey,
-    ASTTypeMarker,
-    ASTTypeChannel,
-    ASTTypeVoice,
-    ASTTypeSynth,
-    ASTTypeVolume,
-    ASTTypePan,
-    ASTTypeChorus,
-    ASTTypeReverb,
-    ASTTypeTranspose,
-    ASTTypeRest,
-    ASTTypeNote,
-    ASTTypeInclude,
-    ASTTypePattern,
-    ASTTypeDefine,
-    ASTTypeContext,
-    ASTTypeIdentifier,
-    ASTTypeNoteParam,
-} ASTType;
-
 typedef struct _ASTRoot {
     Node node;
 } ASTRoot;
@@ -170,3 +144,27 @@ typedef struct _ASTVisitor {
     void (*visitIdentifier)(void *self, ASTIdentifier *ast);
     void (*visitNoteParam)(void *self, ASTNoteParam *ast);
 } ASTVisitor;
+
+extern ASTRoot *ASTRootCreate(FileLocation *location);
+extern ASTResolution *ASTResolutionCreate(FileLocation *location);
+extern ASTTitle *ASTTitleCreate(FileLocation *location);
+extern ASTTempo *ASTTempoCreate(FileLocation *location);
+extern ASTTime *ASTTimeCreate(FileLocation *location);
+extern ASTKey *ASTKeyCreate(FileLocation *location);
+extern ASTMarker *ASTMarkerCreate(FileLocation *location);
+extern ASTChannel *ASTChannelCreate(FileLocation *location);
+extern ASTVoice *ASTVoiceCreate(FileLocation *location);
+extern ASTSynth *ASTSynthCreate(FileLocation *location);
+extern ASTVolume *ASTVolumeCreate(FileLocation *location);
+extern ASTPan *ASTPanCreate(FileLocation *location);
+extern ASTChorus *ASTChorusCreate(FileLocation *location);
+extern ASTReverb *ASTReverbCreate(FileLocation *location);
+extern ASTTranspose *ASTTransposeCreate(FileLocation *location);
+extern ASTRest *ASTRestCreate(FileLocation *location);
+extern ASTNote *ASTNoteCreate(FileLocation *location);
+extern ASTInclude *ASTIncludeCreate(FileLocation *location);
+extern ASTPattern *ASTPatternCreate(FileLocation *location);
+extern ASTDefine *ASTDefineCreate(FileLocation *location);
+extern ASTContext *ASTContextCreate(FileLocation *location);
+extern ASTIdentifier *ASTIdentifierCreate(FileLocation *location);
+extern ASTNoteParam *ASTNoteParamCreate(FileLocation *location);

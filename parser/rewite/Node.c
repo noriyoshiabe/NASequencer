@@ -2,10 +2,15 @@
 
 #include <stdlib.h>
 
-void *NodeCreate(int size, const char *type, FileLocation *location)
+#undef NodeCreate
+
+void *NodeCreate(int size, const char *type, FileLocation *location,
+        void (*accept)(void *self, void *visitor), void (*destroy)(void *self))
 {
     Node *self = calloc(1, size);
     self->type = type;
+    self->accept = accept;
+    self->destroy = destroy;
 
     if (location) {
         self->location = *location;

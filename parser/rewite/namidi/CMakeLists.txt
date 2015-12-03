@@ -17,6 +17,8 @@ include_directories(
 
 set(SOURCES
   NAMidiDriver.c
+  NAMidiAST.c
+  NAMidiSEM.c
 )
 
 add_library(${PROJECT_NAME}

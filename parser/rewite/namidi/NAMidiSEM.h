@@ -7,28 +7,6 @@
 
 #define SEMNOTE_OCTAVE_NONE -99
 
-typedef enum {
-    SEMTypeList,
-    SEMTypeResolution,
-    SEMTypeTitle,
-    SEMTypeTempo,
-    SEMTypeTime,
-    SEMTypeKey,
-    SEMTypeMarker,
-    SEMTypeChannel,
-    SEMTypeVoice,
-    SEMTypeSynth,
-    SEMTypeVolume,
-    SEMTypePan,
-    SEMTypeChorus,
-    SEMTypeReverb,
-    SEMTypeTranspose,
-    SEMTypeRest,
-    SEMTypeNote,
-    SEMTypePattern,
-    SEMTypeContext,
-} SEMType;
-
 typedef struct _SEMList {
     Node node;
     NAMap *patternMap;
@@ -157,3 +135,23 @@ typedef struct _SEMVisitor {
     void (*visitPattern)(void *self, SEMPattern *sem);
     void (*visitContext)(void *self, SEMContext *sem);
 } SEMVisitor;
+
+extern SEMList *SEMListCreate(FileLocation *location);
+extern SEMResolution *SEMResolutionCreate(FileLocation *location);
+extern SEMTitle *SEMTitleCreate(FileLocation *location);
+extern SEMTempo *SEMTempoCreate(FileLocation *location);
+extern SEMTime *SEMTimeCreate(FileLocation *location);
+extern SEMKey *SEMKeyCreate(FileLocation *location);
+extern SEMMarker *SEMMarkerCreate(FileLocation *location);
+extern SEMChannel *SEMChannelCreate(FileLocation *location);
+extern SEMVoice *SEMVoiceCreate(FileLocation *location);
+extern SEMSynth *SEMSynthCreate(FileLocation *location);
+extern SEMVolume *SEMVolumeCreate(FileLocation *location);
+extern SEMPan *SEMPanCreate(FileLocation *location);
+extern SEMChorus *SEMChorusCreate(FileLocation *location);
+extern SEMReverb *SEMReverbCreate(FileLocation *location);
+extern SEMTranspose *SEMTransposeCreate(FileLocation *location);
+extern SEMRest *SEMRestCreate(FileLocation *location);
+extern SEMNote *SEMNoteCreate(FileLocation *location);
+extern SEMPattern *SEMPatternCreate(FileLocation *location);
+extern SEMContext *SEMContextCreate(FileLocation *location);
