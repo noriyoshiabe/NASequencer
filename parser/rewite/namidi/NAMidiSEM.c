@@ -7,13 +7,23 @@ static void SEMListAccept(void *self, void *visitor)
     ((SEMVisitor *)visitor)->visitList(visitor, self);
 }
 
-static void SEMListDestroy(void *self)
+static void SEMListDestroy(void *_self)
 {
+    SEMList *self = _self;
+    if (self->identifier) {
+        free(self->identifier);
+    }
+    
+    NAMapTraverseValue(self->patternMap, NodeRelease);
+    NAMapDestroy(self->patternMap);
 }
 
 SEMList *SEMListCreate(FileLocation *location)
 {
-    return NodeCreate(SEMList, location);
+    SEMList *self = NodeCreate(SEMList, location);
+    self->node.children = NAArrayCreate(4, NULL);
+    self->patternMap = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
+    return self;
 }
 
 static void SEMResolutionAccept(void *self, void *visitor)
@@ -21,7 +31,7 @@ static void SEMResolutionAccept(void *self, void *visitor)
     ((SEMVisitor *)visitor)->visitResolution(visitor, self);
 }
 
-static void SEMResolutionDestroy(void *self)
+static void SEMResolutionDestroy(void *_self)
 {
 }
 
@@ -35,8 +45,10 @@ static void SEMTitleAccept(void *self, void *visitor)
     ((SEMVisitor *)visitor)->visitTitle(visitor, self);
 }
 
-static void SEMTitleDestroy(void *self)
+static void SEMTitleDestroy(void *_self)
 {
+    SEMTitle *self = _self;
+    free(self->title);
 }
 
 SEMTitle *SEMTitleCreate(FileLocation *location)
@@ -49,7 +61,7 @@ static void SEMTempoAccept(void *self, void *visitor)
     ((SEMVisitor *)visitor)->visitTempo(visitor, self);
 }
 
-static void SEMTempoDestroy(void *self)
+static void SEMTempoDestroy(void *_self)
 {
 }
 
@@ -63,7 +75,7 @@ static void SEMTimeAccept(void *self, void *visitor)
     ((SEMVisitor *)visitor)->visitTime(visitor, self);
 }
 
-static void SEMTimeDestroy(void *self)
+static void SEMTimeDestroy(void *_self)
 {
 }
 
@@ -77,8 +89,10 @@ static void SEMKeyAccept(void *self, void *visitor)
     ((SEMVisitor *)visitor)->visitKey(visitor, self);
 }
 
-static void SEMKeyDestroy(void *self)
+static void SEMKeyDestroy(void *_self)
 {
+    SEMKey *self = _self;
+    NoteTableRelease(self->noteTable);
 }
 
 SEMKey *SEMKeyCreate(FileLocation *location)
@@ -91,8 +105,10 @@ static void SEMMarkerAccept(void *self, void *visitor)
     ((SEMVisitor *)visitor)->visitMarker(visitor, self);
 }
 
-static void SEMMarkerDestroy(void *self)
+static void SEMMarkerDestroy(void *_self)
 {
+    SEMMarker *self = _self;
+    free(self->text);
 }
 
 SEMMarker *SEMMarkerCreate(FileLocation *location)
@@ -105,7 +121,7 @@ static void SEMChannelAccept(void *self, void *visitor)
     ((SEMVisitor *)visitor)->visitChannel(visitor, self);
 }
 
-static void SEMChannelDestroy(void *self)
+static void SEMChannelDestroy(void *_self)
 {
 }
 
@@ -119,7 +135,7 @@ static void SEMVoiceAccept(void *self, void *visitor)
     ((SEMVisitor *)visitor)->visitVoice(visitor, self);
 }
 
-static void SEMVoiceDestroy(void *self)
+static void SEMVoiceDestroy(void *_self)
 {
 }
 
@@ -133,8 +149,10 @@ static void SEMSynthAccept(void *self, void *visitor)
     ((SEMVisitor *)visitor)->visitSynth(visitor, self);
 }
 
-static void SEMSynthDestroy(void *self)
+static void SEMSynthDestroy(void *_self)
 {
+    SEMSynth *self = _self;
+    free(self->name);
 }
 
 SEMSynth *SEMSynthCreate(FileLocation *location)
@@ -147,7 +165,7 @@ static void SEMVolumeAccept(void *self, void *visitor)
     ((SEMVisitor *)visitor)->visitVolume(visitor, self);
 }
 
-static void SEMVolumeDestroy(void *self)
+static void SEMVolumeDestroy(void *_self)
 {
 }
 
@@ -161,7 +179,7 @@ static void SEMPanAccept(void *self, void *visitor)
     ((SEMVisitor *)visitor)->visitPan(visitor, self);
 }
 
-static void SEMPanDestroy(void *self)
+static void SEMPanDestroy(void *_self)
 {
 }
 
@@ -175,7 +193,7 @@ static void SEMChorusAccept(void *self, void *visitor)
     ((SEMVisitor *)visitor)->visitChorus(visitor, self);
 }
 
-static void SEMChorusDestroy(void *self)
+static void SEMChorusDestroy(void *_self)
 {
 }
 
@@ -189,7 +207,7 @@ static void SEMReverbAccept(void *self, void *visitor)
     ((SEMVisitor *)visitor)->visitReverb(visitor, self);
 }
 
-static void SEMReverbDestroy(void *self)
+static void SEMReverbDestroy(void *_self)
 {
 }
 
@@ -203,7 +221,7 @@ static void SEMTransposeAccept(void *self, void *visitor)
     ((SEMVisitor *)visitor)->visitTranspose(visitor, self);
 }
 
-static void SEMTransposeDestroy(void *self)
+static void SEMTransposeDestroy(void *_self)
 {
 }
 
@@ -217,7 +235,7 @@ static void SEMRestAccept(void *self, void *visitor)
     ((SEMVisitor *)visitor)->visitRest(visitor, self);
 }
 
-static void SEMRestDestroy(void *self)
+static void SEMRestDestroy(void *_self)
 {
 }
 
@@ -231,8 +249,10 @@ static void SEMNoteAccept(void *self, void *visitor)
     ((SEMVisitor *)visitor)->visitNote(visitor, self);
 }
 
-static void SEMNoteDestroy(void *self)
+static void SEMNoteDestroy(void *_self)
 {
+    SEMNote *self = _self;
+    free(self->noteString);
 }
 
 SEMNote *SEMNoteCreate(FileLocation *location)
@@ -245,13 +265,20 @@ static void SEMPatternAccept(void *self, void *visitor)
     ((SEMVisitor *)visitor)->visitPattern(visitor, self);
 }
 
-static void SEMPatternDestroy(void *self)
+static void SEMPatternDestroy(void *_self)
 {
+    SEMPattern *self = _self;
+    free(self->identifier);
+    NAArrayTraverse(self->ctxIdList, free);
+    NAArrayDestroy(self->ctxIdList);
 }
 
 SEMPattern *SEMPatternCreate(FileLocation *location)
 {
-    return NodeCreate(SEMPattern, location);
+    SEMPattern *self = NodeCreate(SEMPattern, location);
+    self->node.children = NAArrayCreate(4, NULL);
+    self->ctxIdList = NAArrayCreate(4, NULL);
+    return self;
 }
 
 static void SEMContextAccept(void *self, void *visitor)
@@ -259,11 +286,18 @@ static void SEMContextAccept(void *self, void *visitor)
     ((SEMVisitor *)visitor)->visitContext(visitor, self);
 }
 
-static void SEMContextDestroy(void *self)
+static void SEMContextDestroy(void *_self)
 {
+    SEMContext *self = _self;
+    NAArrayTraverse(self->ctxIdList, free);
+    NAArrayDestroy(self->ctxIdList);
+    NodeRelease(self->list);
 }
 
 SEMContext *SEMContextCreate(FileLocation *location)
 {
-    return NodeCreate(SEMContext, location);
+    SEMContext *self = NodeCreate(SEMContext, location);
+    self->node.children = NAArrayCreate(4, NULL);
+    self->ctxIdList = NAArrayCreate(4, NULL);
+    return self;
 }

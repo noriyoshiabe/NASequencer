@@ -7,7 +7,7 @@ static void ASTRootAccept(void *self, void *visitor)
     ((ASTVisitor *)visitor)->visitRoot(visitor, self);
 }
 
-static void ASTRootDestroy(void *self)
+static void ASTRootDestroy(void *_self)
 {
 }
 
@@ -21,7 +21,7 @@ static void ASTResolutionAccept(void *self, void *visitor)
     ((ASTVisitor *)visitor)->visitResolution(visitor, self);
 }
 
-static void ASTResolutionDestroy(void *self)
+static void ASTResolutionDestroy(void *_self)
 {
 }
 
@@ -35,8 +35,10 @@ static void ASTTitleAccept(void *self, void *visitor)
     ((ASTVisitor *)visitor)->visitTitle(visitor, self);
 }
 
-static void ASTTitleDestroy(void *self)
+static void ASTTitleDestroy(void *_self)
 {
+    ASTTitle *self = _self;
+    free(self->title);
 }
 
 ASTTitle *ASTTitleCreate(FileLocation *location)
@@ -49,7 +51,7 @@ static void ASTTempoAccept(void *self, void *visitor)
     ((ASTVisitor *)visitor)->visitTempo(visitor, self);
 }
 
-static void ASTTempoDestroy(void *self)
+static void ASTTempoDestroy(void *_self)
 {
 }
 
@@ -63,7 +65,7 @@ static void ASTTimeAccept(void *self, void *visitor)
     ((ASTVisitor *)visitor)->visitTime(visitor, self);
 }
 
-static void ASTTimeDestroy(void *self)
+static void ASTTimeDestroy(void *_self)
 {
 }
 
@@ -77,8 +79,10 @@ static void ASTKeyAccept(void *self, void *visitor)
     ((ASTVisitor *)visitor)->visitKey(visitor, self);
 }
 
-static void ASTKeyDestroy(void *self)
+static void ASTKeyDestroy(void *_self)
 {
+    ASTKey *self = _self;
+    free(self->keyString);
 }
 
 ASTKey *ASTKeyCreate(FileLocation *location)
@@ -91,8 +95,10 @@ static void ASTMarkerAccept(void *self, void *visitor)
     ((ASTVisitor *)visitor)->visitMarker(visitor, self);
 }
 
-static void ASTMarkerDestroy(void *self)
+static void ASTMarkerDestroy(void *_self)
 {
+    ASTMarker *self = _self;
+    free(self->text);
 }
 
 ASTMarker *ASTMarkerCreate(FileLocation *location)
@@ -105,7 +111,7 @@ static void ASTChannelAccept(void *self, void *visitor)
     ((ASTVisitor *)visitor)->visitChannel(visitor, self);
 }
 
-static void ASTChannelDestroy(void *self)
+static void ASTChannelDestroy(void *_self)
 {
 }
 
@@ -119,7 +125,7 @@ static void ASTVoiceAccept(void *self, void *visitor)
     ((ASTVisitor *)visitor)->visitVoice(visitor, self);
 }
 
-static void ASTVoiceDestroy(void *self)
+static void ASTVoiceDestroy(void *_self)
 {
 }
 
@@ -133,8 +139,10 @@ static void ASTSynthAccept(void *self, void *visitor)
     ((ASTVisitor *)visitor)->visitSynth(visitor, self);
 }
 
-static void ASTSynthDestroy(void *self)
+static void ASTSynthDestroy(void *_self)
 {
+    ASTSynth *self = _self;
+    free(self->name);
 }
 
 ASTSynth *ASTSynthCreate(FileLocation *location)
@@ -147,7 +155,7 @@ static void ASTVolumeAccept(void *self, void *visitor)
     ((ASTVisitor *)visitor)->visitVolume(visitor, self);
 }
 
-static void ASTVolumeDestroy(void *self)
+static void ASTVolumeDestroy(void *_self)
 {
 }
 
@@ -161,7 +169,7 @@ static void ASTPanAccept(void *self, void *visitor)
     ((ASTVisitor *)visitor)->visitPan(visitor, self);
 }
 
-static void ASTPanDestroy(void *self)
+static void ASTPanDestroy(void *_self)
 {
 }
 
@@ -175,7 +183,7 @@ static void ASTChorusAccept(void *self, void *visitor)
     ((ASTVisitor *)visitor)->visitChorus(visitor, self);
 }
 
-static void ASTChorusDestroy(void *self)
+static void ASTChorusDestroy(void *_self)
 {
 }
 
@@ -189,7 +197,7 @@ static void ASTReverbAccept(void *self, void *visitor)
     ((ASTVisitor *)visitor)->visitReverb(visitor, self);
 }
 
-static void ASTReverbDestroy(void *self)
+static void ASTReverbDestroy(void *_self)
 {
 }
 
@@ -203,7 +211,7 @@ static void ASTTransposeAccept(void *self, void *visitor)
     ((ASTVisitor *)visitor)->visitTranspose(visitor, self);
 }
 
-static void ASTTransposeDestroy(void *self)
+static void ASTTransposeDestroy(void *_self)
 {
 }
 
@@ -217,7 +225,7 @@ static void ASTRestAccept(void *self, void *visitor)
     ((ASTVisitor *)visitor)->visitRest(visitor, self);
 }
 
-static void ASTRestDestroy(void *self)
+static void ASTRestDestroy(void *_self)
 {
 }
 
@@ -231,8 +239,10 @@ static void ASTNoteAccept(void *self, void *visitor)
     ((ASTVisitor *)visitor)->visitNote(visitor, self);
 }
 
-static void ASTNoteDestroy(void *self)
+static void ASTNoteDestroy(void *_self)
 {
+    ASTNote *self = _self;
+    free(self->noteString);
 }
 
 ASTNote *ASTNoteCreate(FileLocation *location)
@@ -245,8 +255,10 @@ static void ASTIncludeAccept(void *self, void *visitor)
     ((ASTVisitor *)visitor)->visitInclude(visitor, self);
 }
 
-static void ASTIncludeDestroy(void *self)
+static void ASTIncludeDestroy(void *_self)
 {
+    ASTInclude *self = _self;
+    free(self->filepath);
 }
 
 ASTInclude *ASTIncludeCreate(FileLocation *location)
@@ -259,8 +271,10 @@ static void ASTPatternAccept(void *self, void *visitor)
     ((ASTVisitor *)visitor)->visitPattern(visitor, self);
 }
 
-static void ASTPatternDestroy(void *self)
+static void ASTPatternDestroy(void *_self)
 {
+    ASTPattern *self = _self;
+    free(self->identifier);
 }
 
 ASTPattern *ASTPatternCreate(FileLocation *location)
@@ -273,8 +287,10 @@ static void ASTDefineAccept(void *self, void *visitor)
     ((ASTVisitor *)visitor)->visitDefine(visitor, self);
 }
 
-static void ASTDefineDestroy(void *self)
+static void ASTDefineDestroy(void *_self)
 {
+    ASTDefine *self = _self;
+    free(self->identifier);
 }
 
 ASTDefine *ASTDefineCreate(FileLocation *location)
@@ -287,8 +303,11 @@ static void ASTContextAccept(void *self, void *visitor)
     ((ASTVisitor *)visitor)->visitContext(visitor, self);
 }
 
-static void ASTContextDestroy(void *self)
+static void ASTContextDestroy(void *_self)
 {
+    ASTContext *self = _self;
+    NAArrayTraverse(self->ctxIdList, NodeRelease);
+    NAArrayDestroy(self->ctxIdList);
 }
 
 ASTContext *ASTContextCreate(FileLocation *location)
@@ -301,8 +320,10 @@ static void ASTIdentifierAccept(void *self, void *visitor)
     ((ASTVisitor *)visitor)->visitIdentifier(visitor, self);
 }
 
-static void ASTIdentifierDestroy(void *self)
+static void ASTIdentifierDestroy(void *_self)
 {
+    ASTIdentifier *self = _self;
+    free(self->idString);
 }
 
 ASTIdentifier *ASTIdentifierCreate(FileLocation *location)
@@ -315,7 +336,7 @@ static void ASTNoteParamAccept(void *self, void *visitor)
     ((ASTVisitor *)visitor)->visitNoteParam(visitor, self);
 }
 
-static void ASTNoteParamDestroy(void *self)
+static void ASTNoteParamDestroy(void *_self)
 {
 }
 
