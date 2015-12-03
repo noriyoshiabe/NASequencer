@@ -9,4 +9,9 @@ typedef struct _Node {
 
     void (*accept)(void *self, void *visitor);
     void (*destroy)(void *self);
+
+    int refCount;
 } Node;
+
+extern Node *NodeRetain(Node *node);
+extern void NodeRelease(Node *node);

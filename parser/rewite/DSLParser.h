@@ -4,7 +4,7 @@
 #include "ParseContext.h"
 
 typedef struct _DSLParser {
-    Node *parse(const char *filepath);
+    Node *(*parse)(void *self, const char *filepath);
     void (*destroy)(void *self);
 } DSLParser;
 

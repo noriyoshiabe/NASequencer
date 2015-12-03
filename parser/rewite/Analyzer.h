@@ -4,7 +4,7 @@
 #include "ParseContext.h"
 
 typedef struct _Analyzer {
-    Node *(*process)(Node *node);
+    Node *(*process)(void *self, Node *node);
     void (*destroy)(void *self);
 } Analyzer;
 
