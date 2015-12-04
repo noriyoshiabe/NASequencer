@@ -477,7 +477,7 @@ Analyzer *NAMidiASTAnalyzerCreate(ParseContext *context)
     self->context = context;
     self->listStack = NAStackCreate(4);
 
-    return (Analyzer *)self;
+    return &self->analyzer;
 }
 
 static BaseNote KeyChar2BaseNote(char c)

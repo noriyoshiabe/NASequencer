@@ -49,26 +49,6 @@ static int StateLength(State *self);
 
 #define TICK(state) (state->channels[state->channel].tick)
 
-static void visitList(void *self, SEMList *sem);
-static void visitResolution(void *self, SEMResolution *sem);
-static void visitTitle(void *self, SEMTitle *sem);
-static void visitTempo(void *self, SEMTempo *sem);
-static void visitTime(void *self, SEMTime *sem);
-static void visitKey(void *self, SEMKey *sem);
-static void visitMarker(void *self, SEMMarker *sem);
-static void visitChannel(void *self, SEMChannel *sem);
-static void visitVoice(void *self, SEMVoice *sem);
-static void visitSynth(void *self, SEMSynth *sem);
-static void visitVolume(void *self, SEMVolume *sem);
-static void visitPan(void *self, SEMPan *sem);
-static void visitChorus(void *self, SEMChorus *sem);
-static void visitReverb(void *self, SEMReverb *sem);
-static void visitTranspose(void *self, SEMTranspose *sem);
-static void visitRest(void *self, SEMRest *sem);
-static void visitNote(void *self, SEMNote *sem);
-static void visitPattern(void *self, SEMPattern *sem);
-static void visitContext(void *self, SEMContext *sem);
-
 static void destroy(void *_self)
 {
     NAMidiSEMAnalyzer *self = _self;
@@ -307,7 +287,7 @@ Analyzer *NAMidiSEMAnalyzerCreate(ParseContext *context)
     self->state = StateCreate();
     self->stateStack = NAStackCreate(4);
 
-    return (Analyzer *)self;
+    return &self->analyzer;
 }
 
 static State *StateCreate()
