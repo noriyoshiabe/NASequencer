@@ -75,14 +75,6 @@ DSLParser *NAMidiParserCreate(ParseContext *context)
     return (DSLParser *)self;
 }
 
-int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, void **node, const char *message)
-{
-    NAMidiParser *self = NAMidi_get_extra(scanner);
-    FileLocation location = {(char *)filepath, yylloc->first_line, yylloc->first_column};
-    self->context->appendError(self->context, &location, GeneralParseErrorSyntaxError, NAMidi_get_text(scanner), NULL);
-    return 0;
-}
-
 Node *NAMidiParserParseIncludeFile(void *_self, FileLocation *location, const char *includeFile)
 {
     NAMidiParser *self = _self; 

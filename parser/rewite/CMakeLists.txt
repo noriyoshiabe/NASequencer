@@ -17,6 +17,7 @@ set(SOURCES
   ParseContext.c
   ParseInfo.c
   Node.c
+  NoteTable.c
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

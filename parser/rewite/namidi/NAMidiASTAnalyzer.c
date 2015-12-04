@@ -470,9 +470,9 @@ Analyzer *NAMidiASTAnalyzerCreate(ParseContext *context)
     self->visitor.visitIdentifier = visitIdentifier;
     self->visitor.visitNoteParam = visitNoteParam;
 
-    self->analyzer.self = self;
     self->analyzer.process = process;
     self->analyzer.destroy = destroy;
+    self->analyzer.self = self;
 
     self->context = context;
     self->listStack = NAStackCreate(4);

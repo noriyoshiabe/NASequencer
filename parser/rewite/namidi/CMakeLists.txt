@@ -21,6 +21,7 @@ set(SOURCES
   NAMidiAST.c
   NAMidiASTAnalyzer.c
   NAMidiSEM.c
+  NAMidiSEMAnalyzer.c
 )
 
 add_library(${PROJECT_NAME}

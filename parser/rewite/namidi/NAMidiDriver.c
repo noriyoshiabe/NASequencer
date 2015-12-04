@@ -29,15 +29,14 @@ static void *NAMidiDriverParse(void *_self, const char *filepath, ParseInfo **in
         goto EXIT;
     }
 
-    for (int i = 0; i < AnalyzerCount; ++i) {
-        Analyzer *analyzer = AnalyzerFactories[i](self->context);
+    const AnalyzerFactory *factory = AnalyzerFactories;
+    while (node) {
+        Analyzer *analyzer = (*factory++)(self->context);
         Node *_node = analyzer->process(analyzer->self, node);
         analyzer->destroy(analyzer->self);
         NodeRelease(node);
         node = _node;
     }
-
-    NodeRelease(node);
 
 EXIT:
     return self->context->buildResult(self->context, info);
