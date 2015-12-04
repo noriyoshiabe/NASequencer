@@ -5,17 +5,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static ParserCallbacks ParserTestCallbacks;
-
 int main(int argc, char **argv)
 {
-    Sequence *sequence = NULL;
     ParseInfo *info = NULL;
 
     SequenceBuilder *builder = SequenceBuilderCreate();
-    Parser *parser = ParserCreate(builder, &ParserTestCallbacks, NULL);
-    bool success = ParserParseFile(parser, argv[1], (void **)&sequence, &info);
+    Parser *parser = ParserCreate(builder);
+    Sequence *sequence = ParserParseFile(parser, argv[1], &info);
     ParserDestroy(parser);
+
+    bool success = NAArrayIsEmpty(info->errors);
 
     SequenceDump(sequence, 0);
     SequenceRelease(sequence);
@@ -23,19 +22,3 @@ int main(int argc, char **argv)
 
     return success ? 0 : 1;
 }
-
-static void ParserTestOnReadFile(void *receiver, const char *filepath)
-{
-    fprintf(stderr, "reading %s\n", filepath);
-}
-
-static void ParserTestOnParseError(void *receiver, const ParseError *error)
-{
-    fprintf(stderr, "parse error. %s - %s:%d:%d\n", ParseError2String(error), error->location.filepath, error->location.line, error->location.column);
-}
-
-static ParserCallbacks ParserTestCallbacks = {
-    ParserTestOnReadFile,
-    ParserTestOnParseError,
-};
-

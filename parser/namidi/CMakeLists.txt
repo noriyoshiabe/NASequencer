@@ -16,8 +16,12 @@ include_directories(
 )
 
 set(SOURCES
-  NAMidiExpression.c
+  NAMidiDriver.c
   NAMidiParser.c
+  NAMidiAST.c
+  NAMidiASTAnalyzer.c
+  NAMidiSEM.c
+  NAMidiSEMAnalyzer.c
 )
 
 add_library(${PROJECT_NAME}

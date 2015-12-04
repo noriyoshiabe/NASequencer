@@ -26,7 +26,6 @@ struct _NAMidi {
 };
 
 static FSWatcherCallbacks NAMidiFSWatcherCallbacks;
-static ParserCallbacks NAMidiParserCallbacks;
 
 static void NAMidiStopFileWatch(NAMidi *self);
 
@@ -84,16 +83,6 @@ static void NAMidiNotifyBeforeParse(NAMidi *self, Observer *observer, va_list ar
     observer->callbacks->onBeforeParse(observer->receiver, (bool)va_arg(argList, int));
 }
 
-static void NAMidiNotifyReadFile(NAMidi *self, Observer *observer, va_list argList)
-{
-    observer->callbacks->onReadFile(observer->receiver, va_arg(argList, const char *));
-}
-
-static void NAMidiNotifyParseError(NAMidi *self, Observer *observer, va_list argList)
-{
-    observer->callbacks->onParseError(observer->receiver, va_arg(argList, ParseError *));
-}
-
 static void NAMidiNotifyParseFinish(NAMidi *self, Observer *observer, va_list argList)
 {
     observer->callbacks->onParseFinish(observer->receiver, (bool)va_arg(argList, int), va_arg(argList, Sequence *), va_arg(argList, ParseInfo *));
@@ -133,8 +122,8 @@ void NAMidiParse(NAMidi *self, const char *filepath)
     NAArrayTraverseWithContext(self->observers, self, NAMidiNotifyBeforeParse, self->changed);
 
     SequenceBuilder *builder = SequenceBuilderCreate();
-    Parser *parser = ParserCreate(builder, &NAMidiParserCallbacks, self);
-    bool success = ParserParseFile(parser, filepath, (void **)&sequence, &info);
+    Parser *parser = ParserCreate(builder);
+    bool success = ParserParseFile(parser, filepath, &info);
     ParserDestroy(parser);
 
     if (self->sequence) {
@@ -181,23 +170,6 @@ Sequence *NAMidiGetSequence(NAMidi *self)
 {
     return self->sequence;
 }
-
-static void NAMidiParserOnReadFile(void *receiver, const char *filepath)
-{
-    NAMidi *self = receiver;
-    NAArrayTraverseWithContext(self->observers, self, NAMidiNotifyReadFile, filepath);
-}
-
-static void NAMidiParserOnParseError(void *receiver, const ParseError *error)
-{
-    NAMidi *self = receiver;
-    NAArrayTraverseWithContext(self->observers, self, NAMidiNotifyParseError, error);
-}
-
-static ParserCallbacks NAMidiParserCallbacks = {
-    NAMidiParserOnReadFile,
-    NAMidiParserOnParseError,
-};
 
 static void NAMidiFSWatcherOnFileChanged(void *receiver, const char *changedFile)
 {

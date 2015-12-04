@@ -1,19 +1,20 @@
 %{
  
-#include "NAMidiParser.h"
 #include "NAMidi_yacc.h"
 #include "NAMidi_lex.h"
-#include "NAMidiExpression.h"
-#include "NAArray.h"
-#include "NACString.h"
 
-#include <ctype.h>
+#include "NAMidiParser.h"
+#include "NAMidiAST.h"
 
-extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, Expression **expression, const char *message);
+extern void NAMidi_lex_set_error_until_eol(yyscan_t scanner);
+extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, void **node, const char *message);
 
-#define PERSER() (NAMidi_get_extra(scanner))
-#define LOC(yylloc) (&(ParseLocation){(char *)filepath, yylloc.first_line, yylloc.first_column})
-#define SKIP(yylloc) ExpressionCreateSkip(LOC(yylloc))
+extern Node *NAMidiParserParseIncludeFile(void *self, FileLocation *location, const char *includeFile);
+extern void NAMidiParserSyntaxError(void *self, FileLocation *location, const char *token);
+
+#define node(type, yylloc) NAMidiAST##type##Create(&((FileLocation){(char *)filepath, yylloc.first_line, yylloc.first_column}))
+#define list() NAArrayCreate(4, NULL)
+#define listAppend(list, node) NAArrayAppend(list, node)
 
 %}
 
@@ -25,168 +26,388 @@ extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath,
 %lex-param   { yyscan_t scanner }
 %parse-param { yyscan_t scanner }
 %parse-param { const char *filepath }
-%parse-param { Expression **expression }
+%parse-param { void **node }
 %locations
 
 %union {
     int i;
     float f;
     char *s;
-    Expression *expression;
-    NAArray *array;
+    void *node;
+    void *list;
 }
 
 %token <i>INTEGER
 %token <f>FLOAT
 %token <s>STRING
 
-%token RESOLUTION
-%token TITLE
-%token TEMPO
-%token TIME
-%token MARKER
-%token DEFINE
-%token END
-%token CHANNEL
-%token VOICE
-%token SYNTH
-%token VOLUME
-%token PAN
-%token CHORUS
-%token REVERB
-%token TRANSPOSE
-%token KEY
-%token DEFAULT
-%token REST
+%token RESOLUTION TITLE TEMPO TIME KEY MARKER DEFINE END CHANNEL VOICE
+       SYNTH VOLUME PAN CHORUS REVERB TRANSPOSE DEFAULT REST INCLUDE
 
-%token PLUS
-%token MINUS
-%token DIVISION
-%token SEMICOLON
-%token LPAREN
-%token RPAREN
-%token LCURLY
-%token RCURLY
-%token COMMA
+%token <s>NOTE KEY_SIGN IDENTIFIER
 
-%token INCLUDE
+%type <node> resolution title tempo time key marker channel voice synth volume
+             pan chorus reverb transpose rest note include pattern
 
-%token <s>IDENTIFIER
-%token <s>KEY_SIGN
-%token <s>NOTE
+%type <node> define context
 
-%token EOL
-
-%type <expression> statement_list statement single_statemnt
-%type <expression> include
-%type <expression> pattern
-%type <expression> context
-%type <array>      context_id_list
-%type <s>          context_id
-%type <s>          identifier
+%type <node> statement note_param identifier
+%type <list> statement_list identifier_list note_param_list
 
 %%
- 
+
 input
-    : statement_list                      { *expression = $1; }
+    : statement_list
+        {
+            ASTRoot *n = node(Root, @$);
+            n->node.children = $1;
+            *node = n;
+        }
     ;
 
 statement_list
-    :                                     { $$ = NAMidiExprStatementList(PERSER(), LOC(@$)); }
-    | eos                                 { $$ = NAMidiExprStatementList(PERSER(), LOC(@$)); }
-    | statement                           { if (!$1) $1 = SKIP(@$); $$ = ExpressionAddChild(NAMidiExprStatementList(PERSER(), LOC(@$)), $1); }
-    | statement_list statement            { if (!$2) $2 = SKIP(@$); $$ = ExpressionAddChild($1, $2); }
+    :
+        {
+            $$ = list();
+        }
+    | statement
+        {
+            $$ = list();
+            if ($1) {
+                listAppend($$, $1);
+            }
+        }
+    | statement_list statement
+        {
+            $$ = $1;
+            if ($2) {
+                listAppend($$, $2);
+            }
+        }
     ;
 
 statement
-    : single_statemnt eos
+    : resolution
+    | title
+    | tempo
+    | time
+    | key
+    | marker
+    | channel
+    | voice
+    | synth
+    | volume
+    | pan
+    | chorus
+    | reverb
+    | transpose
+    | rest
+    | note
+    | include
     | pattern
+    | define
     | context
-    | include eos
-    | error eos                           { $$ = SKIP(@$); }
+
+    | ';'
+        {
+            $$ = NULL;
+        }
+    | error
+        {
+            NAMidi_lex_set_error_until_eol(scanner);
+            $$ = NULL;
+        }
     ;
 
-single_statemnt
-    : TITLE STRING                        { $$ = NAMidiExprTitle(PERSER(), LOC(@$), $2); }
-    | RESOLUTION INTEGER                  { $$ = NAMidiExprResolution(PERSER(), LOC(@$), $2); }
-    | TEMPO FLOAT                         { $$ = NAMidiExprTempo(PERSER(), LOC(@$), $2); }
-    | TEMPO INTEGER                       { $$ = NAMidiExprTempo(PERSER(), LOC(@$), $2); }
-    | TIME INTEGER DIVISION INTEGER       { $$ = NAMidiExprTimeSign(PERSER(), LOC(@$), $2, $4); }
-    | MARKER STRING                       { $$ = NAMidiExprMarker(PERSER(), LOC(@$), $2); }
-    | CHANNEL INTEGER                     { $$ = NAMidiExprChannel(PERSER(), LOC(@$), $2); }
-    | VOICE INTEGER INTEGER INTEGER       { $$ = NAMidiExprVoice(PERSER(), LOC(@$), $2, $3, $4); }
-    | SYNTH STRING                        { $$ = NAMidiExprSynth(PERSER(), LOC(@$), $2); }
-    | VOLUME INTEGER                      { $$ = NAMidiExprVolume(PERSER(), LOC(@$), $2); }
-    | PAN INTEGER                         { $$ = NAMidiExprPan(PERSER(), LOC(@$), $2); }
-    | PAN PLUS INTEGER                    { $$ = NAMidiExprPan(PERSER(), LOC(@$), $3); }
-    | PAN MINUS INTEGER                   { $$ = NAMidiExprPan(PERSER(), LOC(@$), $3); }
-    | CHORUS INTEGER                      { $$ = NAMidiExprChorus(PERSER(), LOC(@$), $2); }
-    | REVERB INTEGER                      { $$ = NAMidiExprReverb(PERSER(), LOC(@$), $2); }
-    | TRANSPOSE INTEGER                   { $$ = NAMidiExprTranspose(PERSER(), LOC(@$), $2); }
-    | TRANSPOSE PLUS INTEGER              { $$ = NAMidiExprTranspose(PERSER(), LOC(@$), $3); }
-    | TRANSPOSE MINUS INTEGER             { $$ = NAMidiExprTranspose(PERSER(), LOC(@$), $3); }
-    | KEY KEY_SIGN                        { $$ = NAMidiExprKeySign(PERSER(), LOC(@$), $2); }
-    | REST INTEGER                        { $$ = NAMidiExprRest(PERSER(), LOC(@$), $2); }
-    | NOTE                                { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, -1, -1, -1); }
-    | NOTE MINUS                          { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, -1, -1, -1); }
-    | NOTE MINUS   MINUS                  { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, -1, -1, -1); }
-    | NOTE MINUS   MINUS   MINUS          { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, -1, -1, -1); }
-    | NOTE MINUS   MINUS   INTEGER        { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, -1, -1, $4); }
-    | NOTE MINUS   INTEGER                { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, -1, $3, -1); }
-    | NOTE MINUS   INTEGER MINUS          { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, -1, $3, -1); }
-    | NOTE MINUS   INTEGER INTEGER        { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, -1, $3, $4); }
-    | NOTE INTEGER                        { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, $2, -1, -1); }
-    | NOTE INTEGER INTEGER                { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, $2, $3, -1); }
-    | NOTE INTEGER INTEGER INTEGER        { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, $2, $3, $4); }
-    | NOTE INTEGER INTEGER MINUS          { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, $2, $3, -1); }
-    | NOTE INTEGER MINUS                  { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, $2, -1, -1); }
-    | NOTE INTEGER MINUS   INTEGER        { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, $2, -1, $4); }
-    | NOTE INTEGER MINUS   MINUS          { $$ = NAMidiExprNote(PERSER(), LOC(@$), $1, $2, -1, -1); }
+resolution
+    : RESOLUTION INTEGER
+        {
+            ASTResolution *n = node(Resolution, @$);
+            n->resolution = $2;
+            $$ = n;
+        }
+    ;
+
+title
+    : TITLE STRING
+        {
+            ASTTitle *n = node(Title, @$);
+            n->title = $2;
+            $$ = n;
+        }
+    ;
+
+tempo
+    : TEMPO FLOAT
+        {
+            ASTTempo *n = node(Tempo, @$);
+            n->tempo = $2;
+            $$ = n;
+        }
+    ;
+      
+time
+    : TIME INTEGER '/' INTEGER
+        {
+            ASTTime *n = node(Time, @$);
+            n->numerator = $2;
+            n->denominator = $4;
+            $$ = n;
+        }
+    ;
+      
+key
+    : KEY KEY_SIGN
+        {
+            ASTKey *n = node(Key, @$);
+            n->keyString = $2;
+            $$ = n;
+        }
+    ;
+
+marker
+    : MARKER STRING
+        {
+            ASTMarker *n = node(Marker, @$);
+            n->text = $2;
+            $$ = n;
+        }
+    ;
+
+channel
+    : CHANNEL INTEGER
+        {
+            ASTChannel *n = node(Channel, @$);
+            n->number = $2;
+            $$ = n;
+        }
+    ;
+
+voice
+    : VOICE INTEGER INTEGER INTEGER
+        {
+            ASTVoice *n = node(Voice, @$);
+            n->msb = $2;
+            n->lsb = $3;
+            n->programNo = $4;
+            $$ = n;
+        }
+    ;
+
+synth
+    : SYNTH STRING
+        {
+            ASTSynth *n = node(Synth, @$);
+            n->name = $2;
+            $$ = n;
+        }
+    ;
+
+volume
+    : VOLUME INTEGER
+        {
+            ASTVolume *n = node(Volume, @$);
+            n->value = $2;
+            $$ = n;
+        }
+    ;
+
+pan
+    : PAN INTEGER
+        {
+            ASTPan *n = node(Pan, @$);
+            n->value = $2;
+            $$ = n;
+        }
+    | PAN '+' INTEGER
+        {
+            ASTPan *n = node(Pan, @$);
+            n->value = $3;
+            $$ = n;
+        }
+    | PAN '-' INTEGER
+        {
+            ASTPan *n = node(Pan, @$);
+            n->value = -$3;
+            $$ = n;
+        }
+    ;
+
+chorus
+    : CHORUS INTEGER
+        {
+            ASTChorus *n = node(Chorus, @$);
+            n->value = $2;
+            $$ = n;
+        }
+    ;
+
+reverb
+    : REVERB INTEGER
+        {
+            ASTReverb *n = node(Reverb, @$);
+            n->value = $2;
+            $$ = n;
+        }
+    ;
+
+transpose
+    : TRANSPOSE INTEGER
+        {
+            ASTTranspose *n = node(Transpose, @$);
+            n->value = $2;
+            $$ = n;
+        }
+    | TRANSPOSE '+' INTEGER
+        {
+            ASTTranspose *n = node(Transpose, @$);
+            n->value = $3;
+            $$ = n;
+        }
+    | TRANSPOSE '-' INTEGER
+        {
+            ASTTranspose *n = node(Transpose, @$);
+            n->value = -$3;
+            $$ = n;
+        }
+    ;
+
+rest
+    : REST INTEGER
+        {
+            ASTRest *n = node(Rest, @$);
+            n->step = $2;
+            $$ = n;
+        }
+    ;
+
+note
+    : NOTE note_param_list
+        {
+            ASTNote *n = node(Note, @$);
+            n->noteString = $1;
+            n->node.children = $2;
+            $$ = n;
+        }
     ;
 
 include
-    : INCLUDE STRING                      { if (!NAMidiParserReadIncludeFile(PERSER(), LOC(@$), $2, &$$)) YYERROR; }
+    : INCLUDE STRING
+        {
+            ASTInclude *n = node(Include, @$);
+            n->filepath = $2;
+            $$ = n;
+
+            FileLocation location = {(char *)filepath, @$.first_line, @$.first_column};
+            Node *node = NAMidiParserParseIncludeFile(NAMidi_get_extra(scanner), &location, $2);
+            if (node) {
+                n->node.children = node->children;
+                node->children = NULL;
+                NodeRelease(node);
+            }
+        }
     ;
 
 pattern
-    : DEFINE identifier eos statement_list END eos
-                                          { $$ = NAMidiExprPattern(PERSER(), LOC(@$), $2, $4); }
-    | identifier eos                      { $$ = NAMidiExprPatternExpand(PERSER(), LOC(@$), $1, NULL); }
-    | identifier opt LPAREN opt RPAREN eos    { $$ = NAMidiExprPatternExpand(PERSER(), LOC(@$), $1, NULL); }
-    | identifier opt LPAREN opt context_id_list RPAREN eos
-                                          { $$ = NAMidiExprPatternExpand(PERSER(), LOC(@$), $1, $5); }
+    : IDENTIFIER
+        {
+            ASTPattern *n = node(Pattern, @$);
+            n->identifier = $1;
+            n->node.children = list();
+            $$ = n;
+        }
+    | IDENTIFIER '(' identifier_list ')'
+        {
+            ASTPattern *n = node(Pattern, @$);
+            n->identifier = $1;
+            n->node.children = $3;
+            $$ = n;
+        }
+    ;
+
+define
+    : DEFINE IDENTIFIER statement_list END
+        {
+            ASTDefine *n = node(Define, @$);
+            n->identifier = $2;
+            n->node.children = $3;
+            $$ = n;
+        }
     ;
 
 context
-    : context_id_list LCURLY opt statement_list RCURLY opt
-                                          { $$ = NAMidiExprContext(PERSER(), LOC(@$), $1, $4); }
+    : identifier_list '{' statement_list '}'
+        {
+            ASTContext *n = node(Context, @$);
+            n->ctxIdList = $1;
+            n->node.children = $3;
+            $$ = n;
+        }
     ;
 
-context_id_list
-    : context_id                              { $$ = NAArrayCreate(4, NADescriptionCString); NAArrayAppend($$, $1); }
-    | context_id_list COMMA opt context_id    { $$ = $1; NAArrayAppend($$, $4); }
-    ;
-
-context_id
-    : identifier opt                      { $$ = $1; }
-    | DEFAULT opt                         { $$ = strdup("default"); }
+identifier_list
+    :
+        {
+            $$ = list();
+        }
+    | identifier
+        {
+            $$ = list();
+            listAppend($$, $1);
+        }
+    | identifier_list ',' identifier
+        {
+            $$ = $1;
+            listAppend($$, $3);
+        }
     ;
 
 identifier
-    : IDENTIFIER                          { $$ = NACStringToLowerCase($1); }
+    : IDENTIFIER
+        {
+            ASTIdentifier *n = node(Identifier, @$);
+            n->idString = $1;
+            $$ = n;
+        }
     ;
 
-eos
-    : EOL
-    | SEMICOLON
-    | eos EOL
-    | eos SEMICOLON
-    ;
-
-opt
+note_param_list
     :
-    | EOL
-    | opt EOL
+        {
+            $$ = list();
+        }
+    | note_param
+        {
+            $$ = list();
+            listAppend($$, $1);
+        }
+    | note_param_list note_param
+        {
+            $$ = $1;
+            listAppend($$, $2);
+        }
+    ;
+
+note_param
+    : '-'
+        {
+            ASTNoteParam *n = node(NoteParam, @$);
+            n->value = -1;
+            $$ = n;
+        }
+    | INTEGER
+        {
+            ASTNoteParam *n = node(NoteParam, @$);
+            n->value = $1;
+            $$ = n;
+        }
     ;
 
 %%
+
+int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, void **node, const char *message)
+{
+    FileLocation location = {(char *)filepath, yylloc->first_line, yylloc->first_column};
+    NAMidiParserSyntaxError(NAMidi_get_extra(scanner), &location, NAMidi_get_text(scanner));
+    return 0;
+}
