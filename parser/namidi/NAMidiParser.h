@@ -1,9 +1,10 @@
 #pragma once
 
 #include "DSLParser.h"
+#include "ParseInfo.h"
 
 typedef enum {
-    NAMidiParseErrorInvalidResolution = 0,
+    NAMidiParseErrorInvalidResolution = ParseErrorKindNAMidi,
     NAMidiParseErrorInvalidTempo,
     NAMidiParseErrorInvalidTimeSign,
     NAMidiParseErrorInvalidChannel,
