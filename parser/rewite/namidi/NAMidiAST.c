@@ -11,7 +11,7 @@ static void ASTRootDestroy(void *_self)
 {
 }
 
-ASTRoot *ASTRootCreate(FileLocation *location)
+ASTRoot *NAMidiASTRootCreate(FileLocation *location)
 {
     return NodeCreate(ASTRoot, location);
 }
@@ -25,7 +25,7 @@ static void ASTResolutionDestroy(void *_self)
 {
 }
 
-ASTResolution *ASTResolutionCreate(FileLocation *location)
+ASTResolution *NAMidiASTResolutionCreate(FileLocation *location)
 {
     return NodeCreate(ASTResolution, location);
 }
@@ -41,7 +41,7 @@ static void ASTTitleDestroy(void *_self)
     free(self->title);
 }
 
-ASTTitle *ASTTitleCreate(FileLocation *location)
+ASTTitle *NAMidiASTTitleCreate(FileLocation *location)
 {
     return NodeCreate(ASTTitle, location);
 }
@@ -55,7 +55,7 @@ static void ASTTempoDestroy(void *_self)
 {
 }
 
-ASTTempo *ASTTempoCreate(FileLocation *location)
+ASTTempo *NAMidiASTTempoCreate(FileLocation *location)
 {
     return NodeCreate(ASTTempo, location);
 }
@@ -69,7 +69,7 @@ static void ASTTimeDestroy(void *_self)
 {
 }
 
-ASTTime *ASTTimeCreate(FileLocation *location)
+ASTTime *NAMidiASTTimeCreate(FileLocation *location)
 {
     return NodeCreate(ASTTime, location);
 }
@@ -85,7 +85,7 @@ static void ASTKeyDestroy(void *_self)
     free(self->keyString);
 }
 
-ASTKey *ASTKeyCreate(FileLocation *location)
+ASTKey *NAMidiASTKeyCreate(FileLocation *location)
 {
     return NodeCreate(ASTKey, location);
 }
@@ -101,7 +101,7 @@ static void ASTMarkerDestroy(void *_self)
     free(self->text);
 }
 
-ASTMarker *ASTMarkerCreate(FileLocation *location)
+ASTMarker *NAMidiASTMarkerCreate(FileLocation *location)
 {
     return NodeCreate(ASTMarker, location);
 }
@@ -115,7 +115,7 @@ static void ASTChannelDestroy(void *_self)
 {
 }
 
-ASTChannel *ASTChannelCreate(FileLocation *location)
+ASTChannel *NAMidiASTChannelCreate(FileLocation *location)
 {
     return NodeCreate(ASTChannel, location);
 }
@@ -129,7 +129,7 @@ static void ASTVoiceDestroy(void *_self)
 {
 }
 
-ASTVoice *ASTVoiceCreate(FileLocation *location)
+ASTVoice *NAMidiASTVoiceCreate(FileLocation *location)
 {
     return NodeCreate(ASTVoice, location);
 }
@@ -145,7 +145,7 @@ static void ASTSynthDestroy(void *_self)
     free(self->name);
 }
 
-ASTSynth *ASTSynthCreate(FileLocation *location)
+ASTSynth *NAMidiASTSynthCreate(FileLocation *location)
 {
     return NodeCreate(ASTSynth, location);
 }
@@ -159,7 +159,7 @@ static void ASTVolumeDestroy(void *_self)
 {
 }
 
-ASTVolume *ASTVolumeCreate(FileLocation *location)
+ASTVolume *NAMidiASTVolumeCreate(FileLocation *location)
 {
     return NodeCreate(ASTVolume, location);
 }
@@ -173,7 +173,7 @@ static void ASTPanDestroy(void *_self)
 {
 }
 
-ASTPan *ASTPanCreate(FileLocation *location)
+ASTPan *NAMidiASTPanCreate(FileLocation *location)
 {
     return NodeCreate(ASTPan, location);
 }
@@ -187,7 +187,7 @@ static void ASTChorusDestroy(void *_self)
 {
 }
 
-ASTChorus *ASTChorusCreate(FileLocation *location)
+ASTChorus *NAMidiASTChorusCreate(FileLocation *location)
 {
     return NodeCreate(ASTChorus, location);
 }
@@ -201,7 +201,7 @@ static void ASTReverbDestroy(void *_self)
 {
 }
 
-ASTReverb *ASTReverbCreate(FileLocation *location)
+ASTReverb *NAMidiASTReverbCreate(FileLocation *location)
 {
     return NodeCreate(ASTReverb, location);
 }
@@ -215,7 +215,7 @@ static void ASTTransposeDestroy(void *_self)
 {
 }
 
-ASTTranspose *ASTTransposeCreate(FileLocation *location)
+ASTTranspose *NAMidiASTTransposeCreate(FileLocation *location)
 {
     return NodeCreate(ASTTranspose, location);
 }
@@ -229,7 +229,7 @@ static void ASTRestDestroy(void *_self)
 {
 }
 
-ASTRest *ASTRestCreate(FileLocation *location)
+ASTRest *NAMidiASTRestCreate(FileLocation *location)
 {
     return NodeCreate(ASTRest, location);
 }
@@ -245,7 +245,7 @@ static void ASTNoteDestroy(void *_self)
     free(self->noteString);
 }
 
-ASTNote *ASTNoteCreate(FileLocation *location)
+ASTNote *NAMidiASTNoteCreate(FileLocation *location)
 {
     return NodeCreate(ASTNote, location);
 }
@@ -261,7 +261,7 @@ static void ASTIncludeDestroy(void *_self)
     free(self->filepath);
 }
 
-ASTInclude *ASTIncludeCreate(FileLocation *location)
+ASTInclude *NAMidiASTIncludeCreate(FileLocation *location)
 {
     return NodeCreate(ASTInclude, location);
 }
@@ -277,7 +277,7 @@ static void ASTPatternDestroy(void *_self)
     free(self->identifier);
 }
 
-ASTPattern *ASTPatternCreate(FileLocation *location)
+ASTPattern *NAMidiASTPatternCreate(FileLocation *location)
 {
     return NodeCreate(ASTPattern, location);
 }
@@ -293,7 +293,7 @@ static void ASTDefineDestroy(void *_self)
     free(self->identifier);
 }
 
-ASTDefine *ASTDefineCreate(FileLocation *location)
+ASTDefine *NAMidiASTDefineCreate(FileLocation *location)
 {
     return NodeCreate(ASTDefine, location);
 }
@@ -310,7 +310,7 @@ static void ASTContextDestroy(void *_self)
     NAArrayDestroy(self->ctxIdList);
 }
 
-ASTContext *ASTContextCreate(FileLocation *location)
+ASTContext *NAMidiASTContextCreate(FileLocation *location)
 {
     return NodeCreate(ASTContext, location);
 }
@@ -326,7 +326,7 @@ static void ASTIdentifierDestroy(void *_self)
     free(self->idString);
 }
 
-ASTIdentifier *ASTIdentifierCreate(FileLocation *location)
+ASTIdentifier *NAMidiASTIdentifierCreate(FileLocation *location)
 {
     return NodeCreate(ASTIdentifier, location);
 }
@@ -340,7 +340,7 @@ static void ASTNoteParamDestroy(void *_self)
 {
 }
 
-ASTNoteParam *ASTNoteParamCreate(FileLocation *location)
+ASTNoteParam *NAMidiASTNoteParamCreate(FileLocation *location)
 {
     return NodeCreate(ASTNoteParam, location);
 }

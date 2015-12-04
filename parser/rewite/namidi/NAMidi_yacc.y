@@ -12,7 +12,7 @@ extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath,
 extern Node *NAMidiParserParseIncludeFile(void *self, FileLocation *location, const char *includeFile);
 extern void NAMidiParserSyntaxError(void *self, FileLocation *location, const char *token);
 
-#define node(type, yylloc) AST##type##Create(&((FileLocation){(char *)filepath, yylloc.first_line, yylloc.first_column}))
+#define node(type, yylloc) NAMidiAST##type##Create(&((FileLocation){(char *)filepath, yylloc.first_line, yylloc.first_column}))
 #define list() NAArrayCreate(4, NULL)
 #define listAppend(list, node) NAArrayAppend(list, node)
 
