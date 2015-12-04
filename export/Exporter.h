@@ -7,14 +7,12 @@ typedef enum {
     ExporterErrorNoError,
     ExporterErrorUnsupportedFileType,
     ExporterErrorNoSoundSource,
-    ExporterErrorParseFailed,
     ExporterErrorCouldNotWriteFile,
 } ExporterError;
 
 typedef struct _Exporter Exporter;
 
 typedef struct _ExporterObserverCallbacks {
-    void (*onParseError)(void *receiver, const ParseError *error);
     void (*onParseFinish)(void *receiver, ParseInfo *info);
     void (*onProgress)(void *receiver, int progress);
 } ExporterObserverCallbacks;

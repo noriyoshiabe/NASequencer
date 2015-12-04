@@ -85,7 +85,7 @@ static void NAMidiNotifyBeforeParse(NAMidi *self, Observer *observer, va_list ar
 
 static void NAMidiNotifyParseFinish(NAMidi *self, Observer *observer, va_list argList)
 {
-    observer->callbacks->onParseFinish(observer->receiver, (bool)va_arg(argList, int), va_arg(argList, Sequence *), va_arg(argList, ParseInfo *));
+    observer->callbacks->onParseFinish(observer->receiver, va_arg(argList, Sequence *), va_arg(argList, ParseInfo *));
 }
 
 static void NAMidiStopFileWatch(NAMidi *self)
@@ -116,14 +116,13 @@ static void NAMidiStartFileWatch(NAMidi *self)
 
 void NAMidiParse(NAMidi *self, const char *filepath)
 {
-    Sequence *sequence = NULL;
     ParseInfo *info = NULL;
 
     NAArrayTraverseWithContext(self->observers, self, NAMidiNotifyBeforeParse, self->changed);
 
     SequenceBuilder *builder = SequenceBuilderCreate();
     Parser *parser = ParserCreate(builder);
-    bool success = ParserParseFile(parser, filepath, &info);
+    Sequence *sequence = ParserParseFile(parser, filepath, &info);
     ParserDestroy(parser);
 
     if (self->sequence) {
@@ -137,7 +136,7 @@ void NAMidiParse(NAMidi *self, const char *filepath)
     }
     self->info = info;
 
-    NAArrayTraverseWithContext(self->observers, self, NAMidiNotifyParseFinish, success, sequence, info);
+    NAArrayTraverseWithContext(self->observers, self, NAMidiNotifyParseFinish, sequence, info);
 
     if (self->watchEnable) {
         NAMidiStartFileWatch(self);

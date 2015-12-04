@@ -9,9 +9,7 @@ typedef struct _NAMidi NAMidi;
 
 typedef struct _NAMidiObserverCallbacks {
     void (*onBeforeParse)(void *receiver, bool fileChanged);
-    void (*onReadFile)(void *receiver, const char *filepath);
-    void (*onParseError)(void *receiver, const ParseError *error);
-    void (*onParseFinish)(void *receiver, bool success, Sequence *sequence, ParseInfo *info);
+    void (*onParseFinish)(void *receiver, Sequence *sequence, ParseInfo *info);
 } NAMidiObserverCallbacks;
 
 extern NAMidi *NAMidiCreate();

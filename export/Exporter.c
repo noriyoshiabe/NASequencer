@@ -39,8 +39,6 @@ static double ExporterAudioBufferGetSampleRate(AudioOut *self);
 static void ExporterAudioBufferRegisterCallback(AudioOut *self, AudioCallback function, void *receiver);
 static void ExporterAudioBufferUnregisterCallback(AudioOut *self, AudioCallback function, void *receiver);
 
-static ParserCallbacks ExporterParserCallbacks;
-
 
 Exporter *ExporterCreate(ExporterObserverCallbacks *callbacks, void *receiver)
 {
@@ -111,26 +109,19 @@ ExporterError ExporterExport(Exporter *self, const char *filepath, const char *o
     ExporterError ret = ExporterErrorNoError;
 
     SequenceBuilder *builder = SequenceBuilderCreate();
-    Parser *parser = ParserCreate(builder, &ExporterParserCallbacks, self);
-    Sequence *sequence = NULL;
-    ParseInfo *info = NULL;
+    Parser *parser = ParserCreate(builder);
 
-    bool success = ParserParseFile(parser, filepath, (void **)&sequence, &info);
+    ParseInfo *info = NULL;
+    Sequence *sequence = ParserParseFile(parser, filepath, &info);
 
     ParserDestroy(parser);
     builder->destroy(builder);
 
     self->callbacks->onParseFinish(self->receiver, info);
 
-    if (!success) {
-        ret = ExporterErrorParseFailed;
-        goto EXIT;
-    }
-
     self->sequence = sequence;
 
-    success = function(self, output);
-    if (!success) {
+    if (!function(self, output)) {
         ret = ExporterErrorCouldNotWriteFile;
     }
 
@@ -426,21 +417,6 @@ bool ExporterWriteToAAC(Exporter *self, const char *filepath)
     AACWriterDestroy(writer);
     return ret;
 }
-
-static void ExporterParserOnReadFile(void *receiver, const char *filepath)
-{
-}
-
-static void ExporterParserOnParseError(void *receiver, const ParseError *error)
-{
-    Exporter *self = receiver;
-    self->callbacks->onParseError(self->receiver, error);
-}
-
-static ParserCallbacks ExporterParserCallbacks = {
-    ExporterParserOnReadFile,
-    ExporterParserOnParseError,
-};
 
 
 static ExporterAudioBuffer *ExporterAudioBufferCreate(double sampleRate)

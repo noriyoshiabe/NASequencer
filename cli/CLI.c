@@ -2,8 +2,9 @@
 #include "Command.h"
 #include "Exporter.h"
 #include "Parser.h"
+#include "ParseErrorCode.h"
 #include "NAMidiParser.h"
-#include "ABCParser.h"
+//#include "ABCParser.h"
 
 #include "NAUtil.h"
 #include "NACString.h"
@@ -200,9 +201,6 @@ bool CLIExport(CLI *self, const char *output)
     case ExporterErrorNoSoundSource:
         fprintf(stderr, "no synthesizer is loaded.\n");
         break;
-    case ExporterErrorParseFailed:
-        fprintf(stderr, "parse failed.\n");
-        break;
     case ExporterErrorCouldNotWriteFile:
         fprintf(stderr, "cannot write to output file.\n");
         break;
@@ -249,16 +247,7 @@ static void CLINAMidiOnBeforeParse(void *receiver, bool fileChanged)
     }
 }
 
-static void CLINAMidiOnReadFile(void *receiver, const char *filepath)
-{
-    fprintf(stdout, "reading %s.\n", filepath);
-}
-
-static void CLINAMidiOnParseError(void *receiver, const ParseError *error)
-{
-}
-
-static void CLINAMidiOnParseFinish(void *receiver, bool success, Sequence *sequence, ParseInfo *info)
+static void CLINAMidiOnParseFinish(void *receiver, Sequence *sequence, ParseInfo *info)
 {
     CLI *self = receiver;
 
@@ -272,12 +261,7 @@ static void CLINAMidiOnParseFinish(void *receiver, bool success, Sequence *seque
         EventListViewRender(self->eventListView);
     }
 
-    if (success) {
-        fprintf(stdout, "parse finished.\n");
-    }
-    else {
-        fprintf(stdout, "parse failed.\n");
-    }
+    fprintf(stdout, "parse finished.\n");
 
     NAIterator *iterator = NAArrayGetIterator(info->errors);
     while (iterator->hasNext(iterator)) {
@@ -295,8 +279,6 @@ static void CLINAMidiOnParseFinish(void *receiver, bool success, Sequence *seque
 
 static NAMidiObserverCallbacks CLINAMidiObserverCallbacks = {
     CLINAMidiOnBeforeParse,
-    CLINAMidiOnReadFile,
-    CLINAMidiOnParseError,
     CLINAMidiOnParseFinish,
 };
 
@@ -361,15 +343,15 @@ static MidiSourceManagerObserverCallbacks CLIMidiSourceManagerObserverCallbacks 
     CLIMidiSourceManagerOnUnloadAvailableMidiSourceDescription,
 };
 
-static void CLIExporterOnParseError(void *receiver, const ParseError *error)
+static void CLIExporterOnParseFinish(void *self, ParseInfo *info)
 {
-    char *formatted = CLIFormatParseError(receiver, error);
-    fputs(formatted, stderr);
-    free(formatted);
-}
-
-static void CLIExporterOnParseFinish(void *_self, ParseInfo *info)
-{
+    NAIterator *iterator = NAArrayGetIterator(info->errors);
+    while (iterator->hasNext(iterator)) {
+        ParseError *error = iterator->next(iterator);
+        char *formatted = CLIFormatParseError(self, error);
+        fputs(formatted, stderr);
+        free(formatted);
+    }
 }
 
 static void CLIExporterOnProgress(void *_self, int progress)
@@ -381,7 +363,6 @@ static void CLIExporterOnProgress(void *_self, int progress)
 }
 
 static ExporterObserverCallbacks CLIExporterObserverCallbacks = {
-    CLIExporterOnParseError,
     CLIExporterOnParseFinish,
     CLIExporterOnProgress,
 };
@@ -424,13 +405,13 @@ static char *CLIFormatParseError(CLI *self, const ParseError *error)
     case NAMidiParseErrorCircularPatternReference:
         // TODO
         break;
-    case ABCParseErrorUnrecognisedVersion:
-    case ABCParseErrorUnexpectedVersionExpression:
-    case ABCParseErrorInvalidKeyMode:
-    case ABCParseErrorInvalidKeySign:
-    case ABCParseErrorInvalidNoteNumber:
-    case ABCParseErrorIllegalOctaveDown:
-    case ABCParseErrorIllegalOctaveUp:
+    // case ABCParseErrorUnrecognisedVersion:
+    // case ABCParseErrorUnexpectedVersionExpression:
+    // case ABCParseErrorInvalidKeyMode:
+    // case ABCParseErrorInvalidKeySign:
+    // case ABCParseErrorInvalidNoteNumber:
+    // case ABCParseErrorIllegalOctaveDown:
+    // case ABCParseErrorIllegalOctaveUp:
         // TODO
         break;
     default:
@@ -438,12 +419,13 @@ static char *CLIFormatParseError(CLI *self, const ParseError *error)
     }
 
     char params[256] = {0};
-    for (int i = 0; i < 4 && error->infos[i]; ++i) {
-        if (0 < i) {
+    NAIterator *iterator = NAArrayGetIterator(error->infos);
+    while (iterator->hasNext(iterator)) {
+        if (params[0]) {
             strcat(params, ",");
         }
-        strcat(params, error->infos[i]);
+        strcat(params, iterator->next(iterator));
     }
 
-    return NACStringFormat("%s %s %s at %s\n", head, ParseError2String(error), params, location);
+    return NACStringFormat("%s %s %s at %s\n", head, ParseErrorCode2String(error->code), params, location);
 }
