@@ -2,6 +2,7 @@
 #include "NAMidiParser.h"
 #include "NAMidiASTAnalyzer.h"
 #include "NAMidiSEMAnalyzer.h"
+#include "NAUtil.h"
 
 #include <stdlib.h>
 
@@ -21,8 +22,10 @@ static void *NAMidiDriverParse(void *_self, const char *filepath, ParseInfo **in
 {
     NAMidiDriver *self =  _self;
 
+    char *fullpath = NAUtilGetRealPath(filepath);
+
     DSLParser *parser = NAMidiParserCreate(self->context);
-    Node *node = parser->parse(parser, filepath);
+    Node *node = parser->parse(parser, fullpath);
     parser->destroy(parser);
 
     if (!node) {
@@ -39,6 +42,8 @@ static void *NAMidiDriverParse(void *_self, const char *filepath, ParseInfo **in
     }
 
 EXIT:
+    free(fullpath);
+
     return self->context->buildResult(self->context, info);
 }
 

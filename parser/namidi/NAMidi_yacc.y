@@ -57,7 +57,7 @@ extern void NAMidiParserSyntaxError(void *self, FileLocation *location, const ch
 %%
 
 input
-    : statement_list
+    : statement_list eos_or_none
         {
             ASTRoot *n = node(Root, @$);
             n->node.children = $1;
@@ -77,11 +77,11 @@ statement_list
                 listAppend($$, $1);
             }
         }
-    | statement_list statement
+    | statement_list eos statement
         {
             $$ = $1;
-            if ($2) {
-                listAppend($$, $2);
+            if ($3) {
+                listAppend($$, $3);
             }
         }
     ;
@@ -107,16 +107,25 @@ statement
     | pattern
     | define
     | context
-
-    | ';'
-        {
-            $$ = NULL;
-        }
     | error
         {
             NAMidi_lex_set_error_until_eol(scanner);
+            yyerrok;
+            yyclearin;
             $$ = NULL;
         }
+    ;
+
+eos
+    : ';'
+    | '\n'
+    | eos ';'
+    | eos '\n'
+    ;
+
+eos_or_none
+    :
+    | eos
     ;
 
 resolution
@@ -316,6 +325,13 @@ pattern
             n->node.children = list();
             $$ = n;
         }
+    | IDENTIFIER '(' ')'
+        {
+            ASTPattern *n = node(Pattern, @$);
+            n->identifier = $1;
+            n->node.children = list();
+            $$ = n;
+        }
     | IDENTIFIER '(' identifier_list ')'
         {
             ASTPattern *n = node(Pattern, @$);
@@ -326,7 +342,7 @@ pattern
     ;
 
 define
-    : DEFINE IDENTIFIER statement_list END
+    : DEFINE IDENTIFIER statement_list eos_or_none END
         {
             ASTDefine *n = node(Define, @$);
             n->identifier = $2;
@@ -336,7 +352,7 @@ define
     ;
 
 context
-    : identifier_list '{' statement_list '}'
+    : identifier_list '{' statement_list eos_or_none '}'
         {
             ASTContext *n = node(Context, @$);
             n->ctxIdList = $1;
@@ -346,11 +362,7 @@ context
     ;
 
 identifier_list
-    :
-        {
-            $$ = list();
-        }
-    | identifier
+    : identifier
         {
             $$ = list();
             listAppend($$, $1);
@@ -367,6 +379,12 @@ identifier
         {
             ASTIdentifier *n = node(Identifier, @$);
             n->idString = $1;
+            $$ = n;
+        }
+    | DEFAULT
+        {
+            ASTIdentifier *n = node(Identifier, @$);
+            n->idString = strdup("default");
             $$ = n;
         }
     ;

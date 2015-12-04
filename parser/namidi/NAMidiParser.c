@@ -47,14 +47,11 @@ static Node *NAMidiParserParse(void *_self, const char *filepath)
 {
     NAMidiParser *self = _self; 
 
-    char *fullpath = NAUtilGetRealPath(filepath);
-
-    Node *node = NAMidiParserParseInternal(self, fullpath);
+    Node *node = NAMidiParserParseInternal(self, filepath);
     if (!node) {
         self->context->appendError(self->context, NULL, GeneralParseErrorFileNotFound, filepath, NULL);
     } 
 
-    free(fullpath);
     return node;
 }
 

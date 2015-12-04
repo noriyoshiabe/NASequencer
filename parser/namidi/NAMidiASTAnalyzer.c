@@ -292,7 +292,7 @@ static void visitNote(void *_self, ASTNote *ast)
             break;
         case 2:
             velocity = np->value;
-            if (!isValidRange(gatetime, -1, 127)) {
+            if (!isValidRange(velocity, -1, 127)) {
                 appendError(self, ast, NAMidiParseErrorInvalidVelocity, NACStringFromInteger(velocity), NULL);
                 return;
             }
@@ -371,6 +371,10 @@ static void visitPattern(void *_self, ASTPattern *ast)
     while (iterator->hasNext(iterator)) {
         ASTIdentifier *node = iterator->next(iterator);
         NAArrayAppend(sem->ctxIdList, strdup(node->idString));
+    }
+
+    if (NAArrayIsEmpty(sem->ctxIdList)) {
+        NAArrayAppend(sem->ctxIdList, strdup("default"));
     }
 
     append(self->currentList, sem);

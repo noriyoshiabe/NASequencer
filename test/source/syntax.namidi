@@ -1,5 +1,8 @@
 title 'title test'
 resolution 480
+
+#syntaxerror
+
 tempo 120.0
 time 4/4
 marker 'marker test'
@@ -8,6 +11,9 @@ voice 0 120 0
 synth 'GeneralUser GS Live-Audigy v1.44'
 pan 64
 chorus 127
+
+#syntaxerror
+
 reverb 127
 transpose +1
 key D#min
@@ -27,6 +33,10 @@ D2 240
 define pattern-test
   C1 240
   D1 240
+
+  {
+    C1
+  }
 
   default {
     E1 240

@@ -104,9 +104,9 @@ LINE_COMMENT   (\/\/|==|--).*$
 "}"              { return '}'; }
 ","              { return ','; }
 ";"              { return ';'; }
+\n               { return '\n'; }
 
 {WSPACE}         { }
-\n               { }
 {LINE_COMMENT}   { }
 
 "/*"             { BEGIN(COMMENT); }
@@ -114,7 +114,7 @@ LINE_COMMENT   (\/\/|==|--).*$
 <COMMENT>\n      { }
 <COMMENT>.       { }
 
-<ERROR>\n        { yy_pop_state(yyscanner); }
+<ERROR>\n        { yy_pop_state(yyscanner); return '\n'; }
 <ERROR>.         { }
 
 .                { return 1; }
