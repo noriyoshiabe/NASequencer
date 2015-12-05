@@ -11,6 +11,10 @@ ParseError *ParseErrorCreate()
 
 void ParseErrorDestroy(ParseError *self)
 {
+    if (self->location.filepath) {
+        free(self->location.filepath);
+    }
+
     NAArrayTraverse(self->infos, free);
     NAArrayDestroy(self->infos);
     free(self);

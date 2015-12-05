@@ -14,6 +14,7 @@ int main(int argc, char **argv)
     Parser *parser = ParserCreate(builder);
     Sequence *sequence = ParserParseFile(parser, argv[1], &info);
     ParserDestroy(parser);
+    builder->destroy(builder);
 
     bool success = NAArrayIsEmpty(info->errors);
 

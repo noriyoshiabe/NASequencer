@@ -15,6 +15,7 @@ extern void NAMidiParserSyntaxError(void *self, FileLocation *location, const ch
 #define node(type, yylloc) NAMidiAST##type##Create(&((FileLocation){(char *)filepath, yylloc.first_line, yylloc.first_column}))
 #define list() NAArrayCreate(4, NULL)
 #define listAppend(list, node) NAArrayAppend(list, node)
+#define listMerge(list1, list2) NAArrayAppendAll(list1, list2), NAArrayDestroy(list2)
 
 %}
 
@@ -59,9 +60,15 @@ extern void NAMidiParserSyntaxError(void *self, FileLocation *location, const ch
 input
     : statement_list eos_or_none
         {
-            ASTRoot *n = node(Root, @$);
-            n->node.children = $1;
-            *node = n;
+            if (*node) {
+                ASTRoot *n = *node;
+                listMerge(n->node.children, $1);
+            }
+            else {
+                ASTRoot *n = node(Root, @$);
+                n->node.children = $1;
+                *node = n;
+            }
         }
     ;
 
