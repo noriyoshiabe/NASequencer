@@ -92,6 +92,7 @@ typedef struct _ASTNote {
 typedef struct _ASTInclude {
     Node node;
     char *filepath;
+    Node *root;
 } ASTInclude;
 
 typedef struct _ASTPattern {

@@ -378,12 +378,8 @@ static void visitInclude(void *_self, ASTInclude *ast)
         return;
     }
 
-    if (ast->node.children) {
-        NAIterator *iterator = NAArrayGetIterator(ast->node.children);
-        while (iterator->hasNext(iterator)) {
-            Node *node = iterator->next(iterator);
-            node->accept(node, self);
-        }
+    if (ast->root) {
+        ast->root->accept(ast->root, self);
     }
 }
 

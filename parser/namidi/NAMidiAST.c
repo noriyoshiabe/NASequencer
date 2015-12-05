@@ -259,6 +259,9 @@ static void ASTIncludeDestroy(void *_self)
 {
     ASTInclude *self = _self;
     free(self->filepath);
+    if (self->root) {
+        NodeRelease(self->root);
+    }
 }
 
 ASTInclude *NAMidiASTIncludeCreate(FileLocation *location)

@@ -305,15 +305,9 @@ include
         {
             ASTInclude *n = node(Include, @$);
             n->filepath = $2;
-            $$ = n;
-
             FileLocation location = {(char *)filepath, @$.first_line, @$.first_column};
-            Node *node = NAMidiParserParseIncludeFile(NAMidi_get_extra(scanner), &location, $2);
-            if (node) {
-                n->node.children = node->children;
-                node->children = NULL;
-                NodeRelease(node);
-            }
+            n->root = NAMidiParserParseIncludeFile(NAMidi_get_extra(scanner), &location, $2);
+            $$ = n;
         }
     ;
 
