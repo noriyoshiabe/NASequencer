@@ -18,22 +18,35 @@
 #define isValidRange(v, from, to) (from <= v && v <= to)
 #define isPowerOf2(x) ((x != 0) && ((x & (x - 1)) == 0))
 
+enum {
+    GLOBAL,
+    PATTERN,
+    CONTEXT,
+};
+
+typedef struct _State {
+    SEMList *list;
+    int kind;
+} State;
+
 typedef struct _NAMidiASTAnalyzer {
     ASTVisitor visitor;
     Analyzer analyzer;
     ParseContext *context;
-    NAStack *listStack;
-    SEMList *currentList;
+    State *state;
+    NAStack *stateStack;
 } NAMidiASTAnalyzer;
 
 static BaseNote KeyChar2BaseNote(char c);
+static State *StateCreate(SEMList *list, int kind);
+static void StateDestroy(State *self);
 
 static Node *process(void *_self, Node *node)
 {
     NAMidiASTAnalyzer *self = _self;
 
     SEMList *list = NAMidiSEMListCreate(NULL);
-    self->currentList = list;
+    self->state = StateCreate(list, GLOBAL);
 
     node->accept(node, self);
 
@@ -43,7 +56,8 @@ static Node *process(void *_self, Node *node)
 static void destroy(void *_self)
 {
     NAMidiASTAnalyzer *self = _self;
-    NAStackDestroy(self->listStack);
+    NAStackDestroy(self->stateStack);
+    StateDestroy(self->state);
     free(self);
 }
 
@@ -69,7 +83,7 @@ static void visitResolution(void *_self, ASTResolution *ast)
     
     SEMResolution *sem = node(Resolution, ast);
     sem->resolution = ast->resolution;
-    append(self->currentList, sem);
+    append(self->state->list, sem);
 }
 
 static void visitTitle(void *_self, ASTTitle *ast)
@@ -78,7 +92,7 @@ static void visitTitle(void *_self, ASTTitle *ast)
 
     SEMTitle *sem = node(Title, ast);
     sem->title = strdup(ast->title);
-    append(self->currentList, sem);
+    append(self->state->list, sem);
 }
 
 static void visitTempo(void *_self, ASTTempo *ast)
@@ -92,7 +106,7 @@ static void visitTempo(void *_self, ASTTempo *ast)
 
     SEMTempo *sem = node(Tempo, ast);
     sem->tempo = ast->tempo;
-    append(self->currentList, sem);
+    append(self->state->list, sem);
 }
 
 static void visitTime(void *_self, ASTTime *ast)
@@ -107,7 +121,7 @@ static void visitTime(void *_self, ASTTime *ast)
     SEMTime *sem = node(Time, ast);
     sem->numerator = ast->numerator;
     sem->denominator = ast->denominator;
-    append(self->currentList, sem);
+    append(self->state->list, sem);
 }
 
 static void visitKey(void *_self, ASTKey *ast)
@@ -128,7 +142,7 @@ static void visitKey(void *_self, ASTKey *ast)
 
     SEMKey *sem = node(Key, ast);
     sem->noteTable = noteTable;
-    append(self->currentList, sem);
+    append(self->state->list, sem);
 }
 
 static void visitMarker(void *_self, ASTMarker *ast)
@@ -137,7 +151,7 @@ static void visitMarker(void *_self, ASTMarker *ast)
 
     SEMMarker *sem = node(Marker, ast);
     sem->text = strdup(ast->text);
-    append(self->currentList, sem);
+    append(self->state->list, sem);
 }
 
 static void visitChannel(void *_self, ASTChannel *ast)
@@ -151,7 +165,7 @@ static void visitChannel(void *_self, ASTChannel *ast)
 
     SEMChannel *sem = node(Channel, ast);
     sem->number = ast->number;
-    append(self->currentList, sem);
+    append(self->state->list, sem);
 }
 
 static void visitVoice(void *_self, ASTVoice *ast)
@@ -168,7 +182,7 @@ static void visitVoice(void *_self, ASTVoice *ast)
     sem->msb = ast->msb;
     sem->lsb = ast->lsb;
     sem->programNo = ast->programNo;
-    append(self->currentList, sem);
+    append(self->state->list, sem);
 }
 
 static void visitSynth(void *_self, ASTSynth *ast)
@@ -177,7 +191,7 @@ static void visitSynth(void *_self, ASTSynth *ast)
 
     SEMSynth *sem = node(Synth, ast);
     sem->name = strdup(ast->name);
-    append(self->currentList, sem);
+    append(self->state->list, sem);
 }
 
 static void visitVolume(void *_self, ASTVolume *ast)
@@ -191,7 +205,7 @@ static void visitVolume(void *_self, ASTVolume *ast)
 
     SEMVolume *sem = node(Volume, ast);
     sem->value = ast->value;
-    append(self->currentList, sem);
+    append(self->state->list, sem);
 }
 
 static void visitPan(void *_self, ASTPan *ast)
@@ -205,7 +219,7 @@ static void visitPan(void *_self, ASTPan *ast)
 
     SEMPan *sem = node(Pan, ast);
     sem->value = ast->value;
-    append(self->currentList, sem);
+    append(self->state->list, sem);
 }
 
 static void visitChorus(void *_self, ASTChorus *ast)
@@ -219,7 +233,7 @@ static void visitChorus(void *_self, ASTChorus *ast)
 
     SEMChorus *sem = node(Chorus, ast);
     sem->value = ast->value;
-    append(self->currentList, sem);
+    append(self->state->list, sem);
 }
 
 static void visitReverb(void *_self, ASTReverb *ast)
@@ -233,7 +247,7 @@ static void visitReverb(void *_self, ASTReverb *ast)
 
     SEMReverb *sem = node(Reverb, ast);
     sem->value = ast->value;
-    append(self->currentList, sem);
+    append(self->state->list, sem);
 }
 
 static void visitTranspose(void *_self, ASTTranspose *ast)
@@ -247,7 +261,7 @@ static void visitTranspose(void *_self, ASTTranspose *ast)
 
     SEMTranspose *sem = node(Transpose, ast);
     sem->value = ast->value;
-    append(self->currentList, sem);
+    append(self->state->list, sem);
 }
 
 static void visitRest(void *_self, ASTRest *ast)
@@ -261,7 +275,7 @@ static void visitRest(void *_self, ASTRest *ast)
 
     SEMRest *sem = node(Rest, ast);
     sem->step = ast->step;
-    append(self->currentList, sem);
+    append(self->state->list, sem);
 }
 
 static void visitNote(void *_self, ASTNote *ast)
@@ -344,7 +358,7 @@ static void visitNote(void *_self, ASTNote *ast)
     sem->gatetime = gatetime;
     sem->velocity = velocity;
     sem->noteString = strdup(ast->noteString);
-    append(self->currentList, sem);
+    append(self->state->list, sem);
 }
 
 static void visitInclude(void *_self, ASTInclude *ast)
@@ -377,15 +391,15 @@ static void visitPattern(void *_self, ASTPattern *ast)
         NAArrayAppend(sem->ctxIdList, strdup("default"));
     }
 
-    append(self->currentList, sem);
+    append(self->state->list, sem);
 }
 
 static void visitDefine(void *_self, ASTDefine *ast)
 {
     NAMidiASTAnalyzer *self = _self;
 
-    if (NAMapContainsKey(self->currentList->patternMap, ast->identifier)) {
-        Node *original = NAMapGet(self->currentList->patternMap, ast->identifier);
+    if (NAMapContainsKey(self->state->list->patternMap, ast->identifier)) {
+        Node *original = NAMapGet(self->state->list->patternMap, ast->identifier);
         appendError(self, ast, NAMidiParseErrorDuplicatePatternIdentifier,
                 ast->identifier, original->location.filepath, NACStringFromInteger(original->location.line), NULL);
         return;
@@ -393,10 +407,10 @@ static void visitDefine(void *_self, ASTDefine *ast)
 
     SEMList *list = node(List, ast);
     list->identifier = strdup(ast->identifier);
-    NAMapPut(self->currentList->patternMap, list->identifier, list);
+    NAMapPut(self->state->list->patternMap, list->identifier, list);
 
-    NAStackPush(self->listStack, self->currentList);
-    self->currentList = list;
+    NAStackPush(self->stateStack, self->state);
+    self->state = StateCreate(list, PATTERN);
 
     NAIterator *iterator = NAArrayGetIterator(ast->node.children);
     while (iterator->hasNext(iterator)) {
@@ -404,7 +418,9 @@ static void visitDefine(void *_self, ASTDefine *ast)
         node->accept(node, self);
     }
 
-    self->currentList = NAStackPop(self->listStack);
+    State *local = self->state;
+    self->state = NAStackPop(self->stateStack);
+    StateDestroy(local);
 }
 
 static void visitContext(void *_self, ASTContext *ast)
@@ -422,8 +438,8 @@ static void visitContext(void *_self, ASTContext *ast)
     }
 
     sem->list = node(List, ast);
-    NAStackPush(self->listStack, self->currentList);
-    self->currentList = sem->list;
+    NAStackPush(self->stateStack, self->state);
+    self->state = StateCreate(sem->list, CONTEXT);
 
     iterator = NAArrayGetIterator(ast->node.children);
     while (iterator->hasNext(iterator)) {
@@ -431,9 +447,11 @@ static void visitContext(void *_self, ASTContext *ast)
         node->accept(node, self);
     }
 
-    self->currentList = NAStackPop(self->listStack);
+    State *local = self->state;
+    self->state = NAStackPop(self->stateStack);
+    StateDestroy(local);
 
-    append(self->currentList, sem);
+    append(self->state->list, sem);
 }
 
 static void visitIdentifier(void *_self, ASTIdentifier *ast)
@@ -479,7 +497,7 @@ Analyzer *NAMidiASTAnalyzerCreate(ParseContext *context)
     self->analyzer.self = self;
 
     self->context = context;
-    self->listStack = NAStackCreate(4);
+    self->stateStack = NAStackCreate(4);
 
     return &self->analyzer;
 }
@@ -492,4 +510,17 @@ static BaseNote KeyChar2BaseNote(char c)
     };
 
     return baseNoteTable[tolower(c) - 97];
+}
+
+static State *StateCreate(SEMList *list, int kind)
+{
+    State *self = calloc(1, sizeof(State));
+    self->list = list;
+    self->kind = kind;
+    return self;
+}
+
+static void StateDestroy(State *self)
+{
+    free(self);
 }
