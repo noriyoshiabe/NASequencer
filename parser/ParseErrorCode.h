@@ -25,8 +25,13 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(NAMidiParseErrorInvalidOctave);
     CASE(NAMidiParseErrorInvalidGatetime);
     CASE(NAMidiParseErrorInvalidVelocity);
-    CASE(NAMidiParseErrorResolutionAlreadyDefined);
-    CASE(NAMidiParseErrorTitleAlreadyDefined);
+    CASE(NAMidiParseErrorIllegalStateWithResolution);
+    CASE(NAMidiParseErrorIllegalStateWithTitle);
+    CASE(NAMidiParseErrorIllegalStateWithInclude);
+    CASE(NAMidiParseErrorIllegalStateWithDefine);
+    CASE(NAMidiParseErrorIllegalStateWithContext);
+    CASE(NAMidiParseErrorAlreadyDefinedWithResolution);
+    CASE(NAMidiParseErrorAlreadyDefinedWithTitle);
     CASE(NAMidiParseErrorTooManyNoteParams);
     CASE(NAMidiParseErrorUnsupportedFileTypeInclude);
     CASE(NAMidiParseErrorIncludeFileNotFound);

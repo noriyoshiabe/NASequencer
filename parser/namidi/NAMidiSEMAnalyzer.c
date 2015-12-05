@@ -94,7 +94,7 @@ static void visitResolution(void *_self, SEMResolution *sem)
     NAMidiSEMAnalyzer *self = _self;
     if (self->definedNode.resolution) {
         FileLocation *loc = &self->definedNode.resolution->location;
-        appendError(self, sem, NAMidiParseErrorResolutionAlreadyDefined, loc->filepath, NACStringFromInteger(loc->line), NACStringFromInteger(loc->column), NULL);
+        appendError(self, sem, NAMidiParseErrorAlreadyDefinedWithResolution, loc->filepath, NACStringFromInteger(loc->line), NACStringFromInteger(loc->column), NULL);
         return;
     }
 
@@ -109,7 +109,7 @@ static void visitTitle(void *_self, SEMTitle *sem)
 
     if (self->definedNode.title) {
         FileLocation *loc = &self->definedNode.title->location;
-        appendError(self, sem, NAMidiParseErrorTitleAlreadyDefined, loc->filepath, NACStringFromInteger(loc->line), NACStringFromInteger(loc->column), NULL);
+        appendError(self, sem, NAMidiParseErrorAlreadyDefinedWithTitle, loc->filepath, NACStringFromInteger(loc->line), NACStringFromInteger(loc->column), NULL);
         return;
     }
 

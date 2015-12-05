@@ -76,6 +76,11 @@ static void visitResolution(void *_self, ASTResolution *ast)
 {
     NAMidiASTAnalyzer *self = _self;
 
+    if (GLOBAL != self->state->kind) {
+        appendError(self, ast, NAMidiParseErrorIllegalStateWithResolution, NULL);
+        return;
+    }
+
     if (!isValidRange(ast->resolution, 1, 9600)) {
         appendError(self, ast, NAMidiParseErrorInvalidResolution, NACStringFromInteger(ast->resolution), NULL);
         return;
@@ -89,6 +94,11 @@ static void visitResolution(void *_self, ASTResolution *ast)
 static void visitTitle(void *_self, ASTTitle *ast)
 {
     NAMidiASTAnalyzer *self = _self;
+
+    if (GLOBAL != self->state->kind) {
+        appendError(self, ast, NAMidiParseErrorIllegalStateWithTitle, NULL);
+        return;
+    }
 
     SEMTitle *sem = node(Title, ast);
     sem->title = strdup(ast->title);
@@ -365,6 +375,11 @@ static void visitInclude(void *_self, ASTInclude *ast)
 {
     NAMidiASTAnalyzer *self = _self;
 
+    if (GLOBAL != self->state->kind) {
+        appendError(self, ast, NAMidiParseErrorIllegalStateWithInclude, NULL);
+        return;
+    }
+
     if (ast->node.children) {
         NAIterator *iterator = NAArrayGetIterator(ast->node.children);
         while (iterator->hasNext(iterator)) {
@@ -398,6 +413,11 @@ static void visitDefine(void *_self, ASTDefine *ast)
 {
     NAMidiASTAnalyzer *self = _self;
 
+    if (CONTEXT == self->state->kind) {
+        appendError(self, ast, NAMidiParseErrorIllegalStateWithDefine, NULL);
+        return;
+    }
+
     if (NAMapContainsKey(self->state->list->patternMap, ast->identifier)) {
         Node *original = NAMapGet(self->state->list->patternMap, ast->identifier);
         appendError(self, ast, NAMidiParseErrorDuplicatePatternIdentifier,
@@ -426,6 +446,11 @@ static void visitDefine(void *_self, ASTDefine *ast)
 static void visitContext(void *_self, ASTContext *ast)
 {
     NAMidiASTAnalyzer *self = _self;
+
+    if (GLOBAL == self->state->kind) {
+        appendError(self, ast, NAMidiParseErrorIllegalStateWithContext, NULL);
+        return;
+    }
 
     SEMContext *sem = node(Context, ast);
 
