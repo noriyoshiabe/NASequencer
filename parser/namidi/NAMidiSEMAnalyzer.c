@@ -14,6 +14,7 @@
 #define isValidRange(v, from, to) (from <= v && v <= to)
 
 typedef struct _State {
+    int resolution;
     int channel;
     int transpose;
     NoteTable *noteTable;
@@ -86,6 +87,7 @@ static void visitList(void *_self, SEMList *sem)
 static void visitResolution(void *_self, SEMResolution *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
+    self->state->resolution = sem->resolution;
     self->builder->setResolution(self->builder, sem->resolution);
 }
 
@@ -194,7 +196,9 @@ static void visitNote(void *_self, SEMNote *sem)
 
     int step = -1 != sem->step ? sem->step : 0;
 
-    int gatetime = -1 != sem->gatetime ? sem->gatetime : self->state->channels[channel].gatetime;
+    int gatetime = -1 != sem->gatetime ? sem->gatetime
+                 : -1 != self->state->channels[channel].gatetime ? self->state->channels[channel].gatetime
+                 : -1 != self->state->resolution / 2;
     self->state->channels[channel].gatetime = gatetime;
 
     int velocity = -1 != sem->velocity ? sem->velocity : self->state->channels[channel].velocity;
@@ -296,13 +300,15 @@ static State *StateCreate()
 
     self->noteTable = NoteTableCreate(BaseNote_C, false, false, ModeMajor);
 
+    self->resolution = 480;
+    self->channel = 1;
+
     for (int i = 0; i < 16; ++i) {
-        self->channels[i].gatetime = 240;
+        self->channels[i].gatetime = -1;
         self->channels[i].velocity = 100;
         self->channels[i].octave = 2;
     }
 
-    self->channel = 1;
     self->patternMap = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
     self->ctxIdList = NASetCreate(NAHashCString, NADescriptionCString);
     self->expandingPatternList = NASetCreate(NAHashAddress, NADescriptionAddress);
