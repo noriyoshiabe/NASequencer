@@ -81,13 +81,13 @@ bool TimeTableAddTimeSign(TimeTable *self, int32_t tick, TimeSign timeSign)
 
     if (records[i]->tickStart == tick) {
         records[i]->timeSign = timeSign;
-        return true;
+        goto REFRESH;
     }
 
     if (i + 1 < count) {
         if (0 == memcmp(&records[i + 1]->timeSign, &timeSign, sizeof(TimeSign))) {
             records[i + 1]->tickStart = tick;
-            return true;
+            goto REFRESH;
         }
     }
 
@@ -104,6 +104,7 @@ bool TimeTableAddTimeSign(TimeTable *self, int32_t tick, TimeSign timeSign)
         NAArrayAppend(self->timeSignRecords, insert);
     }
 
+REFRESH:
     TimeTableRefreshMeasureFrom(self, i);
     return true;
 }
@@ -120,13 +121,13 @@ bool TimeTableAddTempo(TimeTable *self, int32_t tick, float tempo)
 
     if (records[i]->tickStart == tick) {
         records[i]->tempo = tempo;
-        return true;
+        goto REFRESH;
     }
 
     if (i + 1 < count) {
         if (records[i + 1]->tempo == tempo) {
             records[i + 1]->tickStart = tick;
-            return true;
+            goto REFRESH;
         }
     }
 
@@ -143,6 +144,7 @@ bool TimeTableAddTempo(TimeTable *self, int32_t tick, float tempo)
         NAArrayAppend(self->tempoRecords, insert);
     }
 
+REFRESH:
     TimeTableRefreshUsecFrom(self, i);
     return true;
 }
@@ -150,6 +152,7 @@ bool TimeTableAddTempo(TimeTable *self, int32_t tick, float tempo)
 void TimeTableSetResolution(TimeTable *self, int32_t resolution)
 {
     self->resolution = resolution;
+    TimeTableRefreshMeasureFrom(self, 0);
 }
 
 void TimeTableSetLength(TimeTable *self, int32_t length)
