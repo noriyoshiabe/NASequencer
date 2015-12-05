@@ -40,6 +40,11 @@ typedef struct _NAMidiSEMAnalyzer {
     SequenceBuilder *builder;
     State *state;
     NAStack *stateStack;
+
+    struct {
+        Node *resolution;
+        Node *title;
+    } definedNode;
 } NAMidiSEMAnalyzer;
 
 static State *StateCreate();
@@ -87,14 +92,29 @@ static void visitList(void *_self, SEMList *sem)
 static void visitResolution(void *_self, SEMResolution *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
+    if (self->definedNode.resolution) {
+        FileLocation *loc = &self->definedNode.resolution->location;
+        appendError(self, sem, NAMidiParseErrorResolutionAlreadyDefined, loc->filepath, NACStringFromInteger(loc->line), NACStringFromInteger(loc->column), NULL);
+        return;
+    }
+
     self->state->resolution = sem->resolution;
     self->builder->setResolution(self->builder, sem->resolution);
+    self->definedNode.resolution = (Node *)sem;
 }
 
 static void visitTitle(void *_self, SEMTitle *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
+
+    if (self->definedNode.title) {
+        FileLocation *loc = &self->definedNode.title->location;
+        appendError(self, sem, NAMidiParseErrorTitleAlreadyDefined, loc->filepath, NACStringFromInteger(loc->line), NACStringFromInteger(loc->column), NULL);
+        return;
+    }
+
     self->builder->setTitle(self->builder, sem->title);
+    self->definedNode.title = (Node *)sem;
 }
 
 static void visitTempo(void *_self, SEMTempo *sem)

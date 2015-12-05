@@ -20,6 +20,8 @@ typedef enum {
     NAMidiParseErrorInvalidOctave,
     NAMidiParseErrorInvalidGatetime,
     NAMidiParseErrorInvalidVelocity,
+    NAMidiParseErrorResolutionAlreadyDefined,
+    NAMidiParseErrorTitleAlreadyDefined,
     NAMidiParseErrorTooManyNoteParams,
     NAMidiParseErrorUnsupportedFileTypeInclude,
     NAMidiParseErrorIncludeFileNotFound,
