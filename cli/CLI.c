@@ -421,11 +421,9 @@ static char *CLIFormatParseError(CLI *self, const ParseError *error)
     char params[256] = {0};
     NAIterator *iterator = NAArrayGetIterator(error->infos);
     while (iterator->hasNext(iterator)) {
-        if (params[0]) {
-            strcat(params, ",");
-        }
+        strcat(params, params[0] ? "," : " ");
         strcat(params, iterator->next(iterator));
     }
 
-    return NACStringFormat("%s %s %s at %s\n", head, ParseErrorCode2String(error->code), params, location);
+    return NACStringFormat("%s %s%s at %s\n", head, ParseErrorCode2String(error->code), params, location);
 }

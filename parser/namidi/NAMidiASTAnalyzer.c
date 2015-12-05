@@ -18,15 +18,13 @@
 #define isValidRange(v, from, to) (from <= v && v <= to)
 #define isPowerOf2(x) ((x != 0) && ((x & (x - 1)) == 0))
 
-enum {
-    GLOBAL,
-    PATTERN,
-    CONTEXT,
-};
+static const char *GLOBAL = "global";
+static const char *PATTERN = "pattern";
+static const char *CONTEXT = "context";
 
 typedef struct _State {
     SEMList *list;
-    int kind;
+    const char *name;
 } State;
 
 typedef struct _NAMidiASTAnalyzer {
@@ -38,7 +36,7 @@ typedef struct _NAMidiASTAnalyzer {
 } NAMidiASTAnalyzer;
 
 static BaseNote KeyChar2BaseNote(char c);
-static State *StateCreate(SEMList *list, int kind);
+static State *StateCreate(SEMList *list, const char *name);
 static void StateDestroy(State *self);
 
 static Node *process(void *_self, Node *node)
@@ -76,8 +74,8 @@ static void visitResolution(void *_self, ASTResolution *ast)
 {
     NAMidiASTAnalyzer *self = _self;
 
-    if (GLOBAL != self->state->kind) {
-        appendError(self, ast, NAMidiParseErrorIllegalStateWithResolution, NULL);
+    if (GLOBAL != self->state->name) {
+        appendError(self, ast, NAMidiParseErrorIllegalStateWithResolution, self->state->name, NULL);
         return;
     }
 
@@ -95,8 +93,8 @@ static void visitTitle(void *_self, ASTTitle *ast)
 {
     NAMidiASTAnalyzer *self = _self;
 
-    if (GLOBAL != self->state->kind) {
-        appendError(self, ast, NAMidiParseErrorIllegalStateWithTitle, NULL);
+    if (GLOBAL != self->state->name) {
+        appendError(self, ast, NAMidiParseErrorIllegalStateWithTitle, self->state->name, NULL);
         return;
     }
 
@@ -375,8 +373,8 @@ static void visitInclude(void *_self, ASTInclude *ast)
 {
     NAMidiASTAnalyzer *self = _self;
 
-    if (GLOBAL != self->state->kind) {
-        appendError(self, ast, NAMidiParseErrorIllegalStateWithInclude, NULL);
+    if (GLOBAL != self->state->name) {
+        appendError(self, ast, NAMidiParseErrorIllegalStateWithInclude, self->state->name, NULL);
         return;
     }
 
@@ -413,8 +411,8 @@ static void visitDefine(void *_self, ASTDefine *ast)
 {
     NAMidiASTAnalyzer *self = _self;
 
-    if (CONTEXT == self->state->kind) {
-        appendError(self, ast, NAMidiParseErrorIllegalStateWithDefine, NULL);
+    if (CONTEXT == self->state->name) {
+        appendError(self, ast, NAMidiParseErrorIllegalStateWithDefine, self->state->name, NULL);
         return;
     }
 
@@ -447,8 +445,8 @@ static void visitContext(void *_self, ASTContext *ast)
 {
     NAMidiASTAnalyzer *self = _self;
 
-    if (GLOBAL == self->state->kind) {
-        appendError(self, ast, NAMidiParseErrorIllegalStateWithContext, NULL);
+    if (GLOBAL == self->state->name) {
+        appendError(self, ast, NAMidiParseErrorIllegalStateWithContext, self->state->name, NULL);
         return;
     }
 
@@ -537,11 +535,11 @@ static BaseNote KeyChar2BaseNote(char c)
     return baseNoteTable[tolower(c) - 97];
 }
 
-static State *StateCreate(SEMList *list, int kind)
+static State *StateCreate(SEMList *list, const char *name)
 {
     State *self = calloc(1, sizeof(State));
     self->list = list;
-    self->kind = kind;
+    self->name = name;
     return self;
 }
 
