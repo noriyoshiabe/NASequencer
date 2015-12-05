@@ -218,7 +218,7 @@ static void visitNote(void *_self, SEMNote *sem)
 
     int gatetime = -1 != sem->gatetime ? sem->gatetime
                  : -1 != self->state->channels[channel].gatetime ? self->state->channels[channel].gatetime
-                 : -1 != self->state->resolution / 2;
+                 : self->state->resolution / 2;
     self->state->channels[channel].gatetime = gatetime;
 
     int velocity = -1 != sem->velocity ? sem->velocity : self->state->channels[channel].velocity;
