@@ -258,7 +258,10 @@ static void ASTIncludeAccept(void *self, void *visitor)
 static void ASTIncludeDestroy(void *_self)
 {
     ASTInclude *self = _self;
+
     free(self->filepath);
+    free(self->fullpath);
+
     if (self->root) {
         NodeRelease(self->root);
     }

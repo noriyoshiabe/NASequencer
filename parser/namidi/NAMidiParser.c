@@ -1,4 +1,5 @@
 #include "NAMidiParser.h"
+#include "NAMidiAST.h"
 #include "NAUtil.h"
 #include "NAMidi_yacc.h"
 #include "NAMidi_lex.h"
@@ -61,7 +62,6 @@ static void NAMidiParserDestroy(void *_self)
 {
     NAMidiParser *self = _self;
     NASetDestroy(self->readingFileSet);
-    NAMapTraverseKey(self->includedNodeMap, free);
     NAMapDestroy(self->includedNodeMap);
     free(self);
 }
@@ -88,30 +88,30 @@ Node *NAMidiParserParseIncludeFile(void *_self, FileLocation *location, const ch
     }
 
     char *directory = dirname(location->filepath);
-    char *fullPath = NAUtilBuildPathWithDirectory(directory, includeFile);
+    char *fullpath = NAUtilBuildPathWithDirectory(directory, includeFile);
 
-    if (NASetContains(self->readingFileSet, fullPath)) {
+    if (NASetContains(self->readingFileSet, fullpath)) {
         self->context->appendError(self->context, location, NAMidiParseErrorCircularFileInclude, includeFile, NULL);
-        free(fullPath);
+        free(fullpath);
         return NULL;
     }
 
-    Node *node = NAMapGet(self->includedNodeMap, fullPath);
+    Node *node = NAMapGet(self->includedNodeMap, fullpath);
     if (node) {
-        NodeRetain(node);
-        goto EXIT;
+        free(fullpath);
+        return NodeRetain(node);
     }
 
-    node = NAMidiParserParseInternal(self, fullPath);
+    node = NAMidiParserParseInternal(self, fullpath);
     if (!node) {
         self->context->appendError(self->context, location, NAMidiParseErrorIncludeFileNotFound, includeFile, NULL);
-        goto EXIT;
+        free(fullpath);
+        return NULL;
     }
 
-    NAMapPut(self->includedNodeMap, strdup(fullPath), node);
-
-EXIT:
-    free(fullPath);
+    ASTInclude *include = (ASTInclude *)node;
+    include->fullpath = fullpath;
+    NAMapPut(self->includedNodeMap, include->fullpath, include);
     return node;
 }
 
