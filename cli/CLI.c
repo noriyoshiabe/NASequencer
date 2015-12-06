@@ -4,7 +4,6 @@
 #include "Parser.h"
 #include "ParseErrorCode.h"
 #include "NAMidiParser.h"
-//#include "ABCParser.h"
 
 #include "NAUtil.h"
 #include "NACString.h"
@@ -407,15 +406,6 @@ static char *CLIFormatParseError(CLI *self, const ParseError *error)
     case NAMidiParseErrorPatternMissing:
     case NAMidiParseErrorDuplicatePatternIdentifier:
     case NAMidiParseErrorCircularPatternReference:
-        // TODO
-        break;
-    // case ABCParseErrorUnrecognisedVersion:
-    // case ABCParseErrorUnexpectedVersionExpression:
-    // case ABCParseErrorInvalidKeyMode:
-    // case ABCParseErrorInvalidKeySign:
-    // case ABCParseErrorInvalidNoteNumber:
-    // case ABCParseErrorIllegalOctaveDown:
-    // case ABCParseErrorIllegalOctaveUp:
         // TODO
         break;
     default:
