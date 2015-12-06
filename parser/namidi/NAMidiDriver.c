@@ -2,6 +2,7 @@
 #include "NAMidiParser.h"
 #include "NAMidiASTDumper.h"
 #include "NAMidiASTAnalyzer.h"
+#include "NAMidiSEMDumper.h"
 #include "NAMidiSEMAnalyzer.h"
 #include "NAUtil.h"
 
@@ -17,6 +18,9 @@ static const AnalyzerFactory AnalyzerFactories[] = {
     NAMidiASTDumperCreate,
 #endif
     NAMidiASTAnalyzerCreate,
+#if 0
+    NAMidiSEMDumperCreate,
+#endif
     NAMidiSEMAnalyzerCreate,
 };
 

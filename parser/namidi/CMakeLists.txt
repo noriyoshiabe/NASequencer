@@ -22,6 +22,7 @@ set(SOURCES
   NAMidiASTDumper.c
   NAMidiASTAnalyzer.c
   NAMidiSEM.c
+  NAMidiSEMDumper.c
   NAMidiSEMAnalyzer.c
 )
 

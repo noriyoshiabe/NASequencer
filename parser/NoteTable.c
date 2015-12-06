@@ -1,5 +1,6 @@
 #include "NoteTable.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 
 struct _NoteTable {
@@ -214,4 +215,19 @@ const char *MidiKeySign2String(MidiKeySign keySign)
     }
 
     return "Unknown key singature";
+}
+
+void NoteTableDump(NoteTable *self, int indent)
+{
+    printf("%*s[NoteTable] sf=%d mi=%d unusualKey=%s baseNote2Sf=%d,%d,%d,%d,%d,%d,%d\n", indent, "",
+            self->midiKeySign.sf,
+            self->midiKeySign.mi,
+            self->unusualKey ? "true" : "false",
+            self->baseNote2Sf[0],
+            self->baseNote2Sf[1],
+            self->baseNote2Sf[2],
+            self->baseNote2Sf[3],
+            self->baseNote2Sf[4],
+            self->baseNote2Sf[5],
+            self->baseNote2Sf[6]);
 }

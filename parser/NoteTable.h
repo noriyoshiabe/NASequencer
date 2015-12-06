@@ -52,3 +52,33 @@ extern void NoteTableAppendAccidental(NoteTable *self, BaseNote baseNote, Accide
 extern MidiKeySign NoteTableGetMidiKeySign(NoteTable *self);
 extern int NoteTableGetNoteNo(NoteTable *self, BaseNote baseNote, Accidental accidental, int octave);
 extern const char *MidiKeySign2String(MidiKeySign keySign);
+extern void NoteTableDump(NoteTable *self, int indent);
+
+static inline const char *BaseNote2String(BaseNote baseNote)
+{
+#define CASE(baseNote) case baseNote: return &#baseNote[9]
+    switch (baseNote) {
+    CASE(BaseNote_C);
+    CASE(BaseNote_D);
+    CASE(BaseNote_E);
+    CASE(BaseNote_F);
+    CASE(BaseNote_G);
+    CASE(BaseNote_A);
+    CASE(BaseNote_B);
+    }
+#undef CASE
+}
+
+static inline const char *Accidental2String(Accidental accidental)
+{
+#define CASE(accidental) case accidental: return &#accidental[10]
+    switch (accidental) {
+    CASE(AccidentalNone);
+    CASE(AccidentalSharp);
+    CASE(AccidentalDoubleSharp);
+    CASE(AccidentalFlat);
+    CASE(AccidentalDoubleFlat);
+    CASE(AccidentalNatural);
+    }
+#undef CASE
+}
