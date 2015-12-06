@@ -20,7 +20,7 @@ static void ParseContextAppendError(ParseContext *self, const FileLocation *loca
     va_start(argList, code);
 
     const char *str;
-    for (int i = 0; i < 4 && (str = va_arg(argList, const char *)); ++i) {
+    while ((str = va_arg(argList, const char *))) {
         NAArrayAppend(error->infos, strdup(str));
     }
 
