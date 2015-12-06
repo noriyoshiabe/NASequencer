@@ -1,5 +1,6 @@
 #include "NAMidiDriver.h"
 #include "NAMidiParser.h"
+#include "NAMidiASTDumper.h"
 #include "NAMidiASTAnalyzer.h"
 #include "NAMidiSEMAnalyzer.h"
 #include "NAUtil.h"
@@ -12,6 +13,9 @@ typedef struct _NAMidiDriver {
 } NAMidiDriver;
 
 static const AnalyzerFactory AnalyzerFactories[] = {
+#if 0
+    NAMidiASTDumperCreate,
+#endif
     NAMidiASTAnalyzerCreate,
     NAMidiSEMAnalyzerCreate,
 };

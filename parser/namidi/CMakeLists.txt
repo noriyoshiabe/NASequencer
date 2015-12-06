@@ -19,6 +19,7 @@ set(SOURCES
   NAMidiDriver.c
   NAMidiParser.c
   NAMidiAST.c
+  NAMidiASTDumper.c
   NAMidiASTAnalyzer.c
   NAMidiSEM.c
   NAMidiSEMAnalyzer.c
