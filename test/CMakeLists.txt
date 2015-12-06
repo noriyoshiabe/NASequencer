@@ -13,6 +13,7 @@ include_directories(
   ../core
   ../parser
   ../parser/namidi
+  ../parser/abc
   ../sequence
   ../lib
   ../synthesizer
