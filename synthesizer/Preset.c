@@ -123,7 +123,7 @@ bool ParsePresets(SoundFont *sf, Preset ***results, int *resultsCount)
         }
 
         if (preset) {
-            presets = realloc(presets, sizeof(Preset *) * presetCount + 1);
+            presets = realloc(presets, sizeof(Preset *) * (presetCount + 1));
             presets[presetCount] = preset;
             ++presetCount;
         }
@@ -212,7 +212,7 @@ static bool ParsePreset(SoundFont *sf, int presetIdx, Preset **result)
             }
         }
         else {
-            preset->zones = realloc(preset->zones, sizeof(Zone *) * preset->zoneCount + 1);
+            preset->zones = realloc(preset->zones, sizeof(Zone *) * (preset->zoneCount + 1));
             preset->zones[preset->zoneCount] = zone;
             ++preset->zoneCount;
         }
@@ -319,7 +319,7 @@ static bool ParseInstrument(SoundFont *sf, int instIdx, Instrument **result)
             }
         }
         else {
-            instrument->zones = realloc(instrument->zones, sizeof(Zone *) * instrument->zoneCount + 1);
+            instrument->zones = realloc(instrument->zones, sizeof(Zone *) * (instrument->zoneCount + 1));
             instrument->zones[instrument->zoneCount] = zone;
             ++instrument->zoneCount;
         }

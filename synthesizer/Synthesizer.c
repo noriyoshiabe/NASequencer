@@ -115,7 +115,7 @@ static void registerCallback(void *_self, MidiSourceCallback function, void *rec
 {
     Synthesizer *self = _self;
 
-    self->callbackList = realloc(self->callbackList, sizeof(Callback) * self->callbackListLength + 1);
+    self->callbackList = realloc(self->callbackList, sizeof(Callback) * (self->callbackListLength + 1));
     self->callbackList[self->callbackListLength].function = function; 
     self->callbackList[self->callbackListLength].receiver = receiver; 
     ++self->callbackListLength;
