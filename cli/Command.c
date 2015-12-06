@@ -588,7 +588,6 @@ static void HelpCommandExecute(Command *self, CLI *cli)
 
 static void ExitCommandExecute(Command *self, CLI *cli)
 {
-    free(self);
     CLIExit(cli);
 }
 

@@ -29,8 +29,8 @@ struct _CLI {
     EventListView *eventListView;
     void *activeView;
     sigjmp_buf sigjmpBuf;
-    jmp_buf jmpBuf;
     bool prompt;
+    bool exit;
 };
 
 static NAMidiObserverCallbacks CLINAMidiObserverCallbacks;
@@ -92,10 +92,6 @@ bool CLIRunShell(CLI *self)
 
     while (sigsetjmp(self->sigjmpBuf, 1));
 
-    if (setjmp(self->jmpBuf)) {
-        goto EXIT;
-    }
-
     rl_attempted_completion_function = CLICompletion;
 
     self->prompt = true;
@@ -104,6 +100,10 @@ bool CLIRunShell(CLI *self)
 
         Command *cmd = CommandParse(line);
         CommandExecute(cmd, self);
+
+        if (self->exit) {
+            break;
+        }
 
         if ('\0' != line[0]) {
             add_history(line);
@@ -118,8 +118,12 @@ bool CLIRunShell(CLI *self)
         self->prompt = true;
     }
 
-EXIT:
-    printf("\n");
+    if (line) {
+        free(line);
+    }
+    else {
+        printf("\n");
+    }
 
     write_history(historyFile);
     clear_history();
@@ -185,7 +189,7 @@ void CLISigInt(CLI *self)
 
 void CLIExit(CLI *self)
 {
-    longjmp(self->jmpBuf, 1);
+    self->exit = true;
 }
 
 bool CLIExport(CLI *self, const char *output)

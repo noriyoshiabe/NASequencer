@@ -124,6 +124,7 @@ void NAMidiParse(NAMidi *self, const char *filepath)
     Parser *parser = ParserCreate(builder);
     Sequence *sequence = ParserParseFile(parser, filepath, &info);
     ParserDestroy(parser);
+    builder->destroy(builder);
 
     if (self->sequence) {
         SequenceRelease(self->sequence);
