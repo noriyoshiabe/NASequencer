@@ -58,7 +58,7 @@ extern void NAMidiParserSyntaxError(void *self, FileLocation *location, const ch
 %%
 
 input
-    : statement_list eos_or_none
+    : statement_list
         {
             if (*node) {
                 ASTRoot *n = *node;
@@ -73,22 +73,18 @@ input
     ;
 
 statement_list
-    :
-        {
-            $$ = list();
-        }
-    | statement
+    : statement
         {
             $$ = list();
             if ($1) {
                 listAppend($$, $1);
             }
         }
-    | statement_list eos statement
+    | statement_list statement
         {
             $$ = $1;
-            if ($3) {
-                listAppend($$, $3);
+            if ($2) {
+                listAppend($$, $2);
             }
         }
     ;
@@ -121,18 +117,18 @@ statement
             yyclearin;
             $$ = NULL;
         }
-    ;
-
-eos
-    : ';'
+    | ';'
+        {
+            $$ = NULL;
+        }
     | '\n'
-    | eos ';'
-    | eos '\n'
-    ;
-
-eos_or_none
-    :
-    | eos
+        {
+            $$ = NULL;
+        }
+    | /* empty */
+        {
+            $$ = NULL;
+        }
     ;
 
 resolution
@@ -343,7 +339,7 @@ pattern
     ;
 
 define
-    : DEFINE IDENTIFIER statement_list eos_or_none END
+    : DEFINE IDENTIFIER statement_list END
         {
             ASTDefine *n = node(Define, @$);
             n->identifier = $2;
@@ -353,7 +349,7 @@ define
     ;
 
 context
-    : identifier_list '{' statement_list eos_or_none '}'
+    : identifier_list '{' statement_list '}'
         {
             ASTContext *n = node(Context, @$);
             n->ctxIdList = $1;
@@ -391,19 +387,19 @@ identifier
     ;
 
 note_param_list
-    :
+    : note_param
         {
             $$ = list();
-        }
-    | note_param
-        {
-            $$ = list();
-            listAppend($$, $1);
+            if ($1) {
+                listAppend($$, $1);
+            }
         }
     | note_param_list note_param
         {
             $$ = $1;
-            listAppend($$, $2);
+            if ($2) {
+                listAppend($$, $2);
+            }
         }
     ;
 
@@ -419,6 +415,10 @@ note_param
             ASTNoteParam *n = node(NoteParam, @$);
             n->value = $1;
             $$ = n;
+        }
+    | /* empty */
+        {
+            $$ = NULL;
         }
     ;
 
