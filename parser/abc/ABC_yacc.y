@@ -38,12 +38,13 @@ extern void ABCParserSyntaxError(void *self, FileLocation *location, const char 
 }
 
 %token TITLE
+%token INSTRUCTION INCLUDE
 
 %token<s> STRING
-%token<s> VERSION NOTE
+%token<s> VERSION NOTE FILEPATH
 
 %type <node> version title note
-%type <node> line_break
+%type <node> include line_break
 
 %type <node> statement
 %type <list> statement_list
@@ -81,6 +82,7 @@ statement
     | title
     | note
     | line_break
+    | include
     | error
         {
             yyerrok;
@@ -116,6 +118,17 @@ note
         {
             ASTNote *n = node(Note, @$);
             n->noteString = $1;
+            $$ = n;
+        }
+    ;
+
+include
+    : INSTRUCTION INCLUDE FILEPATH
+        {
+            ASTInclude *n = node(Include, @$);
+            n->filepath = $3;
+            FileLocation location = {(char *)filepath, @$.first_line, @$.first_column};
+            n->root = ABCParserParseIncludeFile(ABC_get_extra(scanner), &location, $3);
             $$ = n;
         }
     ;

@@ -1,5 +1,7 @@
 %abc-2.1
 T: title title
+I: abc-include include.abh
+I: abc-include 'include hoge.abh'
 r: this is remarks
 C,D,E,F,G,A,B,CDEFGABcdefgabc'd'e'f'g'a'b'
 % comment

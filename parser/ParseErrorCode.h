@@ -1,5 +1,6 @@
 #include "ParseInfo.h"
 #include "NAMidiParser.h"
+#include "ABCParser.h"
 
 static inline const char *ParseErrorCode2String(int code)
 {
@@ -39,6 +40,11 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(NAMidiParseErrorPatternMissing);
     CASE(NAMidiParseErrorDuplicatePatternIdentifier);
     CASE(NAMidiParseErrorCircularPatternReference);
+
+    CASE(ABCParseErrorUnrecognisedVersion);
+    CASE(ABCParseErrorUnsupportedFileTypeInclude);
+    CASE(ABCParseErrorCircularFileInclude);
+    CASE(ABCParseErrorIncludeFileNotFound);
 
     default:
        break;
