@@ -37,9 +37,13 @@ extern void ABCParserSyntaxError(void *self, FileLocation *location, const char 
     void *list;
 }
 
+%token TITLE
+
+%token<s> STRING
 %token<s> VERSION NOTE
 
-%type <node> version note line_break
+%type <node> version title note
+%type <node> line_break
 
 %type <node> statement
 %type <list> statement_list
@@ -74,6 +78,7 @@ statement_list
 
 statement
     : version
+    | title
     | note
     | line_break
     | error
@@ -93,6 +98,15 @@ version
         {
             ASTVersion *n = node(Version, @$);
             n->versionString = $1;
+            $$ = n;
+        }
+    ;
+
+title
+    : TITLE STRING
+        {
+            ASTTitle *n = node(Title, @$);
+            n->title = $2;
             $$ = n;
         }
     ;

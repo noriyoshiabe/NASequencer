@@ -3,6 +3,7 @@
 #include "ABCParser.h"
 #include "ABC_yacc.h"
 #include <string.h>
+#include <NACString.h>
 
 #define YY_USER_INIT \
     yylineno = 1; \
@@ -25,29 +26,55 @@
 %option bison-locations
 
 %x PERCENT
+%x STR_INFO
+%x REMARK
 
-NONZERO          [1-9]
-DIGIT            [[:digit:]]
+NONZERO             [1-9]
+DIGIT               [[:digit:]]
 
-VERSION          abc-{DIGIT}\.{DIGIT}
-NOTE             [cdefgabCDEFGAB][,|']?([\^|_]{1,2}|=)?
+VERSION             abc-{DIGIT}\.{DIGIT}
 
-WSPACE           [[:blank:]]+
+NOTE                [cdefgabCDEFGAB][,|']?([\^|_]{1,2}|=)?
+
+WSPACE              [[:blank:]]+
 
 %%
 
-{NOTE}           { yylval->s = strdup(yytext); return NOTE; }
+{NOTE}              { yylval->s = strdup(yytext); return NOTE; }
 
-\n               { return '\n'; }
+\n                  { return '\n'; }
 
-{WSPACE}         { }
+{WSPACE}            { }
 
-"%"              { BEGIN(PERCENT); }
-<PERCENT>{VERSION}   { yylval->s = strdup(yytext); return VERSION; }
-<PERCENT>\n      { BEGIN(INITIAL); }
-<PERCENT>.       { }
+"%"                 { BEGIN(PERCENT); }
+<PERCENT>{VERSION}  { yylval->s = strdup(yytext); return VERSION; }
+<PERCENT>\n         { BEGIN(INITIAL); }
+<PERCENT>.          { }
 
-.                { return 1; }
-<<EOF>>          { return 0; }
+^A:                 { }
+^B:                 { }
+^C:                 { }
+^D:                 { }
+^F:                 { }
+^G:                 { }
+^H:                 { }
+^N:                 { }
+^O:                 { }
+^R:                 { }
+^S:                 { }
+^T:                 { BEGIN(STR_INFO); return TITLE; }
+^W:                 { }
+^w:                 { }
+^Z:                 { }
+
+<STR_INFO>.         { yymore(); }
+<STR_INFO>\n        { BEGIN(INITIAL); yylval->s = NACStringTrimWhiteSpace(strdup(yytext)); return STRING; }
+ 
+^r:                 { BEGIN(REMARK); }
+<REMARK>.           { }
+<REMARK>\n          { BEGIN(INITIAL); }
+
+.                   { return 1; }
+<<EOF>>             { return 0; }
 
 %%

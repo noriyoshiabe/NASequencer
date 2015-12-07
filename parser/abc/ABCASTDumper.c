@@ -16,7 +16,6 @@ static Node *process(void *self, Node *node)
 {
     node->accept(node, self);
     //return NodeRetain(node);
-    NodeRetain(node);
     return NULL;
 }
 
@@ -73,6 +72,11 @@ static void visitVersion(void *self, ASTVersion *ast)
     dump(self, ast, STRING(ast, versionString), NULL);
 }
 
+static void visitTitle(void *self, ASTTitle *ast)
+{
+    dump(self, ast, STRING(ast, title), NULL);
+}
+
 static void visitNote(void *self, ASTNote *ast)
 {
     dump(self, ast, STRING(ast, noteString), NULL);
@@ -103,6 +107,7 @@ Analyzer *ABCASTDumperCreate(ParseContext *context)
 
     self->visitor.visitRoot = visitRoot;
     self->visitor.visitVersion = visitVersion;
+    self->visitor.visitTitle = visitTitle;
     self->visitor.visitNote = visitNote;
     self->visitor.visitLineBreak = visitLineBreak;
     self->visitor.visitInclude = visitInclude;
