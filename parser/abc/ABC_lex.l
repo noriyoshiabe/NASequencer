@@ -70,21 +70,16 @@ WSPACE              [[:blank:]]+
 ^W:                 { }
 ^w:                 { }
 ^Z:                 { }
-
-^I:                 { BEGIN(INST_INFO); return INSTRUCTION; }
-<INST_INFO>{WSPACE}     { }
-<INST_INFO>{INCLUDE}    { return INCLUDE; }
-<INST_INFO>{FILEPATH}   { yylval->s = strdup(yytext); return FILEPATH; }
-<INST_INFO>{QUOTED_FILEPATH} {
-                          yylval->s = strdup(yytext + 1);
-                          yylval->s[strlen(yylval->s) - 1] = '\0';
-                          return FILEPATH;
-                        }
-<INST_INFO>\n       { BEGIN(INITIAL); }
-
 <STR_INFO>.         { yymore(); }
 <STR_INFO>\n        { BEGIN(INITIAL); yylval->s = NACStringTrimWhiteSpace(strdup(yytext)); return STRING; }
- 
+
+^I:                          { BEGIN(INST_INFO); return INSTRUCTION; }
+<INST_INFO>{WSPACE}          { }
+<INST_INFO>{INCLUDE}         { return INCLUDE; }
+<INST_INFO>{FILEPATH}        { yylval->s = strdup(yytext); return FILEPATH; }
+<INST_INFO>{QUOTED_FILEPATH} { yylval->s = strdup(yytext + 1); yylval->s[strlen(yylval->s) - 1] = '\0'; return FILEPATH; }
+<INST_INFO>\n                { BEGIN(INITIAL); }
+
 ^r:                 { BEGIN(REMARK); }
 <REMARK>.           { }
 <REMARK>\n          { BEGIN(INITIAL); }
