@@ -21,6 +21,28 @@ typedef struct _ASTTitle {
     char *title;
 } ASTTitle;
 
+typedef struct _ASTKey {
+    Node node;
+} ASTKey;
+
+typedef enum {
+    KeyTonic,
+    KeyMode,
+    KeyAccidental,
+    Clef,
+    Middle,
+    Transpose,
+    Octave,
+    StaffLines,
+} ASTKeyParamType;
+
+typedef struct _ASTKeyParam {
+    Node node;
+    ASTKeyParamType type;
+    char *string;
+    int intValue;
+} ASTKeyParam;
+
 typedef struct _ASTNote {
     Node node;
     char *noteString;
@@ -42,6 +64,8 @@ typedef struct _ASTVisitor {
     void (*visitVersion)(void *self, ASTVersion *ast);
     void (*visitReferenceNumber)(void *self, ASTReferenceNumber *ast);
     void (*visitTitle)(void *self, ASTTitle *ast);
+    void (*visitKey)(void *self, ASTKey *ast);
+    void (*visitKeyParam)(void *self, ASTKeyParam *ast);
     void (*visitNote)(void *self, ASTNote *ast);
     void (*visitLineBreak)(void *self, ASTLineBreak *ast);
     void (*visitInclude)(void *self, ASTInclude *ast);
@@ -51,6 +75,8 @@ extern ASTRoot *ABCASTRootCreate(FileLocation *location);
 extern ASTVersion *ABCASTVersionCreate(FileLocation *location);
 extern ASTReferenceNumber *ABCASTReferenceNumberCreate(FileLocation *location);
 extern ASTTitle *ABCASTTitleCreate(FileLocation *location);
+extern ASTKey *ABCASTKeyCreate(FileLocation *location);
+extern ASTKeyParam *ABCASTKeyParamCreate(FileLocation *location);
 extern ASTNote *ABCASTNoteCreate(FileLocation *location);
 extern ASTLineBreak *ABCASTLineBreakCreate(FileLocation *location);
 extern ASTInclude *ABCASTIncludeCreate(FileLocation *location);

@@ -42,6 +42,17 @@ FILEPATH            [0-9a-zA-Z_\-]+\.abh
 QUOTED_FILEPATH     '[0-9a-zA-Z_\- ]+\.abh'|"[0-9a-zA-Z_\- ]+\.abh"
 NOTE                [cdefgabCDEFGAB][,|']?([\^|_]{1,2}|=)?
 
+KEY_TONIC           {PITCH}(#|b)?|(?i:none)|(?i:hp)
+KEY_MODE            (?i:m(aj(or)?)?|min(or)?|ion(ian)?|aeo(lian)?|mix(olydian)?|dor(ian)?|phr(ygian)?|lyd(ian)?|loc(rian)?|exp(licit)?)
+KEY_ACCIDENTAL      (\^{1,2}|_{1,2}|=)[cdefgabCDEFGAB]
+CLEF                (?i:clef)
+CLEF_NAME           (?i:treble|alto|tenor|bass|perc|none)[1-5]?([\+-]8)?
+MIDDLE              (?i:middle)
+PITCH               (?i:[cdefgab])
+TRANSPOSE           (?i:t(ranspose)?)
+OCTAVE              (?i:octave)
+STAFF_LINES         (?i:stafflines)
+
 WSPACE              [[:blank:]]+
 
 %%
@@ -76,12 +87,26 @@ WSPACE              [[:blank:]]+
 <STR_INFO>\n        { BEGIN(INITIAL); yylval->s = NACStringTrimWhiteSpace(strdup(yytext)); return STRING; }
 
 ^I:                          { BEGIN(INST_INFO); return INSTRUCTION; }
+^K:                          { BEGIN(INST_INFO); return KEY; }
 ^X:                          { BEGIN(INST_INFO); return REFERENCE_NUMBER; }
 <INST_INFO>{WSPACE}          { }
 <INST_INFO>{INCLUDE}         { return INCLUDE; }
 <INST_INFO>{INTEGER}         { yylval->i = atoi(yytext); return INTEGER; }
+<INST_INFO>{PITCH}           { yylval->s = strdup(yytext); return PITCH; }
+<INST_INFO>{KEY_TONIC}       { yylval->s = strdup(yytext); return KEY_TONIC; }
+<INST_INFO>{KEY_MODE}        { yylval->s = strdup(yytext); return KEY_MODE; }
+<INST_INFO>{KEY_ACCIDENTAL}  { yylval->s = strdup(yytext); return KEY_ACCIDENTAL; }
+<INST_INFO>{CLEF}            { return CLEF; }
+<INST_INFO>{CLEF_NAME}       { yylval->s = strdup(yytext); return CLEF_NAME; }
+<INST_INFO>{MIDDLE}          { return MIDDLE; }
+<INST_INFO>{TRANSPOSE}       { return TRANSPOSE; }
+<INST_INFO>{OCTAVE}          { return OCTAVE; }
+<INST_INFO>{STAFF_LINES}     { return STAFF_LINES; }
 <INST_INFO>{FILEPATH}        { yylval->s = strdup(yytext); return FILEPATH; }
 <INST_INFO>{QUOTED_FILEPATH} { yylval->s = strdup(yytext + 1); yylval->s[strlen(yylval->s) - 1] = '\0'; return FILEPATH; }
+<INST_INFO>"-"               { return '-'; }
+<INST_INFO>"+"               { return '+'; }
+<INST_INFO>"="               { return '='; }
 <INST_INFO>\n                { BEGIN(INITIAL); }
 
 ^r:                 { BEGIN(REMARK); }

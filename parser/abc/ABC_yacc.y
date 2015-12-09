@@ -37,16 +37,24 @@ extern void ABCParserSyntaxError(void *self, FileLocation *location, const char 
     void *list;
 }
 
-%token TITLE
-%token INSTRUCTION REFERENCE_NUMBER
+%token REFERENCE_NUMBER TITLE KEY INSTRUCTION
 %token INCLUDE
 
 %token <i> INTEGER
 %token <s> STRING
 %token <s> VERSION NOTE FILEPATH
+%token <s> KEY_TONIC KEY_MODE KEY_ACCIDENTAL CLEF_NAME PITCH
 
-%type <node> version reference_number title note
+%token CLEF MIDDLE TRANSPOSE OCTAVE STAFF_LINES
+
+%type <s> key_tonic
+%type <i> signed_integer
+
+%type <node> version reference_number title key note
 %type <node> include line_break
+
+%type <node> key_param
+%type <list> key_param_list
 
 %type <node> statement
 %type <list> statement_list
@@ -83,6 +91,7 @@ statement
     : version
     | reference_number
     | title
+    | key
     | note
     | line_break
     | include
@@ -122,6 +131,121 @@ title
             ASTTitle *n = node(Title, @$);
             n->title = $2;
             $$ = n;
+        }
+    ;
+
+key
+    : KEY key_param_list
+        {
+            ASTKey *n = node(Key, @$);
+            n->node.children = $2;
+            $$ = n;
+        }
+    ;
+
+key_param_list
+    : key_param
+        {
+            $$ = list();
+            if ($1) {
+                listAppend($$, $1);
+            }
+        }
+    | key_param_list key_param
+        {
+            $$ = $1;
+            if ($2) {
+                listAppend($$, $2);
+            }
+        }
+    ;
+
+key_param
+    : key_tonic
+        {
+            ASTKeyParam *n = node(KeyParam, @$);
+            n->type = KeyTonic;
+            n->string = $1;
+            $$ = n;
+        }
+    | KEY_MODE
+        {
+            ASTKeyParam *n = node(KeyParam, @$);
+            n->type = KeyMode;
+            n->string = $1;
+            $$ = n;
+        }
+    | KEY_ACCIDENTAL
+        {
+            ASTKeyParam *n = node(KeyParam, @$);
+            n->type = KeyAccidental;
+            n->string = $1;
+            $$ = n;
+        }
+    | CLEF '=' CLEF_NAME
+        {
+            ASTKeyParam *n = node(KeyParam, @$);
+            n->type = Clef;
+            n->string = $3;
+            $$ = n;
+        }
+    | MIDDLE '=' PITCH
+        {
+            ASTKeyParam *n = node(KeyParam, @$);
+            n->type = Middle;
+            n->string = $3;
+            $$ = n;
+        }
+    | TRANSPOSE '=' signed_integer
+        {
+            ASTKeyParam *n = node(KeyParam, @$);
+            n->type = Transpose;
+            n->intValue = $3;
+            $$ = n;
+        }
+    | OCTAVE '=' signed_integer
+        {
+            ASTKeyParam *n = node(KeyParam, @$);
+            n->type = Octave;
+            n->intValue = $3;
+            $$ = n;
+        }
+    | STAFF_LINES '=' INTEGER
+        {
+            ASTKeyParam *n = node(KeyParam, @$);
+            n->type = StaffLines;
+            n->intValue = $3;
+            $$ = n;
+        }
+    | /* empty */
+        {
+            $$ = NULL;
+        }
+    ;
+
+key_tonic
+    : PITCH
+        {
+            $$ = $1;
+        }
+    | KEY_TONIC
+        {
+            $$ = $1;
+        }
+    ;
+
+signed_integer
+    : INTEGER
+        {
+            $$ = $1;
+        }
+    | '+' INTEGER
+        {
+            $$ = $2;
+        }
+    | '-' INTEGER
+        {
+            $$ = -$2;
         }
     ;
 

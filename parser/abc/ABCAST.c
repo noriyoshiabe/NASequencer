@@ -62,6 +62,38 @@ ASTTitle *ABCASTTitleCreate(FileLocation *location)
     return NodeCreate(ASTTitle, location);
 }
 
+static void ASTKeyAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitKey(visitor, self);
+}
+
+static void ASTKeyDestroy(void *_self)
+{
+}
+
+ASTKey *ABCASTKeyCreate(FileLocation *location)
+{
+    return NodeCreate(ASTKey, location);
+}
+
+static void ASTKeyParamAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitKeyParam(visitor, self);
+}
+
+static void ASTKeyParamDestroy(void *_self)
+{
+    ASTKeyParam *self = _self;
+    if (self->string) {
+        free(self->string);
+    }
+}
+
+ASTKeyParam *ABCASTKeyParamCreate(FileLocation *location)
+{
+    return NodeCreate(ASTKeyParam, location);
+}
+
 static void ASTNoteAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitNote(visitor, self);

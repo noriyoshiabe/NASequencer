@@ -82,6 +82,40 @@ static void visitTitle(void *self, ASTTitle *ast)
     dump(self, ast, STRING(ast, title), NULL);
 }
 
+static void visitKey(void *_self, ASTKey *ast)
+{
+    ABCASTDumper *self = _self;
+
+    dump(self, ast, NULL);
+    self->indent += 4;
+
+    NAIterator *iterator = NAArrayGetIterator(ast->node.children);
+    while (iterator->hasNext(iterator)) {
+        Node *node = iterator->next(iterator);
+        node->accept(node, self);
+    }
+
+    self->indent -= 4;
+}
+
+static void visitKeyParam(void *self, ASTKeyParam *ast)
+{
+    switch (ast->type) {
+    case KeyTonic:
+    case KeyMode:
+    case KeyAccidental:
+    case Clef:
+    case Middle:
+        dump(self, ast, STRING(ast, string), NULL);
+        break;
+    case Transpose:
+    case Octave:
+    case StaffLines:
+        dump(self, ast, INTEGER(ast, intValue), NULL);
+        break;
+    }
+}
+
 static void visitNote(void *self, ASTNote *ast)
 {
     dump(self, ast, STRING(ast, noteString), NULL);
@@ -115,6 +149,8 @@ Analyzer *ABCASTDumperCreate(ParseContext *context)
     self->visitor.visitTitle = visitTitle;
     self->visitor.visitReferenceNumber = visitReferenceNumber;
     self->visitor.visitNote = visitNote;
+    self->visitor.visitKey = visitKey;
+    self->visitor.visitKeyParam = visitKeyParam;
     self->visitor.visitLineBreak = visitLineBreak;
     self->visitor.visitInclude = visitInclude;
 
