@@ -32,6 +32,20 @@ ASTVersion *ABCASTVersionCreate(FileLocation *location)
     return NodeCreate(ASTVersion, location);
 }
 
+static void ASTReferenceNumberAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitReferenceNumber(visitor, self);
+}
+
+static void ASTReferenceNumberDestroy(void *_self)
+{
+}
+
+ASTReferenceNumber *ABCASTReferenceNumberCreate(FileLocation *location)
+{
+    return NodeCreate(ASTReferenceNumber, location);
+}
+
 static void ASTTitleAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitTitle(visitor, self);

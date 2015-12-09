@@ -38,12 +38,14 @@ extern void ABCParserSyntaxError(void *self, FileLocation *location, const char 
 }
 
 %token TITLE
-%token INSTRUCTION INCLUDE
+%token INSTRUCTION REFERENCE_NUMBER
+%token INCLUDE
 
-%token<s> STRING
-%token<s> VERSION NOTE FILEPATH
+%token <i> INTEGER
+%token <s> STRING
+%token <s> VERSION NOTE FILEPATH
 
-%type <node> version title note
+%type <node> version reference_number title note
 %type <node> include line_break
 
 %type <node> statement
@@ -79,6 +81,7 @@ statement_list
 
 statement
     : version
+    | reference_number
     | title
     | note
     | line_break
@@ -100,6 +103,15 @@ version
         {
             ASTVersion *n = node(Version, @$);
             n->versionString = $1;
+            $$ = n;
+        }
+    ;
+
+reference_number
+    : REFERENCE_NUMBER INTEGER
+        {
+            ASTReferenceNumber *n = node(ReferenceNumber, @$);
+            n->number = $2;
             $$ = n;
         }
     ;

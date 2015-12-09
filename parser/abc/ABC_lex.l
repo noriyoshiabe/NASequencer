@@ -33,6 +33,8 @@
 NONZERO             [1-9]
 DIGIT               [[:digit:]]
 
+INTEGER             {NONZERO}{DIGIT}*|0
+
 VERSION             abc-{DIGIT}\.{DIGIT}
 INCLUDE             abc-include
 
@@ -74,8 +76,10 @@ WSPACE              [[:blank:]]+
 <STR_INFO>\n        { BEGIN(INITIAL); yylval->s = NACStringTrimWhiteSpace(strdup(yytext)); return STRING; }
 
 ^I:                          { BEGIN(INST_INFO); return INSTRUCTION; }
+^X:                          { BEGIN(INST_INFO); return REFERENCE_NUMBER; }
 <INST_INFO>{WSPACE}          { }
 <INST_INFO>{INCLUDE}         { return INCLUDE; }
+<INST_INFO>{INTEGER}         { yylval->i = atoi(yytext); return INTEGER; }
 <INST_INFO>{FILEPATH}        { yylval->s = strdup(yytext); return FILEPATH; }
 <INST_INFO>{QUOTED_FILEPATH} { yylval->s = strdup(yytext + 1); yylval->s[strlen(yylval->s) - 1] = '\0'; return FILEPATH; }
 <INST_INFO>\n                { BEGIN(INITIAL); }

@@ -72,6 +72,11 @@ static void visitVersion(void *self, ASTVersion *ast)
     dump(self, ast, STRING(ast, versionString), NULL);
 }
 
+static void visitReferenceNumber(void *self, ASTReferenceNumber *ast)
+{
+    dump(self, ast, INTEGER(ast, number), NULL);
+}
+
 static void visitTitle(void *self, ASTTitle *ast)
 {
     dump(self, ast, STRING(ast, title), NULL);
@@ -108,6 +113,7 @@ Analyzer *ABCASTDumperCreate(ParseContext *context)
     self->visitor.visitRoot = visitRoot;
     self->visitor.visitVersion = visitVersion;
     self->visitor.visitTitle = visitTitle;
+    self->visitor.visitReferenceNumber = visitReferenceNumber;
     self->visitor.visitNote = visitNote;
     self->visitor.visitLineBreak = visitLineBreak;
     self->visitor.visitInclude = visitInclude;
