@@ -6,7 +6,7 @@
 #include "ABCParser.h"
 #include "ABCAST.h"
 
-extern void ABC_lex_set_error_until_eol(yyscan_t scanner);
+extern void ABC_lex_set_error_until_eol_if_needed(yyscan_t scanner);
 extern int ABC_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, void **node, const char *message);
 
 extern Node *ABCParserParseIncludeFile(void *self, FileLocation *location, const char *includeFile);
@@ -97,6 +97,7 @@ statement
     | include
     | error
         {
+            ABC_lex_set_error_until_eol_if_needed(scanner);
             yyerrok;
             yyclearin;
             $$ = NULL;
@@ -108,7 +109,7 @@ statement
     ;
 
 version
-    : VERSION
+    : VERSION '\n'
         {
             ASTVersion *n = node(Version, @$);
             n->versionString = $1;

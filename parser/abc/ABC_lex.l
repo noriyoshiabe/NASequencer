@@ -24,18 +24,20 @@
 %option noyywrap
 %option bison-bridge
 %option bison-locations
+%option stack
 
-%x PERCENT
+%x COMMENT
 %x STR_INFO
 %x INST_INFO
 %x REMARK
+%x ERROR
 
 NONZERO             [1-9]
 DIGIT               [[:digit:]]
 
 INTEGER             {NONZERO}{DIGIT}*|0
 
-VERSION             abc-{DIGIT}\.{DIGIT}
+VERSION             %abc-{DIGIT}\.{DIGIT}
 INCLUDE             abc-include
 
 FILEPATH            [0-9a-zA-Z_\-]+\.abh
@@ -63,10 +65,7 @@ WSPACE              [[:blank:]]+
 
 {WSPACE}            { }
 
-"%"                 { BEGIN(PERCENT); }
-<PERCENT>{VERSION}  { yylval->s = strdup(yytext); return VERSION; }
-<PERCENT>\n         { BEGIN(INITIAL); }
-<PERCENT>.          { }
+{VERSION}           { yylval->s = strdup(yytext); return VERSION; }
 
 ^A:                 { }
 ^B:                 { }
@@ -109,11 +108,26 @@ WSPACE              [[:blank:]]+
 <INST_INFO>"="               { return '='; }
 <INST_INFO>\n                { BEGIN(INITIAL); }
 
+"%"                 { BEGIN(COMMENT); }
+<COMMENT>\n         { BEGIN(INITIAL); }
+<COMMENT>.          { }
+
 ^r:                 { BEGIN(REMARK); }
 <REMARK>.           { }
 <REMARK>\n          { BEGIN(INITIAL); }
 
-.                   { return 1; }
+<ERROR>\n           { yy_pop_state(yyscanner); BEGIN(INITIAL); }
+<ERROR>.            { }
+
+<*>.                { return 1; }
 <<EOF>>             { return 0; }
 
 %%
+
+void ABC_lex_set_error_until_eol_if_needed(yyscan_t scanner)
+{
+    struct yyguts_t *yyg = (struct yyguts_t *)scanner;
+    if (INST_INFO == YY_START) {
+        yy_push_state(ERROR, scanner);
+    }
+}
