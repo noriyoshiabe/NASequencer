@@ -80,3 +80,19 @@ extern ASTKeyParam *ABCASTKeyParamCreate(FileLocation *location);
 extern ASTNote *ABCASTNoteCreate(FileLocation *location);
 extern ASTLineBreak *ABCASTLineBreakCreate(FileLocation *location);
 extern ASTInclude *ABCASTIncludeCreate(FileLocation *location);
+
+static inline const char *ASTKeyParamType2String(ASTKeyParamType type)
+{
+#define CASE(type) case type: return #type;
+    switch (type) {
+    CASE(KeyTonic);
+    CASE(KeyMode);
+    CASE(KeyAccidental);
+    CASE(Clef);
+    CASE(Middle);
+    CASE(Transpose);
+    CASE(Octave);
+    CASE(StaffLines);
+    }
+#define undef
+}

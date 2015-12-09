@@ -106,12 +106,12 @@ static void visitKeyParam(void *self, ASTKeyParam *ast)
     case KeyAccidental:
     case Clef:
     case Middle:
-        dump(self, ast, STRING(ast, string), NULL);
+        dump(self, ast, "type", ASTKeyParamType2String(ast->type), STRING(ast, string), NULL);
         break;
     case Transpose:
     case Octave:
     case StaffLines:
-        dump(self, ast, INTEGER(ast, intValue), NULL);
+        dump(self, ast, "type", ASTKeyParamType2String(ast->type), INTEGER(ast, intValue), NULL);
         break;
     }
 }
