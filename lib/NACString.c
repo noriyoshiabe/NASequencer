@@ -8,6 +8,7 @@
 #undef NACStringFromInteger
 #undef NACStringFromFloat
 #undef NACStringFromChar
+#undef NACStringFromBoolean
 #undef NACStringDuplicate
 
 char *NACStringFormat(const char *format, ...)
@@ -67,6 +68,12 @@ char *NACStringFromFloat(float f, int point, char *buffer, int size)
 char *NACStringFromChar(char c, char *buffer, int size)
 {
     snprintf(buffer, size, "%c", c);
+    return buffer;
+}
+
+char *NACStringFromBoolean(bool b, char *buffer, int size)
+{
+    snprintf(buffer, size, "%s", b ? "true" : "false");
     return buffer;
 }
 

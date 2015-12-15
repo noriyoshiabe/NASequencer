@@ -50,6 +50,7 @@ static void dump(ABCASTDumper *self, void *_node, ...)
 #define INTEGER(ast, name) #name, NACStringFromInteger(ast->name)
 #define FLOAT(ast, name) #name, NACStringFromFloat(ast->name, 2)
 #define CHAR(ast, name) #name, NACStringFromChar(ast->name)
+#define BOOL(ast, name) #name, NACStringFromBoolean(ast->name)
 #define STRING(ast, name) #name, ast->name
 
 static void visitRoot(void *_self, ASTRoot *ast)
@@ -106,7 +107,8 @@ static void visitKey(void *_self, ASTKey *ast)
 
 static void visitMeter(void *self, ASTMeter *ast)
 {
-    dump(self, ast, INTEGER(ast, numerator), INTEGER(ast, denominator), NULL);
+    dump(self, ast, INTEGER(ast, numerator), INTEGER(ast, denominator),
+            BOOL(ast, free), BOOL(ast, commonTime), BOOL(ast, cutTime), NULL);
 }
 
 static void visitKeyParam(void *self, ASTKeyParam *ast)

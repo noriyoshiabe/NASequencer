@@ -28,6 +28,9 @@ M: 4/4
 M: 3/4 % ok
 M: 3/(1+1) % syntax error
 M: (3+3-1)/4
+M: none
+M: C
+M: C |
 I: abc-include include.abh
 I: abc-include 'include hoge.abh'
 r: this is remarks

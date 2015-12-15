@@ -59,6 +59,7 @@ MIDDLE              (?i:middle)
 TRANSPOSE           (?i:t(ranspose)?)
 OCTAVE              (?i:octave)
 STAFF_LINES         (?i:stafflines)
+COMMON_TIME         [Cc]
 
 WSPACE              [[:blank:]]+
 
@@ -122,6 +123,8 @@ WSPACE              [[:blank:]]+
 <x_METER>{WSPACE}        { }
 <x_METER>{INTEGER}       { yylval->i = atoi(yytext); return INTEGER; }
 <x_METER>{NONE}          { yylval->s = strdup(yytext); return NONE; }
+<x_METER>{COMMON_TIME}   { return COMMON_TIME; }
+<x_METER>"|"             { return '|'; }
 <x_METER>"-"             { return '-'; }
 <x_METER>"+"             { return '+'; }
 <x_METER>"/"             { return '/'; }

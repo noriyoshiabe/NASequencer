@@ -46,6 +46,9 @@ typedef struct _ASTMeter {
     Node node;
     int numerator;
     int denominator;
+    bool free;
+    bool commonTime;
+    bool cutTime;
 } ASTMeter;
 
 typedef struct _ASTKeyParam {

@@ -49,6 +49,7 @@ extern void ABCParserSyntaxError(void *self, FileLocation *location, const char 
 %token <s> KEY_TONIC KEY_MODE KEY_ACCIDENTAL CLEF_NAME PITCH NONE
 
 %token CLEF MIDDLE TRANSPOSE OCTAVE STAFF_LINES
+%token COMMON_TIME
 
 %type <s> key_tonic
 %type <i> signed_integer numerator
@@ -283,6 +284,26 @@ meter
             ASTMeter *n = node(Meter, @$);
             n->numerator = $3;
             n->denominator = $6;
+            $$ = n;
+        }
+    | METER NONE
+        {
+            ASTMeter *n = node(Meter, @$);
+            n->free = true;
+            $$ = n;
+
+            free($2);
+        }
+    | METER COMMON_TIME
+        {
+            ASTMeter *n = node(Meter, @$);
+            n->commonTime = true;
+            $$ = n;
+        }
+    | METER COMMON_TIME '|'
+        {
+            ASTMeter *n = node(Meter, @$);
+            n->cutTime = true;
             $$ = n;
         }
     ;
