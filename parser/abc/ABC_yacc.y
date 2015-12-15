@@ -33,12 +33,15 @@ extern void ABCParserSyntaxError(void *self, FileLocation *location, const char 
     int i;
     float f;
     char *s;
+    char c;
     void *node;
     void *list;
 }
 
 %token REFERENCE_NUMBER TITLE KEY INSTRUCTION
 %token INCLUDE
+
+%token <c> STRING_INFORMATION
 
 %token <i> INTEGER
 %token <s> STRING
@@ -52,6 +55,7 @@ extern void ABCParserSyntaxError(void *self, FileLocation *location, const char 
 
 %type <node> version reference_number title key note
 %type <node> include line_break
+%type <node> string_information
 
 %type <node> key_param
 %type <list> key_param_list
@@ -89,6 +93,7 @@ statement_list
 
 statement
     : version
+    | string_information
     | reference_number
     | title
     | key
@@ -113,6 +118,16 @@ version
         {
             ASTVersion *n = node(Version, @$);
             n->versionString = $1;
+            $$ = n;
+        }
+    ;
+
+string_information
+    : STRING_INFORMATION STRING
+        {
+            ASTStringInformation *n = node(StringInformation, @$);
+            n->field = $1;
+            n->string = $2;
             $$ = n;
         }
     ;

@@ -67,21 +67,21 @@ WSPACE              [[:blank:]]+
 
 {VERSION}           { yylval->s = strdup(yytext); return VERSION; }
 
-^A:                 { }
-^B:                 { }
-^C:                 { }
-^D:                 { }
-^F:                 { }
-^G:                 { }
-^H:                 { }
-^N:                 { }
-^O:                 { }
-^R:                 { }
-^S:                 { }
+^A:                 { BEGIN(STR_INFO); yylval->c = 'A'; return STRING_INFORMATION; }
+^B:                 { BEGIN(STR_INFO); yylval->c = 'B'; return STRING_INFORMATION; }
+^C:                 { BEGIN(STR_INFO); yylval->c = 'C'; return STRING_INFORMATION; }
+^D:                 { BEGIN(STR_INFO); yylval->c = 'D'; return STRING_INFORMATION; }
+^F:                 { BEGIN(STR_INFO); yylval->c = 'F'; return STRING_INFORMATION; }
+^G:                 { BEGIN(STR_INFO); yylval->c = 'G'; return STRING_INFORMATION; }
+^H:                 { BEGIN(STR_INFO); yylval->c = 'H'; return STRING_INFORMATION; }
+^N:                 { BEGIN(STR_INFO); yylval->c = 'N'; return STRING_INFORMATION; }
+^O:                 { BEGIN(STR_INFO); yylval->c = 'O'; return STRING_INFORMATION; }
+^R:                 { BEGIN(STR_INFO); yylval->c = 'R'; return STRING_INFORMATION; }
+^S:                 { BEGIN(STR_INFO); yylval->c = 'S'; return STRING_INFORMATION; }
 ^T:                 { BEGIN(STR_INFO); return TITLE; }
-^W:                 { }
-^w:                 { }
-^Z:                 { }
+^W:                 { BEGIN(STR_INFO); yylval->c = 'W'; return STRING_INFORMATION; }
+^w:                 { BEGIN(STR_INFO); yylval->c = 'w'; return STRING_INFORMATION; }
+^Z:                 { BEGIN(STR_INFO); yylval->c = 'Z'; return STRING_INFORMATION; }
 <STR_INFO>.         { yymore(); }
 <STR_INFO>\n        { BEGIN(INITIAL); yylval->s = NACStringTrimWhiteSpace(strdup(yytext)); return STRING; }
 

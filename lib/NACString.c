@@ -7,6 +7,7 @@
 
 #undef NACStringFromInteger
 #undef NACStringFromFloat
+#undef NACStringFromChar
 #undef NACStringDuplicate
 
 char *NACStringFormat(const char *format, ...)
@@ -60,6 +61,12 @@ char *NACStringFromInteger(int i, char *buffer, int size)
 char *NACStringFromFloat(float f, int point, char *buffer, int size)
 {
     snprintf(buffer, size, "%.*f", point, f);
+    return buffer;
+}
+
+char *NACStringFromChar(char c, char *buffer, int size)
+{
+    snprintf(buffer, size, "%c", c);
     return buffer;
 }
 

@@ -1,5 +1,21 @@
 %abc-2.1
 X: 1
+% unsupported ---------
+A:area
+B:book
+C:composer
+D:discography
+F:file url
+G:group
+H:history
+N:notes
+O:origin
+R:rhythm
+S:source
+W:words
+w:words
+Z:transcription
+% unsupported ---------
 T: title title
 K: C minor ^F
 K: syntaxerror clef=treble1-8

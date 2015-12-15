@@ -49,6 +49,7 @@ static void dump(ABCASTDumper *self, void *_node, ...)
 
 #define INTEGER(ast, name) #name, NACStringFromInteger(ast->name)
 #define FLOAT(ast, name) #name, NACStringFromFloat(ast->name, 2)
+#define CHAR(ast, name) #name, NACStringFromChar(ast->name)
 #define STRING(ast, name) #name, ast->name
 
 static void visitRoot(void *_self, ASTRoot *ast)
@@ -65,6 +66,11 @@ static void visitRoot(void *_self, ASTRoot *ast)
     }
 
     self->indent -= 4;
+}
+
+static void visitStringInformation(void *self, ASTStringInformation *ast)
+{
+    dump(self, ast, CHAR(ast, field), STRING(ast, string), NULL);
 }
 
 static void visitVersion(void *self, ASTVersion *ast)
@@ -146,6 +152,7 @@ Analyzer *ABCASTDumperCreate(ParseContext *context)
 
     self->visitor.visitRoot = visitRoot;
     self->visitor.visitVersion = visitVersion;
+    self->visitor.visitStringInformation = visitStringInformation;
     self->visitor.visitTitle = visitTitle;
     self->visitor.visitReferenceNumber = visitReferenceNumber;
     self->visitor.visitNote = visitNote;

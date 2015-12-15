@@ -11,6 +11,12 @@ typedef struct _ASTVersion {
     char *versionString;
 } ASTVersion;
 
+typedef struct _ASTStringInformation {
+    Node node;
+    char *string;
+    char field;
+} ASTStringInformation;
+
 typedef struct _ASTReferenceNumber {
     Node node;
     int number;
@@ -62,6 +68,7 @@ typedef struct _ASTInclude {
 typedef struct _ASTVisitor {
     void (*visitRoot)(void *self, ASTRoot *ast);
     void (*visitVersion)(void *self, ASTVersion *ast);
+    void (*visitStringInformation)(void *self, ASTStringInformation *ast);
     void (*visitReferenceNumber)(void *self, ASTReferenceNumber *ast);
     void (*visitTitle)(void *self, ASTTitle *ast);
     void (*visitKey)(void *self, ASTKey *ast);
@@ -73,6 +80,7 @@ typedef struct _ASTVisitor {
 
 extern ASTRoot *ABCASTRootCreate(FileLocation *location);
 extern ASTVersion *ABCASTVersionCreate(FileLocation *location);
+extern ASTStringInformation *ABCASTStringInformationCreate(FileLocation *location);
 extern ASTReferenceNumber *ABCASTReferenceNumberCreate(FileLocation *location);
 extern ASTTitle *ABCASTTitleCreate(FileLocation *location);
 extern ASTKey *ABCASTKeyCreate(FileLocation *location);
