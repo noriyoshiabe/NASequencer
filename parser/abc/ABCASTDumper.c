@@ -104,6 +104,11 @@ static void visitKey(void *_self, ASTKey *ast)
     self->indent -= 4;
 }
 
+static void visitMeter(void *self, ASTMeter *ast)
+{
+    dump(self, ast, INTEGER(ast, numerator), INTEGER(ast, denominator), NULL);
+}
+
 static void visitKeyParam(void *self, ASTKeyParam *ast)
 {
     switch (ast->type) {
@@ -158,6 +163,7 @@ Analyzer *ABCASTDumperCreate(ParseContext *context)
     self->visitor.visitNote = visitNote;
     self->visitor.visitKey = visitKey;
     self->visitor.visitKeyParam = visitKeyParam;
+    self->visitor.visitMeter = visitMeter;
     self->visitor.visitLineBreak = visitLineBreak;
     self->visitor.visitInclude = visitInclude;
 

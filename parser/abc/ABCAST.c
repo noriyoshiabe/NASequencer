@@ -110,6 +110,20 @@ ASTKeyParam *ABCASTKeyParamCreate(FileLocation *location)
     return NodeCreate(ASTKeyParam, location);
 }
 
+static void ASTMeterAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitMeter(visitor, self);
+}
+
+static void ASTMeterDestroy(void *_self)
+{
+}
+
+ASTMeter *ABCASTMeterCreate(FileLocation *location)
+{
+    return NodeCreate(ASTMeter, location);
+}
+
 static void ASTNoteAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitNote(visitor, self);

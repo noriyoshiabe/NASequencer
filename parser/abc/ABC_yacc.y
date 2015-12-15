@@ -38,7 +38,7 @@ extern void ABCParserSyntaxError(void *self, FileLocation *location, const char 
     void *list;
 }
 
-%token REFERENCE_NUMBER TITLE KEY INSTRUCTION
+%token REFERENCE_NUMBER TITLE KEY INSTRUCTION METER
 %token INCLUDE
 
 %token <c> STRING_INFORMATION
@@ -46,14 +46,14 @@ extern void ABCParserSyntaxError(void *self, FileLocation *location, const char 
 %token <i> INTEGER
 %token <s> STRING
 %token <s> VERSION NOTE FILEPATH
-%token <s> KEY_TONIC KEY_MODE KEY_ACCIDENTAL CLEF_NAME PITCH
+%token <s> KEY_TONIC KEY_MODE KEY_ACCIDENTAL CLEF_NAME PITCH NONE
 
 %token CLEF MIDDLE TRANSPOSE OCTAVE STAFF_LINES
 
 %type <s> key_tonic
-%type <i> signed_integer
+%type <i> signed_integer numerator
 
-%type <node> version reference_number title key note
+%type <node> version reference_number title key meter note
 %type <node> include line_break
 %type <node> string_information
 
@@ -97,6 +97,7 @@ statement
     | reference_number
     | title
     | key
+    | meter
     | note
     | line_break
     | include
@@ -244,6 +245,10 @@ key_tonic
         {
             $$ = $1;
         }
+    | NONE
+        {
+            $$ = $1;
+        }
     | KEY_TONIC
         {
             $$ = $1;
@@ -262,6 +267,38 @@ signed_integer
     | '-' INTEGER
         {
             $$ = -$2;
+        }
+    ;
+
+meter
+    : METER numerator '/' INTEGER
+        {
+            ASTMeter *n = node(Meter, @$);
+            n->numerator = $2;
+            n->denominator = $4;
+            $$ = n;
+        }
+    | METER '(' numerator ')' '/' INTEGER
+        {
+            ASTMeter *n = node(Meter, @$);
+            n->numerator = $3;
+            n->denominator = $6;
+            $$ = n;
+        }
+    ;
+
+numerator
+    : INTEGER
+        {
+           $$ = $1
+        }
+    | numerator '+' INTEGER
+        {
+           $$ = $1 + $3
+        }
+    | numerator '-' INTEGER
+        {
+           $$ = $1 - $3
         }
     ;
 
