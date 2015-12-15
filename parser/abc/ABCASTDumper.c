@@ -111,6 +111,11 @@ static void visitMeter(void *self, ASTMeter *ast)
             BOOL(ast, free), BOOL(ast, commonTime), BOOL(ast, cutTime), NULL);
 }
 
+static void visitUnitNoteLength(void *self, ASTUnitNoteLength *ast)
+{
+    dump(self, ast, INTEGER(ast, numerator), INTEGER(ast, denominator), NULL);
+}
+
 static void visitKeyParam(void *self, ASTKeyParam *ast)
 {
     switch (ast->type) {
@@ -166,6 +171,7 @@ Analyzer *ABCASTDumperCreate(ParseContext *context)
     self->visitor.visitKey = visitKey;
     self->visitor.visitKeyParam = visitKeyParam;
     self->visitor.visitMeter = visitMeter;
+    self->visitor.visitUnitNoteLength = visitUnitNoteLength;
     self->visitor.visitLineBreak = visitLineBreak;
     self->visitor.visitInclude = visitInclude;
 

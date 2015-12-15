@@ -38,7 +38,7 @@ extern void ABCParserSyntaxError(void *self, FileLocation *location, const char 
     void *list;
 }
 
-%token REFERENCE_NUMBER TITLE KEY INSTRUCTION METER
+%token REFERENCE_NUMBER TITLE KEY INSTRUCTION METER UNIT_NOTE_LENGTH
 %token INCLUDE
 
 %token <c> STRING_INFORMATION
@@ -54,7 +54,7 @@ extern void ABCParserSyntaxError(void *self, FileLocation *location, const char 
 %type <s> key_tonic
 %type <i> signed_integer numerator
 
-%type <node> version reference_number title key meter note
+%type <node> version reference_number title key meter unit_note_length note
 %type <node> include line_break
 %type <node> string_information
 
@@ -99,6 +99,7 @@ statement
     | title
     | key
     | meter
+    | unit_note_length
     | note
     | line_break
     | include
@@ -320,6 +321,23 @@ numerator
     | numerator '-' INTEGER
         {
            $$ = $1 - $3
+        }
+    ;
+
+unit_note_length
+    : UNIT_NOTE_LENGTH INTEGER '/' INTEGER
+        {
+            ASTUnitNoteLength *n = node(UnitNoteLength, @$);
+            n->numerator = $2;
+            n->denominator = $4;
+            $$ = n;
+        }
+    | UNIT_NOTE_LENGTH INTEGER
+        {
+            ASTUnitNoteLength *n = node(UnitNoteLength, @$);
+            n->numerator = $2;
+            n->denominator = -1;
+            $$ = n;
         }
     ;
 

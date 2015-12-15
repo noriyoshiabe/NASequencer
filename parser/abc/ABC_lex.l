@@ -33,6 +33,7 @@
 %x x_INSTRUCTION
 %x x_KEY
 %x x_METER
+%x x_UNIT_NOTE_LENGTH
 %x x_REFERENCE_NUMBER
 %x x_REMARK
 
@@ -118,6 +119,14 @@ WSPACE              [[:blank:]]+
 <x_KEY>"="               { return '='; }
 <x_KEY>"%"               { BEGIN(COMMENT); }
 <x_KEY>\n                { BEGIN(INITIAL); }
+
+^L:                            { BEGIN(x_UNIT_NOTE_LENGTH); return UNIT_NOTE_LENGTH; }
+<x_UNIT_NOTE_LENGTH>{WSPACE}   { }
+<x_UNIT_NOTE_LENGTH>{INTEGER}  { yylval->i = atoi(yytext); return INTEGER; }
+<x_UNIT_NOTE_LENGTH>"/"        { return '/'; }
+<x_UNIT_NOTE_LENGTH>"%"        { BEGIN(COMMENT); }
+<x_UNIT_NOTE_LENGTH>\n         { BEGIN(INITIAL); }
+
 
 ^M:                    { BEGIN(x_METER); return METER; }
 <x_METER>{WSPACE}        { }

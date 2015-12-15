@@ -31,6 +31,10 @@ M: (3+3-1)/4
 M: none
 M: C
 M: C |
+L: 1/4
+L: 1
+L: 1 / 512
+L: 1 / 1
 I: abc-include include.abh
 I: abc-include 'include hoge.abh'
 r: this is remarks

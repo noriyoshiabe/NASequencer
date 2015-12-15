@@ -42,6 +42,13 @@ typedef enum {
     StaffLines,
 } ASTKeyParamType;
 
+typedef struct _ASTKeyParam {
+    Node node;
+    ASTKeyParamType type;
+    char *string;
+    int intValue;
+} ASTKeyParam;
+
 typedef struct _ASTMeter {
     Node node;
     int numerator;
@@ -51,12 +58,11 @@ typedef struct _ASTMeter {
     bool cutTime;
 } ASTMeter;
 
-typedef struct _ASTKeyParam {
+typedef struct _ASTUnitNoteLength {
     Node node;
-    ASTKeyParamType type;
-    char *string;
-    int intValue;
-} ASTKeyParam;
+    int numerator;
+    int denominator;
+} ASTUnitNoteLength;
 
 typedef struct _ASTNote {
     Node node;
@@ -83,6 +89,7 @@ typedef struct _ASTVisitor {
     void (*visitKey)(void *self, ASTKey *ast);
     void (*visitKeyParam)(void *self, ASTKeyParam *ast);
     void (*visitMeter)(void *self, ASTMeter *ast);
+    void (*visitUnitNoteLength)(void *self, ASTUnitNoteLength *ast);
     void (*visitNote)(void *self, ASTNote *ast);
     void (*visitLineBreak)(void *self, ASTLineBreak *ast);
     void (*visitInclude)(void *self, ASTInclude *ast);
@@ -96,6 +103,7 @@ extern ASTTitle *ABCASTTitleCreate(FileLocation *location);
 extern ASTKey *ABCASTKeyCreate(FileLocation *location);
 extern ASTKeyParam *ABCASTKeyParamCreate(FileLocation *location);
 extern ASTMeter *ABCASTMeterCreate(FileLocation *location);
+extern ASTUnitNoteLength *ABCASTUnitNoteLengthCreate(FileLocation *location);
 extern ASTNote *ABCASTNoteCreate(FileLocation *location);
 extern ASTLineBreak *ABCASTLineBreakCreate(FileLocation *location);
 extern ASTInclude *ABCASTIncludeCreate(FileLocation *location);

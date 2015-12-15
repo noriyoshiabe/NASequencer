@@ -124,6 +124,20 @@ ASTMeter *ABCASTMeterCreate(FileLocation *location)
     return NodeCreate(ASTMeter, location);
 }
 
+static void ASTUnitNoteLengthAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitUnitNoteLength(visitor, self);
+}
+
+static void ASTUnitNoteLengthDestroy(void *_self)
+{
+}
+
+ASTUnitNoteLength *ABCASTUnitNoteLengthCreate(FileLocation *location)
+{
+    return NodeCreate(ASTUnitNoteLength, location);
+}
+
 static void ASTNoteAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitNote(visitor, self);
