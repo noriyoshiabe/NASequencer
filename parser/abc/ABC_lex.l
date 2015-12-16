@@ -69,10 +69,6 @@ WSPACE              [[:blank:]]+
 
 {NOTE}              { yylval->s = strdup(yytext); return NOTE; }
 
-\n                  { return '\n'; }
-
-{WSPACE}            { }
-
 {VERSION}           { yylval->s = strdup(yytext); return VERSION; }
 
 ^A:                 { BEGIN(x_STR_INFO); yylval->c = 'A'; return STRING_INFORMATION; }
@@ -90,19 +86,14 @@ WSPACE              [[:blank:]]+
 ^W:                 { BEGIN(x_STR_INFO); yylval->c = 'W'; return STRING_INFORMATION; }
 ^w:                 { BEGIN(x_STR_INFO); yylval->c = 'w'; return STRING_INFORMATION; }
 ^Z:                 { BEGIN(x_STR_INFO); yylval->c = 'Z'; return STRING_INFORMATION; }
-<x_STR_INFO>.       { yymore(); }
-<x_STR_INFO>\n      { BEGIN(INITIAL); yylval->s = NACStringTrimWhiteSpace(strdup(yytext)); return STRING; }
+<x_STR_INFO>.*      { yylval->s = NACStringTrimWhiteSpace(strdup(yytext)); return STRING; }
 
 ^I:                                { BEGIN(x_INSTRUCTION); return INSTRUCTION; }
-<x_INSTRUCTION>{WSPACE}            { }
 <x_INSTRUCTION>{INCLUDE}           { return INCLUDE; }
 <x_INSTRUCTION>{FILEPATH}          { yylval->s = strdup(yytext); return FILEPATH; }
 <x_INSTRUCTION>{QUOTED_FILEPATH}   { yylval->s = strdup(yytext + 1); yylval->s[strlen(yylval->s) - 1] = '\0'; return FILEPATH; }
-<x_INSTRUCTION>"%"                 { BEGIN(COMMENT); }
-<x_INSTRUCTION>\n                  { BEGIN(INITIAL); }
 
 ^K:                      { BEGIN(x_KEY); return KEY; }
-<x_KEY>{WSPACE}          { }
 <x_KEY>{INTEGER}         { yylval->i = atoi(yytext); return INTEGER; }
 <x_KEY>{PITCH}           { yylval->s = strdup(yytext); return PITCH; }
 <x_KEY>{NONE}            { yylval->s = strdup(yytext); return NONE; }
@@ -118,19 +109,13 @@ WSPACE              [[:blank:]]+
 <x_KEY>"-"               { return '-'; }
 <x_KEY>"+"               { return '+'; }
 <x_KEY>"="               { return '='; }
-<x_KEY>"%"               { BEGIN(COMMENT); }
-<x_KEY>\n                { BEGIN(INITIAL); }
 
 ^L:                            { BEGIN(x_UNIT_NOTE_LENGTH); return UNIT_NOTE_LENGTH; }
-<x_UNIT_NOTE_LENGTH>{WSPACE}   { }
 <x_UNIT_NOTE_LENGTH>{INTEGER}  { yylval->i = atoi(yytext); return INTEGER; }
 <x_UNIT_NOTE_LENGTH>"/"        { return '/'; }
-<x_UNIT_NOTE_LENGTH>"%"        { BEGIN(COMMENT); }
-<x_UNIT_NOTE_LENGTH>\n         { BEGIN(INITIAL); }
 
 
 ^M:                      { BEGIN(x_METER); return METER; }
-<x_METER>{WSPACE}        { }
 <x_METER>{INTEGER}       { yylval->i = atoi(yytext); return INTEGER; }
 <x_METER>{NONE}          { yylval->s = strdup(yytext); return NONE; }
 <x_METER>{COMMON_TIME}   { return COMMON_TIME; }
@@ -140,36 +125,47 @@ WSPACE              [[:blank:]]+
 <x_METER>"/"             { return '/'; }
 <x_METER>"("             { return '('; }
 <x_METER>")"             { return ')'; }
-<x_METER>"%"             { BEGIN(COMMENT); }
-<x_METER>\n              { BEGIN(INITIAL); }
 
 ^Q:                      { BEGIN(x_TEMPO); return TEMPO; }
-<x_TEMPO>{WSPACE}        { }
 <x_TEMPO>{INTEGER}       { yylval->i = atoi(yytext); return INTEGER; }
 <x_TEMPO>{QUOTED_STRING} { yylval->s = strdup(yytext + 1); yylval->s[strlen(yylval->s) - 1] = '\0'; return STRING; }
 <x_TEMPO>"/"             { return '/'; }
 <x_TEMPO>"="             { return '='; }
-<x_TEMPO>"%"             { BEGIN(COMMENT); }
-<x_TEMPO>\n              { BEGIN(INITIAL); }
 
 ^X:                           { BEGIN(x_REFERENCE_NUMBER); return REFERENCE_NUMBER; }
-<x_REFERENCE_NUMBER>{WSPACE}  { }
 <x_REFERENCE_NUMBER>{INTEGER} { yylval->i = atoi(yytext); return INTEGER; }
-<x_REFERENCE_NUMBER>"%"       { BEGIN(COMMENT); }
-<x_REFERENCE_NUMBER>\n        { BEGIN(INITIAL); }
 
 ^r:                 { BEGIN(x_REMARK); }
 <x_REMARK>.         { }
-<x_REMARK>\n        { BEGIN(INITIAL); }
 
-"%"                 { BEGIN(COMMENT); }
-<COMMENT>\n         { BEGIN(INITIAL); }
 <COMMENT>.          { }
 
-<ERROR>\n           { yy_pop_state(yyscanner); BEGIN(INITIAL); }
-<ERROR>.            { }
+<ERROR>.*           { yy_pop_state(yyscanner); }
 
+<*>"%"              {
+                        switch (YY_START) {
+                        case COMMENT:
+                        case ERROR:
+                        case x_STR_INFO:
+                        case x_REMARK:
+                            break;
+                        default:
+                            BEGIN(COMMENT);
+                            break;
+                        }
+                    }
+<*>\n               {
+                        switch (YY_START) {
+                        case INITIAL:
+                            return '\n';
+                        default:
+                            BEGIN(INITIAL);
+                            break;
+                        }
+                    }
+<*>{WSPACE}         { }
 <*>.                { return 1; }
+
 <<EOF>>             { return 0; }
 
 %%
