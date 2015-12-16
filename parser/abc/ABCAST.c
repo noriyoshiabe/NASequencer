@@ -138,6 +138,38 @@ ASTUnitNoteLength *ABCASTUnitNoteLengthCreate(FileLocation *location)
     return NodeCreate(ASTUnitNoteLength, location);
 }
 
+static void ASTTempoAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitTempo(visitor, self);
+}
+
+static void ASTTempoDestroy(void *_self)
+{
+}
+
+ASTTempo *ABCASTTempoCreate(FileLocation *location)
+{
+    return NodeCreate(ASTTempo, location);
+}
+
+static void ASTTempoParamAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitTempoParam(visitor, self);
+}
+
+static void ASTTempoParamDestroy(void *_self)
+{
+    ASTTempoParam *self = _self;
+    if (self->string) {
+        free(self->string);
+    }
+}
+
+ASTTempoParam *ABCASTTempoParamCreate(FileLocation *location)
+{
+    return NodeCreate(ASTTempoParam, location);
+}
+
 static void ASTNoteAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitNote(visitor, self);

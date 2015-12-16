@@ -105,17 +105,6 @@ static void visitKey(void *_self, ASTKey *ast)
     self->indent -= 4;
 }
 
-static void visitMeter(void *self, ASTMeter *ast)
-{
-    dump(self, ast, INTEGER(ast, numerator), INTEGER(ast, denominator),
-            BOOL(ast, free), BOOL(ast, commonTime), BOOL(ast, cutTime), NULL);
-}
-
-static void visitUnitNoteLength(void *self, ASTUnitNoteLength *ast)
-{
-    dump(self, ast, INTEGER(ast, numerator), INTEGER(ast, denominator), NULL);
-}
-
 static void visitKeyParam(void *self, ASTKeyParam *ast)
 {
     switch (ast->type) {
@@ -130,6 +119,48 @@ static void visitKeyParam(void *self, ASTKeyParam *ast)
     case Octave:
     case StaffLines:
         dump(self, ast, "type", ASTKeyParamType2String(ast->type), INTEGER(ast, intValue), NULL);
+        break;
+    }
+}
+
+static void visitMeter(void *self, ASTMeter *ast)
+{
+    dump(self, ast, INTEGER(ast, numerator), INTEGER(ast, denominator),
+            BOOL(ast, free), BOOL(ast, commonTime), BOOL(ast, cutTime), NULL);
+}
+
+static void visitUnitNoteLength(void *self, ASTUnitNoteLength *ast)
+{
+    dump(self, ast, INTEGER(ast, numerator), INTEGER(ast, denominator), NULL);
+}
+
+static void visitTempo(void *_self, ASTTempo *ast)
+{
+    ABCASTDumper *self = _self;
+
+    dump(self, ast, NULL);
+    self->indent += 4;
+
+    NAIterator *iterator = NAArrayGetIterator(ast->node.children);
+    while (iterator->hasNext(iterator)) {
+        Node *node = iterator->next(iterator);
+        node->accept(node, self);
+    }
+
+    self->indent -= 4;
+}
+
+static void visitTempoParam(void *self, ASTTempoParam *ast)
+{
+    switch (ast->type) {
+    case TextString:
+        dump(self, ast, "type", ASTTempoParamType2String(ast->type), STRING(ast, string), NULL);
+        break;
+    case BeatUnit:
+        dump(self, ast, "type", ASTTempoParamType2String(ast->type), INTEGER(ast, numerator), INTEGER(ast, denominator), NULL);
+        break;
+    case BeatCount:
+        dump(self, ast, "type", ASTTempoParamType2String(ast->type), INTEGER(ast, beatCount), NULL);
         break;
     }
 }
@@ -172,6 +203,8 @@ Analyzer *ABCASTDumperCreate(ParseContext *context)
     self->visitor.visitKeyParam = visitKeyParam;
     self->visitor.visitMeter = visitMeter;
     self->visitor.visitUnitNoteLength = visitUnitNoteLength;
+    self->visitor.visitTempo = visitTempo;
+    self->visitor.visitTempoParam = visitTempoParam;
     self->visitor.visitLineBreak = visitLineBreak;
     self->visitor.visitInclude = visitInclude;
 

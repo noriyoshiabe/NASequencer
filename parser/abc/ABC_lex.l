@@ -34,19 +34,20 @@
 %x x_KEY
 %x x_METER
 %x x_UNIT_NOTE_LENGTH
+%x x_TEMPO
 %x x_REFERENCE_NUMBER
 %x x_REMARK
 
 NONZERO             [1-9]
 DIGIT               [[:digit:]]
-
 INTEGER             {NONZERO}{DIGIT}*|0
+QUOTED_STRING       '.*'|\".*\"
 
 VERSION             %abc-{DIGIT}\.{DIGIT}
 INCLUDE             abc-include
 
 FILEPATH            [0-9a-zA-Z_\-]+\.abh
-QUOTED_FILEPATH     '[0-9a-zA-Z_\- ]+\.abh'|"[0-9a-zA-Z_\- ]+\.abh"
+QUOTED_FILEPATH     '[0-9a-zA-Z_\- ]+\.abh'|\"[0-9a-zA-Z_\- ]+\.abh\"
 NOTE                [cdefgabCDEFGAB][,|']?([\^|_]{1,2}|=)?
 
 PITCH               (?i:[cdefgab])
@@ -128,7 +129,7 @@ WSPACE              [[:blank:]]+
 <x_UNIT_NOTE_LENGTH>\n         { BEGIN(INITIAL); }
 
 
-^M:                    { BEGIN(x_METER); return METER; }
+^M:                      { BEGIN(x_METER); return METER; }
 <x_METER>{WSPACE}        { }
 <x_METER>{INTEGER}       { yylval->i = atoi(yytext); return INTEGER; }
 <x_METER>{NONE}          { yylval->s = strdup(yytext); return NONE; }
@@ -141,6 +142,15 @@ WSPACE              [[:blank:]]+
 <x_METER>")"             { return ')'; }
 <x_METER>"%"             { BEGIN(COMMENT); }
 <x_METER>\n              { BEGIN(INITIAL); }
+
+^Q:                      { BEGIN(x_TEMPO); return TEMPO; }
+<x_TEMPO>{WSPACE}        { }
+<x_TEMPO>{INTEGER}       { yylval->i = atoi(yytext); return INTEGER; }
+<x_TEMPO>{QUOTED_STRING} { yylval->s = strdup(yytext + 1); yylval->s[strlen(yylval->s) - 1] = '\0'; return STRING; }
+<x_TEMPO>"/"             { return '/'; }
+<x_TEMPO>"="             { return '='; }
+<x_TEMPO>"%"             { BEGIN(COMMENT); }
+<x_TEMPO>\n              { BEGIN(INITIAL); }
 
 ^X:                           { BEGIN(x_REFERENCE_NUMBER); return REFERENCE_NUMBER; }
 <x_REFERENCE_NUMBER>{WSPACE}  { }

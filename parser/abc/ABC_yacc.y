@@ -38,7 +38,7 @@ extern void ABCParserSyntaxError(void *self, FileLocation *location, const char 
     void *list;
 }
 
-%token REFERENCE_NUMBER TITLE KEY INSTRUCTION METER UNIT_NOTE_LENGTH
+%token REFERENCE_NUMBER TITLE KEY INSTRUCTION METER UNIT_NOTE_LENGTH TEMPO
 %token INCLUDE
 
 %token <c> STRING_INFORMATION
@@ -54,12 +54,12 @@ extern void ABCParserSyntaxError(void *self, FileLocation *location, const char 
 %type <s> key_tonic
 %type <i> signed_integer numerator
 
-%type <node> version reference_number title key meter unit_note_length note
+%type <node> version reference_number title key meter unit_note_length tempo note
 %type <node> include line_break
 %type <node> string_information
 
-%type <node> key_param
-%type <list> key_param_list
+%type <node> key_param      tempo_param
+%type <list> key_param_list tempo_param_list
 
 %type <node> statement
 %type <list> statement_list
@@ -100,6 +100,7 @@ statement
     | key
     | meter
     | unit_note_length
+    | tempo
     | note
     | line_break
     | include
@@ -337,6 +338,57 @@ unit_note_length
             ASTUnitNoteLength *n = node(UnitNoteLength, @$);
             n->numerator = $2;
             n->denominator = -1;
+            $$ = n;
+        }
+    ;
+
+tempo
+    : TEMPO tempo_param_list
+        {
+            ASTTempo *n = node(Tempo, @$);
+            n->node.children = $2;
+            $$ = n;
+        }
+    ;
+
+tempo_param_list
+    : tempo_param
+        {
+            $$ = list();
+            if ($1) {
+                listAppend($$, $1);
+            }
+        }
+    | tempo_param_list tempo_param
+        {
+            $$ = $1;
+            if ($2) {
+                listAppend($$, $2);
+            }
+        }
+    ;
+
+tempo_param
+    : STRING
+        {
+            ASTTempoParam *n = node(TempoParam, @$);
+            n->type = TextString;
+            n->string = $1;
+            $$ = n;
+        }
+    | INTEGER '/' INTEGER
+        {
+            ASTTempoParam *n = node(TempoParam, @$);
+            n->type = BeatUnit;
+            n->numerator = $1;
+            n->denominator = $3;
+            $$ = n;
+        }
+    | '=' INTEGER
+        {
+            ASTTempoParam *n = node(TempoParam, @$);
+            n->type = BeatCount;
+            n->beatCount = $2;
             $$ = n;
         }
     ;

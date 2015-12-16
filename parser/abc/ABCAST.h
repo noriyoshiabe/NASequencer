@@ -64,6 +64,25 @@ typedef struct _ASTUnitNoteLength {
     int denominator;
 } ASTUnitNoteLength;
 
+typedef struct _ASTTempo {
+    Node node;
+} ASTTempo;
+
+typedef enum {
+    TextString,
+    BeatUnit,
+    BeatCount,
+} ASTTempoParamType;
+
+typedef struct _ASTTempoParam {
+    Node node;
+    ASTTempoParamType type;
+    char *string;
+    int numerator;
+    int denominator;
+    int beatCount;
+} ASTTempoParam;
+
 typedef struct _ASTNote {
     Node node;
     char *noteString;
@@ -90,6 +109,8 @@ typedef struct _ASTVisitor {
     void (*visitKeyParam)(void *self, ASTKeyParam *ast);
     void (*visitMeter)(void *self, ASTMeter *ast);
     void (*visitUnitNoteLength)(void *self, ASTUnitNoteLength *ast);
+    void (*visitTempo)(void *self, ASTTempo *ast);
+    void (*visitTempoParam)(void *self, ASTTempoParam *ast);
     void (*visitNote)(void *self, ASTNote *ast);
     void (*visitLineBreak)(void *self, ASTLineBreak *ast);
     void (*visitInclude)(void *self, ASTInclude *ast);
@@ -104,6 +125,8 @@ extern ASTKey *ABCASTKeyCreate(FileLocation *location);
 extern ASTKeyParam *ABCASTKeyParamCreate(FileLocation *location);
 extern ASTMeter *ABCASTMeterCreate(FileLocation *location);
 extern ASTUnitNoteLength *ABCASTUnitNoteLengthCreate(FileLocation *location);
+extern ASTTempo *ABCASTTempoCreate(FileLocation *location);
+extern ASTTempoParam *ABCASTTempoParamCreate(FileLocation *location);
 extern ASTNote *ABCASTNoteCreate(FileLocation *location);
 extern ASTLineBreak *ABCASTLineBreakCreate(FileLocation *location);
 extern ASTInclude *ABCASTIncludeCreate(FileLocation *location);
@@ -120,6 +143,17 @@ static inline const char *ASTKeyParamType2String(ASTKeyParamType type)
     CASE(Transpose);
     CASE(Octave);
     CASE(StaffLines);
+    }
+#define undef
+}
+
+static inline const char *ASTTempoParamType2String(ASTTempoParamType type)
+{
+#define CASE(type) case type: return #type;
+    switch (type) {
+    CASE(TextString);
+    CASE(BeatUnit);
+    CASE(BeatCount);
     }
 #define undef
 }
