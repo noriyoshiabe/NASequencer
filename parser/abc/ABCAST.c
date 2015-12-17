@@ -24,12 +24,7 @@ static void ASTVersionAccept(void *self, void *visitor)
 static void ASTVersionDestroy(void *_self)
 {
     ASTVersion *self = _self;
-    if (self->versionString) {
-        free(self->versionString);
-    }
-    if (self->numberString) {
-        free(self->numberString);
-    }
+    free(self->versionString);
 }
 
 ASTVersion *ABCASTVersionCreate(FileLocation *location)
@@ -191,20 +186,74 @@ ASTParts *ABCASTPartsCreate(FileLocation *location)
     return NodeCreate(ASTParts, location);
 }
 
-static void ASTInstructionAccept(void *self, void *visitor)
+static void ASTInstCharSetAccept(void *self, void *visitor)
 {
-    ((ASTVisitor *)visitor)->visitInstruction(visitor, self);
+    ((ASTVisitor *)visitor)->visitInstCharSet(visitor, self);
 }
 
-static void ASTInstructionDestroy(void *_self)
+static void ASTInstCharSetDestroy(void *_self)
 {
-    ASTInstruction *self = _self;
-    free(self->string);
+    ASTInstCharSet *self = _self;
+    free(self->name);
 }
 
-ASTInstruction *ABCASTInstructionCreate(FileLocation *location)
+ASTInstCharSet *ABCASTInstCharSetCreate(FileLocation *location)
 {
-    return NodeCreate(ASTInstruction, location);
+    return NodeCreate(ASTInstCharSet, location);
+}
+
+static void ASTInstVersionAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitInstVersion(visitor, self);
+}
+
+static void ASTInstVersionDestroy(void *_self)
+{
+    ASTInstVersion *self = _self;
+    free(self->numberString);
+}
+
+ASTInstVersion *ABCASTInstVersionCreate(FileLocation *location)
+{
+    return NodeCreate(ASTInstVersion, location);
+}
+
+static void ASTInstIncludeAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitInstInclude(visitor, self);
+}
+
+static void ASTInstIncludeDestroy(void *_self)
+{
+    ASTInstInclude *self = _self;
+
+    free(self->filepath);
+    free(self->fullpath);
+
+    if (self->root) {
+        NodeRelease(self->root);
+    }
+}
+
+ASTInstInclude *ABCASTInstIncludeCreate(FileLocation *location)
+{
+    return NodeCreate(ASTInstInclude, location);
+}
+
+static void ASTInstCreatorAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitInstCreator(visitor, self);
+}
+
+static void ASTInstCreatorDestroy(void *_self)
+{
+    ASTInstCreator *self = _self;
+    free(self->name);
+}
+
+ASTInstCreator *ABCASTInstCreatorCreate(FileLocation *location)
+{
+    return NodeCreate(ASTInstCreator, location);
 }
 
 static void ASTNoteAccept(void *self, void *visitor)
@@ -235,26 +284,4 @@ static void ASTLineBreakDestroy(void *_self)
 ASTLineBreak *ABCASTLineBreakCreate(FileLocation *location)
 {
     return NodeCreate(ASTLineBreak, location);
-}
-
-static void ASTIncludeAccept(void *self, void *visitor)
-{
-    ((ASTVisitor *)visitor)->visitInclude(visitor, self);
-}
-
-static void ASTIncludeDestroy(void *_self)
-{
-    ASTInclude *self = _self;
-
-    free(self->filepath);
-    free(self->fullpath);
-
-    if (self->root) {
-        NodeRelease(self->root);
-    }
-}
-
-ASTInclude *ABCASTIncludeCreate(FileLocation *location)
-{
-    return NodeCreate(ASTInclude, location);
 }

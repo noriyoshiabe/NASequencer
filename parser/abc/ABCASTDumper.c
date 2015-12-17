@@ -76,7 +76,7 @@ static void visitStringInformation(void *self, ASTStringInformation *ast)
 
 static void visitVersion(void *self, ASTVersion *ast)
 {
-    dump(self, ast, STRING(ast, versionString), STRING(ast, numberString), NULL);
+    dump(self, ast, STRING(ast, versionString), NULL);
 }
 
 static void visitReferenceNumber(void *self, ASTReferenceNumber *ast)
@@ -170,22 +170,17 @@ static void visitParts(void *self, ASTParts *ast)
     dump(self, ast, STRING(ast, list), NULL);
 }
 
-static void visitInstruction(void *self, ASTInstruction *ast)
+static void visitInstCharSet(void *self, ASTInstCharSet *ast)
 {
-    dump(self, ast, STRING(ast, string), NULL);
+    dump(self, ast, STRING(ast, name), NULL);
 }
 
-static void visitNote(void *self, ASTNote *ast)
+static void visitInstVersion(void *self, ASTInstVersion *ast)
 {
-    dump(self, ast, STRING(ast, noteString), NULL);
+    dump(self, ast, STRING(ast, numberString), NULL);
 }
 
-static void visitLineBreak(void *self, ASTLineBreak *ast)
-{
-    dump(self, ast, NULL);
-}
-
-static void visitInclude(void *_self, ASTInclude *ast)
+static void visitInstInclude(void *_self, ASTInstInclude *ast)
 {
     ABCASTDumper *self = _self;
 
@@ -197,6 +192,21 @@ static void visitInclude(void *_self, ASTInclude *ast)
     }
 
     self->indent -= 4;
+}
+
+static void visitInstCreator(void *self, ASTInstCreator *ast)
+{
+    dump(self, ast, STRING(ast, name), NULL);
+}
+
+static void visitNote(void *self, ASTNote *ast)
+{
+    dump(self, ast, STRING(ast, noteString), NULL);
+}
+
+static void visitLineBreak(void *self, ASTLineBreak *ast)
+{
+    dump(self, ast, NULL);
 }
 
 Analyzer *ABCASTDumperCreate(ParseContext *context)
@@ -216,9 +226,11 @@ Analyzer *ABCASTDumperCreate(ParseContext *context)
     self->visitor.visitTempo = visitTempo;
     self->visitor.visitTempoParam = visitTempoParam;
     self->visitor.visitParts = visitParts;
-    self->visitor.visitInstruction = visitInstruction;
+    self->visitor.visitInstCharSet = visitInstCharSet;
+    self->visitor.visitInstVersion = visitInstVersion;
+    self->visitor.visitInstInclude = visitInstInclude;
+    self->visitor.visitInstCreator = visitInstCreator;
     self->visitor.visitLineBreak = visitLineBreak;
-    self->visitor.visitInclude = visitInclude;
 
     self->analyzer.process = process;
     self->analyzer.destroy = destroy;

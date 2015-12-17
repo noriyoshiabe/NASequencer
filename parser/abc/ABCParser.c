@@ -109,7 +109,7 @@ Node *ABCParserParseIncludeFile(void *_self, FileLocation *location, const char 
         return NULL;
     }
 
-    ASTInclude *include = (ASTInclude *)node;
+    ASTInstInclude *include = (ASTInstInclude *)node;
     include->fullpath = fullpath;
     NAMapPut(self->includedNodeMap, include->fullpath, include);
     return node;

@@ -9,7 +9,6 @@ typedef struct _ASTRoot {
 typedef struct _ASTVersion {
     Node node;
     char *versionString;
-    char *numberString;
 } ASTVersion;
 
 typedef struct _ASTStringInformation {
@@ -89,10 +88,27 @@ typedef struct _ASTParts {
     char *list;
 } ASTParts;
 
-typedef struct _ASTInstruction {
+typedef struct _ASTInstCharSet {
     Node node;
-    char *string;
-} ASTInstruction;
+    char *name;
+} ASTInstCharSet;
+
+typedef struct _ASTInstVersion {
+    Node node;
+    char *numberString;
+} ASTInstVersion;
+
+typedef struct _ASTInstInclude {
+    Node node;
+    char *filepath;
+    char *fullpath;
+    Node *root;
+} ASTInstInclude;
+
+typedef struct _ASTInstCreator {
+    Node node;
+    char *name;
+} ASTInstCreator;
 
 typedef struct _ASTNote {
     Node node;
@@ -102,13 +118,6 @@ typedef struct _ASTNote {
 typedef struct _ASTLineBreak {
     Node node;
 } ASTLineBreak;
-
-typedef struct _ASTInclude {
-    Node node;
-    char *filepath;
-    char *fullpath;
-    Node *root;
-} ASTInclude;
 
 typedef struct _ASTVisitor {
     void (*visitRoot)(void *self, ASTRoot *ast);
@@ -123,10 +132,12 @@ typedef struct _ASTVisitor {
     void (*visitTempo)(void *self, ASTTempo *ast);
     void (*visitTempoParam)(void *self, ASTTempoParam *ast);
     void (*visitParts)(void *self, ASTParts *ast);
-    void (*visitInstruction)(void *self, ASTInstruction *ast);
+    void (*visitInstCharSet)(void *self, ASTInstCharSet *ast);
+    void (*visitInstVersion)(void *self, ASTInstVersion *ast);
+    void (*visitInstInclude)(void *self, ASTInstInclude *ast);
+    void (*visitInstCreator)(void *self, ASTInstCreator *ast);
     void (*visitNote)(void *self, ASTNote *ast);
     void (*visitLineBreak)(void *self, ASTLineBreak *ast);
-    void (*visitInclude)(void *self, ASTInclude *ast);
 } ASTVisitor;
 
 extern ASTRoot *ABCASTRootCreate(FileLocation *location);
@@ -141,10 +152,12 @@ extern ASTUnitNoteLength *ABCASTUnitNoteLengthCreate(FileLocation *location);
 extern ASTTempo *ABCASTTempoCreate(FileLocation *location);
 extern ASTTempoParam *ABCASTTempoParamCreate(FileLocation *location);
 extern ASTParts *ABCASTPartsCreate(FileLocation *location);
-extern ASTInstruction *ABCASTInstructionCreate(FileLocation *location);
+extern ASTInstCharSet *ABCASTInstCharSetCreate(FileLocation *location);
+extern ASTInstVersion *ABCASTInstVersionCreate(FileLocation *location);
+extern ASTInstInclude *ABCASTInstIncludeCreate(FileLocation *location);
+extern ASTInstCreator *ABCASTInstCreatorCreate(FileLocation *location);
 extern ASTNote *ABCASTNoteCreate(FileLocation *location);
 extern ASTLineBreak *ABCASTLineBreakCreate(FileLocation *location);
-extern ASTInclude *ABCASTIncludeCreate(FileLocation *location);
 
 static inline const char *ASTKeyParamType2String(ASTKeyParamType type)
 {

@@ -430,45 +430,43 @@ part_expr
     ;
 
 instruction
-    : INSTRUCTION INST_INCLUDE FILEPATH
+    : INSTRUCTION INST_CHARSET STRING
         {
-            ASTInclude *n = node(Include, @$);
+            ASTInstCharSet *n = node(InstCharSet, @$);
+            n->name = $3;
+            $$ = n;
+        }
+    | INSTRUCTION INST_VERSION VERSION_NUMBER
+        {
+            ASTInstVersion *n = node(InstVersion, @$);
+            n->numberString = $3;
+            $$ = n;
+        }
+    | INSTRUCTION INST_INCLUDE FILEPATH
+        {
+            ASTInstInclude *n = node(InstInclude, @$);
             n->filepath = $3;
             FileLocation location = {(char *)filepath, @$.first_line, @$.first_column};
             n->root = ABCParserParseIncludeFile(ABC_get_extra(scanner), &location, $3);
             $$ = n;
         }
-    | INSTRUCTION INST_CHARSET STRING
-        {
-            ASTInstruction *n = node(Instruction, @$);
-            n->string = $3;
-            $$ = n;
-        }
-    | INSTRUCTION INST_VERSION VERSION_NUMBER
-        {
-            ASTVersion *n = node(Version, @$);
-            n->numberString = $3;
-            $$ = n;
-        }
     | INSTRUCTION INST_CREATOR STRING
         {
-            ASTInstruction *n = node(Instruction, @$);
-            n->string = $3;
+            ASTInstCreator *n = node(InstCreator, @$);
+            n->name = $3;
             $$ = n;
         }
     | INSTRUCTION INST_LINEBREAK STRING
         {
             // TODO
-            ASTInstruction *n = node(Instruction, @$);
-            n->string = $3;
-            $$ = n;
+            free($3);
+            $$ = NULL;
         }
     | INSTRUCTION INST_DECORATION STRING
         {
             // TODO
-            ASTInstruction *n = node(Instruction, @$);
-            n->string = $3;
-            $$ = n;
+            free($3);
+            $$ = NULL;
         }
     ;
 
