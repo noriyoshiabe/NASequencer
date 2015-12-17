@@ -38,7 +38,7 @@ extern void ABCParserSyntaxError(void *self, FileLocation *location, const char 
     void *list;
 }
 
-%token REFERENCE_NUMBER TITLE KEY INSTRUCTION METER UNIT_NOTE_LENGTH TEMPO
+%token REFERENCE_NUMBER TITLE KEY INSTRUCTION METER UNIT_NOTE_LENGTH TEMPO PARTS
 %token INCLUDE
 
 %token <c> STRING_INFORMATION
@@ -46,15 +46,15 @@ extern void ABCParserSyntaxError(void *self, FileLocation *location, const char 
 %token <i> INTEGER
 %token <s> STRING
 %token <s> VERSION NOTE FILEPATH
-%token <s> KEY_TONIC KEY_MODE KEY_ACCIDENTAL CLEF_NAME PITCH NONE
+%token <s> KEY_TONIC KEY_MODE KEY_ACCIDENTAL CLEF_NAME PITCH NONE PART_LABEL
 
 %token CLEF MIDDLE TRANSPOSE OCTAVE STAFF_LINES
 %token COMMON_TIME
 
-%type <s> key_tonic
+%type <s> key_tonic part_expr
 %type <i> signed_integer numerator
 
-%type <node> version reference_number title key meter unit_note_length tempo note
+%type <node> version reference_number title key meter unit_note_length tempo parts note
 %type <node> include line_break
 %type <node> string_information
 
@@ -101,6 +101,7 @@ statement
     | meter
     | unit_note_length
     | tempo
+    | parts
     | note
     | line_break
     | include
@@ -390,6 +391,47 @@ tempo_param
             n->type = BeatCount;
             n->beatCount = $2;
             $$ = n;
+        }
+    ;
+
+parts
+    : PARTS part_expr
+        {
+            ASTParts *n = node(Parts, @$);
+            n->list = $2;
+            $$ = n;
+        }
+    ;
+
+part_expr
+    : PART_LABEL
+        {
+            $$ = $1;
+        }
+    | part_expr PART_LABEL
+        {
+            $$ = realloc($1, strlen($1) + strlen($2) + 1);
+            strcat($$, $2);
+            free($2);
+        }
+    | '(' part_expr ')'
+        {
+            $$ = $2;
+        }
+    | part_expr INTEGER
+        {
+            $$ = malloc(strlen($1) * $2 + 1);
+            $$[0] = '\0';
+            for (int i = 0; i < $2; ++i) {
+                strcat($$, $1);
+            }
+            free($1);
+        }
+    | part_expr part_expr
+        {
+            $$ = realloc($1, strlen($1) + strlen($2) + 1);
+            strcat($$, $2);
+            free($2);
         }
     ;
 

@@ -165,6 +165,11 @@ static void visitTempoParam(void *self, ASTTempoParam *ast)
     }
 }
 
+static void visitParts(void *self, ASTParts *ast)
+{
+    dump(self, ast, STRING(ast, list), NULL);
+}
+
 static void visitNote(void *self, ASTNote *ast)
 {
     dump(self, ast, STRING(ast, noteString), NULL);
@@ -205,6 +210,7 @@ Analyzer *ABCASTDumperCreate(ParseContext *context)
     self->visitor.visitUnitNoteLength = visitUnitNoteLength;
     self->visitor.visitTempo = visitTempo;
     self->visitor.visitTempoParam = visitTempoParam;
+    self->visitor.visitParts = visitParts;
     self->visitor.visitLineBreak = visitLineBreak;
     self->visitor.visitInclude = visitInclude;
 

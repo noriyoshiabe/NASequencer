@@ -170,6 +170,22 @@ ASTTempoParam *ABCASTTempoParamCreate(FileLocation *location)
     return NodeCreate(ASTTempoParam, location);
 }
 
+static void ASTPartsAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitParts(visitor, self);
+}
+
+static void ASTPartsDestroy(void *_self)
+{
+    ASTParts *self = _self;
+    free(self->list);
+}
+
+ASTParts *ABCASTPartsCreate(FileLocation *location)
+{
+    return NodeCreate(ASTParts, location);
+}
+
 static void ASTNoteAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitNote(visitor, self);

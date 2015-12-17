@@ -35,6 +35,7 @@
 %x x_METER
 %x x_UNIT_NOTE_LENGTH
 %x x_TEMPO
+%x x_PARTS
 %x x_REFERENCE_NUMBER
 %x x_REMARK
 
@@ -131,6 +132,13 @@ WSPACE              [[:blank:]]+
 <x_TEMPO>{QUOTED_STRING} { yylval->s = strdup(yytext + 1); yylval->s[strlen(yylval->s) - 1] = '\0'; return STRING; }
 <x_TEMPO>"/"             { return '/'; }
 <x_TEMPO>"="             { return '='; }
+
+^P:                      { BEGIN(x_PARTS); return PARTS; }
+<x_PARTS>[[:alpha:]]     { yylval->s = strdup(yytext); return PART_LABEL; }
+<x_PARTS>{INTEGER}       { yylval->i = atoi(yytext); return INTEGER; }
+<x_PARTS>"."             { }
+<x_PARTS>"("             { return '('; }
+<x_PARTS>")"             { return ')'; }
 
 ^X:                           { BEGIN(x_REFERENCE_NUMBER); return REFERENCE_NUMBER; }
 <x_REFERENCE_NUMBER>{INTEGER} { yylval->i = atoi(yytext); return INTEGER; }

@@ -83,6 +83,11 @@ typedef struct _ASTTempoParam {
     int beatCount;
 } ASTTempoParam;
 
+typedef struct _ASTParts {
+    Node node;
+    char *list;
+} ASTParts;
+
 typedef struct _ASTNote {
     Node node;
     char *noteString;
@@ -111,6 +116,7 @@ typedef struct _ASTVisitor {
     void (*visitUnitNoteLength)(void *self, ASTUnitNoteLength *ast);
     void (*visitTempo)(void *self, ASTTempo *ast);
     void (*visitTempoParam)(void *self, ASTTempoParam *ast);
+    void (*visitParts)(void *self, ASTParts *ast);
     void (*visitNote)(void *self, ASTNote *ast);
     void (*visitLineBreak)(void *self, ASTLineBreak *ast);
     void (*visitInclude)(void *self, ASTInclude *ast);
@@ -127,6 +133,7 @@ extern ASTMeter *ABCASTMeterCreate(FileLocation *location);
 extern ASTUnitNoteLength *ABCASTUnitNoteLengthCreate(FileLocation *location);
 extern ASTTempo *ABCASTTempoCreate(FileLocation *location);
 extern ASTTempoParam *ABCASTTempoParamCreate(FileLocation *location);
+extern ASTParts *ABCASTPartsCreate(FileLocation *location);
 extern ASTNote *ABCASTNoteCreate(FileLocation *location);
 extern ASTLineBreak *ABCASTLineBreakCreate(FileLocation *location);
 extern ASTInclude *ABCASTIncludeCreate(FileLocation *location);
