@@ -24,7 +24,12 @@ static void ASTVersionAccept(void *self, void *visitor)
 static void ASTVersionDestroy(void *_self)
 {
     ASTVersion *self = _self;
-    free(self->versionString);
+    if (self->versionString) {
+        free(self->versionString);
+    }
+    if (self->numberString) {
+        free(self->numberString);
+    }
 }
 
 ASTVersion *ABCASTVersionCreate(FileLocation *location)
@@ -184,6 +189,22 @@ static void ASTPartsDestroy(void *_self)
 ASTParts *ABCASTPartsCreate(FileLocation *location)
 {
     return NodeCreate(ASTParts, location);
+}
+
+static void ASTInstructionAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitInstruction(visitor, self);
+}
+
+static void ASTInstructionDestroy(void *_self)
+{
+    ASTInstruction *self = _self;
+    free(self->string);
+}
+
+ASTInstruction *ABCASTInstructionCreate(FileLocation *location)
+{
+    return NodeCreate(ASTInstruction, location);
 }
 
 static void ASTNoteAccept(void *self, void *visitor)

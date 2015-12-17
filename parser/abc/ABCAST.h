@@ -9,6 +9,7 @@ typedef struct _ASTRoot {
 typedef struct _ASTVersion {
     Node node;
     char *versionString;
+    char *numberString;
 } ASTVersion;
 
 typedef struct _ASTStringInformation {
@@ -88,6 +89,11 @@ typedef struct _ASTParts {
     char *list;
 } ASTParts;
 
+typedef struct _ASTInstruction {
+    Node node;
+    char *string;
+} ASTInstruction;
+
 typedef struct _ASTNote {
     Node node;
     char *noteString;
@@ -117,6 +123,7 @@ typedef struct _ASTVisitor {
     void (*visitTempo)(void *self, ASTTempo *ast);
     void (*visitTempoParam)(void *self, ASTTempoParam *ast);
     void (*visitParts)(void *self, ASTParts *ast);
+    void (*visitInstruction)(void *self, ASTInstruction *ast);
     void (*visitNote)(void *self, ASTNote *ast);
     void (*visitLineBreak)(void *self, ASTLineBreak *ast);
     void (*visitInclude)(void *self, ASTInclude *ast);
@@ -134,6 +141,7 @@ extern ASTUnitNoteLength *ABCASTUnitNoteLengthCreate(FileLocation *location);
 extern ASTTempo *ABCASTTempoCreate(FileLocation *location);
 extern ASTTempoParam *ABCASTTempoParamCreate(FileLocation *location);
 extern ASTParts *ABCASTPartsCreate(FileLocation *location);
+extern ASTInstruction *ABCASTInstructionCreate(FileLocation *location);
 extern ASTNote *ABCASTNoteCreate(FileLocation *location);
 extern ASTLineBreak *ABCASTLineBreakCreate(FileLocation *location);
 extern ASTInclude *ABCASTIncludeCreate(FileLocation *location);

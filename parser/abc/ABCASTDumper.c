@@ -51,7 +51,7 @@ static void dump(ABCASTDumper *self, void *_node, ...)
 #define FLOAT(ast, name) #name, NACStringFromFloat(ast->name, 2)
 #define CHAR(ast, name) #name, NACStringFromChar(ast->name)
 #define BOOL(ast, name) #name, NACStringFromBoolean(ast->name)
-#define STRING(ast, name) #name, ast->name
+#define STRING(ast, name) #name, ast->name ? ast->name : "(null)"
 
 static void visitRoot(void *_self, ASTRoot *ast)
 {
@@ -76,7 +76,7 @@ static void visitStringInformation(void *self, ASTStringInformation *ast)
 
 static void visitVersion(void *self, ASTVersion *ast)
 {
-    dump(self, ast, STRING(ast, versionString), NULL);
+    dump(self, ast, STRING(ast, versionString), STRING(ast, numberString), NULL);
 }
 
 static void visitReferenceNumber(void *self, ASTReferenceNumber *ast)
@@ -170,6 +170,11 @@ static void visitParts(void *self, ASTParts *ast)
     dump(self, ast, STRING(ast, list), NULL);
 }
 
+static void visitInstruction(void *self, ASTInstruction *ast)
+{
+    dump(self, ast, STRING(ast, string), NULL);
+}
+
 static void visitNote(void *self, ASTNote *ast)
 {
     dump(self, ast, STRING(ast, noteString), NULL);
@@ -211,6 +216,7 @@ Analyzer *ABCASTDumperCreate(ParseContext *context)
     self->visitor.visitTempo = visitTempo;
     self->visitor.visitTempoParam = visitTempoParam;
     self->visitor.visitParts = visitParts;
+    self->visitor.visitInstruction = visitInstruction;
     self->visitor.visitLineBreak = visitLineBreak;
     self->visitor.visitInclude = visitInclude;
 

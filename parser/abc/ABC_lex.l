@@ -44,8 +44,15 @@ DIGIT               [[:digit:]]
 INTEGER             {NONZERO}{DIGIT}*|0
 QUOTED_STRING       '.*'|\".*\"
 
-VERSION             %abc-{DIGIT}\.{DIGIT}
+VERSION_NUMBER      {DIGIT}\.{DIGIT}
+VERSION             %abc-{VERSION_NUMBER}
+
 INCLUDE             abc-include
+CHARSET             abc-charset
+VERSION_I           abc-version
+CREATOR             abc-creator
+LINEBREAK           linebreak
+DECORATION          decoration
 
 FILEPATH            [0-9a-zA-Z_\-]+\.abh
 QUOTED_FILEPATH     '[0-9a-zA-Z_\- ]+\.abh'|\"[0-9a-zA-Z_\- ]+\.abh\"
@@ -93,6 +100,17 @@ WSPACE              [[:blank:]]+
 <x_INSTRUCTION>{INCLUDE}           { return INCLUDE; }
 <x_INSTRUCTION>{FILEPATH}          { yylval->s = strdup(yytext); return FILEPATH; }
 <x_INSTRUCTION>{QUOTED_FILEPATH}   { yylval->s = strdup(yytext + 1); yylval->s[strlen(yylval->s) - 1] = '\0'; return FILEPATH; }
+<x_INSTRUCTION>{CHARSET}           { return CHARSET; }
+<x_INSTRUCTION>{VERSION_I}         { return VERSION_INSTRUCTION; }
+<x_INSTRUCTION>{VERSION_NUMBER}    { yylval->s = strdup(yytext); return VERSION_NUMBER; }
+<x_INSTRUCTION>{CREATOR}           { return CREATOR; }
+<x_INSTRUCTION>{LINEBREAK}         { return LINEBREAK_INSTRUCTION; }
+<x_INSTRUCTION>{DECORATION}        { return DECORATION; }
+<x_INSTRUCTION>"<EOL>"             { yylval->s = strdup(yytext); return STRING; /* TODO */ }
+<x_INSTRUCTION>"<none>"            { yylval->s = strdup(yytext); return STRING; /* TODO */ }
+<x_INSTRUCTION>"!"                 { yylval->s = strdup(yytext); return STRING; /* TODO */ }
+<x_INSTRUCTION>"$"                 { yylval->s = strdup(yytext); return STRING; /* TODO */ }
+<x_INSTRUCTION>"+"                 { yylval->s = strdup(yytext); return STRING; /* TODO */ }
 
 ^K:                      { BEGIN(x_KEY); return KEY; }
 <x_KEY>{INTEGER}         { yylval->i = atoi(yytext); return INTEGER; }

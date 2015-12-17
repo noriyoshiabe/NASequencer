@@ -39,13 +39,13 @@ extern void ABCParserSyntaxError(void *self, FileLocation *location, const char 
 }
 
 %token REFERENCE_NUMBER TITLE KEY INSTRUCTION METER UNIT_NOTE_LENGTH TEMPO PARTS
-%token INCLUDE
+%token INCLUDE CHARSET VERSION_INSTRUCTION CREATOR LINEBREAK_INSTRUCTION DECORATION
 
 %token <c> STRING_INFORMATION
 
 %token <i> INTEGER
 %token <s> STRING
-%token <s> VERSION NOTE FILEPATH
+%token <s> VERSION NOTE FILEPATH VERSION_NUMBER
 %token <s> KEY_TONIC KEY_MODE KEY_ACCIDENTAL CLEF_NAME PITCH NONE PART_LABEL
 
 %token CLEF MIDDLE TRANSPOSE OCTAVE STAFF_LINES
@@ -55,7 +55,7 @@ extern void ABCParserSyntaxError(void *self, FileLocation *location, const char 
 %type <i> signed_integer numerator
 
 %type <node> version reference_number title key meter unit_note_length tempo parts note
-%type <node> include line_break
+%type <node> instruction line_break
 %type <node> string_information
 
 %type <node> key_param      tempo_param
@@ -102,9 +102,9 @@ statement
     | unit_note_length
     | tempo
     | parts
+    | instruction
     | note
     | line_break
-    | include
     | error
         {
             ABC_lex_set_error_until_eol_if_needed(scanner);
@@ -408,12 +408,6 @@ part_expr
         {
             $$ = $1;
         }
-    | part_expr PART_LABEL
-        {
-            $$ = realloc($1, strlen($1) + strlen($2) + 1);
-            strcat($$, $2);
-            free($2);
-        }
     | '(' part_expr ')'
         {
             $$ = $2;
@@ -435,22 +429,54 @@ part_expr
         }
     ;
 
-note
-    : NOTE
-        {
-            ASTNote *n = node(Note, @$);
-            n->noteString = $1;
-            $$ = n;
-        }
-    ;
-
-include
+instruction
     : INSTRUCTION INCLUDE FILEPATH
         {
             ASTInclude *n = node(Include, @$);
             n->filepath = $3;
             FileLocation location = {(char *)filepath, @$.first_line, @$.first_column};
             n->root = ABCParserParseIncludeFile(ABC_get_extra(scanner), &location, $3);
+            $$ = n;
+        }
+    | INSTRUCTION CHARSET STRING
+        {
+            ASTInstruction *n = node(Instruction, @$);
+            n->string = $3;
+            $$ = n;
+        }
+    | INSTRUCTION VERSION_INSTRUCTION VERSION_NUMBER
+        {
+            ASTVersion *n = node(Version, @$);
+            n->numberString = $3;
+            $$ = n;
+        }
+    | INSTRUCTION CREATOR STRING
+        {
+            ASTInstruction *n = node(Instruction, @$);
+            n->string = $3;
+            $$ = n;
+        }
+    | INSTRUCTION LINEBREAK_INSTRUCTION STRING
+        {
+            // TODO
+            ASTInstruction *n = node(Instruction, @$);
+            n->string = $3;
+            $$ = n;
+        }
+    | INSTRUCTION DECORATION STRING
+        {
+            // TODO
+            ASTInstruction *n = node(Instruction, @$);
+            n->string = $3;
+            $$ = n;
+        }
+    ;
+
+note
+    : NOTE
+        {
+            ASTNote *n = node(Note, @$);
+            n->noteString = $1;
             $$ = n;
         }
     ;
