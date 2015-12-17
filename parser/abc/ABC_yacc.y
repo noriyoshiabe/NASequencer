@@ -39,7 +39,7 @@ extern void ABCParserSyntaxError(void *self, FileLocation *location, const char 
 }
 
 %token REFERENCE_NUMBER TITLE KEY INSTRUCTION METER UNIT_NOTE_LENGTH TEMPO PARTS
-%token INCLUDE CHARSET VERSION_INSTRUCTION CREATOR LINEBREAK_INSTRUCTION DECORATION
+%token INST_INCLUDE INST_CHARSET INST_VERSION INST_CREATOR INST_LINEBREAK INST_DECORATION
 
 %token <c> STRING_INFORMATION
 
@@ -430,7 +430,7 @@ part_expr
     ;
 
 instruction
-    : INSTRUCTION INCLUDE FILEPATH
+    : INSTRUCTION INST_INCLUDE FILEPATH
         {
             ASTInclude *n = node(Include, @$);
             n->filepath = $3;
@@ -438,32 +438,32 @@ instruction
             n->root = ABCParserParseIncludeFile(ABC_get_extra(scanner), &location, $3);
             $$ = n;
         }
-    | INSTRUCTION CHARSET STRING
+    | INSTRUCTION INST_CHARSET STRING
         {
             ASTInstruction *n = node(Instruction, @$);
             n->string = $3;
             $$ = n;
         }
-    | INSTRUCTION VERSION_INSTRUCTION VERSION_NUMBER
+    | INSTRUCTION INST_VERSION VERSION_NUMBER
         {
             ASTVersion *n = node(Version, @$);
             n->numberString = $3;
             $$ = n;
         }
-    | INSTRUCTION CREATOR STRING
+    | INSTRUCTION INST_CREATOR STRING
         {
             ASTInstruction *n = node(Instruction, @$);
             n->string = $3;
             $$ = n;
         }
-    | INSTRUCTION LINEBREAK_INSTRUCTION STRING
+    | INSTRUCTION INST_LINEBREAK STRING
         {
             // TODO
             ASTInstruction *n = node(Instruction, @$);
             n->string = $3;
             $$ = n;
         }
-    | INSTRUCTION DECORATION STRING
+    | INSTRUCTION INST_DECORATION STRING
         {
             // TODO
             ASTInstruction *n = node(Instruction, @$);

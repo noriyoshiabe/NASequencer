@@ -31,6 +31,12 @@
 
 %x x_STR_INFO
 %x x_INSTRUCTION
+%x x_INST_INCLUDE
+%x x_INST_CHARSET
+%x x_INST_VERSION
+%x x_INST_CREATOR
+%x x_INST_LINEBREAK
+%x x_INST_DECORATION
 %x x_KEY
 %x x_METER
 %x x_UNIT_NOTE_LENGTH
@@ -46,13 +52,6 @@ QUOTED_STRING       '.*'|\".*\"
 
 VERSION_NUMBER      {DIGIT}\.{DIGIT}
 VERSION             %abc-{VERSION_NUMBER}
-
-INCLUDE             abc-include
-CHARSET             abc-charset
-VERSION_I           abc-version
-CREATOR             abc-creator
-LINEBREAK           linebreak
-DECORATION          decoration
 
 FILEPATH            [0-9a-zA-Z_\-]+\.abh
 QUOTED_FILEPATH     '[0-9a-zA-Z_\- ]+\.abh'|\"[0-9a-zA-Z_\- ]+\.abh\"
@@ -70,6 +69,13 @@ TRANSPOSE           (?i:t(ranspose)?)
 OCTAVE              (?i:octave)
 STAFF_LINES         (?i:stafflines)
 COMMON_TIME         [Cc]
+
+INST_INCLUDE        abc-include
+INST_CHARSET        abc-charset
+INST_VERSION        abc-version
+INST_CREATOR        abc-creator
+INST_LINEBREAK      linebreak
+INST_DECORATION     decoration
 
 WSPACE              [[:blank:]]+
 
@@ -95,22 +101,6 @@ WSPACE              [[:blank:]]+
 ^w:                 { BEGIN(x_STR_INFO); yylval->c = 'w'; return STRING_INFORMATION; }
 ^Z:                 { BEGIN(x_STR_INFO); yylval->c = 'Z'; return STRING_INFORMATION; }
 <x_STR_INFO>.*      { yylval->s = NACStringTrimWhiteSpace(strdup(yytext)); return STRING; }
-
-^I:                                { BEGIN(x_INSTRUCTION); return INSTRUCTION; }
-<x_INSTRUCTION>{INCLUDE}           { return INCLUDE; }
-<x_INSTRUCTION>{FILEPATH}          { yylval->s = strdup(yytext); return FILEPATH; }
-<x_INSTRUCTION>{QUOTED_FILEPATH}   { yylval->s = strdup(yytext + 1); yylval->s[strlen(yylval->s) - 1] = '\0'; return FILEPATH; }
-<x_INSTRUCTION>{CHARSET}           { return CHARSET; }
-<x_INSTRUCTION>{VERSION_I}         { return VERSION_INSTRUCTION; }
-<x_INSTRUCTION>{VERSION_NUMBER}    { yylval->s = strdup(yytext); return VERSION_NUMBER; }
-<x_INSTRUCTION>{CREATOR}           { return CREATOR; }
-<x_INSTRUCTION>{LINEBREAK}         { return LINEBREAK_INSTRUCTION; }
-<x_INSTRUCTION>{DECORATION}        { return DECORATION; }
-<x_INSTRUCTION>"<EOL>"             { yylval->s = strdup(yytext); return STRING; /* TODO */ }
-<x_INSTRUCTION>"<none>"            { yylval->s = strdup(yytext); return STRING; /* TODO */ }
-<x_INSTRUCTION>"!"                 { yylval->s = strdup(yytext); return STRING; /* TODO */ }
-<x_INSTRUCTION>"$"                 { yylval->s = strdup(yytext); return STRING; /* TODO */ }
-<x_INSTRUCTION>"+"                 { yylval->s = strdup(yytext); return STRING; /* TODO */ }
 
 ^K:                      { BEGIN(x_KEY); return KEY; }
 <x_KEY>{INTEGER}         { yylval->i = atoi(yytext); return INTEGER; }
@@ -157,6 +147,31 @@ WSPACE              [[:blank:]]+
 <x_PARTS>"."             { }
 <x_PARTS>"("             { return '('; }
 <x_PARTS>")"             { return ')'; }
+
+^I:                                { BEGIN(x_INSTRUCTION); return INSTRUCTION; }
+<x_INSTRUCTION>{INST_INCLUDE}      { BEGIN(x_INST_INCLUDE); return INST_INCLUDE; }
+<x_INST_INCLUDE>{FILEPATH}         { yylval->s = strdup(yytext); return FILEPATH; }
+<x_INST_INCLUDE>{QUOTED_FILEPATH}  { yylval->s = strdup(yytext + 1); yylval->s[strlen(yylval->s) - 1] = '\0'; return FILEPATH; }
+
+<x_INSTRUCTION>{INST_CHARSET}      { BEGIN(x_INST_CHARSET); return INST_CHARSET; }
+<x_INST_CHARSET>.*                 { yylval->s = NACStringTrimWhiteSpace(strdup(yytext)); return STRING; }
+
+<x_INSTRUCTION>{INST_VERSION}      { BEGIN(x_INST_VERSION); return INST_VERSION; }
+<x_INST_VERSION>{VERSION_NUMBER}   { yylval->s = strdup(yytext); return VERSION_NUMBER; }
+
+<x_INSTRUCTION>{INST_CREATOR}      { BEGIN(x_INST_CREATOR); return INST_CREATOR; }
+<x_INST_CREATOR>.*                 { yylval->s = NACStringTrimWhiteSpace(strdup(yytext)); return STRING; }
+
+<x_INSTRUCTION>{INST_LINEBREAK}    { BEGIN(x_INST_LINEBREAK); return INST_LINEBREAK; }
+<x_INST_LINEBREAK>"<EOL>"          { yylval->s = strdup(yytext); return STRING; /* TODO */ }
+<x_INST_LINEBREAK>"<none>"         { yylval->s = strdup(yytext); return STRING; /* TODO */ }
+<x_INST_LINEBREAK>"!"              { yylval->s = strdup(yytext); return STRING; /* TODO */ }
+<x_INST_LINEBREAK>"$"              { yylval->s = strdup(yytext); return STRING; /* TODO */ }
+<x_INST_LINEBREAK>"+"              { yylval->s = strdup(yytext); return STRING; /* TODO */ }
+
+<x_INSTRUCTION>{INST_DECORATION}   { BEGIN(x_INST_DECORATION); return INST_DECORATION; }
+<x_INST_DECORATION>"!"             { yylval->s = strdup(yytext); return STRING; /* TODO */ }
+<x_INST_DECORATION>"+"             { yylval->s = strdup(yytext); return STRING; /* TODO */ }
 
 ^X:                           { BEGIN(x_REFERENCE_NUMBER); return REFERENCE_NUMBER; }
 <x_REFERENCE_NUMBER>{INTEGER} { yylval->i = atoi(yytext); return INTEGER; }
