@@ -77,7 +77,7 @@ INST_CREATOR        abc-creator
 INST_LINEBREAK      linebreak
 INST_DECORATION     decoration
 
-WSPACE              [[:blank:]]+
+WSPACE              ([[:blank:]]|\r)+
 
 %%
 
