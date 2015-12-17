@@ -14,6 +14,7 @@ typedef struct _ABCParser {
     ParseContext *context;
     NASet *readingFileSet;
     NAMap *includedNodeMap;
+    char lineBreak;
 } ABCParser;
 
 extern int ABC_parse(yyscan_t scanner, const char *filepath, void **node);
@@ -119,4 +120,16 @@ void ABCParserSyntaxError(void *_self, FileLocation *location, const char *token
 {
     ABCParser *self = _self; 
     self->context->appendError(self->context, location, GeneralParseErrorSyntaxError, token, NULL);
+}
+
+void ABCParserSetLineBreak(void *_self, char c)
+{
+    ABCParser *self = _self; 
+    self->lineBreak = c;
+}
+
+char ABCParserGetLineBreak(void *_self)
+{
+    ABCParser *self = _self; 
+    return self->lineBreak;
 }

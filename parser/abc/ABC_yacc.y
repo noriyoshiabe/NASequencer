@@ -9,9 +9,6 @@
 extern void ABC_lex_set_error_until_eol_if_needed(yyscan_t scanner);
 extern int ABC_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, void **node, const char *message);
 
-extern Node *ABCParserParseIncludeFile(void *self, FileLocation *location, const char *includeFile);
-extern void ABCParserSyntaxError(void *self, FileLocation *location, const char *token);
-
 #define node(type, yylloc) ABCAST##type##Create(&((FileLocation){(char *)filepath, yylloc.first_line, yylloc.first_column}))
 #define list() NAArrayCreate(4, NULL)
 #define listAppend(list, node) NAArrayAppend(list, node)
@@ -458,7 +455,22 @@ instruction
         }
     | INSTRUCTION INST_LINEBREAK STRING
         {
-            // TODO
+            switch ($3[0]) {
+            case '!':
+            case '$':
+            case '+':
+                ABCParserSetLineBreak(ABC_get_extra(scanner), $3[0]);
+                break;
+            default:
+                if (0 == strcmp("<EOL>", $3)) {
+                    ABCParserSetLineBreak(ABC_get_extra(scanner), '\n');
+                }
+                else if (0 == strcmp("<none>", $3)) {
+                    ABCParserSetLineBreak(ABC_get_extra(scanner), -1);
+                }
+                break;
+            }
+
             free($3);
             $$ = NULL;
         }

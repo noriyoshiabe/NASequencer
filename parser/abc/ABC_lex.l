@@ -77,6 +77,8 @@ INST_CREATOR        abc-creator
 INST_LINEBREAK      linebreak
 INST_DECORATION     decoration
 
+LINEBREAK_CHAR      \$|\+|!
+
 WSPACE              ([[:blank:]]|\r)+
 
 %%
@@ -183,6 +185,15 @@ WSPACE              ([[:blank:]]|\r)+
 
 <ERROR>.*           { yy_pop_state(yyscanner); }
 
+<INITIAL>{LINEBREAK_CHAR}   {
+                                if (yytext[0] == ABCParserGetLineBreak(ABC_get_extra(yyscanner))) {
+                                    return '\n';
+                                }
+                                else {
+                                    yymore();
+                                }
+                            }
+
 <*>"%"              {
                         switch (YY_START) {
                         case COMMENT:
@@ -198,7 +209,9 @@ WSPACE              ([[:blank:]]|\r)+
 <*>\n               {
                         switch (YY_START) {
                         case INITIAL:
-                            return '\n';
+                            if ('\n' == ABCParserGetLineBreak(ABC_get_extra(yyscanner))) {
+                                return '\n';
+                            }
                         default:
                             BEGIN(INITIAL);
                             break;

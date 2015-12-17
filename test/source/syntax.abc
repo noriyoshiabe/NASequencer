@@ -43,8 +43,9 @@ I:abc-creator xml2abc-2.7
 I:linebreak $
 I:linebreak !
 I:linebreak +
-I:linebreak <EOL>
 I:linebreak <none>
+I:linebreak <EOL>
+I:linebreak $
 I:decoration +
 I:decoration !
 I: abc-include include.abh
@@ -52,4 +53,5 @@ I: abc-include 'include hoge.abh'
 I: abc-include "include hoge.abh"
 r: this is remarks
 C, #syntaxerror D,E,F,G,A,B,CDEFGABcdefgabc'd'e'f'g'a'b'
+cdef $
 % comment
