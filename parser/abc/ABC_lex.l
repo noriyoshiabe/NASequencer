@@ -222,6 +222,10 @@ WSPACE              ([[:blank:]]|\r)+
 <x_DECORATION>{WSPACE}      { return 1; }
 
 <*>\n               {
+                        if (COMMENT == YY_START) {
+                            yy_pop_state(yyscanner);
+                        }
+
                         switch (YY_START) {
                         case INITIAL:
                             if (ABCParserIsLineBreak(ABC_get_extra(yyscanner), '\n')) {
@@ -241,7 +245,7 @@ WSPACE              ([[:blank:]]|\r)+
                         case x_REMARK:
                             break;
                         default:
-                            BEGIN(COMMENT);
+                            yy_push_state(COMMENT, yyscanner);
                             break;
                         }
                     }

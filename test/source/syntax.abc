@@ -57,3 +57,7 @@ cdef $
 I:linebreak !
 I:decoration +
 abcd ! efg +aaa+
+I:linebreak <EOL>
+I:decoration !
+abcd % comment
+abcd
