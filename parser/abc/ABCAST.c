@@ -256,6 +256,22 @@ ASTInstCreator *ABCASTInstCreatorCreate(FileLocation *location)
     return NodeCreate(ASTInstCreator, location);
 }
 
+static void ASTDecorationAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitDecoration(visitor, self);
+}
+
+static void ASTDecorationDestroy(void *_self)
+{
+    ASTDecoration *self = _self;
+    free(self->symbol);
+}
+
+ASTDecoration *ABCASTDecorationCreate(FileLocation *location)
+{
+    return NodeCreate(ASTDecoration, location);
+}
+
 static void ASTNoteAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitNote(visitor, self);

@@ -15,6 +15,7 @@ typedef struct _ABCParser {
     NASet *readingFileSet;
     NAMap *includedNodeMap;
     char lineBreak;
+    char decorationDialects[2];
 } ABCParser;
 
 extern int ABC_parse(yyscan_t scanner, const char *filepath, void **node);
@@ -75,6 +76,9 @@ DSLParser *ABCParserCreate(ParseContext *context)
     self->parser.destroy = ABCParserDestroy;
     self->readingFileSet = NASetCreate(NAHashCString, NADescriptionCString);
     self->includedNodeMap = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
+    self->lineBreak = '\n';
+    self->decorationDialects[0] = '!';
+    self->decorationDialects[1] = '+';
     return (DSLParser *)self;
 }
 
@@ -126,10 +130,32 @@ void ABCParserSetLineBreak(void *_self, char c)
 {
     ABCParser *self = _self; 
     self->lineBreak = c;
+
+    if ('!' == c) {
+        self->decorationDialects[0] = '+';
+        self->decorationDialects[1] = -1;
+    }
 }
 
-char ABCParserGetLineBreak(void *_self)
+bool ABCParserIsLineBreak(void *_self, char c)
 {
     ABCParser *self = _self; 
-    return self->lineBreak;
+    return self->lineBreak == c;
+}
+
+void ABCParserSetDecoration(void *_self, char c)
+{
+    ABCParser *self = _self;
+    self->decorationDialects[0] = c;
+    self->decorationDialects[1] = -1;
+
+    if (c == self->lineBreak) {
+        self->lineBreak = -1;
+    }
+}
+
+bool ABCParserIsDecoration(void *_self, char c)
+{
+    ABCParser *self = _self; 
+    return self->decorationDialects[0] == c || self->decorationDialects[1] == c;
 }

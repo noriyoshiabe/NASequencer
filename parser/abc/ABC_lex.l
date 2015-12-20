@@ -44,6 +44,7 @@
 %x x_PARTS
 %x x_REFERENCE_NUMBER
 %x x_REMARK
+%x x_DECORATION
 
 NONZERO             [1-9]
 DIGIT               [[:digit:]]
@@ -76,8 +77,6 @@ INST_VERSION        abc-version
 INST_CREATOR        abc-creator
 INST_LINEBREAK      linebreak
 INST_DECORATION     decoration
-
-LINEBREAK_CHAR      \$|\+|!
 
 WSPACE              ([[:blank:]]|\r)+
 
@@ -165,15 +164,14 @@ WSPACE              ([[:blank:]]|\r)+
 <x_INST_CREATOR>.*                 { yylval->s = NACStringTrimWhiteSpace(strdup(yytext)); return STRING; }
 
 <x_INSTRUCTION>{INST_LINEBREAK}    { BEGIN(x_INST_LINEBREAK); return INST_LINEBREAK; }
-<x_INST_LINEBREAK>"<EOL>"          { yylval->s = strdup(yytext); return STRING; /* TODO */ }
-<x_INST_LINEBREAK>"<none>"         { yylval->s = strdup(yytext); return STRING; /* TODO */ }
-<x_INST_LINEBREAK>"!"              { yylval->s = strdup(yytext); return STRING; /* TODO */ }
-<x_INST_LINEBREAK>"$"              { yylval->s = strdup(yytext); return STRING; /* TODO */ }
-<x_INST_LINEBREAK>"+"              { yylval->s = strdup(yytext); return STRING; /* TODO */ }
+<x_INST_LINEBREAK>"<EOL>"          { yylval->s = strdup(yytext); return STRING; }
+<x_INST_LINEBREAK>"<none>"         { yylval->s = strdup(yytext); return STRING; }
+<x_INST_LINEBREAK>"!"              { yylval->c = yytext[0]; return CHAR; }
+<x_INST_LINEBREAK>"$"              { yylval->c = yytext[0]; return CHAR; }
 
 <x_INSTRUCTION>{INST_DECORATION}   { BEGIN(x_INST_DECORATION); return INST_DECORATION; }
-<x_INST_DECORATION>"!"             { yylval->s = strdup(yytext); return STRING; /* TODO */ }
-<x_INST_DECORATION>"+"             { yylval->s = strdup(yytext); return STRING; /* TODO */ }
+<x_INST_DECORATION>"!"             { yylval->c = yytext[0]; return CHAR; }
+<x_INST_DECORATION>"+"             { yylval->c = yytext[0]; return CHAR; }
 
 ^X:                           { BEGIN(x_REFERENCE_NUMBER); return REFERENCE_NUMBER; }
 <x_REFERENCE_NUMBER>{INTEGER} { yylval->i = atoi(yytext); return INTEGER; }
@@ -185,15 +183,56 @@ WSPACE              ([[:blank:]]|\r)+
 
 <ERROR>.*           { yy_pop_state(yyscanner); }
 
-<INITIAL>{LINEBREAK_CHAR}   {
-                                if (yytext[0] == ABCParserGetLineBreak(ABC_get_extra(yyscanner))) {
-                                    return '\n';
-                                }
-                                else {
-                                    yymore();
+<INITIAL>"$"        {
+                        if (ABCParserIsLineBreak(ABC_get_extra(yyscanner), yytext[0])) {
+                            return '\n';
+                        }
+                    }
+<INITIAL>"!"        {
+                        if (ABCParserIsLineBreak(ABC_get_extra(yyscanner), yytext[0])) {
+                            return '\n';
+                        }
+                        else if (ABCParserIsDecoration(ABC_get_extra(yyscanner), yytext[0])) {
+                            yymore();
+                            BEGIN(x_DECORATION);
+                        }
+                        else {
+                            return 1;
+                        }
+                    }
+<INITIAL>"+"        {
+                        if (ABCParserIsDecoration(ABC_get_extra(yyscanner), yytext[0])) {
+                            yymore();
+                            BEGIN(x_DECORATION);
+                        }
+                        else {
+                            return 1;
+                        }
+                    }
+
+<x_DECORATION>[[:graph:]]   {
+                                yymore();
+                                if (yytext[0] == yytext[yyleng - 1]) {
+                                    BEGIN(INITIAL);
+                                    yylval->s = strdup(yytext + 1);
+                                    yylval->s[yyleng - 2] = '\0';
+                                    return DECORATION;
                                 }
                             }
+<x_DECORATION>{WSPACE}      { return 1; }
 
+<*>\n               {
+                        switch (YY_START) {
+                        case INITIAL:
+                            if (ABCParserIsLineBreak(ABC_get_extra(yyscanner), '\n')) {
+                                return '\n';
+                            }
+                            break;
+                        default:
+                            BEGIN(INITIAL);
+                            break;
+                        }
+                    }
 <*>"%"              {
                         switch (YY_START) {
                         case COMMENT:
@@ -203,17 +242,6 @@ WSPACE              ([[:blank:]]|\r)+
                             break;
                         default:
                             BEGIN(COMMENT);
-                            break;
-                        }
-                    }
-<*>\n               {
-                        switch (YY_START) {
-                        case INITIAL:
-                            if ('\n' == ABCParserGetLineBreak(ABC_get_extra(yyscanner))) {
-                                return '\n';
-                            }
-                        default:
-                            BEGIN(INITIAL);
                             break;
                         }
                     }

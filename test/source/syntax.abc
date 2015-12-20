@@ -42,7 +42,6 @@ I:abc-version 2.0
 I:abc-creator xml2abc-2.7
 I:linebreak $
 I:linebreak !
-I:linebreak +
 I:linebreak <none>
 I:linebreak <EOL>
 I:linebreak $
@@ -55,3 +54,6 @@ r: this is remarks
 C, #syntaxerror D,E,F,G,A,B,CDEFGABcdefgabc'd'e'f'g'a'b'
 cdef $
 % comment
+I:linebreak !
+I:decoration +
+abcd ! efg +aaa+
