@@ -60,4 +60,5 @@ abcd ! efg +aaa+
 I:linebreak <EOL>
 I:decoration !
 abcd % comment
-abcd
+abcd \
+efga

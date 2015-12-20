@@ -209,6 +209,7 @@ WSPACE              ([[:blank:]]|\r)+
                             return 1;
                         }
                     }
+<INITIAL>\\\n       { }
 
 <x_DECORATION>[[:graph:]]   {
                                 yymore();
