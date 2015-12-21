@@ -19,4 +19,8 @@ set(SOURCES
   NACString.c
 )
 
+if (APPLE)
+  set(SOURCES ${SOURCES} osx/NAUtil.c)
+endif (APPLE)
+
 add_library(${PROJECT_NAME} ${SOURCES})

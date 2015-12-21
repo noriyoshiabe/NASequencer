@@ -29,3 +29,6 @@ add_executable(namidi-synthesizer-test SynthesizerTest.c)
 target_link_libraries(namidi-synthesizer-test namidi-synthesizer)
 
 add_executable(namidi-define-test DefineTest.c)
+
+add_executable(namidi-lib-test LibTest.c)
+target_link_libraries(namidi-lib-test namidi-lib)

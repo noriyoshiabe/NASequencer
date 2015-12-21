@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdio.h>
 #include <stdbool.h>
 
 #define NATrace printf("-- %s - %d - %s\n", __FILE__, __LINE__, __FUNCTION__)
@@ -10,3 +11,4 @@ extern char *NAUtilBuildPathWithDirectory(const char *directory, const char *fil
 extern const char *NAUtilGetFileExtenssion(const char *filepath);
 extern const char *NAUtilGetLastPathComponent(const char *filepath);
 extern bool NAUtilIsDirectory(char *path);
+extern FILE *NAUtilCreateMemoryStream(int allocationUnit);
