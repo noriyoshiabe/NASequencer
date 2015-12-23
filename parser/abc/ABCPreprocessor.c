@@ -178,11 +178,20 @@ static void putTransposedNote(char pitch, char letter, FILE *result)
 }
 
 
+static char *removeComment(char *replacement)
+{
+    char *percent = strchr(replacement, '%');
+    if (percent) {
+        *percent = '\0';
+    }
+    return replacement;
+}
+
 static Macro *MacroCreate(char *target, char *replacement)
 {
     Macro *self = calloc(1, sizeof(Macro));
     self->target = target;
-    self->replacement = NACStringTrimWhiteSpace(replacement);
+    self->replacement = NACStringTrimWhiteSpace(removeComment(replacement));
 
     char *pattern = NACStringDuplicate(target);
     char *n = strchr(pattern, 'n');

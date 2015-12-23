@@ -2,8 +2,11 @@ m: ~A1 = {E}D{C}D
 m: ~A1 = {A}D{C}D   
 m:~B2={b}D{C}b   
 m: ~n2 = (3o/n/m/ n 
+m: ~F3 = FFF % comment
 
 aaa ~A1 aaa ~A1
 EAAG~A2
 Bd|eg~g2
 ~G2 aaa ~D2
+
+~F3 ~F3
