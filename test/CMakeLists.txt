@@ -32,3 +32,7 @@ add_executable(namidi-define-test DefineTest.c)
 
 add_executable(namidi-lib-test LibTest.c)
 target_link_libraries(namidi-lib-test namidi-lib)
+
+add_executable(namidi-abc-preprocessor-test ABCPreprocessorTest.c)
+target_link_libraries(namidi-abc-preprocessor-test namidi-parser)
+target_link_libraries(namidi-abc-preprocessor-test namidi-lib)

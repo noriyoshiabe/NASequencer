@@ -17,6 +17,7 @@ include_directories(
 
 set(SOURCES
   ABCDriver.c
+  ABCPreprocessor.c
   ABCParser.c
   ABCAST.c
   ABCASTDumper.c
