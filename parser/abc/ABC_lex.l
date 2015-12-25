@@ -43,6 +43,7 @@
 %x x_TEMPO
 %x x_PARTS
 %x x_REFERENCE_NUMBER
+%x x_MACRO
 %x x_REMARK
 %x x_DECORATION
 
@@ -172,6 +173,9 @@ WSPACE              ([[:blank:]]|\r)+
 <x_INSTRUCTION>{INST_DECORATION}   { BEGIN(x_INST_DECORATION); return INST_DECORATION; }
 <x_INST_DECORATION>"!"             { yylval->c = yytext[0]; return CHAR; }
 <x_INST_DECORATION>"+"             { yylval->c = yytext[0]; return CHAR; }
+
+m:                  { BEGIN(x_MACRO); }
+<x_MACRO>.          { /* Processed by Preprocessor */ }
 
 ^X:                           { BEGIN(x_REFERENCE_NUMBER); return REFERENCE_NUMBER; }
 <x_REFERENCE_NUMBER>{INTEGER} { yylval->i = atoi(yytext); return INTEGER; }

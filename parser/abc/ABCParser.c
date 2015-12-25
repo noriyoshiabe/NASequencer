@@ -1,4 +1,5 @@
 #include "ABCParser.h"
+#include "ABCPreprocessor.h"
 #include "ABCAST.h"
 #include "NAUtil.h"
 #include "ABC_yacc.h"
@@ -16,13 +17,14 @@ typedef struct _ABCParser {
     NAMap *includedNodeMap;
     char lineBreak;
     char decorationDialects[2];
+    ABCPreprocessor *preprocessor;
 } ABCParser;
 
 extern int ABC_parse(yyscan_t scanner, const char *filepath, void **node);
 
 static Node *ABCParserParseInternal(ABCParser *self, const char *filepath)
 {
-    FILE *fp = fopen(filepath, "r");
+    FILE *fp = ABCPreprocessorGetStream(self->preprocessor, filepath);
     if (!fp) {
         return NULL;
     }
@@ -41,7 +43,6 @@ static Node *ABCParserParseInternal(ABCParser *self, const char *filepath)
 
     ABC__delete_buffer(state, scanner);
     ABC_lex_destroy(scanner);
-    fclose(fp);
 
     NASetRemove(self->readingFileSet, (char *)filepath);
 
@@ -52,12 +53,16 @@ static Node *ABCParserParse(void *_self, const char *filepath)
 {
     ABCParser *self = _self; 
 
-    Node *node = ABCParserParseInternal(self, filepath);
-    if (!node) {
+    FILE *fp = fopen(filepath, "r");
+    if (!fp) {
         self->context->appendError(self->context, NULL, GeneralParseErrorFileNotFound, filepath, NULL);
-    } 
+        return NULL;
+    }
 
-    return node;
+    ABCPreprocessorProcess(self->preprocessor, fp, filepath);
+    fclose(fp);
+
+    return ABCParserParseInternal(self, filepath);
 }
 
 static void ABCParserDestroy(void *_self)
@@ -65,6 +70,7 @@ static void ABCParserDestroy(void *_self)
     ABCParser *self = _self;
     NASetDestroy(self->readingFileSet);
     NAMapDestroy(self->includedNodeMap);
+    ABCPreprocessorDestroy(self->preprocessor);
     free(self);
 }
 
@@ -79,6 +85,7 @@ DSLParser *ABCParserCreate(ParseContext *context)
     self->lineBreak = '\n';
     self->decorationDialects[0] = '!';
     self->decorationDialects[1] = '+';
+    self->preprocessor = ABCPreprocessorCreate();
     return (DSLParser *)self;
 }
 
