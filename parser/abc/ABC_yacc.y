@@ -447,7 +447,7 @@ instruction
             ASTInstInclude *n = node(InstInclude, @$);
             n->filepath = $3;
             FileLocation location = {(char *)filepath, @$.first_line, @$.first_column};
-            n->root = ABCParserParseIncludeFile(ABC_get_extra(scanner), &location, $3);
+            n->root = ABCParserParseIncludeFile(ABC_get_extra(scanner), &location, $3, &n->fullpath);
             $$ = n;
         }
     | INSTRUCTION INST_CREATOR STRING

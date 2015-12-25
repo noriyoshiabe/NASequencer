@@ -89,7 +89,7 @@ DSLParser *ABCParserCreate(ParseContext *context)
     return (DSLParser *)self;
 }
 
-Node *ABCParserParseIncludeFile(void *_self, FileLocation *location, const char *includeFile)
+Node *ABCParserParseIncludeFile(void *_self, FileLocation *location, const char *includeFile, char **_fullpath)
 {
     ABCParser *self = _self; 
 
@@ -121,9 +121,8 @@ Node *ABCParserParseIncludeFile(void *_self, FileLocation *location, const char 
         return NULL;
     }
 
-    ASTInstInclude *include = (ASTInstInclude *)node;
-    include->fullpath = fullpath;
-    NAMapPut(self->includedNodeMap, include->fullpath, include);
+    *_fullpath = fullpath;
+    NAMapPut(self->includedNodeMap, fullpath, node);
     return node;
 }
 

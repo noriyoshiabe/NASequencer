@@ -228,7 +228,10 @@ static void ASTInstIncludeDestroy(void *_self)
     ASTInstInclude *self = _self;
 
     free(self->filepath);
-    free(self->fullpath);
+
+    if (self->fullpath) {
+        free(self->fullpath);
+    }
 
     if (self->root) {
         NodeRelease(self->root);
