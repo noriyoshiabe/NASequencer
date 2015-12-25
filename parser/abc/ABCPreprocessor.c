@@ -2,13 +2,16 @@
 #include "NAUtil.h"
 #include "NAMap.h"
 #include "NACString.h"
+#include "NAStack.h"
 
 #include <stdlib.h>
 #include <stdbool.h>
 #include <regex.h>
 #include <alloca.h>
+#include <libgen.h>
 
-static const char *PATTERN = "^m:[[:space:]]*([~[:alnum:]]+)[[:space:]]*=(.*)$";
+static const char *INCLUDE = "^I:[[:space:]]*abc-include[[:space:]]+([0-9a-zA-Z_\\/\\-]+\\.abh|'[0-9a-zA-Z_\\/ \\-]+\\.abh'|\"[0-9a-zA-Z_\\/ \\-]+\\.abh\")[[:space:]]*$";
+static const char *MACRO = "^m:[[:space:]]*([~[:alnum:]]+)[[:space:]]*=(.*)$";
 
 typedef struct Macro {
     char *target;
@@ -23,20 +26,28 @@ static void MacroDestroy(Macro *self);
 struct _ABCPreprocessor {
     NAMap *staticMacros;
     NAMap *transposingMacros;
-    regex_t regex;
+    regex_t includeRegex;
+    regex_t macroRegex;
+    NAMap *streamMap;
+    char *currentFile;
+    NAStack *fileStack;
 };
 
+static bool ABCPreprocessorParseInclude(ABCPreprocessor *self, char *line);
 static bool ABCPreprocessorParseMacro(ABCPreprocessor *self, char *line);
-static void ABCPreprocessorExpandMacro(ABCPreprocessor *self, char *line, FILE *result);
+static void ABCPreprocessorExpandMacro(ABCPreprocessor *self, char *line, FILE *stream);
 
-static void putTransposedNote(char pitch, char letter, FILE *result);
+static void putTransposedNote(char pitch, char letter, FILE *stream);
 
 ABCPreprocessor *ABCPreprocessorCreate()
 {
     ABCPreprocessor *self = calloc(1, sizeof(ABCPreprocessor));
     self->staticMacros = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
     self->transposingMacros = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
-    regcomp(&self->regex, PATTERN, REG_EXTENDED);
+    regcomp(&self->includeRegex, INCLUDE, REG_EXTENDED);
+    regcomp(&self->macroRegex, MACRO, REG_EXTENDED);
+    self->streamMap = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
+    self->fileStack = NAStackCreate(1);
     return self;
 }
 
@@ -48,25 +59,88 @@ void ABCPreprocessorDestroy(ABCPreprocessor *self)
     NAMapTraverseValue(self->transposingMacros, MacroDestroy);
     NAMapDestroy(self->transposingMacros);
 
+    NAIterator *iterator = NAMapGetIterator(self->streamMap);
+    while (iterator->hasNext(iterator)) {
+        NAMapEntry *entry = iterator->next(iterator);
+        char *filepath = entry->key;
+        FILE *fp = entry->value;
+        free(filepath);
+        fclose(fp);
+    }
+    NAMapDestroy(self->streamMap);
+
+    NAStackDestroy(self->fileStack);
+
     free(self);
 }
 
-FILE *ABCPreprocessorProcess(ABCPreprocessor *self, FILE *fp)
+void ABCPreprocessorProcess(ABCPreprocessor *self, FILE *input, const char *filepath)
 {
-    FILE *result = NAUtilCreateMemoryStream(1024);
+    if (NAMapContainsKey(self->streamMap, (char *)filepath)) {
+        return;
+    }
+
+    FILE *stream = NAUtilCreateMemoryStream(1024);
+    NAMapPut(self->streamMap, strdup(filepath), stream);
+
+    if (self->currentFile) {
+        NAStackPush(self->fileStack, self->currentFile);
+    }
+    self->currentFile = (char *)filepath;
 
     char line[1024];
-    while (fgets(line, 1024, fp)) {
-        if (ABCPreprocessorParseMacro(self, line)) {
-            fputs(line, result);
+    while (fgets(line, 1024, input)) {
+        if (ABCPreprocessorParseInclude(self, line)) {
+            fputs(line, stream);
+        } else if (ABCPreprocessorParseMacro(self, line)) {
+            fputs(line, stream);
         }
         else {
-            ABCPreprocessorExpandMacro(self, line, result);
+            ABCPreprocessorExpandMacro(self, line, stream);
         }
     }
 
-    rewind(result);
-    return result;
+    self->currentFile = NAStackPop(self->fileStack);
+}
+
+FILE *ABCPreprocessorGetStream(ABCPreprocessor *self, const char *filepath)
+{
+    FILE *ret = NAMapGet(self->streamMap, (char *)filepath);
+    if (ret) {
+        rewind(ret);
+    }
+    return ret;
+}
+
+static bool ABCPreprocessorParseInclude(ABCPreprocessor *self, char *line)
+{
+    regmatch_t match[2];
+
+    if (REG_NOMATCH == regexec(&self->includeRegex, line, 2, match, 0)) {
+        return false;
+    }
+
+    int length = match[1].rm_eo - match[1].rm_so;
+    char *filename = alloca(length + 1);
+    memcpy(filename, line + match[1].rm_so, length);
+    if ('\'' == filename[0] || '"' == filename[0]) {
+        memmove(filename, filename + 1, length - 2);
+        filename[length - 2] = '\0';
+    }
+    else {
+        filename[length] = '\0';
+    }
+
+    char *directory = dirname(self->currentFile);
+    char *fullpath = NAUtilBuildPathWithDirectory(directory, filename);
+
+    FILE *fp = fopen(fullpath, "r");
+    if (fp) {
+        ABCPreprocessorProcess(self, fp, fullpath);
+    }
+
+    free(fullpath);
+    return true;
 }
 
 static bool ABCPreprocessorParseMacro(ABCPreprocessor *self, char *line)
@@ -74,7 +148,7 @@ static bool ABCPreprocessorParseMacro(ABCPreprocessor *self, char *line)
     int length;
     regmatch_t match[3];
 
-    if (REG_NOMATCH == regexec(&self->regex, line, 3, match, 0)) {
+    if (REG_NOMATCH == regexec(&self->macroRegex, line, 3, match, 0)) {
         return false;
     }
 
@@ -107,7 +181,7 @@ static bool ABCPreprocessorParseMacro(ABCPreprocessor *self, char *line)
     return true;
 }
 
-static void ABCPreprocessorExpandMacro(ABCPreprocessor *self, char *line, FILE *result)
+static void ABCPreprocessorExpandMacro(ABCPreprocessor *self, char *line, FILE *stream)
 {
     NAIterator *iterator;
 
@@ -119,8 +193,8 @@ START:
 
         regmatch_t match[1];
         if (REG_NOMATCH != regexec(&macro->reg, line, 1, match, 0)) {
-            fwrite(line, 1, match[0].rm_so, result);
-            fputs(macro->replacement, result);
+            fwrite(line, 1, match[0].rm_so, stream);
+            fputs(macro->replacement, stream);
             line += match[0].rm_eo;
             goto START;
         }
@@ -133,14 +207,14 @@ START:
 
         regmatch_t match[2];
         if (REG_NOMATCH != regexec(&macro->reg, line, 2, match, 0)) {
-            fwrite(line, 1, match[0].rm_so, result);
+            fwrite(line, 1, match[0].rm_so, stream);
             char pitch = line[match[1].rm_so];
             for (char *pc = macro->replacement; *pc; ++pc) {
                 if ('h' <= *pc && *pc <= 'z') {
-                    putTransposedNote(pitch, *pc, result);
+                    putTransposedNote(pitch, *pc, stream);
                 }
                 else {
-                    fputc(*pc, result);
+                    fputc(*pc, stream);
                 }
             }
 
@@ -149,10 +223,10 @@ START:
         }
     }
     
-    fputs(line, result);
+    fputs(line, stream);
 }
 
-static void putTransposedNote(char pitch, char letter, FILE *result)
+static void putTransposedNote(char pitch, char letter, FILE *stream)
 {
 #define isInsideRange(c, from, to) (from <= c && c <= to)
 
@@ -174,7 +248,7 @@ static void putTransposedNote(char pitch, char letter, FILE *result)
         return;
     }
 
-    fputs(notes[index + transpose], result);
+    fputs(notes[index + transpose], stream);
 }
 
 

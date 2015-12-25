@@ -10,3 +10,11 @@ Bd|eg~g2
 ~G2 aaa ~D2
 
 ~F3 ~F3
+I:abc-include macro-include.abh
+
+~B4
+I: abc-include hoge.abh
+I: abc-include hoge/ab.abh
+I: abc-include 'hoge.abh'
+I: abc-include "hoge.abh"
+I: abc-include "hoge/a b.abh"

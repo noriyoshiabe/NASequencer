@@ -8,22 +8,24 @@ int main(int argc, char **argv)
 
     printf("---- source ----\n");
 
-    while (fgets(buffer, 1204, fp)) {
+    while (fgets(buffer, 1024, fp)) {
         fputs(buffer, stdout);
     }
 
     rewind(fp);
 
     ABCPreprocessor *preprocessor = ABCPreprocessorCreate();
-    FILE *result = ABCPreprocessorProcess(preprocessor, fp);
-    ABCPreprocessorDestroy(preprocessor);
-
+    ABCPreprocessorProcess(preprocessor, fp, argv[1]);
+    FILE *result = ABCPreprocessorGetStream(preprocessor, argv[1]);
+   
     printf("\n");
     printf("---- preproccessed ----\n");
 
-    while (fgets(buffer, 1204, result)) {
+    while (fgets(buffer, 1024, result)) {
         fputs(buffer, stdout);
     }
+
+    ABCPreprocessorDestroy(preprocessor);
 
     return 0;
 }
