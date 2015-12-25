@@ -49,7 +49,7 @@ char *NACStringTrimWhiteSpace(char *string)
     pc = string;
     while (isspace(*pc)) ++pc;
 
-    memmove(string, pc, len + 1);
+    memmove(string, pc, len - (pc - string) + 1);
     return string;
 }
 
