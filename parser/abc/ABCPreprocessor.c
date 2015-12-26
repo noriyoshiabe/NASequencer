@@ -12,8 +12,8 @@
 
 static const char *INCLUDE = "^I:[[:space:]]*abc-include[[:space:]]+([0-9a-zA-Z_\\/\\-]+\\.abh|'[0-9a-zA-Z_\\/ \\-]+\\.abh'|\"[0-9a-zA-Z_\\/ \\-]+\\.abh\")[[:space:]]*$";
 static const char *MACRO = "^m:[[:space:]]*([~[:alnum:]]+)[[:space:]]*=(.*)$";
-static const char *REDEFINABLE_SYMBOL = "^m:[[:space:]]*([~HIJKLMNOPQRSTUVWYhijklmnopqrstuvw])[[:space:]]*=(.*)$";
-static const char *INSTRUCTION = "^[[:alpha]]:.*$";
+static const char *REDEFINABLE_SYMBOL = "^U:[[:space:]]*([~HIJKLMNOPQRSTUVWYhijklmnopqrstuvw])[[:space:]]*=(.*)$";
+static const char *INSTRUCTION = "^[[:alpha:]]:.*$";
 
 typedef struct Macro {
     char *target;
@@ -131,10 +131,11 @@ void ABCPreprocessorProcess(ABCPreprocessor *self, FILE *input, const char *file
             fputs(line, stream);
         } else if (ABCPreprocessorParseMacro(self, line)) {
             fputs(line, stream);
+        } else if (ABCPreprocessorParseRedefinableSymbol(self, line)) {
+            fputs(line, stream);
         } else if (ABCPreprocessorParseInstruction(self, line)) {
             fputs(line, stream);
-        }
-        else {
+        } else {
             ABCPreprocessorExpandMacro(self, line, stream);
         }
     }
