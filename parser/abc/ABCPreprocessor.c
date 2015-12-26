@@ -12,6 +12,8 @@
 
 static const char *INCLUDE = "^I:[[:space:]]*abc-include[[:space:]]+([0-9a-zA-Z_\\/\\-]+\\.abh|'[0-9a-zA-Z_\\/ \\-]+\\.abh'|\"[0-9a-zA-Z_\\/ \\-]+\\.abh\")[[:space:]]*$";
 static const char *MACRO = "^m:[[:space:]]*([~[:alnum:]]+)[[:space:]]*=(.*)$";
+static const char *REDEFINABLE_SYMBOL = "^m:[[:space:]]*([~HIJKLMNOPQRSTUVWYhijklmnopqrstuvw])[[:space:]]*=(.*)$";
+static const char *INSTRUCTION = "^[[:alpha]]:.*$";
 
 typedef struct Macro {
     char *target;
@@ -26,8 +28,11 @@ static void MacroDestroy(Macro *self);
 struct _ABCPreprocessor {
     NAMap *staticMacros;
     NAMap *transposingMacros;
+    NAMap *redefinableSymbols;
     regex_t includeRegex;
     regex_t macroRegex;
+    regex_t redefinableSymbolRegex;
+    regex_t instructionRegex;
     NAMap *streamMap;
     char *currentFile;
     NAStack *fileStack;
@@ -35,6 +40,8 @@ struct _ABCPreprocessor {
 
 static bool ABCPreprocessorParseInclude(ABCPreprocessor *self, char *line);
 static bool ABCPreprocessorParseMacro(ABCPreprocessor *self, char *line);
+static bool ABCPreprocessorParseRedefinableSymbol(ABCPreprocessor *self, char *line);
+static bool ABCPreprocessorParseInstruction(ABCPreprocessor *self, char *line);
 static void ABCPreprocessorExpandMacro(ABCPreprocessor *self, char *line, FILE *stream);
 
 static void putTransposedNote(char pitch, char letter, FILE *stream);
@@ -42,12 +49,39 @@ static void putTransposedNote(char pitch, char letter, FILE *stream);
 ABCPreprocessor *ABCPreprocessorCreate()
 {
     ABCPreprocessor *self = calloc(1, sizeof(ABCPreprocessor));
+
     self->staticMacros = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
     self->transposingMacros = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
-    regcomp(&self->includeRegex, INCLUDE, REG_EXTENDED);
-    regcomp(&self->macroRegex, MACRO, REG_EXTENDED);
+    self->redefinableSymbols = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
     self->streamMap = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
     self->fileStack = NAStackCreate(1);
+
+    regcomp(&self->includeRegex, INCLUDE, REG_EXTENDED);
+    regcomp(&self->macroRegex, MACRO, REG_EXTENDED);
+    regcomp(&self->redefinableSymbolRegex, REDEFINABLE_SYMBOL, REG_EXTENDED);
+    regcomp(&self->instructionRegex, INSTRUCTION, REG_EXTENDED);
+
+    const struct {
+        const char *target;
+        const char *replacement;
+    } predefined[] = {
+        {"~", "!roll!"},
+        {"H", "!fermata!"},
+        {"L", "!accent!"},
+        {"M", "!lowermordent!"},
+        {"O", "!coda!"},
+        {"P", "!uppermordent!"},
+        {"S", "!segno!"},
+        {"T", "!trill!"},
+        {"u", "!upbow!"},
+        {"v", "!downbow!"},
+    };
+
+    for (int i = 0; i < sizeof(predefined) / sizeof(predefined[0]); ++i) {
+        Macro *macro= MacroCreate(strdup(predefined[i].target), strdup(predefined[i].replacement));
+        NAMapPut(self->redefinableSymbols, macro->target, macro);
+    }
+
     return self;
 }
 
@@ -58,6 +92,9 @@ void ABCPreprocessorDestroy(ABCPreprocessor *self)
 
     NAMapTraverseValue(self->transposingMacros, MacroDestroy);
     NAMapDestroy(self->transposingMacros);
+
+    NAMapTraverseValue(self->redefinableSymbols, MacroDestroy);
+    NAMapDestroy(self->redefinableSymbols);
 
     NAIterator *iterator = NAMapGetIterator(self->streamMap);
     while (iterator->hasNext(iterator)) {
@@ -93,6 +130,8 @@ void ABCPreprocessorProcess(ABCPreprocessor *self, FILE *input, const char *file
         if (ABCPreprocessorParseInclude(self, line)) {
             fputs(line, stream);
         } else if (ABCPreprocessorParseMacro(self, line)) {
+            fputs(line, stream);
+        } else if (ABCPreprocessorParseInstruction(self, line)) {
             fputs(line, stream);
         }
         else {
@@ -181,6 +220,47 @@ static bool ABCPreprocessorParseMacro(ABCPreprocessor *self, char *line)
     return true;
 }
 
+static bool ABCPreprocessorParseRedefinableSymbol(ABCPreprocessor *self, char *line)
+{
+    int length;
+    regmatch_t match[3];
+
+    if (REG_NOMATCH == regexec(&self->redefinableSymbolRegex, line, 3, match, 0)) {
+        return false;
+    }
+
+    length = match[1].rm_eo - match[1].rm_so;
+    char *target = malloc(length + 1);
+    memcpy(target, line + match[1].rm_so, length);
+    target[length] = '\0';
+
+    length = match[2].rm_eo - match[2].rm_so;
+    char *replacement = malloc(length + 1);
+    memcpy(replacement, line + match[2].rm_so, length);
+    replacement[length] = '\0';
+
+    Macro *prev = NAMapRemove(self->redefinableSymbols, target);
+    if (prev) {
+        MacroDestroy(prev);
+    }
+
+    if (0 == strcmp(replacement, "!none!") || 0 == strcmp(replacement, "!nil!")) {
+        return true;
+    }
+
+    Macro *macro = MacroCreate(target, replacement);
+    macro->transposing = false;
+    NAMapPut(self->redefinableSymbols, macro->target, macro);
+
+    return true;
+}
+
+static bool ABCPreprocessorParseInstruction(ABCPreprocessor *self, char *line)
+{
+    regmatch_t match[1];
+    return REG_NOMATCH != regexec(&self->instructionRegex, line, 1, match, 0);
+}
+
 static void ABCPreprocessorExpandMacro(ABCPreprocessor *self, char *line, FILE *stream)
 {
     NAIterator *iterator;
@@ -223,6 +303,20 @@ START:
         }
     }
     
+    iterator = NAMapGetIterator(self->redefinableSymbols);
+    while (iterator->hasNext(iterator)) {
+        NAMapEntry *entry = iterator->next(iterator);
+        Macro *macro = entry->value;
+
+        regmatch_t match[1];
+        if (REG_NOMATCH != regexec(&macro->reg, line, 1, match, 0)) {
+            fwrite(line, 1, match[0].rm_so, stream);
+            fputs(macro->replacement, stream);
+            line += match[0].rm_eo;
+            goto START;
+        }
+    }
+
     fputs(line, stream);
 }
 

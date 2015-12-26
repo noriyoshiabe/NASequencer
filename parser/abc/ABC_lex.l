@@ -44,6 +44,7 @@
 %x x_PARTS
 %x x_REFERENCE_NUMBER
 %x x_MACRO
+%x x_REDEFINABLE_SYMBOL
 %s x_SYMBOL_LINE
 %x x_REMARK
 %x x_DECORATION
@@ -180,6 +181,9 @@ m:                  { BEGIN(x_MACRO); }
 
 s:                  { BEGIN(x_SYMBOL_LINE); return SYMBOL_LINE; }
 <x_SYMBOL_LINE>.*   { yylval->s = NACStringTrimWhiteSpace(strdup(yytext)); return STRING; }
+
+U:                      { BEGIN(x_REDEFINABLE_SYMBOL); }
+<x_REDEFINABLE_SYMBOL>. { /* Processed by Preprocessor */ }
 
 ^X:                           { BEGIN(x_REFERENCE_NUMBER); return REFERENCE_NUMBER; }
 <x_REFERENCE_NUMBER>{INTEGER} { yylval->i = atoi(yytext); return INTEGER; }
