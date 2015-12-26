@@ -37,6 +37,7 @@ extern int ABC_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, vo
 
 %token REFERENCE_NUMBER TITLE KEY INSTRUCTION METER UNIT_NOTE_LENGTH TEMPO PARTS
 %token INST_INCLUDE INST_CHARSET INST_VERSION INST_CREATOR INST_LINEBREAK INST_DECORATION
+%token SYMBOL_LINE
 
 %token <c> STRING_INFORMATION
 
@@ -55,7 +56,7 @@ extern int ABC_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, vo
 
 %type <node> version reference_number title key meter unit_note_length tempo parts note
 %type <node> instruction line_break
-%type <node> string_information decoration
+%type <node> string_information decoration symbol_line
 
 %type <node> key_param      tempo_param
 %type <list> key_param_list tempo_param_list
@@ -103,6 +104,7 @@ statement
     | parts
     | instruction
     | decoration
+    | symbol_line
     | note
     | line_break
     | error
@@ -485,6 +487,15 @@ decoration
         {
             ASTDecoration *n = node(Decoration, @$);
             n->symbol = $1;
+            $$ = n;
+        }
+    ;
+
+symbol_line
+    : SYMBOL_LINE STRING
+        {
+            ASTSymbolLine *n = node(SymbolLine, @$);
+            n->string = $2;
             $$ = n;
         }
     ;

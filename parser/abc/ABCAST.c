@@ -275,6 +275,22 @@ ASTDecoration *ABCASTDecorationCreate(FileLocation *location)
     return NodeCreate(ASTDecoration, location);
 }
 
+static void ASTSymbolLineAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitSymbolLine(visitor, self);
+}
+
+static void ASTSymbolLineDestroy(void *_self)
+{
+    ASTSymbolLine *self = _self;
+    free(self->string);
+}
+
+ASTSymbolLine *ABCASTSymbolLineCreate(FileLocation *location)
+{
+    return NodeCreate(ASTSymbolLine, location);
+}
+
 static void ASTNoteAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitNote(visitor, self);

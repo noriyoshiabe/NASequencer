@@ -115,6 +115,11 @@ typedef struct _ASTDecoration {
     char *symbol;
 } ASTDecoration;
 
+typedef struct _ASTSymbolLine {
+    Node node;
+    char *string;
+} ASTSymbolLine;
+
 typedef struct _ASTNote {
     Node node;
     char *noteString;
@@ -142,6 +147,7 @@ typedef struct _ASTVisitor {
     void (*visitInstInclude)(void *self, ASTInstInclude *ast);
     void (*visitInstCreator)(void *self, ASTInstCreator *ast);
     void (*visitDecoration)(void *self, ASTDecoration *ast);
+    void (*visitSymbolLine)(void *self, ASTSymbolLine *ast);
     void (*visitNote)(void *self, ASTNote *ast);
     void (*visitLineBreak)(void *self, ASTLineBreak *ast);
 } ASTVisitor;
@@ -163,6 +169,7 @@ extern ASTInstVersion *ABCASTInstVersionCreate(FileLocation *location);
 extern ASTInstInclude *ABCASTInstIncludeCreate(FileLocation *location);
 extern ASTInstCreator *ABCASTInstCreatorCreate(FileLocation *location);
 extern ASTDecoration *ABCASTDecorationCreate(FileLocation *location);
+extern ASTSymbolLine *ABCASTSymbolLineCreate(FileLocation *location);
 extern ASTNote *ABCASTNoteCreate(FileLocation *location);
 extern ASTLineBreak *ABCASTLineBreakCreate(FileLocation *location);
 

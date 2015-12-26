@@ -61,5 +61,6 @@ I:linebreak <EOL>
 I:decoration !
 abcd % comment
 abcd \
+s: "^slow" | !f! ** !fff!
 efga
 ~HOGE

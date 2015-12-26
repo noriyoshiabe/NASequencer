@@ -44,6 +44,7 @@
 %x x_PARTS
 %x x_REFERENCE_NUMBER
 %x x_MACRO
+%s x_SYMBOL_LINE
 %x x_REMARK
 %x x_DECORATION
 
@@ -176,6 +177,9 @@ WSPACE              ([[:blank:]]|\r)+
 
 m:                  { BEGIN(x_MACRO); }
 <x_MACRO>.          { /* Processed by Preprocessor */ }
+
+s:                  { BEGIN(x_SYMBOL_LINE); return SYMBOL_LINE; }
+<x_SYMBOL_LINE>.*   { yylval->s = NACStringTrimWhiteSpace(strdup(yytext)); return STRING; }
 
 ^X:                           { BEGIN(x_REFERENCE_NUMBER); return REFERENCE_NUMBER; }
 <x_REFERENCE_NUMBER>{INTEGER} { yylval->i = atoi(yytext); return INTEGER; }
