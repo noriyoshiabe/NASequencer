@@ -23,6 +23,7 @@
 %option bison-bridge
 %option bison-locations
 
+%x ERROR
 %x COMMENT
 
 %x x_STR_INFO
@@ -184,6 +185,7 @@ U:                      { BEGIN(x_REDEFINABLE_SYMBOL); }
 <x_CONTINUATION>.   { /* TODO */ }
 
 <COMMENT>.          { }
+<ERROR>.            { }
 
 <*>"%"              {
                         switch (YY_START) {
@@ -203,3 +205,9 @@ U:                      { BEGIN(x_REDEFINABLE_SYMBOL); }
 <<EOF>>             { return 0; }
 
 %%
+
+void ABC_information_lex_set_error(yyscan_t scanner)
+{
+    struct yyguts_t *yyg = (struct yyguts_t *)scanner;
+    BEGIN(ERROR);
+}

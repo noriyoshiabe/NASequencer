@@ -199,11 +199,6 @@ static void visitInstCreator(void *self, ASTInstCreator *ast)
     dump(self, ast, STRING(ast, name), NULL);
 }
 
-static void visitDecoration(void *self, ASTDecoration *ast)
-{
-    dump(self, ast, STRING(ast, symbol), NULL);
-}
-
 static void visitSymbolLine(void *self, ASTSymbolLine *ast)
 {
     dump(self, ast, STRING(ast, string), NULL);
@@ -229,7 +224,6 @@ Analyzer *ABCASTDumperCreate(ParseContext *context)
     self->visitor.visitInstVersion = visitInstVersion;
     self->visitor.visitInstInclude = visitInstInclude;
     self->visitor.visitInstCreator = visitInstCreator;
-    self->visitor.visitDecoration = visitDecoration;
     self->visitor.visitSymbolLine = visitSymbolLine;
 
     self->analyzer.process = process;

@@ -7,6 +7,7 @@
 #include "ABCAST.h"
 
 extern int ABC_information_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, int line, void **node, const char *message);
+extern void ABC_information_lex_set_error(yyscan_t scanner);
 
 #define node(type, yylloc) ABCAST##type##Create(&((FileLocation){(char *)filepath, line, yylloc.first_column}))
 #define list() NAArrayCreate(4, NULL)
@@ -84,6 +85,9 @@ statement
     | symbol_line
     | error
         {
+            ABC_information_lex_set_error(scanner);
+            yyerrok;
+            yyclearin;
             $$ = NULL;
         }
     | /* empty */

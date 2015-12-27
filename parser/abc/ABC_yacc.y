@@ -131,6 +131,7 @@ directive
         {
             TRACE("-- DIRECTIVE [%s] %d - %d\n", $1, @$.first_line, @$.first_column);
             $$ = NULL;
+            free($1);
         }
     ;
 
@@ -139,6 +140,7 @@ tune_body
         {
             TRACE("-- TUNE_BODY [%s] %d - %d\n", $1, @$.first_line, @$.first_column);
             $$ = NULL;
+            free($1);
         }
     ;
 

@@ -112,11 +112,6 @@ typedef struct _ASTInstCreator {
     char *name;
 } ASTInstCreator;
 
-typedef struct _ASTDecoration {
-    Node node;
-    char *symbol;
-} ASTDecoration;
-
 typedef struct _ASTSymbolLine {
     Node node;
     char *string;
@@ -139,7 +134,6 @@ typedef struct _ASTVisitor {
     void (*visitInstVersion)(void *self, ASTInstVersion *ast);
     void (*visitInstInclude)(void *self, ASTInstInclude *ast);
     void (*visitInstCreator)(void *self, ASTInstCreator *ast);
-    void (*visitDecoration)(void *self, ASTDecoration *ast);
     void (*visitSymbolLine)(void *self, ASTSymbolLine *ast);
 } ASTVisitor;
 
@@ -159,7 +153,6 @@ extern ASTInstCharSet *ABCASTInstCharSetCreate(FileLocation *location);
 extern ASTInstVersion *ABCASTInstVersionCreate(FileLocation *location);
 extern ASTInstInclude *ABCASTInstIncludeCreate(FileLocation *location);
 extern ASTInstCreator *ABCASTInstCreatorCreate(FileLocation *location);
-extern ASTDecoration *ABCASTDecorationCreate(FileLocation *location);
 extern ASTSymbolLine *ABCASTSymbolLineCreate(FileLocation *location);
 
 static inline const char *ASTKeyParamType2String(ASTKeyParamType type)
