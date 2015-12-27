@@ -69,11 +69,17 @@ static void visitRoot(void *_self, ASTRoot *ast)
     self->indent -= 4;
 }
 
+static void visitFileIdentification(void *self, ASTFileIdentification *ast)
+{
+    dump(self, ast, STRING(ast, identifier), INTEGER(ast, major), INTEGER(ast, minor), NULL);
+}
+
 Analyzer *ABCASTDumperCreate(ParseContext *context)
 {
     ABCASTDumper *self = calloc(1, sizeof(ABCASTDumper));
 
     self->visitor.visitRoot = visitRoot;
+    self->visitor.visitFileIdentification = visitFileIdentification;
 
     self->analyzer.process = process;
     self->analyzer.destroy = destroy;

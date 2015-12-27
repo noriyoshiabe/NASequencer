@@ -12,6 +12,12 @@ extern int ABC_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, vo
 #define list() NAArrayCreate(4, NULL)
 #define listAppend(list, node) NAArrayAppend(list, node)
 
+#if 1
+#define TRACE(...) printf(__VA_ARGS__)
+#else
+#define TRACE(...)
+#endif
+
 %}
 
 %name-prefix = "ABC_"
@@ -84,15 +90,37 @@ statement
 file_identification
     : FILE_IDENTIFICATION
         {
-            printf("-- FILE_IDENTIFICATION [%s] %d - %d\n", $1, @$.first_line, @$.first_column);
-            $$ = NULL;
+            TRACE("-- FILE_IDENTIFICATION [%s] %d - %d\n", $1, @$.first_line, @$.first_column);
+
+            ASTFileIdentification *n = node(FileIdentification, @$);
+
+            char *saveptr, *token, *s = $1;
+            for (int i = 0; (token = strtok_r(s, "%-.", &saveptr)); ++i) {
+                switch (i) {
+                case 0:
+                    n->identifier = strdup(token);
+                    break;
+                case 1:
+                    n->major = atoi(token);
+                    break;
+                case 2:
+                    n->minor = atoi(token);
+                    break;
+                default:
+                    break;
+                }
+                s = NULL;
+            }
+
+            free($1);
+            $$ = n;
         }
     ;
 
 information
     : INFORMATION
         {
-            printf("-- INFORMATION [%s] %d - %d\n", $1, @$.first_line, @$.first_column);
+            TRACE("-- INFORMATION [%s] %d - %d\n", $1, @$.first_line, @$.first_column);
             $$ = NULL;
         }
     ;
@@ -100,7 +128,7 @@ information
 directive
     : DIRECTIVE
         {
-            printf("-- DIRECTIVE [%s] %d - %d\n", $1, @$.first_line, @$.first_column);
+            TRACE("-- DIRECTIVE [%s] %d - %d\n", $1, @$.first_line, @$.first_column);
             $$ = NULL;
         }
     ;
@@ -108,7 +136,7 @@ directive
 tune_body
     : TUNE_BODY
         {
-            printf("-- TUNE_BODY [%s] %d - %d\n", $1, @$.first_line, @$.first_column);
+            TRACE("-- TUNE_BODY [%s] %d - %d\n", $1, @$.first_line, @$.first_column);
             $$ = NULL;
         }
     ;
