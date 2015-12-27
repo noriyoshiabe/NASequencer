@@ -274,3 +274,19 @@ ASTSymbolLine *ABCASTSymbolLineCreate(FileLocation *location)
 {
     return NodeCreate(ASTSymbolLine, location);
 }
+
+static void ASTContinuationAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitContinuation(visitor, self);
+}
+
+static void ASTContinuationDestroy(void *_self)
+{
+    ASTContinuation *self = _self;
+    free(self->string);
+}
+
+ASTContinuation *ABCASTContinuationCreate(FileLocation *location)
+{
+    return NodeCreate(ASTContinuation, location);
+}

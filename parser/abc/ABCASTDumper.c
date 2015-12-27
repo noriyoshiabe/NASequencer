@@ -204,6 +204,11 @@ static void visitSymbolLine(void *self, ASTSymbolLine *ast)
     dump(self, ast, STRING(ast, string), NULL);
 }
 
+static void visitContinuation(void *self, ASTContinuation *ast)
+{
+    dump(self, ast, STRING(ast, string), NULL);
+}
+
 Analyzer *ABCASTDumperCreate(ParseContext *context)
 {
     ABCASTDumper *self = calloc(1, sizeof(ABCASTDumper));
@@ -225,6 +230,7 @@ Analyzer *ABCASTDumperCreate(ParseContext *context)
     self->visitor.visitInstInclude = visitInstInclude;
     self->visitor.visitInstCreator = visitInstCreator;
     self->visitor.visitSymbolLine = visitSymbolLine;
+    self->visitor.visitContinuation = visitContinuation;
 
     self->analyzer.process = process;
     self->analyzer.destroy = destroy;

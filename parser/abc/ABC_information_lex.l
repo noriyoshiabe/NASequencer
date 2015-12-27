@@ -194,8 +194,8 @@ U:                                              { BEGIN(x_REDEFINABLE_SYMBOL); }
 ^r:                 { BEGIN(x_REMARK); }
 <x_REMARK>.         { }
 
-"^+:"               { BEGIN(x_CONTINUATION); }
-<x_CONTINUATION>.   { /* TODO */ }
+^\+:                { BEGIN(x_CONTINUATION); return CONTINUATION; }
+<x_CONTINUATION>.*  { yylval->s = NACStringTrimWhiteSpace(strdup(yytext)); return STRING; }
 
 <COMMENT>.          { }
 <ERROR>.            { }

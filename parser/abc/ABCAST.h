@@ -117,6 +117,11 @@ typedef struct _ASTSymbolLine {
     char *string;
 } ASTSymbolLine;
 
+typedef struct _ASTContinuation {
+    Node node;
+    char *string;
+} ASTContinuation;
+
 typedef struct _ASTVisitor {
     void (*visitRoot)(void *self, ASTRoot *ast);
     void (*visitFileIdentification)(void *self, ASTFileIdentification *ast);
@@ -135,6 +140,7 @@ typedef struct _ASTVisitor {
     void (*visitInstInclude)(void *self, ASTInstInclude *ast);
     void (*visitInstCreator)(void *self, ASTInstCreator *ast);
     void (*visitSymbolLine)(void *self, ASTSymbolLine *ast);
+    void (*visitContinuation)(void *self, ASTContinuation *ast);
 } ASTVisitor;
 
 extern ASTRoot *ABCASTRootCreate(FileLocation *location);
@@ -154,6 +160,7 @@ extern ASTInstVersion *ABCASTInstVersionCreate(FileLocation *location);
 extern ASTInstInclude *ABCASTInstIncludeCreate(FileLocation *location);
 extern ASTInstCreator *ABCASTInstCreatorCreate(FileLocation *location);
 extern ASTSymbolLine *ABCASTSymbolLineCreate(FileLocation *location);
+extern ASTContinuation *ABCASTContinuationCreate(FileLocation *location);
 
 static inline const char *ASTKeyParamType2String(ASTKeyParamType type)
 {

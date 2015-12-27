@@ -38,7 +38,7 @@ extern void ABC_information_lex_set_error(yyscan_t scanner);
 
 %token REFERENCE_NUMBER TITLE KEY INSTRUCTION METER UNIT_NOTE_LENGTH TEMPO PARTS
 %token INST_INCLUDE INST_CHARSET INST_VERSION INST_CREATOR INST_LINEBREAK INST_DECORATION
-%token SYMBOL_LINE
+%token SYMBOL_LINE CONTINUATION
 
 %token <c> STRING_INFORMATION
 
@@ -59,7 +59,7 @@ extern void ABC_information_lex_set_error(yyscan_t scanner);
 
 %type <node> reference_number title key meter unit_note_length tempo parts
 %type <node> instruction macro redefinable_symbol
-%type <node> string_information symbol_line
+%type <node> string_information symbol_line continuation
 
 %type <node> key_param      tempo_param
 %type <list> key_param_list tempo_param_list
@@ -88,6 +88,7 @@ statement
     | macro
     | symbol_line
     | redefinable_symbol
+    | continuation
     | error
         {
             ABC_information_lex_set_error(scanner);
@@ -476,6 +477,15 @@ redefinable_symbol
         {
             ABCParserSetRedefinableSymbol(ABC_information_get_extra(scanner), $1, $3);
             $$ = NULL;
+        }
+    ;
+
+continuation
+    : CONTINUATION STRING
+        {
+            ASTContinuation *n = node(Continuation, @$);
+            n->string = $2;
+            $$ = n;
         }
     ;
 
