@@ -7,9 +7,18 @@
 #include "ABC_information_lex.h"
 #include "NASet.h"
 #include "NAMap.h"
+#include "NACString.h"
 
 #include <stdlib.h>
 #include <libgen.h>
+#include <regex.h>
+
+typedef struct Macro {
+    char *target;
+    char *replacement;
+    regex_t reg;
+    bool transposing;
+} Macro;
 
 typedef struct _ABCParser {
     DSLParser parser;
@@ -18,10 +27,15 @@ typedef struct _ABCParser {
     NAMap *includedNodeMap;
     char lineBreak;
     char decorationDialects[2];
+    NAMap *staticMacros;
+    NAMap *transposingMacros;
 } ABCParser;
 
 extern int ABC_parse(yyscan_t scanner, const char *filepath, void **node);
 extern int ABC_information_parse(yyscan_t scanner, const char *filepath, int line, void **node);
+
+static Macro *MacroCreate(char *target, char *replacement);
+static void MacroDestroy(Macro *self);
 
 static Node *ABCParserParseInternal(ABCParser *self, const char *filepath)
 {
@@ -66,8 +80,15 @@ static Node *ABCParserParse(void *_self, const char *filepath)
 static void ABCParserDestroy(void *_self)
 {
     ABCParser *self = _self;
+
     NASetDestroy(self->readingFileSet);
     NAMapDestroy(self->includedNodeMap);
+
+    NAMapTraverseValue(self->staticMacros, MacroDestroy);
+    NAMapDestroy(self->staticMacros);
+
+    NAMapTraverseValue(self->transposingMacros, MacroDestroy);
+    NAMapDestroy(self->transposingMacros);
 
     free(self);
 }
@@ -83,6 +104,8 @@ DSLParser *ABCParserCreate(ParseContext *context)
     self->lineBreak = '\n';
     self->decorationDialects[0] = '!';
     self->decorationDialects[1] = '+';
+    self->staticMacros = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
+    self->transposingMacros = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
 
     return (DSLParser *)self;
 }
@@ -177,4 +200,54 @@ bool ABCParserIsDecoration(void *_self, char c)
 {
     ABCParser *self = _self; 
     return self->decorationDialects[0] == c || self->decorationDialects[1] == c;
+}
+
+void ABCParserSetMacro(void *_self, char *target, char *replacement)
+{
+    ABCParser *self = _self;
+
+    Macro *prev;
+    if ((prev = NAMapRemove(self->staticMacros, target))) {
+        MacroDestroy(prev);
+    }
+    if ((prev = NAMapRemove(self->transposingMacros, target))) {
+        MacroDestroy(prev);
+    }
+    
+    Macro *macro = MacroCreate(target, replacement);
+
+    if (macro->transposing) {
+        NAMapPut(self->transposingMacros, macro->target, macro);
+    }
+    else {
+        NAMapPut(self->staticMacros, macro->target, macro);
+    }    
+}
+
+
+static Macro *MacroCreate(char *target, char *replacement)
+{
+    Macro *self = calloc(1, sizeof(Macro));
+    self->target = target;
+    self->replacement = NACStringTrimWhiteSpace(replacement);
+
+    char *pattern = NACStringDuplicate(target);
+    char *n = strchr(pattern, 'n');
+    if (n) {
+        char *_pattern = pattern;
+        pattern = alloca(strlen(_pattern) + 10 + 1);
+        *n = '\0';
+        sprintf(pattern, "%s([A-Ga-g])%s", _pattern, n + 1);
+        self->transposing = true;
+    }
+    regcomp(&self->reg, pattern, REG_EXTENDED);
+
+    return self;
+}
+
+static void MacroDestroy(Macro *self)
+{
+    free(self->target);
+    free(self->replacement);
+    free(self);
 }

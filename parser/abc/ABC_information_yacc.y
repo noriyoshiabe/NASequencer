@@ -47,6 +47,7 @@ extern void ABC_information_lex_set_error(yyscan_t scanner);
 %token <c> CHAR
 %token <s> NOTE FILEPATH VERSION_NUMBER
 %token <s> KEY_TONIC KEY_MODE KEY_ACCIDENTAL CLEF_NAME PITCH NONE PART_LABEL
+%token <s> MACRO_TARGET
 
 %token CLEF MIDDLE TRANSPOSE OCTAVE STAFF_LINES
 %token COMMON_TIME
@@ -55,7 +56,7 @@ extern void ABC_information_lex_set_error(yyscan_t scanner);
 %type <i> signed_integer numerator
 
 %type <node> reference_number title key meter unit_note_length tempo parts
-%type <node> instruction
+%type <node> instruction macro
 %type <node> string_information symbol_line
 
 %type <node> key_param      tempo_param
@@ -82,6 +83,7 @@ statement
     | tempo
     | parts
     | instruction
+    | macro
     | symbol_line
     | error
         {
@@ -445,6 +447,14 @@ instruction
     | INSTRUCTION INST_DECORATION CHAR
         {
             ABCParserSetDecoration(ABC_information_get_extra(scanner), $3);
+            $$ = NULL;
+        }
+    ;
+
+macro
+    : MACRO_TARGET '=' STRING
+        {
+            ABCParserSetMacro(ABC_information_get_extra(scanner), $1, $3);
             $$ = NULL;
         }
     ;

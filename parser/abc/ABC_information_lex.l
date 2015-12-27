@@ -41,6 +41,7 @@
 %x x_PARTS
 %x x_REFERENCE_NUMBER
 %x x_MACRO
+%x x_MACRO_REPLACEMENT
 %x x_REDEFINABLE_SYMBOL
 %s x_SYMBOL_LINE
 %x x_REMARK
@@ -74,6 +75,8 @@ INST_VERSION        abc-version
 INST_CREATOR        abc-creator
 INST_LINEBREAK      linebreak
 INST_DECORATION     decoration
+
+MACRO_TARGET        [~[:alnum:]]+
 
 WSPACE              [[:blank:]]+
 
@@ -166,8 +169,10 @@ WSPACE              [[:blank:]]+
 <x_INST_DECORATION>"!"             { yylval->c = yytext[0]; return CHAR; }
 <x_INST_DECORATION>"+"             { yylval->c = yytext[0]; return CHAR; }
 
-m:                  { BEGIN(x_MACRO); }
-<x_MACRO>.          { /* TODO */ }
+m:                                 { BEGIN(x_MACRO); }
+<x_MACRO>{MACRO_TARGET}            { yylval->s = strdup(yytext); return MACRO_TARGET; }
+<x_MACRO>"="                       { BEGIN(x_MACRO_REPLACEMENT); return '='; }
+<x_MACRO_REPLACEMENT>[^%]+         { yylval->s = NACStringTrimWhiteSpace(strdup(yytext)); return STRING; }
 
 s:                  { BEGIN(x_SYMBOL_LINE); return SYMBOL_LINE; }
 <x_SYMBOL_LINE>.*   { yylval->s = NACStringTrimWhiteSpace(strdup(yytext)); return STRING; }
