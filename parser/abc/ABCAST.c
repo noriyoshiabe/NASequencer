@@ -290,3 +290,35 @@ ASTContinuation *ABCASTContinuationCreate(FileLocation *location)
 {
     return NodeCreate(ASTContinuation, location);
 }
+
+static void ASTVoiceAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitVoice(visitor, self);
+}
+
+static void ASTVoiceDestroy(void *_self)
+{
+}
+
+ASTVoice *ABCASTVoiceCreate(FileLocation *location)
+{
+    return NodeCreate(ASTVoice, location);
+}
+
+static void ASTVoiceParamAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitVoiceParam(visitor, self);
+}
+
+static void ASTVoiceParamDestroy(void *_self)
+{
+    ASTVoiceParam *self = _self;
+    if (self->string) {
+        free(self->string);
+    }
+}
+
+ASTVoiceParam *ABCASTVoiceParamCreate(FileLocation *location)
+{
+    return NodeCreate(ASTVoiceParam, location);
+}

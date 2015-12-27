@@ -36,7 +36,7 @@ extern void ABC_information_lex_set_error(yyscan_t scanner);
     void *list;
 }
 
-%token REFERENCE_NUMBER TITLE KEY INSTRUCTION METER UNIT_NOTE_LENGTH TEMPO PARTS
+%token REFERENCE_NUMBER TITLE KEY INSTRUCTION METER UNIT_NOTE_LENGTH TEMPO PARTS VOICE
 %token INST_INCLUDE INST_CHARSET INST_VERSION INST_CREATOR INST_LINEBREAK INST_DECORATION
 %token SYMBOL_LINE CONTINUATION
 
@@ -47,22 +47,21 @@ extern void ABC_information_lex_set_error(yyscan_t scanner);
 %token <c> CHAR
 %token <s> NOTE FILEPATH VERSION_NUMBER
 %token <s> KEY_TONIC KEY_MODE KEY_ACCIDENTAL CLEF_NAME PITCH NONE PART_LABEL
-%token <s> MACRO_TARGET
-%token <s> REDEFINABLE_SYMBOL
-%token <s> REDEFINABLE_REPLACEMENT
+%token <s> MACRO_TARGET REDEFINABLE_SYMBOL REDEFINABLE_REPLACEMENT
+%token <s> VOICE_ID VOICE_NAME
 
 %token CLEF MIDDLE TRANSPOSE OCTAVE STAFF_LINES
-%token COMMON_TIME
+%token COMMON_TIME NAME SUBNAME STEM UP DOWN
 
 %type <s> key_tonic part_expr
 %type <i> signed_integer numerator
 
-%type <node> reference_number title key meter unit_note_length tempo parts
+%type <node> reference_number title key meter unit_note_length tempo parts voice
 %type <node> instruction macro redefinable_symbol
 %type <node> string_information symbol_line continuation
 
-%type <node> key_param      tempo_param
-%type <list> key_param_list tempo_param_list
+%type <node> key_param      tempo_param      voice_param
+%type <list> key_param_list tempo_param_list voice_param_list
 
 %type <node> statement
 
@@ -89,6 +88,7 @@ statement
     | symbol_line
     | redefinable_symbol
     | continuation
+    | voice
     | error
         {
             ABC_information_lex_set_error(scanner);
@@ -181,35 +181,35 @@ key_param
     | CLEF '=' CLEF_NAME
         {
             ASTKeyParam *n = node(KeyParam, @$);
-            n->type = Clef;
+            n->type = KeyClef;
             n->string = $3;
             $$ = n;
         }
     | MIDDLE '=' PITCH
         {
             ASTKeyParam *n = node(KeyParam, @$);
-            n->type = Middle;
+            n->type = KeyMiddle;
             n->string = $3;
             $$ = n;
         }
     | TRANSPOSE '=' signed_integer
         {
             ASTKeyParam *n = node(KeyParam, @$);
-            n->type = Transpose;
+            n->type = KeyTranspose;
             n->intValue = $3;
             $$ = n;
         }
     | OCTAVE '=' signed_integer
         {
             ASTKeyParam *n = node(KeyParam, @$);
-            n->type = Octave;
+            n->type = KeyOctave;
             n->intValue = $3;
             $$ = n;
         }
     | STAFF_LINES '=' INTEGER
         {
             ASTKeyParam *n = node(KeyParam, @$);
-            n->type = StaffLines;
+            n->type = KeyStaffLines;
             n->intValue = $3;
             $$ = n;
         }
@@ -486,6 +486,101 @@ continuation
             ASTContinuation *n = node(Continuation, @$);
             n->string = $2;
             $$ = n;
+        }
+    ;
+
+voice
+    : VOICE VOICE_ID voice_param_list
+        {
+            ASTVoice *n = node(Voice, @$);
+            n->identifier = $2;
+            n->node.children = $3;
+            $$ = n;
+        }
+    ;
+
+voice_param_list
+    : voice_param
+        {
+            $$ = list();
+            if ($1) {
+                listAppend($$, $1);
+            }
+        }
+    | voice_param_list voice_param
+        {
+            $$ = $1;
+            if ($2) {
+                listAppend($$, $2);
+            }
+        }
+    ;
+
+voice_param
+    : NAME '=' VOICE_NAME
+        {
+            ASTVoiceParam *n = node(VoiceParam, @$);
+            n->type = VoiceName;
+            n->string = $3;
+            $$ = n;
+        }
+    | SUBNAME '=' VOICE_NAME
+        {
+            ASTVoiceParam *n = node(VoiceParam, @$);
+            n->type = VoiceSubname;
+            n->string = $3;
+            $$ = n;
+        }
+    | STEM '=' UP
+        {
+            ASTVoiceParam *n = node(VoiceParam, @$);
+            n->type = VoiceStemUp;
+            $$ = n;
+        }
+    | STEM '=' DOWN
+        {
+            ASTVoiceParam *n = node(VoiceParam, @$);
+            n->type = VoiceStemDown;
+            $$ = n;
+        }
+    | CLEF '=' CLEF_NAME
+        {
+            ASTVoiceParam *n = node(VoiceParam, @$);
+            n->type = VoiceClef;
+            n->string = $3;
+            $$ = n;
+        }
+    | MIDDLE '=' PITCH
+        {
+            ASTVoiceParam *n = node(VoiceParam, @$);
+            n->type = VoiceMiddle;
+            n->string = $3;
+            $$ = n;
+        }
+    | TRANSPOSE '=' signed_integer
+        {
+            ASTVoiceParam *n = node(VoiceParam, @$);
+            n->type = VoiceTranspose;
+            n->intValue = $3;
+            $$ = n;
+        }
+    | OCTAVE '=' signed_integer
+        {
+            ASTVoiceParam *n = node(VoiceParam, @$);
+            n->type = VoiceOctave;
+            n->intValue = $3;
+            $$ = n;
+        }
+    | STAFF_LINES '=' INTEGER
+        {
+            ASTVoiceParam *n = node(VoiceParam, @$);
+            n->type = VoiceStaffLines;
+            n->intValue = $3;
+            $$ = n;
+        }
+    | /* empty */
+        {
+            $$ = NULL;
         }
     ;
 

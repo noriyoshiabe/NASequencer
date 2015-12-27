@@ -46,6 +46,8 @@
 %s x_SYMBOL_LINE
 %x x_REMARK
 %x x_CONTINUATION
+%x x_VOICE
+%x x_VOICE_PARAM
 
 NONZERO             [1-9]
 DIGIT               [[:digit:]]
@@ -79,10 +81,17 @@ INST_DECORATION     decoration
 MACRO_TARGET        [~[:alnum:]]+
 
 DECORATION          ![[:graph:]]+!|\+[[:graph:]]+\+
-ANNOTATION          \"[[:print:]]+\"
+ANNOTATION          \"[^\"]+\"
 
 REDEFINABLE_SYMBOL      [~h-wH-W]  
 REDEFINABLE_REPLACEMENT {DECORATION}|{ANNOTATION}
+
+NAME                (?i:name|nm)
+SUBNAME             (?i:subname|snm)
+VOICE_NAME          \"[^\"]+\"
+STEM                (?i:stem)
+UP                  (?i:up)
+DOWN                (?i:down)
 
 WSPACE              [[:blank:]]+
 
@@ -196,6 +205,26 @@ U:                                              { BEGIN(x_REDEFINABLE_SYMBOL); }
 
 ^\+:                { BEGIN(x_CONTINUATION); return CONTINUATION; }
 <x_CONTINUATION>.*  { yylval->s = NACStringTrimWhiteSpace(strdup(yytext)); return STRING; }
+
+^V:                          { BEGIN(x_VOICE); return VOICE; }
+<x_VOICE>[[:alnum:]]+        { BEGIN(x_VOICE_PARAM); yylval->s = strdup(yytext); return VOICE_ID; }
+<x_VOICE_PARAM>{NAME}        { return NAME; }
+<x_VOICE_PARAM>{SUBNAME}     { return SUBNAME; }
+<x_VOICE_PARAM>{VOICE_NAME}  { yylval->s = strdup(yytext); return VOICE_NAME; }
+<x_VOICE_PARAM>{STEM}        { return STEM; }
+<x_VOICE_PARAM>{UP}          { return UP; }
+<x_VOICE_PARAM>{DOWN}        { return DOWN; }
+<x_VOICE_PARAM>{INTEGER}     { yylval->i = atoi(yytext); return INTEGER; }
+<x_VOICE_PARAM>{PITCH}       { yylval->s = strdup(yytext); return PITCH; }
+<x_VOICE_PARAM>{CLEF}        { return CLEF; }
+<x_VOICE_PARAM>{CLEF_NAME}   { yylval->s = strdup(yytext); return CLEF_NAME; }
+<x_VOICE_PARAM>{MIDDLE}      { return MIDDLE; }
+<x_VOICE_PARAM>{TRANSPOSE}   { return TRANSPOSE; }
+<x_VOICE_PARAM>{OCTAVE}      { return OCTAVE; }
+<x_VOICE_PARAM>{STAFF_LINES} { return STAFF_LINES; }
+<x_VOICE_PARAM>"-"           { return '-'; }
+<x_VOICE_PARAM>"+"           { return '+'; }
+<x_VOICE_PARAM>"="           { return '='; }
 
 <COMMENT>.          { }
 <ERROR>.            { }

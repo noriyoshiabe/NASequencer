@@ -111,13 +111,13 @@ static void visitKeyParam(void *self, ASTKeyParam *ast)
     case KeyTonic:
     case KeyMode:
     case KeyAccidental:
-    case Clef:
-    case Middle:
+    case KeyClef:
+    case KeyMiddle:
         dump(self, ast, "type", ASTKeyParamType2String(ast->type), STRING(ast, string), NULL);
         break;
-    case Transpose:
-    case Octave:
-    case StaffLines:
+    case KeyTranspose:
+    case KeyOctave:
+    case KeyStaffLines:
         dump(self, ast, "type", ASTKeyParamType2String(ast->type), INTEGER(ast, intValue), NULL);
         break;
     }
@@ -209,6 +209,44 @@ static void visitContinuation(void *self, ASTContinuation *ast)
     dump(self, ast, STRING(ast, string), NULL);
 }
 
+static void visitVoice(void *_self, ASTVoice *ast)
+{
+    ABCASTDumper *self = _self;
+
+    dump(self, ast, STRING(ast, identifier), NULL);
+    self->indent += 4;
+
+    NAIterator *iterator = NAArrayGetIterator(ast->node.children);
+    while (iterator->hasNext(iterator)) {
+        Node *node = iterator->next(iterator);
+        node->accept(node, self);
+    }
+
+    self->indent -= 4;
+}
+
+static void visitVoiceParam(void *self, ASTVoiceParam *ast)
+{
+    switch (ast->type) {
+    case VoiceName:
+    case VoiceSubname:
+    case VoiceClef:
+    case VoiceMiddle:
+        dump(self, ast, "type", ASTVoiceParamType2String(ast->type), STRING(ast, string), NULL);
+        break;
+    case VoiceTranspose:
+    case VoiceOctave:
+    case VoiceStaffLines:
+        dump(self, ast, "type", ASTVoiceParamType2String(ast->type), INTEGER(ast, intValue), NULL);
+        break;
+    case VoiceStemUp:
+    case VoiceStemDown:
+        dump(self, ast, "type", ASTVoiceParamType2String(ast->type), NULL);
+        break;
+    }
+}
+
+
 Analyzer *ABCASTDumperCreate(ParseContext *context)
 {
     ABCASTDumper *self = calloc(1, sizeof(ABCASTDumper));
@@ -231,6 +269,8 @@ Analyzer *ABCASTDumperCreate(ParseContext *context)
     self->visitor.visitInstCreator = visitInstCreator;
     self->visitor.visitSymbolLine = visitSymbolLine;
     self->visitor.visitContinuation = visitContinuation;
+    self->visitor.visitVoice = visitVoice;
+    self->visitor.visitVoiceParam = visitVoiceParam;
 
     self->analyzer.process = process;
     self->analyzer.destroy = destroy;

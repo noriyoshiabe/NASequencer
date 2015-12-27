@@ -37,11 +37,11 @@ typedef enum {
     KeyTonic,
     KeyMode,
     KeyAccidental,
-    Clef,
-    Middle,
-    Transpose,
-    Octave,
-    StaffLines,
+    KeyClef,
+    KeyMiddle,
+    KeyTranspose,
+    KeyOctave,
+    KeyStaffLines,
 } ASTKeyParamType;
 
 typedef struct _ASTKeyParam {
@@ -122,6 +122,30 @@ typedef struct _ASTContinuation {
     char *string;
 } ASTContinuation;
 
+typedef struct _ASTVoice {
+    Node node;
+    char *identifier;
+} ASTVoice;
+
+typedef enum {
+    VoiceName,
+    VoiceSubname,
+    VoiceStemUp,
+    VoiceStemDown,
+    VoiceClef,
+    VoiceMiddle,
+    VoiceTranspose,
+    VoiceOctave,
+    VoiceStaffLines,
+} ASTVoiceParamType;
+
+typedef struct _ASTVoiceParam {
+    Node node;
+    ASTVoiceParamType type;
+    char *string;
+    int intValue;
+} ASTVoiceParam;
+
 typedef struct _ASTVisitor {
     void (*visitRoot)(void *self, ASTRoot *ast);
     void (*visitFileIdentification)(void *self, ASTFileIdentification *ast);
@@ -141,6 +165,8 @@ typedef struct _ASTVisitor {
     void (*visitInstCreator)(void *self, ASTInstCreator *ast);
     void (*visitSymbolLine)(void *self, ASTSymbolLine *ast);
     void (*visitContinuation)(void *self, ASTContinuation *ast);
+    void (*visitVoice)(void *self, ASTVoice *ast);
+    void (*visitVoiceParam)(void *self, ASTVoiceParam *ast);
 } ASTVisitor;
 
 extern ASTRoot *ABCASTRootCreate(FileLocation *location);
@@ -161,6 +187,8 @@ extern ASTInstInclude *ABCASTInstIncludeCreate(FileLocation *location);
 extern ASTInstCreator *ABCASTInstCreatorCreate(FileLocation *location);
 extern ASTSymbolLine *ABCASTSymbolLineCreate(FileLocation *location);
 extern ASTContinuation *ABCASTContinuationCreate(FileLocation *location);
+extern ASTVoice *ABCASTVoiceCreate(FileLocation *location);
+extern ASTVoiceParam *ABCASTVoiceParamCreate(FileLocation *location);
 
 static inline const char *ASTKeyParamType2String(ASTKeyParamType type)
 {
@@ -169,11 +197,11 @@ static inline const char *ASTKeyParamType2String(ASTKeyParamType type)
     CASE(KeyTonic);
     CASE(KeyMode);
     CASE(KeyAccidental);
-    CASE(Clef);
-    CASE(Middle);
-    CASE(Transpose);
-    CASE(Octave);
-    CASE(StaffLines);
+    CASE(KeyClef);
+    CASE(KeyMiddle);
+    CASE(KeyTranspose);
+    CASE(KeyOctave);
+    CASE(KeyStaffLines);
     }
 #define undef
 }
@@ -185,6 +213,23 @@ static inline const char *ASTTempoParamType2String(ASTTempoParamType type)
     CASE(TextString);
     CASE(BeatUnit);
     CASE(BeatCount);
+    }
+#define undef
+}
+
+static inline const char *ASTVoiceParamType2String(ASTVoiceParamType type)
+{
+#define CASE(type) case type: return #type;
+    switch (type) {
+    CASE(VoiceName);
+    CASE(VoiceSubname);
+    CASE(VoiceStemUp);
+    CASE(VoiceStemDown);
+    CASE(VoiceClef);
+    CASE(VoiceMiddle);
+    CASE(VoiceTranspose);
+    CASE(VoiceOctave);
+    CASE(VoiceStaffLines);
     }
 #define undef
 }
