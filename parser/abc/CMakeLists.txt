@@ -7,7 +7,16 @@ find_package(BISON)
 
 FLEX_TARGET(ABC_lex ABC_lex.l ${CMAKE_CURRENT_SOURCE_DIR}/ABC_lex.c)
 BISON_TARGET(ABC_yacc ABC_yacc.y ${CMAKE_CURRENT_SOURCE_DIR}/ABC_yacc.c)
-ADD_FLEX_BISON_DEPENDENCY(ABC_lex ABC_yacc)
+
+FLEX_TARGET(ABC_information_lex ABC_information_lex.l ${CMAKE_CURRENT_SOURCE_DIR}/ABC_information_lex.c)
+BISON_TARGET(ABC_information_yacc ABC_information_yacc.y ${CMAKE_CURRENT_SOURCE_DIR}/ABC_information_yacc.c)
+
+ADD_FLEX_BISON_DEPENDENCY(
+  ABC_lex
+  ABC_yacc
+  ABC_information_lex
+  ABC_information_yacc
+)
 
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}
@@ -30,4 +39,6 @@ add_library(${PROJECT_NAME}
   ${SOURCES}
   ${FLEX_ABC_lex_OUTPUTS}
   ${BISON_ABC_yacc_OUTPUTS}
+  ${FLEX_ABC_information_lex_OUTPUTS}
+  ${BISON_ABC_information_yacc_OUTPUTS}
 )

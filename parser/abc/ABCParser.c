@@ -3,6 +3,8 @@
 #include "NAUtil.h"
 #include "ABC_yacc.h"
 #include "ABC_lex.h"
+#include "ABC_information_yacc.h"
+#include "ABC_information_lex.h"
 #include "NASet.h"
 #include "NAMap.h"
 
@@ -19,6 +21,7 @@ typedef struct _ABCParser {
 } ABCParser;
 
 extern int ABC_parse(yyscan_t scanner, const char *filepath, void **node);
+extern int ABC_information_parse(yyscan_t scanner, const char *filepath, int line, void **node);
 
 static Node *ABCParserParseInternal(ABCParser *self, const char *filepath)
 {
@@ -65,6 +68,7 @@ static void ABCParserDestroy(void *_self)
     ABCParser *self = _self;
     NASetDestroy(self->readingFileSet);
     NAMapDestroy(self->includedNodeMap);
+
     free(self);
 }
 
@@ -79,7 +83,23 @@ DSLParser *ABCParserCreate(ParseContext *context)
     self->lineBreak = '\n';
     self->decorationDialects[0] = '!';
     self->decorationDialects[1] = '+';
+
     return (DSLParser *)self;
+}
+
+Node *ABCParserParseInformation(void *_self, const char *filepath, int line, const char *string)
+{
+    ABCParser *self = _self; 
+    Node *node = NULL;
+
+    yyscan_t informationScanner;
+    ABC_information_lex_init_extra(self, &informationScanner);
+    YY_BUFFER_STATE state = ABC_information__scan_string(string, informationScanner);
+    ABC_information_parse(informationScanner, filepath, line, (void **)&node);
+    ABC_information__delete_buffer(state, informationScanner);
+    ABC_information_lex_destroy(informationScanner);
+
+    return node;
 }
 
 Node *ABCParserParseIncludeFile(void *_self, FileLocation *location, const char *includeFile, char **_fullpath)

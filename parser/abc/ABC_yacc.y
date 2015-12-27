@@ -121,7 +121,8 @@ information
     : INFORMATION
         {
             TRACE("-- INFORMATION [%s] %d - %d\n", $1, @$.first_line, @$.first_column);
-            $$ = NULL;
+            $$ = ABCParserParseInformation(ABC_get_extra(scanner), filepath, @$.first_line, $1);
+            free($1);
         }
     ;
 

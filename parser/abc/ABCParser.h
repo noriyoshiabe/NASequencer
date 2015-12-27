@@ -18,3 +18,4 @@ extern void ABCParserSetLineBreak(void *self, char c);
 extern bool ABCParserIsLineBreak(void *self, char c);
 extern void ABCParserSetDecoration(void *self, char c);
 extern bool ABCParserIsDecoration(void *self, char c);
+extern Node *ABCParserParseInformation(void *self, const char *filepath, int line, const char *string);
