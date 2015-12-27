@@ -65,6 +65,8 @@ s: "^slow" | !f! ** !fff!
 efga
 ~HOGE
 U: J = !coda!
+U: K = +coda+
+U: ~ = "AAA LL"
 O ~ T v
 J
 O

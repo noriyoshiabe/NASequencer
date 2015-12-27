@@ -48,6 +48,8 @@ extern void ABC_information_lex_set_error(yyscan_t scanner);
 %token <s> NOTE FILEPATH VERSION_NUMBER
 %token <s> KEY_TONIC KEY_MODE KEY_ACCIDENTAL CLEF_NAME PITCH NONE PART_LABEL
 %token <s> MACRO_TARGET
+%token <s> REDEFINABLE_SYMBOL
+%token <s> REDEFINABLE_REPLACEMENT
 
 %token CLEF MIDDLE TRANSPOSE OCTAVE STAFF_LINES
 %token COMMON_TIME
@@ -56,7 +58,7 @@ extern void ABC_information_lex_set_error(yyscan_t scanner);
 %type <i> signed_integer numerator
 
 %type <node> reference_number title key meter unit_note_length tempo parts
-%type <node> instruction macro
+%type <node> instruction macro redefinable_symbol
 %type <node> string_information symbol_line
 
 %type <node> key_param      tempo_param
@@ -85,6 +87,7 @@ statement
     | instruction
     | macro
     | symbol_line
+    | redefinable_symbol
     | error
         {
             ABC_information_lex_set_error(scanner);
@@ -465,6 +468,14 @@ symbol_line
             ASTSymbolLine *n = node(SymbolLine, @$);
             n->string = $2;
             $$ = n;
+        }
+    ;
+
+redefinable_symbol
+    : REDEFINABLE_SYMBOL '=' REDEFINABLE_REPLACEMENT
+        {
+            ABCParserSetRedefinableSymbol(ABC_information_get_extra(scanner), $1, $3);
+            $$ = NULL;
         }
     ;
 

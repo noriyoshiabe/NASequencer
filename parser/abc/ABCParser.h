@@ -20,3 +20,4 @@ extern bool ABCParserIsLineBreak(void *self, char c);
 extern void ABCParserSetDecoration(void *self, char c);
 extern bool ABCParserIsDecoration(void *self, char c);
 extern void ABCParserSetMacro(void *_self, char *target, char *replacement);
+extern void ABCParserSetRedefinableSymbol(void *_self, char *symbol, char *replacement);

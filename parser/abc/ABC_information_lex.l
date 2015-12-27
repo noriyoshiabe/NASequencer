@@ -78,6 +78,12 @@ INST_DECORATION     decoration
 
 MACRO_TARGET        [~[:alnum:]]+
 
+DECORATION          ![[:graph:]]+!|\+[[:graph:]]+\+
+ANNOTATION          \"[[:print:]]+\"
+
+REDEFINABLE_SYMBOL      [~h-wH-W]  
+REDEFINABLE_REPLACEMENT {DECORATION}|{ANNOTATION}
+
 WSPACE              [[:blank:]]+
 
 %%
@@ -177,8 +183,10 @@ m:                                 { BEGIN(x_MACRO); }
 s:                  { BEGIN(x_SYMBOL_LINE); return SYMBOL_LINE; }
 <x_SYMBOL_LINE>.*   { yylval->s = NACStringTrimWhiteSpace(strdup(yytext)); return STRING; }
 
-U:                      { BEGIN(x_REDEFINABLE_SYMBOL); }
-<x_REDEFINABLE_SYMBOL>. { /* TODO */ }
+U:                                              { BEGIN(x_REDEFINABLE_SYMBOL); }
+<x_REDEFINABLE_SYMBOL>{REDEFINABLE_SYMBOL}      { yylval->s = strdup(yytext); return REDEFINABLE_SYMBOL; }
+<x_REDEFINABLE_SYMBOL>"="                       { return '='; }
+<x_REDEFINABLE_SYMBOL>{REDEFINABLE_REPLACEMENT} { yylval->s = strdup(yytext); return REDEFINABLE_REPLACEMENT; }
 
 ^X:                           { BEGIN(x_REFERENCE_NUMBER); return REFERENCE_NUMBER; }
 <x_REFERENCE_NUMBER>{INTEGER} { yylval->i = atoi(yytext); return INTEGER; }
