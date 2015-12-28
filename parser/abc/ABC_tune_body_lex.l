@@ -13,6 +13,8 @@
     if (strchr(yytext, '\n')) yycolumn = 1; \
     else yycolumn += yyleng;
 
+#define YYMORE() yymore(), yycolumn -= yyleng
+
 %}
 
 %option prefix="ABC_tune_body_"
@@ -107,7 +109,7 @@ CHORD         \[({NOTE}|\ )*{NOTE}({NOTE}|\ )*\][[:digit:]]*(\/[[:digit:]]*)?
                         return '\n';
                     }
                     else if (ABCParserIsDecoration(yyextra, '!')) {
-                        yymore();
+                        YYMORE();
                         BEGIN(x_DECORATION);
                     }
                     else {
@@ -117,7 +119,7 @@ CHORD         \[({NOTE}|\ )*{NOTE}({NOTE}|\ )*\][[:digit:]]*(\/[[:digit:]]*)?
 
 "+"             {
                     if (ABCParserIsDecoration(yyextra, '+')) {
-                        yymore();
+                        YYMORE();
                         BEGIN(x_DECORATION);
                     }
                     else {
@@ -158,12 +160,14 @@ CHORD         \[({NOTE}|\ )*{NOTE}({NOTE}|\ )*\][[:digit:]]*(\/[[:digit:]]*)?
 <x_COMMENT>.          { }
 
 <x_DECORATION>[[:graph:]]   {
-                                yymore();
                                 if (yytext[0] == yytext[yyleng - 1]) {
                                     BEGIN(INITIAL);
                                     yylval->s = strdup(yytext + 1);
                                     yylval->s[yyleng - 2] = '\0';
                                     return DECORATION;
+                                }
+                                else {
+                                    YYMORE();
                                 }
                             }
 <x_DECORATION>[[:space:]]   { return 1; }
