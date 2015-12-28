@@ -97,8 +97,12 @@ REST          [xXzZ][[:digit:]]*(\/[[:digit:]]*)?
                     }
                 }
 
+"`"             { }
+
+
 \\              { BEGIN(x_ESCAPE); }
-.               { }
+[[:space:]]     { }
+.               { return 1; }
 
 <<EOF>>         {
                     switch (YY_START) {
