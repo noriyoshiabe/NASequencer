@@ -39,6 +39,7 @@ REPEAT_BAR    [\|:\[\]]+[-,[:digit:]]*
 ACCIACCATURA  \{\/
 TUPLET        \([[:digit:]]+(:[[:digit:]]*)?(:[[:digit:]]*)?
 CHORD         \[({NOTE}|\ )*{NOTE}({NOTE}|\ )*\][[:digit:]]*(\/[[:digit:]]*)?
+EXTRA_SPACE   [y][[:digit:]]*
 
 %%
 
@@ -85,6 +86,8 @@ CHORD         \[({NOTE}|\ )*{NOTE}({NOTE}|\ )*\][[:digit:]]*(\/[[:digit:]]*)?
                     yylval->s = strdup(yytext);
                     return CHORD;
                 }
+
+{EXTRA_SPACE}   { return EXTRA_SPACE; }
 
 "-"             { return '-'; }
 "("             { return '('; }

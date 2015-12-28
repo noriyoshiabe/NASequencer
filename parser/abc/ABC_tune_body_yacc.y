@@ -47,9 +47,10 @@ extern int ABC_tune_body_error(YYLTYPE *yylloc, yyscan_t scanner, const char *fi
 %token <s>INLINE_FIELD ANNOTATION DECORATION NOTE REST REPEAT_BAR TUPLET CHORD
 %token <c>BROKEN_RHYTHM
 %token ACCIACCATURA
+%token EXTRA_SPACE
 
 %type <node> inline_field line_break annotation decoration note broken_rhythm rest repeat_bar
-%type <node> tie slur dot grace_note tuplet chord
+%type <node> tie slur dot grace_note tuplet chord extra_space
 
 %type <node> statement      grace_note_statement
 %type <list> statement_list grace_note_statement_list
@@ -97,6 +98,7 @@ statement
     | grace_note
     | tuplet
     | chord
+    | extra_space
     | error
         {
             yyerrok;
@@ -289,6 +291,13 @@ chord
 
             free($1);
             $$ = n;
+        }
+    ;
+
+extra_space
+    : EXTRA_SPACE
+        {
+            $$ = NULL; // Ignore
         }
     ;
 
