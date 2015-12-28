@@ -287,6 +287,11 @@ static void visitBrokenRhythm(void *self, ASTBrokenRhythm *ast)
     dump(self, ast, CHAR(ast, direction), NULL);
 }
 
+static void visitRest(void *self, ASTRest *ast)
+{
+    dump(self, ast, STRING(ast, restString), NULL);
+}
+
 
 Analyzer *ABCASTDumperCreate(ParseContext *context)
 {
@@ -318,6 +323,7 @@ Analyzer *ABCASTDumperCreate(ParseContext *context)
     self->visitor.visitDecoration = visitDecoration;
     self->visitor.visitNote = visitNote;
     self->visitor.visitBrokenRhythm = visitBrokenRhythm;
+    self->visitor.visitRest = visitRest;
 
     self->analyzer.process = process;
     self->analyzer.destroy = destroy;

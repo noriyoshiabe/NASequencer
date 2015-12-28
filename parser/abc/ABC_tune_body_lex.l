@@ -32,6 +32,7 @@ INLINE_FIELD  \[[+[:alpha:]]:[^\]]*\]
 ANNOTATION    \"[^\"]*\"
 NOTE          (^^|^|=|_|__)?[a-gA-G](,|')?[[:digit:]]*(\/[[:digit:]]*)?
 BROKEN_RHYTHM <|>
+REST          [xXzZ][[:digit:]]*(\/[[:digit:]]*)?
 
 %%
 
@@ -55,6 +56,11 @@ BROKEN_RHYTHM <|>
 {BROKEN_RHYTHM} {
                     yylval->c = yytext[0];
                     return BROKEN_RHYTHM;
+                }
+
+{REST}          {
+                    yylval->s = strdup(yytext);
+                    return REST;
                 }
 
 "%"             { BEGIN(x_COMMENT); }

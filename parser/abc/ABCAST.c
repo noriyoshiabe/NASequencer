@@ -412,3 +412,19 @@ ASTBrokenRhythm *ABCASTBrokenRhythmCreate(FileLocation *location)
 {
     return NodeCreate(ASTBrokenRhythm, location);
 }
+
+static void ASTRestAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitRest(visitor, self);
+}
+
+static void ASTRestDestroy(void *_self)
+{
+    ASTRest *self = _self;
+    free(self->restString);
+}
+
+ASTRest *ABCASTRestCreate(FileLocation *location)
+{
+    return NodeCreate(ASTRest, location);
+}

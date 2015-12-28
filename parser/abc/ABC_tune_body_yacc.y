@@ -39,10 +39,10 @@ extern int ABC_tune_body_error(YYLTYPE *yylloc, yyscan_t scanner, const char *fi
     void *list;
 }
 
-%token <s>INLINE_FIELD ANNOTATION DECORATION NOTE
+%token <s>INLINE_FIELD ANNOTATION DECORATION NOTE REST
 %token <c>BROKEN_RHYTHM
 
-%type <node> inline_field line_break annotation decoration note broken_rhythm
+%type <node> inline_field line_break annotation decoration note broken_rhythm rest
 
 %type <node> statement
 %type <list> statement_list
@@ -82,6 +82,7 @@ statement
     | decoration
     | note
     | broken_rhythm
+    | rest
     | error
         {
             yyerrok;
@@ -142,6 +143,15 @@ broken_rhythm
         {
             ASTBrokenRhythm *n = node(BrokenRhythm, @$);
             n->direction = $1;
+            $$ = n;
+        }
+    ;
+
+rest
+    : REST
+        {
+            ASTRest *n = node(Rest, @$);
+            n->restString = $1;
             $$ = n;
         }
     ;
