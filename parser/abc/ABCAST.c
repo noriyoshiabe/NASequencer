@@ -382,3 +382,19 @@ ASTDecoration *ABCASTDecorationCreate(FileLocation *location)
 {
     return NodeCreate(ASTDecoration, location);
 }
+
+static void ASTNoteAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitNote(visitor, self);
+}
+
+static void ASTNoteDestroy(void *_self)
+{
+    ASTNote *self = _self;
+    free(self->noteString);
+}
+
+ASTNote *ABCASTNoteCreate(FileLocation *location)
+{
+    return NodeCreate(ASTNote, location);
+}

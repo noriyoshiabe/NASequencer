@@ -46,7 +46,7 @@ extern void ABC_information_lex_set_error(yyscan_t scanner);
 %token <i> INTEGER
 %token <s> STRING
 %token <c> CHAR
-%token <s> NOTE FILEPATH VERSION_NUMBER
+%token <s> FILEPATH VERSION_NUMBER
 %token <s> KEY_TONIC KEY_MODE KEY_ACCIDENTAL CLEF_NAME PITCH NONE PART_LABEL
 %token <s> MACRO_TARGET REDEFINABLE_SYMBOL REDEFINABLE_REPLACEMENT
 %token <s> VOICE_ID VOICE_NAME

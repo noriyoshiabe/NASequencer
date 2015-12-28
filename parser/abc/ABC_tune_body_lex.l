@@ -30,6 +30,7 @@
 
 INLINE_FIELD \[[+[:alpha:]]:[^\]]*\]
 ANNOTATION   \"[^\"]*\"
+NOTE         (^^|^|=|_|__)?[a-gA-G](,|')?[[:digit:]]*(\/[[:digit:]]*)?
 
 %%
 
@@ -43,6 +44,11 @@ ANNOTATION   \"[^\"]*\"
                     yylval->s = strdup(yytext + 1);
                     yylval->s[yyleng - 2] = '\0';
                     return ANNOTATION;
+                }
+
+{NOTE}          {
+                    yylval->s = strdup(yytext);
+                    return NOTE;
                 }
 
 "%"             { BEGIN(x_COMMENT); }

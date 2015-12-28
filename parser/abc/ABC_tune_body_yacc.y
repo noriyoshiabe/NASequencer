@@ -38,9 +38,9 @@ extern int ABC_tune_body_error(YYLTYPE *yylloc, yyscan_t scanner, const char *fi
     void *list;
 }
 
-%token <s>INLINE_FIELD ANNOTATION DECORATION
+%token <s>INLINE_FIELD ANNOTATION DECORATION NOTE
 
-%type <node> inline_field line_break annotation decoration
+%type <node> inline_field line_break annotation decoration note
 
 %type <node> statement
 %type <list> statement_list
@@ -78,6 +78,7 @@ statement
     | line_break
     | annotation
     | decoration
+    | note
     | error
         {
             yyerrok;
@@ -120,6 +121,15 @@ decoration
         {
             ASTDecoration *n = node(Decoration, @$);
             n->symbol = $1;
+            $$ = n;
+        }
+    ;
+
+note
+    : NOTE
+        {
+            ASTNote *n = node(Note, @$);
+            n->noteString = $1;
             $$ = n;
         }
     ;
