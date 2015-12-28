@@ -69,6 +69,11 @@ REPEAT_BAR    [\|:\[\]]+[-,[:digit:]]*
                     return REPEAT_BAR;
                 }
 
+"-"             { return '-'; }
+"("             { return '('; }
+")"             { return ')'; }
+"."             { return '.'; }
+
 "%"             { BEGIN(x_COMMENT); }
 
 "$"             {

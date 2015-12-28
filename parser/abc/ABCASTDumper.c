@@ -297,6 +297,21 @@ static void visitRepeatBar(void *self, ASTRepeatBar *ast)
     dump(self, ast, STRING(ast, symbols), NULL);
 }
 
+static void visitTie(void *self, ASTTie *ast)
+{
+    dump(self, ast, NULL);
+}
+
+static void visitSlur(void *self, ASTSlur *ast)
+{
+    dump(self, ast, CHAR(ast, direction), NULL);
+}
+
+static void visitDot(void *self, ASTDot *ast)
+{
+    dump(self, ast, NULL);
+}
+
 
 Analyzer *ABCASTDumperCreate(ParseContext *context)
 {
@@ -330,6 +345,9 @@ Analyzer *ABCASTDumperCreate(ParseContext *context)
     self->visitor.visitBrokenRhythm = visitBrokenRhythm;
     self->visitor.visitRest = visitRest;
     self->visitor.visitRepeatBar = visitRepeatBar;
+    self->visitor.visitTie = visitTie;
+    self->visitor.visitSlur = visitSlur;
+    self->visitor.visitDot = visitDot;
 
     self->analyzer.process = process;
     self->analyzer.destroy = destroy;

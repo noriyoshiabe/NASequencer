@@ -444,3 +444,48 @@ ASTRepeatBar *ABCASTRepeatBarCreate(FileLocation *location)
 {
     return NodeCreate(ASTRepeatBar, location);
 }
+
+static void ASTTieAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitTie(visitor, self);
+}
+
+static void ASTTieDestroy(void *_self)
+{
+    ASTTie *self = _self;
+}
+
+ASTTie *ABCASTTieCreate(FileLocation *location)
+{
+    return NodeCreate(ASTTie, location);
+}
+
+static void ASTSlurAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitSlur(visitor, self);
+}
+
+static void ASTSlurDestroy(void *_self)
+{
+    ASTSlur *self = _self;
+}
+
+ASTSlur *ABCASTSlurCreate(FileLocation *location)
+{
+    return NodeCreate(ASTSlur, location);
+}
+
+static void ASTDotAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitDot(visitor, self);
+}
+
+static void ASTDotDestroy(void *_self)
+{
+    ASTDot *self = _self;
+}
+
+ASTDot *ABCASTDotCreate(FileLocation *location)
+{
+    return NodeCreate(ASTDot, location);
+}

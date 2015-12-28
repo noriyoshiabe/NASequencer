@@ -43,6 +43,7 @@ extern int ABC_tune_body_error(YYLTYPE *yylloc, yyscan_t scanner, const char *fi
 %token <c>BROKEN_RHYTHM
 
 %type <node> inline_field line_break annotation decoration note broken_rhythm rest repeat_bar
+%type <node> tie slur dot
 
 %type <node> statement
 %type <list> statement_list
@@ -84,6 +85,9 @@ statement
     | broken_rhythm
     | rest
     | repeat_bar
+    | tie
+    | slur
+    | dot
     | error
         {
             yyerrok;
@@ -162,6 +166,36 @@ repeat_bar
         {
             ASTRepeatBar *n = node(RepeatBar, @$);
             n->symbols = $1;
+            $$ = n;
+        }
+
+tie
+    : '-'
+        {
+            ASTTie *n = node(Tie, @$);
+            $$ = n;
+        }
+    ;
+
+slur
+    : '('
+        {
+            ASTSlur *n = node(Slur, @$);
+            n->direction = '(';
+            $$ = n;
+        }
+    | ')'
+        {
+            ASTSlur *n = node(Slur, @$);
+            n->direction = ')';
+            $$ = n;
+        }
+    ;
+
+dot
+    : '.'
+        {
+            ASTDot *n = node(Dot, @$);
             $$ = n;
         }
 
