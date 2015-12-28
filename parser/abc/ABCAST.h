@@ -212,6 +212,10 @@ typedef struct _ASTChord {
     char *lengthString;
 } ASTChord;
 
+typedef struct _ASTOverlay {
+    Node node;
+} ASTOverlay;
+
 
 typedef struct _ASTVisitor {
     void (*visitRoot)(void *self, ASTRoot *ast);
@@ -248,6 +252,7 @@ typedef struct _ASTVisitor {
     void (*visitGraceNote)(void *self, ASTGraceNote *ast);
     void (*visitTuplet)(void *self, ASTTuplet *ast);
     void (*visitChord)(void *self, ASTChord *ast);
+    void (*visitOverlay)(void *self, ASTOverlay *ast);
 } ASTVisitor;
 
 extern ASTRoot *ABCASTRootCreate(FileLocation *location);
@@ -284,6 +289,7 @@ extern ASTDot *ABCASTDotCreate(FileLocation *location);
 extern ASTGraceNote *ABCASTGraceNoteCreate(FileLocation *location);
 extern ASTTuplet *ABCASTTupletCreate(FileLocation *location);
 extern ASTChord *ABCASTChordCreate(FileLocation *location);
+extern ASTOverlay *ABCASTOverlayCreate(FileLocation *location);
 
 
 static inline const char *ASTKeyParamType2String(ASTKeyParamType type)

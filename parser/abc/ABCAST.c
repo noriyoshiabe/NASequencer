@@ -535,3 +535,17 @@ ASTChord *ABCASTChordCreate(FileLocation *location)
 {
     return NodeCreate(ASTChord, location);
 }
+
+static void ASTOverlayAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitOverlay(visitor, self);
+}
+
+static void ASTOverlayDestroy(void *_self)
+{
+}
+
+ASTOverlay *ABCASTOverlayCreate(FileLocation *location)
+{
+    return NodeCreate(ASTOverlay, location);
+}

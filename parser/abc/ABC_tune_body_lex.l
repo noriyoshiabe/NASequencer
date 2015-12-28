@@ -89,6 +89,7 @@ EXTRA_SPACE   [y][[:digit:]]*
 
 {EXTRA_SPACE}   { return EXTRA_SPACE; }
 
+"&"             { return '&'; }
 "-"             { return '-'; }
 "("             { return '('; }
 ")"             { return ')'; }

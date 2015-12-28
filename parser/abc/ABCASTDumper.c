@@ -349,6 +349,11 @@ static void visitChord(void *_self, ASTChord *ast)
     self->indent -= 4;
 }
 
+static void visitOverlay(void *self, ASTOverlay *ast)
+{
+    dump(self, ast, NULL);
+}
+
 
 Analyzer *ABCASTDumperCreate(ParseContext *context)
 {
@@ -388,6 +393,7 @@ Analyzer *ABCASTDumperCreate(ParseContext *context)
     self->visitor.visitGraceNote = visitGraceNote;
     self->visitor.visitTuplet = visitTuplet;
     self->visitor.visitChord = visitChord;
+    self->visitor.visitOverlay = visitOverlay;
 
     self->analyzer.process = process;
     self->analyzer.destroy = destroy;
