@@ -131,12 +131,21 @@ Node *ABCParserParseTuneBody(void *_self, const char *filepath, int line, const 
     ABCParser *self = _self; 
     Node *node = NULL;
 
+    char *preprocessed = ABCPreprocessorPreprocessTuneBody(self->preprocessor, string);
+
+    printf("===========================================\n");
+    printf("%s\n", string);
+    printf("%s\n", preprocessed);
+    printf("===========================================\n");
+
     yyscan_t scanner;
     ABC_tune_body_lex_init_extra(self, &scanner);
-    YY_BUFFER_STATE state = ABC_tune_body__scan_string(string, scanner);
+    YY_BUFFER_STATE state = ABC_tune_body__scan_string(preprocessed, scanner);
     ABC_tune_body_parse(scanner, filepath, line, (void **)&node);
     ABC_tune_body__delete_buffer(state, scanner);
     ABC_tune_body_lex_destroy(scanner);
+
+    free(preprocessed);
 
     return node;
 }
