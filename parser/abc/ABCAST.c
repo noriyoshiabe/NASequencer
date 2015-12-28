@@ -428,3 +428,19 @@ ASTRest *ABCASTRestCreate(FileLocation *location)
 {
     return NodeCreate(ASTRest, location);
 }
+
+static void ASTRepeatBarAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitRepeatBar(visitor, self);
+}
+
+static void ASTRepeatBarDestroy(void *_self)
+{
+    ASTRepeatBar *self = _self;
+    free(self->symbols);
+}
+
+ASTRepeatBar *ABCASTRepeatBarCreate(FileLocation *location)
+{
+    return NodeCreate(ASTRepeatBar, location);
+}

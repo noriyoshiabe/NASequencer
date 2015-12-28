@@ -33,6 +33,7 @@ ANNOTATION    \"[^\"]*\"
 NOTE          (^^|^|=|_|__)?[a-gA-G](,|')?[[:digit:]]*(\/[[:digit:]]*)?
 BROKEN_RHYTHM <|>
 REST          [xXzZ][[:digit:]]*(\/[[:digit:]]*)?
+REPEAT_BAR    [\|:\[\]]+[-,[:digit:]]*
 
 %%
 
@@ -61,6 +62,11 @@ REST          [xXzZ][[:digit:]]*(\/[[:digit:]]*)?
 {REST}          {
                     yylval->s = strdup(yytext);
                     return REST;
+                }
+
+{REPEAT_BAR}    {
+                    yylval->s = strdup(yytext);
+                    return REPEAT_BAR;
                 }
 
 "%"             { BEGIN(x_COMMENT); }
