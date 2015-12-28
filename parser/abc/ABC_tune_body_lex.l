@@ -40,6 +40,7 @@ ACCIACCATURA  \{\/
 TUPLET        \([[:digit:]]+(:[[:digit:]]*)?(:[[:digit:]]*)?
 CHORD         \[({NOTE}|\ )*{NOTE}({NOTE}|\ )*\][[:digit:]]*(\/[[:digit:]]*)?
 EXTRA_SPACE   [y][[:digit:]]*
+RESERVED      [#\*;\?@]
 
 %%
 
@@ -88,6 +89,7 @@ EXTRA_SPACE   [y][[:digit:]]*
                 }
 
 {EXTRA_SPACE}   { return EXTRA_SPACE; }
+{RESERVED}      { return RESERVED; }
 
 "&"             { return '&'; }
 "-"             { return '-'; }
