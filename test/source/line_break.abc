@@ -1,0 +1,19 @@
+aaa
+bbb \
+bbb \% \% aaa
+ccc
+I:linebreak $
+ddd
+eee $ fff
+I:linebreak !
+ggg ! hhh
+I:linebreak <none>
+iii
+I:linebreak <EOL>
+jjj
+kkk \
+I:linebreak !
+aaaa !
+I:decoration !
+aaa !
+aaa

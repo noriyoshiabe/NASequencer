@@ -40,7 +40,7 @@ extern int ABC_tune_body_error(YYLTYPE *yylloc, yyscan_t scanner, const char *fi
 
 %token <s>INLINE_FIELD
 
-%type <node> inline_field
+%type <node> inline_field line_break
 
 %type <node> statement
 %type <list> statement_list
@@ -75,6 +75,13 @@ statement_list
 
 statement
     : inline_field
+    | line_break
+    | error
+        {
+            yyerrok;
+            yyclearin;
+            $$ = NULL;
+        }
     | /* empty */
         {
             $$ = NULL;
@@ -87,6 +94,13 @@ inline_field
             TRACE("---- INLINE_FIELD [%s] %d - %d\n", $1, line, @$.first_column);
             $$ = ABCParserParseInformation(ABC_tune_body_get_extra(scanner), filepath, line, $1);
             free($1);
+        }
+    ;
+
+line_break
+    : '\n'
+        {
+            $$ = node(LineBreak, @$);
         }
     ;
 

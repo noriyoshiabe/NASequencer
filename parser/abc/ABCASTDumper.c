@@ -262,6 +262,11 @@ static void visitTuneBody(void *_self, ASTTuneBody *ast)
     self->indent -= 4;
 }
 
+static void visitLineBreak(void *self, ASTLineBreak *ast)
+{
+    dump(self, ast, NULL);
+}
+
 
 Analyzer *ABCASTDumperCreate(ParseContext *context)
 {
@@ -288,6 +293,7 @@ Analyzer *ABCASTDumperCreate(ParseContext *context)
     self->visitor.visitVoice = visitVoice;
     self->visitor.visitVoiceParam = visitVoiceParam;
     self->visitor.visitTuneBody = visitTuneBody;
+    self->visitor.visitLineBreak = visitLineBreak;
 
     self->analyzer.process = process;
     self->analyzer.destroy = destroy;

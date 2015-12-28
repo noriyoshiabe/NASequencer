@@ -23,6 +23,9 @@
 %option bison-bridge
 %option bison-locations
 
+%x x_ESCAPE
+%x x_END
+
 INLINE_FIELD \[[+[:alpha:]]:[^\]]*\]
 
 %%
@@ -32,8 +35,60 @@ INLINE_FIELD \[[+[:alpha:]]:[^\]]*\]
                     yylval->s[yyleng - 2] = '\0';
                     return INLINE_FIELD;
                 }
-.               { ECHO; }
 
-<<EOF>>         { return 0; }
+"$"             {
+                    if (ABCParserIsLineBreak(yyextra, '$')) {
+                        return '\n';
+                    }
+                    else {
+                        return 1;
+                    }
+                }
+
+"!"             {
+                    if (ABCParserIsLineBreak(yyextra, '!')) {
+                        return '\n';
+                    }
+                    else if (ABCParserIsDecoration(yyextra, '!')) {
+                        yymore();
+                        //BEGIN(x_DECORATION);
+                    }
+                    else {
+                        return 1;
+                    }
+                }
+
+"+"             {
+                    if (ABCParserIsDecoration(yyextra, '+')) {
+                        yymore();
+                        //BEGIN(x_DECORATION);
+                    }
+                    else {
+                        return 1;
+                    }
+                }
+
+\\              { BEGIN(x_ESCAPE); }
+.               { }
+
+<<EOF>>         {
+                    switch (YY_START) {
+                    case x_ESCAPE:
+                    case x_END:
+                        return 0;
+                    default:
+                        if (ABCParserIsLineBreak(yyextra, '\n')) {
+                            BEGIN(x_END);
+                            return '\n';
+                        }
+                        else {
+                            return 0;
+                        }
+                    }
+                }
+
+<x_ESCAPE>"%"         { BEGIN(INITIAL); return '%'; }
+<x_ESCAPE>[[:space:]] { }
+<x_ESCAPE>.           { BEGIN(INITIAL); return 1; }
 
 %%

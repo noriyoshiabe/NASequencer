@@ -336,3 +336,17 @@ ASTTuneBody *ABCASTTuneBodyCreate(FileLocation *location)
 {
     return NodeCreate(ASTTuneBody, location);
 }
+
+static void ASTLineBreakAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitLineBreak(visitor, self);
+}
+
+static void ASTLineBreakDestroy(void *_self)
+{
+}
+
+ASTLineBreak *ABCASTLineBreakCreate(FileLocation *location)
+{
+    return NodeCreate(ASTLineBreak, location);
+}
