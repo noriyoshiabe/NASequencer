@@ -519,3 +519,19 @@ ASTTuplet *ABCASTTupletCreate(FileLocation *location)
 {
     return NodeCreate(ASTTuplet, location);
 }
+
+static void ASTChordAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitChord(visitor, self);
+}
+
+static void ASTChordDestroy(void *_self)
+{
+    ASTChord *self = _self;
+    free(self->lengthString);
+}
+
+ASTChord *ABCASTChordCreate(FileLocation *location)
+{
+    return NodeCreate(ASTChord, location);
+}

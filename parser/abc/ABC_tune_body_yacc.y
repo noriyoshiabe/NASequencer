@@ -6,11 +6,15 @@
 #include "ABCParser.h"
 #include "ABCAST.h"
 
-extern int ABC_tune_body_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, int line, void **node, const char *message);
+#include <string.h>
 
-#define node(type, yylloc) ABCAST##type##Create(&((FileLocation){(char *)filepath, line, yylloc.first_column}))
+extern int ABC_tune_body_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, int line, int columnOffset, void **node, const char *message);
+
+#define node(type, yylloc) ABCAST##type##Create(&((FileLocation){(char *)filepath, line, yylloc.first_column + columnOffset}))
 #define list() NAArrayCreate(4, NULL)
 #define listAppend(list, node) NAArrayAppend(list, node)
+
+#define isInline() (0 < columnOffset)
 
 #if 1
 #define TRACE(...) printf(__VA_ARGS__)
@@ -29,6 +33,7 @@ extern int ABC_tune_body_error(YYLTYPE *yylloc, yyscan_t scanner, const char *fi
 %parse-param { yyscan_t scanner }
 %parse-param { const char *filepath }
 %parse-param { int line }
+%parse-param { int columnOffset }
 %parse-param { void **node }
 %locations
 
@@ -39,12 +44,12 @@ extern int ABC_tune_body_error(YYLTYPE *yylloc, yyscan_t scanner, const char *fi
     void *list;
 }
 
-%token <s>INLINE_FIELD ANNOTATION DECORATION NOTE REST REPEAT_BAR TUPLET
+%token <s>INLINE_FIELD ANNOTATION DECORATION NOTE REST REPEAT_BAR TUPLET CHORD
 %token <c>BROKEN_RHYTHM
 %token ACCIACCATURA
 
 %type <node> inline_field line_break annotation decoration note broken_rhythm rest repeat_bar
-%type <node> tie slur dot grace_note tuplet
+%type <node> tie slur dot grace_note tuplet chord
 
 %type <node> statement      grace_note_statement
 %type <list> statement_list grace_note_statement_list
@@ -91,6 +96,7 @@ statement
     | dot
     | grace_note
     | tuplet
+    | chord
     | error
         {
             yyerrok;
@@ -115,7 +121,7 @@ inline_field
 line_break
     : '\n'
         {
-            $$ = node(LineBreak, @$);
+            $$ = isInline() ? NULL : node(LineBreak, @$);
         }
     ;
 
@@ -265,11 +271,32 @@ tuplet
         }
     ;
 
+chord
+    : CHORD
+        {
+            char *chordStart = $1 + 1;
+            char *chordEnd = strrchr($1, ']');
+            *chordEnd = '\0';
+
+            ASTChord *n = node(Chord, @$);
+            n->lengthString = strdup(chordEnd + 1);
+
+            Node *tuneBody = ABCParserParseTuneBody(ABC_tune_body_get_extra(scanner), filepath, line, @$.first_column + columnOffset, chordStart);
+            n->node.children = tuneBody->children;
+            
+            tuneBody->children = NULL;
+            NodeRelease(tuneBody);
+
+            free($1);
+            $$ = n;
+        }
+    ;
+
 %%
 
-int ABC_tune_body_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, int line, void **node, const char *message)
+int ABC_tune_body_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, int line, int columnOffset, void **node, const char *message)
 {
-    FileLocation location = {(char *)filepath, line, yylloc->first_column};
+    FileLocation location = {(char *)filepath, line, yylloc->first_column + columnOffset};
     ABCParserSyntaxError(ABC_tune_body_get_extra(scanner), &location, ABC_tune_body_get_text(scanner));
     return 0;
 }

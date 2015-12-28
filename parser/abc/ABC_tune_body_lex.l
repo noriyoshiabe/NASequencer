@@ -36,6 +36,7 @@ REST          [xXzZ][[:digit:]]*(\/[[:digit:]]*)?
 REPEAT_BAR    [\|:\[\]]+[-,[:digit:]]*
 ACCIACCATURA  \{\/
 TUPLET        \([[:digit:]]+(:[[:digit:]]*)?(:[[:digit:]]*)?
+CHORD         \[({NOTE}|\ )*{NOTE}({NOTE}|\ )*\][[:digit:]]*(\/[[:digit:]]*)?
 
 %%
 
@@ -76,6 +77,11 @@ TUPLET        \([[:digit:]]+(:[[:digit:]]*)?(:[[:digit:]]*)?
 {TUPLET}        {
                     yylval->s = strdup(yytext);
                     return TUPLET;
+                }
+
+{CHORD}         {
+                    yylval->s = strdup(yytext);
+                    return CHORD;
                 }
 
 "-"             { return '-'; }

@@ -333,6 +333,22 @@ static void visitTuplet(void *self, ASTTuplet *ast)
     dump(self, ast, STRING(ast, tupletString), NULL);
 }
 
+static void visitChord(void *_self, ASTChord *ast)
+{
+    ABCASTDumper *self = _self;
+
+    dump(self, ast, STRING(ast, lengthString), NULL);
+    self->indent += 4;
+
+    NAIterator *iterator = NAArrayGetIterator(ast->node.children);
+    while (iterator->hasNext(iterator)) {
+        Node *node = iterator->next(iterator);
+        node->accept(node, self);
+    }
+
+    self->indent -= 4;
+}
+
 
 Analyzer *ABCASTDumperCreate(ParseContext *context)
 {
@@ -371,6 +387,7 @@ Analyzer *ABCASTDumperCreate(ParseContext *context)
     self->visitor.visitDot = visitDot;
     self->visitor.visitGraceNote = visitGraceNote;
     self->visitor.visitTuplet = visitTuplet;
+    self->visitor.visitChord = visitChord;
 
     self->analyzer.process = process;
     self->analyzer.destroy = destroy;

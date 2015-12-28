@@ -26,7 +26,7 @@ typedef struct _ABCParser {
 
 extern int ABC_parse(yyscan_t scanner, const char *filepath, void **node);
 extern int ABC_information_parse(yyscan_t scanner, const char *filepath, int line, int columnOffset, void **node);
-extern int ABC_tune_body_parse(yyscan_t scanner, const char *filepath, int line, void **node);
+extern int ABC_tune_body_parse(yyscan_t scanner, const char *filepath, int line, int columnOffset, void **node);
 
 static Node *ABCParserParseInternal(ABCParser *self, const char *filepath)
 {
@@ -112,7 +112,7 @@ Node *ABCParserParseInformation(void *_self, const char *filepath, int line, int
     return node;
 }
 
-Node *ABCParserParseTuneBody(void *_self, const char *filepath, int line, const char *string)
+Node *ABCParserParseTuneBody(void *_self, const char *filepath, int line, int columnOffset, const char *string)
 {
     ABCParser *self = _self; 
     Node *node = NULL;
@@ -130,7 +130,7 @@ Node *ABCParserParseTuneBody(void *_self, const char *filepath, int line, const 
     yyscan_t scanner;
     ABC_tune_body_lex_init_extra(self, &scanner);
     YY_BUFFER_STATE state = ABC_tune_body__scan_string(preprocessed, scanner);
-    ABC_tune_body_parse(scanner, filepath, line, (void **)&node);
+    ABC_tune_body_parse(scanner, filepath, line, columnOffset, (void **)&node);
     ABC_tune_body__delete_buffer(state, scanner);
     ABC_tune_body_lex_destroy(scanner);
 

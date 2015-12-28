@@ -139,7 +139,7 @@ tune_body
     : TUNE_BODY
         {
             TRACE("-- TUNE_BODY [%s] %d - %d\n", $1, @$.first_line, @$.first_column);
-            $$ = ABCParserParseTuneBody(ABC_get_extra(scanner), filepath, @$.first_line, $1);
+            $$ = ABCParserParseTuneBody(ABC_get_extra(scanner), filepath, @$.first_line, 0, $1);
             free($1);
         }
     ;
