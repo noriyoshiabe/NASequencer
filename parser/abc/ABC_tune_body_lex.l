@@ -34,6 +34,7 @@ NOTE          (^^|^|=|_|__)?[a-gA-G](,|')?[[:digit:]]*(\/[[:digit:]]*)?
 BROKEN_RHYTHM <|>
 REST          [xXzZ][[:digit:]]*(\/[[:digit:]]*)?
 REPEAT_BAR    [\|:\[\]]+[-,[:digit:]]*
+ACCIACCATURA  \{\/
 
 %%
 
@@ -69,9 +70,13 @@ REPEAT_BAR    [\|:\[\]]+[-,[:digit:]]*
                     return REPEAT_BAR;
                 }
 
+{ACCIACCATURA}  { return ACCIACCATURA; }
+
 "-"             { return '-'; }
 "("             { return '('; }
 ")"             { return ')'; }
+"{"             { return '{'; }
+"}"             { return '}'; }
 "."             { return '.'; }
 
 "%"             { BEGIN(x_COMMENT); }

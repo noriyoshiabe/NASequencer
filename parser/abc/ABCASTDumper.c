@@ -312,6 +312,22 @@ static void visitDot(void *self, ASTDot *ast)
     dump(self, ast, NULL);
 }
 
+static void visitGraceNote(void *_self, ASTGraceNote *ast)
+{
+    ABCASTDumper *self = _self;
+
+    dump(self, ast, BOOL(ast, acciaccatura), NULL);
+    self->indent += 4;
+
+    NAIterator *iterator = NAArrayGetIterator(ast->node.children);
+    while (iterator->hasNext(iterator)) {
+        Node *node = iterator->next(iterator);
+        node->accept(node, self);
+    }
+
+    self->indent -= 4;
+}
+
 
 Analyzer *ABCASTDumperCreate(ParseContext *context)
 {
@@ -348,6 +364,7 @@ Analyzer *ABCASTDumperCreate(ParseContext *context)
     self->visitor.visitTie = visitTie;
     self->visitor.visitSlur = visitSlur;
     self->visitor.visitDot = visitDot;
+    self->visitor.visitGraceNote = visitGraceNote;
 
     self->analyzer.process = process;
     self->analyzer.destroy = destroy;

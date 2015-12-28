@@ -489,3 +489,17 @@ ASTDot *ABCASTDotCreate(FileLocation *location)
 {
     return NodeCreate(ASTDot, location);
 }
+
+static void ASTGraceNoteAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitGraceNote(visitor, self);
+}
+
+static void ASTGraceNoteDestroy(void *_self)
+{
+}
+
+ASTGraceNote *ABCASTGraceNoteCreate(FileLocation *location)
+{
+    return NodeCreate(ASTGraceNote, location);
+}

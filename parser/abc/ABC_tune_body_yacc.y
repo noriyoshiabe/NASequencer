@@ -41,12 +41,13 @@ extern int ABC_tune_body_error(YYLTYPE *yylloc, yyscan_t scanner, const char *fi
 
 %token <s>INLINE_FIELD ANNOTATION DECORATION NOTE REST REPEAT_BAR
 %token <c>BROKEN_RHYTHM
+%token ACCIACCATURA
 
 %type <node> inline_field line_break annotation decoration note broken_rhythm rest repeat_bar
-%type <node> tie slur dot
+%type <node> tie slur dot grace_note
 
-%type <node> statement
-%type <list> statement_list
+%type <node> statement      grace_note_statement
+%type <list> statement_list grace_note_statement_list
 
 %%
 
@@ -88,6 +89,7 @@ statement
     | tie
     | slur
     | dot
+    | grace_note
     | error
         {
             yyerrok;
@@ -198,6 +200,59 @@ dot
             ASTDot *n = node(Dot, @$);
             $$ = n;
         }
+
+grace_note
+    : '{' grace_note_statement_list '}'
+        {
+            ASTGraceNote *n = node(GraceNote, @$);
+            n->node.children = $2;
+            $$ = n;
+        }
+    | ACCIACCATURA grace_note_statement_list '}'
+        {
+            ASTGraceNote *n = node(GraceNote, @$);
+            n->acciaccatura = true;
+            n->node.children = $2;
+            $$ = n;
+        }
+    ;
+
+grace_note_statement_list
+    : grace_note_statement
+        {
+            $$ = list();
+            if ($1) {
+                listAppend($$, $1);
+            }
+        }
+    | grace_note_statement_list grace_note_statement
+        {
+            $$ = $1;
+            if ($2) {
+                listAppend($$, $2);
+            }
+        }
+    ;
+
+grace_note_statement
+    : decoration
+    | note
+    | broken_rhythm
+    | rest
+    | tie
+    | slur
+    | dot
+    | error
+        {
+            yyerrok;
+            yyclearin;
+            $$ = NULL;
+        }
+    | /* empty */
+        {
+            $$ = NULL;
+        }
+    ;
 
 %%
 

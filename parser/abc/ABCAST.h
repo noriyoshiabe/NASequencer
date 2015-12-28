@@ -197,6 +197,11 @@ typedef struct _ASTDot {
     Node node;
 } ASTDot;
 
+typedef struct _ASTGraceNote {
+    Node node;
+    bool acciaccatura;
+} ASTGraceNote;
+
 
 typedef struct _ASTVisitor {
     void (*visitRoot)(void *self, ASTRoot *ast);
@@ -230,6 +235,7 @@ typedef struct _ASTVisitor {
     void (*visitTie)(void *self, ASTTie *ast);
     void (*visitSlur)(void *self, ASTSlur *ast);
     void (*visitDot)(void *self, ASTDot *ast);
+    void (*visitGraceNote)(void *self, ASTGraceNote *ast);
 } ASTVisitor;
 
 extern ASTRoot *ABCASTRootCreate(FileLocation *location);
@@ -263,6 +269,7 @@ extern ASTRepeatBar *ABCASTRepeatBarCreate(FileLocation *location);
 extern ASTTie *ABCASTTieCreate(FileLocation *location);
 extern ASTSlur *ABCASTSlurCreate(FileLocation *location);
 extern ASTDot *ABCASTDotCreate(FileLocation *location);
+extern ASTGraceNote *ABCASTGraceNoteCreate(FileLocation *location);
 
 
 static inline const char *ASTKeyParamType2String(ASTKeyParamType type)
