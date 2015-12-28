@@ -26,6 +26,7 @@
 %x x_ESCAPE
 %x x_COMMENT
 %x x_END
+%x x_DECORATION
 
 INLINE_FIELD \[[+[:alpha:]]:[^\]]*\]
 ANNOTATION   \"[^\"]*\"
@@ -61,7 +62,7 @@ ANNOTATION   \"[^\"]*\"
                     }
                     else if (ABCParserIsDecoration(yyextra, '!')) {
                         yymore();
-                        //BEGIN(x_DECORATION);
+                        BEGIN(x_DECORATION);
                     }
                     else {
                         return 1;
@@ -71,7 +72,7 @@ ANNOTATION   \"[^\"]*\"
 "+"             {
                     if (ABCParserIsDecoration(yyextra, '+')) {
                         yymore();
-                        //BEGIN(x_DECORATION);
+                        BEGIN(x_DECORATION);
                     }
                     else {
                         return 1;
@@ -86,6 +87,9 @@ ANNOTATION   \"[^\"]*\"
                     case x_ESCAPE:
                     case x_END:
                         return 0;
+                    case x_DECORATION:
+                        BEGIN(INITIAL); 
+                        return 1;
                     default:
                         if (ABCParserIsLineBreak(yyextra, '\n')) {
                             BEGIN(x_END);
@@ -102,5 +106,16 @@ ANNOTATION   \"[^\"]*\"
 <x_ESCAPE>.           { BEGIN(INITIAL); return 1; }
 
 <x_COMMENT>.          { }
+
+<x_DECORATION>[[:graph:]]   {
+                                yymore();
+                                if (yytext[0] == yytext[yyleng - 1]) {
+                                    BEGIN(INITIAL);
+                                    yylval->s = strdup(yytext + 1);
+                                    yylval->s[yyleng - 2] = '\0';
+                                    return DECORATION;
+                                }
+                            }
+<x_DECORATION>[[:space:]]   { return 1; }
 
 %%

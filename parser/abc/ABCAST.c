@@ -366,3 +366,19 @@ ASTAnnotation *ABCASTAnnotationCreate(FileLocation *location)
 {
     return NodeCreate(ASTAnnotation, location);
 }
+
+static void ASTDecorationAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitDecoration(visitor, self);
+}
+
+static void ASTDecorationDestroy(void *_self)
+{
+    ASTDecoration *self = _self;
+    free(self->symbol);
+}
+
+ASTDecoration *ABCASTDecorationCreate(FileLocation *location)
+{
+    return NodeCreate(ASTDecoration, location);
+}

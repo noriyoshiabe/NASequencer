@@ -272,6 +272,11 @@ static void visitAnnotation(void *self, ASTAnnotation *ast)
     dump(self, ast, STRING(ast, text), NULL);
 }
 
+static void visitDecoration(void *self, ASTDecoration *ast)
+{
+    dump(self, ast, STRING(ast, symbol), NULL);
+}
+
 
 Analyzer *ABCASTDumperCreate(ParseContext *context)
 {
@@ -300,6 +305,7 @@ Analyzer *ABCASTDumperCreate(ParseContext *context)
     self->visitor.visitTuneBody = visitTuneBody;
     self->visitor.visitLineBreak = visitLineBreak;
     self->visitor.visitAnnotation = visitAnnotation;
+    self->visitor.visitDecoration = visitDecoration;
 
     self->analyzer.process = process;
     self->analyzer.destroy = destroy;

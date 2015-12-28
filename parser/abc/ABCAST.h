@@ -159,6 +159,11 @@ typedef struct _ASTAnnotation {
     char *text;
 } ASTAnnotation;
 
+typedef struct _ASTDecoration {
+    Node node;
+    char *symbol;
+} ASTDecoration;
+
 
 typedef struct _ASTVisitor {
     void (*visitRoot)(void *self, ASTRoot *ast);
@@ -184,6 +189,7 @@ typedef struct _ASTVisitor {
     void (*visitTuneBody)(void *self, ASTTuneBody *ast);
     void (*visitLineBreak)(void *self, ASTLineBreak *ast);
     void (*visitAnnotation)(void *self, ASTAnnotation *ast);
+    void (*visitDecoration)(void *self, ASTDecoration *ast);
 } ASTVisitor;
 
 extern ASTRoot *ABCASTRootCreate(FileLocation *location);
@@ -209,6 +215,8 @@ extern ASTVoiceParam *ABCASTVoiceParamCreate(FileLocation *location);
 extern ASTTuneBody *ABCASTTuneBodyCreate(FileLocation *location);
 extern ASTLineBreak *ABCASTLineBreakCreate(FileLocation *location);
 extern ASTAnnotation *ABCASTAnnotationCreate(FileLocation *location);
+extern ASTDecoration *ABCASTDecorationCreate(FileLocation *location);
+
 
 static inline const char *ASTKeyParamType2String(ASTKeyParamType type)
 {
