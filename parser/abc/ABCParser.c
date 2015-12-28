@@ -1,4 +1,5 @@
 #include "ABCParser.h"
+#include "ABCPreprocessor.h"
 #include "ABCAST.h"
 #include "NAUtil.h"
 #include "ABC_yacc.h"
@@ -34,20 +35,12 @@ typedef struct _ABCParser {
     NAMap *includedNodeMap;
     char lineBreak;
     char decorationDialects[2];
-    NAMap *staticMacros;
-    NAMap *transposingMacros;
-    NAMap *redefinableSymbols;
+    ABCPreprocessor *preprocessor;
 } ABCParser;
 
 extern int ABC_parse(yyscan_t scanner, const char *filepath, void **node);
 extern int ABC_information_parse(yyscan_t scanner, const char *filepath, int line, void **node);
 extern int ABC_tune_body_parse(yyscan_t scanner, const char *filepath, int line, void **node);
-
-static Macro *MacroCreate(char *target, char *replacement);
-static void MacroDestroy(Macro *self);
-
-static RedefinableSymbol *RedefinableSymbolCreate(char *symbol, char *replacement);
-static void RedefinableSymbolDestroy(RedefinableSymbol *self);
 
 static Node *ABCParserParseInternal(ABCParser *self, const char *filepath)
 {
@@ -96,14 +89,7 @@ static void ABCParserDestroy(void *_self)
     NASetDestroy(self->readingFileSet);
     NAMapDestroy(self->includedNodeMap);
 
-    NAMapTraverseValue(self->staticMacros, MacroDestroy);
-    NAMapDestroy(self->staticMacros);
-
-    NAMapTraverseValue(self->transposingMacros, MacroDestroy);
-    NAMapDestroy(self->transposingMacros);
-
-    NAMapTraverseValue(self->redefinableSymbols, RedefinableSymbolDestroy);
-    NAMapDestroy(self->redefinableSymbols);
+    ABCPreprocessorDestroy(self->preprocessor);
 
     free(self);
 }
@@ -119,30 +105,8 @@ DSLParser *ABCParserCreate(ParseContext *context)
     self->lineBreak = '\n';
     self->decorationDialects[0] = '!';
     self->decorationDialects[1] = '+';
-    self->staticMacros = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
-    self->transposingMacros = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
-    self->redefinableSymbols = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
 
-    const struct {
-        const char *symbol;
-        const char *replacement;
-    } predefined[] = {
-        {"~", "!roll!"},
-        {"H", "!fermata!"},
-        {"L", "!accent!"},
-        {"M", "!lowermordent!"},
-        {"O", "!coda!"},
-        {"P", "!uppermordent!"},
-        {"S", "!segno!"},
-        {"T", "!trill!"},
-        {"u", "!upbow!"},
-        {"v", "!downbow!"},
-    };
-
-    for (int i = 0; i < sizeof(predefined) / sizeof(predefined[0]); ++i) {
-        RedefinableSymbol *rdSymbol = RedefinableSymbolCreate(strdup(predefined[i].symbol), strdup(predefined[i].replacement));
-        NAMapPut(self->redefinableSymbols, rdSymbol->symbol, rdSymbol);
-    }
+    self->preprocessor = ABCPreprocessorCreate();
 
     return (DSLParser *)self;
 }
@@ -257,81 +221,11 @@ bool ABCParserIsDecoration(void *_self, char c)
 void ABCParserSetMacro(void *_self, char *target, char *replacement)
 {
     ABCParser *self = _self;
-
-    Macro *prev;
-    if ((prev = NAMapRemove(self->staticMacros, target))) {
-        MacroDestroy(prev);
-    }
-    if ((prev = NAMapRemove(self->transposingMacros, target))) {
-        MacroDestroy(prev);
-    }
-    
-    Macro *macro = MacroCreate(target, replacement);
-
-    if (macro->transposing) {
-        NAMapPut(self->transposingMacros, macro->target, macro);
-    }
-    else {
-        NAMapPut(self->staticMacros, macro->target, macro);
-    }    
+    ABCPreprocessorSetMacro(self->preprocessor, target, replacement);
 }
 
 void ABCParserSetRedefinableSymbol(void *_self, char *symbol, char *replacement)
 {
     ABCParser *self = _self;
-
-    RedefinableSymbol *prev;
-    if ((prev = NAMapRemove(self->redefinableSymbols, symbol))) {
-        RedefinableSymbolDestroy(prev);
-    }
-
-    if (0 == strcmp(replacement, "!none!") || 0 == strcmp(replacement, "!nil!")) {
-        return;
-    }
-    
-    RedefinableSymbol *rdSymbol = RedefinableSymbolCreate(symbol, replacement);
-    NAMapPut(self->redefinableSymbols, rdSymbol->symbol, rdSymbol);
-}
-
-
-static Macro *MacroCreate(char *target, char *replacement)
-{
-    Macro *self = calloc(1, sizeof(Macro));
-    self->target = target;
-    self->replacement = NACStringTrimWhiteSpace(replacement);
-
-    char *pattern = NACStringDuplicate(target);
-    char *n = strchr(pattern, 'n');
-    if (n) {
-        char *_pattern = pattern;
-        pattern = alloca(strlen(_pattern) + 10 + 1);
-        *n = '\0';
-        sprintf(pattern, "%s([A-Ga-g])%s", _pattern, n + 1);
-        self->transposing = true;
-    }
-    regcomp(&self->reg, pattern, REG_EXTENDED);
-
-    return self;
-}
-
-static void MacroDestroy(Macro *self)
-{
-    free(self->target);
-    free(self->replacement);
-    free(self);
-}
-
-static RedefinableSymbol *RedefinableSymbolCreate(char *symbol, char *replacement)
-{
-    RedefinableSymbol *self = calloc(1, sizeof(RedefinableSymbol));
-    self->symbol = symbol;
-    self->replacement = replacement;
-    return self;
-}
-
-static void RedefinableSymbolDestroy(RedefinableSymbol *self)
-{
-    free(self->symbol);
-    free(self->replacement);
-    free(self);
+    ABCPreprocessorSetRedefinableSymbol(self->preprocessor, symbol, replacement);
 }

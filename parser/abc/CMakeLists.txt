@@ -32,6 +32,7 @@ include_directories(
 set(SOURCES
   ABCDriver.c
   ABCParser.c
+  ABCPreprocessor.c
   ABCAST.c
   ABCASTDumper.c
   #ABCASTAnalyzer.c
