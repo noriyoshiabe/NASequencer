@@ -267,6 +267,11 @@ static void visitLineBreak(void *self, ASTLineBreak *ast)
     dump(self, ast, NULL);
 }
 
+static void visitAnnotation(void *self, ASTAnnotation *ast)
+{
+    dump(self, ast, STRING(ast, text), NULL);
+}
+
 
 Analyzer *ABCASTDumperCreate(ParseContext *context)
 {
@@ -294,6 +299,7 @@ Analyzer *ABCASTDumperCreate(ParseContext *context)
     self->visitor.visitVoiceParam = visitVoiceParam;
     self->visitor.visitTuneBody = visitTuneBody;
     self->visitor.visitLineBreak = visitLineBreak;
+    self->visitor.visitAnnotation = visitAnnotation;
 
     self->analyzer.process = process;
     self->analyzer.destroy = destroy;

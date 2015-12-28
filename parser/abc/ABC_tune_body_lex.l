@@ -28,6 +28,7 @@
 %x x_END
 
 INLINE_FIELD \[[+[:alpha:]]:[^\]]*\]
+ANNOTATION   \"[^\"]*\"
 
 %%
 
@@ -35,6 +36,12 @@ INLINE_FIELD \[[+[:alpha:]]:[^\]]*\]
                     yylval->s = strdup(yytext + 1);
                     yylval->s[yyleng - 2] = '\0';
                     return INLINE_FIELD;
+                }
+
+{ANNOTATION}    {
+                    yylval->s = strdup(yytext + 1);
+                    yylval->s[yyleng - 2] = '\0';
+                    return ANNOTATION;
                 }
 
 "%"             { BEGIN(x_COMMENT); }

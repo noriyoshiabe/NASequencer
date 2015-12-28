@@ -38,9 +38,9 @@ extern int ABC_tune_body_error(YYLTYPE *yylloc, yyscan_t scanner, const char *fi
     void *list;
 }
 
-%token <s>INLINE_FIELD
+%token <s>INLINE_FIELD ANNOTATION
 
-%type <node> inline_field line_break
+%type <node> inline_field line_break annotation
 
 %type <node> statement
 %type <list> statement_list
@@ -76,6 +76,7 @@ statement_list
 statement
     : inline_field
     | line_break
+    | annotation
     | error
         {
             yyerrok;
@@ -94,6 +95,15 @@ inline_field
             TRACE("---- INLINE_FIELD [%s] %d - %d\n", $1, line, @$.first_column);
             $$ = ABCParserParseInformation(ABC_tune_body_get_extra(scanner), filepath, line, @$.first_column, $1);
             free($1);
+        }
+    ;
+
+annotation
+    : ANNOTATION
+        {
+            ASTAnnotation *n = node(Annotation, @$);
+            n->text = $1;
+            $$ = n;
         }
     ;
 

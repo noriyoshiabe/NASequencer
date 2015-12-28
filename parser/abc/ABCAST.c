@@ -350,3 +350,19 @@ ASTLineBreak *ABCASTLineBreakCreate(FileLocation *location)
 {
     return NodeCreate(ASTLineBreak, location);
 }
+
+static void ASTAnnotationAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitAnnotation(visitor, self);
+}
+
+static void ASTAnnotationDestroy(void *_self)
+{
+    ASTAnnotation *self = _self;
+    free(self->text);
+}
+
+ASTAnnotation *ABCASTAnnotationCreate(FileLocation *location)
+{
+    return NodeCreate(ASTAnnotation, location);
+}
