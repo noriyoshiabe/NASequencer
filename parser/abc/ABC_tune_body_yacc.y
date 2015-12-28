@@ -50,7 +50,7 @@ extern int ABC_tune_body_error(YYLTYPE *yylloc, yyscan_t scanner, const char *fi
 input
     : statement_list
         {
-            ASTTuneBody *n = node(TuneBody, @$);
+            ASTTuneBody *n = node(TuneBody, ((YYLTYPE){0, 1}));
             n->node.children = $1;
             *node = n;
         }

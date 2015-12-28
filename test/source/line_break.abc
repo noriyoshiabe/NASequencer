@@ -6,7 +6,7 @@ I:linebreak $
 ddd
 eee $ fff
 I:linebreak !
-ggg ! hhh
+ggg ! hhh ! ggg
 I:linebreak <none>
 iii
 I:linebreak <EOL>
