@@ -322,3 +322,17 @@ ASTVoiceParam *ABCASTVoiceParamCreate(FileLocation *location)
 {
     return NodeCreate(ASTVoiceParam, location);
 }
+
+static void ASTTuneBodyAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitTuneBody(visitor, self);
+}
+
+static void ASTTuneBodyDestroy(void *_self)
+{
+}
+
+ASTTuneBody *ABCASTTuneBodyCreate(FileLocation *location)
+{
+    return NodeCreate(ASTTuneBody, location);
+}

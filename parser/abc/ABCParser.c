@@ -5,6 +5,8 @@
 #include "ABC_lex.h"
 #include "ABC_information_yacc.h"
 #include "ABC_information_lex.h"
+#include "ABC_tune_body_yacc.h"
+#include "ABC_tune_body_lex.h"
 #include "NASet.h"
 #include "NAMap.h"
 #include "NACString.h"
@@ -39,6 +41,7 @@ typedef struct _ABCParser {
 
 extern int ABC_parse(yyscan_t scanner, const char *filepath, void **node);
 extern int ABC_information_parse(yyscan_t scanner, const char *filepath, int line, void **node);
+extern int ABC_tune_body_parse(yyscan_t scanner, const char *filepath, int line, void **node);
 
 static Macro *MacroCreate(char *target, char *replacement);
 static void MacroDestroy(Macro *self);
@@ -149,12 +152,27 @@ Node *ABCParserParseInformation(void *_self, const char *filepath, int line, con
     ABCParser *self = _self; 
     Node *node = NULL;
 
-    yyscan_t informationScanner;
-    ABC_information_lex_init_extra(self, &informationScanner);
-    YY_BUFFER_STATE state = ABC_information__scan_string(string, informationScanner);
-    ABC_information_parse(informationScanner, filepath, line, (void **)&node);
-    ABC_information__delete_buffer(state, informationScanner);
-    ABC_information_lex_destroy(informationScanner);
+    yyscan_t scanner;
+    ABC_information_lex_init_extra(self, &scanner);
+    YY_BUFFER_STATE state = ABC_information__scan_string(string, scanner);
+    ABC_information_parse(scanner, filepath, line, (void **)&node);
+    ABC_information__delete_buffer(state, scanner);
+    ABC_information_lex_destroy(scanner);
+
+    return node;
+}
+
+Node *ABCParserParseTuneBody(void *_self, const char *filepath, int line, const char *string)
+{
+    ABCParser *self = _self; 
+    Node *node = NULL;
+
+    yyscan_t scanner;
+    ABC_tune_body_lex_init_extra(self, &scanner);
+    YY_BUFFER_STATE state = ABC_tune_body__scan_string(string, scanner);
+    ABC_tune_body_parse(scanner, filepath, line, (void **)&node);
+    ABC_tune_body__delete_buffer(state, scanner);
+    ABC_tune_body_lex_destroy(scanner);
 
     return node;
 }

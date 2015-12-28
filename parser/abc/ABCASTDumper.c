@@ -246,6 +246,22 @@ static void visitVoiceParam(void *self, ASTVoiceParam *ast)
     }
 }
 
+static void visitTuneBody(void *_self, ASTTuneBody *ast)
+{
+    ABCASTDumper *self = _self;
+
+    dump(self, ast, NULL);
+    self->indent += 4;
+
+    NAIterator *iterator = NAArrayGetIterator(ast->node.children);
+    while (iterator->hasNext(iterator)) {
+        Node *node = iterator->next(iterator);
+        node->accept(node, self);
+    }
+
+    self->indent -= 4;
+}
+
 
 Analyzer *ABCASTDumperCreate(ParseContext *context)
 {
@@ -271,6 +287,7 @@ Analyzer *ABCASTDumperCreate(ParseContext *context)
     self->visitor.visitContinuation = visitContinuation;
     self->visitor.visitVoice = visitVoice;
     self->visitor.visitVoiceParam = visitVoiceParam;
+    self->visitor.visitTuneBody = visitTuneBody;
 
     self->analyzer.process = process;
     self->analyzer.destroy = destroy;

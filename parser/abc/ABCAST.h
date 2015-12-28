@@ -146,6 +146,11 @@ typedef struct _ASTVoiceParam {
     int intValue;
 } ASTVoiceParam;
 
+typedef struct _ASTTuneBody {
+    Node node;
+} ASTTuneBody;
+
+
 typedef struct _ASTVisitor {
     void (*visitRoot)(void *self, ASTRoot *ast);
     void (*visitFileIdentification)(void *self, ASTFileIdentification *ast);
@@ -167,6 +172,7 @@ typedef struct _ASTVisitor {
     void (*visitContinuation)(void *self, ASTContinuation *ast);
     void (*visitVoice)(void *self, ASTVoice *ast);
     void (*visitVoiceParam)(void *self, ASTVoiceParam *ast);
+    void (*visitTuneBody)(void *self, ASTTuneBody *ast);
 } ASTVisitor;
 
 extern ASTRoot *ABCASTRootCreate(FileLocation *location);
@@ -189,6 +195,7 @@ extern ASTSymbolLine *ABCASTSymbolLineCreate(FileLocation *location);
 extern ASTContinuation *ABCASTContinuationCreate(FileLocation *location);
 extern ASTVoice *ABCASTVoiceCreate(FileLocation *location);
 extern ASTVoiceParam *ABCASTVoiceParamCreate(FileLocation *location);
+extern ASTTuneBody *ABCASTTuneBodyCreate(FileLocation *location);
 
 static inline const char *ASTKeyParamType2String(ASTKeyParamType type)
 {
