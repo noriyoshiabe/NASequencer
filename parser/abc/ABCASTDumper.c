@@ -354,6 +354,11 @@ static void visitOverlay(void *self, ASTOverlay *ast)
     dump(self, ast, NULL);
 }
 
+static void visitEmptyLine(void *self, ASTEmptyLine *ast)
+{
+    dump(self, ast, NULL);
+}
+
 
 Analyzer *ABCASTDumperCreate(ParseContext *context)
 {
@@ -394,6 +399,7 @@ Analyzer *ABCASTDumperCreate(ParseContext *context)
     self->visitor.visitTuplet = visitTuplet;
     self->visitor.visitChord = visitChord;
     self->visitor.visitOverlay = visitOverlay;
+    self->visitor.visitEmptyLine = visitEmptyLine;
 
     self->analyzer.process = process;
     self->analyzer.destroy = destroy;

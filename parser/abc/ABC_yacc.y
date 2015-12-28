@@ -47,6 +47,7 @@ extern int ABC_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, vo
 %type <node> file_identification
 %type <node> information
 %type <node> directive
+%type <node> empty_line
 %type <node> tune_body
 
 %type <node> statement
@@ -84,6 +85,7 @@ statement
     : file_identification
     | information
     | directive
+    | empty_line
     | tune_body
     ;
 
@@ -132,6 +134,15 @@ directive
             TRACE("-- DIRECTIVE [%s] %d - %d\n", $1, @$.first_line, @$.first_column);
             $$ = NULL;
             free($1);
+        }
+    ;
+
+empty_line
+    : EMPTY_LINE
+        {
+            TRACE("-- EMPTY_LINE %d - %d\n", @$.first_line, @$.first_column);
+            ASTEmptyLine *n = node(EmptyLine, @$);
+            $$ = n;
         }
     ;
 

@@ -28,8 +28,8 @@
 FILE_IDENTIFICATION ^%abc(-[[:digit:]]\.[[:digit:]])?[[:blank:]]*$
 INFORMATION         ^[+[:alpha:]]:.*$
 DIRECTIVE           ^%%.*$
-COMMENT_LINE        ^[[:blank:]]*%.*$
-EMPTY_LINE          ^[[:blank:]]*$
+COMMENT_LINE        ^[[:blank:]]*%.*\n
+EMPTY_LINE          ^[[:blank:]]*\n
 TUNE_BODY           ^[[:print:]]*$
 
 %%

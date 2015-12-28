@@ -549,3 +549,17 @@ ASTOverlay *ABCASTOverlayCreate(FileLocation *location)
 {
     return NodeCreate(ASTOverlay, location);
 }
+
+static void ASTEmptyLineAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitEmptyLine(visitor, self);
+}
+
+static void ASTEmptyLineDestroy(void *_self)
+{
+}
+
+ASTEmptyLine *ABCASTEmptyLineCreate(FileLocation *location)
+{
+    return NodeCreate(ASTEmptyLine, location);
+}
