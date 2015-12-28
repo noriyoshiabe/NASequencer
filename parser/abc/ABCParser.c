@@ -25,7 +25,7 @@ typedef struct _ABCParser {
 } ABCParser;
 
 extern int ABC_parse(yyscan_t scanner, const char *filepath, void **node);
-extern int ABC_information_parse(yyscan_t scanner, const char *filepath, int line, void **node);
+extern int ABC_information_parse(yyscan_t scanner, const char *filepath, int line, int columnOffset, void **node);
 extern int ABC_tune_body_parse(yyscan_t scanner, const char *filepath, int line, void **node);
 
 static Node *ABCParserParseInternal(ABCParser *self, const char *filepath)
@@ -97,7 +97,7 @@ DSLParser *ABCParserCreate(ParseContext *context)
     return (DSLParser *)self;
 }
 
-Node *ABCParserParseInformation(void *_self, const char *filepath, int line, const char *string)
+Node *ABCParserParseInformation(void *_self, const char *filepath, int line, int columnOffset, const char *string)
 {
     ABCParser *self = _self; 
     Node *node = NULL;
@@ -105,7 +105,7 @@ Node *ABCParserParseInformation(void *_self, const char *filepath, int line, con
     yyscan_t scanner;
     ABC_information_lex_init_extra(self, &scanner);
     YY_BUFFER_STATE state = ABC_information__scan_string(string, scanner);
-    ABC_information_parse(scanner, filepath, line, (void **)&node);
+    ABC_information_parse(scanner, filepath, line, columnOffset, (void **)&node);
     ABC_information__delete_buffer(state, scanner);
     ABC_information_lex_destroy(scanner);
 

@@ -12,7 +12,7 @@ typedef enum {
 
 extern DSLParser *ABCParserCreate(ParseContext *context);
 
-extern Node *ABCParserParseInformation(void *self, const char *filepath, int line, const char *string);
+extern Node *ABCParserParseInformation(void *self, const char *filepath, int line, int columnOffset, const char *string);
 extern Node *ABCParserParseTuneBody(void *self, const char *filepath, int line, const char *string);
 extern Node *ABCParserParseIncludeFile(void *self, FileLocation *location, const char *includeFile, char **fullpath);
 extern void ABCParserSyntaxError(void *self, FileLocation *location, const char *token);

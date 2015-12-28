@@ -92,7 +92,7 @@ inline_field
     : INLINE_FIELD
         {
             TRACE("---- INLINE_FIELD [%s] %d - %d\n", $1, line, @$.first_column);
-            $$ = ABCParserParseInformation(ABC_tune_body_get_extra(scanner), filepath, line, $1);
+            $$ = ABCParserParseInformation(ABC_tune_body_get_extra(scanner), filepath, line, @$.first_column, $1);
             free($1);
         }
     ;

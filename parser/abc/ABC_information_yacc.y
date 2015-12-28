@@ -6,10 +6,10 @@
 #include "ABCParser.h"
 #include "ABCAST.h"
 
-extern int ABC_information_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, int line, void **node, const char *message);
+extern int ABC_information_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, int line, int columnOffset, void **node, const char *message);
 extern void ABC_information_lex_set_error(yyscan_t scanner);
 
-#define node(type, yylloc) ABCAST##type##Create(&((FileLocation){(char *)filepath, line, yylloc.first_column}))
+#define node(type, yylloc) ABCAST##type##Create(&((FileLocation){(char *)filepath, line, yylloc.first_column + columnOffset}))
 #define list() NAArrayCreate(4, NULL)
 #define listAppend(list, node) NAArrayAppend(list, node)
 
@@ -24,6 +24,7 @@ extern void ABC_information_lex_set_error(yyscan_t scanner);
 %parse-param { yyscan_t scanner }
 %parse-param { const char *filepath }
 %parse-param { int line }
+%parse-param { int columnOffset }
 %parse-param { void **node }
 %locations
 
@@ -586,9 +587,9 @@ voice_param
 
 %%
 
-int ABC_information_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, int line, void **node, const char *message)
+int ABC_information_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, int line, int columnOffset, void **node, const char *message)
 {
-    FileLocation location = {(char *)filepath, line, yylloc->first_column};
+    FileLocation location = {(char *)filepath, line, yylloc->first_column + columnOffset};
     ABCParserSyntaxError(ABC_information_get_extra(scanner), &location, ABC_information_get_text(scanner));
     return 0;
 }
