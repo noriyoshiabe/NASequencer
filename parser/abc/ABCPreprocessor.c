@@ -54,7 +54,10 @@ ABCPreprocessor *ABCPreprocessorCreate()
     self->buffer = NAStringBufferCreate(1024);
     self->tmpBuffer = NAStringBufferCreate(1024);
 
-    regcomp(&self->inlineRegex, "\\[[+[:alpha:]]:[^\\]]*\\]", REG_EXTENDED);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunknown-escape-sequence"
+    regcomp(&self->inlineRegex, "\[[+[:alpha:]]:[^\]]*\]", REG_EXTENDED);
+#pragma clang diagnostic pop
 
     const struct {
         const char *symbol;

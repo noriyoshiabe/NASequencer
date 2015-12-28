@@ -10,23 +10,9 @@
 #include "ABC_tune_body_lex.h"
 #include "NASet.h"
 #include "NAMap.h"
-#include "NACString.h"
 
 #include <stdlib.h>
 #include <libgen.h>
-#include <regex.h>
-
-typedef struct Macro {
-    char *target;
-    char *replacement;
-    regex_t reg;
-    bool transposing;
-} Macro;
-
-typedef struct RedefinableSymbol {
-    char *symbol;
-    char *replacement;
-} RedefinableSymbol;
 
 typedef struct _ABCParser {
     DSLParser parser;
