@@ -13,6 +13,7 @@ set(SOURCES
   NASet.c
   NAMap.c
   NAByteBuffer.c
+  NAStringBuffer.c
   NAStack.c
   NAUtil.c
   NAMessageQ.c

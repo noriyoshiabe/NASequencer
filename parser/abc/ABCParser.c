@@ -133,10 +133,13 @@ Node *ABCParserParseTuneBody(void *_self, const char *filepath, int line, const 
 
     char *preprocessed = ABCPreprocessorPreprocessTuneBody(self->preprocessor, string);
 
-    printf("===========================================\n");
+# if 0
+    printf("== [tune body] ===========================================\n");
     printf("%s\n", string);
+    printf("== [preprocessed] ========================================\n");
     printf("%s\n", preprocessed);
-    printf("===========================================\n");
+    printf("==========================================================\n");
+#endif
 
     yyscan_t scanner;
     ABC_tune_body_lex_init_extra(self, &scanner);

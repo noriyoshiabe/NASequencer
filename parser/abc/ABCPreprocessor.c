@@ -1,5 +1,5 @@
 #include "ABCPreprocessor.h"
-#include "NAUtil.h"
+#include "NAStringBuffer.h"
 #include "NAMap.h"
 #include "NACString.h"
 
@@ -32,16 +32,16 @@ struct _ABCPreprocessor {
     NAMap *redefinableSymbols;
 
     regex_t inlineRegex;
-    FILE *stream;
-    FILE *tmpStream;
+    NAStringBuffer *buffer;
+    NAStringBuffer *tmpBuffer;
 };
 
 static void ABCPreprocessorPreprocessTuneBodyInternal(ABCPreprocessor *self, const char *string);
-static void ABCPreprocessorExpandStaticMacro(ABCPreprocessor *self, const char *string, FILE *stream);
-static void ABCPreprocessorExpandTransposingMacro(ABCPreprocessor *self, const char *string, FILE *stream);
-static void ABCPreprocessorExpandRedefinableSymbol(ABCPreprocessor *self, const char *string, FILE *stream);
+static void ABCPreprocessorExpandStaticMacro(ABCPreprocessor *self, const char *string, NAStringBuffer *buffer);
+static void ABCPreprocessorExpandTransposingMacro(ABCPreprocessor *self, const char *string, NAStringBuffer *buffer);
+static void ABCPreprocessorExpandRedefinableSymbol(ABCPreprocessor *self, const char *string, NAStringBuffer *buffer);
 
-static void putTransposedNote(char pitch, char letter, FILE *stream);
+static void putTransposedNote(char pitch, char letter, NAStringBuffer *buffer);
 
 ABCPreprocessor *ABCPreprocessorCreate()
 {
@@ -51,8 +51,8 @@ ABCPreprocessor *ABCPreprocessorCreate()
     self->transposingMacros = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
     self->redefinableSymbols = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
 
-    self->stream = NAUtilCreateMemoryStream(1024);
-    self->tmpStream = NAUtilCreateMemoryStream(1024);
+    self->buffer = NAStringBufferCreate(1024);
+    self->tmpBuffer = NAStringBufferCreate(1024);
 
     regcomp(&self->inlineRegex, "\\[[+[:alpha:]]:[^\\]]*\\]", REG_EXTENDED);
 
@@ -91,8 +91,8 @@ void ABCPreprocessorDestroy(ABCPreprocessor *self)
     NAMapTraverseValue(self->redefinableSymbols, MacroDestroy);
     NAMapDestroy(self->redefinableSymbols);
 
-    fclose(self->stream);
-    fclose(self->tmpStream);
+    NAStringBufferDestroy(self->buffer);
+    NAStringBufferDestroy(self->tmpBuffer);
 
     free(self);
 }
@@ -134,18 +134,11 @@ void ABCPreprocessorSetRedefinableSymbol(ABCPreprocessor *self, char *symbol, ch
 
 char *ABCPreprocessorPreprocessTuneBody(ABCPreprocessor *self, const char *tuneBody)
 {
-    fflush(self->stream);
-
+    NAStringBufferClear(self->buffer);
     ABCPreprocessorPreprocessTuneBodyInternal(self, tuneBody);
-
-    int length = ftell(self->stream);
-    char *result = malloc(length + 1);
-
-    fseek(self->stream, 0, SEEK_SET);
-    fread(result, 1, length, self->stream);
-
-    result[length] = '\0';
-
+    int size = NAStringBufferGetLength(self->buffer) + 1;
+    char *result = malloc(size);
+    NAStringBufferGetCString(self->buffer, result, size);
     return result;
 }
 
@@ -156,22 +149,19 @@ static void ABCPreprocessorPreprocessTuneBodyInternal(ABCPreprocessor *self, con
     if (REG_NOMATCH == regexec(&self->inlineRegex, string, 1, match, 0)) {
         char buffer[1024];
 
-        fflush(self->tmpStream);
-        ABCPreprocessorExpandStaticMacro(self, string, self->tmpStream);
-        fseek(self->tmpStream, 0, SEEK_SET);
-        fread(buffer, 1, 1024, self->tmpStream);
+        NAStringBufferClear(self->tmpBuffer);
+        ABCPreprocessorExpandStaticMacro(self, string, self->tmpBuffer);
+        NAStringBufferGetCString(self->tmpBuffer, buffer, sizeof(buffer));
 
-        fflush(self->tmpStream);
-        ABCPreprocessorExpandTransposingMacro(self, buffer, self->tmpStream);
-        fseek(self->tmpStream, 0, SEEK_SET);
-        fread(buffer, 1, 1024, self->tmpStream);
+        NAStringBufferClear(self->tmpBuffer);
+        ABCPreprocessorExpandTransposingMacro(self, buffer, self->tmpBuffer);
+        NAStringBufferGetCString(self->tmpBuffer, buffer, sizeof(buffer));
 
-        fflush(self->tmpStream);
-        ABCPreprocessorExpandRedefinableSymbol(self, buffer, self->tmpStream);
-        fseek(self->tmpStream, 0, SEEK_SET);
-        fread(buffer, 1, 1024, self->tmpStream);
+        NAStringBufferClear(self->tmpBuffer);
+        ABCPreprocessorExpandRedefinableSymbol(self, buffer, self->tmpBuffer);
+        NAStringBufferGetCString(self->tmpBuffer, buffer, sizeof(buffer));
 
-        fputs(buffer, self->stream);
+        NAStringBufferAppendString(self->buffer, buffer);
     }
     else {
         int length;
@@ -183,7 +173,7 @@ static void ABCPreprocessorPreprocessTuneBodyInternal(ABCPreprocessor *self, con
         buffer[length] = '\0';
         ABCPreprocessorPreprocessTuneBodyInternal(self, buffer);
 
-        fwrite(string + match[0].rm_so, 1, match[0].rm_eo - match[0].rm_so, self->stream);
+        NAStringBufferAppendNString(self->buffer, string + match[0].rm_so, match[0].rm_eo - match[0].rm_so);
 
         length = strlen(string) - match[0].rm_eo;
         buffer = alloca(length + 1);
@@ -193,7 +183,7 @@ static void ABCPreprocessorPreprocessTuneBodyInternal(ABCPreprocessor *self, con
     }
 }
 
-static void ABCPreprocessorExpandStaticMacro(ABCPreprocessor *self, const char *string, FILE *stream)
+static void ABCPreprocessorExpandStaticMacro(ABCPreprocessor *self, const char *string, NAStringBuffer *buffer)
 {
     NAIterator *iterator;
 START:
@@ -204,17 +194,17 @@ START:
 
         regmatch_t match[1];
         if (REG_NOMATCH != regexec(&macro->reg, string, 1, match, 0)) {
-            fwrite(string, 1, match[0].rm_so, stream);
-            fputs(macro->replacement, stream);
+            NAStringBufferAppendNString(buffer, string, match[0].rm_so);
+            NAStringBufferAppendString(buffer, macro->replacement);
             string += match[0].rm_eo;
             goto START;
         }
     }
 
-    fputs(string, stream);
+    NAStringBufferAppendString(buffer, string);
 }
 
-static void ABCPreprocessorExpandTransposingMacro(ABCPreprocessor *self, const char *string, FILE *stream)
+static void ABCPreprocessorExpandTransposingMacro(ABCPreprocessor *self, const char *string, NAStringBuffer *buffer)
 {
     NAIterator *iterator;
 START:
@@ -225,14 +215,15 @@ START:
 
         regmatch_t match[2];
         if (REG_NOMATCH != regexec(&macro->reg, string, 2, match, 0)) {
-            fwrite(string, 1, match[0].rm_so, stream);
+            NAStringBufferAppendNString(buffer, string, match[0].rm_so);
+
             char pitch = string[match[1].rm_so];
             for (char *pc = macro->replacement; *pc; ++pc) {
                 if ('h' <= *pc && *pc <= 'z') {
-                    putTransposedNote(pitch, *pc, stream);
+                    putTransposedNote(pitch, *pc, buffer);
                 }
                 else {
-                    fputc(*pc, stream);
+                    NAStringBufferAppendChar(buffer, *pc);
                 }
             }
 
@@ -241,10 +232,10 @@ START:
         }
     }
     
-    fputs(string, stream);
+    NAStringBufferAppendString(buffer, string);
 }
 
-static void putTransposedNote(char pitch, char letter, FILE *stream)
+static void putTransposedNote(char pitch, char letter, NAStringBuffer *buffer)
 {
 #define isInsideRange(c, from, to) (from <= c && c <= to)
 
@@ -266,20 +257,20 @@ static void putTransposedNote(char pitch, char letter, FILE *stream)
         return;
     }
 
-    fputs(notes[index + transpose], stream);
+    NAStringBufferAppendString(buffer, notes[index + transpose]);
 }
 
-static void ABCPreprocessorExpandRedefinableSymbol(ABCPreprocessor *self, const char *string, FILE *stream)
+static void ABCPreprocessorExpandRedefinableSymbol(ABCPreprocessor *self, const char *string, NAStringBuffer *buffer)
 {
     int length = strlen(string);
     for (int i = 0; i < length; ++i) {
         char symbol[2] = {string[i], '\0'};
         RedefinableSymbol *rdSymbol = NAMapGet(self->redefinableSymbols, symbol);
         if (rdSymbol) {
-            fputs(rdSymbol->replacement, stream);
+            NAStringBufferAppendString(buffer, rdSymbol->replacement);
         }
         else {
-            fputc(string[i], stream);
+            NAStringBufferAppendChar(buffer, string[i]);
         }
     }
 }
