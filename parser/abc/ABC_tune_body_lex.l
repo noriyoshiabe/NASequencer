@@ -24,6 +24,7 @@
 %option bison-locations
 
 %x x_ESCAPE
+%x x_COMMENT
 %x x_END
 
 INLINE_FIELD \[[+[:alpha:]]:[^\]]*\]
@@ -35,6 +36,8 @@ INLINE_FIELD \[[+[:alpha:]]:[^\]]*\]
                     yylval->s[yyleng - 2] = '\0';
                     return INLINE_FIELD;
                 }
+
+"%"             { BEGIN(x_COMMENT); }
 
 "$"             {
                     if (ABCParserIsLineBreak(yyextra, '$')) {
@@ -90,5 +93,7 @@ INLINE_FIELD \[[+[:alpha:]]:[^\]]*\]
 <x_ESCAPE>"%"         { BEGIN(INITIAL); return '%'; }
 <x_ESCAPE>[[:space:]] { }
 <x_ESCAPE>.           { BEGIN(INITIAL); return 1; }
+
+<x_COMMENT>.          { }
 
 %%

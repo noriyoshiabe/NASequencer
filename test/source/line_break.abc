@@ -11,6 +11,7 @@ I:linebreak <none>
 iii
 I:linebreak <EOL>
 jjj
+DDD % comment
 kkk \
 I:linebreak !
 aaaa !
