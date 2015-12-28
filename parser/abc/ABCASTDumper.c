@@ -328,6 +328,11 @@ static void visitGraceNote(void *_self, ASTGraceNote *ast)
     self->indent -= 4;
 }
 
+static void visitTuplet(void *self, ASTTuplet *ast)
+{
+    dump(self, ast, STRING(ast, tupletString), NULL);
+}
+
 
 Analyzer *ABCASTDumperCreate(ParseContext *context)
 {
@@ -365,6 +370,7 @@ Analyzer *ABCASTDumperCreate(ParseContext *context)
     self->visitor.visitSlur = visitSlur;
     self->visitor.visitDot = visitDot;
     self->visitor.visitGraceNote = visitGraceNote;
+    self->visitor.visitTuplet = visitTuplet;
 
     self->analyzer.process = process;
     self->analyzer.destroy = destroy;

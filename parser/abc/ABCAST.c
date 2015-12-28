@@ -503,3 +503,19 @@ ASTGraceNote *ABCASTGraceNoteCreate(FileLocation *location)
 {
     return NodeCreate(ASTGraceNote, location);
 }
+
+static void ASTTupletAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitTuplet(visitor, self);
+}
+
+static void ASTTupletDestroy(void *_self)
+{
+    ASTTuplet *self = _self;
+    free(self->tupletString);
+}
+
+ASTTuplet *ABCASTTupletCreate(FileLocation *location)
+{
+    return NodeCreate(ASTTuplet, location);
+}

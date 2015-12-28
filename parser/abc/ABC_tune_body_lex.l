@@ -35,6 +35,7 @@ BROKEN_RHYTHM <|>
 REST          [xXzZ][[:digit:]]*(\/[[:digit:]]*)?
 REPEAT_BAR    [\|:\[\]]+[-,[:digit:]]*
 ACCIACCATURA  \{\/
+TUPLET        \([[:digit:]]+(:[[:digit:]]*)?(:[[:digit:]]*)?
 
 %%
 
@@ -71,6 +72,11 @@ ACCIACCATURA  \{\/
                 }
 
 {ACCIACCATURA}  { return ACCIACCATURA; }
+
+{TUPLET}        {
+                    yylval->s = strdup(yytext);
+                    return TUPLET;
+                }
 
 "-"             { return '-'; }
 "("             { return '('; }

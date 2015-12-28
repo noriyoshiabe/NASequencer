@@ -39,12 +39,12 @@ extern int ABC_tune_body_error(YYLTYPE *yylloc, yyscan_t scanner, const char *fi
     void *list;
 }
 
-%token <s>INLINE_FIELD ANNOTATION DECORATION NOTE REST REPEAT_BAR
+%token <s>INLINE_FIELD ANNOTATION DECORATION NOTE REST REPEAT_BAR TUPLET
 %token <c>BROKEN_RHYTHM
 %token ACCIACCATURA
 
 %type <node> inline_field line_break annotation decoration note broken_rhythm rest repeat_bar
-%type <node> tie slur dot grace_note
+%type <node> tie slur dot grace_note tuplet
 
 %type <node> statement      grace_note_statement
 %type <list> statement_list grace_note_statement_list
@@ -90,6 +90,7 @@ statement
     | slur
     | dot
     | grace_note
+    | tuplet
     | error
         {
             yyerrok;
@@ -170,6 +171,7 @@ repeat_bar
             n->symbols = $1;
             $$ = n;
         }
+    ;
 
 tie
     : '-'
@@ -251,6 +253,15 @@ grace_note_statement
     | /* empty */
         {
             $$ = NULL;
+        }
+    ;
+
+tuplet
+    : TUPLET
+        {
+            ASTTuplet *n = node(Tuplet, @$);
+            n->tupletString = $1;
+            $$ = n;
         }
     ;
 

@@ -202,6 +202,11 @@ typedef struct _ASTGraceNote {
     bool acciaccatura;
 } ASTGraceNote;
 
+typedef struct _ASTTuplet {
+    Node node;
+    char *tupletString;
+} ASTTuplet;
+
 
 typedef struct _ASTVisitor {
     void (*visitRoot)(void *self, ASTRoot *ast);
@@ -236,6 +241,7 @@ typedef struct _ASTVisitor {
     void (*visitSlur)(void *self, ASTSlur *ast);
     void (*visitDot)(void *self, ASTDot *ast);
     void (*visitGraceNote)(void *self, ASTGraceNote *ast);
+    void (*visitTuplet)(void *self, ASTTuplet *ast);
 } ASTVisitor;
 
 extern ASTRoot *ABCASTRootCreate(FileLocation *location);
@@ -270,6 +276,7 @@ extern ASTTie *ABCASTTieCreate(FileLocation *location);
 extern ASTSlur *ABCASTSlurCreate(FileLocation *location);
 extern ASTDot *ABCASTDotCreate(FileLocation *location);
 extern ASTGraceNote *ABCASTGraceNoteCreate(FileLocation *location);
+extern ASTTuplet *ABCASTTupletCreate(FileLocation *location);
 
 
 static inline const char *ASTKeyParamType2String(ASTKeyParamType type)
