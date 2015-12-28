@@ -28,9 +28,10 @@
 %x x_END
 %x x_DECORATION
 
-INLINE_FIELD \[[+[:alpha:]]:[^\]]*\]
-ANNOTATION   \"[^\"]*\"
-NOTE         (^^|^|=|_|__)?[a-gA-G](,|')?[[:digit:]]*(\/[[:digit:]]*)?
+INLINE_FIELD  \[[+[:alpha:]]:[^\]]*\]
+ANNOTATION    \"[^\"]*\"
+NOTE          (^^|^|=|_|__)?[a-gA-G](,|')?[[:digit:]]*(\/[[:digit:]]*)?
+BROKEN_RHYTHM <|>
 
 %%
 
@@ -49,6 +50,11 @@ NOTE         (^^|^|=|_|__)?[a-gA-G](,|')?[[:digit:]]*(\/[[:digit:]]*)?
 {NOTE}          {
                     yylval->s = strdup(yytext);
                     return NOTE;
+                }
+
+{BROKEN_RHYTHM} {
+                    yylval->c = yytext[0];
+                    return BROKEN_RHYTHM;
                 }
 
 "%"             { BEGIN(x_COMMENT); }

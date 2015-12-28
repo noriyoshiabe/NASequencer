@@ -398,3 +398,17 @@ ASTNote *ABCASTNoteCreate(FileLocation *location)
 {
     return NodeCreate(ASTNote, location);
 }
+
+static void ASTBrokenRhythmAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitBrokenRhythm(visitor, self);
+}
+
+static void ASTBrokenRhythmDestroy(void *_self)
+{
+}
+
+ASTBrokenRhythm *ABCASTBrokenRhythmCreate(FileLocation *location)
+{
+    return NodeCreate(ASTBrokenRhythm, location);
+}

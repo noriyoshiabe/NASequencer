@@ -169,6 +169,11 @@ typedef struct _ASTNote {
     char *noteString;
 } ASTNote;
 
+typedef struct _ASTBrokenRhythm {
+    Node node;
+    char direction;
+} ASTBrokenRhythm;
+
 
 typedef struct _ASTVisitor {
     void (*visitRoot)(void *self, ASTRoot *ast);
@@ -196,6 +201,7 @@ typedef struct _ASTVisitor {
     void (*visitAnnotation)(void *self, ASTAnnotation *ast);
     void (*visitDecoration)(void *self, ASTDecoration *ast);
     void (*visitNote)(void *self, ASTNote *ast);
+    void (*visitBrokenRhythm)(void *self, ASTBrokenRhythm *ast);
 } ASTVisitor;
 
 extern ASTRoot *ABCASTRootCreate(FileLocation *location);
@@ -223,6 +229,7 @@ extern ASTLineBreak *ABCASTLineBreakCreate(FileLocation *location);
 extern ASTAnnotation *ABCASTAnnotationCreate(FileLocation *location);
 extern ASTDecoration *ABCASTDecorationCreate(FileLocation *location);
 extern ASTNote *ABCASTNoteCreate(FileLocation *location);
+extern ASTBrokenRhythm *ABCASTBrokenRhythmCreate(FileLocation *location);
 
 
 static inline const char *ASTKeyParamType2String(ASTKeyParamType type)
