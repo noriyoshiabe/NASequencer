@@ -625,3 +625,49 @@ ASTEmptyLine *ABCASTEmptyLineCreate(FileLocation *location)
 {
     return NodeCreate(ASTEmptyLine, location);
 }
+
+static void ASTMidiAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitMidi(visitor, self);
+}
+
+static void ASTMidiDestroy(void *_self)
+{
+}
+
+ASTMidi *ABCASTMidiCreate(FileLocation *location)
+{
+    return NodeCreate(ASTMidi, location);
+}
+
+static void ASTMidiParamAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitMidiParam(visitor, self);
+}
+
+static void ASTMidiParamDestroy(void *_self)
+{
+    ASTMidiParam *self = _self;
+    if (self->string) {
+        free(self->string);
+    }
+}
+
+ASTMidiParam *ABCASTMidiParamCreate(FileLocation *location)
+{
+    return NodeCreate(ASTMidiParam, location);
+}
+
+static void ASTPropagateAccidentalAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitPropagateAccidental(visitor, self);
+}
+
+static void ASTPropagateAccidentalDestroy(void *_self)
+{
+}
+
+ASTPropagateAccidental *ABCASTPropagateAccidentalCreate(FileLocation *location)
+{
+    return NodeCreate(ASTPropagateAccidental, location);
+}

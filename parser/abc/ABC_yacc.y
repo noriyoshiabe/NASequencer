@@ -132,7 +132,7 @@ directive
     : DIRECTIVE
         {
             TRACE("-- DIRECTIVE [%s] %d - %d\n", $1, @$.first_line, @$.first_column);
-            $$ = NULL;
+            $$ = ABCParserParseDirective(ABC_get_extra(scanner), filepath, @$.first_line, 0, $1);
             free($1);
         }
     ;

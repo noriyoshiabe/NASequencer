@@ -379,6 +379,43 @@ static void visitEmptyLine(void *self, ASTEmptyLine *ast)
     dump(self, ast, NULL);
 }
 
+static void visitMidi(void *_self, ASTMidi *ast)
+{
+    ABCASTDumper *self = _self;
+
+    dump(self, ast, NULL);
+    self->indent += 4;
+
+    NAIterator *iterator = NAArrayGetIterator(ast->node.children);
+    while (iterator->hasNext(iterator)) {
+        Node *node = iterator->next(iterator);
+        node->accept(node, self);
+    }
+
+    self->indent -= 4;
+}
+
+static void visitMidiParam(void *self, ASTMidiParam *ast)
+{
+    switch (ast->type) {
+    case MidiVoiceId:
+        dump(self, ast, "type", ASTMidiParamType2String(ast->type), STRING(ast, string), NULL);
+        break;
+    case MidiInstrument:
+    case MidiBank:
+        dump(self, ast, "type", ASTMidiParamType2String(ast->type), INTEGER(ast, intValue), NULL);
+        break;
+    case MidiMute:
+        dump(self, ast, "type", ASTMidiParamType2String(ast->type), NULL);
+        break;
+    }
+}
+
+static void visitPropagateAccidental(void *self, ASTPropagateAccidental *ast)
+{
+    dump(self, ast, "type", ASTPropagateAccidentalType2String(ast->type), NULL);
+}
+
 
 Analyzer *ABCASTDumperCreate(ParseContext *context)
 {
@@ -424,6 +461,9 @@ Analyzer *ABCASTDumperCreate(ParseContext *context)
     self->visitor.visitChord = visitChord;
     self->visitor.visitOverlay = visitOverlay;
     self->visitor.visitEmptyLine = visitEmptyLine;
+    self->visitor.visitMidi = visitMidi;
+    self->visitor.visitMidiParam = visitMidiParam;
+    self->visitor.visitPropagateAccidental = visitPropagateAccidental;
 
     self->analyzer.process = process;
     self->analyzer.destroy = destroy;

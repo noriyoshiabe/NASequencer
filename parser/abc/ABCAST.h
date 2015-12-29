@@ -242,6 +242,35 @@ typedef struct _ASTEmptyLine {
     Node node;
 } ASTEmptyLine;
 
+typedef struct _ASTMidi {
+    Node node;
+} ASTMidi;
+
+typedef enum {
+    MidiVoiceId,
+    MidiInstrument,
+    MidiBank,
+    MidiMute,
+} ASTMidiParamType;
+
+typedef struct _ASTMidiParam {
+    Node node;
+    ASTMidiParamType type;
+    char *string;
+    int intValue;
+} ASTMidiParam;
+
+typedef enum {
+    PropagateAccidentalNot,
+    PropagateAccidentalOctave,
+    PropagateAccidentalPitch,
+} ASTPropagateAccidentalType;
+
+typedef struct _ASTPropagateAccidental {
+    Node node;
+    ASTPropagateAccidentalType type;
+} ASTPropagateAccidental;
+
 
 typedef struct _ASTVisitor {
     void (*visitRoot)(void *self, ASTRoot *ast);
@@ -284,6 +313,9 @@ typedef struct _ASTVisitor {
     void (*visitChord)(void *self, ASTChord *ast);
     void (*visitOverlay)(void *self, ASTOverlay *ast);
     void (*visitEmptyLine)(void *self, ASTEmptyLine *ast);
+    void (*visitMidi)(void *self, ASTMidi *ast);
+    void (*visitMidiParam)(void *self, ASTMidiParam *ast);
+    void (*visitPropagateAccidental)(void *self, ASTPropagateAccidental *ast);
 } ASTVisitor;
 
 extern ASTRoot *ABCASTRootCreate(FileLocation *location);
@@ -326,6 +358,9 @@ extern ASTTuplet *ABCASTTupletCreate(FileLocation *location);
 extern ASTChord *ABCASTChordCreate(FileLocation *location);
 extern ASTOverlay *ABCASTOverlayCreate(FileLocation *location);
 extern ASTEmptyLine *ABCASTEmptyLineCreate(FileLocation *location);
+extern ASTMidi *ABCASTMidiCreate(FileLocation *location);
+extern ASTMidiParam *ABCASTMidiParamCreate(FileLocation *location);
+extern ASTPropagateAccidental *ABCASTPropagateAccidentalCreate(FileLocation *location);
 
 
 static inline const char *ASTKeyParamType2String(ASTKeyParamType type)
@@ -368,6 +403,29 @@ static inline const char *ASTVoiceParamType2String(ASTVoiceParamType type)
     CASE(VoiceTranspose);
     CASE(VoiceOctave);
     CASE(VoiceStaffLines);
+    }
+#define undef
+}
+
+static inline const char *ASTMidiParamType2String(ASTMidiParamType type)
+{
+#define CASE(type) case type: return #type;
+    switch (type) {
+    CASE(MidiVoiceId);
+    CASE(MidiInstrument);
+    CASE(MidiBank);
+    CASE(MidiMute);
+    }
+#define undef
+}
+
+static inline const char *ASTPropagateAccidentalType2String(ASTPropagateAccidentalType type)
+{
+#define CASE(type) case type: return #type;
+    switch (type) {
+    CASE(PropagateAccidentalNot);
+    CASE(PropagateAccidentalOctave);
+    CASE(PropagateAccidentalPitch);
     }
 #define undef
 }

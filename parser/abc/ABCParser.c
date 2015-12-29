@@ -4,9 +4,8 @@
 #include "NAUtil.h"
 #include "ABC_yacc.h"
 #include "ABC_lex.h"
-#include "ABC_information_yacc.h"
 #include "ABC_information_lex.h"
-#include "ABC_tune_body_yacc.h"
+#include "ABC_directive_lex.h"
 #include "ABC_tune_body_lex.h"
 #include "NASet.h"
 #include "NAMap.h"
@@ -39,6 +38,7 @@ typedef struct _ABCParser {
 
 extern int ABC_parse(yyscan_t scanner, const char *filepath, void **node);
 extern int ABC_information_parse(yyscan_t scanner, const char *filepath, int line, int columnOffset, void **node);
+extern int ABC_directive_parse(yyscan_t scanner, const char *filepath, int line, int columnOffset, void **node);
 extern int ABC_tune_body_parse(yyscan_t scanner, const char *filepath, int line, int columnOffset, void **node);
 
 static Node *ABCParserParseInternal(ABCParser *self, const char *filepath)
@@ -129,6 +129,21 @@ Node *ABCParserParseInformation(void *_self, const char *filepath, int line, int
     ABC_information_parse(scanner, filepath, line, columnOffset, (void **)&node);
     ABC_information__delete_buffer(state, scanner);
     ABC_information_lex_destroy(scanner);
+
+    return node;
+}
+
+Node *ABCParserParseDirective(void *_self, const char *filepath, int line, int columnOffset, const char *string)
+{
+    ABCParser *self = _self; 
+    Node *node = NULL;
+
+    yyscan_t scanner;
+    ABC_directive_lex_init_extra(self, &scanner);
+    YY_BUFFER_STATE state = ABC_directive__scan_string(string, scanner);
+    ABC_directive_parse(scanner, filepath, line, columnOffset, (void **)&node);
+    ABC_directive__delete_buffer(state, scanner);
+    ABC_directive_lex_destroy(scanner);
 
     return node;
 }
