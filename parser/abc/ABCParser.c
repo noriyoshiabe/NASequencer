@@ -256,18 +256,6 @@ bool ABCParserIsDecoration(void *_self, char c)
     return self->decorationDialects[0] == c || self->decorationDialects[1] == c;
 }
 
-void ABCParserSetMacro(void *_self, char *target, char *replacement)
-{
-    ABCParser *self = _self;
-    ABCPreprocessorSetMacro(self->preprocessor, target, replacement);
-}
-
-void ABCParserSetRedefinableSymbol(void *_self, char *symbol, char *replacement)
-{
-    ABCParser *self = _self;
-    ABCPreprocessorSetRedefinableSymbol(self->preprocessor, symbol, replacement);
-}
-
 void ABCParserNotify(void *_self, ABCParserEvent event, void *node)
 {
     ABCParser *self = _self;

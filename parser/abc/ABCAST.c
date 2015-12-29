@@ -360,6 +360,8 @@ static void ASTVoiceAccept(void *self, void *visitor)
 
 static void ASTVoiceDestroy(void *_self)
 {
+    ASTVoice *self = _self;
+    free(self->identifier);
 }
 
 ASTVoice *ABCASTVoiceCreate(FileLocation *location)

@@ -215,6 +215,13 @@ key_param
             n->intValue = $3;
             $$ = n;
         }
+    | error
+        {
+            ABC_information_lex_set_error(scanner);
+            yyerrok;
+            yyclearin;
+            $$ = NULL;
+        }
     | /* empty */
         {
             $$ = NULL;
@@ -368,6 +375,17 @@ tempo_param
             n->type = BeatCount;
             n->beatCount = $2;
             $$ = n;
+        }
+    | error
+        {
+            ABC_information_lex_set_error(scanner);
+            yyerrok;
+            yyclearin;
+            $$ = NULL;
+        }
+    | /* empty */
+        {
+            $$ = NULL;
         }
     ;
 
@@ -592,6 +610,13 @@ voice_param
             n->type = VoiceStaffLines;
             n->intValue = $3;
             $$ = n;
+        }
+    | error
+        {
+            ABC_information_lex_set_error(scanner);
+            yyerrok;
+            yyclearin;
+            $$ = NULL;
         }
     | /* empty */
         {

@@ -78,7 +78,7 @@ ABCPreprocessor *ABCPreprocessorCreate()
     };
 
     for (int i = 0; i < sizeof(predefined) / sizeof(predefined[0]); ++i) {
-        RedefinableSymbol *rdSymbol = RedefinableSymbolCreate(strdup(predefined[i].symbol), strdup(predefined[i].replacement));
+        RedefinableSymbol *rdSymbol = RedefinableSymbolCreate((char *)predefined[i].symbol, (char *)predefined[i].replacement);
         NAMapPut(self->redefinableSymbols, rdSymbol->symbol, rdSymbol);
     }
 
@@ -95,11 +95,13 @@ void ABCPreprocessorDestroy(ABCPreprocessor *self)
     NAMapTraverseValue(self->transposingMacros, MacroDestroy);
     NAMapDestroy(self->transposingMacros);
 
-    NAMapTraverseValue(self->redefinableSymbols, MacroDestroy);
+    NAMapTraverseValue(self->redefinableSymbols, RedefinableSymbolDestroy);
     NAMapDestroy(self->redefinableSymbols);
 
     NAStringBufferDestroy(self->buffer);
     NAStringBufferDestroy(self->tmpBuffer);
+
+    regfree(&self->inlineRegex);
 
     free(self);
 }
@@ -324,6 +326,8 @@ static Macro *MacroCreate(char *target, char *replacement)
 
 static void MacroDestroy(Macro *self)
 {
+    regfree(&self->reg);
+
     free(self->target);
     free(self->replacement);
     free(self);

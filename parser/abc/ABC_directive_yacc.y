@@ -131,6 +131,17 @@ midi_param
             n->type = MidiMute;
             $$ = n;
         }
+    | error
+        {
+            ABC_directive_lex_set_error(scanner);
+            yyerrok;
+            yyclearin;
+            $$ = NULL;
+        }
+    | /* empty */
+        {
+            $$ = NULL;
+        }
     ;
 
 propagate_accidental
