@@ -41,7 +41,7 @@ set(SOURCES
   ABCAST.c
   ABCASTDumper.c
   #ABCASTAnalyzer.c
-  #ABCSEM.c
+  ABCSEM.c
   #ABCSEMDumper.c
   #ABCSEMAnalyzer.c
 )
