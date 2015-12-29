@@ -40,7 +40,7 @@ set(SOURCES
   ABCPreprocessor.c
   ABCAST.c
   ABCASTDumper.c
-  #ABCASTAnalyzer.c
+  ABCASTAnalyzer.c
   ABCSEM.c
   ABCSEMDumper.c
   #ABCSEMAnalyzer.c

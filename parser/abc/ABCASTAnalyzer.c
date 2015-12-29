@@ -1,21 +1,23 @@
-#include "ABCASTDumper.h"
+#include "ABCASTAnalyzer.h"
+#include "ABCParser.h"
 #include "ABCAST.h"
-#include <NACString.h>
+#include "ABCSEM.h"
 
-#include <stdio.h>
 #include <stdlib.h>
-#include <stdarg.h>
 
-typedef struct _ABCASTDumper {
+#define __Trace__ printf("-- %s:%s - %d\n", __FILE__, __func__, __LINE__);
+
+typedef struct _ABCASTAnalyzer {
     ASTVisitor visitor;
     Analyzer analyzer;
-    int indent;
-} ABCASTDumper;
+} ABCASTAnalyzer;
 
 static Node *process(void *self, Node *node)
 {
+    SEMFile *file = ABCSEMFileCreate(NULL);
+    file->node.children = NAArrayCreate(4, NADescriptionAddress);
     node->accept(node, self);
-    return NodeRetain(node);
+    return (Node *)file;
 }
 
 static void destroy(void *self)
@@ -23,402 +25,277 @@ static void destroy(void *self)
     free(self);
 }
 
-static void dump(ABCASTDumper *self, void *_node, ...)
+static void visitRoot(void *self, ASTRoot *ast)
 {
-    Node *node = _node;
-
-    printf("%*s", self->indent, "");
-    printf("[%s]", node->type);
-
-    va_list argList;
-    va_start(argList, _node);
-
-    const char *str;
-    int i = 0;
-    while ((str = va_arg(argList, const char *))) {
-        printf("%c", 0 == i % 2 ? ' ' : '=');
-        printf("%s", str);
-        ++i;
-    }
-
-    va_end(argList);
-
-    printf(" at %s:%d:%d\n", node->location.filepath, node->location.line, node->location.column);
-}
-
-#define INTEGER(ast, name) #name, NACStringFromInteger(ast->name)
-#define FLOAT(ast, name) #name, NACStringFromFloat(ast->name, 2)
-#define CHAR(ast, name) #name, '\n' == ast->name ? "\\n" : NACStringFromChar(ast->name)
-#define BOOL(ast, name) #name, NACStringFromBoolean(ast->name)
-#define STRING(ast, name) #name, ast->name ? ast->name : "(null)"
-
-static void visitRoot(void *_self, ASTRoot *ast)
-{
-    ABCASTDumper *self = _self;
-
-    dump(self, ast, NULL);
-    self->indent += 4;
+    __Trace__
 
     NAIterator *iterator = NAArrayGetIterator(ast->node.children);
     while (iterator->hasNext(iterator)) {
         Node *node = iterator->next(iterator);
         node->accept(node, self);
     }
-
-    self->indent -= 4;
 }
 
 static void visitFileIdentification(void *self, ASTFileIdentification *ast)
 {
-    dump(self, ast, STRING(ast, identifier), INTEGER(ast, major), INTEGER(ast, minor), NULL);
+    __Trace__
 }
 
 static void visitStringInformation(void *self, ASTStringInformation *ast)
 {
-    dump(self, ast, CHAR(ast, field), STRING(ast, string), NULL);
+    __Trace__
 }
 
 static void visitReferenceNumber(void *self, ASTReferenceNumber *ast)
 {
-    dump(self, ast, INTEGER(ast, number), NULL);
+    __Trace__
 }
 
 static void visitTitle(void *self, ASTTitle *ast)
 {
-    dump(self, ast, STRING(ast, title), NULL);
+    __Trace__
 }
 
-static void visitKey(void *_self, ASTKey *ast)
+static void visitKey(void *self, ASTKey *ast)
 {
-    ABCASTDumper *self = _self;
-
-    dump(self, ast, NULL);
-    self->indent += 4;
+    __Trace__
 
     NAIterator *iterator = NAArrayGetIterator(ast->node.children);
     while (iterator->hasNext(iterator)) {
         Node *node = iterator->next(iterator);
         node->accept(node, self);
     }
-
-    self->indent -= 4;
 }
 
 static void visitKeyParam(void *self, ASTKeyParam *ast)
 {
-    switch (ast->type) {
-    case KeyTonic:
-    case KeyMode:
-    case KeyAccidental:
-    case KeyClef:
-    case KeyMiddle:
-        dump(self, ast, "type", ASTKeyParamType2String(ast->type), STRING(ast, string), NULL);
-        break;
-    case KeyTranspose:
-    case KeyOctave:
-    case KeyStaffLines:
-        dump(self, ast, "type", ASTKeyParamType2String(ast->type), INTEGER(ast, intValue), NULL);
-        break;
-    }
+    __Trace__
 }
 
 static void visitMeter(void *self, ASTMeter *ast)
 {
-    dump(self, ast, INTEGER(ast, numerator), INTEGER(ast, denominator),
-            BOOL(ast, free), BOOL(ast, commonTime), BOOL(ast, cutTime), NULL);
+    __Trace__
 }
 
 static void visitUnitNoteLength(void *self, ASTUnitNoteLength *ast)
 {
-    dump(self, ast, INTEGER(ast, numerator), INTEGER(ast, denominator), NULL);
+    __Trace__
 }
 
-static void visitTempo(void *_self, ASTTempo *ast)
+static void visitTempo(void *self, ASTTempo *ast)
 {
-    ABCASTDumper *self = _self;
-
-    dump(self, ast, NULL);
-    self->indent += 4;
+    __Trace__
 
     NAIterator *iterator = NAArrayGetIterator(ast->node.children);
     while (iterator->hasNext(iterator)) {
         Node *node = iterator->next(iterator);
         node->accept(node, self);
     }
-
-    self->indent -= 4;
 }
 
 static void visitTempoParam(void *self, ASTTempoParam *ast)
 {
-    switch (ast->type) {
-    case TextString:
-        dump(self, ast, "type", ASTTempoParamType2String(ast->type), STRING(ast, string), NULL);
-        break;
-    case BeatUnit:
-        dump(self, ast, "type", ASTTempoParamType2String(ast->type), INTEGER(ast, numerator), INTEGER(ast, denominator), NULL);
-        break;
-    case BeatCount:
-        dump(self, ast, "type", ASTTempoParamType2String(ast->type), INTEGER(ast, beatCount), NULL);
-        break;
-    }
+    __Trace__
 }
 
 static void visitParts(void *self, ASTParts *ast)
 {
-    dump(self, ast, STRING(ast, list), NULL);
+    __Trace__
 }
 
 static void visitInstCharSet(void *self, ASTInstCharSet *ast)
 {
-    dump(self, ast, STRING(ast, name), NULL);
+    __Trace__
 }
 
 static void visitInstVersion(void *self, ASTInstVersion *ast)
 {
-    dump(self, ast, STRING(ast, numberString), NULL);
+    __Trace__
 }
 
-static void visitInstInclude(void *_self, ASTInstInclude *ast)
+static void visitInstInclude(void *self, ASTInstInclude *ast)
 {
-    ABCASTDumper *self = _self;
-
-    dump(self, ast, STRING(ast, filepath), NULL);
-    self->indent += 4;
+    __Trace__
 
     if (ast->root) {
         ast->root->accept(ast->root, self);
     }
-
-    self->indent -= 4;
 }
 
 static void visitInstCreator(void *self, ASTInstCreator *ast)
 {
-    dump(self, ast, STRING(ast, name), NULL);
+    __Trace__
 }
 
 static void visitInstLineBreak(void *self, ASTInstLineBreak *ast)
 {
-    dump(self, ast, CHAR(ast, character), NULL);
+    __Trace__
 }
 
 static void visitInstDecoration(void *self, ASTInstDecoration *ast)
 {
-    dump(self, ast, CHAR(ast, character), NULL);
+    __Trace__
 }
 
 static void visitMacro(void *self, ASTMacro *ast)
 {
-    dump(self, ast, STRING(ast, target), STRING(ast, replacement), NULL);
+    __Trace__
 }
 
 static void visitSymbolLine(void *self, ASTSymbolLine *ast)
 {
-    dump(self, ast, STRING(ast, string), NULL);
+    __Trace__
 }
 
 static void visitRedefinableSymbol(void *self, ASTRedefinableSymbol *ast)
 {
-    dump(self, ast, STRING(ast, symbol), STRING(ast, replacement), NULL);
+    __Trace__
 }
 
 static void visitContinuation(void *self, ASTContinuation *ast)
 {
-    dump(self, ast, STRING(ast, string), NULL);
+    __Trace__
 }
 
-static void visitVoice(void *_self, ASTVoice *ast)
+static void visitVoice(void *self, ASTVoice *ast)
 {
-    ABCASTDumper *self = _self;
-
-    dump(self, ast, STRING(ast, identifier), NULL);
-    self->indent += 4;
+    __Trace__
 
     NAIterator *iterator = NAArrayGetIterator(ast->node.children);
     while (iterator->hasNext(iterator)) {
         Node *node = iterator->next(iterator);
         node->accept(node, self);
     }
-
-    self->indent -= 4;
 }
 
 static void visitVoiceParam(void *self, ASTVoiceParam *ast)
 {
-    switch (ast->type) {
-    case VoiceName:
-    case VoiceSubname:
-    case VoiceClef:
-    case VoiceMiddle:
-        dump(self, ast, "type", ASTVoiceParamType2String(ast->type), STRING(ast, string), NULL);
-        break;
-    case VoiceTranspose:
-    case VoiceOctave:
-    case VoiceStaffLines:
-        dump(self, ast, "type", ASTVoiceParamType2String(ast->type), INTEGER(ast, intValue), NULL);
-        break;
-    case VoiceStemUp:
-    case VoiceStemDown:
-        dump(self, ast, "type", ASTVoiceParamType2String(ast->type), NULL);
-        break;
-    }
+    __Trace__
 }
 
-static void visitTuneBody(void *_self, ASTTuneBody *ast)
+static void visitTuneBody(void *self, ASTTuneBody *ast)
 {
-    ABCASTDumper *self = _self;
-
-    dump(self, ast, NULL);
-    self->indent += 4;
+    __Trace__
 
     NAIterator *iterator = NAArrayGetIterator(ast->node.children);
     while (iterator->hasNext(iterator)) {
         Node *node = iterator->next(iterator);
         node->accept(node, self);
     }
-
-    self->indent -= 4;
 }
 
 static void visitLineBreak(void *self, ASTLineBreak *ast)
 {
-    dump(self, ast, NULL);
+    __Trace__
 }
 
 static void visitAnnotation(void *self, ASTAnnotation *ast)
 {
-    dump(self, ast, STRING(ast, text), NULL);
+    __Trace__
 }
 
 static void visitDecoration(void *self, ASTDecoration *ast)
 {
-    dump(self, ast, STRING(ast, symbol), NULL);
+    __Trace__
 }
 
 static void visitNote(void *self, ASTNote *ast)
 {
-    dump(self, ast, STRING(ast, noteString), NULL);
+    __Trace__
 }
 
 static void visitBrokenRhythm(void *self, ASTBrokenRhythm *ast)
 {
-    dump(self, ast, CHAR(ast, direction), NULL);
+    __Trace__
 }
 
 static void visitRest(void *self, ASTRest *ast)
 {
-    dump(self, ast, STRING(ast, restString), NULL);
+    __Trace__
 }
 
 static void visitRepeatBar(void *self, ASTRepeatBar *ast)
 {
-    dump(self, ast, STRING(ast, symbols), NULL);
+    __Trace__
 }
 
 static void visitTie(void *self, ASTTie *ast)
 {
-    dump(self, ast, NULL);
+    __Trace__
 }
 
 static void visitSlur(void *self, ASTSlur *ast)
 {
-    dump(self, ast, CHAR(ast, direction), NULL);
+    __Trace__
 }
 
 static void visitDot(void *self, ASTDot *ast)
 {
-    dump(self, ast, NULL);
+    __Trace__
 }
 
-static void visitGraceNote(void *_self, ASTGraceNote *ast)
+static void visitGraceNote(void *self, ASTGraceNote *ast)
 {
-    ABCASTDumper *self = _self;
-
-    dump(self, ast, BOOL(ast, acciaccatura), NULL);
-    self->indent += 4;
+    __Trace__
 
     NAIterator *iterator = NAArrayGetIterator(ast->node.children);
     while (iterator->hasNext(iterator)) {
         Node *node = iterator->next(iterator);
         node->accept(node, self);
     }
-
-    self->indent -= 4;
 }
 
 static void visitTuplet(void *self, ASTTuplet *ast)
 {
-    dump(self, ast, STRING(ast, tupletString), NULL);
+    __Trace__
 }
 
-static void visitChord(void *_self, ASTChord *ast)
+static void visitChord(void *self, ASTChord *ast)
 {
-    ABCASTDumper *self = _self;
-
-    dump(self, ast, STRING(ast, lengthString), NULL);
-    self->indent += 4;
+    __Trace__
 
     NAIterator *iterator = NAArrayGetIterator(ast->node.children);
     while (iterator->hasNext(iterator)) {
         Node *node = iterator->next(iterator);
         node->accept(node, self);
     }
-
-    self->indent -= 4;
 }
 
 static void visitOverlay(void *self, ASTOverlay *ast)
 {
-    dump(self, ast, NULL);
+    __Trace__
 }
 
 static void visitEmptyLine(void *self, ASTEmptyLine *ast)
 {
-    dump(self, ast, NULL);
+    __Trace__
 }
 
-static void visitMidi(void *_self, ASTMidi *ast)
+static void visitMidi(void *self, ASTMidi *ast)
 {
-    ABCASTDumper *self = _self;
-
-    dump(self, ast, NULL);
-    self->indent += 4;
+    __Trace__
 
     NAIterator *iterator = NAArrayGetIterator(ast->node.children);
     while (iterator->hasNext(iterator)) {
         Node *node = iterator->next(iterator);
         node->accept(node, self);
     }
-
-    self->indent -= 4;
 }
 
 static void visitMidiParam(void *self, ASTMidiParam *ast)
 {
-    switch (ast->type) {
-    case MidiVoiceId:
-        dump(self, ast, "type", ASTMidiParamType2String(ast->type), STRING(ast, string), NULL);
-        break;
-    case MidiInstrument:
-    case MidiBank:
-        dump(self, ast, "type", ASTMidiParamType2String(ast->type), INTEGER(ast, intValue), NULL);
-        break;
-    case MidiMute:
-        dump(self, ast, "type", ASTMidiParamType2String(ast->type), NULL);
-        break;
-    }
+    __Trace__
 }
 
 static void visitPropagateAccidental(void *self, ASTPropagateAccidental *ast)
 {
-    dump(self, ast, "type", ASTPropagateAccidentalType2String(ast->type), NULL);
+    __Trace__
 }
 
 
-Analyzer *ABCASTDumperCreate(ParseContext *context)
+Analyzer *ABCASTAnalyzerCreate(ParseContext *context)
 {
-    ABCASTDumper *self = calloc(1, sizeof(ABCASTDumper));
+    ABCASTAnalyzer *self = calloc(1, sizeof(ABCASTAnalyzer));
 
     self->visitor.visitRoot = visitRoot;
     self->visitor.visitFileIdentification = visitFileIdentification;

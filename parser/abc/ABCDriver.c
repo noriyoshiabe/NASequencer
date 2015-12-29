@@ -1,8 +1,8 @@
 #include "ABCDriver.h"
 #include "ABCParser.h"
 #include "ABCASTDumper.h"
-//#include "ABCASTAnalyzer.h"
-//#include "ABCSEMDumper.h"
+#include "ABCASTAnalyzer.h"
+#include "ABCSEMDumper.h"
 //#include "ABCSEMAnalyzer.h"
 #include "NAUtil.h"
 
@@ -17,8 +17,8 @@ static const AnalyzerFactory AnalyzerFactories[] = {
 #if 1
     ABCASTDumperCreate,
 #endif
-    //ABCASTAnalyzerCreate,
-#if 0
+    ABCASTAnalyzerCreate,
+#if 1
     ABCSEMDumperCreate,
 #endif
     //ABCSEMAnalyzerCreate,
