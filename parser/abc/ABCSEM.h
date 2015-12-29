@@ -11,10 +11,10 @@ typedef struct _SEMFile {
 
 typedef struct _SEMTune {
     Node node;
-    NAMap *partMap;
-    char *partSequence;
     int number;
     char *title;
+    char *partSequence;
+    NAMap *partMap;
 } SEMTune;
 
 typedef struct _SEMTempo {
@@ -121,8 +121,8 @@ typedef struct _SEMOverlay {
 
 typedef struct _SEMMidiVoice {
     Node node;
+    int instrument;
     int bank;
-    int programNo;
 } SEMMidiVoice;
 
 typedef struct _SEMPropagateAccidental {

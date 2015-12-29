@@ -48,7 +48,7 @@ static void dump(NAMidiASTDumper *self, void *_node, ...)
 
 #define INTEGER(ast, name) #name, NACStringFromInteger(ast->name)
 #define FLOAT(ast, name) #name, NACStringFromFloat(ast->name, 2)
-#define STRING(ast, name) #name, ast->name
+#define STRING(ast, name) #name, ast->name ? ast->name : "(null)"
 
 static void visitRoot(void *_self, ASTRoot *ast)
 {

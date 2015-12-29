@@ -64,7 +64,7 @@ static char *array2String(NAArray *array, char *buffer)
 
 #define INTEGER(sem, name) #name, NACStringFromInteger(sem->name)
 #define FLOAT(sem, name) #name, NACStringFromFloat(sem->name, 2)
-#define STRING(sem, name) #name, sem->name
+#define STRING(sem, name) #name, sem->name ? sem->name : "(null)"
 #define STRING_ARRAY(sem, name) #name, array2String(sem->name, alloca(1024))
 
 static void visitList(void *_self, SEMList *sem)
