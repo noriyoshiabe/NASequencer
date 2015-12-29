@@ -136,7 +136,7 @@ void ABCPreprocessorSetRedefinableSymbol(ABCPreprocessor *self, char *symbol, ch
     sprintf(none, "%1$cnone%1$c", self->decorationDialect);
     sprintf(nil, "%1$cnil%1$c", self->decorationDialect);
 
-    if (0 != strcmp(replacement, none) || 0 == strcmp(replacement, nil)) {
+    if (0 == strcmp(replacement, none) || 0 == strcmp(replacement, nil)) {
         return;
     }
     
