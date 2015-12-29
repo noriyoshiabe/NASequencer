@@ -112,10 +112,32 @@ typedef struct _ASTInstCreator {
     char *name;
 } ASTInstCreator;
 
+typedef struct _ASTInstLineBreak {
+    Node node;
+    char character;
+} ASTInstLineBreak;
+
+typedef struct _ASTInstDecoration {
+    Node node;
+    char character;
+} ASTInstDecoration;
+
+typedef struct _ASTMacro {
+    Node node;
+    char *target;
+    char *replacement;
+} ASTMacro;
+
 typedef struct _ASTSymbolLine {
     Node node;
     char *string;
 } ASTSymbolLine;
+
+typedef struct _ASTRedefinableSymbol {
+    Node node;
+    char *symbol;
+    char *replacement;
+} ASTRedefinableSymbol;
 
 typedef struct _ASTContinuation {
     Node node;
@@ -238,7 +260,11 @@ typedef struct _ASTVisitor {
     void (*visitInstVersion)(void *self, ASTInstVersion *ast);
     void (*visitInstInclude)(void *self, ASTInstInclude *ast);
     void (*visitInstCreator)(void *self, ASTInstCreator *ast);
+    void (*visitInstLineBreak)(void *self, ASTInstLineBreak *ast);
+    void (*visitInstDecoration)(void *self, ASTInstDecoration *ast);
+    void (*visitMacro)(void *self, ASTMacro *ast);
     void (*visitSymbolLine)(void *self, ASTSymbolLine *ast);
+    void (*visitRedefinableSymbol)(void *self, ASTRedefinableSymbol *ast);
     void (*visitContinuation)(void *self, ASTContinuation *ast);
     void (*visitVoice)(void *self, ASTVoice *ast);
     void (*visitVoiceParam)(void *self, ASTVoiceParam *ast);
@@ -276,7 +302,11 @@ extern ASTInstCharSet *ABCASTInstCharSetCreate(FileLocation *location);
 extern ASTInstVersion *ABCASTInstVersionCreate(FileLocation *location);
 extern ASTInstInclude *ABCASTInstIncludeCreate(FileLocation *location);
 extern ASTInstCreator *ABCASTInstCreatorCreate(FileLocation *location);
+extern ASTInstLineBreak *ABCASTInstLineBreakCreate(FileLocation *location);
+extern ASTInstDecoration *ABCASTInstDecorationCreate(FileLocation *location);
+extern ASTMacro *ABCASTMacroCreate(FileLocation *location);
 extern ASTSymbolLine *ABCASTSymbolLineCreate(FileLocation *location);
+extern ASTRedefinableSymbol *ABCASTRedefinableSymbolCreate(FileLocation *location);
 extern ASTContinuation *ABCASTContinuationCreate(FileLocation *location);
 extern ASTVoice *ABCASTVoiceCreate(FileLocation *location);
 extern ASTVoiceParam *ABCASTVoiceParamCreate(FileLocation *location);

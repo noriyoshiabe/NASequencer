@@ -49,7 +49,7 @@ static void dump(ABCASTDumper *self, void *_node, ...)
 
 #define INTEGER(ast, name) #name, NACStringFromInteger(ast->name)
 #define FLOAT(ast, name) #name, NACStringFromFloat(ast->name, 2)
-#define CHAR(ast, name) #name, NACStringFromChar(ast->name)
+#define CHAR(ast, name) #name, '\n' == ast->name ? "\\n" : NACStringFromChar(ast->name)
 #define BOOL(ast, name) #name, NACStringFromBoolean(ast->name)
 #define STRING(ast, name) #name, ast->name ? ast->name : "(null)"
 
@@ -199,9 +199,29 @@ static void visitInstCreator(void *self, ASTInstCreator *ast)
     dump(self, ast, STRING(ast, name), NULL);
 }
 
+static void visitInstLineBreak(void *self, ASTInstLineBreak *ast)
+{
+    dump(self, ast, CHAR(ast, character), NULL);
+}
+
+static void visitInstDecoration(void *self, ASTInstDecoration *ast)
+{
+    dump(self, ast, CHAR(ast, character), NULL);
+}
+
+static void visitMacro(void *self, ASTMacro *ast)
+{
+    dump(self, ast, STRING(ast, target), STRING(ast, replacement), NULL);
+}
+
 static void visitSymbolLine(void *self, ASTSymbolLine *ast)
 {
     dump(self, ast, STRING(ast, string), NULL);
+}
+
+static void visitRedefinableSymbol(void *self, ASTRedefinableSymbol *ast)
+{
+    dump(self, ast, STRING(ast, symbol), STRING(ast, replacement), NULL);
 }
 
 static void visitContinuation(void *self, ASTContinuation *ast)
@@ -380,8 +400,12 @@ Analyzer *ABCASTDumperCreate(ParseContext *context)
     self->visitor.visitInstVersion = visitInstVersion;
     self->visitor.visitInstInclude = visitInstInclude;
     self->visitor.visitInstCreator = visitInstCreator;
+    self->visitor.visitInstLineBreak = visitInstLineBreak;
+    self->visitor.visitInstDecoration = visitInstDecoration;
     self->visitor.visitSymbolLine = visitSymbolLine;
+    self->visitor.visitMacro = visitMacro;
     self->visitor.visitContinuation = visitContinuation;
+    self->visitor.visitRedefinableSymbol = visitRedefinableSymbol;
     self->visitor.visitVoice = visitVoice;
     self->visitor.visitVoiceParam = visitVoiceParam;
     self->visitor.visitTuneBody = visitTuneBody;

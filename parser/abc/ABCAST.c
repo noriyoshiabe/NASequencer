@@ -259,6 +259,51 @@ ASTInstCreator *ABCASTInstCreatorCreate(FileLocation *location)
     return NodeCreate(ASTInstCreator, location);
 }
 
+static void ASTInstLineBreakAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitInstLineBreak(visitor, self);
+}
+
+static void ASTInstLineBreakDestroy(void *_self)
+{
+}
+
+ASTInstLineBreak *ABCASTInstLineBreakCreate(FileLocation *location)
+{
+    return NodeCreate(ASTInstLineBreak, location);
+}
+
+static void ASTInstDecorationAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitInstDecoration(visitor, self);
+}
+
+static void ASTInstDecorationDestroy(void *_self)
+{
+}
+
+ASTInstDecoration *ABCASTInstDecorationCreate(FileLocation *location)
+{
+    return NodeCreate(ASTInstDecoration, location);
+}
+
+static void ASTMacroAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitMacro(visitor, self);
+}
+
+static void ASTMacroDestroy(void *_self)
+{
+    ASTMacro *self = _self;
+    free(self->target);
+    free(self->replacement);
+}
+
+ASTMacro *ABCASTMacroCreate(FileLocation *location)
+{
+    return NodeCreate(ASTMacro, location);
+}
+
 static void ASTSymbolLineAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitSymbolLine(visitor, self);
@@ -273,6 +318,23 @@ static void ASTSymbolLineDestroy(void *_self)
 ASTSymbolLine *ABCASTSymbolLineCreate(FileLocation *location)
 {
     return NodeCreate(ASTSymbolLine, location);
+}
+
+static void ASTRedefinableSymbolAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitRedefinableSymbol(visitor, self);
+}
+
+static void ASTRedefinableSymbolDestroy(void *_self)
+{
+    ASTRedefinableSymbol *self = _self;
+    free(self->symbol);
+    free(self->replacement);
+}
+
+ASTRedefinableSymbol *ABCASTRedefinableSymbolCreate(FileLocation *location)
+{
+    return NodeCreate(ASTRedefinableSymbol, location);
 }
 
 static void ASTContinuationAccept(void *self, void *visitor)

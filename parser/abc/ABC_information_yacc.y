@@ -434,33 +434,39 @@ instruction
         }
     | INSTRUCTION INST_LINEBREAK CHAR
         {
-            ABCParserSetLineBreak(ABC_information_get_extra(scanner), $3);
-            $$ = NULL;
+            ASTInstLineBreak *n = node(InstLineBreak, @$);
+            n->character = $3;
+            $$ = n;
         }
     | INSTRUCTION INST_LINEBREAK STRING
         {
+            ASTInstLineBreak *n = node(InstLineBreak, @$);
+
             if (0 == strcmp("<EOL>", $3)) {
-                ABCParserSetLineBreak(ABC_information_get_extra(scanner), '\n');
+                n->character = '\n';
             }
             else if (0 == strcmp("<none>", $3)) {
-                ABCParserSetLineBreak(ABC_information_get_extra(scanner), -1);
+                n->character = -1;
             }
 
             free($3);
-            $$ = NULL;
+            $$ = n;
         }
     | INSTRUCTION INST_DECORATION CHAR
         {
-            ABCParserSetDecoration(ABC_information_get_extra(scanner), $3);
-            $$ = NULL;
+            ASTInstDecoration *n = node(InstDecoration, @$);
+            n->character = $3;
+            $$ = n;
         }
     ;
 
 macro
     : MACRO_TARGET '=' STRING
         {
-            ABCParserSetMacro(ABC_information_get_extra(scanner), $1, $3);
-            $$ = NULL;
+            ASTMacro *n = node(Macro, @$);
+            n->target = $1;
+            n->replacement = $3;
+            $$ = n;
         }
     ;
 
@@ -476,8 +482,10 @@ symbol_line
 redefinable_symbol
     : REDEFINABLE_SYMBOL '=' REDEFINABLE_REPLACEMENT
         {
-            ABCParserSetRedefinableSymbol(ABC_information_get_extra(scanner), $1, $3);
-            $$ = NULL;
+            ASTRedefinableSymbol *n = node(RedefinableSymbol, @$);
+            n->symbol = $1;
+            n->replacement = $3;
+            $$ = n;
         }
     ;
 
