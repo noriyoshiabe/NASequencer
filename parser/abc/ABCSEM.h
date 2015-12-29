@@ -186,5 +186,5 @@ static inline const char *SEMRepeatType2String(SEMRepeatType type)
     CASE(RepeatEnd);
     CASE(RepeatNth);
     }
-#define undef
+#undef CASE
 }

@@ -376,7 +376,7 @@ static inline const char *ASTKeyParamType2String(ASTKeyParamType type)
     CASE(KeyOctave);
     CASE(KeyStaffLines);
     }
-#define undef
+#undef CASE
 }
 
 static inline const char *ASTTempoParamType2String(ASTTempoParamType type)
@@ -387,7 +387,7 @@ static inline const char *ASTTempoParamType2String(ASTTempoParamType type)
     CASE(BeatUnit);
     CASE(BeatCount);
     }
-#define undef
+#undef CASE
 }
 
 static inline const char *ASTVoiceParamType2String(ASTVoiceParamType type)
@@ -404,7 +404,7 @@ static inline const char *ASTVoiceParamType2String(ASTVoiceParamType type)
     CASE(VoiceOctave);
     CASE(VoiceStaffLines);
     }
-#define undef
+#undef CASE
 }
 
 static inline const char *ASTMidiParamType2String(ASTMidiParamType type)
@@ -416,7 +416,7 @@ static inline const char *ASTMidiParamType2String(ASTMidiParamType type)
     CASE(MidiBank);
     CASE(MidiMute);
     }
-#define undef
+#undef CASE
 }
 
 static inline const char *ASTPropagateAccidentalType2String(ASTPropagateAccidentalType type)
@@ -427,5 +427,5 @@ static inline const char *ASTPropagateAccidentalType2String(ASTPropagateAccident
     CASE(PropagateAccidentalOctave);
     CASE(PropagateAccidentalPitch);
     }
-#define undef
+#undef CASE
 }
