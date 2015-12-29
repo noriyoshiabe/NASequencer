@@ -14,6 +14,11 @@
 #include <stdlib.h>
 #include <libgen.h>
 
+typedef struct {
+    char *first;
+    char *second;
+} StringPair;
+
 typedef struct _ABCParser {
     DSLParser parser;
     ParseContext *context;
@@ -22,6 +27,14 @@ typedef struct _ABCParser {
     char lineBreak;
     char decorationDialects[2];
     ABCPreprocessor *preprocessor;
+    bool inFileHeader;
+
+    struct {
+        char lineBreak;
+        char decoration;
+        NAArray *macros;
+        NAArray *redefinableSymbols;
+    } defaults;
 } ABCParser;
 
 extern int ABC_parse(yyscan_t scanner, const char *filepath, void **node);
@@ -76,6 +89,8 @@ static void ABCParserDestroy(void *_self)
     NAMapDestroy(self->includedNodeMap);
 
     ABCPreprocessorDestroy(self->preprocessor);
+    NAArrayDestroy(self->defaults.macros);
+    NAArrayDestroy(self->defaults.redefinableSymbols);
 
     free(self);
 }
@@ -93,6 +108,12 @@ DSLParser *ABCParserCreate(ParseContext *context)
     self->decorationDialects[1] = '+';
 
     self->preprocessor = ABCPreprocessorCreate();
+    self->inFileHeader = true;
+
+    self->defaults.lineBreak = -1;
+    self->defaults.decoration = -1;
+    self->defaults.macros = NAArrayCreate(4, NULL);
+    self->defaults.redefinableSymbols = NAArrayCreate(4, NULL);
 
     return (DSLParser *)self;
 }
@@ -182,7 +203,7 @@ void ABCParserSyntaxError(void *_self, FileLocation *location, const char *token
     self->context->appendError(self->context, location, GeneralParseErrorSyntaxError, token, NULL);
 }
 
-void ABCParserSetLineBreak(void *_self, char c)
+static void ABCParserSetLineBreak(void *_self, char c)
 {
     ABCParser *self = _self; 
     self->lineBreak = c;
@@ -199,7 +220,7 @@ bool ABCParserIsLineBreak(void *_self, char c)
     return self->lineBreak == c;
 }
 
-void ABCParserSetDecoration(void *_self, char c)
+static void ABCParserSetDecoration(void *_self, char c)
 {
     ABCParser *self = _self;
     self->decorationDialects[0] = c;
@@ -226,4 +247,86 @@ void ABCParserSetRedefinableSymbol(void *_self, char *symbol, char *replacement)
 {
     ABCParser *self = _self;
     ABCPreprocessorSetRedefinableSymbol(self->preprocessor, symbol, replacement);
+}
+
+void ABCParserNotify(void *_self, ABCParserEvent event, void *node)
+{
+    ABCParser *self = _self;
+
+    switch (event) {
+    case ABCParserEventRefernceNumber:
+        {
+            NAIterator *iterator;
+
+            self->inFileHeader = false;
+
+            self->lineBreak = '\n';
+            self->decorationDialects[0] = '!';
+            self->decorationDialects[1] = '+';
+
+            if (-1 != self->defaults.lineBreak) {
+                ABCParserSetLineBreak(self, self->defaults.lineBreak);
+            }
+
+            if (-1 == self->defaults.decoration) {
+                ABCParserSetDecoration(self, self->defaults.decoration);
+            }
+
+            ABCPreprocessorDestroy(self->preprocessor);
+            self->preprocessor = ABCPreprocessorCreate();
+
+            iterator = NAArrayGetIterator(self->defaults.macros);
+            while (iterator->hasNext(iterator)) {
+                ASTMacro *macro = iterator->next(iterator);
+                ABCPreprocessorSetMacro(self->preprocessor, macro->target, macro->replacement);
+            }
+
+            iterator = NAArrayGetIterator(self->defaults.redefinableSymbols);
+            while (iterator->hasNext(iterator)) {
+                ASTRedefinableSymbol *rdSymbol = iterator->next(iterator);
+                ABCPreprocessorSetMacro(self->preprocessor, rdSymbol->symbol, rdSymbol->replacement);
+            }
+        }
+        break;
+    case ABCParserEventInstLineBreak:
+        {
+            ASTInstLineBreak *ast = node;
+            ABCParserSetLineBreak(self, ast->character);
+
+            if (self->inFileHeader) {
+                self->defaults.lineBreak = ast->character;
+            }
+        }
+        break;
+    case ABCParserEventInstDecoration:
+        {
+            ASTInstDecoration *ast = node;
+            ABCParserSetDecoration(self, ast->character);
+
+            if (self->inFileHeader) {
+                self->defaults.decoration = ast->character;
+            }
+        }
+        break;
+    case ABCParserEventMacro:
+        {
+            ASTMacro *macro = node;
+            ABCPreprocessorSetMacro(self->preprocessor, macro->target, macro->replacement);
+
+            if (self->inFileHeader) {
+                NAArrayAppend(self->defaults.macros, node);
+            }
+        }
+        break;
+    case ABCParserEventRedefinableSymbol:
+        {
+            ASTRedefinableSymbol *rdSymbol = node;
+            ABCPreprocessorSetRedefinableSymbol(self->preprocessor, rdSymbol->symbol, rdSymbol->replacement);
+
+            if (self->inFileHeader) {
+                NAArrayAppend(self->defaults.redefinableSymbols, node);
+            }
+        }
+        break;
+    }
 }

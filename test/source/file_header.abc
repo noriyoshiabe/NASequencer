@@ -1,0 +1,16 @@
+m: ~HOGE1 = ABCDEFG
+U: T = "!coda!"
+I: linebreak !
+I: decoration +
+
+X:1
+~HOGE1 ! +AAA+
+~
+
+X:2
+I: decoration !
+I: linebreak <EOL>
+m: ~HOGE1 = abcdefg
+U: T = "!what!"
+~HOGE1 ! ABC
+ABC

@@ -282,8 +282,8 @@ static void ABCPreprocessorExpandRedefinableSymbol(ABCPreprocessor *self, const 
 static Macro *MacroCreate(char *target, char *replacement)
 {
     Macro *self = calloc(1, sizeof(Macro));
-    self->target = target;
-    self->replacement = NACStringTrimWhiteSpace(replacement);
+    self->target = strdup(target);
+    self->replacement = strdup(NACStringTrimWhiteSpace(replacement));
 
     char *pattern = NACStringDuplicate(target);
     char *n = strchr(pattern, 'n');
@@ -309,8 +309,8 @@ static void MacroDestroy(Macro *self)
 static RedefinableSymbol *RedefinableSymbolCreate(char *symbol, char *replacement)
 {
     RedefinableSymbol *self = calloc(1, sizeof(RedefinableSymbol));
-    self->symbol = symbol;
-    self->replacement = replacement;
+    self->symbol = strdup(symbol);
+    self->replacement = strdup(replacement);
     return self;
 }
 

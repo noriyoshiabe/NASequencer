@@ -119,6 +119,7 @@ reference_number
             ASTReferenceNumber *n = node(ReferenceNumber, @$);
             n->number = $2;
             $$ = n;
+            ABCParserNotify(ABC_information_get_extra(scanner), ABCParserEventRefernceNumber, n);
         }
     ;
 
@@ -437,6 +438,7 @@ instruction
             ASTInstLineBreak *n = node(InstLineBreak, @$);
             n->character = $3;
             $$ = n;
+            ABCParserNotify(ABC_information_get_extra(scanner), ABCParserEventInstLineBreak, n);
         }
     | INSTRUCTION INST_LINEBREAK STRING
         {
@@ -451,12 +453,14 @@ instruction
 
             free($3);
             $$ = n;
+            ABCParserNotify(ABC_information_get_extra(scanner), ABCParserEventInstLineBreak, n);
         }
     | INSTRUCTION INST_DECORATION CHAR
         {
             ASTInstDecoration *n = node(InstDecoration, @$);
             n->character = $3;
             $$ = n;
+            ABCParserNotify(ABC_information_get_extra(scanner), ABCParserEventInstDecoration, n);
         }
     ;
 
@@ -467,6 +471,7 @@ macro
             n->target = $1;
             n->replacement = $3;
             $$ = n;
+            ABCParserNotify(ABC_information_get_extra(scanner), ABCParserEventMacro, n);
         }
     ;
 
@@ -486,6 +491,7 @@ redefinable_symbol
             n->symbol = $1;
             n->replacement = $3;
             $$ = n;
+            ABCParserNotify(ABC_information_get_extra(scanner), ABCParserEventRedefinableSymbol, n);
         }
     ;
 

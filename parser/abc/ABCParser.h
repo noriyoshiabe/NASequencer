@@ -16,9 +16,15 @@ extern Node *ABCParserParseInformation(void *self, const char *filepath, int lin
 extern Node *ABCParserParseTuneBody(void *self, const char *filepath, int line, int columnOffset, const char *string);
 extern Node *ABCParserParseIncludeFile(void *self, FileLocation *location, const char *includeFile, char **fullpath);
 extern void ABCParserSyntaxError(void *self, FileLocation *location, const char *token);
-extern void ABCParserSetLineBreak(void *self, char c);
 extern bool ABCParserIsLineBreak(void *self, char c);
-extern void ABCParserSetDecoration(void *self, char c);
 extern bool ABCParserIsDecoration(void *self, char c);
-extern void ABCParserSetMacro(void *_self, char *target, char *replacement);
-extern void ABCParserSetRedefinableSymbol(void *_self, char *symbol, char *replacement);
+
+typedef enum {
+    ABCParserEventRefernceNumber,
+    ABCParserEventInstLineBreak,
+    ABCParserEventInstDecoration,
+    ABCParserEventMacro,
+    ABCParserEventRedefinableSymbol,
+} ABCParserEvent;
+
+extern void ABCParserNotify(void *self, ABCParserEvent event, void *node);
