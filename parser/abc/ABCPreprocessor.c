@@ -34,6 +34,8 @@ struct _ABCPreprocessor {
     regex_t inlineRegex;
     NAStringBuffer *buffer;
     NAStringBuffer *tmpBuffer;
+
+    char decorationDialect;
 };
 
 static void ABCPreprocessorPreprocessTuneBodyInternal(ABCPreprocessor *self, const char *string);
@@ -79,6 +81,8 @@ ABCPreprocessor *ABCPreprocessorCreate()
         RedefinableSymbol *rdSymbol = RedefinableSymbolCreate(strdup(predefined[i].symbol), strdup(predefined[i].replacement));
         NAMapPut(self->redefinableSymbols, rdSymbol->symbol, rdSymbol);
     }
+
+    self->decorationDialect = '!';
 
     return self;
 }
@@ -127,12 +131,22 @@ void ABCPreprocessorSetRedefinableSymbol(ABCPreprocessor *self, char *symbol, ch
         RedefinableSymbolDestroy(prev);
     }
 
-    if (0 == strcmp(replacement, "!none!") || 0 == strcmp(replacement, "!nil!")) {
+    char none[8];
+    char nil[8];
+    sprintf(none, "%1$cnone%1$c", self->decorationDialect);
+    sprintf(nil, "%1$cnil%1$c", self->decorationDialect);
+
+    if (0 != strcmp(replacement, none) || 0 == strcmp(replacement, nil)) {
         return;
     }
     
     RedefinableSymbol *rdSymbol = RedefinableSymbolCreate(symbol, replacement);
     NAMapPut(self->redefinableSymbols, rdSymbol->symbol, rdSymbol);
+}
+
+void ABCPreprocessorSetDecorationDialect(ABCPreprocessor *self, char c)
+{
+    self->decorationDialect = c;
 }
 
 char *ABCPreprocessorPreprocessTuneBody(ABCPreprocessor *self, const char *tuneBody)
@@ -270,6 +284,15 @@ static void ABCPreprocessorExpandRedefinableSymbol(ABCPreprocessor *self, const 
         char symbol[2] = {string[i], '\0'};
         RedefinableSymbol *rdSymbol = NAMapGet(self->redefinableSymbols, symbol);
         if (rdSymbol) {
+            if ('!' == rdSymbol->replacement[0] || '+' == rdSymbol->replacement[0]) {
+                char *pc = rdSymbol->replacement;
+                while (*pc) {
+                    if ('!' == *pc || '+' == *pc) {
+                        *pc = self->decorationDialect;
+                    }
+                    ++pc;
+                }
+            }
             NAStringBufferAppendString(buffer, rdSymbol->replacement);
         }
         else {

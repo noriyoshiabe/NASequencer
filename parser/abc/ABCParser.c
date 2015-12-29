@@ -211,6 +211,8 @@ static void ABCParserSetLineBreak(void *_self, char c)
     if ('!' == c) {
         self->decorationDialects[0] = '+';
         self->decorationDialects[1] = -1;
+
+        ABCPreprocessorSetDecorationDialect(self->preprocessor, '+');
     }
 }
 
@@ -229,6 +231,8 @@ static void ABCParserSetDecoration(void *_self, char c)
     if (c == self->lineBreak) {
         self->lineBreak = -1;
     }
+
+    ABCPreprocessorSetDecorationDialect(self->preprocessor, c);
 }
 
 bool ABCParserIsDecoration(void *_self, char c)
@@ -260,6 +264,9 @@ void ABCParserNotify(void *_self, ABCParserEvent event, void *node)
 
             self->inFileHeader = false;
 
+            ABCPreprocessorDestroy(self->preprocessor);
+            self->preprocessor = ABCPreprocessorCreate();
+
             self->lineBreak = '\n';
             self->decorationDialects[0] = '!';
             self->decorationDialects[1] = '+';
@@ -271,9 +278,6 @@ void ABCParserNotify(void *_self, ABCParserEvent event, void *node)
             if (-1 == self->defaults.decoration) {
                 ABCParserSetDecoration(self, self->defaults.decoration);
             }
-
-            ABCPreprocessorDestroy(self->preprocessor);
-            self->preprocessor = ABCPreprocessorCreate();
 
             iterator = NAArrayGetIterator(self->defaults.macros);
             while (iterator->hasNext(iterator)) {
