@@ -47,6 +47,7 @@ typedef struct _ABCASTAnalyzer {
     SEMTune *tune;
     SEMKey *key;
     SEMTempo *tempo;
+    SEMPart *part;
 } ABCASTAnalyzer;
 
 static BaseNote KeyChar2BaseNote(char c);
@@ -422,9 +423,33 @@ static void visitTempoParam(void *_self, ASTTempoParam *ast)
     }
 }
 
-static void visitParts(void *self, ASTParts *ast)
+static void visitParts(void *_self, ASTParts *ast)
 {
-    __Trace__
+    ABCASTAnalyzer *self = _self;
+
+    switch (self->state) {
+    case FileHeader:
+        appendError(self, ast, ABCParseErrorIllegalStateWithParts, State2String(self->state), NULL);
+        return;
+    case TuneHeader:
+        if (self->tune->partSequence) {
+            free(self->tune->partSequence);
+        }
+        self->tune->partSequence = strdup(ast->list);
+        break;
+    case TuneBody:
+        {
+            char identifier[2] = {ast->list[0], '\0'};
+            SEMPart *part = NAMapGet(self->tune->partMap, identifier);
+            if (!part) {
+                part = node(Part, ast);
+                part->identifier = strdup(identifier);
+                NAMapPut(self->tune->partMap, part->identifier, part);
+            }
+            self->part = part;
+        }
+        break;
+    }
 }
 
 static void visitInstCharSet(void *self, ASTInstCharSet *ast)

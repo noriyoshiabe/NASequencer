@@ -122,7 +122,9 @@ static void SEMPartDestroy(void *_self)
 
 SEMPart *ABCSEMPartCreate(FileLocation *location)
 {
-    return NodeCreate(SEMPart, location);
+    SEMPart *self = NodeCreate(SEMPart, location);
+    self->node.children = NAArrayCreate(4, NADescriptionAddress);
+    return self;
 }
 
 static void SEMVoiceAccept(void *self, void *visitor)
