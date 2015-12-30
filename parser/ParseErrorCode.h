@@ -53,6 +53,7 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(ABCParseErrorInvalidOctave);
     CASE(ABCParseErrorInvalidKeyMode);
     CASE(ABCParseErrorInvalidKey);
+    CASE(ABCParseErrorInvalidMeter);
 
     default:
        break;

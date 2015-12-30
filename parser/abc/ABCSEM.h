@@ -18,17 +18,6 @@ typedef struct _SEMTune {
     NAMap *partMap;
 } SEMTune;
 
-typedef struct _SEMTempo {
-    Node node;
-    float tempo;
-} SEMTempo;
-
-typedef struct _SEMTime {
-    Node node;
-    int numerator;
-    int denominator;
-} SEMTime;
-
 typedef struct _SEMKey {
     Node node;
     NoteTable *noteTable;
@@ -40,10 +29,21 @@ typedef struct _SEMKey {
     NAArray *accidentals;
 } SEMKey;
 
+typedef struct _SEMMeter {
+    Node node;
+    int numerator;
+    int denominator;
+} SEMMeter;
+
 typedef struct _SEMUnitNoteLength {
     Node node;
     int length;
 } SEMUnitNoteLength;
+
+typedef struct _SEMTempo {
+    Node node;
+    float tempo;
+} SEMTempo;
 
 typedef struct _SEMPart {
     Node node;
@@ -140,10 +140,10 @@ typedef struct _SEMPropagateAccidental {
 typedef struct _SEMVisitor {
     void (*visitFile)(void *self, SEMFile *sem);
     void (*visitTune)(void *self, SEMTune *sem);
-    void (*visitTempo)(void *self, SEMTempo *sem);
-    void (*visitTime)(void *self, SEMTime *sem);
     void (*visitKey)(void *self, SEMKey *sem);
+    void (*visitMeter)(void *self, SEMMeter *sem);
     void (*visitUnitNoteLength)(void *self, SEMUnitNoteLength *sem);
+    void (*visitTempo)(void *self, SEMTempo *sem);
     void (*visitPart)(void *self, SEMPart *sem);
     void (*visitVoice)(void *self, SEMVoice *sem);
     void (*visitNote)(void *self, SEMNote *sem);
@@ -163,10 +163,10 @@ typedef struct _SEMVisitor {
 
 extern SEMFile *ABCSEMFileCreate(FileLocation *location);
 extern SEMTune *ABCSEMTuneCreate(FileLocation *location);
-extern SEMTempo *ABCSEMTempoCreate(FileLocation *location);
-extern SEMTime *ABCSEMTimeCreate(FileLocation *location);
 extern SEMKey *ABCSEMKeyCreate(FileLocation *location);
+extern SEMMeter *ABCSEMMeterCreate(FileLocation *location);
 extern SEMUnitNoteLength *ABCSEMUnitNoteLengthCreate(FileLocation *location);
+extern SEMTempo *ABCSEMTempoCreate(FileLocation *location);
 extern SEMPart *ABCSEMPartCreate(FileLocation *location);
 extern SEMVoice *ABCSEMVoiceCreate(FileLocation *location);
 extern SEMNote *ABCSEMNoteCreate(FileLocation *location);

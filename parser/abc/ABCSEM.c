@@ -44,34 +44,6 @@ SEMTune *ABCSEMTuneCreate(FileLocation *location)
     return self;
 }
 
-static void SEMTempoAccept(void *self, void *visitor)
-{
-    ((SEMVisitor *)visitor)->visitTempo(visitor, self);
-}
-
-static void SEMTempoDestroy(void *self)
-{
-}
-
-SEMTempo *ABCSEMTempoCreate(FileLocation *location)
-{
-    return NodeCreate(SEMTempo, location);
-}
-
-static void SEMTimeAccept(void *self, void *visitor)
-{
-    ((SEMVisitor *)visitor)->visitTime(visitor, self);
-}
-
-static void SEMTimeDestroy(void *self)
-{
-}
-
-SEMTime *ABCSEMTimeCreate(FileLocation *location)
-{
-    return NodeCreate(SEMTime, location);
-}
-
 static void SEMKeyAccept(void *self, void *visitor)
 {
     ((SEMVisitor *)visitor)->visitKey(visitor, self);
@@ -91,6 +63,20 @@ SEMKey *ABCSEMKeyCreate(FileLocation *location)
     return self;
 }
 
+static void SEMMeterAccept(void *self, void *visitor)
+{
+    ((SEMVisitor *)visitor)->visitMeter(visitor, self);
+}
+
+static void SEMMeterDestroy(void *self)
+{
+}
+
+SEMMeter *ABCSEMMeterCreate(FileLocation *location)
+{
+    return NodeCreate(SEMMeter, location);
+}
+
 static void SEMUnitNoteLengthAccept(void *self, void *visitor)
 {
     ((SEMVisitor *)visitor)->visitUnitNoteLength(visitor, self);
@@ -103,6 +89,20 @@ static void SEMUnitNoteLengthDestroy(void *self)
 SEMUnitNoteLength *ABCSEMUnitNoteLengthCreate(FileLocation *location)
 {
     return NodeCreate(SEMUnitNoteLength, location);
+}
+
+static void SEMTempoAccept(void *self, void *visitor)
+{
+    ((SEMVisitor *)visitor)->visitTempo(visitor, self);
+}
+
+static void SEMTempoDestroy(void *self)
+{
+}
+
+SEMTempo *ABCSEMTempoCreate(FileLocation *location)
+{
+    return NodeCreate(SEMTempo, location);
 }
 
 static void SEMPartAccept(void *self, void *visitor)

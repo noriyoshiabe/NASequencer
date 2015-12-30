@@ -112,16 +112,6 @@ static void visitTune(void *_self, SEMTune *sem)
     self->indent -= 4;
 }
 
-static void visitTempo(void *self, SEMTempo *sem)
-{
-    dump(self, sem, FLOAT(sem, tempo), NULL);
-}
-
-static void visitTime(void *self, SEMTime *sem)
-{
-    dump(self, sem, INTEGER(sem, numerator), INTEGER(sem, denominator), NULL);
-}
-
 static void visitKey(void *_self, SEMKey *sem)
 {
     ABCSEMDumper *self = _self;
@@ -129,9 +119,19 @@ static void visitKey(void *_self, SEMKey *sem)
     NoteTableDump(sem->noteTable, self->indent + 4);
 }
 
+static void visitMeter(void *self, SEMMeter *sem)
+{
+    dump(self, sem, INTEGER(sem, numerator), INTEGER(sem, denominator), NULL);
+}
+
 static void visitUnitNoteLength(void *self, SEMUnitNoteLength *sem)
 {
     dump(self, sem, INTEGER(sem, length), NULL);
+}
+
+static void visitTempo(void *self, SEMTempo *sem)
+{
+    dump(self, sem, FLOAT(sem, tempo), NULL);
 }
 
 static void visitPart(void *_self, SEMPart *sem)
@@ -255,10 +255,10 @@ Analyzer *ABCSEMDumperCreate(ParseContext *context)
     
     self->visitor.visitFile = visitFile;
     self->visitor.visitTune = visitTune;
-    self->visitor.visitTempo = visitTempo;
-    self->visitor.visitTime = visitTime;
     self->visitor.visitKey = visitKey;
+    self->visitor.visitMeter = visitMeter;
     self->visitor.visitUnitNoteLength = visitUnitNoteLength;
+    self->visitor.visitTempo = visitTempo;
     self->visitor.visitPart = visitPart;
     self->visitor.visitVoice = visitVoice;
     self->visitor.visitNote = visitNote;

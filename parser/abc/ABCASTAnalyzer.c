@@ -14,6 +14,7 @@
 #define appendError(self, ast, ...) self->context->appendError(self->context, &ast->node.location, __VA_ARGS__)
 
 #define isValidRange(v, from, to) (from <= v && v <= to)
+#define isPowerOf2(x) ((x != 0) && ((x & (x - 1)) == 0))
 
 #define __Trace__ printf("-- %s:%s - %d\n", __FILE__, __func__, __LINE__);
 
@@ -279,9 +280,31 @@ static void visitKeyParam(void *_self, ASTKeyParam *ast)
     }
 }
 
-static void visitMeter(void *self, ASTMeter *ast)
+static void visitMeter(void *_self, ASTMeter *ast)
 {
-    __Trace__
+    ABCASTAnalyzer *self = _self;
+
+    int numerator = ast->numerator;
+    int denominator = ast->denominator;
+
+    if (ast->free || ast->commonTime) {
+        numerator = 4;
+        denominator = 4;
+    }
+    else if (ast->cutTime) {
+        numerator = 2;
+        denominator = 2;
+    }
+
+    if (1 > numerator || 1 > denominator || !isPowerOf2(denominator)) {
+        appendError(self, ast, ABCParseErrorInvalidMeter, NACStringFromInteger(numerator), NACStringFromInteger(denominator), NULL);
+    }
+    else {
+        SEMMeter *meter = node(Meter, ast);
+        meter->numerator = numerator;
+        meter->denominator = denominator;
+        append(self->tune, meter);
+    }
 }
 
 static void visitUnitNoteLength(void *self, ASTUnitNoteLength *ast)
