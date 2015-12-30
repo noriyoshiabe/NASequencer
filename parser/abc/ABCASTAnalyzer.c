@@ -305,7 +305,13 @@ static void visitMeter(void *_self, ASTMeter *ast)
         SEMMeter *meter = node(Meter, ast);
         meter->numerator = numerator;
         meter->denominator = denominator;
-        append(self->tune, meter);
+
+        if (!self->tune) {
+            append(self->file, meter);
+        }
+        else {
+            append(self->tune, meter);
+        }
     }
 }
 
@@ -324,7 +330,13 @@ static void visitUnitNoteLength(void *_self, ASTUnitNoteLength *ast)
 
     SEMUnitNoteLength *unLength = node(UnitNoteLength, ast);
     unLength->length = RESOLUTION * 4 * numerator / denominator;
-    append(self->tune, unLength);
+
+    if (!self->tune) {
+        append(self->file, unLength);
+    }
+    else {
+        append(self->tune, unLength);
+    }
 }
 
 static void visitTempo(void *_self, ASTTempo *ast)
@@ -376,7 +388,13 @@ static void visitTempo(void *_self, ASTTempo *ast)
     }
 
     tempo->tempo = _tempo;
-    append(self->tune, tempo);
+
+    if (!self->tune) {
+        append(self->file, tempo);
+    }
+    else {
+        append(self->tune, tempo);
+    }
 }
 
 static void visitTempoParam(void *_self, ASTTempoParam *ast)
