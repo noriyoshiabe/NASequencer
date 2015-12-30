@@ -54,6 +54,7 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(ABCParseErrorInvalidKeyMode);
     CASE(ABCParseErrorInvalidKey);
     CASE(ABCParseErrorInvalidMeter);
+    CASE(ABCParseErrorInvalidUnitNoteLength);
 
     default:
        break;

@@ -15,6 +15,7 @@
 
 #define isValidRange(v, from, to) (from <= v && v <= to)
 #define isPowerOf2(x) ((x != 0) && ((x & (x - 1)) == 0))
+#define RESOLUTION 480
 
 #define __Trace__ printf("-- %s:%s - %d\n", __FILE__, __func__, __LINE__);
 
@@ -307,9 +308,22 @@ static void visitMeter(void *_self, ASTMeter *ast)
     }
 }
 
-static void visitUnitNoteLength(void *self, ASTUnitNoteLength *ast)
+static void visitUnitNoteLength(void *_self, ASTUnitNoteLength *ast)
 {
-    __Trace__
+    ABCASTAnalyzer *self = _self;
+
+    int numerator = ast->numerator;
+    int denominator = -1 == ast->denominator ? 1 : ast->denominator;
+
+    if (1 > numerator || 1 > denominator
+            || 0 != RESOLUTION * 4 * numerator % denominator) {
+        appendError(self, ast, ABCParseErrorInvalidUnitNoteLength, NACStringFromInteger(ast->numerator), NACStringFromInteger(ast->denominator), NULL);
+        return;
+    }
+
+    SEMUnitNoteLength *unLength = node(UnitNoteLength, ast);
+    unLength->length = RESOLUTION * 4 * numerator / denominator;
+    append(self->tune, unLength);
 }
 
 static void visitTempo(void *self, ASTTempo *ast)

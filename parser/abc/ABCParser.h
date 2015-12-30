@@ -18,6 +18,7 @@ typedef enum {
     ABCParseErrorInvalidKeyMode,
     ABCParseErrorInvalidKey,
     ABCParseErrorInvalidMeter,
+    ABCParseErrorInvalidUnitNoteLength,
 } ABCParseError;
 
 extern DSLParser *ABCParserCreate(ParseContext *context);
