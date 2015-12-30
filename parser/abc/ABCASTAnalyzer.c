@@ -489,7 +489,6 @@ static void visitInstLineBreak(void *self, ASTInstLineBreak *ast)
 
 static void visitInstDecoration(void *self, ASTInstDecoration *ast)
 {
-    // TODO expand to instructions like pianissimo, forte and so on
 }
 
 static void visitMacro(void *self, ASTMacro *ast)
@@ -579,8 +578,6 @@ static void visitVoiceParam(void *_self, ASTVoiceParam *ast)
 
 static void visitTuneBody(void *self, ASTTuneBody *ast)
 {
-    __Trace__
-
     NAIterator *iterator = NAArrayGetIterator(ast->node.children);
     while (iterator->hasNext(iterator)) {
         Node *node = iterator->next(iterator);
@@ -590,17 +587,15 @@ static void visitTuneBody(void *self, ASTTuneBody *ast)
 
 static void visitLineBreak(void *self, ASTLineBreak *ast)
 {
-    __Trace__
 }
 
 static void visitAnnotation(void *self, ASTAnnotation *ast)
 {
-    __Trace__
 }
 
 static void visitDecoration(void *self, ASTDecoration *ast)
 {
-    __Trace__
+    // TODO expand to instructions like pianissimo, forte and so on
 }
 
 static void visitNote(void *self, ASTNote *ast)
