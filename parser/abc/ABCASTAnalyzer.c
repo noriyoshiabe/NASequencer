@@ -340,7 +340,42 @@ static void visitTempo(void *_self, ASTTempo *ast)
         node->accept(node, self);
     }
 
-    // TODO
+    if (!self->tempo->beatCount) {
+        NodeRelease(tempo);
+        return;
+    }
+
+    int unitLength = 0;
+
+    if (NAArrayIsEmpty(self->tempo->beatUnits)) {
+        unitLength = RESOLUTION;
+    }
+    else {
+        NAIterator *iterator = NAArrayGetIterator(self->tempo->beatUnits);
+        while (iterator->hasNext(iterator)) {
+            ASTTempoParam *beatUnit = iterator->next(iterator);
+            int numerator = beatUnit->numerator;
+            int denominator = beatUnit->denominator;
+
+            if (1 > numerator || 1 > denominator
+                    || 0 != RESOLUTION * 4 * numerator % denominator) {
+                appendError(self, ast, ABCParseErrorInvalidBeatUnit, NACStringFromInteger(numerator), NACStringFromInteger(denominator), NULL);
+                NodeRelease(tempo);
+                return;
+            }
+
+            unitLength += RESOLUTION * 4 * numerator / denominator;
+        }
+    }
+
+    float _tempo = self->tempo->beatCount->beatCount * unitLength / RESOLUTION;
+    if (!isValidRange(_tempo, 30.0, 300.0)) {
+        appendError(self, ast, ABCParseErrorInvalidTempo, NACStringFromFloat(_tempo, 2), NULL);
+        NodeRelease(tempo);
+        return;
+    }
+
+    tempo->tempo = _tempo;
     append(self->tune, tempo);
 }
 

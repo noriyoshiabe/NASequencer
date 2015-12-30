@@ -21,6 +21,7 @@ typedef enum {
     ABCParseErrorInvalidUnitNoteLength,
     ABCParseErrorInvalidBeatUnit,
     ABCParseErrorInvalidBeatCount,
+    ABCParseErrorInvalidTempo,
 } ABCParseError;
 
 extern DSLParser *ABCParserCreate(ParseContext *context);
