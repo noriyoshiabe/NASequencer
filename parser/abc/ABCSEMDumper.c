@@ -109,6 +109,14 @@ static void visitTune(void *_self, SEMTune *sem)
         node->accept(node, self);
     }
 
+    iterator = NAMapGetIterator(sem->voiceMap);
+    while (iterator->hasNext(iterator)) {
+        NAMapEntry *entry = iterator->next(iterator);
+        Node *node = entry->value;
+        printf("%*s---------- voice ----------\n", self->indent, "");
+        node->accept(node, self);
+    }
+
     self->indent -= 4;
 }
 
@@ -141,9 +149,19 @@ static void visitPart(void *_self, SEMPart *sem)
     dump(self, sem, STRING(sem, identifier), NULL);
     self->indent += 4;
 
-    NAIterator *iterator = NAArrayGetIterator(sem->node.children);
+    NAIterator *iterator;
+   
+    iterator = NAArrayGetIterator(sem->node.children);
     while (iterator->hasNext(iterator)) {
         Node *node = iterator->next(iterator);
+        node->accept(node, self);
+    }
+
+    iterator = NAMapGetIterator(sem->voiceMap);
+    while (iterator->hasNext(iterator)) {
+        NAMapEntry *entry = iterator->next(iterator);
+        Node *node = entry->value;
+        printf("%*s---------- voice ----------\n", self->indent, "");
         node->accept(node, self);
     }
 
