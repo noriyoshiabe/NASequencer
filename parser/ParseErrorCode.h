@@ -47,6 +47,8 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(ABCParseErrorIncludeFileNotFound);
     CASE(ABCParseErrorIllegalStateWithTitle);
     CASE(ABCParseErrorIllegalStateWithKey);
+    CASE(ABCParseErrorDuplicatedKeyTonic);
+    CASE(ABCParseErrorDuplicatedKeyMode);
 
     default:
        break;

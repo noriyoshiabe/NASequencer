@@ -33,6 +33,10 @@ typedef struct _SEMKey {
     NoteTable *noteTable;
     int transpose;
     int octave;
+
+    char *tonic;
+    char *mode;
+    NAArray *accidentals;
 } SEMKey;
 
 typedef struct _SEMUnitNoteLength {

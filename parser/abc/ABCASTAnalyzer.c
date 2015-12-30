@@ -132,9 +132,42 @@ static void visitKey(void *_self, ASTKey *ast)
     append(self->tune, key);
 }
 
-static void visitKeyParam(void *self, ASTKeyParam *ast)
+static void visitKeyParam(void *_self, ASTKeyParam *ast)
 {
-    __Trace__
+    ABCASTAnalyzer *self = _self;
+    
+    switch (ast->type) {
+    case KeyTonic:
+        if (self->key->tonic) {
+            appendError(self, ast, ABCParseErrorDuplicatedKeyTonic, ast->string, NULL);
+        }
+        else {
+            self->key->tonic = strdup(ast->string);
+        }
+        break;
+    case KeyMode:
+        if (self->key->mode) {
+            appendError(self, ast, ABCParseErrorDuplicatedKeyMode, ast->string, NULL);
+        }
+        else {
+            self->key->mode = strdup(ast->string);
+        }
+        break;
+    case KeyAccidental:
+        NAArrayAppend(self->key->accidentals, strdup(ast->string));
+        break;
+    case KeyClef:
+    case KeyMiddle:
+        break;
+    case KeyTranspose:
+        self->key->transpose = ast->intValue;
+        break;
+    case KeyOctave:
+        self->key->octave = ast->intValue;
+        break;
+    case KeyStaffLines:
+        break;
+    }
 }
 
 static void visitMeter(void *self, ASTMeter *ast)

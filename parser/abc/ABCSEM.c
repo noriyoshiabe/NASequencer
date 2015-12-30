@@ -81,11 +81,17 @@ static void SEMKeyDestroy(void *_self)
 {
     SEMKey *self = _self;
     IF(self->noteTable, NoteTableRelease);
+    IF(self->tonic, free);
+    IF(self->mode, free);
+    NAArrayTraverse(self->accidentals, free);
+    NAArrayDestroy(self->accidentals);
 }
 
 SEMKey *ABCSEMKeyCreate(FileLocation *location)
 {
-    return NodeCreate(SEMKey, location);
+    SEMKey *self = NodeCreate(SEMKey, location);
+    self->accidentals = NAArrayCreate(4, NADescriptionCString);
+    return self;
 }
 
 static void SEMUnitNoteLengthAccept(void *self, void *visitor)
