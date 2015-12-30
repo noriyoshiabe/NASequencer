@@ -81,9 +81,6 @@ static void SEMKeyDestroy(void *_self)
 {
     SEMKey *self = _self;
     IF(self->noteTable, NoteTableRelease);
-    IF(self->tonic, free);
-    IF(self->mode, free);
-    NAArrayTraverse(self->accidentals, free);
     NAArrayDestroy(self->accidentals);
 }
 

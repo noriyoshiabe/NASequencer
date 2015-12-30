@@ -13,6 +13,10 @@ typedef enum {
     ABCParseErrorIllegalStateWithKey,
     ABCParseErrorDuplicatedKeyTonic,
     ABCParseErrorDuplicatedKeyMode,
+    ABCParseErrorInvalidTranspose,
+    ABCParseErrorInvalidOctave,
+    ABCParseErrorInvalidKeyMode,
+    ABCParseErrorInvalidKey,
 } ABCParseError;
 
 extern DSLParser *ABCParserCreate(ParseContext *context);

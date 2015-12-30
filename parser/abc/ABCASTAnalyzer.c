@@ -2,13 +2,18 @@
 #include "ABCParser.h"
 #include "ABCAST.h"
 #include "ABCSEM.h"
+#include "NoteTable.h"
+#include "NACString.h"
 
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #define node(type, ast) ABCSEM##type##Create(&ast->node.location)
 #define append(list, sem) NAArrayAppend(list->node.children, sem)
 #define appendError(self, ast, ...) self->context->appendError(self->context, &ast->node.location, __VA_ARGS__)
+
+#define isValidRange(v, from, to) (from <= v && v <= to)
 
 #define __Trace__ printf("-- %s:%s - %d\n", __FILE__, __func__, __LINE__);
 
@@ -40,6 +45,8 @@ typedef struct _ABCASTAnalyzer {
     SEMTune *tune;
     SEMKey *key;
 } ABCASTAnalyzer;
+
+static BaseNote KeyChar2BaseNote(char c);
 
 static Node *process(void *_self, Node *node)
 {
@@ -105,6 +112,7 @@ static void visitTitle(void *_self, ASTTitle *ast)
 static void visitKey(void *_self, ASTKey *ast)
 {
     ABCASTAnalyzer *self = _self;
+    NAIterator *iterator;
 
     if (!self->tune) {
         appendError(self, ast, ABCParseErrorIllegalStateWithKey, State2String(self->state), NULL);
@@ -116,19 +124,110 @@ static void visitKey(void *_self, ASTKey *ast)
     SEMKey *key = node(Key, ast);
     self->key = key;
 
-    NAIterator *iterator = NAArrayGetIterator(ast->node.children);
+    iterator = NAArrayGetIterator(ast->node.children);
     while (iterator->hasNext(iterator)) {
         Node *node = iterator->next(iterator);
         node->accept(node, self);
     }
 
-    // TODO
     BaseNote baseNote = BaseNote_C;
     bool sharp = false;
-    bool flat = true;
+    bool flat = false;
     Mode mode = ModeMajor;
-    key->noteTable = NoteTableCreate(baseNote, sharp, flat, ModeMajor);
 
+    if (key->tonic) {
+        char *_tonic = NACStringDuplicate(key->tonic->string);
+        NACStringToLowerCase(_tonic);
+
+        if (0 == strcmp("none", _tonic)) {
+            goto KEY_FOUND;
+        }
+
+        if (0 == strcmp("hp", _tonic)) {
+            baseNote = BaseNote_D;
+            goto KEY_FOUND;
+        }
+
+        baseNote = KeyChar2BaseNote(_tonic[0]);
+        sharp = NULL != strchr(&_tonic[1], '#');
+        flat = NULL != strchr(&_tonic[1], 'b');
+    }
+
+    if (key->mode) {
+        char *_mode = NACStringDuplicate(key->mode->string);
+        NACStringToLowerCase(_mode);
+
+        const struct {
+            const char *name;
+            Mode mode;
+        } scales[] = {
+            {"ma", ModeMajor}, {"maj", ModeMajor}, {"major", ModeMajor},
+            {"m", ModeMinor}, {"min", ModeMinor}, {"minor", ModeMinor},
+            {"ion", ModeIonian}, {"ionian", ModeIonian},
+            {"aeo", ModeAeolian}, {"aeolian", ModeAeolian},
+            {"mix", ModeMixolydian}, {"mixolydian", ModeMixolydian},
+            {"dor", ModeDorian}, {"dorian", ModeDorian},
+            {"phr", ModePhrygian}, {"phrygian", ModePhrygian},
+            {"lyd", ModeLydian}, {"lydian", ModeLydian},
+            {"loc", ModeLocrian}, {"locrian", ModeLocrian},
+            {"exp", ModeMajor}, {"explicit", ModeMajor},
+        };
+
+        for (int i = 0; i < sizeof(scales)/sizeof(scales[0]); ++i) {
+            if (0 == strcmp(_mode, scales[i].name)) {
+                mode = scales[i].mode;
+                goto KEY_FOUND;
+            }
+        }
+
+        appendError(self, key->mode, ABCParseErrorInvalidKeyMode, key->mode->string, NULL);
+        NodeRelease(key);
+        return;
+    }
+
+KEY_FOUND:
+    ;
+
+    NoteTable *noteTable = NoteTableCreate(baseNote, sharp, flat, mode);
+    if (NoteTableHasUnusualKeySign(noteTable)) {
+        char *_tonic = key->tonic ? key->tonic->string : "none";
+        char *_mode = key->mode ? key->mode->string : "none";
+        appendError(self, ast, ABCParseErrorInvalidKey, _tonic, _mode, NULL);
+        NoteTableRelease(noteTable);
+        NodeRelease(key);
+        return;
+    }
+
+    iterator = NAArrayGetIterator(key->accidentals);
+    while (iterator->hasNext(iterator)) {
+        ASTKeyParam *astAccidental = iterator->next(iterator);
+        char *pc = astAccidental->string;
+        char c;
+
+        BaseNote baseNote = BaseNote_C;
+        Accidental accidental = AccidentalNone;
+
+        while ((c = *(pc++))) {
+            switch (c) {
+            case '^':
+                accidental = AccidentalSharp == accidental ? AccidentalDoubleSharp : AccidentalSharp;
+                break;
+            case '_':
+                accidental = AccidentalFlat == accidental ? AccidentalDoubleFlat : AccidentalFlat;
+                break;
+            case '=':
+                accidental = AccidentalNatural;
+                break;
+            default:
+                baseNote = KeyChar2BaseNote(tolower(c));
+                break;
+            }
+        }
+
+        NoteTableAppendAccidental(noteTable, baseNote, accidental);
+    }
+
+    key->noteTable = noteTable;
     append(self->tune, key);
 }
 
@@ -142,7 +241,7 @@ static void visitKeyParam(void *_self, ASTKeyParam *ast)
             appendError(self, ast, ABCParseErrorDuplicatedKeyTonic, ast->string, NULL);
         }
         else {
-            self->key->tonic = strdup(ast->string);
+            self->key->tonic = ast;
         }
         break;
     case KeyMode:
@@ -150,20 +249,30 @@ static void visitKeyParam(void *_self, ASTKeyParam *ast)
             appendError(self, ast, ABCParseErrorDuplicatedKeyMode, ast->string, NULL);
         }
         else {
-            self->key->mode = strdup(ast->string);
+            self->key->mode = ast;
         }
         break;
     case KeyAccidental:
-        NAArrayAppend(self->key->accidentals, strdup(ast->string));
+        NAArrayAppend(self->key->accidentals, ast);
         break;
     case KeyClef:
     case KeyMiddle:
         break;
     case KeyTranspose:
-        self->key->transpose = ast->intValue;
+        if (!isValidRange(ast->intValue, -64, 64)) {
+            appendError(self, ast, ABCParseErrorInvalidTranspose, NACStringFromInteger(ast->intValue), NULL);
+        }
+        else {
+            self->key->transpose = ast->intValue;
+        }
         break;
     case KeyOctave:
-        self->key->octave = ast->intValue;
+        if (!isValidRange(ast->intValue, -3, 3)) {
+            appendError(self, ast, ABCParseErrorInvalidOctave, NACStringFromInteger(ast->intValue), NULL);
+        }
+        else {
+            self->key->octave = ast->intValue;
+        }
         break;
     case KeyStaffLines:
         break;
@@ -446,4 +555,15 @@ Analyzer *ABCASTAnalyzerCreate(ParseContext *context)
     self->context = context;
 
     return &self->analyzer;
+}
+
+
+static BaseNote KeyChar2BaseNote(char c)
+{
+    const BaseNote baseNoteTable[] = {
+        BaseNote_A, BaseNote_B, BaseNote_C,
+        BaseNote_D, BaseNote_E, BaseNote_F, BaseNote_G
+    };
+
+    return baseNoteTable[tolower(c) - 97];
 }

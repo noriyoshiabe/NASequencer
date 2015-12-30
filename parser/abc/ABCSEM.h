@@ -2,6 +2,7 @@
 
 #include "Node.h"
 #include "NoteTable.h"
+#include "ABCAST.h"
 #include "NAArray.h"
 #include "NAMap.h"
 
@@ -34,8 +35,8 @@ typedef struct _SEMKey {
     int transpose;
     int octave;
 
-    char *tonic;
-    char *mode;
+    const ASTKeyParam *tonic;
+    const ASTKeyParam *mode;
     NAArray *accidentals;
 } SEMKey;
 

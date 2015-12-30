@@ -49,6 +49,10 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(ABCParseErrorIllegalStateWithKey);
     CASE(ABCParseErrorDuplicatedKeyTonic);
     CASE(ABCParseErrorDuplicatedKeyMode);
+    CASE(ABCParseErrorInvalidTranspose);
+    CASE(ABCParseErrorInvalidOctave);
+    CASE(ABCParseErrorInvalidKeyMode);
+    CASE(ABCParseErrorInvalidKey);
 
     default:
        break;
