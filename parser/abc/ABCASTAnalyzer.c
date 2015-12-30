@@ -454,56 +454,57 @@ static void visitParts(void *_self, ASTParts *ast)
 
 static void visitInstCharSet(void *self, ASTInstCharSet *ast)
 {
-    __Trace__
 }
 
 static void visitInstVersion(void *self, ASTInstVersion *ast)
 {
-    __Trace__
 }
 
-static void visitInstInclude(void *self, ASTInstInclude *ast)
+static void visitInstInclude(void *_self, ASTInstInclude *ast)
 {
-    __Trace__
+    ABCASTAnalyzer *self = _self;
 
-    if (ast->root) {
-        ast->root->accept(ast->root, self);
+    switch (self->state) {
+    case FileHeader:
+    case TuneHeader:
+        if (ast->root) {
+            ast->root->accept(ast->root, self);
+        }
+        break;
+    case TuneBody:
+        appendError(self, ast, ABCParseErrorIllegalStateWithInclude, State2String(self->state), NULL);
+        break;
     }
+
 }
 
 static void visitInstCreator(void *self, ASTInstCreator *ast)
 {
-    __Trace__
 }
 
 static void visitInstLineBreak(void *self, ASTInstLineBreak *ast)
 {
-    __Trace__
 }
 
 static void visitInstDecoration(void *self, ASTInstDecoration *ast)
 {
-    __Trace__
+    // TODO expand to instructions like pianissimo, forte and so on
 }
 
 static void visitMacro(void *self, ASTMacro *ast)
 {
-    __Trace__
 }
 
 static void visitSymbolLine(void *self, ASTSymbolLine *ast)
 {
-    __Trace__
 }
 
 static void visitRedefinableSymbol(void *self, ASTRedefinableSymbol *ast)
 {
-    __Trace__
 }
 
 static void visitContinuation(void *self, ASTContinuation *ast)
 {
-    __Trace__
 }
 
 static void visitVoice(void *self, ASTVoice *ast)
