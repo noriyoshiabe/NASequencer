@@ -12,7 +12,7 @@ typedef struct _SEMFile {
 typedef struct _SEMTune {
     Node node;
     int number;
-    char *title;
+    NAArray *titleList;
     char *partSequence;
     NAMap *partMap;
 } SEMTune;

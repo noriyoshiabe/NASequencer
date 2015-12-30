@@ -68,6 +68,7 @@ static char *array2String(NAArray *array, char *buffer)
 #define CHAR(ast, name) #name, '\n' == ast->name ? "\\n" : NACStringFromChar(ast->name)
 #define BOOL(ast, name) #name, NACStringFromBoolean(ast->name)
 #define STRING(sem, name) #name, sem->name ? sem->name : "(null)"
+#define STRING_ARRAY(sem, name) #name, array2String(sem->name, alloca(1024))
 
 static void visitFile(void *_self, SEMFile *sem)
 {
@@ -89,7 +90,7 @@ static void visitTune(void *_self, SEMTune *sem)
 {
     ABCSEMDumper *self = _self;
 
-    dump(self, sem, INTEGER(sem, number), STRING(sem, title), STRING(sem, partSequence), NULL);
+    dump(self, sem, INTEGER(sem, number), STRING_ARRAY(sem, titleList), STRING(sem, partSequence), NULL);
     self->indent += 4;
 
     NAIterator *iterator = NAMapGetIterator(sem->partMap);

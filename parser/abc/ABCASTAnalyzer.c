@@ -3,32 +3,70 @@
 #include "ABCAST.h"
 #include "ABCSEM.h"
 
+#include "NAStack.h"
+
 #include <stdlib.h>
+#include <string.h>
+
+#define node(type, ast) ABCSEM##type##Create(&ast->node.location)
+#define append(list, sem) NAArrayAppend(list->node.children, sem)
+#define appendError(self, ast, ...) self->context->appendError(self->context, &ast->node.location, __VA_ARGS__)
 
 #define __Trace__ printf("-- %s:%s - %d\n", __FILE__, __func__, __LINE__);
+
+typedef enum {
+    FileHeader,
+    TuneHeader,
+    TuneBody,
+} StateKind;
+
+typedef struct _State {
+    Node *node;
+    StateKind kind;
+    const char *name;
+} State;
 
 typedef struct _ABCASTAnalyzer {
     ASTVisitor visitor;
     Analyzer analyzer;
+    SEMFile *file;
+    SEMTune *tune;
+
+    ParseContext *context;
+    State *state;
+    NAStack *stateStack;
 } ABCASTAnalyzer;
 
-static Node *process(void *self, Node *node)
+static State *StateCreate(void *node, StateKind kind);
+static void StateDestroy(State *self);
+
+static void pushState(ABCASTAnalyzer *self, Node *node, StateKind kind);
+static void popState(ABCASTAnalyzer *self);
+
+static Node *process(void *_self, Node *node)
 {
+    ABCASTAnalyzer *self = _self;
+
     SEMFile *file = ABCSEMFileCreate(NULL);
     file->node.children = NAArrayCreate(4, NADescriptionAddress);
+
+    self->file = file;
+    self->state = StateCreate(file, FileHeader);
+
     node->accept(node, self);
     return (Node *)file;
 }
 
-static void destroy(void *self)
+static void destroy(void *_self)
 {
+    ABCASTAnalyzer *self = _self;
+    NAStackDestroy(self->stateStack);
+    StateDestroy(self->state);
     free(self);
 }
 
 static void visitRoot(void *self, ASTRoot *ast)
 {
-    __Trace__
-
     NAIterator *iterator = NAArrayGetIterator(ast->node.children);
     while (iterator->hasNext(iterator)) {
         Node *node = iterator->next(iterator);
@@ -38,22 +76,33 @@ static void visitRoot(void *self, ASTRoot *ast)
 
 static void visitFileIdentification(void *self, ASTFileIdentification *ast)
 {
-    __Trace__
 }
 
 static void visitStringInformation(void *self, ASTStringInformation *ast)
 {
-    __Trace__
 }
 
-static void visitReferenceNumber(void *self, ASTReferenceNumber *ast)
+static void visitReferenceNumber(void *_self, ASTReferenceNumber *ast)
 {
-    __Trace__
+    ABCASTAnalyzer *self = _self;
+
+    SEMTune *tune = node(Tune, ast);
+    tune->number = ast->number;
+
+    append(self->file, tune);
+    self->tune = tune;
 }
 
-static void visitTitle(void *self, ASTTitle *ast)
+static void visitTitle(void *_self, ASTTitle *ast)
 {
-    __Trace__
+    ABCASTAnalyzer *self = _self;
+    
+    if (!self->tune) {
+        appendError(self, ast, ABCParseErrorIllegalStateWithTitle, self->state->name, NULL);
+        return;
+    }
+
+    NAArrayAppend(self->tune->titleList, strdup(ast->title));
 }
 
 static void visitKey(void *self, ASTKey *ast)
@@ -345,5 +394,46 @@ Analyzer *ABCASTAnalyzerCreate(ParseContext *context)
     self->analyzer.destroy = destroy;
     self->analyzer.self = self;
 
+    self->context = context;
+    self->stateStack = NAStackCreate(4);
+
     return &self->analyzer;
+}
+
+
+static void pushState(ABCASTAnalyzer *self, Node *node, StateKind kind)
+{
+    NAStackPush(self->stateStack, self->state);
+    self->state = StateCreate(node, kind);
+}
+
+static void popState(ABCASTAnalyzer *self)
+{
+    StateDestroy(self->state);
+    self->state = NAStackPop(self->stateStack);
+}
+
+static inline const char *StateKind2String(StateKind kind)
+{
+#define CASE(kind) case kind: return #kind;
+    switch (kind) {
+    CASE(FileHeader);
+    CASE(TuneHeader);
+    CASE(TuneBody);
+    }
+#undef CASE
+}
+
+static State *StateCreate(void *node, StateKind kind)
+{
+    State *self = calloc(1, sizeof(State));
+    self->node = node;
+    self->kind = kind;
+    self->name = StateKind2String(kind);
+    return self;
+}
+
+static void StateDestroy(State *self)
+{
+    free(self);
 }
