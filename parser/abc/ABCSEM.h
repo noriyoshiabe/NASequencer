@@ -16,6 +16,7 @@ typedef struct _SEMTune {
     NAArray *titleList;
     char *partSequence;
     NAMap *partMap;
+    NAMap *voiceMap;
 } SEMTune;
 
 typedef struct _SEMKey {
@@ -51,6 +52,7 @@ typedef struct _SEMTempo {
 typedef struct _SEMPart {
     Node node;
     char *identifier;
+    NAMap *voiceMap;
 } SEMPart;
 
 typedef struct _SEMVoice {

@@ -48,6 +48,7 @@ typedef struct _ABCASTAnalyzer {
     SEMKey *key;
     SEMTempo *tempo;
     SEMPart *part;
+    SEMVoice *voice;
 } ABCASTAnalyzer;
 
 static BaseNote KeyChar2BaseNote(char c);
@@ -507,20 +508,73 @@ static void visitContinuation(void *self, ASTContinuation *ast)
 {
 }
 
-static void visitVoice(void *self, ASTVoice *ast)
+static void visitVoice(void *_self, ASTVoice *ast)
 {
-    __Trace__
+    ABCASTAnalyzer *self = _self;
 
-    NAIterator *iterator = NAArrayGetIterator(ast->node.children);
-    while (iterator->hasNext(iterator)) {
-        Node *node = iterator->next(iterator);
-        node->accept(node, self);
+    switch (self->state) {
+    case FileHeader:
+        appendError(self, ast, ABCParseErrorIllegalStateWithVoice, State2String(self->state), NULL);
+        break;
+    case TuneHeader:
+    case TuneBody:
+        {
+            NAMap *voiceMap = self->part ? self->part->voiceMap : self->tune->voiceMap;
+
+            SEMVoice *voice = NAMapGet(voiceMap, ast->identifier);
+            if (!voice) {
+                voice = node(Voice, ast);
+                voice->identifier = strdup(ast->identifier);
+                NAMapPut(voiceMap, voice->identifier, voice);
+            }
+            
+            self->voice = voice;
+
+            NAIterator *iterator = NAArrayGetIterator(ast->node.children);
+            while (iterator->hasNext(iterator)) {
+                Node *node = iterator->next(iterator);
+                node->accept(node, self);
+            }
+
+            if (TuneHeader == self->state) {
+                self->voice = NULL;
+            }
+        }
+        break;
     }
 }
 
-static void visitVoiceParam(void *self, ASTVoiceParam *ast)
+static void visitVoiceParam(void *_self, ASTVoiceParam *ast)
 {
-    __Trace__
+    ABCASTAnalyzer *self = _self;
+
+    switch (ast->type) {
+    case VoiceName:
+    case VoiceSubname:
+    case VoiceStemUp:
+    case VoiceStemDown:
+    case VoiceClef:
+    case VoiceMiddle:
+        break;
+    case VoiceTranspose:
+        if (!isValidRange(ast->intValue, -64, 64)) {
+            appendError(self, ast, ABCParseErrorInvalidTranspose, NACStringFromInteger(ast->intValue), NULL);
+        }
+        else {
+            self->voice->transpose = ast->intValue;
+        }
+        break;
+    case VoiceOctave:
+        if (!isValidRange(ast->intValue, -3, 3)) {
+            appendError(self, ast, ABCParseErrorInvalidOctave, NACStringFromInteger(ast->intValue), NULL);
+        }
+        else {
+            self->voice->octave = ast->intValue;
+        }
+        break;
+    case VoiceStaffLines:
+        break;
+    }
 }
 
 static void visitTuneBody(void *self, ASTTuneBody *ast)

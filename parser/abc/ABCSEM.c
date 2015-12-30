@@ -33,6 +33,9 @@ static void SEMTuneDestroy(void *_self)
 
     NAMapTraverseValue(self->partMap, NodeRelease);
     NAMapDestroy(self->partMap);
+
+    NAMapTraverseValue(self->voiceMap, NodeRelease);
+    NAMapDestroy(self->voiceMap);
 }
 
 SEMTune *ABCSEMTuneCreate(FileLocation *location)
@@ -41,6 +44,7 @@ SEMTune *ABCSEMTuneCreate(FileLocation *location)
     self->node.children = NAArrayCreate(4, NADescriptionAddress);
     self->titleList = NAArrayCreate(4, NADescriptionCString);
     self->partMap = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
+    self->voiceMap = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
     return self;
 }
 
@@ -118,12 +122,15 @@ static void SEMPartDestroy(void *_self)
 {
     SEMPart *self = _self;
     IF(self->identifier, free);
+    NAMapTraverseValue(self->voiceMap, NodeRelease);
+    NAMapDestroy(self->voiceMap);
 }
 
 SEMPart *ABCSEMPartCreate(FileLocation *location)
 {
     SEMPart *self = NodeCreate(SEMPart, location);
     self->node.children = NAArrayCreate(4, NADescriptionAddress);
+    self->voiceMap = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
     return self;
 }
 
