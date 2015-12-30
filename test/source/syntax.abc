@@ -40,6 +40,11 @@ L: 3/5
 L: 1 / 512
 L: 1 / 1
 Q: 'Allegro?' 1/4 2/4 3/4 4/4 = 400 "Allegro"
+Q: 120
+Q: =120
+Q: 0
+Q: 1/8 C=120
+Q: 1/7
 P: Z(AB2C2.(YZ)2)2.
 I:abc-charset utf-8
 I:abc-version 2.0

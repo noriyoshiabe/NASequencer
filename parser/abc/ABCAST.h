@@ -82,7 +82,7 @@ typedef struct _ASTTempoParam {
     char *string;
     int numerator;
     int denominator;
-    int beatCount;
+    float beatCount;
 } ASTTempoParam;
 
 typedef struct _ASTParts {

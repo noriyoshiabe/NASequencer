@@ -159,7 +159,7 @@ static void visitTempoParam(void *self, ASTTempoParam *ast)
         dump(self, ast, "type", ASTTempoParamType2String(ast->type), INTEGER(ast, numerator), INTEGER(ast, denominator), NULL);
         break;
     case BeatCount:
-        dump(self, ast, "type", ASTTempoParamType2String(ast->type), INTEGER(ast, beatCount), NULL);
+        dump(self, ast, "type", ASTTempoParamType2String(ast->type), FLOAT(ast, beatCount), NULL);
         break;
     }
 }

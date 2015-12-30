@@ -43,6 +43,9 @@ typedef struct _SEMUnitNoteLength {
 typedef struct _SEMTempo {
     Node node;
     float tempo;
+
+    NAArray *beatUnits;
+    const ASTTempoParam *beatCount;
 } SEMTempo;
 
 typedef struct _SEMPart {

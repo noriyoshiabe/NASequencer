@@ -59,7 +59,7 @@ static void SEMKeyDestroy(void *_self)
 SEMKey *ABCSEMKeyCreate(FileLocation *location)
 {
     SEMKey *self = NodeCreate(SEMKey, location);
-    self->accidentals = NAArrayCreate(4, NADescriptionCString);
+    self->accidentals = NAArrayCreate(4, NADescriptionAddress);
     return self;
 }
 
@@ -96,13 +96,17 @@ static void SEMTempoAccept(void *self, void *visitor)
     ((SEMVisitor *)visitor)->visitTempo(visitor, self);
 }
 
-static void SEMTempoDestroy(void *self)
+static void SEMTempoDestroy(void *_self)
 {
+    SEMTempo *self = _self;
+    NAArrayDestroy(self->beatUnits);
 }
 
 SEMTempo *ABCSEMTempoCreate(FileLocation *location)
 {
-    return NodeCreate(SEMTempo, location);
+    SEMTempo *self = NodeCreate(SEMTempo, location);
+    self->beatUnits = NAArrayCreate(4, NADescriptionAddress);
+    return self;
 }
 
 static void SEMPartAccept(void *self, void *visitor)

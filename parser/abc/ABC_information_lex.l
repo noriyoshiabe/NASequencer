@@ -52,6 +52,7 @@
 NONZERO             [1-9]
 DIGIT               [[:digit:]]
 INTEGER             {NONZERO}{DIGIT}*|0
+FLOAT               ({NONZERO}{DIGIT}*|0)\.{DIGIT}+
 QUOTED_STRING       '.*'|\".*\"
 
 FILEPATH            [0-9a-zA-Z_\-]+\.abh
@@ -149,9 +150,11 @@ WSPACE              [[:blank:]]+
 
 ^Q:                      { BEGIN(x_TEMPO); return TEMPO; }
 <x_TEMPO>{INTEGER}       { yylval->i = atoi(yytext); return INTEGER; }
+<x_TEMPO>{FLOAT}         { yylval->i = atof(yytext); return FLOAT; }
 <x_TEMPO>{QUOTED_STRING} { yylval->s = strdup(yytext + 1); yylval->s[strlen(yylval->s) - 1] = '\0'; return STRING; }
 <x_TEMPO>"/"             { return '/'; }
 <x_TEMPO>"="             { return '='; }
+<x_TEMPO>"C"             { return 'C'; }
 
 ^P:                      { BEGIN(x_PARTS); return PARTS; }
 <x_PARTS>[[:alpha:]]     { yylval->s = strdup(yytext); return PART_LABEL; }

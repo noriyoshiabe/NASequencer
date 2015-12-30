@@ -46,6 +46,7 @@ typedef struct _ABCASTAnalyzer {
     SEMFile *file;
     SEMTune *tune;
     SEMKey *key;
+    SEMTempo *tempo;
 } ABCASTAnalyzer;
 
 static BaseNote KeyChar2BaseNote(char c);
@@ -326,20 +327,46 @@ static void visitUnitNoteLength(void *_self, ASTUnitNoteLength *ast)
     append(self->tune, unLength);
 }
 
-static void visitTempo(void *self, ASTTempo *ast)
+static void visitTempo(void *_self, ASTTempo *ast)
 {
-    __Trace__
+    ABCASTAnalyzer *self = _self;
+
+    SEMTempo *tempo = node(Tempo, ast);
+    self->tempo = tempo;
 
     NAIterator *iterator = NAArrayGetIterator(ast->node.children);
     while (iterator->hasNext(iterator)) {
         Node *node = iterator->next(iterator);
         node->accept(node, self);
     }
+
+    // TODO
+    append(self->tune, tempo);
 }
 
-static void visitTempoParam(void *self, ASTTempoParam *ast)
+static void visitTempoParam(void *_self, ASTTempoParam *ast)
 {
-    __Trace__
+    ABCASTAnalyzer *self = _self;
+
+    switch (ast->type) {
+    case TextString:
+        break;
+    case BeatUnit:
+        if (!self->tempo->beatCount) {
+            NAArrayAppend(self->tempo->beatUnits, ast);
+        }
+        break;
+    case BeatCount:
+        if (!self->tempo->beatCount) {
+            if (1.f > ast->beatCount) {
+                appendError(self, ast, ABCParseErrorInvalidBeatCount, NACStringFromFloat(ast->beatCount, 2), NULL);
+            }
+            else {
+                self->tempo->beatCount = ast;
+            }
+        }
+        break;
+    }
 }
 
 static void visitParts(void *self, ASTParts *ast)

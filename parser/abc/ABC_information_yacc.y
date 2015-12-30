@@ -44,6 +44,7 @@ extern void ABC_information_lex_set_error(yyscan_t scanner);
 %token <c> STRING_INFORMATION
 
 %token <i> INTEGER
+%token <f> FLOAT
 %token <s> STRING
 %token <c> CHAR
 %token <s> FILEPATH VERSION_NUMBER
@@ -369,11 +370,40 @@ tempo_param
             n->denominator = $3;
             $$ = n;
         }
+    | 'C'
+        {
+            ASTTempoParam *n = node(TempoParam, @$);
+            n->type = BeatUnit;
+            n->numerator = 1;
+            n->denominator = 4;
+            $$ = n;
+        }
     | '=' INTEGER
         {
             ASTTempoParam *n = node(TempoParam, @$);
             n->type = BeatCount;
+            n->beatCount = (float)$2;
+            $$ = n;
+        }
+    | INTEGER
+        {
+            ASTTempoParam *n = node(TempoParam, @$);
+            n->type = BeatCount;
+            n->beatCount = (float)$1;
+            $$ = n;
+        }
+    | '=' FLOAT
+        {
+            ASTTempoParam *n = node(TempoParam, @$);
+            n->type = BeatCount;
             n->beatCount = $2;
+            $$ = n;
+        }
+    | FLOAT
+        {
+            ASTTempoParam *n = node(TempoParam, @$);
+            n->type = BeatCount;
+            n->beatCount = $1;
             $$ = n;
         }
     | error
