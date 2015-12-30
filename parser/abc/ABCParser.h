@@ -10,6 +10,7 @@ typedef enum {
     ABCParseErrorIncludeFileNotFound,
 
     ABCParseErrorIllegalStateWithTitle,
+    ABCParseErrorIllegalStateWithKey,
 } ABCParseError;
 
 extern DSLParser *ABCParserCreate(ParseContext *context);

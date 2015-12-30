@@ -46,6 +46,7 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(ABCParseErrorCircularFileInclude);
     CASE(ABCParseErrorIncludeFileNotFound);
     CASE(ABCParseErrorIllegalStateWithTitle);
+    CASE(ABCParseErrorIllegalStateWithKey);
 
     default:
        break;

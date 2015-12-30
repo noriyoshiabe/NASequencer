@@ -38,6 +38,7 @@ static void SEMTuneDestroy(void *_self)
 SEMTune *ABCSEMTuneCreate(FileLocation *location)
 {
     SEMTune *self = NodeCreate(SEMTune, location);
+    self->node.children = NAArrayCreate(4, NADescriptionAddress);
     self->titleList = NAArrayCreate(4, NADescriptionCString);
     self->partMap = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
     return self;

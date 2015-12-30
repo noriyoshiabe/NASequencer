@@ -3,8 +3,6 @@
 #include "ABCAST.h"
 #include "ABCSEM.h"
 
-#include "NAStack.h"
-
 #include <stdlib.h>
 #include <string.h>
 
@@ -18,30 +16,30 @@ typedef enum {
     FileHeader,
     TuneHeader,
     TuneBody,
-} StateKind;
-
-typedef struct _State {
-    Node *node;
-    StateKind kind;
-    const char *name;
 } State;
+
+static inline const char *State2String(State state)
+{
+#define CASE(state) case state: return #state;
+    switch (state) {
+    CASE(FileHeader);
+    CASE(TuneHeader);
+    CASE(TuneBody);
+    }
+#undef CASE
+}
 
 typedef struct _ABCASTAnalyzer {
     ASTVisitor visitor;
     Analyzer analyzer;
-    SEMFile *file;
-    SEMTune *tune;
 
     ParseContext *context;
-    State *state;
-    NAStack *stateStack;
+    State state;
+
+    SEMFile *file;
+    SEMTune *tune;
+    SEMKey *key;
 } ABCASTAnalyzer;
-
-static State *StateCreate(void *node, StateKind kind);
-static void StateDestroy(State *self);
-
-static void pushState(ABCASTAnalyzer *self, Node *node, StateKind kind);
-static void popState(ABCASTAnalyzer *self);
 
 static Node *process(void *_self, Node *node)
 {
@@ -51,17 +49,14 @@ static Node *process(void *_self, Node *node)
     file->node.children = NAArrayCreate(4, NADescriptionAddress);
 
     self->file = file;
-    self->state = StateCreate(file, FileHeader);
-
     node->accept(node, self);
+
     return (Node *)file;
 }
 
 static void destroy(void *_self)
 {
     ABCASTAnalyzer *self = _self;
-    NAStackDestroy(self->stateStack);
-    StateDestroy(self->state);
     free(self);
 }
 
@@ -91,6 +86,8 @@ static void visitReferenceNumber(void *_self, ASTReferenceNumber *ast)
 
     append(self->file, tune);
     self->tune = tune;
+
+    self->state = TuneHeader;
 }
 
 static void visitTitle(void *_self, ASTTitle *ast)
@@ -98,22 +95,41 @@ static void visitTitle(void *_self, ASTTitle *ast)
     ABCASTAnalyzer *self = _self;
     
     if (!self->tune) {
-        appendError(self, ast, ABCParseErrorIllegalStateWithTitle, self->state->name, NULL);
+        appendError(self, ast, ABCParseErrorIllegalStateWithTitle, State2String(self->state), NULL);
         return;
     }
 
     NAArrayAppend(self->tune->titleList, strdup(ast->title));
 }
 
-static void visitKey(void *self, ASTKey *ast)
+static void visitKey(void *_self, ASTKey *ast)
 {
-    __Trace__
+    ABCASTAnalyzer *self = _self;
+
+    if (!self->tune) {
+        appendError(self, ast, ABCParseErrorIllegalStateWithKey, State2String(self->state), NULL);
+        return;
+    }
+
+    self->state = TuneBody;
+
+    SEMKey *key = node(Key, ast);
+    self->key = key;
 
     NAIterator *iterator = NAArrayGetIterator(ast->node.children);
     while (iterator->hasNext(iterator)) {
         Node *node = iterator->next(iterator);
         node->accept(node, self);
     }
+
+    // TODO
+    BaseNote baseNote = BaseNote_C;
+    bool sharp = false;
+    bool flat = true;
+    Mode mode = ModeMajor;
+    key->noteTable = NoteTableCreate(baseNote, sharp, flat, ModeMajor);
+
+    append(self->tune, key);
 }
 
 static void visitKeyParam(void *self, ASTKeyParam *ast)
@@ -395,45 +411,6 @@ Analyzer *ABCASTAnalyzerCreate(ParseContext *context)
     self->analyzer.self = self;
 
     self->context = context;
-    self->stateStack = NAStackCreate(4);
 
     return &self->analyzer;
-}
-
-
-static void pushState(ABCASTAnalyzer *self, Node *node, StateKind kind)
-{
-    NAStackPush(self->stateStack, self->state);
-    self->state = StateCreate(node, kind);
-}
-
-static void popState(ABCASTAnalyzer *self)
-{
-    StateDestroy(self->state);
-    self->state = NAStackPop(self->stateStack);
-}
-
-static inline const char *StateKind2String(StateKind kind)
-{
-#define CASE(kind) case kind: return #kind;
-    switch (kind) {
-    CASE(FileHeader);
-    CASE(TuneHeader);
-    CASE(TuneBody);
-    }
-#undef CASE
-}
-
-static State *StateCreate(void *node, StateKind kind)
-{
-    State *self = calloc(1, sizeof(State));
-    self->node = node;
-    self->kind = kind;
-    self->name = StateKind2String(kind);
-    return self;
-}
-
-static void StateDestroy(State *self)
-{
-    free(self);
 }

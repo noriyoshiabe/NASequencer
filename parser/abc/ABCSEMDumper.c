@@ -93,7 +93,15 @@ static void visitTune(void *_self, SEMTune *sem)
     dump(self, sem, INTEGER(sem, number), STRING_ARRAY(sem, titleList), STRING(sem, partSequence), NULL);
     self->indent += 4;
 
-    NAIterator *iterator = NAMapGetIterator(sem->partMap);
+    NAIterator *iterator;
+   
+    iterator = NAArrayGetIterator(sem->node.children);
+    while (iterator->hasNext(iterator)) {
+        Node *node = iterator->next(iterator);
+        node->accept(node, self);
+    }
+
+    iterator = NAMapGetIterator(sem->partMap);
     while (iterator->hasNext(iterator)) {
         NAMapEntry *entry = iterator->next(iterator);
         Node *node = entry->value;
