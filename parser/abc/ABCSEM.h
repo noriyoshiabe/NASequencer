@@ -68,6 +68,24 @@ typedef struct _NoteLength {
     int divider;
 } NoteLength;
 
+typedef enum {
+    Accent,
+    Emphasis,
+    PianoPianissimo,
+    Pianissimo,
+    Piano,
+    MezzoPiano,
+    MezzoForte,
+    Forte,
+    Foruthisimo,
+    ForteForuthisimo,
+} SEMDecorationType;
+
+typedef struct _SEMDecoration {
+    Node node;
+    SEMDecorationType type;
+} SEMDecoration;
+
 typedef struct _SEMNote {
     Node node;
     BaseNote baseNote;
@@ -156,6 +174,7 @@ typedef struct _SEMVisitor {
     void (*visitTempo)(void *self, SEMTempo *sem);
     void (*visitPart)(void *self, SEMPart *sem);
     void (*visitVoice)(void *self, SEMVoice *sem);
+    void (*visitDecoration)(void *self, SEMDecoration *sem);
     void (*visitNote)(void *self, SEMNote *sem);
     void (*visitBrokenRhythm)(void *self, SEMBrokenRhythm *sem);
     void (*visitRest)(void *self, SEMRest *sem);
@@ -179,6 +198,7 @@ extern SEMUnitNoteLength *ABCSEMUnitNoteLengthCreate(FileLocation *location);
 extern SEMTempo *ABCSEMTempoCreate(FileLocation *location);
 extern SEMPart *ABCSEMPartCreate(FileLocation *location);
 extern SEMVoice *ABCSEMVoiceCreate(FileLocation *location);
+extern SEMDecoration *ABCSEMDecorationCreate(FileLocation *location);
 extern SEMNote *ABCSEMNoteCreate(FileLocation *location);
 extern SEMBrokenRhythm *ABCSEMBrokenRhythmCreate(FileLocation *location);
 extern SEMRest *ABCSEMRestCreate(FileLocation *location);
@@ -210,6 +230,24 @@ static inline const char *SEMRestType2String(SEMRestType type)
     switch (type) {
     CASE(RestUnitNote);
     CASE(RestMeasure);
+    }
+#undef CASE
+}
+
+static inline const char *SEMDecorationType2String(SEMDecorationType type)
+{
+#define CASE(type) case type: return #type;
+    switch (type) {
+    CASE(Accent);
+    CASE(Emphasis);
+    CASE(PianoPianissimo);
+    CASE(Pianissimo);
+    CASE(Piano);
+    CASE(MezzoPiano);
+    CASE(MezzoForte);
+    CASE(Forte);
+    CASE(Foruthisimo);
+    CASE(ForteForuthisimo);
     }
 #undef CASE
 }

@@ -611,9 +611,34 @@ static void visitAnnotation(void *self, ASTAnnotation *ast)
 {
 }
 
-static void visitDecoration(void *self, ASTDecoration *ast)
+static void visitDecoration(void *_self, ASTDecoration *ast)
 {
-    // TODO expand to instructions like pianissimo, forte and so on
+    ABCASTAnalyzer *self = _self;
+
+    const struct {
+        const char *symbol;
+        SEMDecorationType type;
+    } table[] = {
+        {"accent",   Accent},
+        {"emphasis", Emphasis},
+        {"ppp",      PianoPianissimo},
+        {"pp",       Pianissimo},
+        {"p",        Piano},
+        {"mp",       MezzoPiano},
+        {"mf",       MezzoForte},
+        {"f",        Forte},
+        {"ff",       Foruthisimo},
+        {"fff",      ForteForuthisimo},
+    };
+
+    for (int i = 0; i < sizeof(table) / sizeof(table[0]); ++i) {
+        if (0 == strcmp(table[i].symbol, ast->symbol)) {
+            SEMDecoration *decoration = node(Decoration, ast);
+            decoration->type = table[i].type;
+            append(NoteTarget(self), decoration);
+            return;
+        }
+    }
 }
 
 static void visitNote(void *_self, ASTNote *ast)

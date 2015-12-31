@@ -184,6 +184,11 @@ static void visitVoice(void *_self, SEMVoice *sem)
     self->indent -= 4;
 }
 
+static void visitDecoration(void *self, SEMDecoration *sem)
+{
+    dump(self, sem, "type", SEMDecorationType2String(sem->type), NULL);
+}
+
 static void visitNote(void *_self, SEMNote *sem)
 {
     ABCSEMDumper *self = _self;
@@ -302,6 +307,7 @@ Analyzer *ABCSEMDumperCreate(ParseContext *context)
     self->visitor.visitTempo = visitTempo;
     self->visitor.visitPart = visitPart;
     self->visitor.visitVoice = visitVoice;
+    self->visitor.visitDecoration = visitDecoration;
     self->visitor.visitNote = visitNote;
     self->visitor.visitBrokenRhythm = visitBrokenRhythm;
     self->visitor.visitRest = visitRest;

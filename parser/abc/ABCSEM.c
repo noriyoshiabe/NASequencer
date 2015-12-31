@@ -152,6 +152,20 @@ SEMVoice *ABCSEMVoiceCreate(FileLocation *location)
     return self;
 }
 
+static void SEMDecorationAccept(void *self, void *visitor)
+{
+    ((SEMVisitor *)visitor)->visitDecoration(visitor, self);
+}
+
+static void SEMDecorationDestroy(void *self)
+{
+}
+
+SEMDecoration *ABCSEMDecorationCreate(FileLocation *location)
+{
+    return NodeCreate(SEMDecoration, location);
+}
+
 static void SEMNoteAccept(void *self, void *visitor)
 {
     ((SEMVisitor *)visitor)->visitNote(visitor, self);
