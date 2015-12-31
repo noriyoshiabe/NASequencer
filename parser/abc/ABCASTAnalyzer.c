@@ -947,9 +947,11 @@ static void visitChord(void *_self, ASTChord *ast)
     append(NoteTarget(self), chord);
 }
 
-static void visitOverlay(void *self, ASTOverlay *ast)
+static void visitOverlay(void *_self, ASTOverlay *ast)
 {
-    __Trace__
+    ABCASTAnalyzer *self = _self;
+    SEMOverlay *overlay = node(Overlay, ast);
+    append(NoteTarget(self), overlay);
 }
 
 static void visitEmptyLine(void *self, ASTEmptyLine *ast)
