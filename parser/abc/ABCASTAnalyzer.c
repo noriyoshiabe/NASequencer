@@ -10,8 +10,10 @@
 #include <ctype.h>
 
 #define node(type, ast) ABCSEM##type##Create(&ast->node.location)
-#define append(list, sem) NAArrayAppend(list->node.children, sem)
+#define append(node, sem) NAArrayAppend(((Node *)(node))->children, sem)
 #define appendError(self, ast, ...) self->context->appendError(self->context, &ast->node.location, __VA_ARGS__)
+#define TuneOrFile(self) (self->tune ? (Node *)self->tune : (Node *)self->file)
+#define NoteTarget(self) (self->voice ? (Node *)self->voice : self->part ? (Node *)self->part : (Node *)self->tune)
 
 #define isValidRange(v, from, to) (from <= v && v <= to)
 #define isPowerOf2(x) ((x != 0) && ((x & (x - 1)) == 0))
@@ -52,6 +54,7 @@ typedef struct _ABCASTAnalyzer {
 } ABCASTAnalyzer;
 
 static BaseNote KeyChar2BaseNote(char c);
+static bool parseNoteLength(char *_string, NoteLength *noteLength);
 
 static Node *process(void *_self, Node *node)
 {
@@ -308,12 +311,7 @@ static void visitMeter(void *_self, ASTMeter *ast)
         meter->numerator = numerator;
         meter->denominator = denominator;
 
-        if (!self->tune) {
-            append(self->file, meter);
-        }
-        else {
-            append(self->tune, meter);
-        }
+        append(TuneOrFile(self), meter);
     }
 }
 
@@ -333,12 +331,7 @@ static void visitUnitNoteLength(void *_self, ASTUnitNoteLength *ast)
     SEMUnitNoteLength *unLength = node(UnitNoteLength, ast);
     unLength->length = RESOLUTION * 4 * numerator / denominator;
 
-    if (!self->tune) {
-        append(self->file, unLength);
-    }
-    else {
-        append(self->tune, unLength);
-    }
+    append(TuneOrFile(self), unLength);
 }
 
 static void visitTempo(void *_self, ASTTempo *ast)
@@ -390,13 +383,7 @@ static void visitTempo(void *_self, ASTTempo *ast)
     }
 
     tempo->tempo = _tempo;
-
-    if (!self->tune) {
-        append(self->file, tempo);
-    }
-    else {
-        append(self->tune, tempo);
-    }
+    append(TuneOrFile(self), tempo);
 }
 
 static void visitTempoParam(void *_self, ASTTempoParam *ast)
@@ -606,57 +593,6 @@ static void visitDecoration(void *self, ASTDecoration *ast)
     // TODO expand to instructions like pianissimo, forte and so on
 }
 
-static bool parseNoteLength(char *_string, NoteLength *noteLength)
-{
-    int length = strlen(_string);
-    char *string = alloca(length + 2);
-    memcpy(string, _string, length);
-    string[length] = '$';
-    string[length + 1] = '\0';
-
-    int multiplier = 1;
-    int divider = 1;
-    bool isDivider = false;
-    char digits[8];
-    int digitCursor = 0;
-
-    char *pc = string;
-    char c;
-    while ((c = *pc++)) {
-        if (isdigit(c)) {
-            if (7 <= digitCursor) {
-                return false;
-            }
-            else {
-                digits[digitCursor++] = c;
-                digits[digitCursor] = '\0';
-            }
-        }
-        else {
-            if (0 < digitCursor) {
-                if (isDivider) {
-                    divider /= 2;
-                    divider *= atoi(digits);
-                }
-                else {
-                    multiplier = atoi(digits);
-                }
-
-                digitCursor = 0;
-            }
-
-            if ('/' == c) {
-                divider *= 2;
-                isDivider = true;
-            }
-        }
-    }
-
-    noteLength->multiplier = multiplier;
-    noteLength->divider = divider;
-    return true;
-}
-
 static void visitNote(void *_self, ASTNote *ast)
 {
     ABCASTAnalyzer *self = _self;
@@ -710,15 +646,7 @@ LOOP_END:
     note->octave = octave;
     note->length = noteLength;
 
-    if (self->voice) {
-        append(self->voice, note);
-    }
-    else if (self->part) {
-        append(self->part, note);
-    }
-    else {
-        append(self->tune, note);
-    }
+    append(NoteTarget(self), note);
 }
 
 static void visitBrokenRhythm(void *self, ASTBrokenRhythm *ast)
@@ -876,4 +804,55 @@ static BaseNote KeyChar2BaseNote(char c)
     };
 
     return baseNoteTable[tolower(c) - 97];
+}
+
+static bool parseNoteLength(char *_string, NoteLength *noteLength)
+{
+    int length = strlen(_string);
+    char *string = alloca(length + 2);
+    memcpy(string, _string, length);
+    string[length] = '$';
+    string[length + 1] = '\0';
+
+    int multiplier = 1;
+    int divider = 1;
+    bool isDivider = false;
+    char digits[8];
+    int digitCursor = 0;
+
+    char *pc = string;
+    char c;
+    while ((c = *pc++)) {
+        if (isdigit(c)) {
+            if (7 <= digitCursor) {
+                return false;
+            }
+            else {
+                digits[digitCursor++] = c;
+                digits[digitCursor] = '\0';
+            }
+        }
+        else {
+            if (0 < digitCursor) {
+                if (isDivider) {
+                    divider /= 2;
+                    divider *= atoi(digits);
+                }
+                else {
+                    multiplier = atoi(digits);
+                }
+
+                digitCursor = 0;
+            }
+
+            if ('/' == c) {
+                divider *= 2;
+                isDivider = true;
+            }
+        }
+    }
+
+    noteLength->multiplier = multiplier;
+    noteLength->divider = divider;
+    return true;
 }
