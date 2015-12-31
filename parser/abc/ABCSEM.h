@@ -118,9 +118,9 @@ typedef struct _SEMGraceNote {
 
 typedef struct _SEMTuplet {
     Node node;
-    int p;
-    int q;
-    int r;
+    int division;
+    int time;
+    int count;
 } SEMTuplet;
 
 typedef struct _SEMChord {

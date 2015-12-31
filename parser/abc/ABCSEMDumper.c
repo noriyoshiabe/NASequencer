@@ -255,7 +255,7 @@ static void visitGraceNote(void *_self, SEMGraceNote *sem)
 
 static void visitTuplet(void *self, SEMTuplet *sem)
 {
-    dump(self, sem, INTEGER(sem, p), INTEGER(sem, q), INTEGER(sem, r), NULL);
+    dump(self, sem, INTEGER(sem, division), INTEGER(sem, time), INTEGER(sem, count), NULL);
 }
 
 static void visitChord(void *_self, SEMChord *sem)

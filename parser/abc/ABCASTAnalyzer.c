@@ -60,6 +60,9 @@ typedef struct _ABCASTAnalyzer {
     SEMGraceNote *graceNote;
     SEMChord *chord;
 
+    SEMMeter *fileMeter;
+    SEMMeter *tuneMeter;
+
     regex_t nthRepeatRegex;
 } ABCASTAnalyzer;
 
@@ -114,6 +117,7 @@ static void visitReferenceNumber(void *_self, ASTReferenceNumber *ast)
     self->tune = tune;
 
     self->state = TuneHeader;
+    self->tuneMeter = self->fileMeter;
 }
 
 static void visitTitle(void *_self, ASTTitle *ast)
@@ -323,6 +327,13 @@ static void visitMeter(void *_self, ASTMeter *ast)
         meter->denominator = denominator;
 
         append(TuneOrFile(self), meter);
+
+        if (FileHeader == self->state) {
+            self->fileMeter = meter;
+        }
+        else {
+            self->tuneMeter = meter;
+        }
     }
 }
 
@@ -864,9 +875,50 @@ static void visitGraceNote(void *_self, ASTGraceNote *ast)
     append(NoteTarget(self), graceNote);
 }
 
-static void visitTuplet(void *self, ASTTuplet *ast)
+static void visitTuplet(void *_self, ASTTuplet *ast)
 {
-    __Trace__
+    ABCASTAnalyzer *self = _self;
+
+    SEMTuplet *tuplet = node(Tuplet, ast);
+
+    char *string = NACStringDuplicate(ast->tupletString + 1);
+    int params[3];
+    int count = 0;
+    char *saveptr, *token;
+    while ((token = strtok_r(string, ":", &saveptr))) {
+        params[count++] = atoi(token);
+        string = NULL;
+    }
+
+    tuplet->division = params[0];
+
+    if (1 < count) {
+        tuplet->time = params[1];
+    }
+    else {
+        if (self->tuneMeter) {
+            int n = self->tuneMeter->numerator;
+            int d = self->tuneMeter->denominator;
+            if (8 == d && (6 == n || 9 == n || 12 == n)) {
+                tuplet->time = 3;
+            }
+            else {
+                tuplet->time = 2;
+            }
+        }
+        else {
+            tuplet->time = 2;
+        }
+    }
+
+    if (2 < count) {
+        tuplet->count = params[2];
+    }
+    else {
+        tuplet->count = tuplet->division;
+    }
+
+    append(NoteTarget(self), tuplet);
 }
 
 static void visitChord(void *_self, ASTChord *ast)
