@@ -5,6 +5,7 @@
 #include "ABCAST.h"
 #include "NAArray.h"
 #include "NAMap.h"
+#include "NASet.h"
 
 typedef struct _SEMFile {
     Node node;
@@ -100,7 +101,7 @@ typedef enum {
 typedef struct _SEMRepeat {
     Node node;
     SEMRepeatType type;
-    int nth;
+    NASet *nthSet;
 } SEMRepeat;
 
 typedef struct _SEMBarLine {

@@ -212,7 +212,19 @@ static void visitRest(void *self, SEMRest *sem)
 
 static void visitRepeat(void *self, SEMRepeat *sem)
 {
-    dump(self, sem, "type", SEMRepeatType2String(sem->type), INTEGER(sem, nth), NULL);
+    char nthRepeat[256] = {0};
+
+    if (sem->nthSet) {
+        NAIterator *iterator = NASetGetIterator(sem->nthSet);
+        while (iterator->hasNext(iterator)) {
+            int *nth = iterator->next(iterator);
+            char buf[32];
+            sprintf(buf, "%s%d", nthRepeat[0] ? "" : ",", *nth);
+            strcat(nthRepeat, buf);
+        }
+    }
+
+    dump(self, sem, "type", SEMRepeatType2String(sem->type), "nthSet", nthRepeat, NULL);
 }
 
 static void visitBarLine(void *self, SEMBarLine *sem)

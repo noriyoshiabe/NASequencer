@@ -63,6 +63,8 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(ABCParseErrorIllegalStateWithVoice);
     CASE(ABCParseErrorIllegalStateWithTuneBody);
     CASE(ABCParseErrorInvalidNoteLength);
+    CASE(ABCParseErrorInvalidRepeat);
+    CASE(ABCParseErrorInvalidNthRepeat);
 
     default:
        break;

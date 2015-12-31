@@ -199,8 +199,13 @@ static void SEMRepeatAccept(void *self, void *visitor)
     ((SEMVisitor *)visitor)->visitRepeat(visitor, self);
 }
 
-static void SEMRepeatDestroy(void *self)
+static void SEMRepeatDestroy(void *_self)
 {
+    SEMRepeat *self = _self;
+    if (self->nthSet) {
+        NASetTraverse(self->nthSet, free);
+        NASetDestroy(self->nthSet);
+    }
 }
 
 SEMRepeat *ABCSEMRepeatCreate(FileLocation *location)

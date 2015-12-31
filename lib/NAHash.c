@@ -14,3 +14,8 @@ uint32_t NAHashCString(void *value)
     }
     return h;
 }
+
+uint32_t NAHashCInteger(void *value)
+{
+    return *((uint32_t *)value);
+}

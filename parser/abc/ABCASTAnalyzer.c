@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <regex.h>
 
 #define node(type, ast) ABCSEM##type##Create(&ast->node.location)
 #define append(node, sem) NAArrayAppend(((Node *)(node))->children, sem)
@@ -51,6 +52,8 @@ typedef struct _ABCASTAnalyzer {
     SEMTempo *tempo;
     SEMPart *part;
     SEMVoice *voice;
+
+    regex_t nthRepeatRegex;
 } ABCASTAnalyzer;
 
 static BaseNote KeyChar2BaseNote(char c);
@@ -72,6 +75,7 @@ static Node *process(void *_self, Node *node)
 static void destroy(void *_self)
 {
     ABCASTAnalyzer *self = _self;
+    regfree(&self->nthRepeatRegex);
     free(self);
 }
 
@@ -676,9 +680,84 @@ static void visitRest(void *_self, ASTRest *ast)
     append(NoteTarget(self), rest);
 }
 
-static void visitRepeatBar(void *self, ASTRepeatBar *ast)
+static bool parseNThRepeat(char *string, NASet **nthSet)
 {
-    __Trace__
+    return true;
+}
+
+static void visitRepeatBar(void *_self, ASTRepeatBar *ast)
+{
+    ABCASTAnalyzer *self = _self;
+
+    bool hasRepeatStart = false;
+    bool hasRepeatEnd = false;
+    bool hasBarLine = false;
+
+    char *pRepeatStart = strstr(ast->symbols, "|:");
+    char *pRepeatEnd = strstr(ast->symbols, ":|");
+    if (pRepeatStart && pRepeatEnd) {
+        if (pRepeatStart < pRepeatEnd) {
+            appendError(self, ast, ABCParseErrorInvalidRepeat, ast->symbols, NULL);
+            return;
+        }
+
+        hasRepeatStart = true;
+        hasRepeatEnd = true;
+    }
+    else if (pRepeatStart) {
+        hasRepeatStart = true;
+    }
+    else if (pRepeatEnd) {
+        hasRepeatEnd = true;
+    }
+
+    if (!hasRepeatStart && !hasRepeatEnd) {
+        if (strstr(ast->symbols, "::")) {
+            hasRepeatStart = true;
+            hasRepeatEnd = true;
+        }
+        else if (strchr(ast->symbols, '|')) {
+            hasBarLine = true;
+        }
+    }
+
+    if (hasRepeatEnd) {
+        SEMRepeat *repeat = node(Repeat, ast);
+        repeat->type = RepeatEnd;
+        append(NoteTarget(self), repeat);
+    }
+
+    if (hasRepeatStart) {
+        SEMRepeat *repeat = node(Repeat, ast);
+        repeat->type = RepeatStart;
+        append(NoteTarget(self), repeat);
+    }
+
+    if (hasBarLine) {
+        SEMBarLine *barLine = node(BarLine, ast);
+        append(NoteTarget(self), barLine);
+    }
+
+    regmatch_t match[1];
+
+    if (REG_NOMATCH != regexec(&self->nthRepeatRegex, ast->symbols, 1, match, 0)) {
+        char *pDigit = strpbrk(ast->symbols, "0123456789");
+        if ('0' == *pDigit) {
+            appendError(self, ast, ABCParseErrorInvalidNthRepeat, pDigit, NULL);
+            return;
+        }
+
+        NASet *nthSet;
+        if (!parseNThRepeat(pDigit, &nthSet)) {
+            appendError(self, ast, ABCParseErrorInvalidNthRepeat, pDigit, NULL);
+            return;
+        }
+
+        SEMRepeat *repeat = node(Repeat, ast);
+        repeat->type = RepeatNth;
+        repeat->nthSet = nthSet;
+        append(NoteTarget(self), repeat);
+    }
 }
 
 static void visitTie(void *self, ASTTie *ast)
@@ -808,6 +887,11 @@ Analyzer *ABCASTAnalyzerCreate(ParseContext *context)
     self->analyzer.self = self;
 
     self->context = context;
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunknown-escape-sequence"
+    regcomp(&self->nthRepeatRegex, "(\[|\|:*)[[:digit:]]", REG_EXTENDED);
+#pragma clang diagnostic pop
 
     return &self->analyzer;
 }

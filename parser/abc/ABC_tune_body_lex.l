@@ -35,7 +35,7 @@ ANNOTATION    \"[^\"]*\"
 NOTE          (^^|^|=|_|__)?[a-gA-G](,|')*[[:digit:]]*(\/[[:digit:]]*)*
 BROKEN_RHYTHM <|>
 REST          [xXzZ][[:digit:]]*(\/[[:digit:]]*)*
-REPEAT_BAR    [\|:\[\]]+[-,[:digit:]]*
+REPEAT_BAR    [\|:\[\]]+([[:digit:]]+[-,[:digit:]]*)?
 ACCIACCATURA  \{\/
 TUPLET        \([[:digit:]]+(:[[:digit:]]*)?(:[[:digit:]]*)?
 CHORD         \[({NOTE}|\ )*{NOTE}({NOTE}|\ )*\][[:digit:]]*(\/[[:digit:]]*)?

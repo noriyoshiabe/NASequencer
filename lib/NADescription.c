@@ -11,3 +11,8 @@ void NADescriptionCString(void *value, FILE *stream)
 {
     fprintf(stream, "%s", (char *)value);
 }
+
+void NADescriptionCInteger(void *value, FILE *stream)
+{
+    fprintf(stream, "%d", *((int *)value));
+}
