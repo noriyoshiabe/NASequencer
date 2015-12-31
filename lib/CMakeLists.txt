@@ -18,6 +18,7 @@ set(SOURCES
   NAUtil.c
   NAMessageQ.c
   NACString.c
+  NACInteger.c
 )
 
 if (APPLE)

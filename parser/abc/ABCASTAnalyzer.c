@@ -4,6 +4,7 @@
 #include "ABCSEM.h"
 #include "NoteTable.h"
 #include "NACString.h"
+#include "NACInteger.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -752,9 +753,7 @@ static bool parseNThRepeat(char *_string, NASet **nthSet)
                     goto ERROR;
                 }
 
-                int *value = malloc(sizeof(int));
-                *value = nth;
-                NASetAdd(set, value);
+                NASetAdd(set, NACIntegerFromInteger(nth));
             }
             break;
         case 2:
@@ -766,9 +765,7 @@ static bool parseNThRepeat(char *_string, NASet **nthSet)
                 }
 
                 for (int i = from; i <= to; ++i) {
-                    int *value = malloc(sizeof(int));
-                    *value = i;
-                    NASetAdd(set, value);
+                    NASetAdd(set, NACIntegerFromInteger(i));
                 }
             }
             break;
