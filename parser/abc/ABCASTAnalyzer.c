@@ -14,7 +14,12 @@
 #define append(node, sem) NAArrayAppend(((Node *)(node))->children, sem)
 #define appendError(self, ast, ...) self->context->appendError(self->context, &ast->node.location, __VA_ARGS__)
 #define TuneOrFile(self) (self->tune ? (Node *)self->tune : (Node *)self->file)
-#define NoteTarget(self) (self->voice ? (Node *)self->voice : self->part ? (Node *)self->part : (Node *)self->tune)
+#define NoteTarget(self) \
+    (self->chord ? (Node *)self->chord : \
+     self->graceNote ? (Node *)self->graceNote : \
+     self->voice ? (Node *)self->voice : \
+     self->part ? (Node *)self->part : \
+     (Node *)self->tune)
 
 #define isValidRange(v, from, to) (from <= v && v <= to)
 #define isPowerOf2(x) ((x != 0) && ((x & (x - 1)) == 0))
@@ -52,6 +57,8 @@ typedef struct _ABCASTAnalyzer {
     SEMTempo *tempo;
     SEMPart *part;
     SEMVoice *voice;
+    SEMGraceNote *graceNote;
+    SEMChord *chord;
 
     regex_t nthRepeatRegex;
 } ABCASTAnalyzer;
@@ -824,30 +831,37 @@ static void visitRepeatBar(void *_self, ASTRepeatBar *ast)
     }
 }
 
-static void visitTie(void *self, ASTTie *ast)
+static void visitTie(void *_self, ASTTie *ast)
 {
-    __Trace__
+    ABCASTAnalyzer *self = _self;
+
+    SEMTie *tie = node(Tie, ast);
+    append(NoteTarget(self), tie);
 }
 
 static void visitSlur(void *self, ASTSlur *ast)
 {
-    __Trace__
 }
 
 static void visitDot(void *self, ASTDot *ast)
 {
-    __Trace__
 }
 
-static void visitGraceNote(void *self, ASTGraceNote *ast)
+static void visitGraceNote(void *_self, ASTGraceNote *ast)
 {
-    __Trace__
+    ABCASTAnalyzer *self = _self;
+
+    SEMGraceNote *graceNote = node(GraceNote, ast);
+    self->graceNote = graceNote;
 
     NAIterator *iterator = NAArrayGetIterator(ast->node.children);
     while (iterator->hasNext(iterator)) {
         Node *node = iterator->next(iterator);
         node->accept(node, self);
     }
+
+    self->graceNote = NULL;
+    append(NoteTarget(self), graceNote);
 }
 
 static void visitTuplet(void *self, ASTTuplet *ast)
@@ -855,15 +869,30 @@ static void visitTuplet(void *self, ASTTuplet *ast)
     __Trace__
 }
 
-static void visitChord(void *self, ASTChord *ast)
+static void visitChord(void *_self, ASTChord *ast)
 {
-    __Trace__
+    ABCASTAnalyzer *self = _self;
+
+    NoteLength noteLength;
+    if (!parseNoteLength(ast->lengthString, &noteLength)) {
+        appendError(self, ast, ABCParseErrorInvalidNoteLength, ast->lengthString, NULL);
+        return;
+    }
+
+    SEMChord *chord = node(Chord, ast);
+    chord->length = noteLength;
+
+    self->chord = chord;
 
     NAIterator *iterator = NAArrayGetIterator(ast->node.children);
     while (iterator->hasNext(iterator)) {
         Node *node = iterator->next(iterator);
         node->accept(node, self);
     }
+
+    self->chord = NULL;
+
+    append(NoteTarget(self), chord);
 }
 
 static void visitOverlay(void *self, ASTOverlay *ast)

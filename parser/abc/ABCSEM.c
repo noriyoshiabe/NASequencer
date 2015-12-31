@@ -252,7 +252,9 @@ static void SEMGraceNoteDestroy(void *self)
 
 SEMGraceNote *ABCSEMGraceNoteCreate(FileLocation *location)
 {
-    return NodeCreate(SEMGraceNote, location);
+    SEMGraceNote *self = NodeCreate(SEMGraceNote, location);
+    self->node.children = NAArrayCreate(4, NADescriptionAddress);
+    return self;
 }
 
 static void SEMTupletAccept(void *self, void *visitor)
@@ -280,7 +282,9 @@ static void SEMChordDestroy(void *self)
 
 SEMChord *ABCSEMChordCreate(FileLocation *location)
 {
-    return NodeCreate(SEMChord, location);
+    SEMChord *self = NodeCreate(SEMChord, location);
+    self->node.children = NAArrayCreate(4, NADescriptionAddress);
+    return self;
 }
 
 static void SEMOverlayAccept(void *self, void *visitor)
