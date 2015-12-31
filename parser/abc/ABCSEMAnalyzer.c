@@ -1,6 +1,7 @@
 #include "ABCSEMAnalyzer.h"
 #include "ABCSEM.h"
 #include "NACInteger.h"
+#include "NACString.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -90,11 +91,13 @@ static void visitTune(void *_self, SEMTune *sem)
         }
     }
 
-    iterator = NAMapGetIterator(sem->partMap);
-    while (iterator->hasNext(iterator)) {
-        NAMapEntry *entry = iterator->next(iterator);
-        Node *node = entry->value;
-        node->accept(node, self);
+    int length = sem->partSequence ? strlen(sem->partSequence) + 1 : 1;
+    char *partSequence = alloca(length + 1);
+    sprintf(partSequence, "#%s", sem->partSequence);
+
+    for (int i = 0; i < length; ++i) {
+        Node *part = NAMapGet(sem->partMap, NACStringFromChar(partSequence[i]));
+        part->accept(part, self);
     }
 }
 

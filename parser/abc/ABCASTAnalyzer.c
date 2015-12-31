@@ -113,16 +113,16 @@ static void visitReferenceNumber(void *_self, ASTReferenceNumber *ast)
     self->tune = tune;
 
     SEMPart *part = ABCSEMPartCreate(NULL);
-    part->identifier = strdup("");
+    part->identifier = strdup("#");
     NAMapPut(tune->partMap, part->identifier, part);
 
     SEMList *list = ABCSEMListCreate(NULL);
-    list->voiceId = strdup("");
+    list->voiceId = strdup("#");
     append(part, list);
     NAMapPut(part->listMap, list->voiceId, list);
 
     SEMVoice *voice = ABCSEMVoiceCreate(NULL);
-    voice->identifier = strdup("");
+    voice->identifier = strdup("#");
     NAMapPut(tune->voiceMap, voice->identifier, voice);
 
     self->part = part;
@@ -480,11 +480,11 @@ static void visitParts(void *_self, ASTParts *ast)
                 NAMapPut(self->tune->partMap, part->identifier, part);
 
                 SEMVoice *voice = ABCSEMVoiceCreate(NULL);
-                voice->identifier = strdup("");
+                voice->identifier = strdup("#");
                 NAMapPut(self->tune->voiceMap, voice->identifier, voice);
             }
 
-            SEMList *list = NAMapGet(part->listMap, "");
+            SEMList *list = NAMapGet(part->listMap, "#");
             if (!list) {
                 list = ABCSEMListCreate(NULL);
                 list->voiceId = strdup(identifier);
