@@ -278,7 +278,7 @@ void ABCParserNotify(void *_self, ABCParserEvent event, void *node)
                 ABCParserSetLineBreak(self, self->defaults.lineBreak);
             }
 
-            if (-1 == self->defaults.decoration) {
+            if (-1 != self->defaults.decoration) {
                 ABCParserSetDecoration(self, self->defaults.decoration);
             }
 
