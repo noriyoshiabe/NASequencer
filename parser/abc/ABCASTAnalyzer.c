@@ -830,17 +830,6 @@ static void visitRepeatBar(void *_self, ASTRepeatBar *ast)
         append(NoteTarget(self), repeat);
     }
 
-    if (hasRepeatStart) {
-        SEMRepeat *repeat = node(Repeat, ast);
-        repeat->type = RepeatStart;
-        append(NoteTarget(self), repeat);
-    }
-
-    if (hasBarLine) {
-        SEMBarLine *barLine = node(BarLine, ast);
-        append(NoteTarget(self), barLine);
-    }
-
     char *pDigit = strpbrk(ast->symbols, "0123456789");
     if (pDigit) {
         if ('0' == *pDigit) {
@@ -857,14 +846,25 @@ static void visitRepeatBar(void *_self, ASTRepeatBar *ast)
             NASet *nthSet;
             if (!parseNThRepeat(pDigit, &nthSet)) {
                 appendError(self, ast, ABCParseErrorInvalidNthRepeat, pDigit, NULL);
-                return;
             }
-
-            SEMRepeat *repeat = node(Repeat, ast);
-            repeat->type = RepeatNth;
-            repeat->nthSet = nthSet;
-            append(NoteTarget(self), repeat);
+            else {
+                SEMRepeat *repeat = node(Repeat, ast);
+                repeat->type = RepeatNth;
+                repeat->nthSet = nthSet;
+                append(NoteTarget(self), repeat);
+            }
         }
+    }
+
+    if (hasRepeatStart) {
+        SEMRepeat *repeat = node(Repeat, ast);
+        repeat->type = RepeatStart;
+        append(NoteTarget(self), repeat);
+    }
+
+    if (hasBarLine) {
+        SEMBarLine *barLine = node(BarLine, ast);
+        append(NoteTarget(self), barLine);
     }
 }
 
