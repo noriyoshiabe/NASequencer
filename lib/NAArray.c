@@ -9,6 +9,7 @@
 #undef NAArrayTraverseWithContext
 #undef NAArrayApplyAt
 #undef NAArrayGetIterator
+#undef NAArrayGetIteratorWithIndex
 
 struct _NAArray {
     int capacity;
@@ -224,6 +225,13 @@ NAIterator *NAArrayGetIterator(NAArray *self, void *buffer)
     iterator->array = self;
     iterator->index = 0;
 
+    return (NAIterator *)iterator;
+}
+
+NAIterator *NAArrayGetIteratorWithIndex(NAArray *self, void *buffer, int index)
+{
+    NAArrayIterator *iterator = (NAArrayIterator *)NAArrayGetIterator(self, buffer);
+    iterator->index = index;
     return (NAIterator *)iterator;
 }
 

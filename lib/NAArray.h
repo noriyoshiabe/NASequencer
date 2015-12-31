@@ -28,6 +28,7 @@ extern void NAArrayTraverse(NAArray *self, void (*function)(void *));
 extern void NAArrayTraverseWithContext(NAArray *self, void *context, void (*function)(void *, void *, va_list), ...);
 extern void NAArrayApplyAt(NAArray *self, int index, void (*function)(void *));
 extern NAIterator *NAArrayGetIterator(NAArray *self, void *buffer);
+extern NAIterator *NAArrayGetIteratorWithIndex(NAArray *self, void *buffer, int index);
 extern void NAArrayDescription(void *self, FILE *stream);
 
 extern int NAArrayAddressComparator(const void *p1, const void *p2);
@@ -38,3 +39,4 @@ extern const int NAArrayIteratorSize;
 #define NAArrayTraverseWithContext(self, context, function, ...) NAArrayTraverseWithContext(self, context, (void *)function, __VA_ARGS__)
 #define NAArrayApplyAt(self, index, function) NAArrayApplyAt(self, index, (void *)function)
 #define NAArrayGetIterator(self) NAArrayGetIterator(self, alloca(NAArrayIteratorSize))
+#define NAArrayGetIteratorWithIndex(self, index) NAArrayGetIteratorWithIndex(self, alloca(NAArrayIteratorSize), index)

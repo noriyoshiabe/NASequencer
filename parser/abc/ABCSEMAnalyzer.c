@@ -1,14 +1,40 @@
 #include "ABCSEMAnalyzer.h"
 #include "ABCSEM.h"
+#include "NACInteger.h"
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #define __Trace__ printf("-- %s:%s - %d\n", __FILE__, __func__, __LINE__);
+
+typedef enum {
+    RepeatStateInitial,
+    RepeatStateStart,
+    RepeatStateEnd,
+    RepeatStateNthSearch,
+} RepeatState;
+
+typedef struct _RepeatContext {
+    int startIndex;
+    int nth;
+    NASet *passedEndSet;
+
+    RepeatState state;
+    int currentIndex;
+} RepeatContext;
+
+static RepeatContext *RepeatContextCreate();
+static void RepeatContextDestroy(RepeatContext *self);
 
 typedef struct _ABCSEMAnalyzer {
     SEMVisitor visitor;
     Analyzer analyzer;
+
+    ParseContext *context;
+    NAMap *repeatMap;
+
+    RepeatContext *repeat;
 } ABCSEMAnalyzer;
 
 static Node *process(void *self, Node *node)
@@ -18,8 +44,11 @@ static Node *process(void *self, Node *node)
     return NULL;
 }
 
-static void destroy(void *self)
+static void destroy(void *_self)
 {
+    ABCSEMAnalyzer *self = _self;
+    NAMapTraverseValue(self->repeatMap, RepeatContextDestroy);
+    NAMapDestroy(self->repeatMap);
     free(self);
 }
 
@@ -46,6 +75,19 @@ static void visitTune(void *_self, SEMTune *sem)
     while (iterator->hasNext(iterator)) {
         Node *node = iterator->next(iterator);
         node->accept(node, self);
+    }
+
+    iterator = NAMapGetIterator(sem->partMap);
+    while (iterator->hasNext(iterator)) {
+        NAMapEntry *entry = iterator->next(iterator);
+        SEMPart *part = entry->value;
+
+        NAIterator *_iterator = NAMapGetIterator(part->listMap);
+        while (_iterator->hasNext(_iterator)) {
+            NAMapEntry *_entry = _iterator->next(_iterator);
+            SEMList *list = _entry->value;
+            NAMapPut(self->repeatMap, list, RepeatContextCreate());
+        }
     }
 
     iterator = NAMapGetIterator(sem->partMap);
@@ -99,10 +141,37 @@ static void visitList(void *_self, SEMList *sem)
     __Trace__
     ABCSEMAnalyzer *self = _self;
 
-    NAIterator *iterator = NAArrayGetIterator(sem->node.children);
+    self->repeat = NAMapGet(self->repeatMap, sem);
+    self->repeat->startIndex = 0;
+    NASetTraverse(self->repeat->passedEndSet, free);
+    NASetRemoveAll(self->repeat->passedEndSet);
+
+REPEAT:
+    ++self->repeat->nth;
+    self->repeat->state = RepeatStateInitial;
+    self->repeat->currentIndex = self->repeat->startIndex;
+
+    NAIterator *iterator = NAArrayGetIteratorWithIndex(sem->node.children, self->repeat->startIndex);
     while (iterator->hasNext(iterator)) {
         Node *node = iterator->next(iterator);
         node->accept(node, self);
+    
+        switch (self->repeat->state) {
+        case RepeatStateInitial:
+            break;
+        case RepeatStateStart:
+            self->repeat->state = RepeatStateInitial;
+            self->repeat->startIndex = self->repeat->currentIndex + 1;
+            break;
+        case RepeatStateEnd:
+            NASetAdd(self->repeat->passedEndSet, NACIntegerFromInteger(self->repeat->currentIndex)); 
+            self->repeat->state = RepeatStateInitial;
+            goto REPEAT;
+        case RepeatStateNthSearch:
+            break;
+        }
+        
+        ++self->repeat->currentIndex;
     }
 }
 
@@ -121,6 +190,12 @@ static void visitNote(void *_self, SEMNote *sem)
 {
     __Trace__
     ABCSEMAnalyzer *self = _self;
+
+    if (RepeatStateInitial != self->repeat->state) {
+        return;
+    }
+
+    printf("[REPEAT TEST] baseNote=%s\n", BaseNote2String(sem->baseNote));
 }
 
 static void visitBrokenRhythm(void *_self, SEMBrokenRhythm *sem)
@@ -139,6 +214,23 @@ static void visitRepeat(void *_self, SEMRepeat *sem)
 {
     __Trace__
     ABCSEMAnalyzer *self = _self;
+
+    switch (sem->type) {
+    case RepeatStart:
+        self->repeat->state = RepeatStateStart;
+        self->repeat->nth = 1;
+        break;
+    case RepeatEnd:
+        if (!NASetContains(self->repeat->passedEndSet, &self->repeat->currentIndex)) {
+            self->repeat->state = RepeatStateEnd;
+        }
+        break;
+    case RepeatNth:
+        if (!NASetContains(sem->nthSet, &self->repeat->nth)) {
+            self->repeat->state = RepeatStateNthSearch;
+        }
+        break;
+    }
 }
 
 static void visitBarLine(void *_self, SEMBarLine *sem)
@@ -233,5 +325,21 @@ Analyzer *ABCSEMAnalyzerCreate(ParseContext *context)
     self->analyzer.destroy = destroy;
     self->analyzer.self = self;
 
+    self->context = context;
+    self->repeatMap = NAMapCreate(NAHashAddress, NADescriptionAddress, NADescriptionAddress);
+
     return &self->analyzer;
+}
+
+static RepeatContext *RepeatContextCreate()
+{
+    RepeatContext *self = calloc(1, sizeof(RepeatContext));
+    self->passedEndSet = NASetCreate(NAHashCInteger, NADescriptionCInteger);
+    return self;
+}
+
+static void RepeatContextDestroy(RepeatContext *self)
+{
+    NASetTraverse(self->passedEndSet, free);
+    NASetDestroy(self->passedEndSet);
 }
