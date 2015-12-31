@@ -1051,9 +1051,24 @@ static void visitMidiParam(void *_self, ASTMidiParam *ast)
     }
 }
 
-static void visitPropagateAccidental(void *self, ASTPropagateAccidental *ast)
+static void visitPropagateAccidental(void *_self, ASTPropagateAccidental *ast)
 {
-    __Trace__
+    ABCASTAnalyzer *self = _self;
+
+    SEMPropagateAccidental *propagateAccidental = node(PropagateAccidental, ast);
+    switch (ast->type) {
+    case PropagateAccidentalNot:
+        break;
+    case PropagateAccidentalOctave:
+        propagateAccidental->untilBar = true;
+        break;
+    case PropagateAccidentalPitch:
+        propagateAccidental->untilBar = true;
+        propagateAccidental->allOctave = true;
+        break;
+    }
+
+    append(TuneOrFile(self), propagateAccidental);
 }
 
 
