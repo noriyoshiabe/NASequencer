@@ -1,8 +1,11 @@
 X:1
 K:C
-| aaa |] aaa || aaa [| aaa
-|: bbb :| ccc :: ddd :|: eee
+| a |] a || a [| a
+|: b :| c :: d :|: e
 | [1
 | 1 %syntax error
-[1,3 CCCCC :|
-[1,3,5-7  AAAA  :| [2,4,8 BBBB :|
+[1,3 C :|
+[1,3,5-7  A  :| [2,4,8 B :|
+[:1 %syntax error
+|:1
+[4-2 %syntax error

@@ -219,7 +219,7 @@ static void visitRepeat(void *self, SEMRepeat *sem)
         while (iterator->hasNext(iterator)) {
             int *nth = iterator->next(iterator);
             char buf[32];
-            sprintf(buf, "%s%d", nthRepeat[0] ? "" : ",", *nth);
+            sprintf(buf, "%s%d", nthRepeat[0] ? "," : "", *nth);
             strcat(nthRepeat, buf);
         }
     }

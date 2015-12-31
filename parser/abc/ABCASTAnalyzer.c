@@ -680,9 +680,68 @@ static void visitRest(void *_self, ASTRest *ast)
     append(NoteTarget(self), rest);
 }
 
-static bool parseNThRepeat(char *string, NASet **nthSet)
+static bool parseNThRepeat(char *_string, NASet **nthSet)
 {
+    char *string = NACStringDuplicate(_string);
+    char *saveptr, *token;
+
+    NASet *set = NASetCreate(NAHashCInteger, NADescriptionCInteger);
+
+    while ((token = strtok_r(string, ",", &saveptr))) {
+        char *ranges[2];
+        int count = 0;
+        char *_saveptr, *_token;
+        while ((_token = strtok_r(token, "-", &_saveptr))) {
+            if (2 <= count) {
+                goto ERROR;
+            }
+
+            ranges[count++] = _token;
+            token = NULL;
+        }
+
+        switch (count) {
+        case 1:
+            {
+                int nth = atoi(ranges[0]);
+                if (1 > nth) {
+                    goto ERROR;
+                }
+
+                int *value = malloc(sizeof(int));
+                *value = nth;
+                NASetAdd(set, value);
+            }
+            break;
+        case 2:
+            {
+                int from = atoi(ranges[0]);
+                int to = atoi(ranges[1]);
+                if (1 > from || from > to) {
+                    goto ERROR;
+                }
+
+                for (int i = from; i <= to; ++i) {
+                    int *value = malloc(sizeof(int));
+                    *value = i;
+                    NASetAdd(set, value);
+                }
+            }
+            break;
+        default:
+            break;
+        }
+    
+        string = NULL;
+    }
+
+    *nthSet = set;
     return true;
+
+ERROR:
+    NASetTraverse(set, free);
+    NASetDestroy(set);
+    return false;
 }
 
 static void visitRepeatBar(void *_self, ASTRepeatBar *ast)
@@ -738,25 +797,30 @@ static void visitRepeatBar(void *_self, ASTRepeatBar *ast)
         append(NoteTarget(self), barLine);
     }
 
-    regmatch_t match[1];
-
-    if (REG_NOMATCH != regexec(&self->nthRepeatRegex, ast->symbols, 1, match, 0)) {
-        char *pDigit = strpbrk(ast->symbols, "0123456789");
+    char *pDigit = strpbrk(ast->symbols, "0123456789");
+    if (pDigit) {
         if ('0' == *pDigit) {
             appendError(self, ast, ABCParseErrorInvalidNthRepeat, pDigit, NULL);
             return;
         }
 
-        NASet *nthSet;
-        if (!parseNThRepeat(pDigit, &nthSet)) {
-            appendError(self, ast, ABCParseErrorInvalidNthRepeat, pDigit, NULL);
-            return;
-        }
+        regmatch_t match[1];
 
-        SEMRepeat *repeat = node(Repeat, ast);
-        repeat->type = RepeatNth;
-        repeat->nthSet = nthSet;
-        append(NoteTarget(self), repeat);
+        if (REG_NOMATCH == regexec(&self->nthRepeatRegex, ast->symbols, 1, match, 0)) {
+            appendError(self, ast, ABCParseErrorInvalidNthRepeat, ast->symbols, NULL);
+        }
+        else {
+            NASet *nthSet;
+            if (!parseNThRepeat(pDigit, &nthSet)) {
+                appendError(self, ast, ABCParseErrorInvalidNthRepeat, pDigit, NULL);
+                return;
+            }
+
+            SEMRepeat *repeat = node(Repeat, ast);
+            repeat->type = RepeatNth;
+            repeat->nthSet = nthSet;
+            append(NoteTarget(self), repeat);
+        }
     }
 }
 
@@ -888,10 +952,7 @@ Analyzer *ABCASTAnalyzerCreate(ParseContext *context)
 
     self->context = context;
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunknown-escape-sequence"
-    regcomp(&self->nthRepeatRegex, "(\[|\|:*)[[:digit:]]", REG_EXTENDED);
-#pragma clang diagnostic pop
+    regcomp(&self->nthRepeatRegex, "(\\[|\\|:*)[[:digit:]]", REG_EXTENDED);
 
     return &self->analyzer;
 }
