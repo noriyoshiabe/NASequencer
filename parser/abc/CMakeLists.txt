@@ -43,7 +43,7 @@ set(SOURCES
   ABCASTAnalyzer.c
   ABCSEM.c
   ABCSEMDumper.c
-  #ABCSEMAnalyzer.c
+  ABCSEMAnalyzer.c
 )
 
 add_library(${PROJECT_NAME}

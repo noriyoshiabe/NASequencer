@@ -3,7 +3,7 @@
 #include "ABCASTDumper.h"
 #include "ABCASTAnalyzer.h"
 #include "ABCSEMDumper.h"
-//#include "ABCSEMAnalyzer.h"
+#include "ABCSEMAnalyzer.h"
 #include "NAUtil.h"
 
 #include <stdlib.h>
@@ -21,7 +21,7 @@ static const AnalyzerFactory AnalyzerFactories[] = {
 #if 1
     ABCSEMDumperCreate,
 #endif
-    //ABCSEMAnalyzerCreate,
+    ABCSEMAnalyzerCreate,
 };
 
 static const int AnalyzerCount = sizeof(AnalyzerFactories) / sizeof(AnalyzerFactories[0]);

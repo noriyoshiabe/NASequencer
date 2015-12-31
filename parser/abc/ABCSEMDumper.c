@@ -16,8 +16,7 @@ typedef struct _ABCSEMDumper {
 static Node *process(void *self, Node *node)
 {
     node->accept(node, self);
-    //return NodeRetain(node);
-    return NULL;
+    return NodeRetain(node);
 }
 
 static void destroy(void *self)
