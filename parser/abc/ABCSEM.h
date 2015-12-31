@@ -80,8 +80,14 @@ typedef struct _SEMBrokenRhythm {
     char direction;
 } SEMBrokenRhythm;
 
+typedef enum {
+    RestUnitNote,
+    RestMeasure,
+} SEMRestType;
+
 typedef struct _SEMRest {
     Node node;
+    SEMRestType type;
     NoteLength length;
 } SEMRest;
 
@@ -191,6 +197,16 @@ static inline const char *SEMRepeatType2String(SEMRepeatType type)
     CASE(RepeatStart);
     CASE(RepeatEnd);
     CASE(RepeatNth);
+    }
+#undef CASE
+}
+
+static inline const char *SEMRestType2String(SEMRestType type)
+{
+#define CASE(type) case type: return #type;
+    switch (type) {
+    CASE(RestUnitNote);
+    CASE(RestMeasure);
     }
 #undef CASE
 }

@@ -649,14 +649,31 @@ LOOP_END:
     append(NoteTarget(self), note);
 }
 
-static void visitBrokenRhythm(void *self, ASTBrokenRhythm *ast)
+static void visitBrokenRhythm(void *_self, ASTBrokenRhythm *ast)
 {
-    __Trace__
+    ABCASTAnalyzer *self = _self;
+
+    SEMBrokenRhythm *bRhythm = node(BrokenRhythm, ast);
+    bRhythm->direction = ast->direction;
+    append(NoteTarget(self), bRhythm);
 }
 
-static void visitRest(void *self, ASTRest *ast)
+static void visitRest(void *_self, ASTRest *ast)
 {
-    __Trace__
+    ABCASTAnalyzer *self = _self;
+
+    SEMRestType type = isupper(ast->restString[0]) ? RestMeasure : RestUnitNote;
+    NoteLength noteLength;
+
+    if (!parseNoteLength(ast->restString + 1, &noteLength)) {
+        appendError(self, ast, ABCParseErrorInvalidNoteLength, ast->restString + 1, NULL);
+        return;
+    }
+
+    SEMRest *rest = node(Rest, ast);
+    rest->type = type;
+    rest->length = noteLength;
+    append(NoteTarget(self), rest);
 }
 
 static void visitRepeatBar(void *self, ASTRepeatBar *ast)

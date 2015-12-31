@@ -207,7 +207,7 @@ static void visitBrokenRhythm(void *self, SEMBrokenRhythm *sem)
 
 static void visitRest(void *self, SEMRest *sem)
 {
-    dump(self, sem, INTEGER(sem, length.multiplier), INTEGER(sem, length.divider), NULL);
+    dump(self, sem, "type", SEMRestType2String(sem->type), INTEGER(sem, length.multiplier), INTEGER(sem, length.divider), NULL);
 }
 
 static void visitRepeat(void *self, SEMRepeat *sem)

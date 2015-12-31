@@ -34,7 +34,7 @@ INLINE_FIELD  \[[+[:alpha:]]:[^\]]*\]
 ANNOTATION    \"[^\"]*\"
 NOTE          (^^|^|=|_|__)?[a-gA-G](,|')*[[:digit:]]*(\/[[:digit:]]*)*
 BROKEN_RHYTHM <|>
-REST          [xXzZ][[:digit:]]*(\/[[:digit:]]*)?
+REST          [xXzZ][[:digit:]]*(\/[[:digit:]]*)*
 REPEAT_BAR    [\|:\[\]]+[-,[:digit:]]*
 ACCIACCATURA  \{\/
 TUPLET        \([[:digit:]]+(:[[:digit:]]*)?(:[[:digit:]]*)?
