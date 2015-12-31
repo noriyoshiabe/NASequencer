@@ -25,24 +25,29 @@
 %option bison-bridge
 %option bison-locations
 
+%x x_TUNE
+
 FILE_IDENTIFICATION ^%abc(-[[:digit:]]\.[[:digit:]])?[[:blank:]]*$
+REFERNCE_NUMBER     ^X:.*$
 INFORMATION         ^[+[:alpha:]]:.*$
 DIRECTIVE           ^%%.*$
-COMMENT_LINE        ^[[:blank:]]*%.*\n
 EMPTY_LINE          ^[[:blank:]]*\n
 TUNE_BODY           ^[[:print:]]*$
 
 %%
 
 {FILE_IDENTIFICATION} { yylval->s = strdup(yytext); return FILE_IDENTIFICATION; }
-{INFORMATION}         { yylval->s = strdup(yytext); return INFORMATION; }
-{DIRECTIVE}           { yylval->s = strdup(yytext); return DIRECTIVE; }
-{COMMENT_LINE}        { }
-{EMPTY_LINE}          { return EMPTY_LINE; }
-{TUNE_BODY}           { yylval->s = strdup(yytext); return TUNE_BODY; }
+{REFERNCE_NUMBER}     { BEGIN(x_TUNE); yylval->s = strdup(yytext); return INFORMATION; }
 
-\r                    { }
-\n                    { }
+<*>{INFORMATION}      { yylval->s = strdup(yytext); return INFORMATION; }
+<*>{DIRECTIVE}        { yylval->s = strdup(yytext); return DIRECTIVE; }
+
+<x_TUNE>{EMPTY_LINE}  { BEGIN(INITIAL); }
+<x_TUNE>{TUNE_BODY}   { yylval->s = strdup(yytext); return TUNE_BODY; }
+
+<*>.                  { }
+<*>\r                 { }
+<*>\n                 { }
 
 <<EOF>>               { return 0; }
 

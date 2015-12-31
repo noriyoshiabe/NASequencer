@@ -373,11 +373,6 @@ static void visitOverlay(void *self, ASTOverlay *ast)
     dump(self, ast, NULL);
 }
 
-static void visitEmptyLine(void *self, ASTEmptyLine *ast)
-{
-    dump(self, ast, NULL);
-}
-
 static void visitMidi(void *_self, ASTMidi *ast)
 {
     ABCASTDumper *self = _self;
@@ -459,7 +454,6 @@ Analyzer *ABCASTDumperCreate(ParseContext *context)
     self->visitor.visitTuplet = visitTuplet;
     self->visitor.visitChord = visitChord;
     self->visitor.visitOverlay = visitOverlay;
-    self->visitor.visitEmptyLine = visitEmptyLine;
     self->visitor.visitMidi = visitMidi;
     self->visitor.visitMidiParam = visitMidiParam;
     self->visitor.visitPropagateAccidental = visitPropagateAccidental;

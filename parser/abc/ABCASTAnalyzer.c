@@ -954,11 +954,6 @@ static void visitOverlay(void *_self, ASTOverlay *ast)
     append(NoteTarget(self), overlay);
 }
 
-static void visitEmptyLine(void *self, ASTEmptyLine *ast)
-{
-    __Trace__
-}
-
 static void visitMidi(void *self, ASTMidi *ast)
 {
     __Trace__
@@ -1024,7 +1019,6 @@ Analyzer *ABCASTAnalyzerCreate(ParseContext *context)
     self->visitor.visitTuplet = visitTuplet;
     self->visitor.visitChord = visitChord;
     self->visitor.visitOverlay = visitOverlay;
-    self->visitor.visitEmptyLine = visitEmptyLine;
     self->visitor.visitMidi = visitMidi;
     self->visitor.visitMidiParam = visitMidiParam;
     self->visitor.visitPropagateAccidental = visitPropagateAccidental;

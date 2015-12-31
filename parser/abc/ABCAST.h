@@ -238,10 +238,6 @@ typedef struct _ASTOverlay {
     Node node;
 } ASTOverlay;
 
-typedef struct _ASTEmptyLine {
-    Node node;
-} ASTEmptyLine;
-
 typedef struct _ASTMidi {
     Node node;
 } ASTMidi;
@@ -312,7 +308,6 @@ typedef struct _ASTVisitor {
     void (*visitTuplet)(void *self, ASTTuplet *ast);
     void (*visitChord)(void *self, ASTChord *ast);
     void (*visitOverlay)(void *self, ASTOverlay *ast);
-    void (*visitEmptyLine)(void *self, ASTEmptyLine *ast);
     void (*visitMidi)(void *self, ASTMidi *ast);
     void (*visitMidiParam)(void *self, ASTMidiParam *ast);
     void (*visitPropagateAccidental)(void *self, ASTPropagateAccidental *ast);
@@ -357,7 +352,6 @@ extern ASTGraceNote *ABCASTGraceNoteCreate(FileLocation *location);
 extern ASTTuplet *ABCASTTupletCreate(FileLocation *location);
 extern ASTChord *ABCASTChordCreate(FileLocation *location);
 extern ASTOverlay *ABCASTOverlayCreate(FileLocation *location);
-extern ASTEmptyLine *ABCASTEmptyLineCreate(FileLocation *location);
 extern ASTMidi *ABCASTMidiCreate(FileLocation *location);
 extern ASTMidiParam *ABCASTMidiParamCreate(FileLocation *location);
 extern ASTPropagateAccidental *ABCASTPropagateAccidentalCreate(FileLocation *location);
