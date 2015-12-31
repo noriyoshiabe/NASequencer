@@ -32,7 +32,7 @@
 
 INLINE_FIELD  \[[+[:alpha:]]:[^\]]*\]
 ANNOTATION    \"[^\"]*\"
-NOTE          (^^|^|=|_|__)?[a-gA-G](,|')?[[:digit:]]*(\/[[:digit:]]*)?
+NOTE          (^^|^|=|_|__)?[a-gA-G](,|')*[[:digit:]]*(\/[[:digit:]]*)*
 BROKEN_RHYTHM <|>
 REST          [xXzZ][[:digit:]]*(\/[[:digit:]]*)?
 REPEAT_BAR    [\|:\[\]]+[-,[:digit:]]*

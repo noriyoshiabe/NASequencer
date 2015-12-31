@@ -147,7 +147,9 @@ static void SEMVoiceDestroy(void *_self)
 
 SEMVoice *ABCSEMVoiceCreate(FileLocation *location)
 {
-    return NodeCreate(SEMVoice, location);
+    SEMVoice *self = NodeCreate(SEMVoice, location);
+    self->node.children = NAArrayCreate(4, NADescriptionAddress);
+    return self;
 }
 
 static void SEMNoteAccept(void *self, void *visitor)

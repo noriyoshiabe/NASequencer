@@ -1,6 +1,9 @@
-=c _c ^c
-D, D' c, C'
-A2 A2/ A2/3
+=c _c ^c ^^C __C
+X:1
+K:C
+=c _c ^c ^^C __C
+D, D'' c, C''',
+A2 A2/ A2/3 A3/// a/4/4/4
 =A,2/5
 A << B
 C > < > D
@@ -14,3 +17,7 @@ AA {/ABzCD} {ABCD}C
 A y BC y40 D
 A B C D &\
 a b c d
+P:A
+C100/4/4/4
+V:A
+C//

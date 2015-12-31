@@ -448,6 +448,7 @@ static void visitParts(void *_self, ASTParts *ast)
                 NAMapPut(self->tune->partMap, part->identifier, part);
             }
             self->part = part;
+            self->voice = NULL;
         }
         break;
     }
@@ -576,8 +577,15 @@ static void visitVoiceParam(void *_self, ASTVoiceParam *ast)
     }
 }
 
-static void visitTuneBody(void *self, ASTTuneBody *ast)
+static void visitTuneBody(void *_self, ASTTuneBody *ast)
 {
+    ABCASTAnalyzer *self = _self;
+
+    if (TuneBody != self->state) {
+        appendError(self, ast, ABCParseErrorIllegalStateWithTuneBody, State2String(self->state), NULL);
+        return;
+    }
+
     NAIterator *iterator = NAArrayGetIterator(ast->node.children);
     while (iterator->hasNext(iterator)) {
         Node *node = iterator->next(iterator);
@@ -598,9 +606,119 @@ static void visitDecoration(void *self, ASTDecoration *ast)
     // TODO expand to instructions like pianissimo, forte and so on
 }
 
-static void visitNote(void *self, ASTNote *ast)
+static bool parseNoteLength(char *_string, NoteLength *noteLength)
 {
-    __Trace__
+    int length = strlen(_string);
+    char *string = alloca(length + 2);
+    memcpy(string, _string, length);
+    string[length] = '$';
+    string[length + 1] = '\0';
+
+    int multiplier = 1;
+    int divider = 1;
+    bool isDivider = false;
+    char digits[8];
+    int digitCursor = 0;
+
+    char *pc = string;
+    char c;
+    while ((c = *pc++)) {
+        if (isdigit(c)) {
+            if (7 <= digitCursor) {
+                return false;
+            }
+            else {
+                digits[digitCursor++] = c;
+                digits[digitCursor] = '\0';
+            }
+        }
+        else {
+            if (0 < digitCursor) {
+                if (isDivider) {
+                    divider /= 2;
+                    divider *= atoi(digits);
+                }
+                else {
+                    multiplier = atoi(digits);
+                }
+
+                digitCursor = 0;
+            }
+
+            if ('/' == c) {
+                divider *= 2;
+                isDivider = true;
+            }
+        }
+    }
+
+    noteLength->multiplier = multiplier;
+    noteLength->divider = divider;
+    return true;
+}
+
+static void visitNote(void *_self, ASTNote *ast)
+{
+    ABCASTAnalyzer *self = _self;
+
+    BaseNote baseNote = BaseNote_C;
+    Accidental accidental = AccidentalNone;
+    int octave = 2;
+    NoteLength noteLength = {1, 1};
+
+    char *pc = ast->noteString;
+    while (*pc) {
+        switch (*pc) {
+        case '^':
+            accidental = AccidentalSharp == accidental ? AccidentalDoubleSharp : AccidentalSharp;
+            break;
+        case '_':
+            accidental = AccidentalFlat == accidental ? AccidentalDoubleFlat : AccidentalFlat;
+            break;
+        case '=':
+            accidental = AccidentalNatural;
+            break;
+        case 'a': case 'b': case 'c': case 'd': case 'e': case 'f': case 'g':
+        case 'A': case 'B': case 'C': case 'D': case 'E': case 'F': case 'G':
+            baseNote = KeyChar2BaseNote(*pc);
+            octave = isupper(*pc) ? 2 : 3;
+            break;
+        case ',':
+            --octave;
+            break;
+        case '\'':
+            ++octave;
+            break;
+        default:
+            if (!parseNoteLength(pc, &noteLength)) {
+                appendError(self, ast, ABCParseErrorInvalidNoteLength, pc, NULL);
+                return;
+            }
+
+            goto LOOP_END;
+        }
+
+        ++pc;
+    }
+
+LOOP_END:
+    ;
+
+    SEMNote *note = node(Note, ast);
+    note->baseNote = baseNote;
+    note->accidental = accidental;
+    note->octave = octave;
+    note->length = noteLength;
+
+    if (self->voice) {
+        append(self->voice, note);
+    }
+    else if (self->part) {
+        append(self->part, note);
+    }
+    else {
+        append(self->tune, note);
+    }
 }
 
 static void visitBrokenRhythm(void *self, ASTBrokenRhythm *ast)

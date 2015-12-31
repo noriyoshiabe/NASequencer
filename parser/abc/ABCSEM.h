@@ -62,15 +62,17 @@ typedef struct _SEMVoice {
     int octave;
 } SEMVoice;
 
+typedef struct _NoteLength {
+    int multiplier;
+    int divider;
+} NoteLength;
+
 typedef struct _SEMNote {
     Node node;
     BaseNote baseNote;
     Accidental accidental;
     int octave;
-    struct {
-        int multiplier;
-        int divider;
-    } length;
+    NoteLength length;
 } SEMNote;
 
 typedef struct _SEMBrokenRhythm {
@@ -80,10 +82,7 @@ typedef struct _SEMBrokenRhythm {
 
 typedef struct _SEMRest {
     Node node;
-    struct {
-        int multiplier;
-        int divider;
-    } length;
+    NoteLength length;
 } SEMRest;
 
 typedef enum {
@@ -119,10 +118,7 @@ typedef struct _SEMTuplet {
 
 typedef struct _SEMChord {
     Node node;
-    struct {
-        int multiplier;
-        int divider;
-    } length;
+    NoteLength length;
 } SEMChord;
 
 typedef struct _SEMOverlay {

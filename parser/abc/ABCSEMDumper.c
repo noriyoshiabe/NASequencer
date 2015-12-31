@@ -168,9 +168,20 @@ static void visitPart(void *_self, SEMPart *sem)
     self->indent -= 4;
 }
 
-static void visitVoice(void *self, SEMVoice *sem)
+static void visitVoice(void *_self, SEMVoice *sem)
 {
+    ABCSEMDumper *self = _self;
+
     dump(self, sem, STRING(sem, identifier), INTEGER(sem, transpose), INTEGER(sem, octave), NULL);
+    self->indent += 4;
+
+    NAIterator *iterator = NAArrayGetIterator(sem->node.children);
+    while (iterator->hasNext(iterator)) {
+        Node *node = iterator->next(iterator);
+        node->accept(node, self);
+    }
+
+    self->indent -= 4;
 }
 
 static void visitNote(void *_self, SEMNote *sem)
