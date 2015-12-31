@@ -122,15 +122,32 @@ static void SEMPartDestroy(void *_self)
 {
     SEMPart *self = _self;
     IF(self->identifier, free);
-    NAMapTraverseValue(self->voiceMap, NodeRelease);
-    NAMapDestroy(self->voiceMap);
+    NAMapDestroy(self->listMap);
 }
 
 SEMPart *ABCSEMPartCreate(FileLocation *location)
 {
     SEMPart *self = NodeCreate(SEMPart, location);
     self->node.children = NAArrayCreate(4, NADescriptionAddress);
-    self->voiceMap = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
+    self->listMap = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
+    return self;
+}
+
+static void SEMListAccept(void *self, void *visitor)
+{
+    ((SEMVisitor *)visitor)->visitList(visitor, self);
+}
+
+static void SEMListDestroy(void *_self)
+{
+    SEMList *self = _self;
+    IF(self->voiceId, free);
+}
+
+SEMList *ABCSEMListCreate(FileLocation *location)
+{
+    SEMList *self = NodeCreate(SEMList, location);
+    self->node.children = NAArrayCreate(4, NADescriptionAddress);
     return self;
 }
 
@@ -148,7 +165,6 @@ static void SEMVoiceDestroy(void *_self)
 SEMVoice *ABCSEMVoiceCreate(FileLocation *location)
 {
     SEMVoice *self = NodeCreate(SEMVoice, location);
-    self->node.children = NAArrayCreate(4, NADescriptionAddress);
     return self;
 }
 

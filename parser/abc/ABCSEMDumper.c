@@ -100,19 +100,19 @@ static void visitTune(void *_self, SEMTune *sem)
         node->accept(node, self);
     }
 
-    iterator = NAMapGetIterator(sem->partMap);
-    while (iterator->hasNext(iterator)) {
-        NAMapEntry *entry = iterator->next(iterator);
-        Node *node = entry->value;
-        printf("%*s---------- part ----------\n", self->indent, "");
-        node->accept(node, self);
-    }
-
     iterator = NAMapGetIterator(sem->voiceMap);
     while (iterator->hasNext(iterator)) {
         NAMapEntry *entry = iterator->next(iterator);
         Node *node = entry->value;
         printf("%*s---------- voice ----------\n", self->indent, "");
+        node->accept(node, self);
+    }
+
+    iterator = NAMapGetIterator(sem->partMap);
+    while (iterator->hasNext(iterator)) {
+        NAMapEntry *entry = iterator->next(iterator);
+        Node *node = entry->value;
+        printf("%*s---------- part ----------\n", self->indent, "");
         node->accept(node, self);
     }
 
@@ -156,22 +156,14 @@ static void visitPart(void *_self, SEMPart *sem)
         node->accept(node, self);
     }
 
-    iterator = NAMapGetIterator(sem->voiceMap);
-    while (iterator->hasNext(iterator)) {
-        NAMapEntry *entry = iterator->next(iterator);
-        Node *node = entry->value;
-        printf("%*s---------- voice ----------\n", self->indent, "");
-        node->accept(node, self);
-    }
-
     self->indent -= 4;
 }
 
-static void visitVoice(void *_self, SEMVoice *sem)
+static void visitList(void *_self, SEMList *sem)
 {
     ABCSEMDumper *self = _self;
 
-    dump(self, sem, STRING(sem, identifier), INTEGER(sem, transpose), INTEGER(sem, octave), NULL);
+    dump(self, sem, STRING(sem, voiceId), NULL);
     self->indent += 4;
 
     NAIterator *iterator = NAArrayGetIterator(sem->node.children);
@@ -181,6 +173,11 @@ static void visitVoice(void *_self, SEMVoice *sem)
     }
 
     self->indent -= 4;
+}
+
+static void visitVoice(void *self, SEMVoice *sem)
+{
+    dump(self, sem, STRING(sem, identifier), INTEGER(sem, transpose), INTEGER(sem, octave), NULL);
 }
 
 static void visitDecoration(void *self, SEMDecoration *sem)
@@ -305,6 +302,7 @@ Analyzer *ABCSEMDumperCreate(ParseContext *context)
     self->visitor.visitUnitNoteLength = visitUnitNoteLength;
     self->visitor.visitTempo = visitTempo;
     self->visitor.visitPart = visitPart;
+    self->visitor.visitList = visitList;
     self->visitor.visitVoice = visitVoice;
     self->visitor.visitDecoration = visitDecoration;
     self->visitor.visitNote = visitNote;

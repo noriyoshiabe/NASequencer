@@ -53,8 +53,13 @@ typedef struct _SEMTempo {
 typedef struct _SEMPart {
     Node node;
     char *identifier;
-    NAMap *voiceMap;
+    NAMap *listMap;
 } SEMPart;
+
+typedef struct _SEMList {
+    Node node;
+    char *voiceId;
+} SEMList;
 
 typedef struct _SEMVoice {
     Node node;
@@ -173,6 +178,7 @@ typedef struct _SEMVisitor {
     void (*visitUnitNoteLength)(void *self, SEMUnitNoteLength *sem);
     void (*visitTempo)(void *self, SEMTempo *sem);
     void (*visitPart)(void *self, SEMPart *sem);
+    void (*visitList)(void *self, SEMList *sem);
     void (*visitVoice)(void *self, SEMVoice *sem);
     void (*visitDecoration)(void *self, SEMDecoration *sem);
     void (*visitNote)(void *self, SEMNote *sem);
@@ -197,6 +203,7 @@ extern SEMMeter *ABCSEMMeterCreate(FileLocation *location);
 extern SEMUnitNoteLength *ABCSEMUnitNoteLengthCreate(FileLocation *location);
 extern SEMTempo *ABCSEMTempoCreate(FileLocation *location);
 extern SEMPart *ABCSEMPartCreate(FileLocation *location);
+extern SEMList *ABCSEMListCreate(FileLocation *location);
 extern SEMVoice *ABCSEMVoiceCreate(FileLocation *location);
 extern SEMDecoration *ABCSEMDecorationCreate(FileLocation *location);
 extern SEMNote *ABCSEMNoteCreate(FileLocation *location);

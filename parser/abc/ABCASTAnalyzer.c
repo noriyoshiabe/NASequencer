@@ -14,13 +14,6 @@
 #define node(type, ast) ABCSEM##type##Create(&ast->node.location)
 #define append(node, sem) NAArrayAppend(((Node *)(node))->children, sem)
 #define appendError(self, ast, ...) self->context->appendError(self->context, &ast->node.location, __VA_ARGS__)
-#define TuneOrFile(self) (self->tune ? (Node *)self->tune : (Node *)self->file)
-#define NoteTarget(self) \
-    (self->chord ? (Node *)self->chord : \
-     self->graceNote ? (Node *)self->graceNote : \
-     self->voice ? (Node *)self->voice : \
-     self->part ? (Node *)self->part : \
-     (Node *)self->tune)
 
 #define isValidRange(v, from, to) (from <= v && v <= to)
 #define isPowerOf2(x) ((x != 0) && ((x & (x - 1)) == 0))
@@ -57,6 +50,7 @@ typedef struct _ABCASTAnalyzer {
     SEMKey *key;
     SEMTempo *tempo;
     SEMPart *part;
+    SEMList *list;
     SEMVoice *voice;
     SEMGraceNote *graceNote;
     SEMChord *chord;
@@ -118,6 +112,22 @@ static void visitReferenceNumber(void *_self, ASTReferenceNumber *ast)
     append(self->file, tune);
     self->tune = tune;
 
+    SEMPart *part = ABCSEMPartCreate(NULL);
+    part->identifier = strdup("");
+    NAMapPut(tune->partMap, part->identifier, part);
+
+    SEMList *list = ABCSEMListCreate(NULL);
+    list->voiceId = strdup("");
+    append(part, list);
+    NAMapPut(part->listMap, list->voiceId, list);
+
+    SEMVoice *voice = ABCSEMVoiceCreate(NULL);
+    voice->identifier = strdup("");
+    NAMapPut(tune->voiceMap, voice->identifier, voice);
+
+    self->part = part;
+    self->list = list;
+
     self->state = TuneHeader;
     self->tuneMeter = self->fileMeter;
 }
@@ -143,8 +153,6 @@ static void visitKey(void *_self, ASTKey *ast)
         appendError(self, ast, ABCParseErrorIllegalStateWithKey, State2String(self->state), NULL);
         return;
     }
-
-    self->state = TuneBody;
 
     SEMKey *key = node(Key, ast);
     self->key = key;
@@ -253,7 +261,9 @@ KEY_FOUND:
     }
 
     key->noteTable = noteTable;
-    append(self->tune, key);
+    append(self->list, key);
+
+    self->state = TuneBody;
 }
 
 static void visitKeyParam(void *_self, ASTKeyParam *ast)
@@ -328,13 +338,13 @@ static void visitMeter(void *_self, ASTMeter *ast)
         meter->numerator = numerator;
         meter->denominator = denominator;
 
-        append(TuneOrFile(self), meter);
-
         if (FileHeader == self->state) {
             self->fileMeter = meter;
+            append(self->file, meter);
         }
         else {
             self->tuneMeter = meter;
+            append(self->list, meter);
         }
     }
 }
@@ -355,7 +365,12 @@ static void visitUnitNoteLength(void *_self, ASTUnitNoteLength *ast)
     SEMUnitNoteLength *unLength = node(UnitNoteLength, ast);
     unLength->length = RESOLUTION * 4 * numerator / denominator;
 
-    append(TuneOrFile(self), unLength);
+    if (FileHeader == self->state) {
+        append(self->file, unLength);
+    }
+    else {
+        append(self->list, unLength);
+    }
 }
 
 static void visitTempo(void *_self, ASTTempo *ast)
@@ -407,7 +422,13 @@ static void visitTempo(void *_self, ASTTempo *ast)
     }
 
     tempo->tempo = _tempo;
-    append(TuneOrFile(self), tempo);
+
+    if (FileHeader == self->state) {
+        append(self->file, tempo);
+    }
+    else {
+        append(self->list, tempo);
+    }
 }
 
 static void visitTempoParam(void *_self, ASTTempoParam *ast)
@@ -457,9 +478,22 @@ static void visitParts(void *_self, ASTParts *ast)
                 part = node(Part, ast);
                 part->identifier = strdup(identifier);
                 NAMapPut(self->tune->partMap, part->identifier, part);
+
+                SEMVoice *voice = ABCSEMVoiceCreate(NULL);
+                voice->identifier = strdup("");
+                NAMapPut(self->tune->voiceMap, voice->identifier, voice);
             }
+
+            SEMList *list = NAMapGet(part->listMap, "");
+            if (!list) {
+                list = ABCSEMListCreate(NULL);
+                list->voiceId = strdup(identifier);
+                append(part, list);
+                NAMapPut(part->listMap, list->voiceId, list);
+            }
+
             self->part = part;
-            self->voice = NULL;
+            self->list = list;
         }
         break;
     }
@@ -528,17 +562,14 @@ static void visitVoice(void *_self, ASTVoice *ast)
         appendError(self, ast, ABCParseErrorIllegalStateWithVoice, State2String(self->state), NULL);
         break;
     case TuneHeader:
-    case TuneBody:
         {
-            NAMap *voiceMap = self->part ? self->part->voiceMap : self->tune->voiceMap;
-
-            SEMVoice *voice = NAMapGet(voiceMap, ast->identifier);
+            SEMVoice *voice = NAMapGet(self->tune->voiceMap, ast->identifier);
             if (!voice) {
                 voice = node(Voice, ast);
                 voice->identifier = strdup(ast->identifier);
-                NAMapPut(voiceMap, voice->identifier, voice);
+                NAMapPut(self->tune->voiceMap, voice->identifier, voice);
             }
-            
+
             self->voice = voice;
 
             NAIterator *iterator = NAArrayGetIterator(ast->node.children);
@@ -546,10 +577,23 @@ static void visitVoice(void *_self, ASTVoice *ast)
                 Node *node = iterator->next(iterator);
                 node->accept(node, self);
             }
-
-            if (TuneHeader == self->state) {
-                self->voice = NULL;
+        }
+        break;
+    case TuneBody:
+        {
+            SEMVoice *voice = NAMapGet(self->tune->voiceMap, ast->identifier);
+            if (!voice) {
+                voice = node(Voice, ast);
+                voice->identifier = strdup(ast->identifier);
+                NAMapPut(self->tune->voiceMap, voice->identifier, voice);
             }
+
+            SEMList *list = node(List, ast);
+            list->voiceId = strdup(ast->identifier);
+            append(self->part, list);
+            NAMapPut(self->part->listMap, list->voiceId, list);
+
+            self->list = list;
         }
         break;
     }
@@ -636,7 +680,7 @@ static void visitDecoration(void *_self, ASTDecoration *ast)
         if (0 == strcmp(table[i].symbol, ast->symbol)) {
             SEMDecoration *decoration = node(Decoration, ast);
             decoration->type = table[i].type;
-            append(NoteTarget(self), decoration);
+            append(self->list, decoration);
             return;
         }
     }
@@ -695,7 +739,7 @@ LOOP_END:
     note->octave = octave;
     note->length = noteLength;
 
-    append(NoteTarget(self), note);
+    append(self->list, note);
 }
 
 static void visitBrokenRhythm(void *_self, ASTBrokenRhythm *ast)
@@ -704,7 +748,7 @@ static void visitBrokenRhythm(void *_self, ASTBrokenRhythm *ast)
 
     SEMBrokenRhythm *bRhythm = node(BrokenRhythm, ast);
     bRhythm->direction = ast->direction;
-    append(NoteTarget(self), bRhythm);
+    append(self->list, bRhythm);
 }
 
 static void visitRest(void *_self, ASTRest *ast)
@@ -722,7 +766,7 @@ static void visitRest(void *_self, ASTRest *ast)
     SEMRest *rest = node(Rest, ast);
     rest->type = type;
     rest->length = noteLength;
-    append(NoteTarget(self), rest);
+    append(self->list, rest);
 }
 
 static bool parseNThRepeat(char *_string, NASet **nthSet)
@@ -824,7 +868,7 @@ static void visitRepeatBar(void *_self, ASTRepeatBar *ast)
     if (hasRepeatEnd) {
         SEMRepeat *repeat = node(Repeat, ast);
         repeat->type = RepeatEnd;
-        append(NoteTarget(self), repeat);
+        append(self->list, repeat);
     }
 
     char *pDigit = strpbrk(ast->symbols, "0123456789");
@@ -848,7 +892,7 @@ static void visitRepeatBar(void *_self, ASTRepeatBar *ast)
                 SEMRepeat *repeat = node(Repeat, ast);
                 repeat->type = RepeatNth;
                 repeat->nthSet = nthSet;
-                append(NoteTarget(self), repeat);
+                append(self->list, repeat);
             }
         }
     }
@@ -856,12 +900,12 @@ static void visitRepeatBar(void *_self, ASTRepeatBar *ast)
     if (hasRepeatStart) {
         SEMRepeat *repeat = node(Repeat, ast);
         repeat->type = RepeatStart;
-        append(NoteTarget(self), repeat);
+        append(self->list, repeat);
     }
 
     if (hasBarLine) {
         SEMBarLine *barLine = node(BarLine, ast);
-        append(NoteTarget(self), barLine);
+        append(self->list, barLine);
     }
 }
 
@@ -870,7 +914,7 @@ static void visitTie(void *_self, ASTTie *ast)
     ABCASTAnalyzer *self = _self;
 
     SEMTie *tie = node(Tie, ast);
-    append(NoteTarget(self), tie);
+    append(self->list, tie);
 }
 
 static void visitSlur(void *self, ASTSlur *ast)
@@ -895,7 +939,7 @@ static void visitGraceNote(void *_self, ASTGraceNote *ast)
     }
 
     self->graceNote = NULL;
-    append(NoteTarget(self), graceNote);
+    append(self->list, graceNote);
 }
 
 static void visitTuplet(void *_self, ASTTuplet *ast)
@@ -941,7 +985,7 @@ static void visitTuplet(void *_self, ASTTuplet *ast)
         tuplet->count = tuplet->division;
     }
 
-    append(NoteTarget(self), tuplet);
+    append(self->list, tuplet);
 }
 
 static void visitChord(void *_self, ASTChord *ast)
@@ -967,14 +1011,14 @@ static void visitChord(void *_self, ASTChord *ast)
 
     self->chord = NULL;
 
-    append(NoteTarget(self), chord);
+    append(self->list, chord);
 }
 
 static void visitOverlay(void *_self, ASTOverlay *ast)
 {
     ABCASTAnalyzer *self = _self;
     SEMOverlay *overlay = node(Overlay, ast);
-    append(NoteTarget(self), overlay);
+    append(self->list, overlay);
 }
 
 static void visitMidi(void *_self, ASTMidi *ast)
@@ -1006,39 +1050,22 @@ static void visitMidi(void *_self, ASTMidi *ast)
 
     SEMVoice *voice = NULL;
 
-    if (midiVoice->voiceId) {
-        if (self->part) {
-            NAMap *voiceMap = self->part->voiceMap;
-            SEMVoice *voice = NAMapGet(voiceMap, midiVoice->voiceId);
-            if (!voice) {
+    if (FileHeader == self->state) {
+        append(self->file, midiVoice);
+    }
+    else {
+        if (midiVoice->voiceId) {
+            SEMList *list = NAMapGet(self->part->listMap, midiVoice->voiceId);
+            if (!list) {
                 appendError(self, ast, ABCParseErrorMidiVoiceIdMissingInPart, self->part->identifier, midiVoice->voiceId, NULL);
                 NodeRelease(midiVoice);
             }
             else {
-                append(voice, midiVoice);
+                append(list, midiVoice);
             }
         }
         else {
-            NAMap *voiceMap = self->tune->voiceMap;
-            SEMVoice *voice = NAMapGet(voiceMap, midiVoice->voiceId);
-            if (!voice) {
-                appendError(self, ast, ABCParseErrorMidiVoiceIdMissingInTune, midiVoice->voiceId, NULL);
-                NodeRelease(midiVoice);
-            }
-            else {
-                append(voice, midiVoice);
-            }
-        }
-    }
-    else {
-        if (self->voice) {
-            append(self->voice, midiVoice);
-        }
-        else if (self->part) {
-            append(self->part, midiVoice);
-        }
-        else {
-            append(self->tune, midiVoice);
+            append(self->list, midiVoice);
         }
     }
 }
@@ -1090,7 +1117,12 @@ static void visitPropagateAccidental(void *_self, ASTPropagateAccidental *ast)
         break;
     }
 
-    append(TuneOrFile(self), propagateAccidental);
+    if (FileHeader == self->state) {
+        append(self->file, propagateAccidental);
+    }
+    else {
+        append(self->list, propagateAccidental);
+    }
 }
 
 

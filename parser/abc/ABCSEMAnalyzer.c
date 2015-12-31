@@ -54,13 +54,6 @@ static void visitTune(void *_self, SEMTune *sem)
         Node *node = entry->value;
         node->accept(node, self);
     }
-
-    iterator = NAMapGetIterator(sem->voiceMap);
-    while (iterator->hasNext(iterator)) {
-        NAMapEntry *entry = iterator->next(iterator);
-        Node *node = entry->value;
-        node->accept(node, self);
-    }
 }
 
 static void visitKey(void *_self, SEMKey *sem)
@@ -99,16 +92,9 @@ static void visitPart(void *_self, SEMPart *sem)
         Node *node = iterator->next(iterator);
         node->accept(node, self);
     }
-
-    iterator = NAMapGetIterator(sem->voiceMap);
-    while (iterator->hasNext(iterator)) {
-        NAMapEntry *entry = iterator->next(iterator);
-        Node *node = entry->value;
-        node->accept(node, self);
-    }
 }
 
-static void visitVoice(void *_self, SEMVoice *sem)
+static void visitList(void *_self, SEMList *sem)
 {
     __Trace__
     ABCSEMAnalyzer *self = _self;
@@ -118,6 +104,11 @@ static void visitVoice(void *_self, SEMVoice *sem)
         Node *node = iterator->next(iterator);
         node->accept(node, self);
     }
+}
+
+static void visitVoice(void *_self, SEMVoice *sem)
+{
+    __Trace__
 }
 
 static void visitDecoration(void *_self, SEMDecoration *sem)
@@ -222,6 +213,7 @@ Analyzer *ABCSEMAnalyzerCreate(ParseContext *context)
     self->visitor.visitUnitNoteLength = visitUnitNoteLength;
     self->visitor.visitTempo = visitTempo;
     self->visitor.visitPart = visitPart;
+    self->visitor.visitList = visitList;
     self->visitor.visitVoice = visitVoice;
     self->visitor.visitDecoration = visitDecoration;
     self->visitor.visitNote = visitNote;
