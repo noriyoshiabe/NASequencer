@@ -306,8 +306,10 @@ static void SEMMidiVoiceAccept(void *self, void *visitor)
     ((SEMVisitor *)visitor)->visitMidiVoice(visitor, self);
 }
 
-static void SEMMidiVoiceDestroy(void *self)
+static void SEMMidiVoiceDestroy(void *_self)
 {
+    SEMMidiVoice *self = _self;
+    IF(self->voiceId, free);
 }
 
 SEMMidiVoice *ABCSEMMidiVoiceCreate(FileLocation *location)

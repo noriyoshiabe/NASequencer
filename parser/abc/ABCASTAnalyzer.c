@@ -59,6 +59,7 @@ typedef struct _ABCASTAnalyzer {
     SEMVoice *voice;
     SEMGraceNote *graceNote;
     SEMChord *chord;
+    SEMMidiVoice *midiVoice;
 
     SEMMeter *fileMeter;
     SEMMeter *tuneMeter;
@@ -954,20 +955,100 @@ static void visitOverlay(void *_self, ASTOverlay *ast)
     append(NoteTarget(self), overlay);
 }
 
-static void visitMidi(void *self, ASTMidi *ast)
+static void visitMidi(void *_self, ASTMidi *ast)
 {
-    __Trace__
+    ABCASTAnalyzer *self = _self;
+
+    if (!self->tune) {
+        appendError(self, ast, ABCParseErrorIllegalStateWithMidiVoice, State2String(self->state), NULL);
+        return;
+    }
+
+    SEMMidiVoice *midiVoice = node(MidiVoice, ast);
+    midiVoice->instrument = -1;
+    midiVoice->bank = 1;
+
+    self->midiVoice = midiVoice;
 
     NAIterator *iterator = NAArrayGetIterator(ast->node.children);
     while (iterator->hasNext(iterator)) {
         Node *node = iterator->next(iterator);
         node->accept(node, self);
     }
+
+    if (-1 == midiVoice->instrument) {
+        appendError(self, ast, ABCParseErrorMidiInstrumentMissing, NULL);
+        NodeRelease(midiVoice);
+        return;
+    }
+
+    SEMVoice *voice = NULL;
+
+    if (midiVoice->voiceId) {
+        if (self->part) {
+            NAMap *voiceMap = self->part->voiceMap;
+            SEMVoice *voice = NAMapGet(voiceMap, midiVoice->voiceId);
+            if (!voice) {
+                appendError(self, ast, ABCParseErrorMidiVoiceIdMissingInPart, self->part->identifier, midiVoice->voiceId, NULL);
+                NodeRelease(midiVoice);
+            }
+            else {
+                append(voice, midiVoice);
+            }
+        }
+        else {
+            NAMap *voiceMap = self->tune->voiceMap;
+            SEMVoice *voice = NAMapGet(voiceMap, midiVoice->voiceId);
+            if (!voice) {
+                appendError(self, ast, ABCParseErrorMidiVoiceIdMissingInTune, midiVoice->voiceId, NULL);
+                NodeRelease(midiVoice);
+            }
+            else {
+                append(voice, midiVoice);
+            }
+        }
+    }
+    else {
+        if (self->voice) {
+            append(self->voice, midiVoice);
+        }
+        else if (self->part) {
+            append(self->part, midiVoice);
+        }
+        else {
+            append(self->tune, midiVoice);
+        }
+    }
 }
 
-static void visitMidiParam(void *self, ASTMidiParam *ast)
+static void visitMidiParam(void *_self, ASTMidiParam *ast)
 {
-    __Trace__
+    ABCASTAnalyzer *self = _self;
+
+    switch (ast->type) {
+    case MidiVoiceId:
+        if (self->midiVoice->voiceId) {
+            appendError(self, ast, ABCParseErrorDuplicatedMidiVoiceId, ast->string, NULL);
+        }
+        else {
+            self->midiVoice->voiceId = strdup(ast->string);
+        }
+        break;
+    case MidiInstrument:
+        if (!isValidRange(ast->intValue, 1, 128)) {
+            appendError(self, ast, ABCParseErrorInvalidMidiInstrument, NACStringFromInteger(ast->intValue), NULL);
+        }
+        else {
+            self->midiVoice->instrument = ast->intValue;
+        }
+        break;
+    case MidiBank:
+        self->midiVoice->bank = ast->intValue;
+        break;
+    case MidiMute:
+        self->midiVoice->mute = true;
+        break;
+    }
 }
 
 static void visitPropagateAccidental(void *self, ASTPropagateAccidental *ast)

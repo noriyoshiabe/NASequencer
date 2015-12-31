@@ -281,7 +281,7 @@ static void visitOverlay(void *self, SEMOverlay *sem)
 
 static void visitMidiVoice(void *self, SEMMidiVoice *sem)
 {
-    dump(self, sem, INTEGER(sem, instrument), INTEGER(sem, bank), NULL);
+    dump(self, sem, STRING(sem, voiceId), INTEGER(sem, instrument), INTEGER(sem, bank), BOOL(sem, mute), NULL);
 }
 
 static void visitPropagateAccidental(void *self, SEMPropagateAccidental *sem)

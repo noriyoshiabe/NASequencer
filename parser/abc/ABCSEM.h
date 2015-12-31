@@ -134,8 +134,10 @@ typedef struct _SEMOverlay {
 
 typedef struct _SEMMidiVoice {
     Node node;
+    char *voiceId;
     int instrument;
     int bank;
+    bool mute;
 } SEMMidiVoice;
 
 typedef struct _SEMPropagateAccidental {
