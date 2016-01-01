@@ -86,7 +86,6 @@ static void destroy(void *_self)
 
 static void visitFile(void *_self, SEMFile *sem)
 {
-    __Trace__
     ABCSEMAnalyzer *self = _self;
 
     NAIterator *iterator = NAArrayGetIterator(sem->node.children);
@@ -116,7 +115,6 @@ static void processPendingEvents(ABCSEMAnalyzer *self)
 
 static void visitTune(void *_self, SEMTune *sem)
 {
-    __Trace__
     ABCSEMAnalyzer *self = _self;
     
     setDefaultEvents(self);
@@ -154,7 +152,6 @@ static void visitTune(void *_self, SEMTune *sem)
 
 static void visitKey(void *_self, SEMKey *sem)
 {
-    __Trace__
     ABCSEMAnalyzer *self = _self;
     self->key = sem;
 
@@ -164,7 +161,6 @@ static void visitKey(void *_self, SEMKey *sem)
 
 static void visitMeter(void *_self, SEMMeter *sem)
 {
-    __Trace__
     ABCSEMAnalyzer *self = _self;
 
     if (inFileFeader(self)) {
@@ -190,19 +186,16 @@ static void visitMeter(void *_self, SEMMeter *sem)
 
 static void visitUnitNoteLength(void *_self, SEMUnitNoteLength *sem)
 {
-    __Trace__
     ABCSEMAnalyzer *self = _self;
 }
 
 static void visitTempo(void *_self, SEMTempo *sem)
 {
-    __Trace__
     ABCSEMAnalyzer *self = _self;
 }
 
 static void visitPart(void *_self, SEMPart *sem)
 {
-    __Trace__
     ABCSEMAnalyzer *self = _self;
 
     NAIterator *iterator;
@@ -216,7 +209,6 @@ static void visitPart(void *_self, SEMPart *sem)
 
 static void visitList(void *_self, SEMList *sem)
 {
-    __Trace__
     ABCSEMAnalyzer *self = _self;
 
     self->voice = NAMapGet(self->voiceMap, sem->voiceId);
@@ -262,18 +254,15 @@ REPEAT:
 
 static void visitVoice(void *_self, SEMVoice *sem)
 {
-    __Trace__
 }
 
 static void visitDecoration(void *_self, SEMDecoration *sem)
 {
-    __Trace__
     ABCSEMAnalyzer *self = _self;
 }
 
 static void visitNote(void *_self, SEMNote *sem)
 {
-    __Trace__
     ABCSEMAnalyzer *self = _self;
 
     if (RepeatStateInitial != self->repeat->state) {
@@ -285,19 +274,16 @@ static void visitNote(void *_self, SEMNote *sem)
 
 static void visitBrokenRhythm(void *_self, SEMBrokenRhythm *sem)
 {
-    __Trace__
     ABCSEMAnalyzer *self = _self;
 }
 
 static void visitRest(void *_self, SEMRest *sem)
 {
-    __Trace__
     ABCSEMAnalyzer *self = _self;
 }
 
 static void visitRepeat(void *_self, SEMRepeat *sem)
 {
-    __Trace__
     ABCSEMAnalyzer *self = _self;
 
     switch (sem->type) {
@@ -320,19 +306,16 @@ static void visitRepeat(void *_self, SEMRepeat *sem)
 
 static void visitBarLine(void *_self, SEMBarLine *sem)
 {
-    __Trace__
     ABCSEMAnalyzer *self = _self;
 }
 
 static void visitTie(void *_self, SEMTie *sem)
 {
-    __Trace__
     ABCSEMAnalyzer *self = _self;
 }
 
 static void visitGraceNote(void *_self, SEMGraceNote *sem)
 {
-    __Trace__
     ABCSEMAnalyzer *self = _self;
 
     NAIterator *iterator = NAArrayGetIterator(sem->node.children);
@@ -344,13 +327,11 @@ static void visitGraceNote(void *_self, SEMGraceNote *sem)
 
 static void visitTuplet(void *_self, SEMTuplet *sem)
 {
-    __Trace__
     ABCSEMAnalyzer *self = _self;
 }
 
 static void visitChord(void *_self, SEMChord *sem)
 {
-    __Trace__
     ABCSEMAnalyzer *self = _self;
 
     NAIterator *iterator = NAArrayGetIterator(sem->node.children);
@@ -362,19 +343,16 @@ static void visitChord(void *_self, SEMChord *sem)
 
 static void visitOverlay(void *_self, SEMOverlay *sem)
 {
-    __Trace__
     ABCSEMAnalyzer *self = _self;
 }
 
 static void visitMidiVoice(void *_self, SEMMidiVoice *sem)
 {
-    __Trace__
     ABCSEMAnalyzer *self = _self;
 }
 
 static void visitPropagateAccidental(void *_self, SEMPropagateAccidental *sem)
 {
-    __Trace__
     ABCSEMAnalyzer *self = _self;
 }
 
