@@ -3,7 +3,7 @@ L:1/8
 M:2/4
 
 X:1
-P:A2B
+P:A2BZ
 V:V1  middle=d clef=bass      name="Basso II"   snm="B.II" transpose=-24
 V:V2  middle=d clef=bass      name="Basso II"   snm="B.II" transpose=-24
 K:C

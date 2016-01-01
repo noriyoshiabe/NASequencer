@@ -286,7 +286,9 @@ static void visitTune(void *_self, SEMTune *sem)
 
     for (int i = 0; i < length; ++i) {
         Node *part = NAMapGet(sem->partMap, NACStringFromChar(partSequence[i]));
-        part->accept(part, self);
+        if (part) {
+            part->accept(part, self);
+        }
     }
 
     postProcessTune(self);
