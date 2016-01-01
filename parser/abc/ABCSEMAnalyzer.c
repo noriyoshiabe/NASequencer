@@ -70,6 +70,8 @@ typedef struct _VoiceContext {
 
     Tuplet *tuplet;
     NAStack *tupletStack;
+
+    bool inChord;
 } VoiceContext;
 
 static VoiceContext *VoiceContextCreate();
@@ -490,9 +492,12 @@ static bool calcNextStep(ABCSEMAnalyzer *self, NoteLength *length, void *sem, in
     if (voice->tuplet) {
         multiplier *= voice->tuplet->time;
         divider *= voice->tuplet->division;
-        if (0 == --voice->tuplet->count) {
-            TupletDestroy(voice->tuplet);
-            voice->tuplet = NAStackPop(voice->tupletStack);
+
+        if (!voice->inChord) {
+            if (0 == --voice->tuplet->count) {
+                TupletDestroy(voice->tuplet);
+                voice->tuplet = NAStackPop(voice->tupletStack);
+            }
         }
     }
 
@@ -567,7 +572,9 @@ static void visitNote(void *_self, SEMNote *sem)
         return;
     }
 
-    flushPendingNotes(self, self->voice);
+    if (!self->voice->inChord) {
+        flushPendingNotes(self, self->voice);
+    }
 
     Note *note = NoteCreate();
     note->step = step;
@@ -616,7 +623,9 @@ static void visitRest(void *_self, SEMRest *sem)
         break;
     }
 
-    flushPendingNotes(self, self->voice);
+    if (!self->voice->inChord) {
+        flushPendingNotes(self, self->voice);
+    }
 
     Note *note = NoteCreate();
     note->step = step;
@@ -736,6 +745,11 @@ static void visitTuplet(void *_self, SEMTuplet *sem)
 static void visitChord(void *_self, SEMChord *sem)
 {
     ABCSEMAnalyzer *self = _self;
+    VoiceContext *voice = self->voice;
+
+    flushPendingNotes(self, voice);
+
+    voice->inChord = true;
 
     NAIterator *iterator = NAArrayGetIterator(sem->node.children);
     while (iterator->hasNext(iterator)) {
@@ -743,7 +757,14 @@ static void visitChord(void *_self, SEMChord *sem)
         node->accept(node, self);
     }
 
-    // TODO
+    if (voice->tuplet) {
+        if (0 == --voice->tuplet->count) {
+            TupletDestroy(voice->tuplet);
+            voice->tuplet = NAStackPop(voice->tupletStack);
+        }
+    }
+
+    voice->inChord = false;
 }
 
 static void visitOverlay(void *_self, SEMOverlay *sem)

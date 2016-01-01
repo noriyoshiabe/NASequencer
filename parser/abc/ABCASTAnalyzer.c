@@ -753,7 +753,15 @@ LOOP_END:
     note->length = noteLength;
     note->noteString = strdup(ast->noteString);
 
-    append(self->list, note);
+    if (self->chord) {
+        append(self->chord, note);
+    }
+    else if (self->graceNote) {
+        append(self->graceNote, note);
+    }
+    else {
+        append(self->list, note);
+    }
 }
 
 static void visitBrokenRhythm(void *_self, ASTBrokenRhythm *ast)
