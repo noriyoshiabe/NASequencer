@@ -476,17 +476,45 @@ static void visitRepeat(void *_self, SEMRepeat *sem)
 
     switch (sem->type) {
     case RepeatStart:
-        self->repeat->state = RepeatStateStart;
-        self->repeat->nth = 1;
+        switch (self->repeat->state) {
+        case RepeatStateInitial:
+            self->repeat->state = RepeatStateStart;
+            self->repeat->nth = 1;
+            break;
+        case RepeatStateStart:
+        case RepeatStateEnd:
+        case RepeatStateNthSearch:
+            break;
+        }
         break;
     case RepeatEnd:
-        if (!NASetContains(self->repeat->passedEndSet, &self->repeat->currentIndex)) {
-            self->repeat->state = RepeatStateEnd;
+        switch (self->repeat->state) {
+        case RepeatStateInitial:
+            if (!NASetContains(self->repeat->passedEndSet, &self->repeat->currentIndex)) {
+                self->repeat->state = RepeatStateEnd;
+            }
+            break;
+        case RepeatStateStart:
+        case RepeatStateEnd:
+        case RepeatStateNthSearch:
+            break;
         }
         break;
     case RepeatNth:
-        if (!NASetContains(sem->nthSet, &self->repeat->nth)) {
-            self->repeat->state = RepeatStateNthSearch;
+        switch (self->repeat->state) {
+        case RepeatStateInitial:
+            if (!NASetContains(sem->nthSet, &self->repeat->nth)) {
+                self->repeat->state = RepeatStateNthSearch;
+            }
+            break;
+        case RepeatStateStart:
+        case RepeatStateEnd:
+            break;
+        case RepeatStateNthSearch:
+            if (NASetContains(sem->nthSet, &self->repeat->nth)) {
+                self->repeat->state = RepeatStateInitial;
+            }
+            break;
         }
         break;
     }
