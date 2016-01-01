@@ -22,6 +22,7 @@ extern void *NAMapGet(NAMap *self, void *key);
 extern int NAMapCount(NAMap *self);
 extern void **NAMapGetKeys(NAMap *self, void *buffer);
 extern void *NAMapRemove(NAMap *self, void *key);
+extern void NAMapRemoveAll(NAMap *self);
 extern void NAMapTraverseKey(NAMap *self, void (*function)(void *));
 extern void NAMapTraverseValue(NAMap *self, void (*function)(void *));
 extern NAIterator *NAMapGetIterator(NAMap *self, void *buffer);

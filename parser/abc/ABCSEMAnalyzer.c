@@ -253,6 +253,11 @@ static void resetBrokenRhythm(VoiceContext *voice)
 static void visitTune(void *_self, SEMTune *sem)
 {
     ABCSEMAnalyzer *self = _self;
+
+    NAMapTraverseValue(self->repeatMap, RepeatContextDestroy);
+    NAMapRemoveAll(self->repeatMap);
+    NAMapTraverseValue(self->voiceMap, VoiceContextDestroy);
+    NAMapRemoveAll(self->voiceMap);
     
     self->tune = sem;
 

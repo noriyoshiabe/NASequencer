@@ -205,6 +205,16 @@ void *NAMapRemove(NAMap *self, void *key)
     return NULL;
 }
 
+void NAMapRemoveAll(NAMap *self)
+{
+    self->count = 0;
+    self->freeList = self->entries;
+    for (int i = 0; i < self->size; ++i) {
+        self->entries[i].next = i < self->size - 1 ? &self->entries[i + 1] : NULL;
+        self->buckets[i] = NULL;
+    }
+}
+
 void NAMapTraverseKey(NAMap *self, void (*function)(void *))
 {
     for (int i = 0; i < self->size; ++i) {
