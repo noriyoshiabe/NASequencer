@@ -77,6 +77,15 @@ typedef struct _VoiceContext {
 
     int lastBarTick;
     int preIncrementTick;
+
+    struct {
+        bool untilBar;
+        bool allOctave;
+        struct {
+            Accidental accidental;
+            int octave;
+        } notes[BaseNoteCount];
+    } accidental;
 } VoiceContext;
 
 static VoiceContext *VoiceContextCreate();
@@ -121,6 +130,11 @@ typedef struct _ABCSEMAnalyzer {
         SEMTempo *tempo;
         int unitNoteLength;
         int tick;
+
+        struct {
+            bool untilBar;
+            bool allOctave;
+        } accidental;
     } file;
 
     struct {
@@ -187,6 +201,8 @@ static void setFileContext(ABCSEMAnalyzer *self)
         VoiceContext *voice = entry->value;
         voice->unitNoteLength = self->file.unitNoteLength;
         voice->tick = self->file.tick;
+        voice->accidental.untilBar = self->file.accidental.untilBar;
+        voice->accidental.allOctave = self->file.accidental.allOctave;
     }
 }
 
@@ -612,7 +628,24 @@ static void visitNote(void *_self, SEMNote *sem)
     int octave = self->key->octave + voice->octave;
     int transpose = self->key->transpose + voice->transpose;
 
-    int noteNo = NoteTableGetNoteNo(self->key->noteTable, sem->baseNote, sem->accidental, octave + sem->octave);
+    int noteOctave = octave + sem->octave;
+    Accidental accidental = sem->accidental;
+
+    if (AccidentalNone != accidental) {
+        if (voice->accidental.untilBar) {
+            voice->accidental.notes[sem->baseNote].accidental = accidental;
+            voice->accidental.notes[sem->baseNote].octave = noteOctave;
+        }
+    }
+    else {
+        if (AccidentalNone != voice->accidental.notes[sem->baseNote].accidental) {
+            if (voice->accidental.allOctave || noteOctave == voice->accidental.notes[sem->baseNote].octave) {
+                accidental = voice->accidental.notes[sem->baseNote].accidental;
+            }
+        }
+    }
+
+    int noteNo = NoteTableGetNoteNo(self->key->noteTable, sem->baseNote, accidental, noteOctave);
     noteNo += transpose;
 
     if (!isValidRange(noteNo, 0, 127)) {
@@ -766,7 +799,9 @@ static void visitBarLine(void *_self, SEMBarLine *sem)
 
     self->voice->lastBarTick = self->voice->preIncrementTick;
 
-    // TODO accidental state reset
+    for (int i = 0; i < BaseNoteCount; ++i) {
+        self->voice->accidental.notes[i].accidental = AccidentalNone;
+    }
 }
 
 static void visitTie(void *_self, SEMTie *sem)
@@ -881,11 +916,21 @@ static void visitOverlay(void *_self, SEMOverlay *sem)
 static void visitMidiVoice(void *_self, SEMMidiVoice *sem)
 {
     ABCSEMAnalyzer *self = _self;
+    // TODO
 }
 
 static void visitPropagateAccidental(void *_self, SEMPropagateAccidental *sem)
 {
     ABCSEMAnalyzer *self = _self;
+
+    if (inFileFeader(self)) {
+        self->file.accidental.untilBar = sem->untilBar;
+        self->file.accidental.allOctave = sem->allOctave;
+    }
+    else {
+        self->voice->accidental.untilBar = sem->untilBar;
+        self->voice->accidental.allOctave = sem->allOctave;
+    }
 }
 
 
@@ -927,6 +972,9 @@ Analyzer *ABCSEMAnalyzerCreate(ParseContext *context)
     self->voiceMap = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
 
     self->file.unitNoteLength = RESOLUTION / 2;
+    self->file.accidental.untilBar = true;
+    self->file.accidental.allOctave = true;
+
     self->time.numerator = 4;
     self->time.denominator = 4;
 

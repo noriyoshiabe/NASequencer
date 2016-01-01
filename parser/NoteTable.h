@@ -13,6 +13,8 @@ typedef enum {
     BaseNote_B,
 } BaseNote;
 
+static const int BaseNoteCount = BaseNote_B + 1;
+
 typedef enum {
     AccidentalNone,
     AccidentalSharp,

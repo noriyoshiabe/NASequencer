@@ -1,0 +1,9 @@
+%%propagate-accidentals not
+
+X:1
+K:C
+C^^CCc | CCCC
+%%propagate-accidentals octave
+C^^CCc | CCCC
+%%propagate-accidentals pitch
+C^^CCc | CCCC
