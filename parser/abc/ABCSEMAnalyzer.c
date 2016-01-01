@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <sys/param.h>
 
 #define RESOLUTION 480
 #define appendError(self, sem, ...) self->context->appendError(self->context, &sem->node.location, __VA_ARGS__)
@@ -77,7 +78,8 @@ typedef struct _ABCSEMAnalyzer {
         SEMMeter *meter;
         SEMTempo *tempo;
         int unitNoteLength;
-    } defaults;
+        int tick;
+    } file;
 
     struct {
         struct {
@@ -127,23 +129,24 @@ static void visitFile(void *_self, SEMFile *sem)
     }
 }
 
-static void setFileDefaults(ABCSEMAnalyzer *self)
+static void setFileContext(ABCSEMAnalyzer *self)
 {
-    if (self->defaults.meter) {
-        self->pending.meter.sem = self->defaults.meter;
+    if (self->file.meter) {
+        self->pending.meter.sem = self->file.meter;
         self->pending.meter.tick = 0;
     }
 
-    if (self->defaults.tempo) {
-        self->pending.tempo.sem = self->defaults.tempo;
+    if (self->file.tempo) {
+        self->pending.tempo.sem = self->file.tempo;
         self->pending.tempo.tick = 0;
     }
 
     NAIterator *iterator = NAMapGetIterator(self->voiceMap);
     while (iterator->hasNext(iterator)) {
         NAMapEntry *entry = iterator->next(iterator);
-        VoiceContext *context = entry->value;
-        context->unitNoteLength = self->defaults.unitNoteLength;
+        VoiceContext *voice = entry->value;
+        voice->unitNoteLength = self->file.unitNoteLength;
+        voice->tick = self->file.tick;
     }
 }
 
@@ -162,6 +165,23 @@ static void processPendingEvents(ABCSEMAnalyzer *self)
         self->pending.tempo.sem = NULL;
         self->builder->appendTempo(self->builder, tick, _sem->tempo);
     }
+}
+
+static void postProcessTune(ABCSEMAnalyzer *self)
+{
+    processPendingEvents(self);
+
+    int tick = 0;
+
+    NAIterator *iterator = NAMapGetIterator(self->voiceMap);
+    while (iterator->hasNext(iterator)) {
+        NAMapEntry *entry = iterator->next(iterator);
+        VoiceContext *voice = entry->value;
+        tick = MAX(tick, voice->tick);
+    }
+
+    self->builder->setLength(self->builder, tick);
+    self->file.tick = tick + RESOLUTION * 4;
 }
 
 static void visitTune(void *_self, SEMTune *sem)
@@ -190,7 +210,7 @@ static void visitTune(void *_self, SEMTune *sem)
         NAMapPut(self->voiceMap, voiceIds[i], context);
     }
 
-    setFileDefaults(self);
+    setFileContext(self);
 
     int length = sem->partSequence ? strlen(sem->partSequence) + 1 : 1;
     char *partSequence = alloca(length + 1);
@@ -201,7 +221,7 @@ static void visitTune(void *_self, SEMTune *sem)
         part->accept(part, self);
     }
 
-    processPendingEvents(self);
+    postProcessTune(self);
 }
 
 static void visitKey(void *_self, SEMKey *sem)
@@ -218,7 +238,7 @@ static void visitMeter(void *_self, SEMMeter *sem)
     ABCSEMAnalyzer *self = _self;
 
     if (inFileFeader(self)) {
-        self->defaults.meter = sem;
+        self->file.meter = sem;
     }
     else {
         if (!self->pending.meter.sem) {
@@ -243,7 +263,7 @@ static void visitUnitNoteLength(void *_self, SEMUnitNoteLength *sem)
     ABCSEMAnalyzer *self = _self;
 
     if (inFileFeader(self)) {
-        self->defaults.unitNoteLength = sem->length;
+        self->file.unitNoteLength = sem->length;
     }
     else {
         self->voice->unitNoteLength = sem->length;
@@ -255,7 +275,7 @@ static void visitTempo(void *_self, SEMTempo *sem)
     ABCSEMAnalyzer *self = _self;
 
     if (inFileFeader(self)) {
-        self->defaults.tempo = sem;
+        self->file.tempo = sem;
     }
     else {
         if (!self->pending.tempo.sem) {
@@ -398,7 +418,7 @@ static void visitNote(void *_self, SEMNote *sem)
         return;
     }
 
-#if 0
+#if 1
     printf("[REPEAT TEST] baseNote=%s\n", BaseNote2String(sem->baseNote));
 #endif
 
@@ -563,7 +583,7 @@ Analyzer *ABCSEMAnalyzerCreate(ParseContext *context)
     self->voiceMap = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
     self->pendingNotes = NAArrayCreate(4, NADescriptionAddress);
 
-    self->defaults.unitNoteLength = RESOLUTION / 2;
+    self->file.unitNoteLength = RESOLUTION / 2;
 
     return &self->analyzer;
 }
