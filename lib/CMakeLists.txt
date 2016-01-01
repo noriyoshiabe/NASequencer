@@ -15,14 +15,14 @@ set(SOURCES
   NAByteBuffer.c
   NAStringBuffer.c
   NAStack.c
-  NAUtil.c
+  NAIO.c
   NAMessageQ.c
   NACString.c
   NACInteger.c
 )
 
 if (APPLE)
-  set(SOURCES ${SOURCES} osx/NAUtil.c)
+  set(SOURCES ${SOURCES} osx/NAIO.c)
 endif (APPLE)
 
 add_library(${PROJECT_NAME} ${SOURCES})

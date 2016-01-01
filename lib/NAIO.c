@@ -1,4 +1,4 @@
-#include "NAUtil.h"
+#include "NAIO.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,7 +7,7 @@
 #include <limits.h>
 #include <sys/stat.h>
 
-char *NAUtilGetRealPath(const char *filepath)
+char *NAIOGetRealPath(const char *filepath)
 {
     char buf[PATH_MAX];
     char *_filepath = realpath(filepath, buf);
@@ -20,7 +20,7 @@ char *NAUtilGetRealPath(const char *filepath)
     return ret;
 }
 
-char *NAUtilBuildPathWithDirectory(const char *directory, const char *filename)
+char *NAIOBuildPathWithDirectory(const char *directory, const char *filename)
 {
     char buf[PATH_MAX];
     snprintf(buf, PATH_MAX, "%s/%s", directory, filename);
@@ -29,7 +29,7 @@ char *NAUtilBuildPathWithDirectory(const char *directory, const char *filename)
     return ret;
 }
 
-const char *NAUtilGetFileExtenssion(const char *filepath)
+const char *NAIOGetFileExtenssion(const char *filepath)
 {
     const char *dot = strrchr(filepath, '.');
     
@@ -40,13 +40,13 @@ const char *NAUtilGetFileExtenssion(const char *filepath)
     return dot + 1;
 }
 
-const char *NAUtilGetLastPathComponent(const char *filepath)
+const char *NAIOGetLastPathComponent(const char *filepath)
 {
     const char *slash = strrchr(filepath, '/');
     return slash ? slash + 1 : filepath;
 }
 
-bool NAUtilIsDirectory(char *path)
+bool NAIOIsDirectory(char *path)
 {
     struct stat s;
     return 0 == stat(path, &s) && s.st_mode & S_IFDIR;

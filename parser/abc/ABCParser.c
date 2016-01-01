@@ -1,7 +1,7 @@
 #include "ABCParser.h"
 #include "ABCPreprocessor.h"
 #include "ABCAST.h"
-#include "NAUtil.h"
+#include "NAIO.h"
 #include "ABC_yacc.h"
 #include "ABC_lex.h"
 #include "ABC_information_lex.h"
@@ -179,14 +179,14 @@ Node *ABCParserParseIncludeFile(void *_self, FileLocation *location, const char 
 {
     ABCParser *self = _self; 
 
-    const char *ext = NAUtilGetFileExtenssion(includeFile);
+    const char *ext = NAIOGetFileExtenssion(includeFile);
     if (0 != strcmp("abh", ext)) {
         self->context->appendError(self->context, location, ABCParseErrorUnsupportedFileTypeInclude, ext, includeFile, NULL);
         return NULL;
     }
 
     char *directory = dirname(location->filepath);
-    char *fullpath = NAUtilBuildPathWithDirectory(directory, includeFile);
+    char *fullpath = NAIOBuildPathWithDirectory(directory, includeFile);
 
     if (NASetContains(self->readingFileSet, fullpath)) {
         self->context->appendError(self->context, location, ABCParseErrorCircularFileInclude, includeFile, NULL);

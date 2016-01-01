@@ -5,7 +5,7 @@
 #include "ParseErrorCode.h"
 #include "NAMidiParser.h"
 
-#include "NAUtil.h"
+#include "NAIO.h"
 #include "NACString.h"
 
 #include <stdio.h>
@@ -141,7 +141,7 @@ static char **CLICompletion(const char *text, int start, int end)
 
         char **matches = rl_completion_matches(text, rl_filename_completion_function);
         for (int i = 0; matches && matches[i]; ++i) {
-            if (NAUtilIsDirectory(matches[i])) {
+            if (NAIOIsDirectory(matches[i])) {
                 char *str = malloc(strlen(matches[i]) + 2);
                 strcpy(str, matches[i]);
                 if (str[strlen(str) - 1] != '/') {

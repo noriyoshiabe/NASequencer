@@ -1,6 +1,6 @@
 #include "NAMidiParser.h"
 #include "NAMidiAST.h"
-#include "NAUtil.h"
+#include "NAIO.h"
 #include "NAMidi_yacc.h"
 #include "NAMidi_lex.h"
 #include "NASet.h"
@@ -81,14 +81,14 @@ Node *NAMidiParserParseIncludeFile(void *_self, FileLocation *location, const ch
 {
     NAMidiParser *self = _self; 
 
-    const char *ext = NAUtilGetFileExtenssion(includeFile);
+    const char *ext = NAIOGetFileExtenssion(includeFile);
     if (0 != strcmp("namidi", ext)) {
         self->context->appendError(self->context, location, NAMidiParseErrorUnsupportedFileTypeInclude, ext, includeFile, NULL);
         return NULL;
     }
 
     char *directory = dirname(location->filepath);
-    char *fullpath = NAUtilBuildPathWithDirectory(directory, includeFile);
+    char *fullpath = NAIOBuildPathWithDirectory(directory, includeFile);
 
     if (NASetContains(self->readingFileSet, fullpath)) {
         self->context->appendError(self->context, location, NAMidiParseErrorCircularFileInclude, includeFile, NULL);

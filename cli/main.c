@@ -6,7 +6,7 @@
 #include <getopt.h>
 
 #include "CLI.h"
-#include "NAUtil.h"
+#include "NAIO.h"
 
 static void showHelp();
 static bool isAudioFileType(const char *filepath);
@@ -104,7 +104,7 @@ static bool isAudioFileType(const char *filepath)
         "aac",
     };
 
-    const char *ext = NAUtilGetFileExtenssion(filepath);
+    const char *ext = NAIOGetFileExtenssion(filepath);
     for (int i = 0; i < sizeof(exts) / sizeof(exts[0]); ++i) {
         if (0 == strcmp(exts[i], ext)) {
             return true;

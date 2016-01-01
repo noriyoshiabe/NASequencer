@@ -1,8 +1,8 @@
-#include "NAUtil.h"
+#include "NAIO.h"
 
 int main(int argc, char **argv)
 {
-    FILE *fp = NAUtilCreateMemoryStream(8);
+    FILE *fp = NAIOCreateMemoryStream(8);
     fprintf(fp, "TESTTESTTEST\n");
     fprintf(fp, "testtesttest\n");
     fprintf(fp, "TESTTESTTEST\n");

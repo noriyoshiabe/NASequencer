@@ -1,4 +1,4 @@
-#include "NAUtil.h"
+#include "NAIO.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -81,7 +81,7 @@ static int __close(void *cookie)
     return 0;
 }
 
-FILE *NAUtilCreateMemoryStream(int allocationUnit)
+FILE *NAIOCreateMemoryStream(int allocationUnit)
 {
     fmem_t *mem = calloc(1, sizeof(fmem_t));
 

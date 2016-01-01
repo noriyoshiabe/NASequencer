@@ -2,7 +2,7 @@
 #include "NAMidiDriver.h"
 #include "ABCDriver.h"
 
-#include "NAUtil.h"
+#include "NAIO.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -27,7 +27,7 @@ void ParserDestroy(Parser *self)
 
 static Driver *ParserDriverCreate(Parser *self, const char *filepath)
 {
-    const char *ext = NAUtilGetFileExtenssion(filepath);
+    const char *ext = NAIOGetFileExtenssion(filepath);
 
     const struct {
         const char *ext;

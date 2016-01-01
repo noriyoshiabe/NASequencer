@@ -9,7 +9,7 @@
 #include "AACWriter.h"
 #include "NAArray.h"
 #include "NASet.h"
-#include "NAUtil.h"
+#include "NAIO.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -90,7 +90,7 @@ ExporterError ExporterExport(Exporter *self, const char *filepath, const char *o
     };
 
     bool (*function)(Exporter *, const char *) = NULL;
-    const char *ext = NAUtilGetFileExtenssion(output);
+    const char *ext = NAIOGetFileExtenssion(output);
 
     for (int i = 0; i < sizeof(table) / sizeof(table[0]); ++i) {
         if (0 == strcmp(table[i].ext, ext)) {

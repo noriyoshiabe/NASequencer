@@ -5,7 +5,7 @@
 #include "NAStack.h"
 #include "NASet.h"
 #include "NACString.h"
-#include "NAUtil.h"
+#include "NAIO.h"
 
 #include <stdlib.h>
 #include <string.h>

@@ -4,7 +4,7 @@
 #include "ABCASTAnalyzer.h"
 #include "ABCSEMDumper.h"
 #include "ABCSEMAnalyzer.h"
-#include "NAUtil.h"
+#include "NAIO.h"
 
 #include <stdlib.h>
 
@@ -30,7 +30,7 @@ static void *ABCDriverParse(void *_self, const char *filepath, ParseInfo **info)
 {
     ABCDriver *self =  _self;
 
-    char *fullpath = NAUtilGetRealPath(filepath);
+    char *fullpath = NAIOGetRealPath(filepath);
 
     DSLParser *parser = ABCParserCreate(self->context);
     Node *node = parser->parse(parser, fullpath);
