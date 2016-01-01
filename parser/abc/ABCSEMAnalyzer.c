@@ -30,7 +30,7 @@ static void RepeatContextDestroy(RepeatContext *self);
 
 typedef struct _VoiceContext {
     int channel;
-    int step;
+    int tick;
 } VoiceContext;
 
 static VoiceContext *VoiceContextCreate();
@@ -41,12 +41,31 @@ typedef struct _ABCSEMAnalyzer {
     Analyzer analyzer;
 
     ParseContext *context;
+    SequenceBuilder *builder;
+
     NAMap *repeatMap;
     NAMap *voiceMap;
 
     RepeatContext *repeat;
     VoiceContext *voice;
+
+    SEMTune *tune;
+    SEMKey *key;
+
+    struct {
+        SEMMeter *meter;
+    } defaults;
+
+    struct {
+        struct {
+            SEMMeter *sem;
+            int tick;
+        } meter;
+    } pending;
 } ABCSEMAnalyzer;
+
+static int VoiceIdComparator(const void *_id1, const void *_id2);
+#define inFileFeader(self) (NULL == self->tune)
 
 static Node *process(void *self, Node *node)
 {
@@ -77,22 +96,34 @@ static void visitFile(void *_self, SEMFile *sem)
     }
 }
 
-static int VoiceIdComparator(const void *_id1, const void *_id2)
+static void setDefaultEvents(ABCSEMAnalyzer *self)
 {
-    const char **id1 = (const char **)_id1;
-    const char **id2 = (const char **)_id2;
+    if (self->defaults.meter) {
+        self->pending.meter.sem = self->defaults.meter;
+        self->pending.meter.tick = 0;
+    }
+}
 
-    return strcmp(*id1, *id2);
+static void processPendingEvents(ABCSEMAnalyzer *self)
+{
+    if (self->pending.meter.sem) {
+        SEMMeter *_sem = self->pending.meter.sem;
+        int tick = self->pending.meter.tick;
+        self->pending.meter.sem = NULL;
+        self->builder->appendTimeSign(self->builder, tick, _sem->numerator, _sem->denominator);
+    }
 }
 
 static void visitTune(void *_self, SEMTune *sem)
 {
     __Trace__
     ABCSEMAnalyzer *self = _self;
+    
+    setDefaultEvents(self);
 
-    NAIterator *iterator;
-   
-    iterator = NAArrayGetIterator(sem->node.children);
+    self->tune = sem;
+
+    NAIterator *iterator = NAArrayGetIterator(sem->node.children);
     while (iterator->hasNext(iterator)) {
         Node *node = iterator->next(iterator);
         node->accept(node, self);
@@ -117,18 +148,44 @@ static void visitTune(void *_self, SEMTune *sem)
         Node *part = NAMapGet(sem->partMap, NACStringFromChar(partSequence[i]));
         part->accept(part, self);
     }
+
+    processPendingEvents(self);
 }
 
 static void visitKey(void *_self, SEMKey *sem)
 {
     __Trace__
     ABCSEMAnalyzer *self = _self;
+    self->key = sem;
+
+    MidiKeySign keysign = NoteTableGetMidiKeySign(sem->noteTable);
+    self->builder->appendKey(self->builder, self->voice->tick, keysign.sf, keysign.mi);
 }
 
 static void visitMeter(void *_self, SEMMeter *sem)
 {
     __Trace__
     ABCSEMAnalyzer *self = _self;
+
+    if (inFileFeader(self)) {
+        self->defaults.meter = sem;
+    }
+    else {
+        if (!self->pending.meter.sem) {
+            self->pending.meter.sem = sem;
+            self->pending.meter.tick = self->voice->tick;
+        }
+        else {
+            if (self->pending.meter.tick == self->voice->tick) {
+                self->pending.meter.sem = sem;
+            }
+            else {
+                SEMMeter *_sem = self->pending.meter.sem;
+                self->pending.meter.sem = NULL;
+                self->builder->appendTimeSign(self->builder, self->voice->tick, _sem->numerator, _sem->denominator);
+            }
+        }
+    }
 }
 
 static void visitUnitNoteLength(void *_self, SEMUnitNoteLength *sem)
@@ -161,6 +218,8 @@ static void visitList(void *_self, SEMList *sem)
 {
     __Trace__
     ABCSEMAnalyzer *self = _self;
+
+    self->voice = NAMapGet(self->voiceMap, sem->voiceId);
 
     self->repeat = NAMapGet(self->repeatMap, sem);
     if (!self->repeat) {
@@ -352,10 +411,21 @@ Analyzer *ABCSEMAnalyzerCreate(ParseContext *context)
     self->analyzer.self = self;
 
     self->context = context;
+    self->builder = context->builder;
+
     self->repeatMap = NAMapCreate(NAHashAddress, NADescriptionAddress, NADescriptionAddress);
     self->voiceMap = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
 
     return &self->analyzer;
+}
+
+
+static int VoiceIdComparator(const void *_id1, const void *_id2)
+{
+    const char **id1 = (const char **)_id1;
+    const char **id2 = (const char **)_id2;
+
+    return strcmp(*id1, *id2);
 }
 
 static RepeatContext *RepeatContextCreate()
