@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#define RESOLUTION 480
+
 #define __Trace__ printf("-- %s:%s - %d\n", __FILE__, __func__, __LINE__);
 
 typedef enum {
@@ -31,6 +33,7 @@ static void RepeatContextDestroy(RepeatContext *self);
 typedef struct _VoiceContext {
     int channel;
     int tick;
+    int unitNoteLength;
 } VoiceContext;
 
 static VoiceContext *VoiceContextCreate();
@@ -54,6 +57,7 @@ typedef struct _ABCSEMAnalyzer {
 
     struct {
         SEMMeter *meter;
+        int unitNoteLength;
     } defaults;
 
     struct {
@@ -95,11 +99,18 @@ static void visitFile(void *_self, SEMFile *sem)
     }
 }
 
-static void setDefaultEvents(ABCSEMAnalyzer *self)
+static void setDefaults(ABCSEMAnalyzer *self)
 {
     if (self->defaults.meter) {
         self->pending.meter.sem = self->defaults.meter;
         self->pending.meter.tick = 0;
+    }
+
+    NAIterator *iterator = NAMapGetIterator(self->voiceMap);
+    while (iterator->hasNext(iterator)) {
+        NAMapEntry *entry = iterator->next(iterator);
+        VoiceContext *context = entry->value;
+        context->unitNoteLength = self->defaults.unitNoteLength;
     }
 }
 
@@ -117,8 +128,6 @@ static void visitTune(void *_self, SEMTune *sem)
 {
     ABCSEMAnalyzer *self = _self;
     
-    setDefaultEvents(self);
-
     self->tune = sem;
 
     NAIterator *iterator = NAArrayGetIterator(sem->node.children);
@@ -137,6 +146,8 @@ static void visitTune(void *_self, SEMTune *sem)
         context->channel = i + 1;
         NAMapPut(self->voiceMap, voiceIds[i], context);
     }
+
+    setDefaults(self);
 
     int length = sem->partSequence ? strlen(sem->partSequence) + 1 : 1;
     char *partSequence = alloca(length + 1);
@@ -187,6 +198,13 @@ static void visitMeter(void *_self, SEMMeter *sem)
 static void visitUnitNoteLength(void *_self, SEMUnitNoteLength *sem)
 {
     ABCSEMAnalyzer *self = _self;
+
+    if (inFileFeader(self)) {
+        self->defaults.unitNoteLength = sem->length;
+    }
+    else {
+        self->voice->unitNoteLength = sem->length;
+    }
 }
 
 static void visitTempo(void *_self, SEMTempo *sem)
@@ -393,6 +411,8 @@ Analyzer *ABCSEMAnalyzerCreate(ParseContext *context)
 
     self->repeatMap = NAMapCreate(NAHashAddress, NADescriptionAddress, NADescriptionAddress);
     self->voiceMap = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
+
+    self->defaults.unitNoteLength = RESOLUTION / 2;
 
     return &self->analyzer;
 }
