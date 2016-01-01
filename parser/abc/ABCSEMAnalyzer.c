@@ -3,6 +3,7 @@
 #include "ABCParser.h"
 #include "NACInteger.h"
 #include "NACString.h"
+#include "NAStack.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -34,6 +35,15 @@ typedef struct _RepeatContext {
 static RepeatContext *RepeatContextCreate();
 static void RepeatContextDestroy(RepeatContext *self);
 
+typedef struct {
+    int division;
+    int time;
+    int count;
+} Tuplet;
+
+#define TupletCreate() calloc(1, sizeof(Tuplet))
+#define TupletDestroy  free
+
 typedef struct _VoiceContext {
     int channel;
     int tick;
@@ -57,6 +67,9 @@ typedef struct _VoiceContext {
             int divider;
         } next;
     } brokenRhythm;
+
+    Tuplet *tuplet;
+    NAStack *tupletStack;
 } VoiceContext;
 
 static VoiceContext *VoiceContextCreate();
@@ -71,8 +84,8 @@ typedef struct {
     void *sem;
 } Note;
 
-static Note *NoteCreate();
-static void NoteDestroy(Note *self);
+#define NoteCreate() calloc(1, sizeof(Note))
+#define NoteDestroy  free
 
 typedef struct _ABCSEMAnalyzer {
     SEMVisitor visitor;
@@ -469,17 +482,27 @@ static void flushPendingNotes(ABCSEMAnalyzer *self, VoiceContext *voice)
 
 static bool calcNextStep(ABCSEMAnalyzer *self, NoteLength *length, void *sem, int *result)
 {
-    // TODO tuplet
-    int multiplier = length->multiplier * self->voice->brokenRhythm.next.multiplier;
-    int divider = length->divider * self->voice->brokenRhythm.next.divider;
+    VoiceContext *voice = self->voice;
 
-    if (0 != self->voice->unitNoteLength * multiplier % divider) {
-        float result = (float)(self->voice->unitNoteLength * multiplier) / (float)divider;
+    int multiplier = length->multiplier * voice->brokenRhythm.next.multiplier;
+    int divider = length->divider * voice->brokenRhythm.next.divider;
+
+    if (voice->tuplet) {
+        multiplier *= voice->tuplet->time;
+        divider *= voice->tuplet->division;
+        if (0 == --voice->tuplet->count) {
+            TupletDestroy(voice->tuplet);
+            voice->tuplet = NAStackPop(voice->tupletStack);
+        }
+    }
+
+    if (0 != voice->unitNoteLength * multiplier % divider) {
+        float result = (float)(voice->unitNoteLength * multiplier) / (float)divider;
         appendError(self, sem, ABCParseErrorInvalidCaluculatedNoteLength, NACStringFromFloat(result, 2), NACStringFromInteger(RESOLUTION), NULL);
         return false;
     }
 
-    *result = self->voice->unitNoteLength * multiplier / divider;
+    *result = voice->unitNoteLength * multiplier / divider;
     return true;
 }
 
@@ -523,11 +546,6 @@ static void visitNote(void *_self, SEMNote *sem)
     printf("[REPEAT TEST] baseNote=%s\n", BaseNote2String(sem->baseNote));
 #endif
 
-    int step;
-    if (!calcNextStep(self, &sem->length, sem, &step)) {
-        return;
-    }
-
     int octave = self->key->octave + self->voice->octave;
     int transpose = self->key->transpose + self->voice->transpose;
 
@@ -537,6 +555,11 @@ static void visitNote(void *_self, SEMNote *sem)
     if (!isValidRange(noteNo, 0, 127)) {
         appendError(self, sem, ABCParseErrorInvalidNoteNumber, NACStringFromInteger(noteNo),
                 NACStringFromInteger(octave), NACStringFromInteger(transpose), sem->noteString, NULL);
+        return;
+    }
+
+    int step;
+    if (!calcNextStep(self, &sem->length, sem, &step)) {
         return;
     }
 
@@ -681,11 +704,33 @@ static void visitGraceNote(void *_self, SEMGraceNote *sem)
         Node *node = iterator->next(iterator);
         node->accept(node, self);
     }
+
+    // TODO
 }
 
 static void visitTuplet(void *_self, SEMTuplet *sem)
 {
     ABCSEMAnalyzer *self = _self;
+    
+    Tuplet *tuplet = TupletCreate();
+    tuplet->division = sem->division;
+    tuplet->time = sem->time;
+    tuplet->count = sem->count;
+
+    Tuplet *current = self->voice->tuplet;
+
+    if (current) {
+        tuplet->division *= current->division;
+
+        if (0 == --current->count) {
+            TupletDestroy(current);
+        }
+        else {
+            NAStackPush(self->voice->tupletStack, current);
+        }
+    }
+
+    self->voice->tuplet = tuplet;
 }
 
 static void visitChord(void *_self, SEMChord *sem)
@@ -697,6 +742,8 @@ static void visitChord(void *_self, SEMChord *sem)
         Node *node = iterator->next(iterator);
         node->accept(node, self);
     }
+
+    // TODO
 }
 
 static void visitOverlay(void *_self, SEMOverlay *sem)
@@ -786,6 +833,7 @@ static VoiceContext *VoiceContextCreate()
 {
     VoiceContext *self = calloc(1, sizeof(VoiceContext));
     self->pendingNotes = NAArrayCreate(4, NADescriptionAddress);
+    self->tupletStack = NAStackCreate(4);
     return self;
 }
 
@@ -793,15 +841,12 @@ static void VoiceContextDestroy(VoiceContext *self)
 {
     NAArrayTraverse(self->pendingNotes, NoteDestroy);
     NAArrayDestroy(self->pendingNotes);
-    free(self);
-}
 
-static Note *NoteCreate()
-{
-    return calloc(1, sizeof(Note));
-}
+    Tuplet *tuplet;
+    while ((tuplet = NAStackPop(self->tupletStack))) {
+        TupletDestroy(tuplet);
+    }
+    NAStackDestroy(self->tupletStack);
 
-static void NoteDestroy(Note *self)
-{
     free(self);
 }
