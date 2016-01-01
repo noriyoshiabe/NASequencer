@@ -72,6 +72,8 @@ typedef struct _VoiceContext {
     NAStack *tupletStack;
 
     bool inChord;
+    bool inGraceNote;
+    int graceNoteLength;
 } VoiceContext;
 
 static VoiceContext *VoiceContextCreate();
@@ -84,6 +86,7 @@ typedef struct {
     int velocity;
 
     void *sem;
+    bool isGraceNote;
 } Note;
 
 #define NoteCreate() calloc(1, sizeof(Note))
@@ -448,20 +451,41 @@ static void visitDecoration(void *_self, SEMDecoration *sem)
 static void flushPendingNotes(ABCSEMAnalyzer *self, VoiceContext *voice)
 {
     int increment = 0;
+    bool resetGraceNoteLength = false;
 
     NAIterator *iterator = NAArrayGetIterator(voice->pendingNotes);
     while (iterator->hasNext(iterator)) {
         Note *note = iterator->next(iterator);
 
-        int multiplier = voice->brokenRhythm.prev.multiplier;
-        int divider = voice->brokenRhythm.prev.divider;
+        int multiplier = note->isGraceNote ? 1 : voice->brokenRhythm.prev.multiplier;
+        int divider = note->isGraceNote ? 1 : voice->brokenRhythm.prev.divider;
 
         if (0 != note->step * multiplier % divider) {
             float result = (float)(note->step * multiplier) / (float)divider;
             appendError(self, note->sem, ABCParseErrorInvalidCaluculatedNoteLength, NACStringFromFloat(result, 2), NACStringFromInteger(RESOLUTION), NULL);
         }
         else {
+            
+            if (note->isGraceNote) {
+                voice->tick += increment;
+                increment = 0;
+            }
+
             int step = note->step * multiplier / divider;
+
+            if (note->isGraceNote) {
+                voice->graceNoteLength += step;
+            }
+            else {
+                if (0 < voice->graceNoteLength) {
+                    resetGraceNoteLength = true;
+
+                    if (voice->graceNoteLength < step) {
+                        step -= voice->graceNoteLength;
+                    }
+                }
+            }
+
             int velocity = voice->accent ? MIN(note->velocity + 20, 127) : note->velocity;
 
             if (-1 != note->channel) {
@@ -484,23 +508,39 @@ static void flushPendingNotes(ABCSEMAnalyzer *self, VoiceContext *voice)
 
     voice->accent = false;
     voice->tie = false;
+
+    if (resetGraceNoteLength) {
+        voice->graceNoteLength = 0;
+    }
+}
+
+static void popTupletStack(VoiceContext *voice)
+{
+    if (voice->tuplet) {
+        if (0 == --voice->tuplet->count) {
+            TupletDestroy(voice->tuplet);
+            voice->tuplet = NAStackPop(voice->tupletStack);
+        }
+    }
 }
 
 static bool calcNextStep(ABCSEMAnalyzer *self, NoteLength *length, void *sem, int *result)
 {
     VoiceContext *voice = self->voice;
 
-    int multiplier = length->multiplier * voice->brokenRhythm.next.multiplier;
-    int divider = length->divider * voice->brokenRhythm.next.divider;
+    int multiplier = length->multiplier;
+    int divider = length->divider;
 
-    if (voice->tuplet) {
-        multiplier *= voice->tuplet->time;
-        divider *= voice->tuplet->division;
+    if (!voice->inGraceNote) {
+        multiplier *= voice->brokenRhythm.next.multiplier;
+        divider *= voice->brokenRhythm.next.divider;
 
-        if (!voice->inChord) {
-            if (0 == --voice->tuplet->count) {
-                TupletDestroy(voice->tuplet);
-                voice->tuplet = NAStackPop(voice->tupletStack);
+        if (voice->tuplet) {
+            multiplier *= voice->tuplet->time;
+            divider *= voice->tuplet->division;
+
+            if (!voice->inChord) {
+                popTupletStack(voice);
             }
         }
     }
@@ -509,6 +549,10 @@ static bool calcNextStep(ABCSEMAnalyzer *self, NoteLength *length, void *sem, in
         float result = (float)(voice->unitNoteLength * multiplier) / (float)divider;
         appendError(self, sem, ABCParseErrorInvalidCaluculatedNoteLength, NACStringFromFloat(result, 2), NACStringFromInteger(RESOLUTION), NULL);
         return false;
+    }
+
+    if (voice->inGraceNote) {
+        divider *= 4;
     }
 
     *result = voice->unitNoteLength * multiplier / divider;
@@ -576,7 +620,7 @@ static void visitNote(void *_self, SEMNote *sem)
         return;
     }
 
-    if (!self->voice->inChord) {
+    if (!self->voice->inChord && !self->voice->inGraceNote) {
         flushPendingNotes(self, self->voice);
     }
 
@@ -586,6 +630,7 @@ static void visitNote(void *_self, SEMNote *sem)
     note->noteNo = noteNo;
     note->velocity = self->voice->velocity;
     note->sem = sem;
+    note->isGraceNote = self->voice->inGraceNote;
 
     NAArrayAppend(self->voice->pendingNotes, note);
 }
@@ -627,9 +672,7 @@ static void visitRest(void *_self, SEMRest *sem)
         break;
     }
 
-    if (!self->voice->inChord) {
-        flushPendingNotes(self, self->voice);
-    }
+    flushPendingNotes(self, self->voice);
 
     Note *note = NoteCreate();
     note->step = step;
@@ -711,6 +754,9 @@ static void visitTie(void *_self, SEMTie *sem)
 static void visitGraceNote(void *_self, SEMGraceNote *sem)
 {
     ABCSEMAnalyzer *self = _self;
+    VoiceContext *voice = self->voice;
+
+    voice->inGraceNote = true;
 
     NAIterator *iterator = NAArrayGetIterator(sem->node.children);
     while (iterator->hasNext(iterator)) {
@@ -718,7 +764,7 @@ static void visitGraceNote(void *_self, SEMGraceNote *sem)
         node->accept(node, self);
     }
 
-    // TODO
+    voice->inGraceNote = false;
 }
 
 static void visitTuplet(void *_self, SEMTuplet *sem)
@@ -761,13 +807,7 @@ static void visitChord(void *_self, SEMChord *sem)
         node->accept(node, self);
     }
 
-    if (voice->tuplet) {
-        if (0 == --voice->tuplet->count) {
-            TupletDestroy(voice->tuplet);
-            voice->tuplet = NAStackPop(voice->tupletStack);
-        }
-    }
-
+    popTupletStack(voice);
     resetBrokenRhythm(voice);
 
     voice->inChord = false;

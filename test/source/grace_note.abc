@@ -1,0 +1,16 @@
+X:1
+L:1/4
+Q:120
+K:C
+C C C {c} [CEG]
+C C C {c} < [CEG]
+C C C {c} > [CEG]
+C C C < {c} [CEG]
+C C C > {c} [CEG]
+C C C < [CEG]
+C C C < {c} C
+C C [CDE] < {c} C
+C C [CDE] > {c} C
+C C [CDE] {c} < C
+C C [CDE] {c} > C
+BB {cdef} C
