@@ -594,6 +594,19 @@ static void visitVoice(void *_self, ASTVoice *ast)
             NAMapPut(self->part->listMap, list->voiceId, list);
 
             self->list = list;
+
+            voice = node(Voice, ast);
+            voice->identifier = strdup(ast->identifier);
+
+            self->voice = voice;
+
+            NAIterator *iterator = NAArrayGetIterator(ast->node.children);
+            while (iterator->hasNext(iterator)) {
+                Node *node = iterator->next(iterator);
+                node->accept(node, self);
+            }
+
+            append(list, voice);
         }
         break;
     }

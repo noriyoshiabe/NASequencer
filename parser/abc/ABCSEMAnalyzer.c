@@ -34,6 +34,10 @@ typedef struct _VoiceContext {
     int channel;
     int tick;
     int unitNoteLength;
+    int transpose;
+    int octave;
+    int velocity;
+    bool accent;
 } VoiceContext;
 
 static VoiceContext *VoiceContextCreate();
@@ -104,7 +108,7 @@ static void visitFile(void *_self, SEMFile *sem)
     }
 }
 
-static void setDefaults(ABCSEMAnalyzer *self)
+static void setFileDefaults(ABCSEMAnalyzer *self)
 {
     if (self->defaults.meter) {
         self->pending.meter.sem = self->defaults.meter;
@@ -161,10 +165,13 @@ static void visitTune(void *_self, SEMTune *sem)
 
         VoiceContext *context = VoiceContextCreate();
         context->channel = i + 1;
+        context->transpose = voice->transpose;
+        context->octave = voice->octave;
+        context->velocity = 100;
         NAMapPut(self->voiceMap, voiceIds[i], context);
     }
 
-    setDefaults(self);
+    setFileDefaults(self);
 
     int length = sem->partSequence ? strlen(sem->partSequence) + 1 : 1;
     char *partSequence = alloca(length + 1);
@@ -309,11 +316,45 @@ REPEAT:
 
 static void visitVoice(void *_self, SEMVoice *sem)
 {
+    ABCSEMAnalyzer *self = _self;
+    self->voice->transpose = sem->transpose;
+    self->voice->octave = sem->octave;
 }
 
 static void visitDecoration(void *_self, SEMDecoration *sem)
 {
     ABCSEMAnalyzer *self = _self;
+    
+    switch (sem->type) {
+    case Accent:
+    case Emphasis:
+        self->voice->accent = true;
+        break;
+    case PianoPianissimo:
+        self->voice->velocity = 30;
+        break;
+    case Pianissimo:
+        self->voice->velocity = 50;
+        break;
+    case Piano:
+        self->voice->velocity = 70;
+        break;
+    case MezzoPiano:
+        self->voice->velocity = 90;
+        break;
+    case MezzoForte:
+        self->voice->velocity = 100;
+        break;
+    case Forte:
+        self->voice->velocity = 110;
+        break;
+    case Foruthisimo:
+        self->voice->velocity = 120;
+        break;
+    case ForteForuthisimo:
+        self->voice->velocity = 127;
+        break;
+    }
 }
 
 static void visitNote(void *_self, SEMNote *sem)
