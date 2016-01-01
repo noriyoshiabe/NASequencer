@@ -37,6 +37,7 @@ typedef enum {
     ABCParseErrorMidiVoiceIdMissingInPart,
     ABCParseErrorInvalidCaluculatedNoteLength,
     ABCParseErrorInvalidNoteNumber,
+    ABCParseErrorIllegalTie,
 } ABCParseError;
 
 extern DSLParser *ABCParserCreate(ParseContext *context);

@@ -41,7 +41,9 @@ typedef struct _VoiceContext {
     int transpose;
     int octave;
     int velocity;
+
     bool accent;
+    bool tie;
 
     NAArray *pendingNotes;
 
@@ -66,7 +68,7 @@ typedef struct {
     int noteNo;
     int velocity;
 
-    const void *sem;
+    void *sem;
 } Note;
 
 static Note *NoteCreate();
@@ -119,7 +121,6 @@ static void flushPendingNotes(ABCSEMAnalyzer *self, VoiceContext *voice);
 static Node *process(void *self, Node *node)
 {
     node->accept(node, self);
-    //return NodeRetain(node);
     return NULL;
 }
 
@@ -441,9 +442,10 @@ static void flushPendingNotes(ABCSEMAnalyzer *self, VoiceContext *voice)
         }
         else {
             int step = note->step * multiplier / divider;
+            int velocity = voice->accent ? MIN(note->velocity + 20, 127) : note->velocity;
 
             if (-1 != note->channel) {
-                self->builder->appendNote(self->builder, voice->tick, note->channel, note->noteNo, step, note->velocity);
+                self->builder->appendNote(self->builder, voice->tick, note->channel, note->noteNo, step, velocity);
             }
 
             increment = MAX(increment, step);
@@ -460,6 +462,9 @@ static void flushPendingNotes(ABCSEMAnalyzer *self, VoiceContext *voice)
     voice->brokenRhythm.prev.divider = 1;
     voice->brokenRhythm.next.multiplier = 1;
     voice->brokenRhythm.next.divider = 1;
+
+    voice->accent = false;
+    voice->tie = false;
 }
 
 static bool calcNextStep(ABCSEMAnalyzer *self, NoteLength *length, void *sem, int *result)
@@ -476,6 +481,34 @@ static bool calcNextStep(ABCSEMAnalyzer *self, NoteLength *length, void *sem, in
 
     *result = self->voice->unitNoteLength * multiplier / divider;
     return true;
+}
+
+static bool processTie(ABCSEMAnalyzer *self, SEMNote *sem, int step, int noteNo)
+{
+#define isNeighbor(b1, b2) (1 > abs((int)b1 - (int)b2) || 5 < abs((int)b1 - (int)b2))
+
+    if (!self->voice->tie) {
+        return false;
+    }
+
+    bool proccessed = false;
+
+    NAIterator *iterator = NAArrayGetIterator(self->voice->pendingNotes);
+    while (iterator->hasNext(iterator)) {
+        Note *_note = iterator->next(iterator);
+        if (-1 != _note->channel) {
+            SEMNote *note = _note->sem;
+            if (isNeighbor(note->baseNote, sem->baseNote) && 6 > abs(_note->noteNo - noteNo)) {
+                _note->step += step;
+                self->voice->tie = false;
+                proccessed = true;
+                break;
+            }
+        }
+    }
+
+    return proccessed;
+#undef isNeighbor
 }
 
 static void visitNote(void *_self, SEMNote *sem)
@@ -495,8 +528,6 @@ static void visitNote(void *_self, SEMNote *sem)
         return;
     }
 
-    flushPendingNotes(self, self->voice);
-
     int octave = self->key->octave + self->voice->octave;
     int transpose = self->key->transpose + self->voice->transpose;
 
@@ -506,17 +537,23 @@ static void visitNote(void *_self, SEMNote *sem)
     if (!isValidRange(noteNo, 0, 127)) {
         appendError(self, sem, ABCParseErrorInvalidNoteNumber, NACStringFromInteger(noteNo),
                 NACStringFromInteger(octave), NACStringFromInteger(transpose), sem->noteString, NULL);
+        return;
     }
-    else {
-        Note *note = NoteCreate();
-        note->step = step;
-        note->channel = self->voice->channel;
-        note->noteNo = noteNo;
-        note->velocity = self->voice->velocity;
-        note->sem = sem;
 
-        NAArrayAppend(self->voice->pendingNotes, note);
+    if (processTie(self, sem, step, noteNo)) {
+        return;
     }
+
+    flushPendingNotes(self, self->voice);
+
+    Note *note = NoteCreate();
+    note->step = step;
+    note->channel = self->voice->channel;
+    note->noteNo = noteNo;
+    note->velocity = self->voice->velocity;
+    note->sem = sem;
+
+    NAArrayAppend(self->voice->pendingNotes, note);
 }
 
 static void visitBrokenRhythm(void *_self, SEMBrokenRhythm *sem)
@@ -619,11 +656,20 @@ static void visitRepeat(void *_self, SEMRepeat *sem)
 static void visitBarLine(void *_self, SEMBarLine *sem)
 {
     ABCSEMAnalyzer *self = _self;
+
+    // TODO store voice overlay location
+    // TODO accidental state reset
 }
 
 static void visitTie(void *_self, SEMTie *sem)
 {
     ABCSEMAnalyzer *self = _self;
+    
+    if (self->voice->tie) {
+        appendError(self, sem, ABCParseErrorIllegalTie, NULL);
+    }
+
+    self->voice->tie = true;
 }
 
 static void visitGraceNote(void *_self, SEMGraceNote *sem)
