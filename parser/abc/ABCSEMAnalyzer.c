@@ -28,14 +28,24 @@ typedef struct _RepeatContext {
 static RepeatContext *RepeatContextCreate();
 static void RepeatContextDestroy(RepeatContext *self);
 
+typedef struct _VoiceContext {
+    int channel;
+    int step;
+} VoiceContext;
+
+static VoiceContext *VoiceContextCreate();
+static void VoiceContextDestroy(VoiceContext *self);
+
 typedef struct _ABCSEMAnalyzer {
     SEMVisitor visitor;
     Analyzer analyzer;
 
     ParseContext *context;
     NAMap *repeatMap;
+    NAMap *voiceMap;
 
     RepeatContext *repeat;
+    VoiceContext *voice;
 } ABCSEMAnalyzer;
 
 static Node *process(void *self, Node *node)
@@ -50,6 +60,8 @@ static void destroy(void *_self)
     ABCSEMAnalyzer *self = _self;
     NAMapTraverseValue(self->repeatMap, RepeatContextDestroy);
     NAMapDestroy(self->repeatMap);
+    NAMapTraverseValue(self->voiceMap, VoiceContextDestroy);
+    NAMapDestroy(self->voiceMap);
     free(self);
 }
 
@@ -65,6 +77,14 @@ static void visitFile(void *_self, SEMFile *sem)
     }
 }
 
+static int VoiceIdComparator(const void *_id1, const void *_id2)
+{
+    const char **id1 = (const char **)_id1;
+    const char **id2 = (const char **)_id2;
+
+    return strcmp(*id1, *id2);
+}
+
 static void visitTune(void *_self, SEMTune *sem)
 {
     __Trace__
@@ -78,17 +98,15 @@ static void visitTune(void *_self, SEMTune *sem)
         node->accept(node, self);
     }
 
-    iterator = NAMapGetIterator(sem->partMap);
-    while (iterator->hasNext(iterator)) {
-        NAMapEntry *entry = iterator->next(iterator);
-        SEMPart *part = entry->value;
+    int count = NAMapCount(sem->voiceMap);
+    char **voiceIds = NAMapGetKeys(sem->voiceMap, alloca(sizeof(char *) * count));
+    qsort(voiceIds, count, sizeof(char *), VoiceIdComparator);
+    for (int i = 0; i < count; ++i) {
+        SEMVoice *voice = NAMapGet(sem->voiceMap, voiceIds[i]);
 
-        NAIterator *_iterator = NAMapGetIterator(part->listMap);
-        while (_iterator->hasNext(_iterator)) {
-            NAMapEntry *_entry = _iterator->next(_iterator);
-            SEMList *list = _entry->value;
-            NAMapPut(self->repeatMap, list, RepeatContextCreate());
-        }
+        VoiceContext *context = VoiceContextCreate();
+        context->channel = i + 1;
+        NAMapPut(self->voiceMap, voiceIds[i], context);
     }
 
     int length = sem->partSequence ? strlen(sem->partSequence) + 1 : 1;
@@ -145,6 +163,11 @@ static void visitList(void *_self, SEMList *sem)
     ABCSEMAnalyzer *self = _self;
 
     self->repeat = NAMapGet(self->repeatMap, sem);
+    if (!self->repeat) {
+        self->repeat = RepeatContextCreate();
+        NAMapPut(self->repeatMap, sem, self->repeat);
+    }
+
     self->repeat->startIndex = 0;
     NASetTraverse(self->repeat->passedEndSet, free);
     NASetRemoveAll(self->repeat->passedEndSet);
@@ -330,6 +353,7 @@ Analyzer *ABCSEMAnalyzerCreate(ParseContext *context)
 
     self->context = context;
     self->repeatMap = NAMapCreate(NAHashAddress, NADescriptionAddress, NADescriptionAddress);
+    self->voiceMap = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
 
     return &self->analyzer;
 }
@@ -345,4 +369,15 @@ static void RepeatContextDestroy(RepeatContext *self)
 {
     NASetTraverse(self->passedEndSet, free);
     NASetDestroy(self->passedEndSet);
+    free(self);
+}
+
+static VoiceContext *VoiceContextCreate()
+{
+    return calloc(1, sizeof(VoiceContext));
+}
+
+static void VoiceContextDestroy(VoiceContext *self)
+{
+    free(self);
 }
