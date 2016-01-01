@@ -288,24 +288,24 @@ static void visitMeter(void *_self, SEMMeter *sem)
 
     if (inFileFeader(self)) {
         self->file.meter = sem;
+        return;
+    }
+
+    self->time.numerator = sem->numerator;
+    self->time.denominator = sem->denominator;
+
+    if (!self->pending.meter.sem) {
+        self->pending.meter.sem = sem;
+        self->pending.meter.tick = self->voice->tick;
     }
     else {
-        self->time.numerator = sem->numerator;
-        self->time.denominator = sem->denominator;
-
-        if (!self->pending.meter.sem) {
+        if (self->pending.meter.tick == self->voice->tick) {
             self->pending.meter.sem = sem;
-            self->pending.meter.tick = self->voice->tick;
         }
         else {
-            if (self->pending.meter.tick == self->voice->tick) {
-                self->pending.meter.sem = sem;
-            }
-            else {
-                SEMMeter *_sem = self->pending.meter.sem;
-                self->pending.meter.sem = NULL;
-                self->builder->appendTimeSign(self->builder, self->voice->tick, _sem->numerator, _sem->denominator);
-            }
+            SEMMeter *_sem = self->pending.meter.sem;
+            self->pending.meter.sem = NULL;
+            self->builder->appendTimeSign(self->builder, self->voice->tick, _sem->numerator, _sem->denominator);
         }
     }
 }
@@ -316,10 +316,10 @@ static void visitUnitNoteLength(void *_self, SEMUnitNoteLength *sem)
 
     if (inFileFeader(self)) {
         self->file.unitNoteLength = sem->length;
+        return;
     }
-    else {
-        self->voice->unitNoteLength = sem->length;
-    }
+
+    self->voice->unitNoteLength = sem->length;
 }
 
 static void visitTempo(void *_self, SEMTempo *sem)
@@ -328,21 +328,21 @@ static void visitTempo(void *_self, SEMTempo *sem)
 
     if (inFileFeader(self)) {
         self->file.tempo = sem;
+        return;
+    }
+
+    if (!self->pending.tempo.sem) {
+        self->pending.tempo.sem = sem;
+        self->pending.tempo.tick = self->voice->tick;
     }
     else {
-        if (!self->pending.tempo.sem) {
+        if (self->pending.tempo.tick == self->voice->tick) {
             self->pending.tempo.sem = sem;
-            self->pending.tempo.tick = self->voice->tick;
         }
         else {
-            if (self->pending.tempo.tick == self->voice->tick) {
-                self->pending.tempo.sem = sem;
-            }
-            else {
-                SEMTempo *_sem = self->pending.tempo.sem;
-                self->pending.tempo.sem = NULL;
-                self->builder->appendTempo(self->builder, self->voice->tick, _sem->tempo);
-            }
+            SEMTempo *_sem = self->pending.tempo.sem;
+            self->pending.tempo.sem = NULL;
+            self->builder->appendTempo(self->builder, self->pending.tempo.tick, _sem->tempo);
         }
     }
 }
@@ -408,6 +408,7 @@ REPEAT:
 static void visitVoice(void *_self, SEMVoice *sem)
 {
     ABCSEMAnalyzer *self = _self;
+
     self->voice->transpose = sem->transpose;
     self->voice->octave = sem->octave;
 }
@@ -415,7 +416,7 @@ static void visitVoice(void *_self, SEMVoice *sem)
 static void visitDecoration(void *_self, SEMDecoration *sem)
 {
     ABCSEMAnalyzer *self = _self;
-    
+
     switch (sem->type) {
     case Accent:
     case Emphasis:
@@ -639,6 +640,10 @@ static void visitBrokenRhythm(void *_self, SEMBrokenRhythm *sem)
 {
     ABCSEMAnalyzer *self = _self;
 
+    if (RepeatStateInitial != self->repeat->state) {
+        return;
+    }
+
     switch (sem->direction) {
     case '<':
         self->voice->brokenRhythm.prev.divider *= 2;
@@ -658,6 +663,10 @@ static void visitBrokenRhythm(void *_self, SEMBrokenRhythm *sem)
 static void visitRest(void *_self, SEMRest *sem)
 {
     ABCSEMAnalyzer *self = _self;
+
+    if (RepeatStateInitial != self->repeat->state) {
+        return;
+    }
 
     int step;
 
@@ -736,6 +745,10 @@ static void visitBarLine(void *_self, SEMBarLine *sem)
 {
     ABCSEMAnalyzer *self = _self;
 
+    if (RepeatStateInitial != self->repeat->state) {
+        return;
+    }
+
     // TODO store voice overlay location
     // TODO accidental state reset
 }
@@ -743,6 +756,10 @@ static void visitBarLine(void *_self, SEMBarLine *sem)
 static void visitTie(void *_self, SEMTie *sem)
 {
     ABCSEMAnalyzer *self = _self;
+
+    if (RepeatStateInitial != self->repeat->state) {
+        return;
+    }
     
     if (self->voice->tie) {
         appendError(self, sem, ABCParseErrorIllegalTie, NULL);
@@ -754,6 +771,11 @@ static void visitTie(void *_self, SEMTie *sem)
 static void visitGraceNote(void *_self, SEMGraceNote *sem)
 {
     ABCSEMAnalyzer *self = _self;
+
+    if (RepeatStateInitial != self->repeat->state) {
+        return;
+    }
+
     VoiceContext *voice = self->voice;
 
     voice->inGraceNote = true;
@@ -770,6 +792,10 @@ static void visitGraceNote(void *_self, SEMGraceNote *sem)
 static void visitTuplet(void *_self, SEMTuplet *sem)
 {
     ABCSEMAnalyzer *self = _self;
+
+    if (RepeatStateInitial != self->repeat->state) {
+        return;
+    }
     
     Tuplet *tuplet = TupletCreate();
     tuplet->division = sem->division;
@@ -795,6 +821,11 @@ static void visitTuplet(void *_self, SEMTuplet *sem)
 static void visitChord(void *_self, SEMChord *sem)
 {
     ABCSEMAnalyzer *self = _self;
+
+    if (RepeatStateInitial != self->repeat->state) {
+        return;
+    }
+
     VoiceContext *voice = self->voice;
 
     voice->inChord = true;
@@ -816,6 +847,10 @@ static void visitChord(void *_self, SEMChord *sem)
 static void visitOverlay(void *_self, SEMOverlay *sem)
 {
     ABCSEMAnalyzer *self = _self;
+
+    if (RepeatStateInitial != self->repeat->state) {
+        return;
+    }
 }
 
 static void visitMidiVoice(void *_self, SEMMidiVoice *sem)
