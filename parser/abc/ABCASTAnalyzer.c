@@ -113,9 +113,11 @@ static SEMPart *createPart(SEMTune *tune, FileLocation *location, const char *id
     append(part, list);
     NAMapPut(part->listMap, list->voiceId, list);
 
-    SEMVoice *voice = ABCSEMVoiceCreate(NULL);
-    voice->identifier = strdup("#");
-    NAMapPut(tune->voiceMap, voice->identifier, voice);
+    if (!NAMapContainsKey(tune->voiceMap, "#")) {
+        SEMVoice *voice = ABCSEMVoiceCreate(NULL);
+        voice->identifier = strdup("#");
+        NAMapPut(tune->voiceMap, voice->identifier, voice);
+    }
 
     return part;
 }
