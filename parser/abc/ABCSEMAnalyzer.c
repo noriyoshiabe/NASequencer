@@ -220,6 +220,14 @@ static void postProcessTune(ABCSEMAnalyzer *self)
     self->file.tick = tick + RESOLUTION * 4;
 }
 
+static void resetBrokenRhythm(VoiceContext *voice)
+{
+    voice->brokenRhythm.prev.multiplier = 1;
+    voice->brokenRhythm.prev.divider = 1;
+    voice->brokenRhythm.next.multiplier = 1;
+    voice->brokenRhythm.next.divider = 1;
+}
+
 static void visitTune(void *_self, SEMTune *sem)
 {
     ABCSEMAnalyzer *self = _self;
@@ -243,10 +251,7 @@ static void visitTune(void *_self, SEMTune *sem)
         context->transpose = voice->transpose;
         context->octave = voice->octave;
         context->velocity = 100;
-        context->brokenRhythm.prev.multiplier = 1;
-        context->brokenRhythm.prev.divider = 1;
-        context->brokenRhythm.next.multiplier = 1;
-        context->brokenRhythm.next.divider = 1;
+        resetBrokenRhythm(context);
 
         NAMapPut(self->voiceMap, voiceIds[i], context);
     }
@@ -473,10 +478,9 @@ static void flushPendingNotes(ABCSEMAnalyzer *self, VoiceContext *voice)
 
     voice->tick += increment;
 
-    voice->brokenRhythm.prev.multiplier = 1;
-    voice->brokenRhythm.prev.divider = 1;
-    voice->brokenRhythm.next.multiplier = 1;
-    voice->brokenRhythm.next.divider = 1;
+    if (!voice->inChord) {
+        resetBrokenRhythm(voice);
+    }
 
     voice->accent = false;
     voice->tie = false;
@@ -747,9 +751,9 @@ static void visitChord(void *_self, SEMChord *sem)
     ABCSEMAnalyzer *self = _self;
     VoiceContext *voice = self->voice;
 
-    flushPendingNotes(self, voice);
-
     voice->inChord = true;
+
+    flushPendingNotes(self, voice);
 
     NAIterator *iterator = NAArrayGetIterator(sem->node.children);
     while (iterator->hasNext(iterator)) {
@@ -763,6 +767,8 @@ static void visitChord(void *_self, SEMChord *sem)
             voice->tuplet = NAStackPop(voice->tupletStack);
         }
     }
+
+    resetBrokenRhythm(voice);
 
     voice->inChord = false;
 }
