@@ -146,13 +146,40 @@ void MidiEventDump(MidiEvent *self, int indent)
     }
 }
 
+static int MidiEventGetChannel(const MidiEvent *event)
+{
+    switch (event->type) {
+    case MidiEventTypeNote:
+    case MidiEventTypeVoice:
+    case MidiEventTypeVolume:
+    case MidiEventTypePan:
+    case MidiEventTypeChorus:
+    case MidiEventTypeReverb:
+    case MidiEventTypeSynth:
+        return ((ChannelEvent *)event)->channel;
+    default:
+        return 0;
+    }
+}
+
 int MidiEventComparator(const void *_event1, const void *_event2)
 {
-    const MidiEvent **event1 = (const MidiEvent **)_event1;
-    const MidiEvent **event2 = (const MidiEvent **)_event2;
+    const MidiEvent *event1 = *((const MidiEvent **)_event1);
+    const MidiEvent *event2 = *((const MidiEvent **)_event2);
 
-    int result = (*event1)->tick - (*event2)->tick;
-    return 0 != result ? result : (*event1)->id - (*event2)->id;
+    int result;
+    
+    result = event1->tick - event2->tick;
+    if (0 != result) {
+        return result;
+    }
+
+    result = MidiEventGetChannel(event1) - MidiEventGetChannel(event2);
+    if (0 != result) {
+        return result;
+    }
+
+    return 0 != result ? result : event1->id - event2->id;
 }
 
 int MidiEventIDComparator(const void *event1, const void *event2)
