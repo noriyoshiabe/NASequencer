@@ -74,6 +74,7 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(ABCParseErrorInvalidCaluculatedNoteLength);
     CASE(ABCParseErrorInvalidNoteNumber);
     CASE(ABCParseErrorIllegalTie);
+    CASE(ABCParseErrorIllegalOverlay);
 
     default:
        break;

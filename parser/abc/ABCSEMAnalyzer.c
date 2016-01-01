@@ -74,6 +74,9 @@ typedef struct _VoiceContext {
     bool inChord;
     bool inGraceNote;
     int graceNoteLength;
+
+    int lastBarTick;
+    int preIncrementTick;
 } VoiceContext;
 
 static VoiceContext *VoiceContextCreate();
@@ -376,6 +379,9 @@ static void visitList(void *_self, SEMList *sem)
     NASetTraverse(self->repeat->passedEndSet, free);
     NASetRemoveAll(self->repeat->passedEndSet);
 
+    self->voice->lastBarTick = self->voice->tick;
+    self->voice->preIncrementTick = self->voice->tick;
+
 REPEAT:
     ++self->repeat->nth;
     self->repeat->state = RepeatStateInitial;
@@ -502,6 +508,7 @@ static void flushPendingNotes(ABCSEMAnalyzer *self, VoiceContext *voice)
     NAArrayRemoveAll(voice->pendingNotes);
 
     voice->tick += increment;
+    voice->preIncrementTick = voice->tick;
 
     if (!voice->inChord) {
         resetBrokenRhythm(voice);
@@ -600,8 +607,10 @@ static void visitNote(void *_self, SEMNote *sem)
     printf("[REPEAT TEST] baseNote=%s\n", BaseNote2String(sem->baseNote));
 #endif
 
-    int octave = self->key->octave + self->voice->octave;
-    int transpose = self->key->transpose + self->voice->transpose;
+    VoiceContext *voice = self->voice;
+
+    int octave = self->key->octave + voice->octave;
+    int transpose = self->key->transpose + voice->transpose;
 
     int noteNo = NoteTableGetNoteNo(self->key->noteTable, sem->baseNote, sem->accidental, octave + sem->octave);
     noteNo += transpose;
@@ -621,19 +630,23 @@ static void visitNote(void *_self, SEMNote *sem)
         return;
     }
 
-    if (!self->voice->inChord && !self->voice->inGraceNote) {
-        flushPendingNotes(self, self->voice);
+    if (!voice->inChord && !voice->inGraceNote) {
+        flushPendingNotes(self, voice);
     }
 
     Note *note = NoteCreate();
     note->step = step;
-    note->channel = self->voice->channel;
+    note->channel = voice->channel;
     note->noteNo = noteNo;
-    note->velocity = self->voice->velocity;
+    note->velocity = voice->velocity;
     note->sem = sem;
-    note->isGraceNote = self->voice->inGraceNote;
+    note->isGraceNote = voice->inGraceNote;
 
     NAArrayAppend(self->voice->pendingNotes, note);
+
+    if (!voice->inChord) {
+        voice->preIncrementTick += step;
+    }
 }
 
 static void visitBrokenRhythm(void *_self, SEMBrokenRhythm *sem)
@@ -739,6 +752,8 @@ static void visitRepeat(void *_self, SEMRepeat *sem)
         }
         break;
     }
+
+    self->voice->lastBarTick = self->voice->preIncrementTick;
 }
 
 static void visitBarLine(void *_self, SEMBarLine *sem)
@@ -749,7 +764,8 @@ static void visitBarLine(void *_self, SEMBarLine *sem)
         return;
     }
 
-    // TODO store voice overlay location
+    self->voice->lastBarTick = self->voice->preIncrementTick;
+
     // TODO accidental state reset
 }
 
@@ -850,6 +866,15 @@ static void visitOverlay(void *_self, SEMOverlay *sem)
 
     if (RepeatStateInitial != self->repeat->state) {
         return;
+    }
+
+    if (self->voice->lastBarTick == self->voice->preIncrementTick) {
+        appendError(self, sem, ABCParseErrorIllegalOverlay, NULL);
+    }
+    else {
+        flushPendingNotes(self, self->voice);
+
+        self->voice->tick = self->voice->lastBarTick;
     }
 }
 
