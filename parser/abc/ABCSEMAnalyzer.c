@@ -10,7 +10,7 @@
 #include <sys/param.h>
 
 #define RESOLUTION 480
-#define appendError(self, sem, ...) self->context->appendError(self->context, &sem->node.location, __VA_ARGS__)
+#define appendError(self, sem, ...) self->context->appendError(self->context, &((Node *)sem)->location, __VA_ARGS__)
 #define isValidRange(v, from, to) (from <= v && v <= to)
 
 #define __Trace__ printf("-- %s:%s - %d\n", __FILE__, __func__, __LINE__);
@@ -66,7 +66,7 @@ typedef struct {
     int noteNo;
     int velocity;
 
-    const SEMNote *sem;
+    const void *sem;
 } Note;
 
 static Note *NoteCreate();
@@ -87,6 +87,11 @@ typedef struct _ABCSEMAnalyzer {
 
     SEMTune *tune;
     SEMKey *key;
+
+    struct {
+        int numerator;
+        int denominator;
+    } time;
 
     struct {
         SEMMeter *meter;
@@ -144,6 +149,9 @@ static void setFileContext(ABCSEMAnalyzer *self)
     if (self->file.meter) {
         self->pending.meter.sem = self->file.meter;
         self->pending.meter.tick = 0;
+
+        self->time.numerator = self->file.meter->numerator;
+        self->time.denominator = self->file.meter->denominator;
     }
 
     if (self->file.tempo) {
@@ -258,6 +266,9 @@ static void visitMeter(void *_self, SEMMeter *sem)
         self->file.meter = sem;
     }
     else {
+        self->time.numerator = sem->numerator;
+        self->time.denominator = sem->denominator;
+
         if (!self->pending.meter.sem) {
             self->pending.meter.sem = sem;
             self->pending.meter.tick = self->voice->tick;
@@ -427,15 +438,18 @@ static void flushPendingNotes(ABCSEMAnalyzer *self, VoiceContext *voice)
         if (0 != note->step * multiplier % divider) {
             float result = (float)(note->step * multiplier) / (float)divider;
             appendError(self, note->sem, ABCParseErrorInvalidCaluculatedNoteLength, NACStringFromFloat(result, 2), NACStringFromInteger(RESOLUTION), NULL);
-            return;
         }
         else {
             int step = note->step * multiplier / divider;
-            self->builder->appendNote(self->builder, voice->tick, note->channel, note->noteNo, step, note->velocity);
-            NoteDestroy(note);
+
+            if (-1 != note->channel) {
+                self->builder->appendNote(self->builder, voice->tick, note->channel, note->noteNo, step, note->velocity);
+            }
 
             increment = MAX(increment, step);
         }
+
+        NoteDestroy(note);
     }
 
     NAArrayRemoveAll(voice->pendingNotes);
@@ -446,6 +460,22 @@ static void flushPendingNotes(ABCSEMAnalyzer *self, VoiceContext *voice)
     voice->brokenRhythm.prev.divider = 1;
     voice->brokenRhythm.next.multiplier = 1;
     voice->brokenRhythm.next.divider = 1;
+}
+
+static bool calcNextStep(ABCSEMAnalyzer *self, NoteLength *length, void *sem, int *result)
+{
+    // TODO tuplet
+    int multiplier = length->multiplier * self->voice->brokenRhythm.next.multiplier;
+    int divider = length->divider * self->voice->brokenRhythm.next.divider;
+
+    if (0 != self->voice->unitNoteLength * multiplier % divider) {
+        float result = (float)(self->voice->unitNoteLength * multiplier) / (float)divider;
+        appendError(self, sem, ABCParseErrorInvalidCaluculatedNoteLength, NACStringFromFloat(result, 2), NACStringFromInteger(RESOLUTION), NULL);
+        return false;
+    }
+
+    *result = self->voice->unitNoteLength * multiplier / divider;
+    return true;
 }
 
 static void visitNote(void *_self, SEMNote *sem)
@@ -460,19 +490,12 @@ static void visitNote(void *_self, SEMNote *sem)
     printf("[REPEAT TEST] baseNote=%s\n", BaseNote2String(sem->baseNote));
 #endif
 
-    // TODO tuplet
-    int multiplier = sem->length.multiplier * self->voice->brokenRhythm.next.multiplier;
-    int divider = sem->length.divider * self->voice->brokenRhythm.next.divider;
-
-    if (0 != self->voice->unitNoteLength * multiplier % divider) {
-        float result = (float)(self->voice->unitNoteLength * multiplier) / (float)divider;
-        appendError(self, sem, ABCParseErrorInvalidCaluculatedNoteLength, NACStringFromFloat(result, 2), NACStringFromInteger(RESOLUTION), NULL);
+    int step;
+    if (!calcNextStep(self, &sem->length, sem, &step)) {
         return;
     }
 
     flushPendingNotes(self, self->voice);
-
-    int step = self->voice->unitNoteLength * multiplier / divider;
 
     int octave = self->key->octave + self->voice->octave;
     int transpose = self->key->transpose + self->voice->transpose;
@@ -519,6 +542,28 @@ static void visitBrokenRhythm(void *_self, SEMBrokenRhythm *sem)
 static void visitRest(void *_self, SEMRest *sem)
 {
     ABCSEMAnalyzer *self = _self;
+
+    int step;
+
+    switch (sem->type) {
+    case RestUnitNote:
+        if (!calcNextStep(self, &sem->length, sem, &step)) {
+            return;
+        }
+        break;
+    case RestMeasure:
+        step = RESOLUTION * 4 * self->time.numerator / self->time.denominator;
+        break;
+    }
+
+    flushPendingNotes(self, self->voice);
+
+    Note *note = NoteCreate();
+    note->step = step;
+    note->channel = -1;
+    note->sem = sem;
+
+    NAArrayAppend(self->voice->pendingNotes, note);
 }
 
 static void visitRepeat(void *_self, SEMRepeat *sem)
@@ -662,6 +707,8 @@ Analyzer *ABCSEMAnalyzerCreate(ParseContext *context)
     self->voiceMap = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
 
     self->file.unitNoteLength = RESOLUTION / 2;
+    self->time.numerator = 4;
+    self->time.denominator = 4;
 
     return &self->analyzer;
 }
