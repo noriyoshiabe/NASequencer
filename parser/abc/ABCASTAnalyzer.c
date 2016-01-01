@@ -1064,12 +1064,6 @@ static void visitMidi(void *_self, ASTMidi *ast)
         node->accept(node, self);
     }
 
-    if (-1 == midiVoice->instrument) {
-        appendError(self, ast, ABCParseErrorMidiInstrumentMissing, NULL);
-        NodeRelease(midiVoice);
-        return;
-    }
-
     SEMVoice *voice = NULL;
 
     if (FileHeader == self->state) {

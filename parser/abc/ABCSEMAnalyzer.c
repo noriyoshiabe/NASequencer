@@ -916,12 +916,31 @@ static void visitOverlay(void *_self, SEMOverlay *sem)
 static void visitMidiVoice(void *_self, SEMMidiVoice *sem)
 {
     ABCSEMAnalyzer *self = _self;
-    // TODO
+
+    if (!inFileFeader(self) && RepeatStateInitial == self->repeat->state) {
+        flushPendingNotes(self, self->voice);
+    }
+
+    int channel = self->voice->channel;
+    
+    if (-1 != sem->instrument) {
+        int msb = 0x7F & ((sem->bank - 1) >> 7);
+        int lsb = 0x7F & ((sem->bank - 1) >> 0);
+        int programNo = sem->instrument - 1;
+
+        self->builder->appendVoice(self->builder, self->voice->tick, channel, msb, lsb, programNo);
+    }
+
+    self->builder->appendVolume(self->builder, self->voice->tick, channel, sem->mute ? 0 : 100);
 }
 
 static void visitPropagateAccidental(void *_self, SEMPropagateAccidental *sem)
 {
     ABCSEMAnalyzer *self = _self;
+
+    if (!inFileFeader(self) && RepeatStateInitial == self->repeat->state) {
+        flushPendingNotes(self, self->voice);
+    }
 
     if (inFileFeader(self)) {
         self->file.accidental.untilBar = sem->untilBar;

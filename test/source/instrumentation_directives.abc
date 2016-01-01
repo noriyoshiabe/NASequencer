@@ -1,0 +1,13 @@
+%%MIDI voice instrument=1 bank=121
+
+X:1
+L:1/8
+K:C
+%%MIDI voice instrument=1 bank=121
+C,C,C,C,C,C,C,C,
+V: V1
+%%MIDI voice V1 instrument=43
+cccccccc
+V: V2
+%%MIDI voice V2 mute
+DDDDDDDD
