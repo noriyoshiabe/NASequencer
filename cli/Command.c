@@ -1,6 +1,7 @@
 #include "Command.h"
 #include "PianoRollView.h"
 #include "NAArray.h"
+#include "NALog.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -586,6 +587,34 @@ static void HelpCommandExecute(Command *self, CLI *cli)
     printf("\n");
 }
 
+#ifdef DEBUG
+static void LogCommandExecute(Command *self, CLI *cli)
+{
+    if (2 > NAArrayCount(self->argv)) {
+        fprintf(stderr, "loglevel is missing.\n");
+        return;
+    }
+
+    const struct {
+        const char *name;
+        int level;
+    } table[] = {
+        {"silent", NALogLevelSilent},
+        {"debug", NALogLevelDebug},
+        {"trace", NALogLevelTrace},
+    };
+
+    for (int i = 0; i < sizeof(table) / sizeof(table[0]); ++i) {
+        if (0 == strcmp(NAArrayGetValueAt(self->argv, 1), table[i].name)) {
+            NALogLevel = table[i].level;
+            return;
+        }
+    }
+
+    fprintf(stderr, "unknown loglevel. level must be one of <silent|debug|trace>\n");
+}
+#endif
+
 static void ExitCommandExecute(Command *self, CLI *cli)
 {
     CLIExit(cli);
@@ -698,6 +727,9 @@ static CommandTable commandTable[] = {
     {"unload", UnloadCommandExecute, "unload <index>", "unload synthesizer specifid by index of synthesizers list."},
     {"export", ExportCommandExecute, "export <file>", "export sequence.\nsupported file types are currently .smf, .mid, .midi, .wav, .wave .m4a and .aac."},
     {"help", HelpCommandExecute, "help", "display this help."},
+#ifdef DEBUG
+    {"log", LogCommandExecute, "log <silent|debug|trace>", "for development."},
+#endif
     {"exit", ExitCommandExecute, "exit", "exit namidi."},
 
     {NULL, NULL, NULL, NULL}

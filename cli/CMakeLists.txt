@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.2)
 
 project(namidi-cli)
 
+if (CMAKE_BUILD_TYPE MATCHES "Debug")
+  set(CMAKE_C_FLAGS_DEBUG "-DDEBUG")
+endif (CMAKE_BUILD_TYPE MATCHES "Debug")
+
 find_library(LIBEDIT edit)
 
 add_subdirectory (../core ${CMAKE_CURRENT_BINARY_DIR}/core)
