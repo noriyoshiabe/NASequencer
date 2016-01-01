@@ -187,8 +187,10 @@ static void SEMNoteAccept(void *self, void *visitor)
     ((SEMVisitor *)visitor)->visitNote(visitor, self);
 }
 
-static void SEMNoteDestroy(void *self)
+static void SEMNoteDestroy(void *_self)
 {
+    SEMNote *self = _self;
+    free(self->noteString);
 }
 
 SEMNote *ABCSEMNoteCreate(FileLocation *location)

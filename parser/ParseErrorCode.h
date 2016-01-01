@@ -71,6 +71,8 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(ABCParseErrorMidiInstrumentMissing);
     CASE(ABCParseErrorMidiVoiceIdMissingInTune);
     CASE(ABCParseErrorMidiVoiceIdMissingInPart);
+    CASE(ABCParseErrorInvalidCaluculatedNoteLength);
+    CASE(ABCParseErrorInvalidNoteNumber);
 
     default:
        break;

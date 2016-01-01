@@ -751,6 +751,7 @@ LOOP_END:
     note->accidental = accidental;
     note->octave = octave;
     note->length = noteLength;
+    note->noteString = strdup(ast->noteString);
 
     append(self->list, note);
 }

@@ -97,6 +97,7 @@ typedef struct _SEMNote {
     Accidental accidental;
     int octave;
     NoteLength length;
+    char *noteString;
 } SEMNote;
 
 typedef struct _SEMBrokenRhythm {

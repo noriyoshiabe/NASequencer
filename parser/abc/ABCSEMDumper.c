@@ -197,6 +197,7 @@ static void visitNote(void *_self, SEMNote *sem)
     printf(" %s=%s", INTEGER(sem, octave));
     printf(" %s=%s", INTEGER(sem, length.multiplier));
     printf(" %s=%s", INTEGER(sem, length.divider));
+    printf(" %s=%s", STRING(sem, noteString));
 
     printf(" from %s:%d:%d\n", node->location.filepath, node->location.line, node->location.column);
 }

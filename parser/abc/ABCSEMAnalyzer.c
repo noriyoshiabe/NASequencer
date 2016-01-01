@@ -1,5 +1,6 @@
 #include "ABCSEMAnalyzer.h"
 #include "ABCSEM.h"
+#include "ABCParser.h"
 #include "NACInteger.h"
 #include "NACString.h"
 
@@ -8,6 +9,8 @@
 #include <stdbool.h>
 
 #define RESOLUTION 480
+#define appendError(self, sem, ...) self->context->appendError(self->context, &sem->node.location, __VA_ARGS__)
+#define isValidRange(v, from, to) (from <= v && v <= to)
 
 #define __Trace__ printf("-- %s:%s - %d\n", __FILE__, __func__, __LINE__);
 
@@ -43,6 +46,17 @@ typedef struct _VoiceContext {
 static VoiceContext *VoiceContextCreate();
 static void VoiceContextDestroy(VoiceContext *self);
 
+typedef struct {
+    int tick;
+    int channel;
+    int noteNo;
+    int gatetime;
+    int velocity;
+} Note;
+
+static Note *NoteCreate();
+static void NoteDestroy(Note *self);
+
 typedef struct _ABCSEMAnalyzer {
     SEMVisitor visitor;
     Analyzer analyzer;
@@ -75,10 +89,13 @@ typedef struct _ABCSEMAnalyzer {
             int tick;
         } tempo;
     } pending;
+
+    NAArray *pendingNotes;
 } ABCSEMAnalyzer;
 
 static int VoiceIdComparator(const void *_id1, const void *_id2);
 #define inFileFeader(self) (NULL == self->tune)
+static void flushPendingNotes(ABCSEMAnalyzer *self);
 
 static Node *process(void *self, Node *node)
 {
@@ -94,6 +111,8 @@ static void destroy(void *_self)
     NAMapDestroy(self->repeatMap);
     NAMapTraverseValue(self->voiceMap, VoiceContextDestroy);
     NAMapDestroy(self->voiceMap);
+    NAArrayTraverse(self->pendingNotes, NoteDestroy);
+    NAArrayDestroy(self->pendingNotes);
     free(self);
 }
 
@@ -312,6 +331,8 @@ REPEAT:
         
         ++self->repeat->currentIndex;
     }
+
+    flushPendingNotes(self);
 }
 
 static void visitVoice(void *_self, SEMVoice *sem)
@@ -357,6 +378,18 @@ static void visitDecoration(void *_self, SEMDecoration *sem)
     }
 }
 
+static void flushPendingNotes(ABCSEMAnalyzer *self)
+{
+    NAIterator *iterator = NAArrayGetIterator(self->pendingNotes);
+    while (iterator->hasNext(iterator)) {
+        Note *note = iterator->next(iterator);
+        self->builder->appendNote(self->builder, note->tick, note->channel, note->noteNo, note->gatetime, note->velocity);
+        NoteDestroy(note);
+    }
+
+    NAArrayRemoveAll(self->pendingNotes);
+}
+
 static void visitNote(void *_self, SEMNote *sem)
 {
     ABCSEMAnalyzer *self = _self;
@@ -365,7 +398,46 @@ static void visitNote(void *_self, SEMNote *sem)
         return;
     }
 
+#if 0
     printf("[REPEAT TEST] baseNote=%s\n", BaseNote2String(sem->baseNote));
+#endif
+
+    // TODO tuplet
+    int division = sem->length.divider;
+    int multiplier = sem->length.multiplier;
+
+    if (0 != self->voice->unitNoteLength * multiplier % division) {
+        float result = (float)(self->voice->unitNoteLength * multiplier) / (float)division;
+        appendError(self, sem, ABCParseErrorInvalidCaluculatedNoteLength, NACStringFromFloat(result, 2), NACStringFromInteger(RESOLUTION), NULL);
+        return;
+    }
+
+    int step = self->voice->unitNoteLength * multiplier / division;
+
+    int octave = self->key->octave + self->voice->octave;
+    int transpose = self->key->transpose + self->voice->transpose;
+
+    int noteNo = NoteTableGetNoteNo(self->key->noteTable, sem->baseNote, sem->accidental, octave + sem->octave);
+    noteNo += transpose;
+
+    if (!isValidRange(noteNo, 0, 127)) {
+        appendError(self, sem, ABCParseErrorInvalidNoteNumber, NACStringFromInteger(noteNo),
+                NACStringFromInteger(octave), NACStringFromInteger(transpose), sem->noteString, NULL);
+    }
+    else {
+        Note *note = NoteCreate();
+        note->tick = self->voice->tick;
+        note->channel = self->voice->channel;
+        note->noteNo = noteNo;
+        note->gatetime = step;
+        note->velocity = self->voice->velocity;
+
+        NAArrayAppend(self->pendingNotes, note);
+    }
+
+    // TODO chord
+
+    self->voice->tick += step;
 }
 
 static void visitBrokenRhythm(void *_self, SEMBrokenRhythm *sem)
@@ -489,6 +561,7 @@ Analyzer *ABCSEMAnalyzerCreate(ParseContext *context)
 
     self->repeatMap = NAMapCreate(NAHashAddress, NADescriptionAddress, NADescriptionAddress);
     self->voiceMap = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
+    self->pendingNotes = NAArrayCreate(4, NADescriptionAddress);
 
     self->defaults.unitNoteLength = RESOLUTION / 2;
 
@@ -524,6 +597,16 @@ static VoiceContext *VoiceContextCreate()
 }
 
 static void VoiceContextDestroy(VoiceContext *self)
+{
+    free(self);
+}
+
+static Note *NoteCreate()
+{
+    return calloc(1, sizeof(Note));
+}
+
+static void NoteDestroy(Note *self)
 {
     free(self);
 }
