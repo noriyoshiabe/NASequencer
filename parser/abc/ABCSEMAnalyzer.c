@@ -57,6 +57,7 @@ typedef struct _ABCSEMAnalyzer {
 
     struct {
         SEMMeter *meter;
+        SEMTempo *tempo;
         int unitNoteLength;
     } defaults;
 
@@ -65,6 +66,10 @@ typedef struct _ABCSEMAnalyzer {
             SEMMeter *sem;
             int tick;
         } meter;
+        struct {
+            SEMTempo *sem;
+            int tick;
+        } tempo;
     } pending;
 } ABCSEMAnalyzer;
 
@@ -106,6 +111,11 @@ static void setDefaults(ABCSEMAnalyzer *self)
         self->pending.meter.tick = 0;
     }
 
+    if (self->defaults.tempo) {
+        self->pending.tempo.sem = self->defaults.tempo;
+        self->pending.tempo.tick = 0;
+    }
+
     NAIterator *iterator = NAMapGetIterator(self->voiceMap);
     while (iterator->hasNext(iterator)) {
         NAMapEntry *entry = iterator->next(iterator);
@@ -121,6 +131,13 @@ static void processPendingEvents(ABCSEMAnalyzer *self)
         int tick = self->pending.meter.tick;
         self->pending.meter.sem = NULL;
         self->builder->appendTimeSign(self->builder, tick, _sem->numerator, _sem->denominator);
+    }
+
+    if (self->pending.tempo.sem) {
+        SEMTempo *_sem = self->pending.tempo.sem;
+        int tick = self->pending.tempo.tick;
+        self->pending.tempo.sem = NULL;
+        self->builder->appendTempo(self->builder, tick, _sem->tempo);
     }
 }
 
@@ -210,6 +227,26 @@ static void visitUnitNoteLength(void *_self, SEMUnitNoteLength *sem)
 static void visitTempo(void *_self, SEMTempo *sem)
 {
     ABCSEMAnalyzer *self = _self;
+
+    if (inFileFeader(self)) {
+        self->defaults.tempo = sem;
+    }
+    else {
+        if (!self->pending.tempo.sem) {
+            self->pending.tempo.sem = sem;
+            self->pending.tempo.tick = self->voice->tick;
+        }
+        else {
+            if (self->pending.tempo.tick == self->voice->tick) {
+                self->pending.tempo.sem = sem;
+            }
+            else {
+                SEMTempo *_sem = self->pending.tempo.sem;
+                self->pending.tempo.sem = NULL;
+                self->builder->appendTempo(self->builder, self->voice->tick, _sem->tempo);
+            }
+        }
+    }
 }
 
 static void visitPart(void *_self, SEMPart *sem)
