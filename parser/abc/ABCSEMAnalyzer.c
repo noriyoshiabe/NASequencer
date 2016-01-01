@@ -42,17 +42,31 @@ typedef struct _VoiceContext {
     int octave;
     int velocity;
     bool accent;
+
+    NAArray *pendingNotes;
+
+    struct {
+        struct {
+            int multiplier;
+            int divider;
+        } prev;
+        struct {
+            int multiplier;
+            int divider;
+        } next;
+    } brokenRhythm;
 } VoiceContext;
 
 static VoiceContext *VoiceContextCreate();
 static void VoiceContextDestroy(VoiceContext *self);
 
 typedef struct {
-    int tick;
+    int step;
     int channel;
     int noteNo;
-    int gatetime;
     int velocity;
+
+    const SEMNote *sem;
 } Note;
 
 static Note *NoteCreate();
@@ -91,13 +105,11 @@ typedef struct _ABCSEMAnalyzer {
             int tick;
         } tempo;
     } pending;
-
-    NAArray *pendingNotes;
 } ABCSEMAnalyzer;
 
 static int VoiceIdComparator(const void *_id1, const void *_id2);
 #define inFileFeader(self) (NULL == self->tune)
-static void flushPendingNotes(ABCSEMAnalyzer *self);
+static void flushPendingNotes(ABCSEMAnalyzer *self, VoiceContext *voice);
 
 static Node *process(void *self, Node *node)
 {
@@ -113,8 +125,6 @@ static void destroy(void *_self)
     NAMapDestroy(self->repeatMap);
     NAMapTraverseValue(self->voiceMap, VoiceContextDestroy);
     NAMapDestroy(self->voiceMap);
-    NAArrayTraverse(self->pendingNotes, NoteDestroy);
-    NAArrayDestroy(self->pendingNotes);
     free(self);
 }
 
@@ -177,6 +187,8 @@ static void postProcessTune(ABCSEMAnalyzer *self)
     while (iterator->hasNext(iterator)) {
         NAMapEntry *entry = iterator->next(iterator);
         VoiceContext *voice = entry->value;
+        flushPendingNotes(self, voice);
+
         tick = MAX(tick, voice->tick);
     }
 
@@ -207,6 +219,11 @@ static void visitTune(void *_self, SEMTune *sem)
         context->transpose = voice->transpose;
         context->octave = voice->octave;
         context->velocity = 100;
+        context->brokenRhythm.prev.multiplier = 1;
+        context->brokenRhythm.prev.divider = 1;
+        context->brokenRhythm.next.multiplier = 1;
+        context->brokenRhythm.next.divider = 1;
+
         NAMapPut(self->voiceMap, voiceIds[i], context);
     }
 
@@ -351,8 +368,6 @@ REPEAT:
         
         ++self->repeat->currentIndex;
     }
-
-    flushPendingNotes(self);
 }
 
 static void visitVoice(void *_self, SEMVoice *sem)
@@ -398,16 +413,39 @@ static void visitDecoration(void *_self, SEMDecoration *sem)
     }
 }
 
-static void flushPendingNotes(ABCSEMAnalyzer *self)
+static void flushPendingNotes(ABCSEMAnalyzer *self, VoiceContext *voice)
 {
-    NAIterator *iterator = NAArrayGetIterator(self->pendingNotes);
+    int increment = 0;
+
+    NAIterator *iterator = NAArrayGetIterator(voice->pendingNotes);
     while (iterator->hasNext(iterator)) {
         Note *note = iterator->next(iterator);
-        self->builder->appendNote(self->builder, note->tick, note->channel, note->noteNo, note->gatetime, note->velocity);
-        NoteDestroy(note);
+
+        int multiplier = voice->brokenRhythm.prev.multiplier;
+        int divider = voice->brokenRhythm.prev.divider;
+
+        if (0 != note->step * multiplier % divider) {
+            float result = (float)(note->step * multiplier) / (float)divider;
+            appendError(self, note->sem, ABCParseErrorInvalidCaluculatedNoteLength, NACStringFromFloat(result, 2), NACStringFromInteger(RESOLUTION), NULL);
+            return;
+        }
+        else {
+            int step = note->step * multiplier / divider;
+            self->builder->appendNote(self->builder, voice->tick, note->channel, note->noteNo, step, note->velocity);
+            NoteDestroy(note);
+
+            increment = MAX(increment, step);
+        }
     }
 
-    NAArrayRemoveAll(self->pendingNotes);
+    NAArrayRemoveAll(voice->pendingNotes);
+
+    voice->tick += increment;
+
+    voice->brokenRhythm.prev.multiplier = 1;
+    voice->brokenRhythm.prev.divider = 1;
+    voice->brokenRhythm.next.multiplier = 1;
+    voice->brokenRhythm.next.divider = 1;
 }
 
 static void visitNote(void *_self, SEMNote *sem)
@@ -418,21 +456,23 @@ static void visitNote(void *_self, SEMNote *sem)
         return;
     }
 
-#if 1
+#if 0
     printf("[REPEAT TEST] baseNote=%s\n", BaseNote2String(sem->baseNote));
 #endif
 
     // TODO tuplet
-    int division = sem->length.divider;
-    int multiplier = sem->length.multiplier;
+    int multiplier = sem->length.multiplier * self->voice->brokenRhythm.next.multiplier;
+    int divider = sem->length.divider * self->voice->brokenRhythm.next.divider;
 
-    if (0 != self->voice->unitNoteLength * multiplier % division) {
-        float result = (float)(self->voice->unitNoteLength * multiplier) / (float)division;
+    if (0 != self->voice->unitNoteLength * multiplier % divider) {
+        float result = (float)(self->voice->unitNoteLength * multiplier) / (float)divider;
         appendError(self, sem, ABCParseErrorInvalidCaluculatedNoteLength, NACStringFromFloat(result, 2), NACStringFromInteger(RESOLUTION), NULL);
         return;
     }
 
-    int step = self->voice->unitNoteLength * multiplier / division;
+    flushPendingNotes(self, self->voice);
+
+    int step = self->voice->unitNoteLength * multiplier / divider;
 
     int octave = self->key->octave + self->voice->octave;
     int transpose = self->key->transpose + self->voice->transpose;
@@ -446,23 +486,34 @@ static void visitNote(void *_self, SEMNote *sem)
     }
     else {
         Note *note = NoteCreate();
-        note->tick = self->voice->tick;
+        note->step = step;
         note->channel = self->voice->channel;
         note->noteNo = noteNo;
-        note->gatetime = step;
         note->velocity = self->voice->velocity;
+        note->sem = sem;
 
-        NAArrayAppend(self->pendingNotes, note);
+        NAArrayAppend(self->voice->pendingNotes, note);
     }
-
-    // TODO chord
-
-    self->voice->tick += step;
 }
 
 static void visitBrokenRhythm(void *_self, SEMBrokenRhythm *sem)
 {
     ABCSEMAnalyzer *self = _self;
+
+    switch (sem->direction) {
+    case '<':
+        self->voice->brokenRhythm.prev.divider *= 2;
+
+        self->voice->brokenRhythm.next.multiplier *= 3;
+        self->voice->brokenRhythm.next.divider *= 2;
+        break;
+    case '>':
+        self->voice->brokenRhythm.prev.multiplier *= 3;
+        self->voice->brokenRhythm.prev.divider *= 2;
+
+        self->voice->brokenRhythm.next.divider *= 2;
+        break;
+    }
 }
 
 static void visitRest(void *_self, SEMRest *sem)
@@ -609,7 +660,6 @@ Analyzer *ABCSEMAnalyzerCreate(ParseContext *context)
 
     self->repeatMap = NAMapCreate(NAHashAddress, NADescriptionAddress, NADescriptionAddress);
     self->voiceMap = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
-    self->pendingNotes = NAArrayCreate(4, NADescriptionAddress);
 
     self->file.unitNoteLength = RESOLUTION / 2;
 
@@ -641,11 +691,15 @@ static void RepeatContextDestroy(RepeatContext *self)
 
 static VoiceContext *VoiceContextCreate()
 {
-    return calloc(1, sizeof(VoiceContext));
+    VoiceContext *self = calloc(1, sizeof(VoiceContext));
+    self->pendingNotes = NAArrayCreate(4, NADescriptionAddress);
+    return self;
 }
 
 static void VoiceContextDestroy(VoiceContext *self)
 {
+    NAArrayTraverse(self->pendingNotes, NoteDestroy);
+    NAArrayDestroy(self->pendingNotes);
     free(self);
 }
 
