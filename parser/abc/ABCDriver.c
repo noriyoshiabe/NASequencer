@@ -14,11 +14,11 @@ typedef struct _ABCDriver {
 } ABCDriver;
 
 static const AnalyzerFactory AnalyzerFactories[] = {
-#if 1
+#ifdef DEBUG
     ABCASTDumperCreate,
 #endif
     ABCASTAnalyzerCreate,
-#if 1
+#ifdef DEBUG
     ABCSEMDumperCreate,
 #endif
     ABCSEMAnalyzerCreate,

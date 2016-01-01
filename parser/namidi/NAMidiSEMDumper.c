@@ -1,6 +1,7 @@
 #include "NAMidiSEMDumper.h"
 #include "NAMidiSEM.h"
 #include "NACString.h"
+#include <NALog.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,7 +16,9 @@ typedef struct _NAMidiSEMDumper {
 
 static Node *process(void *self, Node *node)
 {
-    node->accept(node, self);
+    if (__IsDebug__) {
+        node->accept(node, self);
+    }
     return NodeRetain(node);
 }
 

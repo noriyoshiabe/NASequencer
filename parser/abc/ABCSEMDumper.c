@@ -1,6 +1,7 @@
 #include "ABCSEMDumper.h"
 #include "ABCSEM.h"
 #include "NACString.h"
+#include <NALog.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,7 +16,9 @@ typedef struct _ABCSEMDumper {
 
 static Node *process(void *self, Node *node)
 {
-    node->accept(node, self);
+    if (__IsDebug__) {
+        node->accept(node, self);
+    }
     return NodeRetain(node);
 }
 

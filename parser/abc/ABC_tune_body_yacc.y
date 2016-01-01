@@ -6,6 +6,8 @@
 #include "ABCParser.h"
 #include "ABCAST.h"
 
+#include "NALog.h"
+
 #include <string.h>
 
 extern int ABC_tune_body_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, int line, int columnOffset, void **node, const char *message);
@@ -15,12 +17,6 @@ extern int ABC_tune_body_error(YYLTYPE *yylloc, yyscan_t scanner, const char *fi
 #define listAppend(list, node) NAArrayAppend(list, node)
 
 #define isInline() (0 < columnOffset)
-
-#if 1
-#define TRACE(...) printf(__VA_ARGS__)
-#else
-#define TRACE(...)
-#endif
 
 %}
 
@@ -116,7 +112,7 @@ statement
 inline_field
     : INLINE_FIELD
         {
-            TRACE("---- INLINE_FIELD [%s] %d - %d\n", $1, line, @$.first_column);
+            __LogTrace__("---- INLINE_FIELD [%s] %d - %d\n", $1, line, @$.first_column);
             $$ = ABCParserParseInformation(ABC_tune_body_get_extra(scanner), filepath, line, @$.first_column, $1);
             free($1);
         }

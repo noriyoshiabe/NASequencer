@@ -14,11 +14,11 @@ typedef struct _NAMidiDriver {
 } NAMidiDriver;
 
 static const AnalyzerFactory AnalyzerFactories[] = {
-#if 0
+#ifdef DEBUG
     NAMidiASTDumperCreate,
 #endif
     NAMidiASTAnalyzerCreate,
-#if 0
+#ifdef DEBUG
     NAMidiSEMDumperCreate,
 #endif
     NAMidiSEMAnalyzerCreate,

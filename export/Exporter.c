@@ -10,10 +10,12 @@
 #include "NAArray.h"
 #include "NASet.h"
 #include "NAIO.h"
+#include "NALog.h"
 
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <sys/time.h>
 
 #define AUDIO_BUFFER_SIZE 64
 
@@ -285,13 +287,13 @@ static void ExporterBuildAudioSample(Exporter *self, ExporterAudioBuffer *audioB
 
     while (tick < length) {
         int64_t usec = usecPerSample * AUDIO_BUFFER_SIZE * bufferCount;
-#if 0
-#include <sys/time.h>
-        int sec = usec / 1000000;
-        struct timeval tv;
-        gettimeofday(&tv, NULL);
-        printf("%d%% %d:%02d now=%ld\n", (tick * 100) / length, sec / 60, sec % 60, tv.tv_sec);
-#endif
+
+        if (__IsTrace__) {
+            int sec = usec / 1000000;
+            struct timeval tv;
+            gettimeofday(&tv, NULL);
+            printf("%d%% %d:%02d now=%ld\n", (tick * 100) / length, sec / 60, sec % 60, tv.tv_sec);
+        }
 
         int32_t prevTick = TimeTableMicroSec2Tick(self->sequence->timeTable, prevUsec);
         tick = TimeTableMicroSec2Tick(self->sequence->timeTable, usec);

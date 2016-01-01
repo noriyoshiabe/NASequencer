@@ -16,6 +16,7 @@ set(SOURCES
   NAStringBuffer.c
   NAStack.c
   NAIO.c
+  NALog.c
   NAMessageQ.c
   NACString.c
   NACInteger.c
