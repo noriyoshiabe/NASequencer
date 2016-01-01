@@ -102,18 +102,10 @@ static void visitStringInformation(void *self, ASTStringInformation *ast)
 {
 }
 
-static void visitReferenceNumber(void *_self, ASTReferenceNumber *ast)
+static SEMPart *createPart(SEMTune *tune, FileLocation *location, const char *identifier)
 {
-    ABCASTAnalyzer *self = _self;
-
-    SEMTune *tune = node(Tune, ast);
-    tune->number = ast->number;
-
-    append(self->file, tune);
-    self->tune = tune;
-
-    SEMPart *part = ABCSEMPartCreate(NULL);
-    part->identifier = strdup("#");
+    SEMPart *part = ABCSEMPartCreate(location);
+    part->identifier = strdup(identifier);
     NAMapPut(tune->partMap, part->identifier, part);
 
     SEMList *list = ABCSEMListCreate(NULL);
@@ -125,8 +117,21 @@ static void visitReferenceNumber(void *_self, ASTReferenceNumber *ast)
     voice->identifier = strdup("#");
     NAMapPut(tune->voiceMap, voice->identifier, voice);
 
-    self->part = part;
-    self->list = list;
+    return part;
+}
+
+static void visitReferenceNumber(void *_self, ASTReferenceNumber *ast)
+{
+    ABCASTAnalyzer *self = _self;
+
+    SEMTune *tune = node(Tune, ast);
+    tune->number = ast->number;
+
+    append(self->file, tune);
+    self->tune = tune;
+
+    self->part = createPart(tune, NULL, "#");
+    self->list = NAMapGet(self->part->listMap, "#");
 
     self->state = TuneHeader;
     self->tuneMeter = self->fileMeter;
@@ -473,27 +478,14 @@ static void visitParts(void *_self, ASTParts *ast)
     case TuneBody:
         {
             char identifier[2] = {ast->list[0], '\0'};
-            SEMPart *part = NAMapGet(self->tune->partMap, identifier);
-            if (!part) {
-                part = node(Part, ast);
-                part->identifier = strdup(identifier);
-                NAMapPut(self->tune->partMap, part->identifier, part);
 
-                SEMVoice *voice = ABCSEMVoiceCreate(NULL);
-                voice->identifier = strdup("#");
-                NAMapPut(self->tune->voiceMap, voice->identifier, voice);
+            if (NAMapContainsKey(self->tune->partMap, identifier)) {
+                appendError(self, ast, ABCParseErrorDuplicatedParts, identifier, NULL);
+                return;
             }
 
-            SEMList *list = NAMapGet(part->listMap, "#");
-            if (!list) {
-                list = ABCSEMListCreate(NULL);
-                list->voiceId = strdup(identifier);
-                append(part, list);
-                NAMapPut(part->listMap, list->voiceId, list);
-            }
-
-            self->part = part;
-            self->list = list;
+            self->part = createPart(self->tune, &ast->node.location, identifier);
+            self->list = NAMapGet(self->part->listMap, "#");
         }
         break;
     }

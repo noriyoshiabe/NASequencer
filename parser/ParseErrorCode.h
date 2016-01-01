@@ -59,6 +59,7 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(ABCParseErrorInvalidBeatCount);
     CASE(ABCParseErrorInvalidTempo);
     CASE(ABCParseErrorIllegalStateWithParts);
+    CASE(ABCParseErrorDuplicatedParts);
     CASE(ABCParseErrorIllegalStateWithInclude);
     CASE(ABCParseErrorIllegalStateWithVoice);
     CASE(ABCParseErrorIllegalStateWithTuneBody);
