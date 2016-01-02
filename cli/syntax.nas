@@ -20,7 +20,7 @@ MARKER 'Start'
 
 DEFINE rhythm-pattern
 ------------------------
-CONTEXT DEFAULT
+CONTEXT default
 ------------------------
   120: C1      C#2 
   120:          
@@ -41,7 +41,7 @@ CONTEXT DEFAULT
 ------------------------
 END
 ------------------------
-CONTEXT LAST
+CONTEXT last
 ------------------------
   120: C1      C#2 127
   120:          
@@ -69,7 +69,7 @@ END
 EXPAND rhythm-pattern
 EXPAND rhythm-pattern
 EXPAND rhythm-pattern
-EXPAND rhythm-pattern WITH LAST
+EXPAND rhythm-pattern WITH last
 
 
 CHANNEL   1

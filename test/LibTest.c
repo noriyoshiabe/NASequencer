@@ -1,5 +1,4 @@
 #include "NAIO.h"
-#define DEBUG
 #include "NALog.h"
 
 int main(int argc, char **argv)

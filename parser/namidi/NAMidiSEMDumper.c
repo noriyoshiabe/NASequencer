@@ -223,6 +223,7 @@ Analyzer *NAMidiSEMDumperCreate(ParseContext *context)
     self->visitor.visitTime = visitTime;
     self->visitor.visitKey = visitKey;
     self->visitor.visitMarker = visitMarker;
+    self->visitor.visitChannel = visitChannel;
     self->visitor.visitVelocity = visitVelocity;
     self->visitor.visitVoice = visitVoice;
     self->visitor.visitSynth = visitSynth;
