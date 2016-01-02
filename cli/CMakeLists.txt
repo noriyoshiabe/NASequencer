@@ -22,6 +22,13 @@ add_custom_command(
   DEPENDS license.txt
 )
 
+add_custom_command(
+  OUTPUT syntax.c
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  COMMAND xxd -i syntax.txt ${CMAKE_CURRENT_BINARY_DIR}/syntax.c
+  DEPENDS syntax.txt
+)
+
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}
   ../core
@@ -42,6 +49,7 @@ set(SOURCES
   EventListView.c
   InformationView.c
   license.c
+  syntax.c
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

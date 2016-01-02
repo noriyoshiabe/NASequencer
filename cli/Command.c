@@ -569,6 +569,13 @@ static void HelpCommandExecute(Command *self, CLI *cli)
     fputs("\n", stdout);
 }
 
+static void SyntaxCommandExecute(Command *self, CLI *cli)
+{
+    printf("\n");
+    InformationViewShowSyntax();
+    printf("\n");
+}
+
 static void AboutCommandExecute(Command *self, CLI *cli)
 {
     printf("\n");
@@ -721,6 +728,7 @@ static CommandTable commandTable[] = {
     {"unload", UnloadCommandExecute, "unload <index>", "unload synthesizer specifid by index of synthesizers list."},
     {"export", ExportCommandExecute, "export <file>", "export sequence.\nsupported file types are currently .smf, .mid, .midi, .wav, .wave .m4a and .aac."},
     {"help", HelpCommandExecute, "help", "display this help."},
+    {"syntax", SyntaxCommandExecute, "syntax", "syntax reference."},
     {"about", AboutCommandExecute, "about", "about NAMIDI."},
 #ifdef DEBUG
     {"debug", LogCommandExecute, "debug", "for development."},
