@@ -9,7 +9,7 @@
 extern void NAMidi_lex_set_error_until_eol(yyscan_t scanner);
 extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, void **node, const char *message);
 
-extern Node *NAMidiParserParseIncludeFile(void *self, FileLocation *location, const char *includeFile);
+extern Node *NAMidiParserParseIncludeFile(void *self, FileLocation *location, const char *includeFile, ASTInclude *includeNode);
 extern void NAMidiParserSyntaxError(void *self, FileLocation *location, const char *token);
 
 #define node(type, yylloc) NAMidiAST##type##Create(&((FileLocation){(char *)filepath, yylloc.first_line, yylloc.first_column}))
@@ -302,7 +302,7 @@ include
             ASTInclude *n = node(Include, @$);
             n->filepath = $2;
             FileLocation location = {(char *)filepath, @$.first_line, @$.first_column};
-            n->root = NAMidiParserParseIncludeFile(NAMidi_get_extra(scanner), &location, $2);
+            n->root = NAMidiParserParseIncludeFile(NAMidi_get_extra(scanner), &location, $2, n);
             $$ = n;
         }
     ;

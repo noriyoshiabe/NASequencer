@@ -13,7 +13,7 @@ typedef struct _NAMidiParser {
     DSLParser parser;
     ParseContext *context;
     NASet *readingFileSet;
-    NAMap *includedNodeMap;
+    NAMap *includedRootNodeMap;
 } NAMidiParser;
 
 extern int NAMidi_parse(yyscan_t scanner, const char *filepath, void **node);
@@ -62,7 +62,7 @@ static void NAMidiParserDestroy(void *_self)
 {
     NAMidiParser *self = _self;
     NASetDestroy(self->readingFileSet);
-    NAMapDestroy(self->includedNodeMap);
+    NAMapDestroy(self->includedRootNodeMap);
     free(self);
 }
 
@@ -73,11 +73,11 @@ DSLParser *NAMidiParserCreate(ParseContext *context)
     self->parser.parse = NAMidiParserParse;
     self->parser.destroy = NAMidiParserDestroy;
     self->readingFileSet = NASetCreate(NAHashCString, NADescriptionCString);
-    self->includedNodeMap = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
+    self->includedRootNodeMap = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
     return (DSLParser *)self;
 }
 
-Node *NAMidiParserParseIncludeFile(void *_self, FileLocation *location, const char *includeFile)
+Node *NAMidiParserParseIncludeFile(void *_self, FileLocation *location, const char *includeFile, ASTInclude *includeNode)
 {
     NAMidiParser *self = _self; 
 
@@ -96,7 +96,7 @@ Node *NAMidiParserParseIncludeFile(void *_self, FileLocation *location, const ch
         return NULL;
     }
 
-    Node *node = NAMapGet(self->includedNodeMap, fullpath);
+    Node *node = NAMapGet(self->includedRootNodeMap, fullpath);
     if (node) {
         free(fullpath);
         return NodeRetain(node);
@@ -109,9 +109,8 @@ Node *NAMidiParserParseIncludeFile(void *_self, FileLocation *location, const ch
         return NULL;
     }
 
-    ASTInclude *include = (ASTInclude *)node;
-    include->fullpath = fullpath;
-    NAMapPut(self->includedNodeMap, include->fullpath, include);
+    includeNode->fullpath = fullpath;
+    NAMapPut(self->includedRootNodeMap, includeNode->fullpath, node);
     return node;
 }
 
