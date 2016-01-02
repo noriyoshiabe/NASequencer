@@ -579,28 +579,8 @@ static void AboutCommandExecute(Command *self, CLI *cli)
 #ifdef DEBUG
 static void LogCommandExecute(Command *self, CLI *cli)
 {
-    if (2 > NAArrayCount(self->argv)) {
-        fprintf(stderr, "loglevel is missing.\n");
-        return;
-    }
-
-    const struct {
-        const char *name;
-        int level;
-    } table[] = {
-        {"silent", NALogLevelSilent},
-        {"debug", NALogLevelDebug},
-        {"trace", NALogLevelTrace},
-    };
-
-    for (int i = 0; i < sizeof(table) / sizeof(table[0]); ++i) {
-        if (0 == strcmp(NAArrayGetValueAt(self->argv, 1), table[i].name)) {
-            NALogLevel = table[i].level;
-            return;
-        }
-    }
-
-    fprintf(stderr, "unknown loglevel. level must be one of <silent|debug|trace>\n");
+    NALogLevel = NALogLevelSilent == NALogLevel ? NALogLevelDebug : NALogLevelSilent;
+    printf("debug %s\n", NALogLevelSilent == NALogLevel ? "off" : "on");
 }
 #endif
 
@@ -743,7 +723,7 @@ static CommandTable commandTable[] = {
     {"help", HelpCommandExecute, "help", "display this help."},
     {"about", AboutCommandExecute, "about", "about NAMIDI."},
 #ifdef DEBUG
-    {"log", LogCommandExecute, "log <silent|debug|trace>", "for development."},
+    {"debug", LogCommandExecute, "debug", "for development."},
 #endif
     {"exit", ExitCommandExecute, "exit", "exit namidi."},
 
