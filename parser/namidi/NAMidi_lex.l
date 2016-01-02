@@ -42,6 +42,9 @@ TEMPO          tempo
 TIME           time
 MARKER         marker
 DEFINE         define
+EXPAND         expand
+CONTEXT        context
+WITH           with
 END            end
 CHANNEL        channel
 VOICE          voice
@@ -77,6 +80,9 @@ LINE_COMMENT   (\/\/|==|--).*$
 {KEY}            { return KEY; }
 {MARKER}         { return MARKER; }
 {DEFINE}         { return DEFINE; }
+{EXPAND}         { return EXPAND; }
+{CONTEXT}        { return CONTEXT; }
+{WITH}           { return WITH; }
 {END}            { return END; }
 {CHANNEL}        { return CHANNEL; }
 {VOICE}          { return VOICE; }

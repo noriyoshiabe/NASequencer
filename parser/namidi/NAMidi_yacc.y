@@ -43,13 +43,13 @@ extern void NAMidiParserSyntaxError(void *self, FileLocation *location, const ch
 %token <f>FLOAT
 %token <s>STRING
 
-%token RESOLUTION TITLE TEMPO TIME KEY MARKER DEFINE END CHANNEL VOICE
-       SYNTH VOLUME PAN CHORUS REVERB TRANSPOSE DEFAULT INCLUDE
+%token RESOLUTION TITLE TEMPO TIME KEY MARKER DEFINE EXPAND CONTEXT WITH
+       END CHANNEL VOICE SYNTH VOLUME PAN CHORUS REVERB TRANSPOSE DEFAULT INCLUDE
 
 %token <s>NOTE KEY_SIGN IDENTIFIER
 
 %type <node> resolution title tempo time key marker channel voice synth volume
-             pan chorus reverb transpose step note include pattern
+             pan chorus reverb transpose step note include expand
 
 %type <node> define context
 
@@ -102,7 +102,7 @@ statement
     | step
     | note
     | include
-    | pattern
+    | expand
     | define
     | context
     | error
@@ -309,26 +309,19 @@ include
         }
     ;
 
-pattern
-    : IDENTIFIER
+expand
+    : EXPAND IDENTIFIER
         {
             ASTPattern *n = node(Pattern, @$);
-            n->identifier = NACStringToUpperCase($1);
+            n->identifier = NACStringToUpperCase($2);
             n->node.children = list();
             $$ = n;
         }
-    | IDENTIFIER '(' ')'
+    | EXPAND IDENTIFIER WITH identifier_list
         {
             ASTPattern *n = node(Pattern, @$);
-            n->identifier = NACStringToUpperCase($1);
-            n->node.children = list();
-            $$ = n;
-        }
-    | IDENTIFIER '(' identifier_list ')'
-        {
-            ASTPattern *n = node(Pattern, @$);
-            n->identifier = NACStringToUpperCase($1);
-            n->node.children = $3;
+            n->identifier = NACStringToUpperCase($2);
+            n->node.children = $4;
             $$ = n;
         }
     ;
@@ -344,10 +337,10 @@ define
     ;
 
 context
-    : identifier_list '{' statement_list '}'
+    : CONTEXT identifier_list statement_list END
         {
             ASTContext *n = node(Context, @$);
-            n->ctxIdList = $1;
+            n->ctxIdList = $2;
             n->node.children = $3;
             $$ = n;
         }
