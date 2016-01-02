@@ -377,6 +377,12 @@ identifier
             n->idString = strdup("default");
             $$ = n;
         }
+    | INTEGER
+        {
+            ASTIdentifier *n = node(Identifier, @$);
+            n->idString = strdup(NACStringFromInteger($1));
+            $$ = n;
+        }
     ;
 
 note_param_list
