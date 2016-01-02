@@ -2,6 +2,11 @@ cmake_minimum_required(VERSION 3.2)
 
 project(namidi-test)
 
+if (CMAKE_BUILD_TYPE MATCHES "Debug")
+  add_definitions(-DDEBUG)
+  add_definitions(-D__TEST__)
+endif (CMAKE_BUILD_TYPE MATCHES "Debug")
+
 add_subdirectory (../core ${CMAKE_CURRENT_BINARY_DIR}/core)
 add_subdirectory (../sequence ${CMAKE_CURRENT_BINARY_DIR}/sequence)
 add_subdirectory (../parser ${CMAKE_CURRENT_BINARY_DIR}/parser)
