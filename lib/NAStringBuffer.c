@@ -1,7 +1,9 @@
 #include "NAStringBuffer.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 #include <sys/param.h>
 
 struct _NAStringBuffer {
@@ -22,7 +24,9 @@ NAStringBuffer *NAStringBufferCreate(int allocationUnit)
 
 void NAStringBufferDestroy(NAStringBuffer *self)
 {
-    free(self->buffer);
+    if (self->buffer) {
+        free(self->buffer);
+    }
     free(self);
 }
 
@@ -58,6 +62,25 @@ int NAStringBufferAppendNString(NAStringBuffer *self, const char *string, int le
     return length;
 }
 
+extern int NAStringBufferAppendFormat(NAStringBuffer *self, const char *format, ...)
+{
+    va_list argList;
+    va_start(argList, format);
+    int length = vsnprintf(NULL, 0, format, argList);
+    va_end(argList);
+
+    if (self->capacity - self->length < length + 1) {
+        NAStringBufferExtend(self, length + 1);
+    }
+
+    va_start(argList, format);
+    vsnprintf(self->buffer + self->length, length + 1, format, argList);
+    self->length += length;
+    va_end(argList);
+
+    return length;
+}
+
 int NAStringBufferAppendChar(NAStringBuffer *self, char c)
 {
     if (self->capacity - self->length < 2) {
@@ -80,6 +103,16 @@ int NAStringBufferGetCString(NAStringBuffer *self, char *buffer, int size)
 int NAStringBufferGetLength(NAStringBuffer *self)
 {
     return self->length;
+}
+
+char *NAStringBufferRetriveCString(NAStringBuffer *self)
+{
+    self->buffer[self->length] = '\0';
+    char *ret = self->buffer;
+    self->buffer = NULL;
+    self->length = 0;
+    self->capacity = 0;
+    return ret;
 }
 
 void NAStringBufferClear(NAStringBuffer *self)

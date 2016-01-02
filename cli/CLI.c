@@ -7,10 +7,12 @@
 
 #include "NAIO.h"
 #include "NACString.h"
+#include "NAStringBuffer.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <limits.h>
 #include <signal.h>
 #include <setjmp.h>
@@ -372,52 +374,44 @@ static ExporterObserverCallbacks CLIExporterObserverCallbacks = {
 
 static char *CLIFormatParseError(CLI *self, const ParseError *error)
 {
-    char location[256];
-    char head[32];
+    NAStringBuffer *buffer = NAStringBufferCreate(1024);
 
-    snprintf(location, 256, "%s:%d:%d", error->location.filepath, error->location.line, error->location.column);
-    snprintf(head, 32, "[ERROR:%d]", error->code);
+    NAStringBufferAppendFormat(buffer, "[ERROR:%d] ", error->code);
 
-    switch (error->code) {
-    case GeneralParseErrorUnsupportedFileType:
-    case GeneralParseErrorFileNotFound:
-    case GeneralParseErrorSyntaxError:
-        // TODO
-        break;
-    case NAMidiParseErrorInvalidResolution:
-    case NAMidiParseErrorInvalidTempo:
-    case NAMidiParseErrorInvalidTimeSign:
-    case NAMidiParseErrorInvalidChannel:
-    case NAMidiParseErrorInvalidVoice:
-    case NAMidiParseErrorInvalidVolume:
-    case NAMidiParseErrorInvalidPan:
-    case NAMidiParseErrorInvalidChorus:
-    case NAMidiParseErrorInvalidReverb:
-    case NAMidiParseErrorInvalidTranspose:
-    case NAMidiParseErrorInvalidKeySign:
-    case NAMidiParseErrorInvalidStep:
-    case NAMidiParseErrorInvalidNoteNumber:
-    case NAMidiParseErrorInvalidOctave:
-    case NAMidiParseErrorInvalidGatetime:
-    case NAMidiParseErrorInvalidVelocity:
-    case NAMidiParseErrorUnsupportedFileTypeInclude:
-    case NAMidiParseErrorIncludeFileNotFound:
-    case NAMidiParseErrorCircularFileInclude:
-    case NAMidiParseErrorPatternMissing:
-    case NAMidiParseErrorDuplicatePatternIdentifier:
-    case NAMidiParseErrorCircularPatternReference:
-        // TODO
-        break;
-    default:
-        break;
+    const char *errorString = ParseErrorCode2String(error->code);
+    const char *search = "ParseError";
+    char *camel = strstr(errorString, search) + strlen(search);
+    char *pc = camel;
+
+    while (*pc) {
+        if (isupper(*pc)) {
+            if (pc == camel) {
+                NAStringBufferAppendChar(buffer, *pc);
+            }
+            else {
+                NAStringBufferAppendChar(buffer, ' ');
+                NAStringBufferAppendChar(buffer, tolower(*pc));
+            }
+        }
+        else {
+            NAStringBufferAppendChar(buffer, *pc);
+        }
+
+        ++pc;
     }
 
-    char params[256] = {0};
+    NAStringBufferAppendString(buffer, ". ");
+
+    bool needseparator = false;
     NAIterator *iterator = NAArrayGetIterator(error->infos);
     while (iterator->hasNext(iterator)) {
-        strcat(params, params[0] ? "," : " ");
-        strcat(params, iterator->next(iterator));
+        NAStringBufferAppendFormat(buffer, "%s\"%s\"", needseparator ? "," : "", iterator->next(iterator));
+        needseparator = true;
     }
 
-    return NACStringFormat("%s %s%s at %s\n", head, ParseErrorCode2String(error->code), params, location);
+    NAStringBufferAppendFormat(buffer, " - %s:%d:%d\n", error->location.filepath, error->location.line, error->location.column);
+
+    char *ret = NAStringBufferRetriveCString(buffer);
+    NAStringBufferDestroy(buffer);
+    return ret;
 }
