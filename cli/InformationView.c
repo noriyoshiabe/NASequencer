@@ -5,6 +5,9 @@
 #define VERSION "0.2.0"
 #define VERSION_LONG "namidi-cli Version "VERSION" January 2, 2016\n"
 
+extern unsigned char license_txt[];
+extern int license_txt_len;
+
 const char *HEADER =
 "Welcome to the `NAMIDI` sequencer.\n"
 "\n"
@@ -41,4 +44,9 @@ extern void InformationViewShowHelp()
 extern void InformationViewShowVersion()
 {
     fputs(VERSION_LONG, stdout);
+}
+
+extern void InformationViewShowAbout()
+{
+    fwrite(license_txt, 1, license_txt_len, stdout);
 }

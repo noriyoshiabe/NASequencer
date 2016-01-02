@@ -1,5 +1,6 @@
 #include "Command.h"
 #include "PianoRollView.h"
+#include "InformationView.h"
 #include "NAArray.h"
 #include "NALog.h"
 
@@ -565,6 +566,13 @@ static void HelpCommandExecute(Command *self, CLI *cli)
     printf("\n");
 }
 
+static void AboutCommandExecute(Command *self, CLI *cli)
+{
+    printf("\n");
+    InformationViewShowAbout();
+    printf("\n");
+}
+
 #ifdef DEBUG
 static void LogCommandExecute(Command *self, CLI *cli)
 {
@@ -730,6 +738,7 @@ static CommandTable commandTable[] = {
     {"unload", UnloadCommandExecute, "unload <index>", "unload synthesizer specifid by index of synthesizers list."},
     {"export", ExportCommandExecute, "export <file>", "export sequence.\nsupported file types are currently .smf, .mid, .midi, .wav, .wave .m4a and .aac."},
     {"help", HelpCommandExecute, "help", "display this help."},
+    {"about", AboutCommandExecute, "about", "about NAMIDI."},
 #ifdef DEBUG
     {"log", LogCommandExecute, "log <silent|debug|trace>", "for development."},
 #endif

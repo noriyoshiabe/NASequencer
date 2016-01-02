@@ -15,6 +15,13 @@ add_subdirectory (../lib ${CMAKE_CURRENT_BINARY_DIR}/lib)
 add_subdirectory (../synthesizer ${CMAKE_CURRENT_BINARY_DIR}/synthesizer)
 add_subdirectory (../export ${CMAKE_CURRENT_BINARY_DIR}/export)
 
+add_custom_command(
+  OUTPUT license.c
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  COMMAND xxd -i license.txt ${CMAKE_CURRENT_BINARY_DIR}/license.c
+  DEPENDS license.txt
+)
+
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}
   ../core
@@ -34,6 +41,7 @@ set(SOURCES
   PianoRollView.c
   EventListView.c
   InformationView.c
+  license.c
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
