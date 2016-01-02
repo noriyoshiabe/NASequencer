@@ -272,7 +272,7 @@ static void visitTranspose(void *_self, ASTTranspose *ast)
     append(self->state->list, sem);
 }
 
-static void visitRest(void *_self, ASTRest *ast)
+static void visitStep(void *_self, ASTStep *ast)
 {
     NAMidiASTAnalyzer *self = _self;
 
@@ -281,7 +281,7 @@ static void visitRest(void *_self, ASTRest *ast)
         return;
     }
 
-    SEMRest *sem = node(Rest, ast);
+    SEMStep *sem = node(Step, ast);
     sem->step = ast->step;
     append(self->state->list, sem);
 }
@@ -502,7 +502,7 @@ Analyzer *NAMidiASTAnalyzerCreate(ParseContext *context)
     self->visitor.visitChorus = visitChorus;
     self->visitor.visitReverb = visitReverb;
     self->visitor.visitTranspose = visitTranspose;
-    self->visitor.visitRest = visitRest;
+    self->visitor.visitStep = visitStep;
     self->visitor.visitNote = visitNote;
     self->visitor.visitInclude = visitInclude;
     self->visitor.visitPattern = visitPattern;

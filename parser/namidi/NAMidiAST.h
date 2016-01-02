@@ -79,10 +79,10 @@ typedef struct _ASTTranspose {
     int value;
 } ASTTranspose;
 
-typedef struct _ASTRest {
+typedef struct _ASTStep {
     Node node;
     int step;
-} ASTRest;
+} ASTStep;
 
 typedef struct _ASTNote {
     Node node;
@@ -137,7 +137,7 @@ typedef struct _ASTVisitor {
     void (*visitChorus)(void *self, ASTChorus *ast);
     void (*visitReverb)(void *self, ASTReverb *ast);
     void (*visitTranspose)(void *self, ASTTranspose *ast);
-    void (*visitRest)(void *self, ASTRest *ast);
+    void (*visitStep)(void *self, ASTStep *ast);
     void (*visitNote)(void *self, ASTNote *ast);
     void (*visitInclude)(void *self, ASTInclude *ast);
     void (*visitPattern)(void *self, ASTPattern *ast);
@@ -162,7 +162,7 @@ extern ASTPan *NAMidiASTPanCreate(FileLocation *location);
 extern ASTChorus *NAMidiASTChorusCreate(FileLocation *location);
 extern ASTReverb *NAMidiASTReverbCreate(FileLocation *location);
 extern ASTTranspose *NAMidiASTTransposeCreate(FileLocation *location);
-extern ASTRest *NAMidiASTRestCreate(FileLocation *location);
+extern ASTStep *NAMidiASTStepCreate(FileLocation *location);
 extern ASTNote *NAMidiASTNoteCreate(FileLocation *location);
 extern ASTInclude *NAMidiASTIncludeCreate(FileLocation *location);
 extern ASTPattern *NAMidiASTPatternCreate(FileLocation *location);

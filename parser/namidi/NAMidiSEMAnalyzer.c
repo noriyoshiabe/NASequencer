@@ -193,7 +193,7 @@ static void visitTranspose(void *_self, SEMTranspose *sem)
     self->state->transpose = sem->value;
 }
 
-static void visitRest(void *_self, SEMRest *sem)
+static void visitStep(void *_self, SEMStep *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
     TICK(self->state) += sem->step;
@@ -296,7 +296,7 @@ Analyzer *NAMidiSEMAnalyzerCreate(ParseContext *context)
     self->visitor.visitChorus = visitChorus;
     self->visitor.visitReverb = visitReverb;
     self->visitor.visitTranspose = visitTranspose;
-    self->visitor.visitRest = visitRest;
+    self->visitor.visitStep = visitStep;
     self->visitor.visitNote = visitNote;
     self->visitor.visitPattern = visitPattern;
     self->visitor.visitContext = visitContext;

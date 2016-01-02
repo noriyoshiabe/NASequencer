@@ -86,10 +86,10 @@ typedef struct _SEMTranspose {
     int value;
 } SEMTranspose;
 
-typedef struct _SEMRest {
+typedef struct _SEMStep {
     Node node;
     int step;
-} SEMRest;
+} SEMStep;
 
 typedef struct _SEMNote {
     Node node;
@@ -130,7 +130,7 @@ typedef struct _SEMVisitor {
     void (*visitChorus)(void *self, SEMChorus *sem);
     void (*visitReverb)(void *self, SEMReverb *sem);
     void (*visitTranspose)(void *self, SEMTranspose *sem);
-    void (*visitRest)(void *self, SEMRest *sem);
+    void (*visitStep)(void *self, SEMStep *sem);
     void (*visitNote)(void *self, SEMNote *sem);
     void (*visitPattern)(void *self, SEMPattern *sem);
     void (*visitContext)(void *self, SEMContext *sem);
@@ -151,7 +151,7 @@ extern SEMPan *NAMidiSEMPanCreate(FileLocation *location);
 extern SEMChorus *NAMidiSEMChorusCreate(FileLocation *location);
 extern SEMReverb *NAMidiSEMReverbCreate(FileLocation *location);
 extern SEMTranspose *NAMidiSEMTransposeCreate(FileLocation *location);
-extern SEMRest *NAMidiSEMRestCreate(FileLocation *location);
+extern SEMStep *NAMidiSEMStepCreate(FileLocation *location);
 extern SEMNote *NAMidiSEMNoteCreate(FileLocation *location);
 extern SEMPattern *NAMidiSEMPatternCreate(FileLocation *location);
 extern SEMContext *NAMidiSEMContextCreate(FileLocation *location);

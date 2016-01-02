@@ -220,18 +220,18 @@ ASTTranspose *NAMidiASTTransposeCreate(FileLocation *location)
     return NodeCreate(ASTTranspose, location);
 }
 
-static void ASTRestAccept(void *self, void *visitor)
+static void ASTStepAccept(void *self, void *visitor)
 {
-    ((ASTVisitor *)visitor)->visitRest(visitor, self);
+    ((ASTVisitor *)visitor)->visitStep(visitor, self);
 }
 
-static void ASTRestDestroy(void *_self)
+static void ASTStepDestroy(void *_self)
 {
 }
 
-ASTRest *NAMidiASTRestCreate(FileLocation *location)
+ASTStep *NAMidiASTStepCreate(FileLocation *location)
 {
-    return NodeCreate(ASTRest, location);
+    return NodeCreate(ASTStep, location);
 }
 
 static void ASTNoteAccept(void *self, void *visitor)

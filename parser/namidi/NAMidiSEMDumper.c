@@ -168,7 +168,7 @@ static void visitTranspose(void *self, SEMTranspose *sem)
     dump(self, sem, INTEGER(sem, value), NULL);
 }
 
-static void visitRest(void *self, SEMRest *sem)
+static void visitStep(void *self, SEMStep *sem)
 {
     dump(self, sem, INTEGER(sem, step), NULL);
 }
@@ -226,7 +226,7 @@ Analyzer *NAMidiSEMDumperCreate(ParseContext *context)
     self->visitor.visitChorus = visitChorus;
     self->visitor.visitReverb = visitReverb;
     self->visitor.visitTranspose = visitTranspose;
-    self->visitor.visitRest = visitRest;
+    self->visitor.visitStep = visitStep;
     self->visitor.visitNote = visitNote;
     self->visitor.visitPattern = visitPattern;
     self->visitor.visitContext = visitContext;

@@ -230,18 +230,18 @@ SEMTranspose *NAMidiSEMTransposeCreate(FileLocation *location)
     return NodeCreate(SEMTranspose, location);
 }
 
-static void SEMRestAccept(void *self, void *visitor)
+static void SEMStepAccept(void *self, void *visitor)
 {
-    ((SEMVisitor *)visitor)->visitRest(visitor, self);
+    ((SEMVisitor *)visitor)->visitStep(visitor, self);
 }
 
-static void SEMRestDestroy(void *_self)
+static void SEMStepDestroy(void *_self)
 {
 }
 
-SEMRest *NAMidiSEMRestCreate(FileLocation *location)
+SEMStep *NAMidiSEMStepCreate(FileLocation *location)
 {
-    return NodeCreate(SEMRest, location);
+    return NodeCreate(SEMStep, location);
 }
 
 static void SEMNoteAccept(void *self, void *visitor)
