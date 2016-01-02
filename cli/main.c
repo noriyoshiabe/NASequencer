@@ -6,9 +6,12 @@
 #include <getopt.h>
 
 #include "CLI.h"
+#include "Command.h"
+#include "InformationView.h"
 #include "NAIO.h"
 
 static void showHelp();
+static void showVersion();
 static bool isAudioFileType(const char *filepath);
 
 static struct option _options[] = {
@@ -36,7 +39,7 @@ int main(int argc, char **argv)
     const char *output = NULL;
     const char *input = NULL;
 
-    while (-1 != (opt = getopt_long(argc, argv, "o:s:h", _options, NULL))) {
+    while (-1 != (opt = getopt_long(argc, argv, "o:s:h:v", _options, NULL))) {
         switch (opt) {
         case 'o':
             output = optarg;
@@ -46,6 +49,9 @@ int main(int argc, char **argv)
             break;
         case 'h':
             showHelp();
+            return EXIT_SUCCESS;
+        case 'v':
+            showVersion();
             return EXIT_SUCCESS;
         case '?':
             return EXIT_FAILURE;
@@ -68,6 +74,10 @@ int main(int argc, char **argv)
         }
     }
 
+    if (!input) {
+        InformationViewShowWelCome();
+    }
+
     _cli = CLICreate(input, soundSources);
 
     bool success;
@@ -85,14 +95,15 @@ int main(int argc, char **argv)
 
 static void showHelp()
 {
-    printf(
-          "Usage: namidi [options] [file]\n"
-          "Options:\n"
-          " -o, --outout <file>      Write output to SMF, WAV or AAC.\n"
-          "                          WAV and AAC output require valid synthesizer with -s, --sound-font option.\n"
-          " -s, --sound-font <file>  Specify sound font file for synthesizer.\n"
-          " -h, --help               This help text.\n"
-          );
+    InformationViewShowHelp();
+    fputs("\n", stdout);
+    CommandShowHelp();
+    fputs("\n", stdout);
+}
+
+static void showVersion()
+{
+    InformationViewShowVersion();
 }
 
 static bool isAudioFileType(const char *filepath)

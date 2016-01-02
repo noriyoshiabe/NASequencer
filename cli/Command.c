@@ -561,29 +561,7 @@ static void ExportCommandExecute(Command *self, CLI *cli)
 static void HelpCommandExecute(Command *self, CLI *cli)
 {
     printf("\n");
-
-    int maxSynopsisWidth = 0;
-    for (int i = 0; commandTable[i].cmd; ++i) {
-        maxSynopsisWidth = MAX(maxSynopsisWidth, strlen(commandTable[i].synopsis));
-    }
-
-    for (int i = 0; commandTable[i].cmd; ++i) {
-        printf("%s", commandTable[i].synopsis);
-
-        char *description = strdup(commandTable[i].description);
-        char *saveptr, *token, *s = description;
-        while ((token = strtok_r(s, "\n", &saveptr))) {
-            if (s) {
-                printf("%*s  - %s\n", maxSynopsisWidth - (int)strlen(commandTable[i].synopsis), "", token);
-            }
-            else {
-                printf("%*s    %s\n", maxSynopsisWidth, "", token);
-            }
-            s = NULL;
-        }
-        free(description);
-    }
-
+    CommandShowHelp();
     printf("\n");
 }
 
@@ -705,6 +683,31 @@ char *CommandCompletionEntry(const char *text, int state)
     }
 
     return NULL;
+}
+
+extern void CommandShowHelp()
+{
+    int maxSynopsisWidth = 0;
+    for (int i = 0; commandTable[i].cmd; ++i) {
+        maxSynopsisWidth = MAX(maxSynopsisWidth, strlen(commandTable[i].synopsis));
+    }
+
+    for (int i = 0; commandTable[i].cmd; ++i) {
+        printf("%s", commandTable[i].synopsis);
+
+        char *description = strdup(commandTable[i].description);
+        char *saveptr, *token, *s = description;
+        while ((token = strtok_r(s, "\n", &saveptr))) {
+            if (s) {
+                printf("%*s  - %s\n", maxSynopsisWidth - (int)strlen(commandTable[i].synopsis), "", token);
+            }
+            else {
+                printf("%*s    %s\n", maxSynopsisWidth, "", token);
+            }
+            s = NULL;
+        }
+        free(description);
+    }
 }
 
 static CommandTable commandTable[] = {
