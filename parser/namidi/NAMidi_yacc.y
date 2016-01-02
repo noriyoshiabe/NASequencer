@@ -44,10 +44,9 @@ extern void NAMidiParserSyntaxError(void *self, FileLocation *location, const ch
 %token <s>STRING
 
 %token RESOLUTION TITLE TEMPO TIME KEY MARKER DEFINE END CHANNEL VOICE
-       SYNTH VOLUME PAN CHORUS REVERB TRANSPOSE DEFAULT STEP INCLUDE
+       SYNTH VOLUME PAN CHORUS REVERB TRANSPOSE DEFAULT INCLUDE
 
 %token <s>NOTE KEY_SIGN IDENTIFIER
-%token <i>STEP
 
 %type <node> resolution title tempo time key marker channel voice synth volume
              pan chorus reverb transpose step note include pattern
@@ -281,19 +280,7 @@ transpose
     ;
 
 step
-    : STEP
-        {
-            ASTStep *n = node(Step, @$);
-            n->step = $1;
-            $$ = n;
-        }
-    | ':' INTEGER
-        {
-            ASTStep *n = node(Step, @$);
-            n->step = $2;
-            $$ = n;
-        }
-    | INTEGER ':'
+    : INTEGER ':'
         {
             ASTStep *n = node(Step, @$);
             n->step = $1;

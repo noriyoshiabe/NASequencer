@@ -53,7 +53,6 @@ REVERB         reverb
 TRANSPOSE      transpose
 KEY            key
 DEFAULT        default
-STEP           (s|step)[[:space:]]*{INTEGER}
 INCLUDE        include
 
 KEY_SIGN       [cdefgab](#|b)?(maj|min)
@@ -88,7 +87,6 @@ LINE_COMMENT   (\/\/|==|--).*$
 {REVERB}         { return REVERB; }
 {TRANSPOSE}      { return TRANSPOSE; }
 {DEFAULT}        { return DEFAULT; }
-{STEP}           { yylval->i = atoi(strpbrk(yytext, "012345679")); return STEP; }
 {INCLUDE}        { return INCLUDE; }
 
 {NOTE}           { yylval->s = strdup(yytext); return NOTE; }
