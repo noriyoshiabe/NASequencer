@@ -11,6 +11,7 @@ VOICE     0 120 0
 CHORUS    100
 REVERB    100
 VOLUME    100
+VELOCITY  127
 TRANSPOSE 0
 PAN       0
 ------------------------
@@ -82,6 +83,7 @@ REVERB    100
 DEFINE piano-chord
 ------------------------
 KEY Cmaj
+VELOCITY  100
 
 480: C2 E2 G2 B2
 
@@ -93,17 +95,18 @@ KEY Cmaj
 240: C2 E2 G2 B2
 
 KEY Cmin
+VELOCITY  60
 
 480: C2 - 960 E2 G2 B2
                 
-120:    E2 G2 B2
-120:    E2 G2 B2
+120:    E2 G2 B2 100
+120:    E2 G2 B2 100
 240: 
-240: C2 E2 G2 B2
-240:    E2 G2 B2 C3 127
-240: C2 E2 G2 B2
-240: C2 E2 G2 B2
-240: C2 E2 G2 B2
+240: C2 E2 G2 B2 127
+240:    E2 G2 B2 127 C3 127
+240: C2 E2 G2 B2 127
+240: C2 E2 G2 B2 127
+240: C2 E2 G2 B2 127
 ------------------------
 END
 

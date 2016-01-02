@@ -44,11 +44,12 @@ extern void NAMidiParserSyntaxError(void *self, FileLocation *location, const ch
 %token <s>STRING
 
 %token RESOLUTION TITLE TEMPO TIME KEY MARKER DEFINE EXPAND CONTEXT WITH
-       END CHANNEL VOICE SYNTH VOLUME PAN CHORUS REVERB TRANSPOSE DEFAULT INCLUDE
+       END CHANNEL VELOCITY VOICE SYNTH VOLUME PAN CHORUS REVERB TRANSPOSE
+       DEFAULT INCLUDE
 
 %token <s>NOTE KEY_SIGN IDENTIFIER
 
-%type <node> resolution title tempo time key marker channel voice synth volume
+%type <node> resolution title tempo time key marker channel velocity voice synth volume
              pan chorus reverb transpose step note include expand
 
 %type <node> define context
@@ -92,6 +93,7 @@ statement
     | key
     | marker
     | channel
+    | velocity
     | voice
     | synth
     | volume
@@ -186,6 +188,15 @@ channel
         {
             ASTChannel *n = node(Channel, @$);
             n->number = $2;
+            $$ = n;
+        }
+    ;
+
+velocity
+    : VELOCITY INTEGER
+        {
+            ASTVelocity *n = node(Velocity, @$);
+            n->value = $2;
             $$ = n;
         }
     ;

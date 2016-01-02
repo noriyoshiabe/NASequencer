@@ -120,6 +120,20 @@ ASTChannel *NAMidiASTChannelCreate(FileLocation *location)
     return NodeCreate(ASTChannel, location);
 }
 
+static void ASTVelocityAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitVelocity(visitor, self);
+}
+
+static void ASTVelocityDestroy(void *_self)
+{
+}
+
+ASTVelocity *NAMidiASTVelocityCreate(FileLocation *location)
+{
+    return NodeCreate(ASTVelocity, location);
+}
+
 static void ASTVoiceAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitVoice(visitor, self);

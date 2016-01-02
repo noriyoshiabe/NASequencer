@@ -173,6 +173,14 @@ static void visitChannel(void *_self, SEMChannel *sem)
     FLUSH(self->state);
 }
 
+static void visitVelocity(void *_self, SEMVelocity *sem)
+{
+    NAMidiSEMAnalyzer *self = _self;
+    VELOCITY(self->state) = sem->value;
+
+    FLUSH(self->state);
+}
+
 static void visitVoice(void *_self, SEMVoice *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
@@ -257,8 +265,6 @@ static void visitNote(void *_self, SEMNote *sem)
     int gatetime = -1 != sem->gatetime ? sem->gatetime : GATETIME(self->state);
     int velocity = -1 != sem->velocity ? sem->velocity : VELOCITY(self->state);
 
-    VELOCITY(self->state) = velocity;
-
     self->builder->appendNote(self->builder, TICK(self->state), channel, noteNo, gatetime, velocity);
 }
 
@@ -327,6 +333,7 @@ Analyzer *NAMidiSEMAnalyzerCreate(ParseContext *context)
     self->visitor.visitKey = visitKey;
     self->visitor.visitMarker = visitMarker;
     self->visitor.visitChannel = visitChannel;
+    self->visitor.visitVelocity = visitVelocity;
     self->visitor.visitVoice = visitVoice;
     self->visitor.visitSynth = visitSynth;
     self->visitor.visitVolume = visitVolume;

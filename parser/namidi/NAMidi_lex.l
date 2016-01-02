@@ -47,6 +47,7 @@ CONTEXT        context
 WITH           with
 END            end
 CHANNEL        channel
+VELOCITY       velocity
 VOICE          voice
 SYNTH          synth
 VOLUME         volume
@@ -85,6 +86,7 @@ LINE_COMMENT   (\/\/|==|--).*$
 {WITH}           { return WITH; }
 {END}            { return END; }
 {CHANNEL}        { return CHANNEL; }
+{VELOCITY}       { return VELOCITY; }
 {VOICE}          { return VOICE; }
 {SYNTH}          { return SYNTH; }
 {VOLUME}         { return VOLUME; }

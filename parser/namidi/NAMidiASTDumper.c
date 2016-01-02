@@ -104,6 +104,11 @@ static void visitChannel(void *self, ASTChannel *ast)
     dump(self, ast, INTEGER(ast, number), NULL);
 }
 
+static void visitVelocity(void *self, ASTVelocity *ast)
+{
+    dump(self, ast, INTEGER(ast, value), NULL);
+}
+
 static void visitVoice(void *self, ASTVoice *ast)
 {
     dump(self, ast, INTEGER(ast, msb), INTEGER(ast, lsb), INTEGER(ast, programNo), NULL);
@@ -252,6 +257,7 @@ Analyzer *NAMidiASTDumperCreate(ParseContext *context)
     self->visitor.visitKey = visitKey;
     self->visitor.visitMarker = visitMarker;
     self->visitor.visitChannel = visitChannel;
+    self->visitor.visitVelocity = visitVelocity;
     self->visitor.visitVoice = visitVoice;
     self->visitor.visitSynth = visitSynth;
     self->visitor.visitVolume = visitVolume;

@@ -130,6 +130,20 @@ SEMChannel *NAMidiSEMChannelCreate(FileLocation *location)
     return NodeCreate(SEMChannel, location);
 }
 
+static void SEMVelocityAccept(void *self, void *visitor)
+{
+    ((SEMVisitor *)visitor)->visitVelocity(visitor, self);
+}
+
+static void SEMVelocityDestroy(void *_self)
+{
+}
+
+SEMVelocity *NAMidiSEMVelocityCreate(FileLocation *location)
+{
+    return NodeCreate(SEMVelocity, location);
+}
+
 static void SEMVoiceAccept(void *self, void *visitor)
 {
     ((SEMVisitor *)visitor)->visitVoice(visitor, self);

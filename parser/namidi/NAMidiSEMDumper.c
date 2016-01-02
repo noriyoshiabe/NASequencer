@@ -133,6 +133,11 @@ static void visitChannel(void *self, SEMChannel *sem)
     dump(self, sem, INTEGER(sem, number), NULL);
 }
 
+static void visitVelocity(void *self, SEMVelocity *sem)
+{
+    dump(self, sem, INTEGER(sem, value), NULL);
+}
+
 static void visitVoice(void *self, SEMVoice *sem)
 {
     dump(self, sem, INTEGER(sem, msb), INTEGER(sem, lsb), INTEGER(sem, programNo), NULL);
@@ -218,7 +223,7 @@ Analyzer *NAMidiSEMDumperCreate(ParseContext *context)
     self->visitor.visitTime = visitTime;
     self->visitor.visitKey = visitKey;
     self->visitor.visitMarker = visitMarker;
-    self->visitor.visitChannel = visitChannel;
+    self->visitor.visitVelocity = visitVelocity;
     self->visitor.visitVoice = visitVoice;
     self->visitor.visitSynth = visitSynth;
     self->visitor.visitVolume = visitVolume;

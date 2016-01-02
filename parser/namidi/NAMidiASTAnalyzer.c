@@ -176,6 +176,20 @@ static void visitChannel(void *_self, ASTChannel *ast)
     append(self->state->list, sem);
 }
 
+static void visitVelocity(void *_self, ASTVelocity *ast)
+{
+    NAMidiASTAnalyzer *self = _self;
+
+    if (!isValidRange(ast->value, 0, 127)) {
+        appendError(self, ast, NAMidiParseErrorInvalidVelocity, NACStringFromInteger(ast->value), NULL);
+        return;
+    }
+
+    SEMVelocity *sem = node(Velocity, ast);
+    sem->value = ast->value;
+    append(self->state->list, sem);
+}
+
 static void visitVoice(void *_self, ASTVoice *ast)
 {
     NAMidiASTAnalyzer *self = _self;
@@ -488,6 +502,7 @@ Analyzer *NAMidiASTAnalyzerCreate(ParseContext *context)
     self->visitor.visitKey = visitKey;
     self->visitor.visitMarker = visitMarker;
     self->visitor.visitChannel = visitChannel;
+    self->visitor.visitVelocity = visitVelocity;
     self->visitor.visitVoice = visitVoice;
     self->visitor.visitSynth = visitSynth;
     self->visitor.visitVolume = visitVolume;

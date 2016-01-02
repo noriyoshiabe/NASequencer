@@ -42,6 +42,11 @@ typedef struct _ASTChannel {
     int number;
 } ASTChannel;
 
+typedef struct _ASTVelocity {
+    Node node;
+    int value;
+} ASTVelocity;
+
 typedef struct _ASTVoice {
     Node node;
     int msb;
@@ -130,6 +135,7 @@ typedef struct _ASTVisitor {
     void (*visitKey)(void *self, ASTKey *ast);
     void (*visitMarker)(void *self, ASTMarker *ast);
     void (*visitChannel)(void *self, ASTChannel *ast);
+    void (*visitVelocity)(void *self, ASTVelocity *ast);
     void (*visitVoice)(void *self, ASTVoice *ast);
     void (*visitSynth)(void *self, ASTSynth *ast);
     void (*visitVolume)(void *self, ASTVolume *ast);
@@ -155,6 +161,7 @@ extern ASTTime *NAMidiASTTimeCreate(FileLocation *location);
 extern ASTKey *NAMidiASTKeyCreate(FileLocation *location);
 extern ASTMarker *NAMidiASTMarkerCreate(FileLocation *location);
 extern ASTChannel *NAMidiASTChannelCreate(FileLocation *location);
+extern ASTVelocity *NAMidiASTVelocityCreate(FileLocation *location);
 extern ASTVoice *NAMidiASTVoiceCreate(FileLocation *location);
 extern ASTSynth *NAMidiASTSynthCreate(FileLocation *location);
 extern ASTVolume *NAMidiASTVolumeCreate(FileLocation *location);
