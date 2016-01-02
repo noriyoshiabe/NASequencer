@@ -12,12 +12,14 @@
 
 static void showHelp();
 static void showVersion();
+static void showWelcome();
 static bool isAudioFileType(const char *filepath);
 
 static struct option _options[] = {
     { "output", required_argument, NULL, 'o'},
     { "sound-font", required_argument, NULL, 's'},
     { "help", no_argument, NULL, 'h'},
+    { "version", no_argument, NULL, 'v'},
 
     {NULL, 0, NULL, 0}
 };
@@ -75,7 +77,7 @@ int main(int argc, char **argv)
     }
 
     if (!input) {
-        InformationViewShowWelCome();
+        showWelcome();
     }
 
     _cli = CLICreate(input, soundSources);
@@ -95,7 +97,9 @@ int main(int argc, char **argv)
 
 static void showHelp()
 {
-    InformationViewShowHelp();
+    InformationViewShowHeader();
+    fputs("\n", stdout);
+    InformationViewShowUsage();
     fputs("\n", stdout);
     CommandShowHelp();
     fputs("\n", stdout);
@@ -104,6 +108,12 @@ static void showHelp()
 static void showVersion()
 {
     InformationViewShowVersion();
+}
+
+static void showWelcome()
+{
+    InformationViewShowWelCome();
+    fputs("\n", stdout);
 }
 
 static bool isAudioFileType(const char *filepath)

@@ -562,8 +562,11 @@ static void ExportCommandExecute(Command *self, CLI *cli)
 static void HelpCommandExecute(Command *self, CLI *cli)
 {
     printf("\n");
-    CommandShowHelp();
+    InformationViewShowUsage();
     printf("\n");
+    printf("\n");
+    CommandShowHelp();
+    fputs("\n", stdout);
 }
 
 static void AboutCommandExecute(Command *self, CLI *cli)

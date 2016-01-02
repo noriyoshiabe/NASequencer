@@ -25,28 +25,29 @@ const char *USAGE =
 " -s, --sound-font <file>  Specify sound font file for synthesizer.\n"
 " -h, --help               This help text.\n";
 
-extern void InformationViewShowWelCome()
+void InformationViewShowWelCome()
 {
     fputs(HEADER, stdout);
     fputs("\n", stdout);
     fputs(GETTING_STARTED, stdout);
-    fputs("\n", stdout);
 }
 
-extern void InformationViewShowHelp()
+void InformationViewShowHeader()
 {
     fputs(HEADER, stdout);
-    fputs("\n", stdout);
-    fputs(USAGE, stdout);
-    fputs("\n", stdout);
 }
 
-extern void InformationViewShowVersion()
+void InformationViewShowUsage()
+{
+    fputs(USAGE, stdout);
+}
+
+void InformationViewShowVersion()
 {
     fputs(VERSION_LONG, stdout);
 }
 
-extern void InformationViewShowAbout()
+void InformationViewShowAbout()
 {
     fwrite(license_txt, 1, license_txt_len, stdout);
 }

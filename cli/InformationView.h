@@ -1,6 +1,7 @@
 #pragma once
 
 extern void InformationViewShowWelCome();
-extern void InformationViewShowHelp();
+extern void InformationViewShowHeader();
+extern void InformationViewShowUsage();
 extern void InformationViewShowVersion();
 extern void InformationViewShowAbout();
