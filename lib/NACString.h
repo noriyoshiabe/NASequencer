@@ -6,6 +6,7 @@
 
 extern char *NACStringFormat(const char *format, ...);
 extern char *NACStringToLowerCase(char *string);
+extern char *NACStringToUpperCase(char *string);
 extern char *NACStringTrimWhiteSpace(char *string);
 
 extern char *NACStringFromInteger(int i, char *buffer, int size);

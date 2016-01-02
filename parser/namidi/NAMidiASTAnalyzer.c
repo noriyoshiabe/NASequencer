@@ -397,7 +397,7 @@ static void visitPattern(void *_self, ASTPattern *ast)
     }
 
     if (NAArrayIsEmpty(sem->ctxIdList)) {
-        NAArrayAppend(sem->ctxIdList, strdup("default"));
+        NAArrayAppend(sem->ctxIdList, strdup("DEFAULT"));
     }
 
     append(self->state->list, sem);

@@ -38,6 +38,16 @@ char *NACStringToLowerCase(char *string)
     return string;
 }
 
+char *NACStringToUpperCase(char *string)
+{
+    char *c = string;
+    while (*c) {
+        *c = tolower(*c);
+        ++c;
+    }
+    return string;
+}
+
 char *NACStringTrimWhiteSpace(char *string)
 {
     int len = strlen(string);

@@ -6,6 +6,8 @@
 #include "NAMidiParser.h"
 #include "NAMidiAST.h"
 
+#include "NACString.h"
+
 extern void NAMidi_lex_set_error_until_eol(yyscan_t scanner);
 extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, void **node, const char *message);
 
@@ -311,21 +313,21 @@ pattern
     : IDENTIFIER
         {
             ASTPattern *n = node(Pattern, @$);
-            n->identifier = $1;
+            n->identifier = NACStringToUpperCase($1);
             n->node.children = list();
             $$ = n;
         }
     | IDENTIFIER '(' ')'
         {
             ASTPattern *n = node(Pattern, @$);
-            n->identifier = $1;
+            n->identifier = NACStringToUpperCase($1);
             n->node.children = list();
             $$ = n;
         }
     | IDENTIFIER '(' identifier_list ')'
         {
             ASTPattern *n = node(Pattern, @$);
-            n->identifier = $1;
+            n->identifier = NACStringToUpperCase($1);
             n->node.children = $3;
             $$ = n;
         }
@@ -335,7 +337,7 @@ define
     : DEFINE IDENTIFIER statement_list END
         {
             ASTDefine *n = node(Define, @$);
-            n->identifier = $2;
+            n->identifier = NACStringToUpperCase($2);
             n->node.children = $3;
             $$ = n;
         }
@@ -368,13 +370,13 @@ identifier
     : IDENTIFIER
         {
             ASTIdentifier *n = node(Identifier, @$);
-            n->idString = $1;
+            n->idString = NACStringToUpperCase($1);
             $$ = n;
         }
     | DEFAULT
         {
             ASTIdentifier *n = node(Identifier, @$);
-            n->idString = strdup("default");
+            n->idString = strdup("DEFAULT");
             $$ = n;
         }
     | INTEGER
