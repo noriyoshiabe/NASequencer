@@ -253,14 +253,16 @@ static void visitNote(void *_self, SEMNote *sem)
 
     int channel = self->state->channel;
     int octave = SEMNOTE_OCTAVE_NONE != sem->octave ? sem->octave : self->state->channels[channel].octave;
-    self->state->channels[channel].octave = octave;
 
     int noteNo = NoteTableGetNoteNo(self->state->noteTable, sem->baseNote, sem->accidental, octave);
     noteNo += self->state->transpose;
+
     if (!isValidRange(noteNo, 0, 127)) {
         appendError(self, sem, NAMidiParseErrorInvalidNoteNumber, NACStringFromInteger(noteNo), sem->noteString, NULL);
         return;
     }
+
+    self->state->channels[channel].octave = octave;
 
     int gatetime = -1 != sem->gatetime ? sem->gatetime : GATETIME(self->state);
     int velocity = -1 != sem->velocity ? sem->velocity : VELOCITY(self->state);

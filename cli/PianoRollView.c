@@ -195,7 +195,7 @@ static const char *NoteNo2NoteLabel(int noteNo)
         "C5",  "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
         "C6",  "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
         "C7",  "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
-        "C8",  "C#", "D", "D#", "E", "F", "F#",
+        "C8",  "C#", "D", "D#", "E", "F", "F#", "G",
     };
 
     return labels[noteNo];
