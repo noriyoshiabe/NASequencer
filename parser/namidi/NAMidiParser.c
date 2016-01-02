@@ -82,7 +82,7 @@ Node *NAMidiParserParseIncludeFile(void *_self, FileLocation *location, const ch
     NAMidiParser *self = _self; 
 
     const char *ext = NAIOGetFileExtenssion(includeFile);
-    if (0 != strcmp("namidi", ext)) {
+    if (0 != strcmp("namidi", ext) && 0 != strcmp("nas", ext)) {
         self->context->appendError(self->context, location, NAMidiParseErrorUnsupportedFileTypeInclude, ext, includeFile, NULL);
         return NULL;
     }

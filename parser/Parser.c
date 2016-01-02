@@ -34,6 +34,7 @@ static Driver *ParserDriverCreate(Parser *self, const char *filepath)
         DriverFactory factory;
     } table[] = {
         {"namidi", NAMidiDriverCreate},
+        {"nas", NAMidiDriverCreate},
         {"abc", ABCDriverCreate},
     };
 
