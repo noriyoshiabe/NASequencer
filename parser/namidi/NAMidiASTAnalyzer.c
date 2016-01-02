@@ -299,9 +299,9 @@ static void visitNote(void *_self, ASTNote *ast)
         ASTNoteParam *np = NAArrayGetValueAt(ast->node.children, i);
         switch (i) {
         case 0:
-            step = np->value;
-            if (!isValidRange(step, -1, 65535)) {
-                appendError(self, ast, NAMidiParseErrorInvalidStep, NACStringFromInteger(step), NULL);
+            velocity = np->value;
+            if (!isValidRange(velocity, -1, 127)) {
+                appendError(self, ast, NAMidiParseErrorInvalidVelocity, NACStringFromInteger(velocity), NULL);
                 return;
             }
             break;
@@ -309,13 +309,6 @@ static void visitNote(void *_self, ASTNote *ast)
             gatetime = np->value;
             if (!isValidRange(gatetime, -1, 65535)) {
                 appendError(self, ast, NAMidiParseErrorInvalidGatetime, NACStringFromInteger(gatetime), NULL);
-                return;
-            }
-            break;
-        case 2:
-            velocity = np->value;
-            if (!isValidRange(velocity, -1, 127)) {
-                appendError(self, ast, NAMidiParseErrorInvalidVelocity, NACStringFromInteger(velocity), NULL);
                 return;
             }
             break;
