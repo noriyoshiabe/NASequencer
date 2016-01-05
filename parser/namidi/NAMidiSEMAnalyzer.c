@@ -61,6 +61,7 @@ static int StateLength(State *self);
 #define OCTAVE(state) (state->channels[state->channel].octave)
 
 #define FLUSH(state) TICK(state) += STEP(state); STEP(state) = 0
+
 static void destroy(void *_self)
 {
     NAMidiSEMAnalyzer *self = _self;
@@ -106,11 +107,11 @@ static void visitResolution(void *_self, SEMResolution *sem)
         return;
     }
 
+    FLUSH(self->state);
+
     self->state->resolution = sem->resolution;
     self->builder->setResolution(self->builder, sem->resolution);
     self->definedNode.resolution = (Node *)sem;
-
-    FLUSH(self->state);
 }
 
 static void visitTitle(void *_self, SEMTitle *sem)
@@ -123,118 +124,107 @@ static void visitTitle(void *_self, SEMTitle *sem)
         return;
     }
 
+    FLUSH(self->state);
+
     self->builder->setTitle(self->builder, sem->title);
     self->definedNode.title = (Node *)sem;
-
-    FLUSH(self->state);
 }
 
 static void visitTempo(void *_self, SEMTempo *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-    self->builder->appendTempo(self->builder, TICK(self->state), sem->tempo);
-
     FLUSH(self->state);
+    self->builder->appendTempo(self->builder, TICK(self->state), sem->tempo);
 }
 
 static void visitTime(void *_self, SEMTime *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-    self->builder->appendTimeSign(self->builder, TICK(self->state), sem->numerator, sem->denominator);
-
     FLUSH(self->state);
+    self->builder->appendTimeSign(self->builder, TICK(self->state), sem->numerator, sem->denominator);
 }
 
 static void visitKey(void *_self, SEMKey *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
+
+    FLUSH(self->state);
+
     MidiKeySign keysign = NoteTableGetMidiKeySign(sem->noteTable);
     self->builder->appendKey(self->builder, TICK(self->state), keysign.sf, keysign.mi);
 
     NoteTableRelease(self->state->noteTable);
     self->state->noteTable = NoteTableRetain(sem->noteTable);
-
-    FLUSH(self->state);
 }
 
 static void visitMarker(void *_self, SEMMarker *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-    self->builder->appendMarker(self->builder, TICK(self->state), sem->text);
-
     FLUSH(self->state);
+    self->builder->appendMarker(self->builder, TICK(self->state), sem->text);
 }
 
 static void visitChannel(void *_self, SEMChannel *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-    self->state->channel = sem->number;
-
     FLUSH(self->state);
+    self->state->channel = sem->number;
 }
 
 static void visitVelocity(void *_self, SEMVelocity *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-    VELOCITY(self->state) = sem->value;
-
     FLUSH(self->state);
+    VELOCITY(self->state) = sem->value;
 }
 
 static void visitVoice(void *_self, SEMVoice *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-    self->builder->appendVoice(self->builder, TICK(self->state), self->state->channel, sem->msb, sem->lsb, sem->programNo);
-
     FLUSH(self->state);
+    self->builder->appendVoice(self->builder, TICK(self->state), self->state->channel, sem->msb, sem->lsb, sem->programNo);
 }
 
 static void visitSynth(void *_self, SEMSynth *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-    self->builder->appendSynth(self->builder, TICK(self->state), self->state->channel, sem->name);
-
     FLUSH(self->state);
+    self->builder->appendSynth(self->builder, TICK(self->state), self->state->channel, sem->name);
 }
 
 static void visitVolume(void *_self, SEMVolume *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-    self->builder->appendVolume(self->builder, TICK(self->state), self->state->channel, sem->value);
-
     FLUSH(self->state);
+    self->builder->appendVolume(self->builder, TICK(self->state), self->state->channel, sem->value);
 }
 
 static void visitPan(void *_self, SEMPan *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-    self->builder->appendPan(self->builder, TICK(self->state), self->state->channel, sem->value);
-
     FLUSH(self->state);
+    self->builder->appendPan(self->builder, TICK(self->state), self->state->channel, sem->value);
 }
 
 static void visitChorus(void *_self, SEMChorus *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-    self->builder->appendChorus(self->builder, TICK(self->state), self->state->channel, sem->value);
-
     FLUSH(self->state);
+    self->builder->appendChorus(self->builder, TICK(self->state), self->state->channel, sem->value);
 }
 
 static void visitReverb(void *_self, SEMReverb *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-    self->builder->appendReverb(self->builder, TICK(self->state), self->state->channel, sem->value);
-
     FLUSH(self->state);
+    self->builder->appendReverb(self->builder, TICK(self->state), self->state->channel, sem->value);
 }
 
 static void visitTranspose(void *_self, SEMTranspose *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-    self->state->transpose = sem->value;
-
     FLUSH(self->state);
+    self->state->transpose = sem->value;
 }
 
 static void visitStep(void *_self, SEMStep *sem)
