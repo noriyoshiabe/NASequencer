@@ -98,7 +98,6 @@ typedef struct _SEMStep {
 
 typedef struct _SEMNote {
     Node node;
-    int step;
     BaseNote baseNote;
     Accidental accidental;
     int octave;

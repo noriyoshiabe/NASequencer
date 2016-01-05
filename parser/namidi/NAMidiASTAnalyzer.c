@@ -304,7 +304,6 @@ static void visitNote(void *_self, ASTNote *ast)
 {
     NAMidiASTAnalyzer *self = _self;
 
-    int step = -1;
     int gatetime = -1;
     int velocity = -1;
 
@@ -366,7 +365,6 @@ static void visitNote(void *_self, ASTNote *ast)
     }
 
     SEMNote *sem = node(Note, ast);
-    sem->step = step;
     sem->baseNote = baseNote;
     sem->accidental = accidental;
     sem->octave = octave;

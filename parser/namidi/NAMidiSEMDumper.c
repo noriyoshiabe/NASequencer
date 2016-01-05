@@ -185,7 +185,6 @@ static void visitNote(void *_self, SEMNote *sem)
 
     printf("%*s[%s]", self->indent, "", node->type);
 
-    printf(" %s=%s", INTEGER(sem, step));
     printf(" baseNote=%s", BaseNote2String(sem->baseNote));
     printf(" accidental=%s", Accidental2String(sem->accidental));
     printf(" %s=%s", INTEGER(sem, octave));
