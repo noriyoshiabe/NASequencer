@@ -48,6 +48,8 @@ extern int ABC_directive_error(YYLTYPE *yylloc, yyscan_t scanner, const char *fi
 
 %type <node> statement
 
+%destructor { free($$); } VOICE_ID
+
 %%
 
 input

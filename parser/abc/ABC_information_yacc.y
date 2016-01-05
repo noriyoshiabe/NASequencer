@@ -67,6 +67,13 @@ extern void ABC_information_lex_set_error(yyscan_t scanner);
 
 %type <node> statement
 
+%destructor { free($$); } STRING
+%destructor { free($$); } FILEPATH VERSION_NUMBER
+%destructor { free($$); } KEY_TONIC KEY_MODE KEY_ACCIDENTAL CLEF_NAME PITCH NONE PART_LABEL
+%destructor { free($$); } MACRO_TARGET REDEFINABLE_SYMBOL REDEFINABLE_REPLACEMENT
+%destructor { free($$); } VOICE_ID VOICE_NAME
+%destructor { free($$); } key_tonic part_expr
+
 %%
 
 input

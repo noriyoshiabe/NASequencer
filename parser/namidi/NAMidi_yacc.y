@@ -58,6 +58,9 @@ extern void NAMidiParserUnExpectedEOF(void *self, FileLocation *location);
 %type <node> statement note_param identifier
 %type <list> statement_list identifier_list note_param_list
 
+%destructor { free($$); } STRING
+%destructor { free($$); } NOTE KEY_SIGN IDENTIFIER
+
 %%
 
 input

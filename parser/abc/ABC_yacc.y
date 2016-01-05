@@ -46,6 +46,11 @@ extern int ABC_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, vo
 %type <node> statement
 %type <list> statement_list
 
+%destructor { free($$); } FILE_IDENTIFICATION
+%destructor { free($$); } INFORMATION
+%destructor { free($$); } DIRECTIVE
+%destructor { free($$); } TUNE_BODY
+
 %%
 
 input
