@@ -34,6 +34,7 @@ typedef enum {
     NAMidiParseErrorPatternMissing,
     NAMidiParseErrorDuplicatePatternIdentifier,
     NAMidiParseErrorCircularPatternReference,
+    NAMidiParseErrorUnexpectedEOF,
 } NAMidiParseError;
 
 extern DSLParser *NAMidiParserCreate(ParseContext *context);

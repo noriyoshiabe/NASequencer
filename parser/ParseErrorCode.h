@@ -40,6 +40,7 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(NAMidiParseErrorPatternMissing);
     CASE(NAMidiParseErrorDuplicatePatternIdentifier);
     CASE(NAMidiParseErrorCircularPatternReference);
+    CASE(NAMidiParseErrorUnexpectedEOF);
 
     CASE(ABCParseErrorUnrecognisedVersion);
     CASE(ABCParseErrorUnsupportedFileTypeInclude);

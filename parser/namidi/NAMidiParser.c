@@ -119,3 +119,9 @@ void NAMidiParserSyntaxError(void *_self, FileLocation *location, const char *to
     NAMidiParser *self = _self; 
     self->context->appendError(self->context, location, GeneralParseErrorSyntaxError, token, NULL);
 }
+
+void NAMidiParserUnExpectedEOF(void *_self, FileLocation *location)
+{
+    NAMidiParser *self = _self; 
+    self->context->appendError(self->context, location, NAMidiParseErrorUnexpectedEOF, NULL);
+}

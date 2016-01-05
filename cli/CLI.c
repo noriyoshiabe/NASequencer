@@ -382,6 +382,7 @@ static char *CLIFormatParseError(CLI *self, const ParseError *error)
     const char *search = "ParseError";
     char *camel = strstr(errorString, search) + strlen(search);
     char *pc = camel;
+    char *prev = NULL;
 
     while (*pc) {
         if (isupper(*pc)) {
@@ -389,14 +390,23 @@ static char *CLIFormatParseError(CLI *self, const ParseError *error)
                 NAStringBufferAppendChar(buffer, *pc);
             }
             else {
-                NAStringBufferAppendChar(buffer, ' ');
-                NAStringBufferAppendChar(buffer, tolower(*pc));
+                if (islower(*prev)) {
+                    NAStringBufferAppendChar(buffer, ' ');
+                }
+
+                if (islower(*(pc + 1))) {
+                    NAStringBufferAppendChar(buffer, tolower(*pc));
+                }
+                else {
+                    NAStringBufferAppendChar(buffer, *pc);
+                }
             }
         }
         else {
             NAStringBufferAppendChar(buffer, *pc);
         }
 
+        prev = pc;
         ++pc;
     }
 

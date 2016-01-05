@@ -12,6 +12,7 @@ extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath,
 
 extern Node *NAMidiParserParseIncludeFile(void *self, FileLocation *location, const char *includeFile, ASTInclude *includeNode);
 extern void NAMidiParserSyntaxError(void *self, FileLocation *location, const char *token);
+extern void NAMidiParserUnExpectedEOF(void *self, FileLocation *location);
 
 #define node(type, yylloc) NAMidiAST##type##Create(&((FileLocation){(char *)filepath, yylloc.first_line, yylloc.first_column}))
 #define list() NAArrayCreate(4, NULL)
@@ -45,6 +46,7 @@ extern void NAMidiParserSyntaxError(void *self, FileLocation *location, const ch
 %token RESOLUTION TITLE TEMPO TIME KEY MARKER DEFINE EXPAND CONTEXT WITH
        END CHANNEL VELOCITY VOICE SYNTH VOLUME PAN CHORUS REVERB TRANSPOSE
        DEFAULT INCLUDE
+%token END_OF_FILE 0
 
 %token <s>NOTE KEY_SIGN IDENTIFIER
 
@@ -335,7 +337,7 @@ expand
     ;
 
 define
-    : DEFINE IDENTIFIER statement_list END
+    : DEFINE IDENTIFIER statement_list end
         {
             ASTDefine *n = node(Define, @$);
             n->identifier = NACStringToUpperCase($2);
@@ -345,12 +347,21 @@ define
     ;
 
 context
-    : CONTEXT identifier_list statement_list END
+    : CONTEXT identifier_list statement_list end
         {
             ASTContext *n = node(Context, @$);
             n->ctxIdList = $2;
             n->node.children = $3;
             $$ = n;
+        }
+    ;
+
+end
+    : END
+    | END_OF_FILE
+        {
+            FileLocation location = {(char *)filepath, @$.first_line, @$.first_column};
+            NAMidiParserUnExpectedEOF(NAMidi_get_extra(scanner), &location);
         }
     ;
 
