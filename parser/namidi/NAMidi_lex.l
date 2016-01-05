@@ -24,10 +24,8 @@
 %option bison-bridge
 %option bison-locations
 %option case-insensitive
-%option stack
 
 %x COMMENT
-%x ERROR
 
 NONZERO        [1-9]
 DIGIT          [[:digit:]]
@@ -121,15 +119,7 @@ LINE_COMMENT   (\/\/|==|--).*$
 <COMMENT>\n      { }
 <COMMENT>.       { }
 
-<ERROR>\n        { yy_pop_state(yyscanner); return '\n'; }
-<ERROR>.         { }
-
 .                { return 1; }
 <<EOF>>          { return 0; }
  
 %%
-
-void NAMidi_lex_set_error_until_eol(yyscan_t scanner)
-{
-    yy_push_state(ERROR, scanner);
-}

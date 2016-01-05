@@ -8,7 +8,6 @@
 
 #include "NACString.h"
 
-extern void NAMidi_lex_set_error_until_eol(yyscan_t scanner);
 extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, void **node, const char *message);
 
 extern Node *NAMidiParserParseIncludeFile(void *self, FileLocation *location, const char *includeFile, ASTInclude *includeNode);
@@ -109,8 +108,6 @@ statement
     | context
     | error
         {
-            NAMidi_lex_set_error_until_eol(scanner);
-            yyerrok;
             yyclearin;
             $$ = NULL;
         }
