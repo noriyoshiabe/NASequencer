@@ -54,7 +54,13 @@ extern int ABC_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, vo
 %%
 
 input
-    : statement_list
+    : /* empty */
+        {
+            ASTRoot *n = node(Root, @$);
+            n->node.children = list();
+            *node = n;
+        }
+    | statement_list
         {
             ASTRoot *n = node(Root, @$);
             n->node.children = $1;

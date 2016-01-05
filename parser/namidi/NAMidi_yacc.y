@@ -64,7 +64,13 @@ extern void NAMidiParserUnExpectedEOF(void *self, FileLocation *location);
 %%
 
 input
-    : statement_list
+    : /* empty */
+        {
+            ASTRoot *n = node(Root, @$);
+            n->node.children = list();
+            *node = n;
+        }
+    | statement_list
         {
             ASTRoot *n = node(Root, @$);
             n->node.children = $1;
@@ -121,10 +127,6 @@ statement
             $$ = NULL;
         }
     | '\n'
-        {
-            $$ = NULL;
-        }
-    | /* empty */
         {
             $$ = NULL;
         }
@@ -302,7 +304,14 @@ step
     ;
 
 note
-    : NOTE note_param_list
+    : NOTE
+        {
+            ASTNote *n = node(Note, @$);
+            n->noteString = $1;
+            n->node.children = list();
+            $$ = n;
+        }
+    | NOTE note_param_list
         {
             ASTNote *n = node(Note, @$);
             n->noteString = $1;
@@ -431,10 +440,6 @@ note_param
             ASTNoteParam *n = node(NoteParam, @$);
             n->value = $1;
             $$ = n;
-        }
-    | /* empty */
-        {
-            $$ = NULL;
         }
     ;
 

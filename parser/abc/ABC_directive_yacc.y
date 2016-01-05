@@ -53,7 +53,11 @@ extern int ABC_directive_error(YYLTYPE *yylloc, yyscan_t scanner, const char *fi
 %%
 
 input
-    : statement
+    : /* empty */
+        {
+            *node = NULL;
+        }
+    | statement
         {
             *node = $1;
         }
@@ -69,14 +73,16 @@ statement
             yyclearin;
             $$ = NULL;
         }
-    | /* empty */
-        {
-            $$ = NULL;
-        }
     ;
 
 midi
-    : MIDI VOICE midi_param_list
+    : MIDI VOICE
+        {
+            ASTMidi *n = node(Midi, @$);
+            n->node.children = list();
+            $$ = n;
+        }
+    | MIDI VOICE midi_param_list
         {
             ASTMidi *n = node(Midi, @$);
             n->node.children = $3;
@@ -138,10 +144,6 @@ midi_param
             ABC_directive_lex_set_error(scanner);
             yyerrok;
             yyclearin;
-            $$ = NULL;
-        }
-    | /* empty */
-        {
             $$ = NULL;
         }
     ;

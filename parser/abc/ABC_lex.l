@@ -46,8 +46,6 @@ TUNE_BODY           ^[[:print:]]*$
 <x_TUNE>{TUNE_BODY}   { yylval->s = strdup(yytext); return TUNE_BODY; }
 
 <*>.                  { }
-<*>\r                 { }
-<*>\n                 { }
 
 <<EOF>>               { return 0; }
 

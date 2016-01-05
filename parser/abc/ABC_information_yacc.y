@@ -77,7 +77,11 @@ extern void ABC_information_lex_set_error(yyscan_t scanner);
 %%
 
 input
-    : statement
+    : /* empty */
+        {
+            *node = NULL;
+        }
+    | statement
         {
             *node = $1;
         }
@@ -103,10 +107,6 @@ statement
             ABC_information_lex_set_error(scanner);
             yyerrok;
             yyclearin;
-            $$ = NULL;
-        }
-    | /* empty */
-        {
             $$ = NULL;
         }
     ;
@@ -141,7 +141,13 @@ title
     ;
 
 key
-    : KEY key_param_list
+    : KEY
+        {
+            ASTKey *n = node(Key, @$);
+            n->node.children = list();
+            $$ = n;
+        }
+    | KEY key_param_list
         {
             ASTKey *n = node(Key, @$);
             n->node.children = $2;
@@ -228,10 +234,6 @@ key_param
             ABC_information_lex_set_error(scanner);
             yyerrok;
             yyclearin;
-            $$ = NULL;
-        }
-    | /* empty */
-        {
             $$ = NULL;
         }
     ;
@@ -336,7 +338,13 @@ unit_note_length
     ;
 
 tempo
-    : TEMPO tempo_param_list
+    : TEMPO
+        {
+            ASTTempo *n = node(Tempo, @$);
+            n->node.children = list();
+            $$ = n;
+        }
+    | TEMPO tempo_param_list
         {
             ASTTempo *n = node(Tempo, @$);
             n->node.children = $2;
@@ -418,10 +426,6 @@ tempo_param
             ABC_information_lex_set_error(scanner);
             yyerrok;
             yyclearin;
-            $$ = NULL;
-        }
-    | /* empty */
-        {
             $$ = NULL;
         }
     ;
@@ -560,7 +564,14 @@ continuation
     ;
 
 voice
-    : VOICE VOICE_ID voice_param_list
+    : VOICE VOICE_ID
+        {
+            ASTVoice *n = node(Voice, @$);
+            n->identifier = $2;
+            n->node.children = list();
+            $$ = n;
+        }
+    | VOICE VOICE_ID voice_param_list
         {
             ASTVoice *n = node(Voice, @$);
             n->identifier = $2;
@@ -653,10 +664,6 @@ voice_param
             ABC_information_lex_set_error(scanner);
             yyerrok;
             yyclearin;
-            $$ = NULL;
-        }
-    | /* empty */
-        {
             $$ = NULL;
         }
     ;
