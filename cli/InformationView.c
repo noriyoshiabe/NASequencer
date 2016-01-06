@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 
-#define VERSION "0.2.0"
+#define VERSION "0.2.1"
 #define VERSION_LONG "namidi-cli Version "VERSION" January 2, 2016\n"
 
 extern unsigned char syntax_txt[];
