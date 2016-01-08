@@ -1,6 +1,7 @@
 #include "Parser.h"
 #include "NAMidiDriver.h"
 #include "ABCDriver.h"
+#include "MMLDriver.h"
 
 #include "NAIO.h"
 #include <stdlib.h>
@@ -36,6 +37,7 @@ static Driver *ParserDriverCreate(Parser *self, const char *filepath)
         {"namidi", NAMidiDriverCreate},
         {"nas", NAMidiDriverCreate},
         {"abc", ABCDriverCreate},
+        {"mml", MMLDriverCreate},
     };
 
     for (int i = 0; i < sizeof(table) / sizeof(table[0]); ++i) {
