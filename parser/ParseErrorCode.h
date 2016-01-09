@@ -1,6 +1,7 @@
 #include "ParseInfo.h"
 #include "NAMidiParser.h"
 #include "ABCParser.h"
+#include "MMLParser.h"
 
 static inline const char *ParseErrorCode2String(int code)
 {
@@ -76,6 +77,16 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(ABCParseErrorInvalidNoteNumber);
     CASE(ABCParseErrorIllegalTie);
     CASE(ABCParseErrorIllegalOverlay);
+
+    CASE(MMLParseErrorUnsupportedFileTypeInclude);
+    CASE(MMLParseErrorCircularFileInclude);
+    CASE(MMLParseErrorIncludeFileNotFound);
+    CASE(MMLParseErrorUnexpectedEOF);
+    CASE(MMLParseErrorMacroRedefined);
+    CASE(MMLParseErrorUndefinedMacroSymbol);
+    CASE(MMLParseErrorMacroArgumentsMissing);
+    CASE(MMLParseErrorWrongNumberOfMacroArguments);
+    CASE(MMLParseErrorUndefinedMacroArgument);
 
     default:
        break;

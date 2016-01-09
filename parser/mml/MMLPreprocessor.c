@@ -4,12 +4,26 @@
 #include "NAIO.h"
 #include "NAStack.h"
 #include "NASet.h"
-#include <NALog.h>
+#include "NAStringBuffer.h"
+#include "NAMap.h"
+#include "NACString.h"
+#include "NACInteger.h"
+#include "NALog.h"
 
 #include <stdlib.h>
 #include <libgen.h>
+#include <ctype.h>
 
 #define LOCATION_FORMAT "##%s:%d:%d\n"
+
+typedef struct Macro {
+    char *target;
+    char *replacement;
+    NAMap *args;
+} Macro;
+
+static Macro *MacroCreate(char *target, char *replacement);
+static void MacroDestroy(Macro *self);
 
 typedef struct _Buffer {
     YY_BUFFER_STATE state;
@@ -30,6 +44,8 @@ struct _MMLPreprocessor {
     Buffer *currentBuffer;
     NAStack *bufferStack;
     FILE *outputStream;
+
+    NAMap *macros;
 };
 
 extern int MML_preprocessor_lex(yyscan_t yyscanner, FILE *stream);
@@ -42,11 +58,15 @@ MMLPreprocessor *MMLPreprocessorCreate(ParseContext *context)
     self->readingFileSet = NASetCreate(NAHashCString, NADescriptionCString);
     self->bufferStack = NAStackCreate(4);
     self->outputStream = NAIOCreateMemoryStream(1024);
+    self->macros = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
     return self;
 }
 
 void MMLPreprocessorDestroy(MMLPreprocessor *self)
 {
+    NAMapTraverseValue(self->macros, MacroDestroy);
+    NAMapDestroy(self->macros);
+
     NASetDestroy(self->readingFileSet);
     NAStackDestroy(self->bufferStack);
     free(self);
@@ -167,11 +187,157 @@ bool MMLPreprocessorPopPreviousFile(MMLPreprocessor *self)
 
 void MMLPreprocessorAppendMacro(MMLPreprocessor *self, int line, int column, char *difinition)
 {
+    FileLocation location = {self->currentBuffer->filepath, line, column};
+
+    char *target;
+    char *replacement;
+
+    char *saveptr, *token, *s = NACStringDuplicate(difinition);
+    for (int i = 0; (token = strtok_r(s, "=;", &saveptr)); ++i) {
+        switch (i) {
+        case 0:
+            target = NACStringTrimWhiteSpace(token);
+            break;
+        case 1:
+            replacement = NACStringTrimWhiteSpace(token);
+            break;
+        default:
+            break;
+        }
+        s = NULL;
+    }
+
+    char *pc = strchr(target, '{');
+    char *args = NULL;
+    if (pc) {
+        args = pc + 1;
+        args[strlen(args) - 1] = '\0';
+        *pc = '\0';
+        target = NACStringTrimWhiteSpace(target);
+    }
+
+    Macro *macro = NAMapRemove(self->macros, target);
+    if (macro) {
+        location.column = strstr(difinition, target) - difinition + 1;
+        self->context->appendError(self->context, &location, MMLParseErrorMacroRedefined, target, NULL);
+        MacroDestroy(macro);
+    }
+
+    macro = MacroCreate(target, replacement);
+    if (args) {
+        char *saveptr, *token, *s = args;
+        for (int i = 0; (token = strtok_r(s, ", \t", &saveptr)); ++i) {
+            NAMapPut(macro->args, strdup(token), NACIntegerFromInteger(i));
+            s = NULL;
+        }
+    }
+
+    while ((pc = strchr(replacement, '%'))) {
+        int from = pc - replacement;
+        int to = from + 1;
+        char c;
+        while ((c = replacement[to])) {
+            if (isdigit(c) || isalpha(c) || '_' == c || '+' == c || '(' == c || ')' == c) {
+                ++to;
+            }
+            else {
+                break;
+            }
+        }
+
+        char replace[to - from + 1];
+        strncpy(replace, replacement + from, to - from);
+        if (!NAMapContainsKey(macro->args, replace + 1)) {
+            location.column = strstr(difinition, replace) - difinition + 1;
+            self->context->appendError(self->context, &location, MMLParseErrorUndefinedMacroArgument, replace, NULL);
+            MacroDestroy(macro);
+            return;
+        }
+
+        replacement += to;
+    }
+
+    NAMapPut(self->macros, macro->target, macro);
 }
 
 char *MMLPreprocessorExpandMacro(MMLPreprocessor *self, int line, int column, char *string)
 {
-    return NULL;
+    FileLocation location = {self->currentBuffer->filepath, line, column};
+
+    char *target = NACStringDuplicate(string);
+    char *pc = strchr(target, '{');
+    char *argsString = NULL;
+    if (pc) {
+        argsString = pc + 1;
+        argsString[strlen(argsString) - 1] = '\0';
+        *pc = '\0';
+        target = NACStringTrimWhiteSpace(target);
+    }
+
+    Macro *macro = NAMapGet(self->macros, target);
+    if (!macro) {
+        self->context->appendError(self->context, &location, MMLParseErrorUndefinedMacroSymbol, target, NULL);
+        return NULL;
+    }
+
+    int macroArgc = NAMapCount(macro->args);
+    if (0 == macroArgc && !argsString) {
+        return strdup(macro->replacement);
+    }
+    
+    if (0 < macroArgc && !argsString) {
+        self->context->appendError(self->context, &location, MMLParseErrorMacroArgumentsMissing, NACStringFromInteger(macroArgc), NULL);
+        return NULL;
+    }
+
+    char *args[macroArgc];
+    char *saveptr, *token, *s = argsString;
+    int argc;
+    for (argc = 0; (token = strtok_r(s, ", \t", &saveptr)); ++argc) {
+        if (argc < macroArgc) {
+            args[argc] = token;
+        }
+        s = NULL;
+    }
+
+    if (macroArgc != argc) {
+        self->context->appendError(self->context, &location, MMLParseErrorWrongNumberOfMacroArguments, NACStringFromInteger(argc), NACStringFromInteger(macroArgc), NULL);
+        return NULL;
+    }
+
+    NAStringBuffer *buffer = NAStringBufferCreate(256);
+
+    char *replacement = macro->replacement;
+    while ((pc = strchr(replacement, '%'))) {
+        int from = pc - replacement;
+        int to = from + 1;
+        char c;
+        while ((c = replacement[to])) {
+            if (isdigit(c) || isalpha(c) || '_' == c || '+' == c || '(' == c || ')' == c) {
+                ++to;
+            }
+            else {
+                break;
+            }
+        }
+
+        NAStringBufferAppendNString(buffer, replacement, from);
+
+        char replace[to - from + 1];
+        strncpy(replace, replacement + from, to - from);
+        int *index = NAMapGet(macro->args, replace + 1);
+        if (index) {
+            NAStringBufferAppendString(buffer, args[*index]);
+        }
+
+        NAStringBufferAppendString(buffer, args[*index]);
+        replacement += to;
+    }
+
+    NAStringBufferAppendString(buffer, replacement);
+    char *ret = NAStringBufferRetriveCString(buffer);
+    NAStringBufferDestroy(buffer);
+    return ret;
 }
 
 void MMLPreprocessorSyntaxError(MMLPreprocessor *self, int line, int column, const char *token)
@@ -184,6 +350,26 @@ void MMLPreprocessorUnexpectedEOF(MMLPreprocessor *self, int line, int column)
 {
     FileLocation location = {self->currentBuffer->filepath, line, column};
     self->context->appendError(self->context, &location, MMLParseErrorUnexpectedEOF, NULL);
+}
+
+static Macro *MacroCreate(char *target, char *replacement)
+{
+    Macro *self = calloc(1, sizeof(Macro));
+    self->target = strdup(target);
+    self->replacement = strdup(replacement);
+    self->args = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionCInteger);
+    return self;
+}
+
+static void MacroDestroy(Macro *self)
+{
+    NAMapTraverseKey(self->args, free);
+    NAMapTraverseValue(self->args, free);
+    NAMapDestroy(self->args);
+
+    free(self->target);
+    free(self->replacement);
+    free(self);
 }
 
 static Buffer *BufferCreate(YY_BUFFER_STATE state, FILE *fp, char *filepath)

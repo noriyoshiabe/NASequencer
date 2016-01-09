@@ -33,9 +33,10 @@ WSPACE         [[:blank:]]+
 LINE_COMMENT   \/\/.*$
 
 INCLUDE        ^[[:blank:]]*#[[:blank:]]*include
-MACRO_SYMBOL   \$[_[:alpha:]][_[:alnum:]#\+\(\)]*
-MACRO_DEFINE   {MACRO_SYMBOL}[[:blank:]]*=.*;
-MACRO_ARGS     \{[^,]+(,[^,]+)*\}
+MACRO_STRING   [_[:alpha:]][_[:alnum:]#\+\(\)]*
+MACRO_SYMBOL   \${MACRO_STRING}
+MACRO_ARGS     \{[[:blank:]]*{MACRO_STRING}([[:blank:]]*,[[:blank:]]*{MACRO_STRING})*[[:blank:]]*\}
+MACRO_DEFINE   {MACRO_SYMBOL}([[:blank:]]*{MACRO_ARGS})?[[:blank:]]*=.*;
 MACRO_REF      {MACRO_SYMBOL}([[:blank:]]*{MACRO_ARGS})?
 
 %%
@@ -61,6 +62,7 @@ MACRO_REF      {MACRO_SYMBOL}([[:blank:]]*{MACRO_ARGS})?
                           while (pc > expanded) {
                               unput(*--pc);
                           }
+                          free(expanded);
                       }
                   }
 

@@ -36,6 +36,7 @@ include_directories(
   ../parser
   ../parser/namidi
   ../parser/abc
+  ../parser/mml
   ../lib
   ../synthesizer
   ../export

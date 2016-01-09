@@ -19,6 +19,7 @@ include_directories(
   ../parser
   ../parser/namidi
   ../parser/abc
+  ../parser/mml
   ../sequence
   ../lib
   ../synthesizer

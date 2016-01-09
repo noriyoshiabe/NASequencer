@@ -3,3 +3,12 @@ A
 'AAAAAA'
 /* aaaaa */
 B
+
+$TEST = HOGE;
+
+$TEST
+$TEST
+
+$TESTR{test1, test2} = HOGE %test1 HOGE %test2;
+
+$TESTR{AAA, BBB}
