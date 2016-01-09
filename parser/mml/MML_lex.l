@@ -40,7 +40,7 @@ STRING         \"[^\"]*\"|'[^']*'
 WSPACE         [[:blank:]]+
 LINE_COMMENT   \/\/.*$
 
-INCLUDE        ^#include
+LOCATION       ^##.+:[[:digit:]]+:[[:digit:]]+\n
 
 %%
 
@@ -50,15 +50,6 @@ INCLUDE        ^#include
                     yylval->s[yyleng - 2] = '\0';
                     return STRING; }
 
-{INCLUDE}         { BEGIN(x_INCLUDE); }
-<x_INCLUDE>{STRING} {
-                      char *filepath = NACStringDuplicate(yytext + 1);
-                      filepath[yyleng - 2] = '\0';
-                      MMLParserParseIncludeFile(yyextra, yylineno, yycolumn, filepath);
-                      BEGIN(INITIAL);
-                  }
-<x_INCLUDE>\n     { BEGIN(INITIAL); return -1; }
-
 {WSPACE}          { }
 {LINE_COMMENT}    { }
 
@@ -66,11 +57,27 @@ INCLUDE        ^#include
 <COMMENT>"*/"     { BEGIN(INITIAL); }
 <COMMENT>.        { }
 
-.                 { return 1; }
-<<EOF>>           {
-                      if (!MMLParserPopPreviousFile(yyextra)) {
-                          return 0;
+{LOCATION}        {
+                      char *saveptr, *token, *s = NACStringDuplicate(yytext);
+                      for (int i = 0; (token = strtok_r(s, "#:\n", &saveptr)); ++i) {
+                          switch (i) {
+                          case 0:
+                              MMLParserSetCurrentFilepath(yyextra, token);
+                              break;
+                          case 1:
+                              yylineno = atoi(token);
+                              break;
+                          case 2:
+                              yycolumn = atoi(token);
+                              break;
+                          default:
+                              break;
+                          }
+                          s = NULL;
                       }
                   }
+
+.                 { return 1; }
+<<EOF>>           { return 0; }
  
 %%
