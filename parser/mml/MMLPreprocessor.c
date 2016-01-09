@@ -4,7 +4,7 @@
 #include "NAIO.h"
 #include "NAStack.h"
 #include "NASet.h"
-#include "NAStringBuffer.h"
+#include <NALog.h>
 
 #include <stdlib.h>
 #include <libgen.h>
@@ -29,10 +29,10 @@ struct _MMLPreprocessor {
     yyscan_t scanner;
     Buffer *currentBuffer;
     NAStack *bufferStack;
-    NAStringBuffer *stringBuffer;
+    FILE *outputStream;
 };
 
-extern int MML_preprocessor_lex(yyscan_t yyscanner, void *buffer);
+extern int MML_preprocessor_lex(yyscan_t yyscanner, FILE *stream);
 extern void MML_preprocessor_set_column(int column_no, yyscan_t yyscanner);
 
 MMLPreprocessor *MMLPreprocessorCreate(ParseContext *context)
@@ -41,7 +41,7 @@ MMLPreprocessor *MMLPreprocessorCreate(ParseContext *context)
     self->context = context;
     self->readingFileSet = NASetCreate(NAHashCString, NADescriptionCString);
     self->bufferStack = NAStackCreate(4);
-    self->stringBuffer = NAStringBufferCreate(1024);
+    self->outputStream = NAIOCreateMemoryStream(1024);
     return self;
 }
 
@@ -49,11 +49,10 @@ void MMLPreprocessorDestroy(MMLPreprocessor *self)
 {
     NASetDestroy(self->readingFileSet);
     NAStackDestroy(self->bufferStack);
-    NAStringBufferDestroy(self->stringBuffer);
     free(self);
 }
 
-void MMLPreprocessorScanFile(MMLPreprocessor *self, const char *filepath)
+FILE *MMLPreprocessorScanFile(MMLPreprocessor *self, const char *filepath)
 {
     char *fullpath = NAIOGetRealPath(filepath);
     FILE *fp = fopen(fullpath, "r");
@@ -69,11 +68,11 @@ void MMLPreprocessorScanFile(MMLPreprocessor *self, const char *filepath)
     char *_filepath = self->context->appendFile(self->context, filepath);
     self->currentBuffer = BufferCreate(state, fp, _filepath);
 
-    NAStringBufferAppendFormat(self->stringBuffer, LOCATION_FORMAT, self->currentBuffer->filepath, 1, 1);
+    fprintf(self->outputStream, LOCATION_FORMAT, self->currentBuffer->filepath, 1, 1);
 
     NASetAdd(self->readingFileSet, self->currentBuffer->filepath);
 
-    MML_preprocessor_lex(self->scanner, self->stringBuffer);
+    MML_preprocessor_lex(self->scanner, self->outputStream);
 
     MML_preprocessor__delete_buffer(self->currentBuffer->state, self->scanner);
     MML_preprocessor_lex_destroy(self->scanner);
@@ -85,12 +84,20 @@ void MMLPreprocessorScanFile(MMLPreprocessor *self, const char *filepath)
 
 EXIT:
     free(fullpath);
-}
 
-void MMLPreprocessorGetPreprocessedString(MMLPreprocessor *self, char **string, int *length)
-{
-    *length = NAStringBufferGetLength(self->stringBuffer);
-    *string = NAStringBufferRetriveCString(self->stringBuffer);
+    rewind(self->outputStream);
+
+    if (__IsDebug__) {
+        printf("\r-- preprocessed -----------\n");
+        char str[1024];
+        while (fgets(str, 1024, self->outputStream)) {
+            fputs(str, stdout);
+        }
+        printf("---------------------------\n");
+        rewind(self->outputStream);
+    }
+
+    return self->outputStream;
 }
 
 void MMLPreprocessorIncludeFile(MMLPreprocessor *self, int line, int column, const char *includeFile)
@@ -129,7 +136,7 @@ void MMLPreprocessorIncludeFile(MMLPreprocessor *self, int line, int column, con
     char *_filepath = self->context->appendFile(self->context, fullpath);
     self->currentBuffer = BufferCreate(state, fp, _filepath);
 
-    NAStringBufferAppendFormat(self->stringBuffer, LOCATION_FORMAT, self->currentBuffer->filepath, 1, 1);
+    fprintf(self->outputStream, LOCATION_FORMAT, self->currentBuffer->filepath, 1, 1);
 
     NASetAdd(self->readingFileSet, self->currentBuffer->filepath);
 
@@ -149,7 +156,7 @@ bool MMLPreprocessorPopPreviousFile(MMLPreprocessor *self)
 
     self->currentBuffer = NAStackPop(self->bufferStack);
 
-    NAStringBufferAppendFormat(self->stringBuffer, LOCATION_FORMAT, self->currentBuffer->filepath, self->currentBuffer->line, self->currentBuffer->column);
+    fprintf(self->outputStream, LOCATION_FORMAT, self->currentBuffer->filepath, self->currentBuffer->line, self->currentBuffer->column);
 
     MML_preprocessor__switch_to_buffer(self->currentBuffer->state, self->scanner);
     MML_preprocessor_set_lineno(self->currentBuffer->line, self->scanner);

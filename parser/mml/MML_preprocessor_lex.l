@@ -2,7 +2,6 @@
   
 #include "MMLPreprocessor.h"
 #include "NACString.h"
-#include "NAStringBuffer.h"
 
 #include <string.h>
 
@@ -51,7 +50,7 @@ MACRO_REF      {MACRO_SYMBOL}([[:blank:]]*{MACRO_ARGS})?
 <INCLUDE>\n       {
                       BEGIN(INITIAL);
                       MMLPreprocessorSyntaxError(yyextra, yylineno, yycolumn, yytext);
-                      NAStringBufferAppendChar(buffer, '\n');
+                      fputc('\n', stream);
                   }
 
 {MACRO_DEFINE}    { MMLPreprocessorAppendMacro(yyextra, yylineno, yycolumn, yytext); }
@@ -65,23 +64,23 @@ MACRO_REF      {MACRO_SYMBOL}([[:blank:]]*{MACRO_ARGS})?
                       }
                   }
 
-{WSPACE}          { NAStringBufferAppendString(buffer, yytext); }
+{WSPACE}          { fputs(yytext, stream); }
 {LINE_COMMENT}    { }
 
 "/*"              { BEGIN(COMMENT); }
 <COMMENT>"*/"     { BEGIN(INITIAL); }
 <COMMENT>.        { }
 
-"'"               { NAStringBufferAppendChar(buffer, '\''); BEGIN(QUOTE_STRING); }
-<QUOTE_STRING>"'" { NAStringBufferAppendChar(buffer, '\''); BEGIN(INITIAL); }
-<QUOTE_STRING>.   { NAStringBufferAppendChar(buffer, yytext[0]); }
+"'"               { fputc('\'', stream); BEGIN(QUOTE_STRING); }
+<QUOTE_STRING>"'" { fputc('\'', stream); BEGIN(INITIAL); }
+<QUOTE_STRING>.   { fputc(yytext[0], stream); }
 
-"\""                      { NAStringBufferAppendChar(buffer, '"'); BEGIN(DOUBLE_QUOTE_STRING); }
-<DOUBLE_QUOTE_STRING>"\"" { NAStringBufferAppendChar(buffer, '"'); BEGIN(INITIAL); }
-<DOUBLE_QUOTE_STRING>.    { NAStringBufferAppendChar(buffer, yytext[0]); }
+"\""                      { fputc('"', stream); BEGIN(DOUBLE_QUOTE_STRING); }
+<DOUBLE_QUOTE_STRING>"\"" { fputc('"', stream); BEGIN(INITIAL); }
+<DOUBLE_QUOTE_STRING>.    { fputc(yytext[0], stream); }
 
-<*>\n             { NAStringBufferAppendChar(buffer, yytext[0]); }
-.                 { NAStringBufferAppendChar(buffer, yytext[0]); }
+<*>\n             { fputc(yytext[0], stream); }
+.                 { fputc(yytext[0], stream); }
 <<EOF>>           {
                       if (YYSTATE != INITIAL) {
                           MMLPreprocessorUnexpectedEOF(yyextra, yylineno, yycolumn);

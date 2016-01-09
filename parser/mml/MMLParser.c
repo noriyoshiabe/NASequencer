@@ -23,20 +23,13 @@ static Node *MMLParserParse(void *_self, const char *filepath)
 {
     MMLParser *self = _self; 
 
-    char *preprocessed;
-    int length;
-
     MMLPreprocessor *preprocessor = MMLPreprocessorCreate(self->context);
-    MMLPreprocessorScanFile(preprocessor, filepath);
-    MMLPreprocessorGetPreprocessedString(preprocessor, &preprocessed, &length);
-    printf("---\n");
-    fputs(preprocessed, stdout);
-    printf("---\n");
+    FILE *fp = MMLPreprocessorScanFile(preprocessor, filepath);
     MMLPreprocessorDestroy(preprocessor);
 
     yyscan_t scanner;
     MML_lex_init_extra(self, &scanner);
-    YY_BUFFER_STATE state = MML__scan_buffer(preprocessed, length + 1, scanner);
+    YY_BUFFER_STATE state = MML__create_buffer(fp, YY_BUF_SIZE, scanner);
     MML__switch_to_buffer(state, scanner);
 
     Node *node = NULL;
@@ -44,6 +37,8 @@ static Node *MMLParserParse(void *_self, const char *filepath)
 
     MML__delete_buffer(state, scanner);
     MML_lex_destroy(scanner);
+
+    fclose(fp);
 
     return node;
 }
