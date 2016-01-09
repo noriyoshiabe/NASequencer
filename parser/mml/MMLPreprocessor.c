@@ -4,9 +4,12 @@
 #include "NAIO.h"
 #include "NAStack.h"
 #include "NASet.h"
+#include "NAStringBuffer.h"
 
 #include <stdlib.h>
 #include <libgen.h>
+
+#define LOCATION_FORMAT "##%s:%d:%d\n"
 
 typedef struct _Buffer {
     YY_BUFFER_STATE state;
@@ -26,8 +29,10 @@ struct _MMLPreprocessor {
     yyscan_t scanner;
     Buffer *currentBuffer;
     NAStack *bufferStack;
+    NAStringBuffer *stringBuffer;
 };
 
+extern int MML_preprocessor_lex(yyscan_t yyscanner, void *buffer);
 extern void MML_preprocessor_set_column(int column_no, yyscan_t yyscanner);
 
 MMLPreprocessor *MMLPreprocessorCreate(ParseContext *context)
@@ -36,6 +41,7 @@ MMLPreprocessor *MMLPreprocessorCreate(ParseContext *context)
     self->context = context;
     self->readingFileSet = NASetCreate(NAHashCString, NADescriptionCString);
     self->bufferStack = NAStackCreate(4);
+    self->stringBuffer = NAStringBufferCreate(1024);
     return self;
 }
 
@@ -43,13 +49,13 @@ void MMLPreprocessorDestroy(MMLPreprocessor *self)
 {
     NASetDestroy(self->readingFileSet);
     NAStackDestroy(self->bufferStack);
+    NAStringBufferDestroy(self->stringBuffer);
     free(self);
 }
 
 void MMLPreprocessorScanFile(MMLPreprocessor *self, const char *filepath)
 {
     char *fullpath = NAIOGetRealPath(filepath);
-
     FILE *fp = fopen(fullpath, "r");
     if (!fp) {
         self->context->appendError(self->context, NULL, GeneralParseErrorFileNotFound, filepath, NULL);
@@ -63,9 +69,11 @@ void MMLPreprocessorScanFile(MMLPreprocessor *self, const char *filepath)
     char *_filepath = self->context->appendFile(self->context, filepath);
     self->currentBuffer = BufferCreate(state, fp, _filepath);
 
+    NAStringBufferAppendFormat(self->stringBuffer, LOCATION_FORMAT, self->currentBuffer->filepath, 1, 1);
+
     NASetAdd(self->readingFileSet, self->currentBuffer->filepath);
 
-    // lex?
+    MML_preprocessor_lex(self->scanner, self->stringBuffer);
 
     MML_preprocessor__delete_buffer(self->currentBuffer->state, self->scanner);
     MML_preprocessor_lex_destroy(self->scanner);
@@ -77,6 +85,12 @@ void MMLPreprocessorScanFile(MMLPreprocessor *self, const char *filepath)
 
 EXIT:
     free(fullpath);
+}
+
+void MMLPreprocessorGetPreprocessedString(MMLPreprocessor *self, char **string, int *length)
+{
+    *length = NAStringBufferGetLength(self->stringBuffer);
+    *string = NAStringBufferRetriveCString(self->stringBuffer);
 }
 
 void MMLPreprocessorIncludeFile(MMLPreprocessor *self, int line, int column, const char *includeFile)
@@ -115,6 +129,8 @@ void MMLPreprocessorIncludeFile(MMLPreprocessor *self, int line, int column, con
     char *_filepath = self->context->appendFile(self->context, fullpath);
     self->currentBuffer = BufferCreate(state, fp, _filepath);
 
+    NAStringBufferAppendFormat(self->stringBuffer, LOCATION_FORMAT, self->currentBuffer->filepath, 1, 1);
+
     NASetAdd(self->readingFileSet, self->currentBuffer->filepath);
 
 EXIT:
@@ -132,6 +148,9 @@ bool MMLPreprocessorPopPreviousFile(MMLPreprocessor *self)
     BufferDestroy(self->currentBuffer);
 
     self->currentBuffer = NAStackPop(self->bufferStack);
+
+    NAStringBufferAppendFormat(self->stringBuffer, LOCATION_FORMAT, self->currentBuffer->filepath, self->currentBuffer->line, self->currentBuffer->column);
+
     MML_preprocessor__switch_to_buffer(self->currentBuffer->state, self->scanner);
     MML_preprocessor_set_lineno(self->currentBuffer->line, self->scanner);
     MML_preprocessor_set_column(self->currentBuffer->column, self->scanner);
@@ -146,6 +165,18 @@ void MMLPreprocessorAppendMacro(MMLPreprocessor *self, int line, int column, cha
 char *MMLPreprocessorExpandMacro(MMLPreprocessor *self, int line, int column, char *string)
 {
     return NULL;
+}
+
+void MMLPreprocessorSyntaxError(MMLPreprocessor *self, int line, int column, const char *token)
+{
+    FileLocation location = {self->currentBuffer->filepath, line, column};
+    self->context->appendError(self->context, &location, GeneralParseErrorSyntaxError, token, NULL);
+}
+
+void MMLPreprocessorUnexpectedEOF(MMLPreprocessor *self, int line, int column)
+{
+    FileLocation location = {self->currentBuffer->filepath, line, column};
+    self->context->appendError(self->context, &location, MMLParseErrorUnexpectedEOF, NULL);
 }
 
 static Buffer *BufferCreate(YY_BUFFER_STATE state, FILE *fp, char *filepath)

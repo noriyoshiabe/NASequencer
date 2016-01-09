@@ -1,4 +1,5 @@
 #include "MMLParser.h"
+#include "MMLPreprocessor.h"
 #include "MMLAST.h"
 #include "NAIO.h"
 #include "MML_yacc.h"
@@ -67,6 +68,16 @@ static Node *MMLParserParseInternal(MMLParser *self, const char *filepath)
 static Node *MMLParserParse(void *_self, const char *filepath)
 {
     MMLParser *self = _self; 
+
+    MMLPreprocessor *preprocessor = MMLPreprocessorCreate(self->context);
+    MMLPreprocessorScanFile(preprocessor, filepath);
+    char *preprocessed;
+    int length;
+    MMLPreprocessorGetPreprocessedString(preprocessor, &preprocessed, &length);
+    printf("---\n");
+    fputs(preprocessed, stdout);
+    printf("---\n");
+    MMLPreprocessorDestroy(preprocessor);
 
     Node *node = MMLParserParseInternal(self, filepath);
     if (!node) {
