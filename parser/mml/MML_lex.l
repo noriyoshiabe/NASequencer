@@ -1,6 +1,8 @@
 %{
   
 #include "MML_yacc.h"
+#include "MMLParser.h"
+#include "NACString.h"
 
 #include <string.h>
 
@@ -26,6 +28,7 @@
 %option case-insensitive
 
 %x COMMENT
+%x x_INCLUDE
 
 NONZERO        [1-9]
 DIGIT          [[:digit:]]
@@ -37,22 +40,37 @@ STRING         \"[^\"]*\"|'[^']*'
 WSPACE         [[:blank:]]+
 LINE_COMMENT   \/\/.*$
 
+INCLUDE        ^#include
+
 %%
 
-{INTEGER}        { yylval->i = atoi(yytext); return INTEGER; }
-{FLOAT}          { yylval->f = atof(yytext); return FLOAT; }
-{STRING}         { yylval->s = strdup(yytext + 1);
-                   yylval->s[strlen(yylval->s) - 1] = '\0';
-                   return STRING; }
+{INTEGER}         { yylval->i = atoi(yytext); return INTEGER; }
+{FLOAT}           { yylval->f = atof(yytext); return FLOAT; }
+{STRING}          { yylval->s = strdup(yytext + 1);
+                    yylval->s[yyleng - 2] = '\0';
+                    return STRING; }
 
-{WSPACE}         { }
-{LINE_COMMENT}   { }
+{INCLUDE}         { BEGIN(x_INCLUDE); }
+<x_INCLUDE>{STRING} {
+                      char *filepath = NACStringDuplicate(yytext + 1);
+                      filepath[yyleng - 2] = '\0';
+                      MMLParserParseIncludeFile(yyextra, yylineno, yycolumn, filepath);
+                      BEGIN(INITIAL);
+                  }
+<x_INCLUDE>\n     { BEGIN(INITIAL); return -1; }
 
-"/*"             { BEGIN(COMMENT); }
-<COMMENT>"*/"    { BEGIN(INITIAL); }
-<COMMENT>.       { }
+{WSPACE}          { }
+{LINE_COMMENT}    { }
 
-.                { return 1; }
-<<EOF>>          { return 0; }
+"/*"              { BEGIN(COMMENT); }
+<COMMENT>"*/"     { BEGIN(INITIAL); }
+<COMMENT>.        { }
+
+.                 { return 1; }
+<<EOF>>           {
+                      if (!MMLParserPopPreviousFile(yyextra)) {
+                          return 0;
+                      }
+                  }
  
 %%

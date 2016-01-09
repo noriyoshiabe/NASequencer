@@ -29,13 +29,15 @@ static void ParseContextAppendError(ParseContext *self, const FileLocation *loca
     NAArrayAppend(self->errors, error);
 }
 
-static void ParseContextAppendFile(ParseContext *self, const char *filepath)
+static char *ParseContextAppendFile(ParseContext *self, const char *filepath)
 {
-    if (!NASetContains(self->_fileSet, (char *)filepath)) {
-        char *_filepath = strdup(filepath);
+    char *_filepath = NASetGet(self->_fileSet, (char *)filepath);
+    if (!_filepath) {
+        _filepath = strdup(filepath);
         NASetAdd(self->_fileSet, _filepath);
         NAArrayAppend(self->filepaths, _filepath);
     }
+    return _filepath;
 }
 
 static void *ParseContextBuildResult(ParseContext *self, ParseInfo **info)

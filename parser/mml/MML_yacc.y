@@ -8,13 +8,9 @@
 
 #include "NACString.h"
 
-extern int MML_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, void **node, const char *message);
+extern int MML_error(YYLTYPE *yylloc, yyscan_t scanner, void **node, const char *message);
 
-extern Node *MMLParserParseIncludeFile(void *self, FileLocation *location, const char *includeFile, ASTInclude *includeNode);
-extern void MMLParserSyntaxError(void *self, FileLocation *location, const char *token);
-extern void MMLParserUnExpectedEOF(void *self, FileLocation *location);
-
-#define node(type, yylloc) MMLAST##type##Create(&((FileLocation){(char *)filepath, yylloc.first_line, yylloc.first_column}))
+#define node(type, yylloc) MMLAST##type##Create(&((FileLocation){MMLParserGetCurrentFilepath(MML_get_extra(scanner)), yylloc.first_line, yylloc.first_column}))
 #define list() NAArrayCreate(4, NULL)
 #define listAppend(list, node) NAArrayAppend(list, node)
 
@@ -27,7 +23,6 @@ extern void MMLParserUnExpectedEOF(void *self, FileLocation *location);
 %pure-parser
 %lex-param   { yyscan_t scanner }
 %parse-param { yyscan_t scanner }
-%parse-param { const char *filepath }
 %parse-param { void **node }
 %locations
 
@@ -87,6 +82,7 @@ statement_list
 statement
     : error
         {
+            yyerrok; // TODO remove
             yyclearin;
             $$ = NULL;
         }
@@ -94,9 +90,9 @@ statement
 
 %%
 
-int MML_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, void **node, const char *message)
+int MML_error(YYLTYPE *yylloc, yyscan_t scanner, void **node, const char *message)
 {
-    FileLocation location = {(char *)filepath, yylloc->first_line, yylloc->first_column};
+    FileLocation location = {MMLParserGetCurrentFilepath(MML_get_extra(scanner)), yylloc->first_line, yylloc->first_column};
     MMLParserSyntaxError(MML_get_extra(scanner), &location, MML_get_text(scanner));
     return 0;
 }

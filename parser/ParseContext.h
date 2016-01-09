@@ -11,7 +11,7 @@ struct _ParseContext {
     NAArray *errors;
 
     void (*appendError)(ParseContext *self, const FileLocation *location, int code, ...);
-    void (*appendFile)(ParseContext *self, const char *filepath);
+    char *(*appendFile)(ParseContext *self, const char *filepath);
     void *(*buildResult)(ParseContext *self, ParseInfo **info);
 
     NASet *_fileSet;
