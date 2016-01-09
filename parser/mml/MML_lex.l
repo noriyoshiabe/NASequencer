@@ -2,6 +2,7 @@
   
 #include "MML_yacc.h"
 #include "MMLParser.h"
+#include "MMLPreprocessor.h"
 #include "NACString.h"
 
 #include <string.h>
@@ -40,7 +41,11 @@ STRING         \"[^\"]*\"|'[^']*'
 WSPACE         [[:blank:]]+
 LINE_COMMENT   \/\/.*$
 
-INCLUDE        ^#include
+INCLUDE        ^[[:blank:]]*#[[:blank:]]*include
+MACRO_SYMBOL   \$[_[:alpha:]][_[:alnum:]#\+\(\)]*
+MACRO_DEFINE   {MACRO_SYMBOL}[[:blank:]]*=.*;
+MACRO_ARGS     \{[^,]+(,[^,]+)*\}
+MACRO_REF      {MACRO_SYMBOL}([[:blank:]]*{MACRO_ARGS})?
 
 %%
 
@@ -58,6 +63,17 @@ INCLUDE        ^#include
                       BEGIN(INITIAL);
                   }
 <x_INCLUDE>\n     { BEGIN(INITIAL); return -1; }
+
+{MACRO_DEFINE}    { MMLPreprocessorAppendMacro(preprocessor, yytext, yylineno, yycolumn); }
+{MACRO_REF}       {
+                      char *expanded = MMLPreprocessorExpandMacro(preprocessor, yytext, yylineno, yycolumn);
+                      if (expanded) {
+                          char *pc = expanded + strlen(expanded);
+                          while (pc > expanded) {
+                              unput(*--qc);
+                          }
+                      }
+                  }
 
 {WSPACE}          { }
 {LINE_COMMENT}    { }
