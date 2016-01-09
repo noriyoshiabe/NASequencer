@@ -26,6 +26,7 @@
 %x INCLUDE
 %x QUOTE_STRING
 %x DOUBLE_QUOTE_STRING
+%x MACRO
 
 STRING         \"[^\"]*\"|'[^']*'
 
@@ -36,7 +37,7 @@ INCLUDE        ^[[:blank:]]*#[[:blank:]]*include
 MACRO_STRING   [_[:alpha:]][_[:alnum:]#\+\(\)]*
 MACRO_SYMBOL   \${MACRO_STRING}
 MACRO_ARGS     \{[[:blank:]]*{MACRO_STRING}([[:blank:]]*,[[:blank:]]*{MACRO_STRING})*[[:blank:]]*\}
-MACRO_DEFINE   {MACRO_SYMBOL}([[:blank:]]*{MACRO_ARGS})?[[:blank:]]*=.*;
+MACRO_DEFINE   {MACRO_SYMBOL}([[:blank:]]*{MACRO_ARGS})?[[:blank:]]*=
 MACRO_REF      {MACRO_SYMBOL}([[:blank:]]*{MACRO_ARGS})?
 
 %%
@@ -54,7 +55,10 @@ MACRO_REF      {MACRO_SYMBOL}([[:blank:]]*{MACRO_ARGS})?
                       fputc('\n', stream);
                   }
 
-{MACRO_DEFINE}    { MMLPreprocessorAppendMacro(yyextra, yylineno, yycolumn, yytext); }
+{MACRO_DEFINE}    { yymore(); BEGIN(MACRO); }
+<MACRO>;          { BEGIN(INITIAL); MMLPreprocessorAppendMacro(yyextra, yylineno, yycolumn, yytext); }
+<MACRO>\n         { fputc(yytext[0], stream); yymore(); }
+<MACRO>.          { yymore(); }
 {MACRO_REF}       {
                       char *expanded = MMLPreprocessorExpandMacro(yyextra, yylineno, yycolumn, yytext);
                       if (expanded) {
