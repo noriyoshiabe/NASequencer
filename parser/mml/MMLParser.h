@@ -9,10 +9,12 @@ typedef enum {
     MMLParseErrorIncludeFileNotFound,
     MMLParseErrorUnexpectedEOF,
     MMLParseErrorMacroRedefined,
+    MMLParseErrorDuplicatedMacroArguments,
     MMLParseErrorUndefinedMacroSymbol,
     MMLParseErrorMacroArgumentsMissing,
     MMLParseErrorWrongNumberOfMacroArguments,
     MMLParseErrorUndefinedMacroArgument,
+    MMLParseErrorCircularMacroReference,
 } MMLParseError;
 
 extern DSLParser *MMLParserCreate(ParseContext *context);

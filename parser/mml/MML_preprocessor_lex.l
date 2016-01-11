@@ -38,7 +38,8 @@ MACRO_STRING   [_[:alpha:]][_[:alnum:]#\+\(\)]*
 MACRO_SYMBOL   \${MACRO_STRING}
 MACRO_ARGS     \{[[:blank:]]*{MACRO_STRING}([[:blank:]]*,[[:blank:]]*{MACRO_STRING})*[[:blank:]]*\}
 MACRO_DEFINE   {MACRO_SYMBOL}([[:blank:]]*{MACRO_ARGS})?[[:blank:]]*=
-MACRO_REF      {MACRO_SYMBOL}([[:blank:]]*{MACRO_ARGS})?
+MACRO_REF_ARGS \{[[:blank:]]*[^,[:space:]]+([[:blank:]]*,[[:blank:]]*[^,[:space:]]+)*[[:blank:]]*\}
+MACRO_REF      {MACRO_SYMBOL}([[:blank:]]*{MACRO_REF_ARGS})?
 
 %%
 
@@ -57,7 +58,7 @@ MACRO_REF      {MACRO_SYMBOL}([[:blank:]]*{MACRO_ARGS})?
 
 {MACRO_DEFINE}    { yymore(); BEGIN(MACRO); }
 <MACRO>;          { BEGIN(INITIAL); MMLPreprocessorAppendMacro(yyextra, yylineno, yycolumn, yytext); }
-<MACRO>\n         { fputc(yytext[0], stream); yymore(); }
+<MACRO>\n         { fputc('\n', stream); yymore(); }
 <MACRO>.          { yymore(); }
 {MACRO_REF}       {
                       char *expanded = MMLPreprocessorExpandMacro(yyextra, yylineno, yycolumn, yytext);

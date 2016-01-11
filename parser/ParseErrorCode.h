@@ -83,10 +83,12 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(MMLParseErrorIncludeFileNotFound);
     CASE(MMLParseErrorUnexpectedEOF);
     CASE(MMLParseErrorMacroRedefined);
+    CASE(MMLParseErrorDuplicatedMacroArguments);
     CASE(MMLParseErrorUndefinedMacroSymbol);
     CASE(MMLParseErrorMacroArgumentsMissing);
     CASE(MMLParseErrorWrongNumberOfMacroArguments);
     CASE(MMLParseErrorUndefinedMacroArgument);
+    CASE(MMLParseErrorCircularMacroReference);
 
     default:
        break;
