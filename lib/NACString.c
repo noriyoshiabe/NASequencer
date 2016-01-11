@@ -11,6 +11,7 @@
 #undef NACStringFromBoolean
 #undef NACStringDuplicate
 #undef NACStringDuplicateNString
+#undef NACStringSplit
 
 char *NACStringFormat(const char *format, ...)
 {
@@ -98,5 +99,48 @@ char *NACStringDuplicateNString(char *str, int length, char *buffer)
 {
     strncpy(buffer, str, length);
     buffer[length] = '\0';
+    return buffer;
+}
+
+int NACStringSplitCount(char *str, char *delim)
+{
+    int ret = 0;
+    char *pc = str;
+    bool delimiter = true;
+    
+    while (*pc) {
+        if (strchr(delim, *pc)) {
+            delimiter = true;
+        }
+        else {
+            if (delimiter) {
+                ++ret;
+            }
+            delimiter = false;
+        }
+        ++pc;
+    }
+
+    return ret;
+}
+
+char **NACStringSplit(char *str, char *delim, int *length, char **buffer)
+{
+    if (length) {
+        *length = 0;
+    }
+
+    char **pbuf = buffer;
+    char *saveptr, *token, *s = str;
+    while ((token = strtok_r(s, delim, &saveptr))) {
+        *(pbuf++) = token;
+        if (length) {
+            ++(*length);
+        }
+        s = NULL;
+    }
+
+    *pbuf = NULL;
+
     return buffer;
 }

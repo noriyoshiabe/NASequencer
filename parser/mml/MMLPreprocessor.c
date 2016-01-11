@@ -199,32 +199,13 @@ void MMLPreprocessorAppendMacro(MMLPreprocessor *self, int line, int column, cha
 {
     FileLocation location = {self->currentBuffer->filepath, line, column};
 
-    char *target;
-    char *replacement;
+    char **split = NACStringSplit(NACStringDuplicate(difinition), "=;", NULL);
+    char *target = NACStringTrimWhiteSpace(split[0]);
+    char *replacement = NACStringTrimWhiteSpace(split[1]);
 
-    char *saveptr, *token, *s = NACStringDuplicate(difinition);
-    for (int i = 0; (token = strtok_r(s, "=;", &saveptr)); ++i) {
-        switch (i) {
-        case 0:
-            target = NACStringTrimWhiteSpace(token);
-            break;
-        case 1:
-            replacement = NACStringTrimWhiteSpace(token);
-            break;
-        default:
-            break;
-        }
-        s = NULL;
-    }
-
-    char *pc = strchr(target, '{');
-    char *args = NULL;
-    if (pc) {
-        args = pc + 1;
-        args[strlen(args) - 1] = '\0';
-        *pc = '\0';
-        target = NACStringTrimWhiteSpace(target);
-    }
+    split = NACStringSplit(target, "{}", NULL);
+    target = NACStringTrimWhiteSpace(split[0]);
+    char *args = split[1];
 
     Macro *macro = NAMapRemove(self->macros, target);
     if (macro) {
@@ -238,20 +219,21 @@ void MMLPreprocessorAppendMacro(MMLPreprocessor *self, int line, int column, cha
 
     macro = MacroCreate(target, replacement);
     if (args) {
-        char *saveptr, *token, *s = args;
-        for (int i = 0; (token = strtok_r(s, ", \t", &saveptr)); ++i) {
-            if (NAMapContainsKey(macro->args, token)) {
-                self->context->appendError(self->context, &location, MMLParseErrorDuplicatedMacroArguments, token, NULL);
+        int argc;
+        split = NACStringSplit(args, ", \t", &argc);
+        for (int i = 0; i < argc; ++i) {
+            if (NAMapContainsKey(macro->args, split[i])) {
+                self->context->appendError(self->context, &location, MMLParseErrorDuplicatedMacroArguments, split[i], NULL);
                 MacroDestroy(macro);
                 return;
             }
             else {
-                NAMapPut(macro->args, strdup(token), NACIntegerFromInteger(i));
+                NAMapPut(macro->args, strdup(split[i]), NACIntegerFromInteger(i));
             }
-            s = NULL;
         }
     }
 
+    char *pc;
     while ((pc = strchr(replacement, '%'))) {
         int from = pc - replacement;
         int to = from + 1;
@@ -285,15 +267,9 @@ static void MMLPreprocessorExpandMacroInternal(MMLPreprocessor *self, FileLocati
 {
     NAStringBuffer *expandBuffer = NAStringBufferCreate(256);
 
-    char *target = NACStringDuplicate(string);
-    char *pc = strchr(target, '{');
-    char *argsString = NULL;
-    if (pc) {
-        argsString = pc + 1;
-        argsString[strlen(argsString) - 1] = '\0';
-        *pc = '\0';
-        target = NACStringTrimWhiteSpace(target);
-    }
+    char **split = NACStringSplit(NACStringDuplicate(string), "{}", NULL);
+    char *target = NACStringTrimWhiteSpace(split[0]);
+    char *argsString = split[1];
 
     char *remain = NULL;
     Macro *macro = NULL;
@@ -331,22 +307,15 @@ static void MMLPreprocessorExpandMacroInternal(MMLPreprocessor *self, FileLocati
         goto FINISH;
     }
 
-    char **args = alloca(sizeof(char *) * macroArgc);
-    char *saveptr, *token, *s = argsString;
     int argc;
-    for (argc = 0; (token = strtok_r(s, ", \t", &saveptr)); ++argc) {
-        if (argc < macroArgc) {
-            args[argc] = token;
-        }
-        s = NULL;
-    }
-
+    char **args = NACStringSplit(argsString, ", \t", &argc);
     if (macroArgc != argc) {
         self->context->appendError(self->context, location, MMLParseErrorWrongNumberOfMacroArguments, NACStringFromInteger(argc), NACStringFromInteger(macroArgc), NULL);
         goto FINISH;
     }
 
     char *replacement = macro->replacement;
+    char *pc;
     while ((pc = strchr(replacement, '%'))) {
         int from = pc - replacement;
         int to = from + 1;

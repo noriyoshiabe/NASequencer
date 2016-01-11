@@ -15,6 +15,8 @@ extern char *NACStringFromChar(char c, char *buffer, int size);
 extern char *NACStringFromBoolean(bool b, char *buffer, int size);
 extern char *NACStringDuplicate(char *str, char *buffer);
 extern char *NACStringDuplicateNString(char *str, int length, char *buffer);
+extern int NACStringSplitCount(char *str, char *delim);
+extern char **NACStringSplit(char *str, char *delim, int *length, char **buffer);
 
 #define NACStringFromInteger(i) NACStringFromInteger(i, alloca(32), 32)
 #define NACStringFromFloat(f, p) NACStringFromFloat(f, p, alloca(32), 32)
@@ -22,3 +24,4 @@ extern char *NACStringDuplicateNString(char *str, int length, char *buffer);
 #define NACStringFromBoolean(b) NACStringFromBoolean(b, alloca(8), 8)
 #define NACStringDuplicate(s) NACStringDuplicate(s, alloca(strlen(s) + 1))
 #define NACStringDuplicateNString(s, l) NACStringDuplicateNString(s, l, alloca(l + 1))
+#define NACStringSplit(s, d, pl) NACStringSplit(s, d, pl, alloca(sizeof(char *) * (NACStringSplitCount(s, d) + 1)))
