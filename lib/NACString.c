@@ -10,6 +10,7 @@
 #undef NACStringFromChar
 #undef NACStringFromBoolean
 #undef NACStringDuplicate
+#undef NACStringDuplicateNString
 
 char *NACStringFormat(const char *format, ...)
 {
@@ -90,5 +91,12 @@ char *NACStringFromBoolean(bool b, char *buffer, int size)
 char *NACStringDuplicate(char *str, char *buffer)
 {
     strcpy(buffer, str);
+    return buffer;
+}
+
+char *NACStringDuplicateNString(char *str, int length, char *buffer)
+{
+    strncpy(buffer, str, length);
+    buffer[length] = '\0';
     return buffer;
 }

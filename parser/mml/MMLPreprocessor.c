@@ -265,10 +265,7 @@ void MMLPreprocessorAppendMacro(MMLPreprocessor *self, int line, int column, cha
             }
         }
 
-        int length = to - from;
-        char replace[length + 1];
-        strncpy(replace, replacement + from, length);
-        replace[length] = '\0';
+        char *replace = NACStringDuplicateNString(replacement + from, to - from);
         if (!NAMapContainsKey(macro->args, replace + 1)) {
             location.column = strstr(difinition, replace) - difinition + 1;
             self->context->appendError(self->context, &location, MMLParseErrorUndefinedMacroArgument, replace, NULL);
@@ -365,10 +362,7 @@ static void MMLPreprocessorExpandMacroInternal(MMLPreprocessor *self, FileLocati
 
         NAStringBufferAppendNString(expandBuffer, replacement, from);
 
-        int length = to - from;
-        char replace[length + 1];
-        strncpy(replace, replacement + from, length);
-        replace[length] = '\0';
+        char *replace = NACStringDuplicateNString(replacement + from, to - from);
         int *index = NAMapGet(macro->args, replace + 1);
         if (index) {
             NAStringBufferAppendString(expandBuffer, args[*index]);
