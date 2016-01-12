@@ -66,6 +66,8 @@ TRANSPOSE      @?ns
 LENGTH         l
 GATETIME       @?q
 VELOCITY       @?v
+TUPLET_START   \{
+TUPLET_END     \}{NOTE_LENGTH}?
 REPEAT_START   \/:
 REPEAT_END     :\/
 REPEAT_BREAK   \/
@@ -77,55 +79,56 @@ LOCATION       ^##.+:[[:digit:]]+:[[:digit:]]+\n
 
 %%
 
-{INTEGER}         { ECHO; __Trace__ /* yylval->i = atoi(yytext); return INTEGER; */ }
-{FLOAT}           { ECHO; __Trace__ /* yylval->f = atof(yytext); return FLOAT; */ }
-{STRING}          { ECHO; __Trace__ /* yylval->s = strdup(yytext + 1);
+{INTEGER}         { ECHO; __Trace__ yylval->i = atoi(yytext); return INTEGER; }
+{FLOAT}           { ECHO; __Trace__ yylval->f = atof(yytext); return FLOAT; }
+{STRING}          { ECHO; __Trace__ yylval->s = strdup(yytext + 1);
                     yylval->s[yyleng - 2] = '\0';
-                    return STRING; */ }
+                    return STRING; }
 
-{D_TIMEBASE}      { ECHO; __Trace__ }
-{D_TITLE}         { ECHO; __Trace__ }
-{D_COPYRIGHT}     { ECHO; __Trace__ }
-{D_MARKER}        { ECHO; __Trace__ }
-{D_VELOCITY}      { ECHO; __Trace__ }
-{D_OCTAVE}        { ECHO; __Trace__ }
-{REVERSE}         { ECHO; __Trace__ }
+{D_TIMEBASE}      { ECHO; __Trace__ return D_TIMEBASE; }
+{D_TITLE}         { ECHO; __Trace__ return D_TITLE; }
+{D_COPYRIGHT}     { ECHO; __Trace__ return D_COPYRIGHT; }
+{D_MARKER}        { ECHO; __Trace__ return D_MARKER; }
+{D_VELOCITY}      { ECHO; __Trace__ return D_VELOCITY; }
+{D_OCTAVE}        { ECHO; __Trace__ return D_OCTAVE; }
+{REVERSE}         { ECHO; __Trace__ return REVERSE; }
                          
-{CHANNEL}         { ECHO; __Trace__ }
-{SYNTHESIZER}     { ECHO; __Trace__ }
-{BANK_SELECT}     { ECHO; __Trace__ }
-{PROGRAM_CHANGE}  { ECHO; __Trace__ }
-{VOLUME}          { ECHO; __Trace__ }
-{CHORUS}          { ECHO; __Trace__ }
-{REVERB}          { ECHO; __Trace__ }
-{EXPRESSION}      { ECHO; __Trace__ }
-{PAN}             { ECHO; __Trace__ }
-{DETUNE}          { ECHO; __Trace__ }
-{TEMPO}           { ECHO; __Trace__ }
+{CHANNEL}         { ECHO; __Trace__ return CHANNEL; }
+{SYNTHESIZER}     { ECHO; __Trace__ return SYNTHESIZER; }
+{BANK_SELECT}     { ECHO; __Trace__ return BANK_SELECT; }
+{PROGRAM_CHANGE}  { ECHO; __Trace__ return PROGRAM_CHANGE; }
+{VOLUME}          { ECHO; __Trace__ return VOLUME; }
+{CHORUS}          { ECHO; __Trace__ return CHORUS; }
+{REVERB}          { ECHO; __Trace__ return REVERB; }
+{EXPRESSION}      { ECHO; __Trace__ return EXPRESSION; }
+{PAN}             { ECHO; __Trace__ return PAN; }
+{DETUNE}          { ECHO; __Trace__ return DETUNE; }
+{TEMPO}           { ECHO; __Trace__ return TEMPO; }
 
-{NOTE}            { ECHO; __Trace__ }
-{REST}            { ECHO; __Trace__ }
-{OCTAVE}          { ECHO; __Trace__ }
-{TRANSPOSE}       { ECHO; __Trace__ }
-{LENGTH}          { ECHO; __Trace__ }
-{GATETIME}        { ECHO; __Trace__ }
-{VELOCITY}        { ECHO; __Trace__ }
-{REPEAT_START}    { ECHO; __Trace__ }
-{REPEAT_END}      { ECHO; __Trace__ }
-{REPEAT_BREAK}    { ECHO; __Trace__ }
+{NOTE}            { ECHO; __Trace__ yylval->s = strdup(yytext); return NOTE; }
+{REST}            { ECHO; __Trace__ yylval->s = strdup(yytext); return REST; }
+{OCTAVE}          { ECHO; __Trace__ return OCTAVE; }
+{TRANSPOSE}       { ECHO; __Trace__ return TRANSPOSE; }
+{LENGTH}          { ECHO; __Trace__ return LENGTH; }
+{GATETIME}        { ECHO; __Trace__ return GATETIME; }
+{VELOCITY}        { ECHO; __Trace__ return VELOCITY; }
+{TUPLET_START}    { ECHO; __Trace__ return TUPLET_START; }
+{TUPLET_END}      { ECHO; __Trace__ yylval->s = strdup(yytext); return TUPLET_END; }
+{REPEAT_START}    { ECHO; __Trace__ return REPEAT_START; }
+{REPEAT_END}      { ECHO; __Trace__ return REPEAT_END; }
+{REPEAT_BREAK}    { ECHO; __Trace__ return REPEAT_BREAK; }
                          
-","               { ECHO; __Trace__ }
-"-"               { ECHO; __Trace__ }
-"<"               { ECHO; __Trace__ }
-">"               { ECHO; __Trace__ }
-"&"               { ECHO; __Trace__ }
-"{"               { ECHO; __Trace__ }
-"}"               { ECHO; __Trace__ }
-"("               { ECHO; __Trace__ }
-")"               { ECHO; __Trace__ }
-";"               { ECHO; __Trace__ }
-"["               { ECHO; __Trace__ }
-"]"               { ECHO; __Trace__ }
+","               { ECHO; __Trace__ return ','; }
+"-"               { ECHO; __Trace__ return '-'; }
+"+"               { ECHO; __Trace__ return '+'; }
+"<"               { ECHO; __Trace__ return '<'; }
+">"               { ECHO; __Trace__ return '>'; }
+"&"               { ECHO; __Trace__ return '&'; }
+"("               { ECHO; __Trace__ return '('; }
+")"               { ECHO; __Trace__ return ')'; }
+";"               { ECHO; __Trace__ return ';'; }
+"["               { ECHO; __Trace__ return '['; }
+"]"               { ECHO; __Trace__ return ']'; }
 
 {WSPACE}          { }
 {LINE_COMMENT}    { }
