@@ -1,30 +1,41 @@
-A
-#include 'include.mml'
-'AAAAAA'
-/* aaaaa */
-B
+#TIMEBASE 480
+#TITLE "MML Syntax test."
+#COPYRIGHT "abechan"
+#MARKER 'marker'
+#VELOCITY REVERSE
+#OCTAVE REVERSE
 
-$TEST = HOGE;
+@SY'GeneralUser GS Live-Audigy v1.44'
+@CH10
+@BS0,120
+@PC0
+@CH 1
+@BS 0,0
+@PC 41
 
-$TEST
-$TEST
+@VL100
+@CS100
+@RV100
+@X100
+@P70
+@D-100
+T124.0
 
-$TESTTEST
-
-$TESTR{test1, test2} = HOGE %test1
-                       HOGE %test2;
-
-$TESTR{AAA, BBB}
-
-$TEST1 = $TEST2;
-$TEST2 = $TEST3;
-$TEST3 = Hi $TEST;
-
-$TEST1
-
-$TEST3 = HI $TEST1;
-
-$TEST1
-
-$TEST_ARGS{arg1, arg2} = hoge $TEST hoge %arg1 hoge %arg2;
-$TEST_ARGS{CCC, $TEST}
+G++16
+G##16
+G--16
+A4.
+C+%24
+r16.
+r%24
+O4 < >
+@NS-2
+NS-2
+L4 c&c8
+Q15
+@Q128
+{ABC}5
+@V5 V127 ( )
+abc;
+/:2 abc / def :/
+[A++4BC]
