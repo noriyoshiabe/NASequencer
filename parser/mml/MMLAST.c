@@ -15,25 +15,3 @@ ASTRoot *MMLASTRootCreate(FileLocation *location)
 {
     return NodeCreate(ASTRoot, location);
 }
-
-static void ASTIncludeAccept(void *self, void *visitor)
-{
-    ((ASTVisitor *)visitor)->visitInclude(visitor, self);
-}
-
-static void ASTIncludeDestroy(void *_self)
-{
-    ASTInclude *self = _self;
-
-    free(self->filepath);
-    free(self->fullpath);
-
-    if (self->root) {
-        NodeRelease(self->root);
-    }
-}
-
-ASTInclude *MMLASTIncludeCreate(FileLocation *location)
-{
-    return NodeCreate(ASTInclude, location);
-}

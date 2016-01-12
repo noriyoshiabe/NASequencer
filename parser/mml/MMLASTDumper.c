@@ -70,26 +70,11 @@ static void visitRoot(void *_self, ASTRoot *ast)
     self->indent -= 4;
 }
 
-static void visitInclude(void *_self, ASTInclude *ast)
-{
-    MMLASTDumper *self = _self;
-
-    dump(self, ast, STRING(ast, filepath), NULL);
-    self->indent += 4;
-
-    if (ast->root) {
-        ast->root->accept(ast->root, self);
-    }
-
-    self->indent -= 4;
-}
-
 Analyzer *MMLASTDumperCreate(ParseContext *context)
 {
     MMLASTDumper *self = calloc(1, sizeof(MMLASTDumper));
 
     self->visitor.visitRoot = visitRoot;
-    self->visitor.visitInclude = visitInclude;
 
     self->analyzer.process = process;
     self->analyzer.destroy = destroy;
