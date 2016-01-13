@@ -37,7 +37,7 @@ static void ASTTitleAccept(void *self, void *visitor)
 
 static void ASTTitleDestroy(void *_self)
 {
-    ASTTitle *self = self;
+    ASTTitle *self = _self;
     free(self->title);
 }
 
@@ -53,7 +53,7 @@ static void ASTCopyrightAccept(void *self, void *visitor)
 
 static void ASTCopyrightDestroy(void *_self)
 {
-    ASTCopyright *self = self;
+    ASTCopyright *self = _self;
     free(self->text);
 }
 
