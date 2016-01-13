@@ -53,6 +53,7 @@ static void dump(MMLASTDumper *self, void *_node, ...)
 #define INTEGER(ast, name) #name, NACStringFromInteger(ast->name)
 #define FLOAT(ast, name) #name, NACStringFromFloat(ast->name, 2)
 #define STRING(ast, name) #name, ast->name ? ast->name : "(null)"
+#define CHAR(ast, name) #name, '\0' == ast->name ? "none" : NACStringFromChar(ast->name)
 #define BOOL(ast, name) #name, NACStringFromBoolean(ast->name)
 
 static void visitRoot(void *_self, ASTRoot *ast)
@@ -168,7 +169,7 @@ static void visitRest(void *self, ASTRest *ast)
 
 static void visitOctave(void *self, ASTOctave *ast)
 {
-    dump(self, ast, INTEGER(ast, value), NULL);
+    dump(self, ast, CHAR(ast, direction), INTEGER(ast, value), NULL);
 }
 
 static void visitTransepose(void *self, ASTTransepose *ast)
@@ -181,6 +182,11 @@ static void visitTie(void *self, ASTTie *ast)
     dump(self, ast, NULL);
 }
 
+static void visitLength(void *self, ASTLength *ast)
+{
+    dump(self, ast, INTEGER(ast, length), NULL);
+}
+
 static void visitGatetime(void *self, ASTGatetime *ast)
 {
     dump(self, ast, BOOL(ast, absolute), INTEGER(ast, value), NULL);
@@ -188,7 +194,7 @@ static void visitGatetime(void *self, ASTGatetime *ast)
 
 static void visitVelocity(void *self, ASTVelocity *ast)
 {
-    dump(self, ast, BOOL(ast, absolute), INTEGER(ast, value), NULL);
+    dump(self, ast, CHAR(ast, direction), BOOL(ast, absolute), INTEGER(ast, value), NULL);
 }
 
 static void visitTuplet(void *_self, ASTTuplet *ast)
@@ -256,6 +262,7 @@ Analyzer *MMLASTDumperCreate(ParseContext *context)
     self->visitor.visitRoot = visitRoot;
     self->visitor.visitTimebase = visitTimebase;
     self->visitor.visitTitle = visitTitle;
+    self->visitor.visitCopyright = visitCopyright;
     self->visitor.visitMarker = visitMarker;
     self->visitor.visitVelocityReverse = visitVelocityReverse;
     self->visitor.visitOctaveReverse = visitOctaveReverse;
@@ -275,6 +282,7 @@ Analyzer *MMLASTDumperCreate(ParseContext *context)
     self->visitor.visitOctave = visitOctave;
     self->visitor.visitTransepose = visitTransepose;
     self->visitor.visitTie = visitTie;
+    self->visitor.visitLength = visitLength;
     self->visitor.visitGatetime = visitGatetime;
     self->visitor.visitVelocity = visitVelocity;
     self->visitor.visitTuplet = visitTuplet;

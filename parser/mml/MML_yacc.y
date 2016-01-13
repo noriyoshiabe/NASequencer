@@ -41,7 +41,8 @@ extern int MML_error(YYLTYPE *yylloc, yyscan_t scanner, void **node, const char 
 %token END_OF_FILE 0
 %token D_TIMEBASE D_TITLE D_COPYRIGHT D_MARKER  D_VELOCITY D_OCTAVE  REVERSE   
 %token CHANNEL SYNTHESIZER BANK_SELECT PROGRAM_CHANGE VOLUME CHORUS REVERB EXPRESSION PAN DETUNE TEMPO
-%token OCTAVE TRANSPOSE LENGTH VELOCITY TUPLET_START GATETIME REPEAT_START REPEAT_END REPEAT_BREAK
+%token OCTAVE TRANSPOSE R_TRANSPOSE LENGTH GATETIME A_GATETIME VELOCITY A_VELOCITY TUPLET_START
+%token REPEAT_START REPEAT_END REPEAT_BREAK
 %token <s> NOTE REST TUPLET_END
 
 %type <node> d_timebase d_title d_copyright d_marker d_velocity d_octave channel synthesizer bank_select program_change
@@ -133,230 +134,320 @@ statement
 d_timebase
     : D_TIMEBASE INTEGER
         {
-            $$ = NULL;
+            ASTTimebase *n = node(Timebase, @$);
+            n->timebase = $2;
+            $$ = n;
         }
     ;
 
 d_title
     : D_TITLE STRING
         {
-            $$ = NULL;
+            ASTTitle *n = node(Title, @$);
+            n->title = $2;
+            $$ = n;
         }
     ;
 
 d_copyright
     : D_COPYRIGHT STRING
         {
-            $$ = NULL;
+            ASTCopyright *n = node(Copyright, @$);
+            n->text = $2;
+            $$ = n;
         }
     ;
 
 d_marker
     : D_MARKER STRING
         {
-            $$ = NULL;
+            ASTMarker *n = node(Marker, @$);
+            n->text = $2;
+            $$ = n;
         }
     ;
 
 d_velocity
     : D_VELOCITY REVERSE
         {
-            $$ = NULL;
+            ASTVelocityReverse *n = node(VelocityReverse, @$);
+            $$ = n;
         }
     ;
 
 d_octave
     : D_OCTAVE REVERSE
         {
-            $$ = NULL;
+            ASTOctaveReverse *n = node(OctaveReverse, @$);
+            $$ = n;
         }
     ;
 
 channel
     : CHANNEL INTEGER
         {
-            $$ = NULL;
+            ASTChannel *n = node(Channel, @$);
+            n->number = $2;
+            $$ = n;
         }
     ;
 
 synthesizer
     : SYNTHESIZER STRING
         {
-            $$ = NULL;
+            ASTSynth *n = node(Synth, @$);
+            n->name = $2;
+            $$ = n;
         }
     ;
 
 bank_select
     : BANK_SELECT INTEGER ',' INTEGER
         {
-            $$ = NULL;
+            ASTBankSelect *n = node(BankSelect, @$);
+            n->msb = $2;
+            n->lsb = $4;
+            $$ = n;
         }
     ;
 
 program_change
     : PROGRAM_CHANGE INTEGER
         {
-            $$ = NULL;
+            ASTProgramChange *n = node(ProgramChange, @$);
+            n->programNo = $2;
+            $$ = n;
         }
     ;
 
 volume
     : VOLUME INTEGER
         {
-            $$ = NULL;
+            ASTVolume *n = node(Volume, @$);
+            n->value = $2;
+            $$ = n;
         }
     ;
 
 chorus
     : CHORUS INTEGER
         {
-            $$ = NULL;
+            ASTChorus *n = node(Chorus, @$);
+            n->value = $2;
+            $$ = n;
         }
     ;
 
 reverb
     : REVERB INTEGER
         {
-            $$ = NULL;
+            ASTReverb *n = node(Reverb, @$);
+            n->value = $2;
+            $$ = n;
         }
     ;
 
 expression
     : EXPRESSION INTEGER
         {
-            $$ = NULL;
+            ASTExpression *n = node(Expression, @$);
+            n->value = $2;
+            $$ = n;
         }
     ;
 
 pan
     : PAN signed_integer
         {
-            $$ = NULL;
+            ASTPan *n = node(Pan, @$);
+            n->value = $2;
+            $$ = n;
         }
     ;
 
 detune
     : DETUNE signed_integer
         {
-            $$ = NULL;
+            ASTDetune *n = node(Detune, @$);
+            n->value = $2;
+            $$ = n;
         }
     ;
 
 tempo
     : TEMPO FLOAT
         {
-            $$ = NULL;
+            ASTTempo *n = node(Tempo, @$);
+            n->tempo = $2;
+            $$ = n;
         }
     ;
 
 note
     : NOTE
         {
-            $$ = NULL;
+            ASTNote *n = node(Note, @$);
+            n->noteString = $1;
+            $$ = n;
         }
     ;
 
 rest
     : REST
         {
-            $$ = NULL;
+            ASTRest *n = node(Rest, @$);
+            n->restString = $1;
+            $$ = n;
         }
     ;
 
 octave
     : OCTAVE signed_integer
         {
-            $$ = NULL;
+            ASTOctave *n = node(Octave, @$);
+            n->value = $2;
+            $$ = n;
         }
     | '<'
         {
-            $$ = NULL;
+            ASTOctave *n = node(Octave, @$);
+            n->direction = '<';
+            $$ = n;
         }
     | '>'
         {
-            $$ = NULL;
+            ASTOctave *n = node(Octave, @$);
+            n->direction = '>';
+            $$ = n;
         }
     ;
 
 transpose
     : TRANSPOSE signed_integer
         {
-            $$ = NULL;
+            ASTTransepose *n = node(Transepose, @$);
+            n->value = $2;
+            $$ = n;
+        }
+    | R_TRANSPOSE signed_integer
+        {
+            ASTTransepose *n = node(Transepose, @$);
+            n->relative = true;
+            n->value = $2;
+            $$ = n;
         }
     ;
 
 tie
     : '&'
         {
-            $$ = NULL;
+            ASTTie *n = node(Tie, @$);
+            $$ = n;
         }
     ;
 
 length
     : LENGTH INTEGER
         {
-            $$ = NULL;
+            ASTLength *n = node(Length, @$);
+            n->length = $2;
+            $$ = n;
         }
     ;
 
 gatetime
     : GATETIME INTEGER
         {
-            $$ = NULL;
+            ASTGatetime *n = node(Gatetime, @$);
+            n->value = $2;
+            $$ = n;
+        }
+    | A_GATETIME INTEGER
+        {
+            ASTGatetime *n = node(Gatetime, @$);
+            n->absolute = true;
+            n->value = $2;
+            $$ = n;
         }
     ;
 
 velocity
     : VELOCITY INTEGER
         {
-            $$ = NULL;
+            ASTVelocity *n = node(Velocity, @$);
+            n->value = $2;
+            $$ = n;
+        }
+    | A_VELOCITY INTEGER
+        {
+            ASTVelocity *n = node(Velocity, @$);
+            n->absolute = true;
+            n->value = $2;
+            $$ = n;
         }
     | '('
         {
-            $$ = NULL;
+            ASTVelocity *n = node(Velocity, @$);
+            n->direction = '(';
+            $$ = n;
         }
     | ')'
         {
-            $$ = NULL;
+            ASTVelocity *n = node(Velocity, @$);
+            n->direction = ')';
+            $$ = n;
         }
     ;
 
 tuplet
     : TUPLET_START statement_list TUPLET_END
         {
-            $$ = NULL;
+            ASTTuplet *n = node(Tuplet, @$);
+            n->lengthString = $3;
+            n->node.children = $2;
+            $$ = n;
         }
     ;
 
 track_change
     : ';'
         {
-            $$ = NULL;
+            ASTTrackChange *n = node(TrackChange, @$);
+            $$ = n;
         }
     ;
 
 repeat
     : REPEAT_START statement_list REPEAT_END
         {
-            $$ = NULL;
+            ASTRepeat *n = node(Repeat, @$);
+            n->times = 2;
+            n->node.children = $2;
+            $$ = n;
         }
     | REPEAT_START INTEGER statement_list REPEAT_END
         {
-            $$ = NULL;
+            ASTRepeat *n = node(Repeat, @$);
+            n->times = $2;
+            n->node.children = $3;
+            $$ = n;
         }
     ;
 
 repeat_break
     : REPEAT_BREAK
         {
-            $$ = NULL;
+            ASTRepeatBreak *n = node(RepeatBreak, @$);
+            $$ = n;
         }
     ;
 
 chord
     : '[' statement_list ']'
         {
-            $$ = NULL;
+            ASTChord *n = node(Chord, @$);
+            n->node.children = $2;
+            $$ = n;
         }
     ;
 

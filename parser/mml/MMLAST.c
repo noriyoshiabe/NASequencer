@@ -337,6 +337,20 @@ ASTTie *MMLASTTieCreate(FileLocation *location)
     return NodeCreate(ASTTie, location);
 }
 
+static void ASTLengthAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitLength(visitor, self);
+}
+
+static void ASTLengthDestroy(void *self)
+{
+}
+
+ASTLength *MMLASTLengthCreate(FileLocation *location)
+{
+    return NodeCreate(ASTLength, location);
+}
+
 static void ASTGatetimeAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitGatetime(visitor, self);

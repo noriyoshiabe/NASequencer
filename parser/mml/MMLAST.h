@@ -102,6 +102,7 @@ typedef struct _ASTRest {
 
 typedef struct _ASTOctave {
     Node node;
+    char direction;
     int value;
 } ASTOctave;
 
@@ -115,6 +116,11 @@ typedef struct _ASTTie {
     Node node;
 } ASTTie;
 
+typedef struct _ASTLength {
+    Node node;
+    int length;
+} ASTLength;
+
 typedef struct _ASTGatetime {
     Node node;
     bool absolute;
@@ -123,6 +129,7 @@ typedef struct _ASTGatetime {
 
 typedef struct _ASTVelocity {
     Node node;
+    char direction;
     bool absolute;
     int value;
 } ASTVelocity;
@@ -173,6 +180,7 @@ typedef struct _ASTVisitor {
     void (*visitOctave)(void *self, ASTOctave *ast);
     void (*visitTransepose)(void *self, ASTTransepose *ast);
     void (*visitTie)(void *self, ASTTie *ast);
+    void (*visitLength)(void *self, ASTLength *ast);
     void (*visitGatetime)(void *self, ASTGatetime *ast);
     void (*visitVelocity)(void *self, ASTVelocity *ast);
     void (*visitTuplet)(void *self, ASTTuplet *ast);
@@ -205,6 +213,7 @@ extern ASTRest *MMLASTRestCreate(FileLocation *location);
 extern ASTOctave *MMLASTOctaveCreate(FileLocation *location);
 extern ASTTransepose *MMLASTTranseposeCreate(FileLocation *location);
 extern ASTTie *MMLASTTieCreate(FileLocation *location);
+extern ASTLength *MMLASTLengthCreate(FileLocation *location);
 extern ASTGatetime *MMLASTGatetimeCreate(FileLocation *location);
 extern ASTVelocity *MMLASTVelocityCreate(FileLocation *location);
 extern ASTTuplet *MMLASTTupletCreate(FileLocation *location);

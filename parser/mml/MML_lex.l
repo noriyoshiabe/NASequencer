@@ -108,12 +108,12 @@ LOCATION       ^##.+:[[:digit:]]+:[[:digit:]]+\n
 {NOTE}            { ECHO; __Trace__ yylval->s = strdup(yytext); return NOTE; }
 {REST}            { ECHO; __Trace__ yylval->s = strdup(yytext); return REST; }
 {OCTAVE}          { ECHO; __Trace__ return OCTAVE; }
-{TRANSPOSE}       { ECHO; __Trace__ return TRANSPOSE; }
+{TRANSPOSE}       { ECHO; __Trace__ return '@' == yytext[0] ? R_TRANSPOSE : TRANSPOSE; }
 {LENGTH}          { ECHO; __Trace__ return LENGTH; }
-{GATETIME}        { ECHO; __Trace__ return GATETIME; }
-{VELOCITY}        { ECHO; __Trace__ return VELOCITY; }
+{GATETIME}        { ECHO; __Trace__ return '@' == yytext[0] ? A_GATETIME : GATETIME; }
+{VELOCITY}        { ECHO; __Trace__ return '@' == yytext[0] ? A_VELOCITY : VELOCITY; }
 {TUPLET_START}    { ECHO; __Trace__ return TUPLET_START; }
-{TUPLET_END}      { ECHO; __Trace__ yylval->s = strdup(yytext); return TUPLET_END; }
+{TUPLET_END}      { ECHO; __Trace__ yylval->s = strdup(yytext + 1); return TUPLET_END; }
 {REPEAT_START}    { ECHO; __Trace__ return REPEAT_START; }
 {REPEAT_END}      { ECHO; __Trace__ return REPEAT_END; }
 {REPEAT_BREAK}    { ECHO; __Trace__ return REPEAT_BREAK; }
