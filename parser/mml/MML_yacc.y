@@ -125,7 +125,6 @@ statement
     | chord
     | error
         {
-            yyerrok; // TODO remove
             yyclearin;
             $$ = NULL;
         }
