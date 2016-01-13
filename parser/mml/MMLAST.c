@@ -30,7 +30,6 @@ ASTTimebase *MMLASTTimebaseCreate(FileLocation *location)
     return NodeCreate(ASTTimebase, location);
 }
 
-
 static void ASTTitleAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitTitle(visitor, self);
@@ -47,6 +46,21 @@ ASTTitle *MMLASTTitleCreate(FileLocation *location)
     return NodeCreate(ASTTitle, location);
 }
 
+static void ASTCopyrightAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitCopyright(visitor, self);
+}
+
+static void ASTCopyrightDestroy(void *_self)
+{
+    ASTCopyright *self = self;
+    free(self->text);
+}
+
+ASTCopyright *MMLASTCopyrightCreate(FileLocation *location)
+{
+    return NodeCreate(ASTCopyright, location);
+}
 
 static void ASTMarkerAccept(void *self, void *visitor)
 {
@@ -63,7 +77,6 @@ ASTMarker *MMLASTMarkerCreate(FileLocation *location)
 {
     return NodeCreate(ASTMarker, location);
 }
-
 
 static void ASTVelocityReverseAccept(void *self, void *visitor)
 {
@@ -94,7 +107,6 @@ ASTOctaveReverse *MMLASTOctaveReverseCreate(FileLocation *location)
     return NodeCreate(ASTOctaveReverse, location);
 }
 
-
 static void ASTChannelAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitChannel(visitor, self);
@@ -108,7 +120,6 @@ ASTChannel *MMLASTChannelCreate(FileLocation *location)
 {
     return NodeCreate(ASTChannel, location);
 }
-
 
 static void ASTSynthAccept(void *self, void *visitor)
 {
@@ -126,7 +137,6 @@ ASTSynth *MMLASTSynthCreate(FileLocation *location)
     return NodeCreate(ASTSynth, location);
 }
 
-
 static void ASTBankSelectAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitBankSelect(visitor, self);
@@ -140,7 +150,6 @@ ASTBankSelect *MMLASTBankSelectCreate(FileLocation *location)
 {
     return NodeCreate(ASTBankSelect, location);
 }
-
 
 static void ASTProgramChangeAccept(void *self, void *visitor)
 {
@@ -156,7 +165,6 @@ ASTProgramChange *MMLASTProgramChangeCreate(FileLocation *location)
     return NodeCreate(ASTProgramChange, location);
 }
 
-
 static void ASTVolumeAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitVolume(visitor, self);
@@ -170,7 +178,6 @@ ASTVolume *MMLASTVolumeCreate(FileLocation *location)
 {
     return NodeCreate(ASTVolume, location);
 }
-
 
 static void ASTChorusAccept(void *self, void *visitor)
 {
@@ -186,7 +193,6 @@ ASTChorus *MMLASTChorusCreate(FileLocation *location)
     return NodeCreate(ASTChorus, location);
 }
 
-
 static void ASTReverbAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitReverb(visitor, self);
@@ -200,7 +206,6 @@ ASTReverb *MMLASTReverbCreate(FileLocation *location)
 {
     return NodeCreate(ASTReverb, location);
 }
-
 
 static void ASTExpressionAccept(void *self, void *visitor)
 {
@@ -216,7 +221,6 @@ ASTExpression *MMLASTExpressionCreate(FileLocation *location)
     return NodeCreate(ASTExpression, location);
 }
 
-
 static void ASTPanAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitPan(visitor, self);
@@ -230,7 +234,6 @@ ASTPan *MMLASTPanCreate(FileLocation *location)
 {
     return NodeCreate(ASTPan, location);
 }
-
 
 static void ASTDetuneAccept(void *self, void *visitor)
 {
@@ -246,7 +249,6 @@ ASTDetune *MMLASTDetuneCreate(FileLocation *location)
     return NodeCreate(ASTDetune, location);
 }
 
-
 static void ASTTempoAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitTempo(visitor, self);
@@ -260,7 +262,6 @@ ASTTempo *MMLASTTempoCreate(FileLocation *location)
 {
     return NodeCreate(ASTTempo, location);
 }
-
 
 static void ASTNoteAccept(void *self, void *visitor)
 {
@@ -278,7 +279,6 @@ ASTNote *MMLASTNoteCreate(FileLocation *location)
     return NodeCreate(ASTNote, location);
 }
 
-
 static void ASTRestAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitRest(visitor, self);
@@ -295,7 +295,6 @@ ASTRest *MMLASTRestCreate(FileLocation *location)
     return NodeCreate(ASTRest, location);
 }
 
-
 static void ASTOctaveAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitOctave(visitor, self);
@@ -309,7 +308,6 @@ ASTOctave *MMLASTOctaveCreate(FileLocation *location)
 {
     return NodeCreate(ASTOctave, location);
 }
-
 
 static void ASTTranseposeAccept(void *self, void *visitor)
 {
@@ -325,7 +323,6 @@ ASTTransepose *MMLASTTranseposeCreate(FileLocation *location)
     return NodeCreate(ASTTransepose, location);
 }
 
-
 static void ASTTieAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitTie(visitor, self);
@@ -339,7 +336,6 @@ ASTTie *MMLASTTieCreate(FileLocation *location)
 {
     return NodeCreate(ASTTie, location);
 }
-
 
 static void ASTGatetimeAccept(void *self, void *visitor)
 {
@@ -355,7 +351,6 @@ ASTGatetime *MMLASTGatetimeCreate(FileLocation *location)
     return NodeCreate(ASTGatetime, location);
 }
 
-
 static void ASTVelocityAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitVelocity(visitor, self);
@@ -369,7 +364,6 @@ ASTVelocity *MMLASTVelocityCreate(FileLocation *location)
 {
     return NodeCreate(ASTVelocity, location);
 }
-
 
 static void ASTTupletAccept(void *self, void *visitor)
 {
@@ -387,7 +381,6 @@ ASTTuplet *MMLASTTupletCreate(FileLocation *location)
     return NodeCreate(ASTTuplet, location);
 }
 
-
 static void ASTTrackChangeAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitTrackChange(visitor, self);
@@ -401,7 +394,6 @@ ASTTrackChange *MMLASTTrackChangeCreate(FileLocation *location)
 {
     return NodeCreate(ASTTrackChange, location);
 }
-
 
 static void ASTRepeatAccept(void *self, void *visitor)
 {
@@ -417,7 +409,6 @@ ASTRepeat *MMLASTRepeatCreate(FileLocation *location)
     return NodeCreate(ASTRepeat, location);
 }
 
-
 static void ASTRepeatBreakAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitRepeatBreak(visitor, self);
@@ -431,7 +422,6 @@ ASTRepeatBreak *MMLASTRepeatBreakCreate(FileLocation *location)
 {
     return NodeCreate(ASTRepeatBreak, location);
 }
-
 
 static void ASTChordAccept(void *self, void *visitor)
 {
