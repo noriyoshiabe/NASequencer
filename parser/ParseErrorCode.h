@@ -89,6 +89,21 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(MMLParseErrorWrongNumberOfMacroArguments);
     CASE(MMLParseErrorUndefinedMacroArgument);
     CASE(MMLParseErrorCircularMacroReference);
+    CASE(MMLParseErrorIllegalStateWithTimebase);
+    CASE(MMLParseErrorInvalidTimebase);
+    CASE(MMLParseErrorIllegalStateWithTitle);
+    CASE(MMLParseErrorIllegalStateWithCopyright);
+    CASE(MMLParseErrorIllegalStateWithMarker);
+    CASE(MMLParseErrorIllegalStateWithVelocityReverse);
+    CASE(MMLParseErrorIllegalStateWithOctaveReverse);
+    CASE(MMLParseErrorInvalidChannel);
+    CASE(MMLParseErrorInvalidBankSelect);
+    CASE(MMLParseErrorInvalidProgramChange);
+    CASE(MMLParseErrorInvalidVolume);
+    CASE(MMLParseErrorInvalidChorus);
+    CASE(MMLParseErrorInvalidReverb);
+    CASE(MMLParseErrorInvalidExpression);
+    CASE(MMLParseErrorInvalidPan);
 
     default:
        break;

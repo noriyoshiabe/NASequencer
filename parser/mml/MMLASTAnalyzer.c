@@ -3,6 +3,7 @@
 #include "MMLAST.h"
 #include "MMLSEM.h"
 #include "NAStack.h"
+#include "NACString.h"
 #include "NALog.h"
 
 #include <stdlib.h>
@@ -13,6 +14,8 @@
 #define appendError(self, ast, ...) self->context->appendError(self->context, &ast->node.location, __VA_ARGS__)
 
 #define isValidRange(v, from, to) (from <= v && v <= to)
+
+#define isGlobal(state) (GLOBAL == state->name)
 
 static const char *GLOBAL = "global";
 static const char *TUPLET = "tuplet";
@@ -67,79 +70,213 @@ static void visitRoot(void *_self, ASTRoot *ast)
     }
 }
 
-static void visitTimebase(void *self, ASTTimebase *ast)
+static void visitTimebase(void *_self, ASTTimebase *ast)
 {
-    __Trace__
+    MMLASTAnalyzer *self = _self;
+
+    if (!isGlobal(self->state)) {
+        appendError(self, ast, MMLParseErrorIllegalStateWithTimebase, self->state->name, NULL);
+        return;
+    }
+
+    if (!isValidRange(ast->timebase, 48, 9600)) {
+        appendError(self, ast, MMLParseErrorInvalidTimebase, NACStringFromInteger(ast->timebase), NULL);
+        return;
+    }
+    
+    SEMTimebase *sem = node(Timebase, ast);
+    sem->timebase = ast->timebase;
+    append(self->state->list, sem);
 }
 
-static void visitTitle(void *self, ASTTitle *ast)
+static void visitTitle(void *_self, ASTTitle *ast)
 {
-    __Trace__
+    MMLASTAnalyzer *self = _self;
+
+    if (!isGlobal(self->state)) {
+        appendError(self, ast, MMLParseErrorIllegalStateWithTitle, self->state->name, NULL);
+        return;
+    }
+
+    SEMTitle *sem = node(Title, ast);
+    sem->title = strdup(ast->title);
+    append(self->state->list, sem);
 }
 
-static void visitCopyright(void *self, ASTCopyright *ast)
+static void visitCopyright(void *_self, ASTCopyright *ast)
 {
-    __Trace__
+    MMLASTAnalyzer *self = _self;
+
+    if (!isGlobal(self->state)) {
+        appendError(self, ast, MMLParseErrorIllegalStateWithCopyright, self->state->name, NULL);
+        return;
+    }
+
+    SEMCopyright *sem = node(Copyright, ast);
+    sem->text = strdup(ast->text);
+    append(self->state->list, sem);
 }
 
-static void visitMarker(void *self, ASTMarker *ast)
+static void visitMarker(void *_self, ASTMarker *ast)
 {
-    __Trace__
+    MMLASTAnalyzer *self = _self;
+
+    if (!isGlobal(self->state)) {
+        appendError(self, ast, MMLParseErrorIllegalStateWithMarker, self->state->name, NULL);
+        return;
+    }
+
+    SEMMarker *sem = node(Marker, ast);
+    sem->text = strdup(ast->text);
+    append(self->state->list, sem);
 }
 
-static void visitVelocityReverse(void *self, ASTVelocityReverse *ast)
+static void visitVelocityReverse(void *_self, ASTVelocityReverse *ast)
 {
-    __Trace__
+    MMLASTAnalyzer *self = _self;
+
+    if (!isGlobal(self->state)) {
+        appendError(self, ast, MMLParseErrorIllegalStateWithVelocityReverse, self->state->name, NULL);
+        return;
+    }
+
+    SEMVelocityReverse *sem = node(VelocityReverse, ast);
+    append(self->state->list, sem);
 }
 
-static void visitOctaveReverse(void *self, ASTOctaveReverse *ast)
+static void visitOctaveReverse(void *_self, ASTOctaveReverse *ast)
 {
-    __Trace__
+    MMLASTAnalyzer *self = _self;
+
+    if (!isGlobal(self->state)) {
+        appendError(self, ast, MMLParseErrorIllegalStateWithOctaveReverse, self->state->name, NULL);
+        return;
+    }
+
+    SEMOctaveReverse *sem = node(OctaveReverse, ast);
+    append(self->state->list, sem);
 }
 
-static void visitChannel(void *self, ASTChannel *ast)
+static void visitChannel(void *_self, ASTChannel *ast)
 {
-    __Trace__
+    MMLASTAnalyzer *self = _self;
+
+    if (!isValidRange(ast->number, 1, 16)) {
+        appendError(self, ast, MMLParseErrorInvalidChannel, NACStringFromInteger(ast->number), NULL);
+        return;
+    }
+
+    SEMChannel *sem = node(Channel, ast);
+    sem->number = ast->number;
+    append(self->state->list, sem);
 }
 
-static void visitSynth(void *self, ASTSynth *ast)
+static void visitSynth(void *_self, ASTSynth *ast)
 {
-    __Trace__
+    MMLASTAnalyzer *self = _self;
+
+    SEMSynth *sem = node(Synth, ast);
+    sem->name = strdup(ast->name);
+    append(self->state->list, sem);
 }
 
-static void visitBankSelect(void *self, ASTBankSelect *ast)
+static void visitBankSelect(void *_self, ASTBankSelect *ast)
 {
-    __Trace__
+    MMLASTAnalyzer *self = _self;
+
+    if (!isValidRange(ast->msb, 0, 127) || !isValidRange(ast->lsb, 0, 127)) {
+        appendError(self, ast, MMLParseErrorInvalidBankSelect, NACStringFromInteger(ast->msb), NACStringFromInteger(ast->lsb), NULL);
+        return;
+    }
+
+    SEMBankSelect *sem = node(BankSelect, ast);
+    sem->msb = ast->msb;
+    sem->lsb = ast->lsb;
+    append(self->state->list, sem);
 }
 
-static void visitProgramChange(void *self, ASTProgramChange *ast)
+static void visitProgramChange(void *_self, ASTProgramChange *ast)
 {
-    __Trace__
+    MMLASTAnalyzer *self = _self;
+
+    if (!isValidRange(ast->programNo, 0, 127)) {
+        appendError(self, ast, MMLParseErrorInvalidProgramChange, NACStringFromInteger(ast->programNo), NULL);
+        return;
+    }
+
+    SEMProgramChange *sem = node(ProgramChange, ast);
+    sem->programNo = ast->programNo;
+    append(self->state->list, sem);
 }
 
-static void visitVolume(void *self, ASTVolume *ast)
+static void visitVolume(void *_self, ASTVolume *ast)
 {
-    __Trace__
+    MMLASTAnalyzer *self = _self;
+
+    if (!isValidRange(ast->value, 0, 127)) {
+        appendError(self, ast, MMLParseErrorInvalidVolume, NACStringFromInteger(ast->value), NULL);
+        return;
+    }
+
+    SEMVolume *sem = node(Volume, ast);
+    sem->value = ast->value;
+    append(self->state->list, sem);
 }
 
-static void visitChorus(void *self, ASTChorus *ast)
+static void visitChorus(void *_self, ASTChorus *ast)
 {
-    __Trace__
+    MMLASTAnalyzer *self = _self;
+
+    if (!isValidRange(ast->value, 0, 127)) {
+        appendError(self, ast, MMLParseErrorInvalidChorus, NACStringFromInteger(ast->value), NULL);
+        return;
+    }
+
+    SEMChorus *sem = node(Chorus, ast);
+    sem->value = ast->value;
+    append(self->state->list, sem);
 }
 
-static void visitReverb(void *self, ASTReverb *ast)
+static void visitReverb(void *_self, ASTReverb *ast)
 {
-    __Trace__
+    MMLASTAnalyzer *self = _self;
+
+    if (!isValidRange(ast->value, 0, 127)) {
+        appendError(self, ast, MMLParseErrorInvalidReverb, NACStringFromInteger(ast->value), NULL);
+        return;
+    }
+
+    SEMReverb *sem = node(Reverb, ast);
+    sem->value = ast->value;
+    append(self->state->list, sem);
 }
 
-static void visitExpression(void *self, ASTExpression *ast)
+static void visitExpression(void *_self, ASTExpression *ast)
 {
-    __Trace__
+    MMLASTAnalyzer *self = _self;
+
+    if (!isValidRange(ast->value, 0, 127)) {
+        appendError(self, ast, MMLParseErrorInvalidExpression, NACStringFromInteger(ast->value), NULL);
+        return;
+    }
+
+    SEMExpression *sem = node(Expression, ast);
+    sem->value = ast->value;
+    append(self->state->list, sem);
 }
 
-static void visitPan(void *self, ASTPan *ast)
+static void visitPan(void *_self, ASTPan *ast)
 {
-    __Trace__
+    MMLASTAnalyzer *self = _self;
+
+    if (!isValidRange(ast->value, 0, 127)) {
+        appendError(self, ast, MMLParseErrorInvalidPan, NACStringFromInteger(ast->value), NULL);
+        return;
+    }
+
+    SEMPan *sem = node(Pan, ast);
+    sem->value = ast->value;
+    append(self->state->list, sem);
 }
 
 static void visitDetune(void *self, ASTDetune *ast)

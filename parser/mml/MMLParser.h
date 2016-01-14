@@ -15,6 +15,21 @@ typedef enum {
     MMLParseErrorWrongNumberOfMacroArguments,
     MMLParseErrorUndefinedMacroArgument,
     MMLParseErrorCircularMacroReference,
+    MMLParseErrorIllegalStateWithTimebase,
+    MMLParseErrorInvalidTimebase,
+    MMLParseErrorIllegalStateWithTitle,
+    MMLParseErrorIllegalStateWithCopyright,
+    MMLParseErrorIllegalStateWithMarker,
+    MMLParseErrorIllegalStateWithVelocityReverse,
+    MMLParseErrorIllegalStateWithOctaveReverse,
+    MMLParseErrorInvalidChannel,
+    MMLParseErrorInvalidBankSelect,
+    MMLParseErrorInvalidProgramChange,
+    MMLParseErrorInvalidVolume,
+    MMLParseErrorInvalidChorus,
+    MMLParseErrorInvalidReverb,
+    MMLParseErrorInvalidExpression,
+    MMLParseErrorInvalidPan,
 } MMLParseError;
 
 extern DSLParser *MMLParserCreate(ParseContext *context);
