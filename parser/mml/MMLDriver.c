@@ -1,7 +1,7 @@
 #include "MMLDriver.h"
 #include "MMLParser.h"
 #include "MMLASTDumper.h"
-//#include "MMLASTAnalyzer.h"
+#include "MMLASTAnalyzer.h"
 //#include "MMLSEMDumper.h"
 //#include "MMLSEMAnalyzer.h"
 #include "NAIO.h"
@@ -17,7 +17,7 @@ static const AnalyzerFactory AnalyzerFactories[] = {
 #ifdef DEBUG
     MMLASTDumperCreate,
 #endif
-    //MMLASTAnalyzerCreate,
+    MMLASTAnalyzerCreate,
 #ifdef DEBUG
     //MMLSEMDumperCreate,
 #endif

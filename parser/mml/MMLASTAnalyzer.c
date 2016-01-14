@@ -1,262 +1,224 @@
-#include "MMLASTDumper.h"
+#include "MMLASTAnalyzer.h"
+#include "MMLParser.h"
 #include "MMLAST.h"
-#include <NACString.h>
-#include <NALog.h>
+#include "MMLSEM.h"
+#include "NALog.h"
 
-#include <stdio.h>
 #include <stdlib.h>
-#include <stdarg.h>
 
-typedef struct _MMLASTDumper {
+#define node(type, ast) MMLSEM##type##Create(&ast->node.location)
+#define append(list, sem) NAArrayAppend(list->node.children, sem)
+#define appendError(self, ast, ...) self->context->appendError(self->context, &ast->node.location, __VA_ARGS__)
+
+#define isValidRange(v, from, to) (from <= v && v <= to)
+
+typedef struct _MMLASTAnalyzer {
     ASTVisitor visitor;
     Analyzer analyzer;
-    int indent;
-} MMLASTDumper;
+    ParseContext *context;
+} MMLASTAnalyzer;
 
-static Node *process(void *self, Node *node)
+static Node *process(void *_self, Node *node)
 {
-    if (__IsDebug__) {
-        node->accept(node, self);
-    }
-    return NodeRetain(node);
+    MMLASTAnalyzer *self = _self;
+
+    SEMList *list = MMLSEMListCreate(NULL);
+
+    node->accept(node, self);
+
+    //return (Node *)list;
+    NodeRelease(list);
+    return NULL;
 }
 
-static void destroy(void *self)
+static void destroy(void *_self)
 {
+    MMLASTAnalyzer *self = _self;
     free(self);
 }
 
-static void dump(MMLASTDumper *self, void *_node, ...)
-{
-    Node *node = _node;
-
-    printf("%*s", self->indent, "");
-    printf("[%s]", node->type);
-
-    va_list argList;
-    va_start(argList, _node);
-
-    const char *str;
-    int i = 0;
-    while ((str = va_arg(argList, const char *))) {
-        printf("%c", 0 == i % 2 ? ' ' : '=');
-        printf("%s", str);
-        ++i;
-    }
-
-    va_end(argList);
-
-    printf(" at %s:%d:%d\n", node->location.filepath, node->location.line, node->location.column);
-}
-
-#define INTEGER(ast, name) #name, NACStringFromInteger(ast->name)
-#define FLOAT(ast, name) #name, NACStringFromFloat(ast->name, 2)
-#define STRING(ast, name) #name, ast->name ? ast->name : "(null)"
-#define CHAR(ast, name) #name, '\0' == ast->name ? "none" : NACStringFromChar(ast->name)
-#define BOOL(ast, name) #name, NACStringFromBoolean(ast->name)
-
 static void visitRoot(void *_self, ASTRoot *ast)
 {
-    MMLASTDumper *self = _self;
-
-    dump(self, ast, NULL);
-    self->indent += 4;
+    MMLASTAnalyzer *self = _self;
 
     NAIterator *iterator = NAArrayGetIterator(ast->node.children);
     while (iterator->hasNext(iterator)) {
         Node *node = iterator->next(iterator);
         node->accept(node, self);
     }
-
-    self->indent -= 4;
 }
 
 static void visitTimebase(void *self, ASTTimebase *ast)
 {
-    dump(self, ast, INTEGER(ast, timebase), NULL);
+    __Trace__
 }
 
 static void visitTitle(void *self, ASTTitle *ast)
 {
-    dump(self, ast, STRING(ast, title), NULL);
+    __Trace__
 }
 
 static void visitCopyright(void *self, ASTCopyright *ast)
 {
-    dump(self, ast, STRING(ast, text), NULL);
+    __Trace__
 }
 
 static void visitMarker(void *self, ASTMarker *ast)
 {
-    dump(self, ast, STRING(ast, text), NULL);
+    __Trace__
 }
 
 static void visitVelocityReverse(void *self, ASTVelocityReverse *ast)
 {
-    dump(self, ast, NULL);
+    __Trace__
 }
 
 static void visitOctaveReverse(void *self, ASTOctaveReverse *ast)
 {
-    dump(self, ast, NULL);
+    __Trace__
 }
 
 static void visitChannel(void *self, ASTChannel *ast)
 {
-    dump(self, ast, INTEGER(ast, number), NULL);
+    __Trace__
 }
 
 static void visitSynth(void *self, ASTSynth *ast)
 {
-    dump(self, ast, STRING(ast, name), NULL);
+    __Trace__
 }
 
 static void visitBankSelect(void *self, ASTBankSelect *ast)
 {
-    dump(self, ast, INTEGER(ast, msb), INTEGER(ast, lsb), NULL);
+    __Trace__
 }
 
 static void visitProgramChange(void *self, ASTProgramChange *ast)
 {
-    dump(self, ast, INTEGER(ast, programNo), NULL);
+    __Trace__
 }
 
 static void visitVolume(void *self, ASTVolume *ast)
 {
-    dump(self, ast, INTEGER(ast, value), NULL);
+    __Trace__
 }
 
 static void visitChorus(void *self, ASTChorus *ast)
 {
-    dump(self, ast, INTEGER(ast, value), NULL);
+    __Trace__
 }
 
 static void visitReverb(void *self, ASTReverb *ast)
 {
-    dump(self, ast, INTEGER(ast, value), NULL);
+    __Trace__
 }
 
 static void visitExpression(void *self, ASTExpression *ast)
 {
-    dump(self, ast, INTEGER(ast, value), NULL);
+    __Trace__
 }
 
 static void visitPan(void *self, ASTPan *ast)
 {
-    dump(self, ast, INTEGER(ast, value), NULL);
+    __Trace__
 }
 
 static void visitDetune(void *self, ASTDetune *ast)
 {
-    dump(self, ast, INTEGER(ast, value), NULL);
+    __Trace__
 }
 
 static void visitTempo(void *self, ASTTempo *ast)
 {
-    dump(self, ast, FLOAT(ast, tempo), NULL);
+    __Trace__
 }
 
 static void visitNote(void *self, ASTNote *ast)
 {
-    dump(self, ast, STRING(ast, noteString), NULL);
+    __Trace__
 }
 
 static void visitRest(void *self, ASTRest *ast)
 {
-    dump(self, ast, STRING(ast, restString), NULL);
+    __Trace__
 }
 
 static void visitOctave(void *self, ASTOctave *ast)
 {
-    dump(self, ast, CHAR(ast, direction), INTEGER(ast, value), NULL);
+    __Trace__
 }
 
 static void visitTransepose(void *self, ASTTransepose *ast)
 {
-    dump(self, ast, BOOL(ast, relative), INTEGER(ast, value), NULL);
+    __Trace__
 }
 
 static void visitTie(void *self, ASTTie *ast)
 {
-    dump(self, ast, NULL);
+    __Trace__
 }
 
 static void visitLength(void *self, ASTLength *ast)
 {
-    dump(self, ast, INTEGER(ast, length), NULL);
+    __Trace__
 }
 
 static void visitGatetime(void *self, ASTGatetime *ast)
 {
-    dump(self, ast, BOOL(ast, absolute), INTEGER(ast, value), NULL);
+    __Trace__
 }
 
 static void visitVelocity(void *self, ASTVelocity *ast)
 {
-    dump(self, ast, CHAR(ast, direction), BOOL(ast, absolute), INTEGER(ast, value), NULL);
+    __Trace__
 }
 
 static void visitTuplet(void *_self, ASTTuplet *ast)
 {
-    MMLASTDumper *self = _self;
-
-    dump(self, ast, STRING(ast, lengthString), NULL);
-    self->indent += 4;
+    MMLASTAnalyzer *self = _self;
 
     NAIterator *iterator = NAArrayGetIterator(ast->node.children);
     while (iterator->hasNext(iterator)) {
         Node *node = iterator->next(iterator);
         node->accept(node, self);
     }
-
-    self->indent -= 4;
 }
 
 static void visitTrackChange(void *self, ASTTrackChange *ast)
 {
-    dump(self, ast, NULL);
+    __Trace__
 }
 
 static void visitRepeat(void *_self, ASTRepeat *ast)
 {
-    MMLASTDumper *self = _self;
-
-    dump(self, ast, INTEGER(ast, times), NULL);
-    self->indent += 4;
+    MMLASTAnalyzer *self = _self;
 
     NAIterator *iterator = NAArrayGetIterator(ast->node.children);
     while (iterator->hasNext(iterator)) {
         Node *node = iterator->next(iterator);
         node->accept(node, self);
     }
-
-    self->indent -= 4;
 }
 
 static void visitRepeatBreak(void *self, ASTRepeatBreak *ast)
 {
-    dump(self, ast, NULL);
+    __Trace__
 }
 
 static void visitChord(void *_self, ASTChord *ast)
 {
-    MMLASTDumper *self = _self;
-
-    dump(self, ast, NULL);
-    self->indent += 4;
+    MMLASTAnalyzer *self = _self;
 
     NAIterator *iterator = NAArrayGetIterator(ast->node.children);
     while (iterator->hasNext(iterator)) {
         Node *node = iterator->next(iterator);
         node->accept(node, self);
     }
-
-    self->indent -= 4;
 }
 
-Analyzer *MMLASTDumperCreate(ParseContext *context)
+Analyzer *MMLASTAnalyzerCreate(ParseContext *context)
 {
-    MMLASTDumper *self = calloc(1, sizeof(MMLASTDumper));
+    MMLASTAnalyzer *self = calloc(1, sizeof(MMLASTAnalyzer));
 
     self->visitor.visitRoot = visitRoot;
     self->visitor.visitTimebase = visitTimebase;

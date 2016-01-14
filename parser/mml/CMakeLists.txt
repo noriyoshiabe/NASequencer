@@ -23,8 +23,8 @@ set(SOURCES
   MMLParser.c
   MMLAST.c
   MMLASTDumper.c
-  #MMLASTAnalyzer.c
-  #MMLSEM.c
+  MMLASTAnalyzer.c
+  MMLSEM.c
   #MMLSEMDumper.c
   #MMLSEMAnalyzer.c
 )
