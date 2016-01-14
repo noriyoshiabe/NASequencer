@@ -2,27 +2,46 @@
 #include "MMLParser.h"
 #include "MMLAST.h"
 #include "MMLSEM.h"
+#include "NAStack.h"
 #include "NALog.h"
 
 #include <stdlib.h>
+#include <ctype.h>
 
 #define node(type, ast) MMLSEM##type##Create(&ast->node.location)
-#define append(list, sem) NAArrayAppend(list->node.children, sem)
+#define append(list, sem) NAArrayAppend(list, sem)
 #define appendError(self, ast, ...) self->context->appendError(self->context, &ast->node.location, __VA_ARGS__)
 
 #define isValidRange(v, from, to) (from <= v && v <= to)
+
+static const char *GLOBAL = "global";
+static const char *TUPLET = "tuplet";
+static const char *REPEAT = "repeat";
+static const char *CHORD = "chord";
+
+typedef struct _State {
+    NAArray *list;
+    const char *name;
+} State;
 
 typedef struct _MMLASTAnalyzer {
     ASTVisitor visitor;
     Analyzer analyzer;
     ParseContext *context;
+    State *state;
+    NAStack *stateStack;
 } MMLASTAnalyzer;
+
+static BaseNote KeyChar2BaseNote(char c);
+static State *StateCreate(NAArray *list, const char *name);
+static void StateDestroy(State *self);
 
 static Node *process(void *_self, Node *node)
 {
     MMLASTAnalyzer *self = _self;
 
     SEMList *list = MMLSEMListCreate(NULL);
+    self->state = StateCreate(list->node.children, GLOBAL);
 
     node->accept(node, self);
 
@@ -32,6 +51,8 @@ static Node *process(void *_self, Node *node)
 static void destroy(void *_self)
 {
     MMLASTAnalyzer *self = _self;
+    NAStackDestroy(self->stateStack);
+    StateDestroy(self->state);
     free(self);
 }
 
@@ -254,5 +275,31 @@ Analyzer *MMLASTAnalyzerCreate(ParseContext *context)
     self->analyzer.destroy = destroy;
     self->analyzer.self = self;
 
+    self->context = context;
+    self->stateStack = NAStackCreate(4);
+
     return &self->analyzer;
+}
+
+static BaseNote KeyChar2BaseNote(char c)
+{
+    const BaseNote baseNoteTable[] = {
+        BaseNote_A, BaseNote_B, BaseNote_C,
+        BaseNote_D, BaseNote_E, BaseNote_F, BaseNote_G
+    };
+
+    return baseNoteTable[tolower(c) - 97];
+}
+
+static State *StateCreate(NAArray *list, const char *name)
+{
+    State *self = calloc(1, sizeof(State));
+    self->list = list;
+    self->name = name;
+    return self;
+}
+
+static void StateDestroy(State *self)
+{
+    free(self);
 }

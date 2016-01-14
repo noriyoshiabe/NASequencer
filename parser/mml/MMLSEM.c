@@ -391,7 +391,9 @@ static void SEMTupletDestroy(void *self)
 
 SEMTuplet *MMLSEMTupletCreate(FileLocation *location)
 {
-    return NodeCreate(SEMTuplet, location);
+    SEMTuplet *self = NodeCreate(SEMTuplet, location);
+    self->node.children = NAArrayCreate(4, NULL);
+    return self;
 }
 
 static void SEMTrackChangeAccept(void *self, void *visitor)
@@ -419,7 +421,9 @@ static void SEMRepeatDestroy(void *self)
 
 SEMRepeat *MMLSEMRepeatCreate(FileLocation *location)
 {
-    return NodeCreate(SEMRepeat, location);
+    SEMRepeat *self = NodeCreate(SEMRepeat, location);
+    self->node.children = NAArrayCreate(4, NULL);
+    return self;
 }
 
 static void SEMRepeatBreakAccept(void *self, void *visitor)
@@ -447,5 +451,7 @@ static void SEMChordDestroy(void *self)
 
 SEMChord *MMLSEMChordCreate(FileLocation *location)
 {
-    return NodeCreate(SEMChord, location);
+    SEMChord *self = NodeCreate(SEMChord, location);
+    self->node.children = NAArrayCreate(4, NULL);
+    return self;
 }
