@@ -26,9 +26,7 @@ static Node *process(void *_self, Node *node)
 
     node->accept(node, self);
 
-    //return (Node *)list;
-    NodeRelease(list);
-    return NULL;
+    return (Node *)list;
 }
 
 static void destroy(void *_self)

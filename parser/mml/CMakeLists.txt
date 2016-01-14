@@ -25,7 +25,7 @@ set(SOURCES
   MMLASTDumper.c
   MMLASTAnalyzer.c
   MMLSEM.c
-  #MMLSEMDumper.c
+  MMLSEMDumper.c
   #MMLSEMAnalyzer.c
 )
 

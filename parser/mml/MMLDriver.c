@@ -2,7 +2,7 @@
 #include "MMLParser.h"
 #include "MMLASTDumper.h"
 #include "MMLASTAnalyzer.h"
-//#include "MMLSEMDumper.h"
+#include "MMLSEMDumper.h"
 //#include "MMLSEMAnalyzer.h"
 #include "NAIO.h"
 
@@ -19,7 +19,7 @@ static const AnalyzerFactory AnalyzerFactories[] = {
 #endif
     MMLASTAnalyzerCreate,
 #ifdef DEBUG
-    //MMLSEMDumperCreate,
+    MMLSEMDumperCreate,
 #endif
     //MMLSEMAnalyzerCreate,
 };
