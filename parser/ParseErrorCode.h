@@ -104,6 +104,16 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(MMLParseErrorInvalidReverb);
     CASE(MMLParseErrorInvalidExpression);
     CASE(MMLParseErrorInvalidPan);
+    CASE(MMLParseErrorInvalidDetune);
+    CASE(MMLParseErrorInvalidTempo);
+    // TODO Note/Rest
+    CASE(MMLParseErrorInvalidOctave);
+    CASE(MMLParseErrorInvalidTranspose);
+    CASE(MMLParseErrorIllegalStateWithTie);
+    CASE(MMLParseErrorInvalidLength);
+    CASE(MMLParseErrorInvalidGatetime);
+    CASE(MMLParseErrorInvalidVelocity);
+    CASE(MMLParseErrorIllegalStateWithTrackChange);
 
     default:
        break;

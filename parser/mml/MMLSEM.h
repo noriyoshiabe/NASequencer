@@ -120,7 +120,7 @@ typedef struct _SEMTranspose {
     Node node;
     bool relative;
     int value;
-} SEMTransepose;
+} SEMTranspose;
 
 typedef struct _SEMTie {
     Node node;
@@ -188,7 +188,7 @@ typedef struct _SEMVisitor {
     void (*visitNote)(void *self, SEMNote *sem);
     void (*visitRest)(void *self, SEMRest *sem);
     void (*visitOctave)(void *self, SEMOctave *sem);
-    void (*visitTransepose)(void *self, SEMTransepose *sem);
+    void (*visitTransepose)(void *self, SEMTranspose *sem);
     void (*visitTie)(void *self, SEMTie *sem);
     void (*visitLength)(void *self, SEMLength *sem);
     void (*visitGatetime)(void *self, SEMGatetime *sem);
@@ -221,7 +221,7 @@ extern SEMTempo *MMLSEMTempoCreate(FileLocation *location);
 extern SEMNote *MMLSEMNoteCreate(FileLocation *location);
 extern SEMRest *MMLSEMRestCreate(FileLocation *location);
 extern SEMOctave *MMLSEMOctaveCreate(FileLocation *location);
-extern SEMTransepose *MMLSEMTranseposeCreate(FileLocation *location);
+extern SEMTranspose *MMLSEMTransposeCreate(FileLocation *location);
 extern SEMTie *MMLSEMTieCreate(FileLocation *location);
 extern SEMLength *MMLSEMLengthCreate(FileLocation *location);
 extern SEMGatetime *MMLSEMGatetimeCreate(FileLocation *location);

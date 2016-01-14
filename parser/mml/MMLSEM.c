@@ -310,18 +310,18 @@ SEMOctave *MMLSEMOctaveCreate(FileLocation *location)
     return NodeCreate(SEMOctave, location);
 }
 
-static void SEMTranseposeAccept(void *self, void *visitor)
+static void SEMTransposeAccept(void *self, void *visitor)
 {
     ((SEMVisitor *)visitor)->visitTransepose(visitor, self);
 }
 
-static void SEMTranseposeDestroy(void *self)
+static void SEMTransposeDestroy(void *self)
 {
 }
 
-SEMTransepose *MMLSEMTranseposeCreate(FileLocation *location)
+SEMTranspose *MMLSEMTransposeCreate(FileLocation *location)
 {
-    return NodeCreate(SEMTransepose, location);
+    return NodeCreate(SEMTranspose, location);
 }
 
 static void SEMTieAccept(void *self, void *visitor)

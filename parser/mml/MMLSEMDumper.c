@@ -184,7 +184,7 @@ static void visitOctave(void *self, SEMOctave *sem)
     dump(self, sem, CHAR(sem, direction), INTEGER(sem, value), NULL);
 }
 
-static void visitTransepose(void *self, SEMTransepose *sem)
+static void visitTransepose(void *self, SEMTranspose *sem)
 {
     dump(self, sem, BOOL(sem, relative), INTEGER(sem, value), NULL);
 }

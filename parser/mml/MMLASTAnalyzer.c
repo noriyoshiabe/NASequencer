@@ -16,6 +16,8 @@
 #define isValidRange(v, from, to) (from <= v && v <= to)
 
 #define isGlobal(state) (GLOBAL == state->name)
+#define isGlobalOrRepeat(state) (GLOBAL == state->name || REPEAT == state->name)
+#define isChord(state) (CHORD == state->name)
 
 static const char *GLOBAL = "global";
 static const char *TUPLET = "tuplet";
@@ -279,59 +281,142 @@ static void visitPan(void *_self, ASTPan *ast)
     append(self->state->list, sem);
 }
 
-static void visitDetune(void *self, ASTDetune *ast)
+static void visitDetune(void *_self, ASTDetune *ast)
 {
-    __Trace__
+    MMLASTAnalyzer *self = _self;
+
+    if (!isValidRange(ast->value, -2400, 2400)) {
+        appendError(self, ast, MMLParseErrorInvalidDetune, NACStringFromInteger(ast->value), NULL);
+        return;
+    }
+
+    SEMDetune *sem = node(Detune, ast);
+    sem->value = ast->value;
+    append(self->state->list, sem);
 }
 
-static void visitTempo(void *self, ASTTempo *ast)
+static void visitTempo(void *_self, ASTTempo *ast)
 {
-    __Trace__
+    MMLASTAnalyzer *self = _self;
+
+    if (!isValidRange(ast->tempo, 30.0, 300.0)) {
+        appendError(self, ast, MMLParseErrorInvalidTempo, NACStringFromFloat(ast->tempo, 2), NULL);
+        return;
+    }
+
+    SEMTempo *sem = node(Tempo, ast);
+    sem->tempo = ast->tempo;
+    append(self->state->list, sem);
 }
 
 static void visitNote(void *self, ASTNote *ast)
 {
+    // TODO
     __Trace__
 }
 
 static void visitRest(void *self, ASTRest *ast)
 {
+    // TODO
     __Trace__
 }
 
-static void visitOctave(void *self, ASTOctave *ast)
+static void visitOctave(void *_self, ASTOctave *ast)
 {
-    __Trace__
+    MMLASTAnalyzer *self = _self;
+
+    if (!isValidRange(ast->value, -2, 8)) {
+        appendError(self, ast, MMLParseErrorInvalidOctave, NACStringFromFloat(ast->value, 2), NULL);
+        return;
+    }
+
+    SEMOctave *sem = node(Octave, ast);
+    sem->direction = ast->direction;
+    sem->value = ast->value;
+    append(self->state->list, sem);
 }
 
-static void visitTransepose(void *self, ASTTransepose *ast)
+static void visitTransepose(void *_self, ASTTransepose *ast)
 {
-    __Trace__
+    MMLASTAnalyzer *self = _self;
+
+    if (!isValidRange(ast->value, -64, 64)) {
+        appendError(self, ast, MMLParseErrorInvalidTranspose, NACStringFromInteger(ast->value), NULL);
+        return;
+    }
+
+    SEMTranspose *sem = node(Transpose, ast);
+    sem->value = ast->value;
+    append(self->state->list, sem);
 }
 
-static void visitTie(void *self, ASTTie *ast)
+static void visitTie(void *_self, ASTTie *ast)
 {
-    __Trace__
+    MMLASTAnalyzer *self = _self;
+
+    if (isChord(self->state)) {
+        appendError(self, ast, MMLParseErrorIllegalStateWithTie, self->state->name, NULL);
+        return;
+    }
+
+    // TODO Tuplet
+
+    SEMTie *sem = node(Tie, ast);
+    append(self->state->list, sem);
 }
 
-static void visitLength(void *self, ASTLength *ast)
+static void visitLength(void *_self, ASTLength *ast)
 {
-    __Trace__
+    MMLASTAnalyzer *self = _self;
+
+    if (0 != 384 % ast->length) {
+        appendError(self, ast, MMLParseErrorInvalidLength, NACStringFromInteger(ast->length), NULL);
+        return;
+    }
+
+    SEMLength *sem = node(Length, ast);
+    sem->length = ast->length;
+    append(self->state->list, sem);
 }
 
-static void visitGatetime(void *self, ASTGatetime *ast)
+static void visitGatetime(void *_self, ASTGatetime *ast)
 {
-    __Trace__
+    MMLASTAnalyzer *self = _self;
+
+    if ((!ast->absolute && !isValidRange(ast->value, 0, 16))
+            || (ast->absolute && !isValidRange(ast->value, 0, 192))) {
+        appendError(self, ast, MMLParseErrorInvalidGatetime, NACStringFromBoolean(ast->absolute), NACStringFromInteger(ast->value), NULL);
+        return;
+    }
+
+    SEMGatetime *sem = node(Gatetime, ast);
+    sem->absolute = ast->absolute;
+    sem->value = ast->value;
+    append(self->state->list, sem);
 }
 
-static void visitVelocity(void *self, ASTVelocity *ast)
+static void visitVelocity(void *_self, ASTVelocity *ast)
 {
-    __Trace__
+    MMLASTAnalyzer *self = _self;
+
+    if ((!ast->absolute && !isValidRange(ast->value, 0, 15))
+            || (ast->absolute && !isValidRange(ast->value, 0, 127))) {
+        appendError(self, ast, MMLParseErrorInvalidVelocity, NACStringFromBoolean(ast->absolute), NACStringFromInteger(ast->value), NULL);
+        return;
+    }
+
+    SEMVelocity *sem = node(Velocity, ast);
+    sem->direction = ast->direction;
+    sem->absolute = ast->absolute;
+    sem->value = ast->value;
+    append(self->state->list, sem);
 }
 
 static void visitTuplet(void *_self, ASTTuplet *ast)
 {
     MMLASTAnalyzer *self = _self;
+
+    // TODO
 
     NAIterator *iterator = NAArrayGetIterator(ast->node.children);
     while (iterator->hasNext(iterator)) {
@@ -340,9 +425,17 @@ static void visitTuplet(void *_self, ASTTuplet *ast)
     }
 }
 
-static void visitTrackChange(void *self, ASTTrackChange *ast)
+static void visitTrackChange(void *_self, ASTTrackChange *ast)
 {
-    __Trace__
+    MMLASTAnalyzer *self = _self;
+
+    if (!isGlobalOrRepeat(self->state)) {
+        appendError(self, ast, MMLParseErrorIllegalStateWithTrackChange, self->state->name, NULL);
+        return;
+    }
+
+    SEMTrackChange *sem = node(TrackChange, ast);
+    append(self->state->list, sem);
 }
 
 static void visitRepeat(void *_self, ASTRepeat *ast)
