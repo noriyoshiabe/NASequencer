@@ -14,6 +14,7 @@
     else yycolumn += yyleng;
 
 #define YYMORE() yymore(), yycolumn -= yyleng
+#define ECHO
 
 %}
 

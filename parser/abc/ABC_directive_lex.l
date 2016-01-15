@@ -13,6 +13,8 @@
     if (strchr(yytext, '\n')) yycolumn = 1; \
     else yycolumn += yyleng;
 
+#define ECHO
+
 %}
 
 %option prefix="ABC_directive_"

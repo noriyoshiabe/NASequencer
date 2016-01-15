@@ -14,6 +14,8 @@
     if (strchr(yytext, '\n')) ++yylineno, yycolumn = 1; \
     else yycolumn += yyleng;
 
+#define ECHO
+
 %}
 
 %option prefix="NAMidi_"
