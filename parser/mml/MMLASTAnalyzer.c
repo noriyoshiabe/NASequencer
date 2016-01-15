@@ -38,6 +38,7 @@ typedef struct _MMLASTAnalyzer {
 } MMLASTAnalyzer;
 
 static BaseNote KeyChar2BaseNote(char c);
+static void parseNoteLength(char *string, NoteLength *noteLength);
 static State *StateCreate(NAArray *list, const char *name);
 static void StateDestroy(State *self);
 
@@ -309,16 +310,53 @@ static void visitTempo(void *_self, ASTTempo *ast)
     append(self->state->list, sem);
 }
 
-static void visitNote(void *self, ASTNote *ast)
+static void visitNote(void *_self, ASTNote *ast)
 {
-    // TODO
-    __Trace__
+    MMLASTAnalyzer *self = _self;
+
+    BaseNote baseNote = BaseNote_C;
+    Accidental accidental = AccidentalNone;
+    NoteLength noteLength = {-1, 0, -1};
+
+    char *pc = ast->noteString;
+    while (*pc) {
+        switch (*pc) {
+        case '+':
+        case '#':
+            accidental = AccidentalSharp == accidental ? AccidentalDoubleSharp : AccidentalSharp;
+            break;
+        case '-':
+            accidental = AccidentalFlat == accidental ? AccidentalDoubleFlat : AccidentalFlat;
+            break;
+        case 'a': case 'b': case 'c': case 'd': case 'e': case 'f': case 'g':
+        case 'A': case 'B': case 'C': case 'D': case 'E': case 'F': case 'G':
+            baseNote = KeyChar2BaseNote(*pc);
+            break;
+        default:
+            parseNoteLength(pc, &noteLength);
+            goto LOOP_END;
+        }
+
+        ++pc;
+    }
+
+LOOP_END:
+    ;
+
+    SEMNote *sem = node(Note, ast);
+    sem->baseNote = baseNote;
+    sem->accidental = accidental;
+    sem->length = noteLength;
+    sem->noteString = strdup(ast->noteString);
+    append(self->state->list, sem);
 }
 
-static void visitRest(void *self, ASTRest *ast)
+static void visitRest(void *_self, ASTRest *ast)
 {
-    // TODO
-    __Trace__
+    MMLASTAnalyzer *self = _self;
+    SEMRest *sem = node(Rest, ast);
+    parseNoteLength(ast->restString + 1, &sem->length);
+    append(self->state->list, sem);
 }
 
 static void visitOctave(void *_self, ASTOctave *ast)
@@ -358,8 +396,6 @@ static void visitTie(void *_self, ASTTie *ast)
         appendError(self, ast, MMLParseErrorIllegalStateWithTie, self->state->name, NULL);
         return;
     }
-
-    // TODO Tuplet
 
     SEMTie *sem = node(Tie, ast);
     append(self->state->list, sem);
@@ -519,6 +555,30 @@ static BaseNote KeyChar2BaseNote(char c)
     };
 
     return baseNoteTable[tolower(c) - 97];
+}
+
+static void parseNoteLength(char *string, NoteLength *noteLength)
+{
+    char *pc = NACStringDuplicate(string);
+
+    if ('%' == *pc) {
+        noteLength->gatetime = atoi(pc + 1);
+    }
+    else {
+        if (*pc) {
+            char *digits = pc;
+            while (*pc) {
+                if ('.' == *pc) {
+                    *pc = '\0';
+                    ++noteLength->dotCount;
+                }
+
+                ++pc;
+            }
+
+            noteLength->length = atoi(digits);
+        }
+    }
 }
 
 static State *StateCreate(NAArray *list, const char *name)
