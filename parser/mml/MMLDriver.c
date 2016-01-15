@@ -3,7 +3,7 @@
 #include "MMLASTDumper.h"
 #include "MMLASTAnalyzer.h"
 #include "MMLSEMDumper.h"
-//#include "MMLSEMAnalyzer.h"
+#include "MMLSEMAnalyzer.h"
 #include "NAIO.h"
 
 #include <stdlib.h>
@@ -21,7 +21,7 @@ static const AnalyzerFactory AnalyzerFactories[] = {
 #ifdef DEBUG
     MMLSEMDumperCreate,
 #endif
-    //MMLSEMAnalyzerCreate,
+    MMLSEMAnalyzerCreate,
 };
 
 static const int AnalyzerCount = sizeof(AnalyzerFactories) / sizeof(AnalyzerFactories[0]);

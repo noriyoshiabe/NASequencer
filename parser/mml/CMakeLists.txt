@@ -26,7 +26,7 @@ set(SOURCES
   MMLASTAnalyzer.c
   MMLSEM.c
   MMLSEMDumper.c
-  #MMLSEMAnalyzer.c
+  MMLSEMAnalyzer.c
 )
 
 add_library(${PROJECT_NAME}
