@@ -146,6 +146,7 @@ typedef struct _SEMVelocity {
 
 typedef struct _SEMTuplet {
     Node node;
+    int division;
     NoteLength length;
 } SEMTuplet;
 

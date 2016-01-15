@@ -10,14 +10,17 @@
 #include <ctype.h>
 
 #define node(type, ast) MMLSEM##type##Create(&ast->node.location)
-#define append(list, sem) NAArrayAppend(list, sem)
+#define append(state, sem) NAArrayAppend(state->node->children, sem)
 #define appendError(self, ast, ...) self->context->appendError(self->context, &ast->node.location, __VA_ARGS__)
 
 #define isValidRange(v, from, to) (from <= v && v <= to)
 
 #define isGlobal(state) (GLOBAL == state->name)
 #define isGlobalOrRepeat(state) (GLOBAL == state->name || REPEAT == state->name)
+#define isRepeat(state) (REPEAT == state->name)
 #define isChord(state) (CHORD == state->name)
+
+#define inTuplet(self) (self->inTuplet)
 
 static const char *GLOBAL = "global";
 static const char *TUPLET = "tuplet";
@@ -25,7 +28,7 @@ static const char *REPEAT = "repeat";
 static const char *CHORD = "chord";
 
 typedef struct _State {
-    NAArray *list;
+    Node *node;
     const char *name;
 } State;
 
@@ -35,11 +38,12 @@ typedef struct _MMLASTAnalyzer {
     ParseContext *context;
     State *state;
     NAStack *stateStack;
+    bool inTuplet;
 } MMLASTAnalyzer;
 
 static BaseNote KeyChar2BaseNote(char c);
 static void parseNoteLength(char *string, NoteLength *noteLength);
-static State *StateCreate(NAArray *list, const char *name);
+static State *StateCreate(void *node, const char *name);
 static void StateDestroy(State *self);
 
 static Node *process(void *_self, Node *node)
@@ -47,7 +51,7 @@ static Node *process(void *_self, Node *node)
     MMLASTAnalyzer *self = _self;
 
     SEMList *list = MMLSEMListCreate(NULL);
-    self->state = StateCreate(list->node.children, GLOBAL);
+    self->state = StateCreate(list, GLOBAL);
 
     node->accept(node, self);
 
@@ -89,7 +93,7 @@ static void visitTimebase(void *_self, ASTTimebase *ast)
     
     SEMTimebase *sem = node(Timebase, ast);
     sem->timebase = ast->timebase;
-    append(self->state->list, sem);
+    append(self->state, sem);
 }
 
 static void visitTitle(void *_self, ASTTitle *ast)
@@ -103,7 +107,7 @@ static void visitTitle(void *_self, ASTTitle *ast)
 
     SEMTitle *sem = node(Title, ast);
     sem->title = strdup(ast->title);
-    append(self->state->list, sem);
+    append(self->state, sem);
 }
 
 static void visitCopyright(void *_self, ASTCopyright *ast)
@@ -117,7 +121,7 @@ static void visitCopyright(void *_self, ASTCopyright *ast)
 
     SEMCopyright *sem = node(Copyright, ast);
     sem->text = strdup(ast->text);
-    append(self->state->list, sem);
+    append(self->state, sem);
 }
 
 static void visitMarker(void *_self, ASTMarker *ast)
@@ -131,7 +135,7 @@ static void visitMarker(void *_self, ASTMarker *ast)
 
     SEMMarker *sem = node(Marker, ast);
     sem->text = strdup(ast->text);
-    append(self->state->list, sem);
+    append(self->state, sem);
 }
 
 static void visitVelocityReverse(void *_self, ASTVelocityReverse *ast)
@@ -144,7 +148,7 @@ static void visitVelocityReverse(void *_self, ASTVelocityReverse *ast)
     }
 
     SEMVelocityReverse *sem = node(VelocityReverse, ast);
-    append(self->state->list, sem);
+    append(self->state, sem);
 }
 
 static void visitOctaveReverse(void *_self, ASTOctaveReverse *ast)
@@ -157,7 +161,7 @@ static void visitOctaveReverse(void *_self, ASTOctaveReverse *ast)
     }
 
     SEMOctaveReverse *sem = node(OctaveReverse, ast);
-    append(self->state->list, sem);
+    append(self->state, sem);
 }
 
 static void visitChannel(void *_self, ASTChannel *ast)
@@ -171,7 +175,7 @@ static void visitChannel(void *_self, ASTChannel *ast)
 
     SEMChannel *sem = node(Channel, ast);
     sem->number = ast->number;
-    append(self->state->list, sem);
+    append(self->state, sem);
 }
 
 static void visitSynth(void *_self, ASTSynth *ast)
@@ -180,7 +184,7 @@ static void visitSynth(void *_self, ASTSynth *ast)
 
     SEMSynth *sem = node(Synth, ast);
     sem->name = strdup(ast->name);
-    append(self->state->list, sem);
+    append(self->state, sem);
 }
 
 static void visitBankSelect(void *_self, ASTBankSelect *ast)
@@ -195,7 +199,7 @@ static void visitBankSelect(void *_self, ASTBankSelect *ast)
     SEMBankSelect *sem = node(BankSelect, ast);
     sem->msb = ast->msb;
     sem->lsb = ast->lsb;
-    append(self->state->list, sem);
+    append(self->state, sem);
 }
 
 static void visitProgramChange(void *_self, ASTProgramChange *ast)
@@ -209,7 +213,7 @@ static void visitProgramChange(void *_self, ASTProgramChange *ast)
 
     SEMProgramChange *sem = node(ProgramChange, ast);
     sem->programNo = ast->programNo;
-    append(self->state->list, sem);
+    append(self->state, sem);
 }
 
 static void visitVolume(void *_self, ASTVolume *ast)
@@ -223,7 +227,7 @@ static void visitVolume(void *_self, ASTVolume *ast)
 
     SEMVolume *sem = node(Volume, ast);
     sem->value = ast->value;
-    append(self->state->list, sem);
+    append(self->state, sem);
 }
 
 static void visitChorus(void *_self, ASTChorus *ast)
@@ -237,7 +241,7 @@ static void visitChorus(void *_self, ASTChorus *ast)
 
     SEMChorus *sem = node(Chorus, ast);
     sem->value = ast->value;
-    append(self->state->list, sem);
+    append(self->state, sem);
 }
 
 static void visitReverb(void *_self, ASTReverb *ast)
@@ -251,7 +255,7 @@ static void visitReverb(void *_self, ASTReverb *ast)
 
     SEMReverb *sem = node(Reverb, ast);
     sem->value = ast->value;
-    append(self->state->list, sem);
+    append(self->state, sem);
 }
 
 static void visitExpression(void *_self, ASTExpression *ast)
@@ -265,7 +269,7 @@ static void visitExpression(void *_self, ASTExpression *ast)
 
     SEMExpression *sem = node(Expression, ast);
     sem->value = ast->value;
-    append(self->state->list, sem);
+    append(self->state, sem);
 }
 
 static void visitPan(void *_self, ASTPan *ast)
@@ -279,7 +283,7 @@ static void visitPan(void *_self, ASTPan *ast)
 
     SEMPan *sem = node(Pan, ast);
     sem->value = ast->value;
-    append(self->state->list, sem);
+    append(self->state, sem);
 }
 
 static void visitDetune(void *_self, ASTDetune *ast)
@@ -293,7 +297,7 @@ static void visitDetune(void *_self, ASTDetune *ast)
 
     SEMDetune *sem = node(Detune, ast);
     sem->value = ast->value;
-    append(self->state->list, sem);
+    append(self->state, sem);
 }
 
 static void visitTempo(void *_self, ASTTempo *ast)
@@ -307,7 +311,7 @@ static void visitTempo(void *_self, ASTTempo *ast)
 
     SEMTempo *sem = node(Tempo, ast);
     sem->tempo = ast->tempo;
-    append(self->state->list, sem);
+    append(self->state, sem);
 }
 
 static void visitNote(void *_self, ASTNote *ast)
@@ -333,6 +337,11 @@ static void visitNote(void *_self, ASTNote *ast)
             baseNote = KeyChar2BaseNote(*pc);
             break;
         default:
+            if (inTuplet(self)) {
+                appendError(self, ast, MMLParseErrorIllegalStateWithNoteLength, self->state->name, NACStringFromBoolean(inTuplet(self)), NULL);
+                return;
+            }
+
             parseNoteLength(pc, &noteLength);
             goto LOOP_END;
         }
@@ -348,15 +357,39 @@ LOOP_END:
     sem->accidental = accidental;
     sem->length = noteLength;
     sem->noteString = strdup(ast->noteString);
-    append(self->state->list, sem);
+    append(self->state, sem);
+
+    if (inTuplet(self) && !isChord(self->state)) {
+        SEMTuplet *tuplet = (SEMTuplet *)self->state->node;
+        ++tuplet->division;
+    }
 }
 
 static void visitRest(void *_self, ASTRest *ast)
 {
     MMLASTAnalyzer *self = _self;
+
+    if (inTuplet(self) && isChord(self->state)) {
+        appendError(self, ast, MMLParseErrorIllegalStateWithRest, self->state->name, NACStringFromBoolean(inTuplet(self)), NULL);
+        return;
+    }
+
+    if (inTuplet(self) && '\0' != ast->restString[1] ) {
+        appendError(self, ast, MMLParseErrorIllegalStateWithNoteLength, self->state->name, NACStringFromBoolean(inTuplet(self)), NULL);
+        return;
+    }
+
+    NoteLength noteLength = {-1, 0, -1};
+    parseNoteLength(ast->restString + 1, &noteLength);
+
     SEMRest *sem = node(Rest, ast);
-    parseNoteLength(ast->restString + 1, &sem->length);
-    append(self->state->list, sem);
+    sem->length = noteLength;
+    append(self->state, sem);
+
+    if (inTuplet(self) && !isChord(self->state)) {
+        SEMTuplet *tuplet = (SEMTuplet *)self->state->node;
+        ++tuplet->division;
+    }
 }
 
 static void visitOctave(void *_self, ASTOctave *ast)
@@ -371,7 +404,7 @@ static void visitOctave(void *_self, ASTOctave *ast)
     SEMOctave *sem = node(Octave, ast);
     sem->direction = ast->direction;
     sem->value = ast->value;
-    append(self->state->list, sem);
+    append(self->state, sem);
 }
 
 static void visitTransepose(void *_self, ASTTransepose *ast)
@@ -385,7 +418,7 @@ static void visitTransepose(void *_self, ASTTransepose *ast)
 
     SEMTranspose *sem = node(Transpose, ast);
     sem->value = ast->value;
-    append(self->state->list, sem);
+    append(self->state, sem);
 }
 
 static void visitTie(void *_self, ASTTie *ast)
@@ -398,12 +431,17 @@ static void visitTie(void *_self, ASTTie *ast)
     }
 
     SEMTie *sem = node(Tie, ast);
-    append(self->state->list, sem);
+    append(self->state, sem);
 }
 
 static void visitLength(void *_self, ASTLength *ast)
 {
     MMLASTAnalyzer *self = _self;
+
+    if (!isGlobalOrRepeat(self->state)) {
+        appendError(self, ast, MMLParseErrorIllegalStateWithLength, self->state->name, NULL);
+        return;
+    }
 
     if (0 != 384 % ast->length) {
         appendError(self, ast, MMLParseErrorInvalidLength, NACStringFromInteger(ast->length), NULL);
@@ -412,7 +450,7 @@ static void visitLength(void *_self, ASTLength *ast)
 
     SEMLength *sem = node(Length, ast);
     sem->length = ast->length;
-    append(self->state->list, sem);
+    append(self->state, sem);
 }
 
 static void visitGatetime(void *_self, ASTGatetime *ast)
@@ -428,7 +466,7 @@ static void visitGatetime(void *_self, ASTGatetime *ast)
     SEMGatetime *sem = node(Gatetime, ast);
     sem->absolute = ast->absolute;
     sem->value = ast->value;
-    append(self->state->list, sem);
+    append(self->state, sem);
 }
 
 static void visitVelocity(void *_self, ASTVelocity *ast)
@@ -445,20 +483,39 @@ static void visitVelocity(void *_self, ASTVelocity *ast)
     sem->direction = ast->direction;
     sem->absolute = ast->absolute;
     sem->value = ast->value;
-    append(self->state->list, sem);
+    append(self->state, sem);
 }
 
 static void visitTuplet(void *_self, ASTTuplet *ast)
 {
     MMLASTAnalyzer *self = _self;
 
-    // TODO
+    if (!isGlobalOrRepeat(self->state)) {
+        appendError(self, ast, MMLParseErrorIllegalStateWithTuplet, self->state->name, NULL);
+        return;
+    }
+
+    NoteLength noteLength = {-1, 0, -1};
+    parseNoteLength(ast->lengthString, &noteLength);
+
+    SEMTuplet *sem = node(Tuplet, ast);
+    sem->length = noteLength;
+    append(self->state, sem);
+
+    NAStackPush(self->stateStack, self->state);
+    self->state = StateCreate(sem, TUPLET);
+    self->inTuplet = true;
 
     NAIterator *iterator = NAArrayGetIterator(ast->node.children);
     while (iterator->hasNext(iterator)) {
         Node *node = iterator->next(iterator);
         node->accept(node, self);
     }
+
+    State *local = self->state;
+    self->state = NAStackPop(self->stateStack);
+    StateDestroy(local);
+    self->inTuplet = false;
 }
 
 static void visitTrackChange(void *_self, ASTTrackChange *ast)
@@ -471,33 +528,77 @@ static void visitTrackChange(void *_self, ASTTrackChange *ast)
     }
 
     SEMTrackChange *sem = node(TrackChange, ast);
-    append(self->state->list, sem);
+    append(self->state, sem);
 }
 
 static void visitRepeat(void *_self, ASTRepeat *ast)
 {
     MMLASTAnalyzer *self = _self;
 
+    if (!isGlobalOrRepeat(self->state)) {
+        appendError(self, ast, MMLParseErrorIllegalStateWithRepeat, self->state->name, NULL);
+        return;
+    }
+
+    SEMRepeat *sem = node(Repeat, ast);
+    sem->times = ast->times;
+    append(self->state, sem);
+
+    NAStackPush(self->stateStack, self->state);
+    self->state = StateCreate(sem, REPEAT);
+
     NAIterator *iterator = NAArrayGetIterator(ast->node.children);
     while (iterator->hasNext(iterator)) {
         Node *node = iterator->next(iterator);
         node->accept(node, self);
     }
+
+    State *local = self->state;
+    self->state = NAStackPop(self->stateStack);
+    StateDestroy(local);
 }
 
-static void visitRepeatBreak(void *self, ASTRepeatBreak *ast)
+static void visitRepeatBreak(void *_self, ASTRepeatBreak *ast)
 {
-    __Trace__
+    MMLASTAnalyzer *self = _self;
+
+    if (!isRepeat(self->state)) {
+        appendError(self, ast, MMLParseErrorIllegalStateWithRepeatBreak, self->state->name, NULL);
+        return;
+    }
+
+    SEMRepeatBreak *sem = node(RepeatBreak, ast);
+    append(self->state, sem);
 }
 
 static void visitChord(void *_self, ASTChord *ast)
 {
     MMLASTAnalyzer *self = _self;
 
+    if (isChord(self->state)) {
+        appendError(self, ast, MMLParseErrorIllegalStateWithChord, self->state->name, NULL);
+        return;
+    }
+
+    SEMChord *sem = node(Chord, ast);
+    append(self->state, sem);
+
+    NAStackPush(self->stateStack, self->state);
+    self->state = StateCreate(sem, CHORD);
+
     NAIterator *iterator = NAArrayGetIterator(ast->node.children);
     while (iterator->hasNext(iterator)) {
         Node *node = iterator->next(iterator);
         node->accept(node, self);
+    }
+
+    State *local = self->state;
+    self->state = NAStackPop(self->stateStack);
+    StateDestroy(local);
+
+    if (inTuplet(self)) {
+        SEMTuplet *tuplet = (SEMTuplet *)self->state->node;
+        ++tuplet->division;
     }
 }
 
@@ -581,10 +682,10 @@ static void parseNoteLength(char *string, NoteLength *noteLength)
     }
 }
 
-static State *StateCreate(NAArray *list, const char *name)
+static State *StateCreate(void *node, const char *name)
 {
     State *self = calloc(1, sizeof(State));
-    self->list = list;
+    self->node = node;
     self->name = name;
     return self;
 }

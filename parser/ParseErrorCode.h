@@ -106,14 +106,20 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(MMLParseErrorInvalidPan);
     CASE(MMLParseErrorInvalidDetune);
     CASE(MMLParseErrorInvalidTempo);
-    // TODO Note/Rest
+    CASE(MMLParseErrorIllegalStateWithNoteLength);
+    CASE(MMLParseErrorIllegalStateWithRest);
     CASE(MMLParseErrorInvalidOctave);
     CASE(MMLParseErrorInvalidTranspose);
     CASE(MMLParseErrorIllegalStateWithTie);
+    CASE(MMLParseErrorIllegalStateWithLength);
     CASE(MMLParseErrorInvalidLength);
     CASE(MMLParseErrorInvalidGatetime);
     CASE(MMLParseErrorInvalidVelocity);
     CASE(MMLParseErrorIllegalStateWithTrackChange);
+    CASE(MMLParseErrorIllegalStateWithTuplet);
+    CASE(MMLParseErrorIllegalStateWithRepeat);
+    CASE(MMLParseErrorIllegalStateWithRepeatBreak);
+    CASE(MMLParseErrorIllegalStateWithChord);
 
     default:
        break;

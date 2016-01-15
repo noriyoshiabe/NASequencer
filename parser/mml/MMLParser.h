@@ -32,14 +32,20 @@ typedef enum {
     MMLParseErrorInvalidPan,
     MMLParseErrorInvalidDetune,
     MMLParseErrorInvalidTempo,
-    // TODO Note/Rest
+    MMLParseErrorIllegalStateWithNoteLength,
+    MMLParseErrorIllegalStateWithRest,
     MMLParseErrorInvalidOctave,
     MMLParseErrorInvalidTranspose,
     MMLParseErrorIllegalStateWithTie,
+    MMLParseErrorIllegalStateWithLength,
     MMLParseErrorInvalidLength,
     MMLParseErrorInvalidGatetime,
     MMLParseErrorInvalidVelocity,
     MMLParseErrorIllegalStateWithTrackChange,
+    MMLParseErrorIllegalStateWithTuplet,
+    MMLParseErrorIllegalStateWithRepeat,
+    MMLParseErrorIllegalStateWithRepeatBreak,
+    MMLParseErrorIllegalStateWithChord,
 } MMLParseError;
 
 extern DSLParser *MMLParserCreate(ParseContext *context);

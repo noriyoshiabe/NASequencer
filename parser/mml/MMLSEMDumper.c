@@ -213,7 +213,7 @@ static void visitTuplet(void *_self, SEMTuplet *sem)
 {
     MMLSEMDumper *self = _self;
 
-    dump(self, sem, INTEGER(sem, length.length), INTEGER(sem, length.dotCount), INTEGER(sem, length.gatetime), NULL);
+    dump(self, sem, INTEGER(sem, division), INTEGER(sem, length.length), INTEGER(sem, length.dotCount), INTEGER(sem, length.gatetime), NULL);
     self->indent += 4;
 
     NAIterator *iterator = NAArrayGetIterator(sem->node.children);
