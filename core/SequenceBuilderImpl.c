@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <sys/param.h>
 
 typedef struct _SequenceBuilderImpl {
     SequenceBuilder interface;
@@ -213,7 +214,7 @@ static void SequenceBuilderAppendDetune(void *_self, int tick, int channel, int 
     event->channel = channel;
     event->value = value;
 
-    int sign = event->value / abs(event->value);
+    int sign = event->value / MAX(1, abs(event->value));
     int fine = (int)((double)(abs(event->value) % 100 * sign) / (100.0 / 8192.0)) + 8192;
     int corse = (abs(event->value) / 100 * sign) + 64;
 
