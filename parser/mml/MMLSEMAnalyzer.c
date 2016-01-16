@@ -40,8 +40,12 @@ typedef struct _MMLSEMAnalyzer {
     struct {
         int rate;
         int minus;
+        bool absolute;
     } gatetime;
-    int velocity;
+    struct {
+        int value;
+        bool absolute;
+    } velocity;
 
     Note *pendingNote;
 
@@ -290,7 +294,22 @@ static void visitVelocity(void *_self, SEMVelocity *sem)
 {
     MMLSEMAnalyzer *self = _self;
 
-    // TODO
+    if (sem->direction) {
+        int shift = '(' == sem->direction ? sem->value : -sem->value;
+        shift *= self->velocity.absolute ? 1 : 8;
+        shift *= self->velocityReverse ? -1 : 1;
+        int velocity = self->velocity.value + shift;
+        if (!isValidRange(velocity, 0, 127)) {
+            appendError(self, sem, MMLParseErrorInvalidVelocity, NACStringFromInteger(velocity), NULL);
+        }
+        else {
+            self->velocity.value = velocity;
+        }
+    }
+    else {
+        self->velocity.absolute = sem->absolute;
+        self->velocity.value = self->velocity.absolute ? sem->value : sem->value * 8 + 7;
+    }
 }
 
 static void visitTuplet(void *_self, SEMTuplet *sem)
@@ -393,7 +412,7 @@ Analyzer *MMLSEMAnalyzerCreate(ParseContext *context)
     self->length = 4;
     self->gatetime.rate = 15;
     self->gatetime.minus = 0;
-    self->velocity = 100;
+    self->velocity.value = 100;
 
     return &self->analyzer;
 }

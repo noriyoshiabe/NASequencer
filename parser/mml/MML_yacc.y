@@ -43,7 +43,7 @@ extern int MML_error(YYLTYPE *yylloc, yyscan_t scanner, void **node, const char 
 %token CHANNEL SYNTHESIZER BANK_SELECT PROGRAM_CHANGE VOLUME CHORUS REVERB EXPRESSION PAN DETUNE TEMPO
 %token OCTAVE TRANSPOSE R_TRANSPOSE LENGTH GATETIME A_GATETIME VELOCITY A_VELOCITY TUPLET_START
 %token REPEAT_START REPEAT_END REPEAT_BREAK
-%token <s> NOTE REST TUPLET_END
+%token <s> NOTE REST TUPLET_END VELOCITY_SHIFT
 
 %type <node> d_timebase d_title d_copyright d_marker d_velocity d_octave channel synthesizer bank_select program_change
 %type <node> volume chorus reverb expression pan detune tempo note rest octave
@@ -58,6 +58,7 @@ extern int MML_error(YYLTYPE *yylloc, yyscan_t scanner, void **node, const char 
 %destructor { free($$); } NOTE
 %destructor { free($$); } REST
 %destructor { free($$); } TUPLET_END
+%destructor { free($$); } VELOCITY_SHIFT
 
 %%
 
@@ -385,17 +386,13 @@ velocity
             n->value = $2;
             $$ = n;
         }
-    | '('
+    | VELOCITY_SHIFT
         {
             ASTVelocity *n = node(Velocity, @$);
-            n->direction = '(';
+            n->direction = $1[0];
+            n->value = $1[1] ? atoi($1 + 1) : 1;
             $$ = n;
-        }
-    | ')'
-        {
-            ASTVelocity *n = node(Velocity, @$);
-            n->direction = ')';
-            $$ = n;
+            free($1);
         }
     ;
 

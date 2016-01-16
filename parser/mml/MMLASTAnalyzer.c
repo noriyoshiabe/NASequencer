@@ -473,10 +473,17 @@ static void visitVelocity(void *_self, ASTVelocity *ast)
 {
     MMLASTAnalyzer *self = _self;
 
-    if ((!ast->absolute && !isValidRange(ast->value, 0, 15))
-            || (ast->absolute && !isValidRange(ast->value, 0, 127))) {
-        appendError(self, ast, MMLParseErrorInvalidVelocity, NACStringFromBoolean(ast->absolute), NACStringFromInteger(ast->value), NULL);
-        return;
+    if (ast->direction || ast->absolute) {
+        if (!isValidRange(ast->value, 0, 127)) {
+            appendError(self, ast, MMLParseErrorInvalidVelocity, NACStringFromBoolean(ast->absolute), NACStringFromInteger(ast->value), NULL);
+            return;
+        }
+    }
+    else {
+        if (!isValidRange(ast->value, 0, 15)) {
+            appendError(self, ast, MMLParseErrorInvalidVelocity, NACStringFromBoolean(ast->absolute), NACStringFromInteger(ast->value), NULL);
+            return;
+        }
     }
 
     SEMVelocity *sem = node(Velocity, ast);

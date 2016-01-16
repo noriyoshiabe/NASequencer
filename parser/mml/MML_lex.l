@@ -68,6 +68,7 @@ TRANSPOSE      @?ns
 LENGTH         l
 GATETIME       @?q
 VELOCITY       @?v
+VELOCITY_SHIFT [\(|\)]{INTEGER}?
 TUPLET_START   \{
 TUPLET_END     \}{NOTE_LENGTH}?
 REPEAT_START   \/:
@@ -114,6 +115,7 @@ LOCATION       ^##.+:[[:digit:]]+:[[:digit:]]+\n
 {LENGTH}          { return LENGTH; }
 {GATETIME}        { return '@' == yytext[0] ? A_GATETIME : GATETIME; }
 {VELOCITY}        { return '@' == yytext[0] ? A_VELOCITY : VELOCITY; }
+{VELOCITY_SHIFT}  { yylval->s = strdup(yytext); return VELOCITY_SHIFT; }
 {TUPLET_START}    { return TUPLET_START; }
 {TUPLET_END}      { yylval->s = strdup(yytext + 1); return TUPLET_END; }
 {REPEAT_START}    { return REPEAT_START; }
@@ -126,8 +128,6 @@ LOCATION       ^##.+:[[:digit:]]+:[[:digit:]]+\n
 "<"               { return '<'; }
 ">"               { return '>'; }
 "&"               { return '&'; }
-"("               { return '('; }
-")"               { return ')'; }
 ";"               { return ';'; }
 "["               { return '['; }
 "]"               { return ']'; }
