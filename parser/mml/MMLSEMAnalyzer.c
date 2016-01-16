@@ -57,6 +57,12 @@ typedef struct _MMLSEMAnalyzer {
     RepeatContext *repeatContext;
     NAStack *repeatContextStack;
 
+    bool inChord;
+    struct {
+        int offset;
+        int step;
+    } chord;
+
     struct {
         Node *timebase;
         Node *title;
@@ -271,9 +277,16 @@ static void visitNote(void *_self, SEMNote *sem)
     int gatetime = calcGatetime(self, step);
 
     // TODO tie
-    self->builder->appendNote(self->builder, self->tick, self->channel, noteNo, gatetime, self->velocity.value);
 
-    self->tick += step;
+    if (self->inChord) {
+        int tick = self->tick + self->chord.offset;
+        self->builder->appendNote(self->builder, tick, self->channel, noteNo, gatetime, self->velocity.value);
+        self->chord.step = MAX(self->chord.step, step + self->chord.offset);
+    }
+    else {
+        self->builder->appendNote(self->builder, self->tick, self->channel, noteNo, gatetime, self->velocity.value);
+        self->tick += step;
+    }
 }
 
 static void visitRest(void *_self, SEMRest *sem)
@@ -290,7 +303,12 @@ static void visitRest(void *_self, SEMRest *sem)
 
     // TODO tie
 
-    self->tick += step;
+    if (self->inChord) {
+        self->chord.offset += step;
+    }
+    else {
+        self->tick += step;
+    }
 }
 
 static void visitOctave(void *_self, SEMOctave *sem)
@@ -441,13 +459,19 @@ static void visitChord(void *_self, SEMChord *sem)
 {
     MMLSEMAnalyzer *self = _self;
 
-    __Trace__
+    self->inChord = true;
+    self->chord.offset = 0;
+    self->chord.step = 0;
 
     NAIterator *iterator = NAArrayGetIterator(sem->node.children);
     while (iterator->hasNext(iterator)) {
         Node *node = iterator->next(iterator);
         node->accept(node, self);
     }
+
+    self->inChord = false;
+
+    self->tick += self->chord.step;
 }
 
 Analyzer *MMLSEMAnalyzerCreate(ParseContext *context)
