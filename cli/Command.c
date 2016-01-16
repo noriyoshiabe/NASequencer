@@ -359,6 +359,7 @@ static void StatusCommandExecute(Command *self, CLI *cli)
         {"Pan", 6},
         {"Chorus", 6},
         {"Reverb", 6},
+        {"Expression", 10},
         {"Mute", 4},
         {"Solo", 4},
     };
@@ -413,9 +414,12 @@ static void StatusCommandExecute(Command *self, CLI *cli)
                 snprintf(text, limit, "%*d", width, MixerChannelGetReverbSend(channel));
                 break;
             case 7:
-                snprintf(text, limit, "%*s", width, MixerChannelGetMute(channel) ? "ON" : "OFF");
+                snprintf(text, limit, "%*d", width, MixerChannelGetExpressionSend(channel));
                 break;
             case 8:
+                snprintf(text, limit, "%*s", width, MixerChannelGetMute(channel) ? "ON" : "OFF");
+                break;
+            case 9:
                 snprintf(text, limit, "%*s", width, MixerChannelGetSolo(channel) ? "ON" : "OFF");
                 break;
             }
