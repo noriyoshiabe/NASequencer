@@ -5,6 +5,7 @@ typedef struct _SequenceBuilder {
 
     void (*setResolution)(void *self, int resolution);
     void (*setTitle)(void *self, const char *title);
+    void (*setCopyright)(void *self, const char *text);
     void (*appendTempo)(void *self, int tick, float tempo);
     void (*appendTimeSign)(void *self, int tick, int numerator, int denominator);
     void (*appendKey)(void *self, int tick, int sf, int mi);
@@ -16,6 +17,8 @@ typedef struct _SequenceBuilder {
     void (*appendPan)(void *self, int tick, int channel, int value);
     void (*appendChorus)(void *self, int tick, int channel, int value);
     void (*appendReverb)(void *self, int tick, int channel, int value);
+    void (*appendExpression)(void *self, int tick, int channel, int value);
+    void (*appendDetune)(void *self, int tick, int channel, int value);
     void (*setLength)(void *self, int length);
 
     void *(*build)(void *self);

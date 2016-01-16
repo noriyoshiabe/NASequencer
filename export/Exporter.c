@@ -214,6 +214,12 @@ bool ExporterWriteToSMF(Exporter *self, const char *filepath)
                 SMFWriterAppendTitle(writer, title->tick, title->text);
             }
             break;
+        case MidiEventTypeCopyright:
+            {
+                CopyrightEvent *copyright = (CopyrightEvent *)events[i];
+                SMFWriterAppendCopyright(writer, copyright->tick, copyright->text);
+            }
+            break;
         case MidiEventTypeMarker:
             {
                 MarkerEvent *marker = (MarkerEvent *)events[i];
@@ -251,6 +257,26 @@ bool ExporterWriteToSMF(Exporter *self, const char *filepath)
             {
                 ReverbEvent *event = (ReverbEvent *)events[i];
                 SMFWriterAppendControlChange(writer, event->tick, event->channel, 91, event->value);
+            }
+            break;
+        case MidiEventTypeExpression:
+            {
+                ExpressionEvent *event = (ExpressionEvent *)events[i];
+                SMFWriterAppendControlChange(writer, event->tick, event->channel, 11, event->value);
+            }
+            break;
+        case MidiEventTypeDetune:
+            {
+                DetuneEvent *event = (DetuneEvent *)events[i];
+                SMFWriterAppendControlChange(writer, event->tick, event->channel, 101, 0);
+                SMFWriterAppendControlChange(writer, event->tick, event->channel, 100, 1);
+                SMFWriterAppendControlChange(writer, event->tick, event->channel, 6, event->fine.msb);
+                SMFWriterAppendControlChange(writer, event->tick, event->channel, 38, event->fine.lsb);
+                SMFWriterAppendControlChange(writer, event->tick, event->channel, 101, 0);
+                SMFWriterAppendControlChange(writer, event->tick, event->channel, 100, 2);
+                SMFWriterAppendControlChange(writer, event->tick, event->channel, 6, event->corse.msb);
+                SMFWriterAppendControlChange(writer, event->tick, event->channel, 101, 0x7F);
+                SMFWriterAppendControlChange(writer, event->tick, event->channel, 100, 0x7F);
             }
             break;
         case MidiEventTypeSynth:

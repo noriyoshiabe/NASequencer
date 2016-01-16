@@ -9,6 +9,7 @@ typedef struct _SequenceBuilderImpl {
     Sequence *sequence;
     int id;
     TitleEvent *titleEvent;
+    CopyrightEvent *copyrightEvent;
 } SequenceBuilderImpl;
 
 static void SequenceBuilderDestroy(void *_self)
@@ -49,6 +50,22 @@ static void SequenceBuilderSetTitle(void *_self, const char *title)
     self->titleEvent = MidiEventAlloc(MidiEventTypeTitle, ++self->id, 0, strlen(title) + 1);
     strcpy(self->titleEvent->text, title);
     NAArrayAppend(sequence->events, self->titleEvent);
+}
+
+static void SequenceBuilderSetCopyright(void *_self, const char *text)
+{
+    SequenceBuilderImpl *self = _self;
+    Sequence *sequence = self->sequence;
+
+    if (self->copyrightEvent) {
+        int index = NAArrayBSearchIndex(sequence->events, self->copyrightEvent, MidiEventIDComparator);
+        NAArrayRemoveAt(sequence->events, index);
+        free(self->copyrightEvent);
+    }
+
+    self->copyrightEvent = MidiEventAlloc(MidiEventTypeCopyright, ++self->id, 0, strlen(text) + 1);
+    strcpy(self->copyrightEvent->text, text);
+    NAArrayAppend(sequence->events, self->copyrightEvent);
 }
 
 static void SequenceBuilderAppendTempo(void *_self, int tick, float tempo)
@@ -176,6 +193,37 @@ static void SequenceBuilderAppendReverb(void *_self, int tick, int channel, int 
     NAArrayAppend(sequence->events, event);
 }
 
+static void SequenceBuilderAppendExpression(void *_self, int tick, int channel, int value)
+{
+    SequenceBuilderImpl *self = _self;
+    Sequence *sequence = self->sequence;
+
+    ExpressionEvent *event = MidiEventAlloc(MidiEventTypeExpression, ++self->id, tick, sizeof(ExpressionEvent) - sizeof(MidiEvent));
+    event->channel = channel;
+    event->value = value;
+    NAArrayAppend(sequence->events, event);
+}
+
+static void SequenceBuilderAppendDetune(void *_self, int tick, int channel, int value)
+{
+    SequenceBuilderImpl *self = _self;
+    Sequence *sequence = self->sequence;
+
+    DetuneEvent *event = MidiEventAlloc(MidiEventTypeDetune, ++self->id, tick, sizeof(DetuneEvent) - sizeof(MidiEvent));
+    event->channel = channel;
+    event->value = value;
+
+    int sign = event->value / abs(event->value);
+    int fine = (int)((double)(abs(event->value) % 100 * sign) / (100.0 / 8192.0)) + 8192;
+    int corse = (abs(event->value) / 100 * sign) + 64;
+
+    event->fine.msb = 0x7F & (fine >> 7);
+    event->fine.lsb = 0x7F & fine;
+    event->corse.msb = corse;
+
+    NAArrayAppend(sequence->events, event);
+}
+
 static void SequenceBuilderSetLength(void *_self, int length)
 {
     SequenceBuilderImpl *self = _self;
@@ -200,6 +248,7 @@ SequenceBuilder *SequenceBuilderCreate()
     self->interface.destroy = SequenceBuilderDestroy;
     self->interface.setResolution = SequenceBuilderSetResolution;
     self->interface.setTitle = SequenceBuilderSetTitle;
+    self->interface.setCopyright = SequenceBuilderSetCopyright;
     self->interface.appendTempo = SequenceBuilderAppendTempo;
     self->interface.appendTimeSign = SequenceBuilderAppendTimeSign;
     self->interface.appendKey = SequenceBuilderAppendKey;
@@ -211,6 +260,8 @@ SequenceBuilder *SequenceBuilderCreate()
     self->interface.appendPan = SequenceBuilderAppendPan;
     self->interface.appendChorus = SequenceBuilderAppendChorus;
     self->interface.appendReverb = SequenceBuilderAppendReverb;
+    self->interface.appendExpression = SequenceBuilderAppendExpression;
+    self->interface.appendDetune = SequenceBuilderAppendDetune;
     self->interface.setLength = SequenceBuilderSetLength;
     self->interface.build = SequenceBuilderBuild;
 

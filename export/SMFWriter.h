@@ -14,6 +14,7 @@ extern void SMFWriterAppendTime(SMFWriter *self, int32_t tick, uint8_t numerator
 extern void SMFWriterAppendTempo(SMFWriter *self, int32_t tick, float tempo);
 extern void SMFWriterAppendKey(SMFWriter *self, int32_t tick, uint8_t sf, uint8_t mi);
 extern void SMFWriterAppendTitle(SMFWriter *self, int32_t tick, const char *text);
+extern void SMFWriterAppendCopyright(SMFWriter *self, int32_t tick, const char *text);
 extern void SMFWriterAppendMarker(SMFWriter *self, int32_t tick, const char *text);
 extern void SMFWriterAppendNoteOn(SMFWriter *self, int32_t tick, uint8_t channel, uint8_t noteNo, uint8_t velocity);
 extern void SMFWriterAppendNoteOff(SMFWriter *self, int32_t tick, uint8_t channel, uint8_t noteNo, uint8_t velocity);

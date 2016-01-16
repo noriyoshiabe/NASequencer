@@ -23,6 +23,9 @@ void *MidiEventAlloc(MidiEventType type, int id, int tick, int extraSize)
     case MidiEventTypeTitle:
         size = sizeof(TitleEvent) + extraSize;
         break;
+    case MidiEventTypeCopyright:
+        size = sizeof(CopyrightEvent) + extraSize;
+        break;
     case MidiEventTypeMarker:
         size = sizeof(MarkerEvent) + extraSize;
         break;
@@ -40,6 +43,12 @@ void *MidiEventAlloc(MidiEventType type, int id, int tick, int extraSize)
         break;
     case MidiEventTypeReverb:
         size = sizeof(ReverbEvent);
+        break;
+    case MidiEventTypeExpression:
+        size = sizeof(ExpressionEvent);
+        break;
+    case MidiEventTypeDetune:
+        size = sizeof(DetuneEvent);
         break;
     case MidiEventTypeSynth:
         size = sizeof(SynthEvent) + extraSize;
@@ -94,6 +103,13 @@ void MidiEventDump(MidiEvent *self, int indent)
                     self->id, self->tick, self->text);
         }
         break;
+    case MidiEventTypeCopyright:
+        {
+            CopyrightEvent *self = _self;
+            printf("Copyright: id=%d tick=%d text=%s\n",
+                    self->id, self->tick, self->text);
+        }
+        break;
     case MidiEventTypeMarker:
         {
             MarkerEvent *self = _self;
@@ -136,6 +152,20 @@ void MidiEventDump(MidiEvent *self, int indent)
                     self->id, self->tick, self->channel, self->value);
         }
         break;
+    case MidiEventTypeExpression:
+        {
+            ExpressionEvent *self = _self;
+            printf("Synth: id=%d tick=%d value=%d\n",
+                    self->id, self->tick, self->value);
+        }
+        break;
+    case MidiEventTypeDetune:
+        {
+            DetuneEvent *self = _self;
+            printf("Synth: id=%d tick=%d value=%d\n",
+                    self->id, self->tick, self->value);
+        }
+        break;
     case MidiEventTypeSynth:
         {
             SynthEvent *self = _self;
@@ -156,6 +186,8 @@ static int MidiEventGetChannel(const MidiEvent *event)
     case MidiEventTypeChorus:
     case MidiEventTypeReverb:
     case MidiEventTypeSynth:
+    case MidiEventTypeExpression:
+    case MidiEventTypeDetune:
         return ((ChannelEvent *)event)->channel;
     default:
         return 0;

@@ -1,17 +1,22 @@
 #pragma once
 
+#include <stdint.h>
+
 typedef enum {
     MidiEventTypeNote,
     MidiEventTypeTempo,
     MidiEventTypeTime,
     MidiEventTypeKey,
     MidiEventTypeTitle,
+    MidiEventTypeCopyright,
     MidiEventTypeMarker,
     MidiEventTypeVoice,
     MidiEventTypeVolume,
     MidiEventTypePan,
     MidiEventTypeChorus,
     MidiEventTypeReverb,
+    MidiEventTypeExpression,
+    MidiEventTypeDetune,
 
     MidiEventTypeSynth,
 } MidiEventType;
@@ -76,6 +81,13 @@ typedef struct _MarkerEvent {
     char text[];
 } MarkerEvent;
 
+typedef struct _CopyrightEvent {
+    MidiEventType type;
+    int id;
+    int tick;
+    char text[];
+} CopyrightEvent;
+
 typedef struct _VoiceEvent {
     MidiEventType type;
     int id;
@@ -118,6 +130,29 @@ typedef struct _ReverbEvent {
     int value;
 } ReverbEvent;
 
+typedef struct _ExpressionEvent {
+    MidiEventType type;
+    int id;
+    int tick;
+    int channel;
+    int value;
+} ExpressionEvent;
+
+typedef struct _DetuneEvent {
+    MidiEventType type;
+    int id;
+    int tick;
+    int channel;
+    int value;
+    struct {
+        uint8_t msb;
+        uint8_t lsb;
+    } fine;
+    struct {
+        uint8_t msb;
+    } corse;
+} DetuneEvent;
+
 typedef struct _SynthEvent {
     MidiEventType type;
     int id;
@@ -140,12 +175,15 @@ static inline char *MidiEventType2String(MidiEventType type)
     CASE(MidiEventTypeTime);
     CASE(MidiEventTypeKey);
     CASE(MidiEventTypeTitle);
+    CASE(MidiEventTypeCopyright);
     CASE(MidiEventTypeMarker);
     CASE(MidiEventTypeVoice);
     CASE(MidiEventTypeVolume);
     CASE(MidiEventTypePan);
     CASE(MidiEventTypeChorus);
     CASE(MidiEventTypeReverb);
+    CASE(MidiEventTypeExpression);
+    CASE(MidiEventTypeDetune);
     CASE(MidiEventTypeSynth);
 
     default:

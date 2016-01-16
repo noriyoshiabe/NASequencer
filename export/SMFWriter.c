@@ -160,6 +160,21 @@ void SMFWriterAppendTitle(SMFWriter *self, int32_t tick, const char *text)
     writeToTrack(self, 0, (uint8_t *)text, textLength);
 }
 
+void SMFWriterAppendCopyright(SMFWriter *self, int32_t tick, const char *text)
+{
+    writeDeltaTime(self, 0, tick);
+
+    uint8_t bytes[2] = {0xFF, 0x02};
+    writeToTrack(self, 0, bytes, sizeof(bytes));
+
+    uint8_t lengthBytes[4];
+    size_t size;
+    size_t textLength = strlen(text);
+    flexibleLength(textLength, lengthBytes, &size);
+    writeToTrack(self, 0, lengthBytes, sizeof(lengthBytes));
+    writeToTrack(self, 0, (uint8_t *)text, textLength);
+}
+
 void SMFWriterAppendMarker(SMFWriter *self, int32_t tick, const char *text)
 {
     writeDeltaTime(self, 0, tick);

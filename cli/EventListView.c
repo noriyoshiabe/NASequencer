@@ -74,7 +74,7 @@ void EventListViewRender(EventListView *self)
         int width;
     } table[] = {
         {"Position", 10},
-        {"Type", 6},
+        {"Type", 10},
         {"Ch", 2},
         {"Note no", 8},
         {"Gatetime", 8},
@@ -170,6 +170,12 @@ void EventListViewRender(EventListView *self)
                 sprintf(texts[6], "%s", _event->text);
             }
             break;
+        case MidiEventTypeCopyright:
+            {
+                CopyrightEvent *_event = (void *)event;
+                sprintf(texts[6], "%s", _event->text);
+            }
+            break;
         case MidiEventTypeMarker:
             {
                 MarkerEvent *_event = (void *)event;
@@ -209,6 +215,20 @@ void EventListViewRender(EventListView *self)
                 ReverbEvent *_event = (void *)event;
                 sprintf(texts[2], "%d", _event->channel);
                 sprintf(texts[6], "Reverb: %d", _event->value);
+            }
+            break;
+        case MidiEventTypeExpression:
+            {
+                ExpressionEvent *_event = (void *)event;
+                sprintf(texts[2], "%d", _event->channel);
+                sprintf(texts[6], "Expression: %d", _event->value);
+            }
+            break;
+        case MidiEventTypeDetune:
+            {
+                DetuneEvent *_event = (void *)event;
+                sprintf(texts[2], "%d", _event->channel);
+                sprintf(texts[6], "Detune: %d", _event->value);
             }
             break;
         case MidiEventTypeSynth:

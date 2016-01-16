@@ -159,8 +159,7 @@ static void visitCopyright(void *_self, SEMCopyright *sem)
         return;
     }
 
-    // TODO
-    //self->builder->setCopyright(self->builder, sem->text);
+    self->builder->setCopyright(self->builder, sem->text);
     self->definedNode.copyright = (Node *)sem;
 }
 
@@ -228,8 +227,7 @@ static void visitReverb(void *_self, SEMReverb *sem)
 static void visitExpression(void *_self, SEMExpression *sem)
 {
     MMLSEMAnalyzer *self = _self;
-    // TODO
-    //self->builder->appendExpression(self->builder, self->tick, self->channel, sem->value);
+    self->builder->appendExpression(self->builder, self->tick, self->channel, sem->value);
 }
 
 static void visitPan(void *_self, SEMPan *sem)
@@ -241,8 +239,7 @@ static void visitPan(void *_self, SEMPan *sem)
 static void visitDetune(void *_self, SEMDetune *sem)
 {
     MMLSEMAnalyzer *self = _self;
-    // TODO
-    //self->builder->appendDetune(self->builder, self->tick, self->channel, sem->value);
+    self->builder->appendDetune(self->builder, self->tick, self->channel, sem->value);
 }
 
 static void visitTempo(void *_self, SEMTempo *sem)
