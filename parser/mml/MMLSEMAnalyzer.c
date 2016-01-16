@@ -557,7 +557,7 @@ Analyzer *MMLSEMAnalyzerCreate(ParseContext *context)
 
     self->timebase = 480;
     self->channel = 1;
-    self->octave = 0;
+    self->octave = 2;
     self->length = 4;
     self->gatetime.rate = 15;
     self->gatetime.minus = 0;
