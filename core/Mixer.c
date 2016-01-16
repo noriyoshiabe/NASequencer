@@ -218,6 +218,58 @@ void MixerSendReverb(Mixer *self, ReverbEvent *event)
     }
 }
 
+void MixerSendExpression(Mixer *self, ExpressionEvent *event)
+{
+    MixerChannel *channel = NAArrayGetValueAt(self->channels, event->channel - 1);
+    if (channel->active) {
+        channel->source->setExpressionSend(channel->source, channel->number, event->value);
+    }
+}
+
+void MixerSendDetune(Mixer *self, DetuneEvent *event)
+{
+    MixerChannel *channel = NAArrayGetValueAt(self->channels, event->channel - 1);
+    if (channel->active) {
+        uint8_t bytes[3];
+
+        bytes[0] = 0xB0 | (0x0F & channel->number);
+
+        bytes[1] = 101;
+        bytes[2] = 0;
+        channel->source->send(channel->source, bytes, 3);
+
+        bytes[1] = 100;
+        bytes[2] = 1;
+        channel->source->send(channel->source, bytes, 3);
+
+        bytes[1] = 6;
+        bytes[2] = event->fine.msb;
+        channel->source->send(channel->source, bytes, 3);
+
+        bytes[1] = 38;
+        bytes[2] = event->fine.lsb;
+        channel->source->send(channel->source, bytes, 3);
+
+        bytes[1] = 101;
+        bytes[2] = 0;
+        channel->source->send(channel->source, bytes, 3);
+
+        bytes[1] = 100;
+        bytes[2] = 2;
+        channel->source->send(channel->source, bytes, 3);
+
+        bytes[1] = 6;
+        bytes[2] = event->corse.msb;
+        channel->source->send(channel->source, bytes, 3);
+
+        bytes[1] = 101;
+        bytes[2] = 0x7F;
+        channel->source->send(channel->source, bytes, 3);
+        bytes[1] = 100;
+        channel->source->send(channel->source, bytes, 3);
+    }
+}
+
 void MixerSendSynth(Mixer *self, SynthEvent *event)
 {
     MixerChannel *channel = NAArrayGetValueAt(self->channels, event->channel - 1);
@@ -346,6 +398,7 @@ static void MixerMidiSourceCallback(void *receiver, MidiSource *source, MidiSour
     case MidiSourceEventChangePan:
     case MidiSourceEventChangeChorusSend:
     case MidiSourceEventChangeReverbSend:
+    case MidiSourceEventChangeExpressionSend:
     case MidiSourceEventChangePreset:
         {
             uint8_t channel = *((uint8_t *)arg1);
@@ -494,6 +547,11 @@ int MixerChannelGetReverbSend(MixerChannel *self)
     return self->source->getReverbSend(self->source, self->number - 1);
 }
 
+int MixerChannelGetExpressionSend(MixerChannel *self)
+{
+    return self->source->getExpressionSend(self->source, self->number - 1);
+}
+
 bool MixerChannelGetMute(MixerChannel *self)
 {
     return self->mute;
@@ -543,6 +601,11 @@ void MixerChannelSetChorusSend(MixerChannel *self, int value)
 void MixerChannelSetReverbSend(MixerChannel *self, int value)
 {
     self->source->setReverbSend(self->source, self->number, value);
+}
+
+void MixerChannelSetExpressionSend(MixerChannel *self, int value)
+{
+    self->source->setExpressionSend(self->source, self->number, value);
 }
 
 void MixerChannelSetMute(MixerChannel *self, bool mute)

@@ -12,6 +12,7 @@ typedef enum {
     MidiSourceEventChangePan,
     MidiSourceEventChangeChorusSend,
     MidiSourceEventChangeReverbSend,
+    MidiSourceEventChangeExpressionSend,
     MidiSourceEventChangePreset,
     MidiSourceEventChangeLevelMater,
 } MidiSourceEvent;
@@ -57,12 +58,14 @@ struct _MidiSource {
     void (*setPan)(void *self, uint8_t channel, uint8_t value);
     void (*setChorusSend)(void *self, uint8_t channel, uint8_t value);
     void (*setReverbSend)(void *self, uint8_t channel, uint8_t value);
+    void (*setExpressionSend)(void *self, uint8_t channel, uint8_t value);
 
     int16_t (*getMasterVolume)(void *self);
     uint8_t (*getVolume)(void *self, uint8_t channel);
     uint8_t (*getPan)(void *self, uint8_t channel);
     uint8_t (*getChorusSend)(void *self, uint8_t channel);
     uint8_t (*getReverbSend)(void *self, uint8_t channel);
+    uint8_t (*getExpressionSend)(void *self, uint8_t channel);
 };
 
 static inline const char *MidiSourceEvent2String(MidiSourceEvent event)
@@ -74,6 +77,7 @@ static inline const char *MidiSourceEvent2String(MidiSourceEvent event)
     CASE(MidiSourceEventChangePan);
     CASE(MidiSourceEventChangeChorusSend);
     CASE(MidiSourceEventChangeReverbSend);
+    CASE(MidiSourceEventChangeExpressionSend);
     CASE(MidiSourceEventChangePreset);
     CASE(MidiSourceEventChangeLevelMater);
     }

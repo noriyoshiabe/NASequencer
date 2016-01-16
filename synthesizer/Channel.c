@@ -68,9 +68,6 @@ void ChannelSetControlChange(Channel *self, uint8_t ccNumber, uint8_t value)
         // Not support
         break;
     case CC_RPN_MSB:
-        self->nrpnActive = false;
-        self->rpnActive = true;
-        break;
     case CC_RPN_LSB:
         self->nrpnActive = false;
         self->rpnActive = true;
@@ -131,21 +128,23 @@ void ChannelSetControlChange(Channel *self, uint8_t ccNumber, uint8_t value)
                 self->nrpnValues[self->nrpnSelection] = data * GeneratorNRPNScale(self->nrpnSelection);
             }
         }
-        else if (self->rpnActive) {
+        // fall through
+    case CC_DataEntry_LSB:
+        if (self->rpnActive) {
             switch (self->cc[CC_RPN_LSB]) {
             case RPN_PitchBendSensitivity:
-                self->pitchBendSensitivity = value;
+                self->pitchBendSensitivity = self->cc[CC_DataEntry_MSB];
                 break;
             case RPN_MasterFineTune:
                 {
-                    // MSB unit is 1 cent (+/- 64 cent)
-                    int16_t data = (value << 7 | self->cc[CC_DataEntry_LSB]) - 8192;
-                    self->masterFineTune = round((double)data / 8192.0 * 64.0);
+                    // data unit is 100/8192 cent (+/- 100 cent)
+                    int16_t data = (self->cc[CC_DataEntry_MSB] << 7 | self->cc[CC_DataEntry_LSB]) - 8192;
+                    self->masterFineTune = round((double)data / 8192.0 * 100.0);
                 }
                 break;
             case RPN_MasterCoarseTune:
                 // semitone
-                self->masterCoarseTune = value - 64;
+                self->masterCoarseTune = self->cc[CC_DataEntry_MSB] - 64;
                 break;
             case RPN_TuningProgramChange:
             case RPN_TuningBankSelect:
@@ -154,8 +153,6 @@ void ChannelSetControlChange(Channel *self, uint8_t ccNumber, uint8_t value)
                 break;
             }
         }
-        break;
-    case CC_DataEntry_LSB:
         break;
     case CC_DataIncrement:
     case CC_DataDecrement:

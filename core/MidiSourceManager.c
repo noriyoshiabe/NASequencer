@@ -329,11 +329,13 @@ static void DefaultMidiSourceSetVolume(void *self, uint8_t channel, uint8_t valu
 static void DefaultMidiSourceSetPan(void *self, uint8_t channel, uint8_t value) { }
 static void DefaultMidiSourceSetChorusSend(void *self, uint8_t channel, uint8_t value) { }
 static void DefaultMidiSourceSetReverbSend(void *self, uint8_t channel, uint8_t value) { }
+static void DefaultMidiSourceSetExpressionSend(void *self, uint8_t channel, uint8_t value) { }
 static int16_t DefaultMidiSourceGetMasterVolume(void *self) { return 0; }
 static uint8_t DefaultMidiSourceGetVolume(void *self, uint8_t channel) { return 0; }
 static uint8_t DefaultMidiSourceGetPan(void *self, uint8_t channel) { return 0; }
 static uint8_t DefaultMidiSourceGetChorusSend(void *self, uint8_t channel) { return 0; }
 static uint8_t DefaultMidiSourceGetReverbSend(void *self, uint8_t channel) { return 0; }
+static uint8_t DefaultMidiSourceGetExpressionSend(void *self, uint8_t channel) { return 0; }
 
 static MidiSource DefaultMidiSource = {
     DefaultMidiSourceSend,
@@ -354,9 +356,11 @@ static MidiSource DefaultMidiSource = {
     DefaultMidiSourceSetPan,
     DefaultMidiSourceSetChorusSend,
     DefaultMidiSourceSetReverbSend,
+    DefaultMidiSourceSetExpressionSend,
     DefaultMidiSourceGetMasterVolume,
     DefaultMidiSourceGetVolume,
     DefaultMidiSourceGetPan,
     DefaultMidiSourceGetChorusSend,
     DefaultMidiSourceGetReverbSend,
+    DefaultMidiSourceGetExpressionSend,
 };

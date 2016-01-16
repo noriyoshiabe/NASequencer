@@ -215,6 +215,11 @@ static void setReverbSend(void *self, uint8_t channel, uint8_t value)
     SynthesizerControlChange(self, channel, CC_Effect1Depth, value);
 }
 
+static void setExpressionSend(void *self, uint8_t channel, uint8_t value)
+{
+    SynthesizerControlChange(self, channel, CC_Expression_MSB, value);
+}
+
 static int16_t getMasterVolume(void *self)
 {
     return Value2cB(((Synthesizer *)self)->masterVolume);
@@ -238,6 +243,11 @@ static uint8_t getChorusSend(void *self, uint8_t channel)
 static uint8_t getReverbSend(void *self, uint8_t channel)
 {
     return ((Synthesizer *)self)->channels[channel].cc[CC_Effect1Depth];
+}
+
+static uint8_t getExpressionSend(void *self, uint8_t channel)
+{
+    return ((Synthesizer *)self)->channels[channel].cc[CC_Expression_MSB];
 }
 
 static void computeAudioSample(void *self, AudioSample *buffer, uint32_t count)
@@ -268,11 +278,13 @@ Synthesizer *SynthesizerCreate(SoundFont *sf, double sampleRate)
     self->srcVtbl.setPan = setPan;
     self->srcVtbl.setChorusSend = setChorusSend;
     self->srcVtbl.setReverbSend = setReverbSend;
+    self->srcVtbl.setExpressionSend = setExpressionSend;
     self->srcVtbl.getMasterVolume = getMasterVolume;
     self->srcVtbl.getVolume = getVolume;
     self->srcVtbl.getPan = getPan;
     self->srcVtbl.getChorusSend = getChorusSend;
     self->srcVtbl.getReverbSend = getReverbSend;
+    self->srcVtbl.getExpressionSend = getExpressionSend;
 
     self->sf = sf;
 
@@ -480,6 +492,9 @@ static void SynthesizerControlChange(Synthesizer *self, uint8_t channel, uint8_t
         break;
     case CC_Effect1Depth:
         SynthesizerNotifyEvent(self, MidiSourceEventChangeReverbSend, &channel, &value);
+        break;
+    case CC_Expression_MSB:
+        SynthesizerNotifyEvent(self, MidiSourceEventChangeExpressionSend, &channel, &value);
         break;
     }
 }

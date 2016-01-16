@@ -400,6 +400,12 @@ static void PlayerScanEvents(Player *self, int32_t prevTick, int32_t tick)
                 case MidiEventTypeReverb:
                     MixerSendReverb(self->mixer, (ReverbEvent *)event);
                     break;
+                case MidiEventTypeExpression:
+                    MixerSendExpression(self->mixer, (ExpressionEvent *)event);
+                    break;
+                case MidiEventTypeDetune:
+                    MixerSendDetune(self->mixer, (DetuneEvent *)event);
+                    break;
                 case MidiEventTypeSynth:
                     MixerSendSynth(self->mixer, (SynthEvent *)event);
                     break;

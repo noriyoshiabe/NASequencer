@@ -31,6 +31,8 @@ extern void MixerSendVolume(Mixer *self, VolumeEvent *event);
 extern void MixerSendPan(Mixer *self, PanEvent *event);
 extern void MixerSendChorus(Mixer *self, ChorusEvent *event);
 extern void MixerSendReverb(Mixer *self, ReverbEvent *event);
+extern void MixerSendExpression(Mixer *self, ExpressionEvent *event);
+extern void MixerSendDetune(Mixer *self, DetuneEvent *event);
 extern void MixerSendSynth(Mixer *self, SynthEvent *event);
 
 extern NAArray *MixerGetChannels(Mixer *self);
@@ -45,6 +47,7 @@ extern int MixerChannelGetVolume(MixerChannel *self);
 extern int MixerChannelGetPan(MixerChannel *self);
 extern int MixerChannelGetChorusSend(MixerChannel *self);
 extern int MixerChannelGetReverbSend(MixerChannel *self);
+extern int MixerChannelGetExpressionSend(MixerChannel *self);
 extern bool MixerChannelGetMute(MixerChannel *self);
 extern bool MixerChannelGetSolo(MixerChannel *self);
 
@@ -54,5 +57,6 @@ extern void MixerChannelSetVolume(MixerChannel *self, int value);
 extern void MixerChannelSetPan(MixerChannel *self, int value);
 extern void MixerChannelSetChorusSend(MixerChannel *self, int value);
 extern void MixerChannelSetReverbSend(MixerChannel *self, int value);
+extern void MixerChannelSetExpressionSend(MixerChannel *self, int value);
 extern void MixerChannelSetMute(MixerChannel *self, bool mute);
 extern void MixerChannelSetSolo(MixerChannel *self, bool solo);
