@@ -14,7 +14,13 @@
 #define isValidRange(v, from, to) (from <= v && v <= to)
 
 typedef struct _Note {
-    struct _Note *next;
+    int tick;
+    int channel;
+    int noteNo;
+    int gatetime;
+    int velocity;
+
+    bool tied;
 } Note;
 
 typedef struct _RepeatContext {
@@ -22,6 +28,9 @@ typedef struct _RepeatContext {
     int current;
     bool breaked;
 } RepeatContext;
+
+static RepeatContext *RepeatContextCreate(SEMRepeat *sem);
+static void RepeatContextDestroy(RepeatContext *self);
 
 typedef struct _MMLSEMAnalyzer {
     SEMVisitor visitor;
@@ -50,7 +59,7 @@ typedef struct _MMLSEMAnalyzer {
         bool absolute;
     } velocity;
 
-    Note *pendingNote;
+    NAArray *pendingNotes;
 
     SEMTuplet *tuplet;
 
@@ -70,10 +79,16 @@ typedef struct _MMLSEMAnalyzer {
     } definedNode;
 
     NoteTable *noteTable;
+
+    int sequenceLength;
 } MMLSEMAnalyzer;
 
-static RepeatContext *RepeatContextCreate(SEMRepeat *sem);
-static void RepeatContextDestroy(RepeatContext *self);
+static void appendPendingNote(MMLSEMAnalyzer *self, int tick, int channel, int noteNo, int gatetime, int velocity);
+static void flushPendingNote(MMLSEMAnalyzer *self);
+static bool processTie(MMLSEMAnalyzer *self, int step, int channel, int noteNo);
+static void preprocessTieInChord(MMLSEMAnalyzer *self);
+static bool isTiedNoteExsit(MMLSEMAnalyzer *self);
+static void flushPendingNoteWithoutTie(MMLSEMAnalyzer *self);
 
 static Node *process(void *_self, Node *node)
 {
@@ -86,6 +101,7 @@ static void destroy(void *_self)
 {
     MMLSEMAnalyzer *self = _self;
     NAStackDestroy(self->repeatContextStack);
+    NAArrayDestroy(self->pendingNotes);
     NoteTableRelease(self->noteTable);
     free(self);
 }
@@ -99,6 +115,10 @@ static void visitList(void *_self, SEMList *sem)
         Node *node = iterator->next(iterator);
         node->accept(node, self);
     }
+
+    flushPendingNote(self);
+    self->sequenceLength = MAX(self->sequenceLength, self->tick);
+    self->builder->setLength(self->builder, self->sequenceLength);
 }
 
 static void visitTimebase(void *_self, SEMTimebase *sem)
@@ -276,15 +296,26 @@ static void visitNote(void *_self, SEMNote *sem)
 
     int gatetime = calcGatetime(self, step);
 
-    // TODO tie
-
     if (self->inChord) {
         int tick = self->tick + self->chord.offset;
-        self->builder->appendNote(self->builder, tick, self->channel, noteNo, gatetime, self->velocity.value);
+        if (self->tie && processTie(self, step + self->chord.offset, self->channel, noteNo)) {
+            ;
+        }
+        else {
+            appendPendingNote(self, tick, self->channel, noteNo, gatetime, self->velocity.value);
+        }
         self->chord.step = MAX(self->chord.step, step + self->chord.offset);
     }
     else {
-        self->builder->appendNote(self->builder, self->tick, self->channel, noteNo, gatetime, self->velocity.value);
+        if (self->tie && processTie(self, step, self->channel, noteNo)) {
+            flushPendingNoteWithoutTie(self);
+        }
+        else {
+            flushPendingNote(self);
+            appendPendingNote(self, self->tick, self->channel, noteNo, gatetime, self->velocity.value);
+        }
+
+        self->tie = false;
         self->tick += step;
     }
 }
@@ -301,12 +332,12 @@ static void visitRest(void *_self, SEMRest *sem)
         step = calcStep(self, &sem->length);
     }
 
-    // TODO tie
-
     if (self->inChord) {
         self->chord.offset += step;
     }
     else {
+        flushPendingNote(self);
+        self->tie = false;
         self->tick += step;
     }
 }
@@ -351,8 +382,8 @@ static void visitTransepose(void *_self, SEMTranspose *sem)
 
 static void visitTie(void *_self, SEMTie *sem)
 {
-    // TODO
-    __Trace__
+    MMLSEMAnalyzer *self = _self;
+    self->tie = true;
 }
 
 static void visitLength(void *_self, SEMLength *sem)
@@ -415,6 +446,8 @@ static void visitTuplet(void *_self, SEMTuplet *sem)
 static void visitTrackChange(void *_self, SEMTrackChange *sem)
 {
     MMLSEMAnalyzer *self = _self;
+    flushPendingNote(self);
+    self->sequenceLength = MAX(self->sequenceLength, self->tick);
     self->tick = 0;
 }
 
@@ -463,10 +496,16 @@ static void visitChord(void *_self, SEMChord *sem)
     self->chord.offset = 0;
     self->chord.step = 0;
 
+    preprocessTieInChord(self);
+
     NAIterator *iterator = NAArrayGetIterator(sem->node.children);
     while (iterator->hasNext(iterator)) {
         Node *node = iterator->next(iterator);
         node->accept(node, self);
+    }
+
+    if (isTiedNoteExsit(self)) {
+        flushPendingNoteWithoutTie(self);
     }
 
     self->inChord = false;
@@ -521,14 +560,91 @@ Analyzer *MMLSEMAnalyzerCreate(ParseContext *context)
 
     self->timebase = 480;
     self->channel = 1;
+    self->octave = 0;
     self->length = 4;
     self->gatetime.rate = 15;
     self->gatetime.minus = 0;
     self->velocity.value = 100;
 
     self->noteTable = NoteTableCreate(BaseNote_C, false, false, ModeMajor);
+    self->pendingNotes = NAArrayCreate(4, NADescriptionAddress);
 
     return &self->analyzer;
+}
+
+static void appendPendingNote(MMLSEMAnalyzer *self, int tick, int channel, int noteNo, int gatetime, int velocity)
+{
+    Note *note = calloc(1, sizeof(Note));
+    note->tick = tick;
+    note->channel = channel;
+    note->noteNo = noteNo;
+    note->gatetime = gatetime;
+    note->velocity = velocity;
+
+    NAArrayAppend(self->pendingNotes, note);
+}
+
+static void flushPendingNote(MMLSEMAnalyzer *self)
+{
+    NAIterator *iterator = NAArrayGetIterator(self->pendingNotes);
+    while (iterator->hasNext(iterator)) {
+        Note *note = iterator->next(iterator);
+        self->builder->appendNote(self->builder, note->tick, note->channel, note->noteNo, note->gatetime, note->velocity);
+        free(note);
+    }
+    NAArrayRemoveAll(self->pendingNotes);
+}
+
+static bool processTie(MMLSEMAnalyzer *self, int step, int channel, int noteNo)
+{
+    bool ret = false;
+
+    NAIterator *iterator = NAArrayGetIterator(self->pendingNotes);
+    while (iterator->hasNext(iterator)) {
+        Note *note = iterator->next(iterator);
+        if (note->channel == channel && note->noteNo == noteNo) {
+            note->gatetime += step;
+            note->tied = true;
+            ret = true;
+        }
+    }
+
+    return ret;
+}
+
+static void preprocessTieInChord(MMLSEMAnalyzer *self)
+{
+    NAIterator *iterator = NAArrayGetIterator(self->pendingNotes);
+    while (iterator->hasNext(iterator)) {
+        Note *note = iterator->next(iterator);
+        note->tied = false;
+    }
+}
+
+static bool isTiedNoteExsit(MMLSEMAnalyzer *self)
+{
+    bool ret = false;
+    NAIterator *iterator = NAArrayGetIterator(self->pendingNotes);
+    while (iterator->hasNext(iterator)) {
+        Note *note = iterator->next(iterator);
+        if (note->tied) {
+            ret = true;
+        }
+    }
+    return ret;
+}
+
+static void flushPendingNoteWithoutTie(MMLSEMAnalyzer *self)
+{
+    NAIterator *iterator = NAArrayGetIterator(self->pendingNotes);
+    while (iterator->hasNext(iterator)) {
+        Note *note = iterator->next(iterator);
+        if (!note->tied) {
+            self->builder->appendNote(self->builder, note->tick, note->channel, note->noteNo, note->gatetime, note->velocity);
+            iterator->remove(iterator);
+            free(note);
+        }
+    }
 }
 
 static RepeatContext *RepeatContextCreate(SEMRepeat *sem)
