@@ -18,8 +18,9 @@ typedef struct _Note {
 } Note;
 
 typedef struct _RepeatContext {
+    SEMRepeat *sem;
     int current;
-    SEMRepeat *repeat;
+    bool breaked;
 } RepeatContext;
 
 typedef struct _MMLSEMAnalyzer {
@@ -64,6 +65,9 @@ typedef struct _MMLSEMAnalyzer {
 
     NoteTable *noteTable;
 } MMLSEMAnalyzer;
+
+static RepeatContext *RepeatContextCreate(SEMRepeat *sem);
+static void RepeatContextDestroy(RepeatContext *self);
 
 static Node *process(void *_self, Node *node)
 {
@@ -400,18 +404,37 @@ static void visitRepeat(void *_self, SEMRepeat *sem)
 {
     MMLSEMAnalyzer *self = _self;
 
-    __Trace__
-
-    NAIterator *iterator = NAArrayGetIterator(sem->node.children);
-    while (iterator->hasNext(iterator)) {
-        Node *node = iterator->next(iterator);
-        node->accept(node, self);
+    if (self->repeatContext) {
+        NAStackPush(self->repeatContextStack, self->repeatContext);
     }
+    
+    self->repeatContext = RepeatContextCreate(sem);
+
+    for (int i = 0; i < self->repeatContext->sem->times; ++i) {
+        self->repeatContext->current = i + 1;
+
+        NAIterator *iterator = NAArrayGetIterator(sem->node.children);
+        while (iterator->hasNext(iterator)) {
+            Node *node = iterator->next(iterator);
+            node->accept(node, self);
+
+            if (self->repeatContext->breaked) {
+                break;
+            }
+        }
+    }
+
+    RepeatContextDestroy(self->repeatContext);
+    self->repeatContext = NAStackPop(self->repeatContextStack);
 }
 
-static void visitRepeatBreak(void *self, SEMRepeatBreak *sem)
+static void visitRepeatBreak(void *_self, SEMRepeatBreak *sem)
 {
-    __Trace__
+    MMLSEMAnalyzer *self = _self;
+
+    if (self->repeatContext->sem->times <= self->repeatContext->current) {
+        self->repeatContext->breaked = true;
+    }
 }
 
 static void visitChord(void *_self, SEMChord *sem)
@@ -484,3 +507,14 @@ Analyzer *MMLSEMAnalyzerCreate(ParseContext *context)
     return &self->analyzer;
 }
 
+static RepeatContext *RepeatContextCreate(SEMRepeat *sem)
+{
+    RepeatContext *self = calloc(1, sizeof(RepeatContext));
+    self->sem = sem;
+    return self;
+}
+
+static void RepeatContextDestroy(RepeatContext *self)
+{
+    free(self);
+}
