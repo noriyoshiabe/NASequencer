@@ -120,6 +120,9 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(MMLParseErrorIllegalStateWithRepeat);
     CASE(MMLParseErrorIllegalStateWithRepeatBreak);
     CASE(MMLParseErrorIllegalStateWithChord);
+    CASE(MMLParseErrorAlreadyDefinedWithTimebase);
+    CASE(MMLParseErrorAlreadyDefinedWithTitle);
+    CASE(MMLParseErrorAlreadyDefinedWithCopyright);
 
     default:
        break;

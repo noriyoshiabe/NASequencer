@@ -46,6 +46,9 @@ typedef enum {
     MMLParseErrorIllegalStateWithRepeat,
     MMLParseErrorIllegalStateWithRepeatBreak,
     MMLParseErrorIllegalStateWithChord,
+    MMLParseErrorAlreadyDefinedWithTimebase,
+    MMLParseErrorAlreadyDefinedWithTitle,
+    MMLParseErrorAlreadyDefinedWithCopyright,
 } MMLParseError;
 
 extern DSLParser *MMLParserCreate(ParseContext *context);

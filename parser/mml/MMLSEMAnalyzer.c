@@ -1,12 +1,60 @@
 #include "MMLSEMAnalyzer.h"
 #include "MMLSEM.h"
-#include <NALog.h>
+#include "MMLParser.h"
+#include "NAArray.h"
+#include "NAStack.h"
+#include "NACString.h"
+#include "NALog.h"
 
 #include <stdlib.h>
+
+#define appendError(self, sem, ...) self->context->appendError(self->context, &sem->node.location, __VA_ARGS__)
+#define isValidRange(v, from, to) (from <= v && v <= to)
+
+typedef struct _Note {
+    struct _Note *next;
+} Note;
+
+typedef struct _RepeatContext {
+    int current;
+    SEMRepeat *repeat;
+} RepeatContext;
 
 typedef struct _MMLSEMAnalyzer {
     SEMVisitor visitor;
     Analyzer analyzer;
+    ParseContext *context;
+    SequenceBuilder *builder;
+
+    int timebase;
+    bool velocityReverse;
+    bool octaveReverse;
+    int tick;
+    int channel;
+    int msb;
+    int lsb;
+    int octave;
+    int transpose;
+    bool tie;
+    int length;
+    struct {
+        int rate;
+        int minus;
+    } gatetime;
+    int velocity;
+
+    Note *pendingNote;
+
+    SEMTuplet *tuplet;
+
+    RepeatContext *repeatContext;
+    NAStack *repeatContextStack;
+
+    struct {
+        Node *timebase;
+        Node *title;
+        Node *copyright;
+    } definedNode;
 } MMLSEMAnalyzer;
 
 static Node *process(void *_self, Node *node)
@@ -16,16 +64,16 @@ static Node *process(void *_self, Node *node)
     return NULL;
 }
 
-static void destroy(void *self)
+static void destroy(void *_self)
 {
+    MMLSEMAnalyzer *self = _self;
+    NAStackDestroy(self->repeatContextStack);
     free(self);
 }
 
 static void visitList(void *_self, SEMList *sem)
 {
     MMLSEMAnalyzer *self = _self;
-
-    __Trace__
 
     NAIterator *iterator = NAArrayGetIterator(sem->node.children);
     while (iterator->hasNext(iterator)) {
@@ -34,89 +82,135 @@ static void visitList(void *_self, SEMList *sem)
     }
 }
 
-static void visitTimebase(void *self, SEMTimebase *sem)
+static void visitTimebase(void *_self, SEMTimebase *sem)
 {
+    MMLSEMAnalyzer *self = _self;
+    if (self->definedNode.timebase) {
+        FileLocation *loc = &self->definedNode.timebase->location;
+        appendError(self, sem, MMLParseErrorAlreadyDefinedWithTimebase, loc->filepath, NACStringFromInteger(loc->line), NACStringFromInteger(loc->column), NULL);
+        return;
+    }
+
+    self->timebase = sem->timebase;
+    self->builder->setResolution(self->builder, sem->timebase);
+    self->definedNode.timebase = (Node *)sem;
+}
+
+static void visitTitle(void *_self, SEMTitle *sem)
+{
+    MMLSEMAnalyzer *self = _self;
+
+    if (self->definedNode.title) {
+        FileLocation *loc = &self->definedNode.title->location;
+        appendError(self, sem, MMLParseErrorAlreadyDefinedWithTitle, loc->filepath, NACStringFromInteger(loc->line), NACStringFromInteger(loc->column), NULL);
+        return;
+    }
+
+    self->builder->setTitle(self->builder, sem->title);
+    self->definedNode.title = (Node *)sem;
+}
+
+static void visitCopyright(void *_self, SEMCopyright *sem)
+{
+    MMLSEMAnalyzer *self = _self;
+
+    if (self->definedNode.copyright) {
+        FileLocation *loc = &self->definedNode.copyright->location;
+        appendError(self, sem, MMLParseErrorAlreadyDefinedWithCopyright, loc->filepath, NACStringFromInteger(loc->line), NACStringFromInteger(loc->column), NULL);
+        return;
+    }
+
+    // TODO
+    //self->builder->setCopyright(self->builder, sem->text);
+    self->definedNode.copyright = (Node *)sem;
+}
+
+static void visitMarker(void *_self, SEMMarker *sem)
+{
+    MMLSEMAnalyzer *self = _self;
+    self->builder->appendMarker(self->builder, self->tick, sem->text);
+}
+
+static void visitVelocityReverse(void *_self, SEMVelocityReverse *sem)
+{
+    MMLSEMAnalyzer *self = _self;
+    self->velocityReverse = !self->velocityReverse;
+}
+
+static void visitOctaveReverse(void *_self, SEMOctaveReverse *sem)
+{
+    MMLSEMAnalyzer *self = _self;
+    self->octaveReverse = !self->octaveReverse;
+}
+
+static void visitChannel(void *_self, SEMChannel *sem)
+{
+    MMLSEMAnalyzer *self = _self;
+    self->channel = sem->number - 1;
+}
+
+static void visitSynth(void *_self, SEMSynth *sem)
+{
+    MMLSEMAnalyzer *self = _self;
+    self->builder->appendSynth(self->builder, self->tick, self->channel, sem->name);
+}
+
+static void visitBankSelect(void *_self, SEMBankSelect *sem)
+{
+    MMLSEMAnalyzer *self = _self;
+    self->msb = sem->msb;
+    self->lsb = sem->lsb;
+}
+
+static void visitProgramChange(void *_self, SEMProgramChange *sem)
+{
+    MMLSEMAnalyzer *self = _self;
+    self->builder->appendVoice(self->builder, self->tick, self->channel, self->msb, self->lsb, sem->programNo);
+}
+
+static void visitVolume(void *_self, SEMVolume *sem)
+{
+    MMLSEMAnalyzer *self = _self;
+    self->builder->appendVolume(self->builder, self->tick, self->channel, sem->value);
+}
+
+static void visitChorus(void *_self, SEMChorus *sem)
+{
+    MMLSEMAnalyzer *self = _self;
+    self->builder->appendChorus(self->builder, self->tick, self->channel, sem->value);
+}
+
+static void visitReverb(void *_self, SEMReverb *sem)
+{
+    MMLSEMAnalyzer *self = _self;
+    self->builder->appendReverb(self->builder, self->tick, self->channel, sem->value);
+}
+
+static void visitExpression(void *_self, SEMExpression *sem)
+{
+    MMLSEMAnalyzer *self = _self;
+    // TODO
+    //self->builder->appendExpression(self->builder, self->tick, self->channel, sem->value);
+}
+
+static void visitPan(void *_self, SEMPan *sem)
+{
+    MMLSEMAnalyzer *self = _self;
+    self->builder->appendPan(self->builder, self->tick, self->channel, sem->value - 64);
+}
+
+static void visitDetune(void *_self, SEMDetune *sem)
+{
+    MMLSEMAnalyzer *self = _self;
+    // TODO
+    //self->builder->appendDetune(self->builder, self->tick, self->channel, sem->value);
     __Trace__
 }
 
-static void visitTitle(void *self, SEMTitle *sem)
+static void visitTempo(void *_self, SEMTempo *sem)
 {
-    __Trace__
-}
-
-static void visitCopyright(void *self, SEMCopyright *sem)
-{
-    __Trace__
-}
-
-static void visitMarker(void *self, SEMMarker *sem)
-{
-    __Trace__
-}
-
-static void visitVelocityReverse(void *self, SEMVelocityReverse *sem)
-{
-    __Trace__
-}
-
-static void visitOctaveReverse(void *self, SEMOctaveReverse *sem)
-{
-    __Trace__
-}
-
-static void visitChannel(void *self, SEMChannel *sem)
-{
-    __Trace__
-}
-
-static void visitSynth(void *self, SEMSynth *sem)
-{
-    __Trace__
-}
-
-static void visitBankSelect(void *self, SEMBankSelect *sem)
-{
-    __Trace__
-}
-
-static void visitProgramChange(void *self, SEMProgramChange *sem)
-{
-    __Trace__
-}
-
-static void visitVolume(void *self, SEMVolume *sem)
-{
-    __Trace__
-}
-
-static void visitChorus(void *self, SEMChorus *sem)
-{
-    __Trace__
-}
-
-static void visitReverb(void *self, SEMReverb *sem)
-{
-    __Trace__
-}
-
-static void visitExpression(void *self, SEMExpression *sem)
-{
-    __Trace__
-}
-
-static void visitPan(void *self, SEMPan *sem)
-{
-    __Trace__
-}
-
-static void visitDetune(void *self, SEMDetune *sem)
-{
-    __Trace__
-}
-
-static void visitTempo(void *self, SEMTempo *sem)
-{
-    __Trace__
+    MMLSEMAnalyzer *self = _self;
+    self->builder->appendTempo(self->builder, self->tick, sem->tempo);
 }
 
 static void visitNote(void *_self, SEMNote *sem)
@@ -247,6 +341,18 @@ Analyzer *MMLSEMAnalyzerCreate(ParseContext *context)
     self->analyzer.process = process;
     self->analyzer.destroy = destroy;
     self->analyzer.self = self;
+
+    self->context = context;
+    self->builder = context->builder;
+
+    self->repeatContextStack = NAStackCreate(4);
+
+    self->timebase = 480;
+    self->channel = 1;
+    self->length = 4;
+    self->gatetime.rate = 15;
+    self->gatetime.minus = 0;
+    self->velocity = 100;
 
     return &self->analyzer;
 }
