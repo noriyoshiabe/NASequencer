@@ -94,7 +94,7 @@ typedef struct _SEMTempo {
 typedef struct _NoteLength {
     int length;
     int dotCount;
-    int gatetime;
+    int step;
 } NoteLength;
 
 typedef struct _SEMNote {

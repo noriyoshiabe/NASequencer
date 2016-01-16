@@ -343,6 +343,11 @@ static void visitNote(void *_self, ASTNote *ast)
             }
 
             parseNoteLength(pc, &noteLength);
+            if (-1 != noteLength.length && 0 != 384 % noteLength.length) {
+                appendError(self, ast, MMLParseErrorInvalidLength, NACStringFromInteger(noteLength.length), NULL);
+                return;
+            }
+
             goto LOOP_END;
         }
 
@@ -381,6 +386,10 @@ static void visitRest(void *_self, ASTRest *ast)
 
     NoteLength noteLength = {-1, 0, -1};
     parseNoteLength(ast->restString + 1, &noteLength);
+    if (-1 != noteLength.length && 0 != 384 % noteLength.length) {
+        appendError(self, ast, MMLParseErrorInvalidLength, NACStringFromInteger(noteLength.length), NULL);
+        return;
+    }
 
     SEMRest *sem = node(Rest, ast);
     sem->length = noteLength;
@@ -504,6 +513,10 @@ static void visitTuplet(void *_self, ASTTuplet *ast)
 
     NoteLength noteLength = {-1, 0, -1};
     parseNoteLength(ast->lengthString, &noteLength);
+    if (-1 != noteLength.length && 0 != 384 % noteLength.length) {
+        appendError(self, ast, MMLParseErrorInvalidLength, NACStringFromInteger(noteLength.length), NULL);
+        return;
+    }
 
     SEMTuplet *sem = node(Tuplet, ast);
     sem->length = noteLength;
@@ -670,7 +683,7 @@ static void parseNoteLength(char *string, NoteLength *noteLength)
     char *pc = NACStringDuplicate(string);
 
     if ('%' == *pc) {
-        noteLength->gatetime = atoi(pc + 1);
+        noteLength->step = atoi(pc + 1);
     }
     else {
         if (*pc) {

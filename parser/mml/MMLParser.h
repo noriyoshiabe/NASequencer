@@ -49,6 +49,7 @@ typedef enum {
     MMLParseErrorAlreadyDefinedWithTimebase,
     MMLParseErrorAlreadyDefinedWithTitle,
     MMLParseErrorAlreadyDefinedWithCopyright,
+    MMLParseErrorInvalidNoteNumber,
 } MMLParseError;
 
 extern DSLParser *MMLParserCreate(ParseContext *context);

@@ -1,12 +1,14 @@
 #include "MMLSEMAnalyzer.h"
 #include "MMLSEM.h"
 #include "MMLParser.h"
+#include "NoteTable.h"
 #include "NAArray.h"
 #include "NAStack.h"
 #include "NACString.h"
 #include "NALog.h"
 
 #include <stdlib.h>
+#include <sys/param.h>
 
 #define appendError(self, sem, ...) self->context->appendError(self->context, &sem->node.location, __VA_ARGS__)
 #define isValidRange(v, from, to) (from <= v && v <= to)
@@ -59,6 +61,8 @@ typedef struct _MMLSEMAnalyzer {
         Node *title;
         Node *copyright;
     } definedNode;
+
+    NoteTable *noteTable;
 } MMLSEMAnalyzer;
 
 static Node *process(void *_self, Node *node)
@@ -72,6 +76,7 @@ static void destroy(void *_self)
 {
     MMLSEMAnalyzer *self = _self;
     NAStackDestroy(self->repeatContextStack);
+    NoteTableRelease(self->noteTable);
     free(self);
 }
 
@@ -150,7 +155,7 @@ static void visitOctaveReverse(void *_self, SEMOctaveReverse *sem)
 static void visitChannel(void *_self, SEMChannel *sem)
 {
     MMLSEMAnalyzer *self = _self;
-    self->channel = sem->number - 1;
+    self->channel = sem->number;
 }
 
 static void visitSynth(void *_self, SEMSynth *sem)
@@ -216,16 +221,72 @@ static void visitTempo(void *_self, SEMTempo *sem)
     self->builder->appendTempo(self->builder, self->tick, sem->tempo);
 }
 
+static int calcStep(MMLSEMAnalyzer *self, NoteLength *noteLength)
+{
+    if (-1 != noteLength->step) {
+        return noteLength->step;
+    }
+
+    int length = -1 != noteLength->length ? noteLength->length : self->length;
+    int step = self->timebase * 4 / length;
+    int dotIncrement = step / 2;
+    for (int i = 0; i < noteLength->dotCount; ++i) {
+        step += dotIncrement;
+        dotIncrement /= 2;
+    }
+    return step;
+}
+
+static int calcGatetime(MMLSEMAnalyzer *self, int step)
+{
+    int gatetime = step * self->gatetime.rate / 16
+                 - self->timebase * 4 * self->gatetime.minus / 192;
+    return MAX(0, gatetime);
+}
+
 static void visitNote(void *_self, SEMNote *sem)
 {
-    // TODO
-    __Trace__
+    MMLSEMAnalyzer *self = _self;
+
+    int noteNo = NoteTableGetNoteNo(self->noteTable, sem->baseNote, sem->accidental, self->octave);
+    noteNo += self->transpose;
+
+    if (!isValidRange(noteNo, 0, 127)) {
+        appendError(self, sem, MMLParseErrorInvalidNoteNumber, NACStringFromInteger(noteNo), sem->noteString, NULL);
+        return;
+    }
+
+    int step;
+    if (self->tuplet) {
+        step = calcStep(self, &self->tuplet->length) / self->tuplet->division;
+    }
+    else {
+        step = calcStep(self, &sem->length);
+    }
+
+    int gatetime = calcGatetime(self, step);
+
+    // TODO tie
+    self->builder->appendNote(self->builder, self->tick, self->channel, noteNo, gatetime, self->velocity.value);
+
+    self->tick += step;
 }
 
 static void visitRest(void *_self, SEMRest *sem)
 {
-    // TODO
-    __Trace__
+    MMLSEMAnalyzer *self = _self;
+
+    int step;
+    if (self->tuplet) {
+        step = calcStep(self, &self->tuplet->length) / self->tuplet->division;
+    }
+    else {
+        step = calcStep(self, &sem->length);
+    }
+
+    // TODO tie
+
+    self->tick += step;
 }
 
 static void visitOctave(void *_self, SEMOctave *sem)
@@ -316,19 +377,23 @@ static void visitTuplet(void *_self, SEMTuplet *sem)
 {
     MMLSEMAnalyzer *self = _self;
 
-    // TODO
-    __Trace__
+    self->tuplet = sem;
+    int tick = self->tick;
 
     NAIterator *iterator = NAArrayGetIterator(sem->node.children);
     while (iterator->hasNext(iterator)) {
         Node *node = iterator->next(iterator);
         node->accept(node, self);
     }
+
+    self->tuplet = NULL;
+    self->tick = tick + calcStep(self, &sem->length);
 }
 
-static void visitTrackChange(void *self, SEMTrackChange *sem)
+static void visitTrackChange(void *_self, SEMTrackChange *sem)
 {
-    __Trace__
+    MMLSEMAnalyzer *self = _self;
+    self->tick = 0;
 }
 
 static void visitRepeat(void *_self, SEMRepeat *sem)
@@ -413,6 +478,8 @@ Analyzer *MMLSEMAnalyzerCreate(ParseContext *context)
     self->gatetime.rate = 15;
     self->gatetime.minus = 0;
     self->velocity.value = 100;
+
+    self->noteTable = NoteTableCreate(BaseNote_C, false, false, ModeMajor);
 
     return &self->analyzer;
 }

@@ -123,6 +123,7 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(MMLParseErrorAlreadyDefinedWithTimebase);
     CASE(MMLParseErrorAlreadyDefinedWithTitle);
     CASE(MMLParseErrorAlreadyDefinedWithCopyright);
+    CASE(MMLParseErrorInvalidNoteNumber);
 
     default:
        break;

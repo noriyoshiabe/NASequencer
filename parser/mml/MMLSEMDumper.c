@@ -167,7 +167,7 @@ static void visitNote(void *_self, SEMNote *sem)
     printf(" accidental=%s", Accidental2String(sem->accidental));
     printf(" %s=%s", INTEGER(sem, length.length));
     printf(" %s=%s", INTEGER(sem, length.dotCount));
-    printf(" %s=%s", INTEGER(sem, length.gatetime));
+    printf(" %s=%s", INTEGER(sem, length.step));
     printf(" %s=%s", STRING(sem, noteString));
 
     printf(" from %s:%d:%d\n", node->location.filepath, node->location.line, node->location.column);
@@ -175,7 +175,7 @@ static void visitNote(void *_self, SEMNote *sem)
 
 static void visitRest(void *self, SEMRest *sem)
 {
-    dump(self, sem, INTEGER(sem, length.length), INTEGER(sem, length.dotCount), INTEGER(sem, length.gatetime), NULL);
+    dump(self, sem, INTEGER(sem, length.length), INTEGER(sem, length.dotCount), INTEGER(sem, length.step), NULL);
 }
 
 static void visitOctave(void *self, SEMOctave *sem)
@@ -212,7 +212,7 @@ static void visitTuplet(void *_self, SEMTuplet *sem)
 {
     MMLSEMDumper *self = _self;
 
-    dump(self, sem, INTEGER(sem, division), INTEGER(sem, length.length), INTEGER(sem, length.dotCount), INTEGER(sem, length.gatetime), NULL);
+    dump(self, sem, INTEGER(sem, division), INTEGER(sem, length.length), INTEGER(sem, length.dotCount), INTEGER(sem, length.step), NULL);
     self->indent += 4;
 
     NAIterator *iterator = NAArrayGetIterator(sem->node.children);
