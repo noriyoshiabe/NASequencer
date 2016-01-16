@@ -204,7 +204,6 @@ static void visitDetune(void *_self, SEMDetune *sem)
     MMLSEMAnalyzer *self = _self;
     // TODO
     //self->builder->appendDetune(self->builder, self->tick, self->channel, sem->value);
-    __Trace__
 }
 
 static void visitTempo(void *_self, SEMTempo *sem)
@@ -215,48 +214,90 @@ static void visitTempo(void *_self, SEMTempo *sem)
 
 static void visitNote(void *_self, SEMNote *sem)
 {
+    // TODO
     __Trace__
 }
 
-static void visitRest(void *self, SEMRest *sem)
+static void visitRest(void *_self, SEMRest *sem)
 {
+    // TODO
     __Trace__
 }
 
-static void visitOctave(void *self, SEMOctave *sem)
+static void visitOctave(void *_self, SEMOctave *sem)
 {
+    MMLSEMAnalyzer *self = _self;
+
+    if (sem->direction) {
+        int shift = '<' == sem->direction ? 1 : -1;
+        shift *= self->octaveReverse ? -1 : 1;
+        int octave = self->octave + shift;
+        if (!isValidRange(octave, -2, 8)) {
+            appendError(self, sem, MMLParseErrorInvalidOctave, NACStringFromInteger(octave), NULL);
+        }
+        else {
+            self->octave = octave;
+        }
+    }
+    else {
+        self->octave = sem->value;
+    }
+}
+
+static void visitTransepose(void *_self, SEMTranspose *sem)
+{
+    MMLSEMAnalyzer *self = _self;
+
+    if (sem->relative) {
+        int transpose = self->transpose + sem->value;
+        if (!isValidRange(transpose, -64, 64)) {
+            appendError(self, sem, MMLParseErrorInvalidTranspose, NACStringFromInteger(transpose), NULL);
+        }
+        else {
+            self->transpose = transpose;
+        }
+    }
+    else {
+        self->transpose = sem->value;
+    }
+}
+
+static void visitTie(void *_self, SEMTie *sem)
+{
+    // TODO
     __Trace__
 }
 
-static void visitTransepose(void *self, SEMTranspose *sem)
+static void visitLength(void *_self, SEMLength *sem)
 {
-    __Trace__
+    MMLSEMAnalyzer *self = _self;
+    self->length = sem->length;
 }
 
-static void visitTie(void *self, SEMTie *sem)
+static void visitGatetime(void *_self, SEMGatetime *sem)
 {
-    __Trace__
+    MMLSEMAnalyzer *self = _self;
+
+    if (sem->absolute) {
+        self->gatetime.minus = sem->value;
+    }
+    else {
+        self->gatetime.rate = sem->value;
+    }
 }
 
-static void visitLength(void *self, SEMLength *sem)
+static void visitVelocity(void *_self, SEMVelocity *sem)
 {
-    __Trace__
-}
+    MMLSEMAnalyzer *self = _self;
 
-static void visitGatetime(void *self, SEMGatetime *sem)
-{
-    __Trace__
-}
-
-static void visitVelocity(void *self, SEMVelocity *sem)
-{
-    __Trace__
+    // TODO
 }
 
 static void visitTuplet(void *_self, SEMTuplet *sem)
 {
     MMLSEMAnalyzer *self = _self;
 
+    // TODO
     __Trace__
 
     NAIterator *iterator = NAArrayGetIterator(sem->node.children);
