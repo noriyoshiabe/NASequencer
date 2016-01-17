@@ -48,6 +48,8 @@ WITH           with
 END            end
 CHANNEL        channel
 VELOCITY       velocity
+GATETIME       gatetime
+STEP           step
 VOICE          voice
 SYNTH          synth
 VOLUME         volume
@@ -87,6 +89,8 @@ LINE_COMMENT   (\/\/|==|--).*$
 {END}            { return END; }
 {CHANNEL}        { return CHANNEL; }
 {VELOCITY}       { return VELOCITY; }
+{GATETIME}       { return GATETIME; }
+{STEP}           { return STEP; }
 {VOICE}          { return VOICE; }
 {SYNTH}          { return SYNTH; }
 {VOLUME}         { return VOLUME; }

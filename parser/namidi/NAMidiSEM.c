@@ -144,6 +144,20 @@ SEMVelocity *NAMidiSEMVelocityCreate(FileLocation *location)
     return NodeCreate(SEMVelocity, location);
 }
 
+static void SEMGatetimeAccept(void *self, void *visitor)
+{
+    ((SEMVisitor *)visitor)->visitGatetime(visitor, self);
+}
+
+static void SEMGatetimeDestroy(void *_self)
+{
+}
+
+SEMGatetime *NAMidiSEMGatetimeCreate(FileLocation *location)
+{
+    return NodeCreate(SEMGatetime, location);
+}
+
 static void SEMVoiceAccept(void *self, void *visitor)
 {
     ((SEMVisitor *)visitor)->visitVoice(visitor, self);

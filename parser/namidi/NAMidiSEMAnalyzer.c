@@ -21,8 +21,12 @@ typedef struct _State {
     struct {
         int step;
         int tick;
-        int gatetime;
         int velocity;
+        struct {
+            bool absolute;
+            int step;
+            int value;
+        } gatetime;
         int octave;
     } channels[16];
 
@@ -178,6 +182,14 @@ static void visitVelocity(void *_self, SEMVelocity *sem)
     VELOCITY(self->state) = sem->value;
 }
 
+static void visitGatetime(void *_self, SEMGatetime *sem)
+{
+    NAMidiSEMAnalyzer *self = _self;
+    FLUSH(self->state);
+    GATETIME(self->state).absolute = sem->absolute;
+    GATETIME(self->state).value = sem->value;
+}
+
 static void visitVoice(void *_self, SEMVoice *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
@@ -234,7 +246,7 @@ static void visitStep(void *_self, SEMStep *sem)
     FLUSH(self->state);
 
     STEP(self->state) = sem->step;
-    GATETIME(self->state) = sem->step;
+    GATETIME(self->state).step = sem->step;
 }
 
 static void visitNote(void *_self, SEMNote *sem)
@@ -254,7 +266,9 @@ static void visitNote(void *_self, SEMNote *sem)
 
     self->state->channels[channel].octave = octave;
 
-    int gatetime = -1 != sem->gatetime ? sem->gatetime : GATETIME(self->state);
+    int gatetime = -1 != sem->gatetime ? sem->gatetime
+                 : GATETIME(self->state).absolute ? GATETIME(self->state).value
+                 : GATETIME(self->state).step + GATETIME(self->state).value;
     int velocity = -1 != sem->velocity ? sem->velocity : VELOCITY(self->state);
 
     self->builder->appendNote(self->builder, TICK(self->state), channel, noteNo, gatetime, velocity);
@@ -326,6 +340,7 @@ Analyzer *NAMidiSEMAnalyzerCreate(ParseContext *context)
     self->visitor.visitMarker = visitMarker;
     self->visitor.visitChannel = visitChannel;
     self->visitor.visitVelocity = visitVelocity;
+    self->visitor.visitGatetime = visitGatetime;
     self->visitor.visitVoice = visitVoice;
     self->visitor.visitSynth = visitSynth;
     self->visitor.visitVolume = visitVolume;
@@ -361,7 +376,8 @@ static State *StateCreate()
     self->channel = 1;
 
     for (int i = 0; i < 16; ++i) {
-        self->channels[i].gatetime = -1;
+        self->channels[i].gatetime.absolute = false;
+        self->channels[i].gatetime.value = 0;
         self->channels[i].velocity = 100;
         self->channels[i].octave = 2;
     }

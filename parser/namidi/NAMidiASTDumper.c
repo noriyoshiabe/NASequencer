@@ -52,6 +52,7 @@ static void dump(NAMidiASTDumper *self, void *_node, ...)
 #define INTEGER(ast, name) #name, NACStringFromInteger(ast->name)
 #define FLOAT(ast, name) #name, NACStringFromFloat(ast->name, 2)
 #define STRING(ast, name) #name, ast->name ? ast->name : "(null)"
+#define BOOL(ast, name) #name, NACStringFromBoolean(ast->name)
 
 static void visitRoot(void *_self, ASTRoot *ast)
 {
@@ -107,6 +108,11 @@ static void visitChannel(void *self, ASTChannel *ast)
 static void visitVelocity(void *self, ASTVelocity *ast)
 {
     dump(self, ast, INTEGER(ast, value), NULL);
+}
+
+static void visitGatetime(void *self, ASTGatetime *ast)
+{
+    dump(self, ast, BOOL(ast, absolute), INTEGER(ast, value), NULL);
 }
 
 static void visitVoice(void *self, ASTVoice *ast)
@@ -258,6 +264,7 @@ Analyzer *NAMidiASTDumperCreate(ParseContext *context)
     self->visitor.visitMarker = visitMarker;
     self->visitor.visitChannel = visitChannel;
     self->visitor.visitVelocity = visitVelocity;
+    self->visitor.visitGatetime = visitGatetime;
     self->visitor.visitVoice = visitVoice;
     self->visitor.visitSynth = visitSynth;
     self->visitor.visitVolume = visitVolume;

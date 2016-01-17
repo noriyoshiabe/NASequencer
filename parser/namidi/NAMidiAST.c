@@ -134,6 +134,20 @@ ASTVelocity *NAMidiASTVelocityCreate(FileLocation *location)
     return NodeCreate(ASTVelocity, location);
 }
 
+static void ASTGatetimeAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitGatetime(visitor, self);
+}
+
+static void ASTGatetimeDestroy(void *_self)
+{
+}
+
+ASTGatetime *NAMidiASTGatetimeCreate(FileLocation *location)
+{
+    return NodeCreate(ASTGatetime, location);
+}
+
 static void ASTVoiceAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitVoice(visitor, self);

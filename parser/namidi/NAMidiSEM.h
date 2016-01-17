@@ -54,6 +54,12 @@ typedef struct _SEMVelocity {
     int value;
 } SEMVelocity;
 
+typedef struct _SEMGatitime {
+    Node node;
+    bool absolute;
+    int value;
+} SEMGatetime;
+
 typedef struct _SEMVoice {
     Node node;
     int msb;
@@ -128,6 +134,7 @@ typedef struct _SEMVisitor {
     void (*visitMarker)(void *self, SEMMarker *sem);
     void (*visitChannel)(void *self, SEMChannel *sem);
     void (*visitVelocity)(void *self, SEMVelocity *sem);
+    void (*visitGatetime)(void *self, SEMGatetime *sem);
     void (*visitVoice)(void *self, SEMVoice *sem);
     void (*visitSynth)(void *self, SEMSynth *sem);
     void (*visitVolume)(void *self, SEMVolume *sem);
@@ -150,6 +157,7 @@ extern SEMKey *NAMidiSEMKeyCreate(FileLocation *location);
 extern SEMMarker *NAMidiSEMMarkerCreate(FileLocation *location);
 extern SEMChannel *NAMidiSEMChannelCreate(FileLocation *location);
 extern SEMVelocity *NAMidiSEMVelocityCreate(FileLocation *location);
+extern SEMGatetime *NAMidiSEMGatetimeCreate(FileLocation *location);
 extern SEMVoice *NAMidiSEMVoiceCreate(FileLocation *location);
 extern SEMSynth *NAMidiSEMSynthCreate(FileLocation *location);
 extern SEMVolume *NAMidiSEMVolumeCreate(FileLocation *location);

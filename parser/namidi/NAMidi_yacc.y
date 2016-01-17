@@ -44,14 +44,14 @@ extern void NAMidiParserUnExpectedEOF(void *self, FileLocation *location);
 %token <s>STRING
 
 %token RESOLUTION TITLE TEMPO TIME KEY MARKER DEFINE EXPAND CONTEXT WITH
-       END CHANNEL VELOCITY VOICE SYNTH VOLUME PAN CHORUS REVERB TRANSPOSE
-       DEFAULT INCLUDE
+       END CHANNEL VELOCITY GATETIME STEP VOICE SYNTH VOLUME PAN CHORUS
+       REVERB TRANSPOSE DEFAULT INCLUDE
 %token END_OF_FILE 0
 
 %token <s>NOTE KEY_SIGN IDENTIFIER
 
-%type <node> resolution title tempo time key marker channel velocity voice synth volume
-             pan chorus reverb transpose step note include expand
+%type <node> resolution title tempo time key marker channel velocity gatetime voice
+             synth volume pan chorus reverb transpose step note include expand
 
 %type <node> define context
 
@@ -104,6 +104,7 @@ statement
     | marker
     | channel
     | velocity
+    | gatetime
     | voice
     | synth
     | volume
@@ -201,6 +202,33 @@ velocity
         {
             ASTVelocity *n = node(Velocity, @$);
             n->value = $2;
+            $$ = n;
+        }
+    ;
+
+gatetime
+    : GATETIME INTEGER
+        {
+            ASTGatetime *n = node(Gatetime, @$);
+            n->absolute = true;
+            n->value = $2;
+            $$ = n;
+        }
+    | GATETIME STEP
+        {
+            ASTGatetime *n = node(Gatetime, @$);
+            $$ = n;
+        }
+    | GATETIME STEP '-' INTEGER
+        {
+            ASTGatetime *n = node(Gatetime, @$);
+            n->value = -$4;
+            $$ = n;
+        }
+    | GATETIME STEP '+' INTEGER
+        {
+            ASTGatetime *n = node(Gatetime, @$);
+            n->value = $4;
             $$ = n;
         }
     ;
