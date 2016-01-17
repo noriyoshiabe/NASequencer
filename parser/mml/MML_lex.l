@@ -30,7 +30,6 @@
 %option bison-locations
 %option case-insensitive
 
-%x COMMENT
 %x x_INCLUDE
 
 NONZERO        [1-9]
@@ -76,7 +75,6 @@ REPEAT_END     :\/
 REPEAT_BREAK   \/
 
 WSPACE         [[:blank:]]+
-LINE_COMMENT   \/\/.*$
 
 LOCATION       ^##.+:[[:digit:]]+:[[:digit:]]+\n
 
@@ -133,11 +131,6 @@ LOCATION       ^##.+:[[:digit:]]+:[[:digit:]]+\n
 "]"               { return ']'; }
 
 {WSPACE}          { }
-{LINE_COMMENT}    { }
-
-"/*"              { BEGIN(COMMENT); }
-<COMMENT>"*/"     { BEGIN(INITIAL); }
-<COMMENT>.        { }
 
 {LOCATION}        {
                       char *saveptr, *token, *s = NACStringDuplicate(yytext);

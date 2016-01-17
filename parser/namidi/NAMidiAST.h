@@ -115,13 +115,6 @@ typedef struct _ASTNote {
     char *noteString;
 } ASTNote;
 
-typedef struct _ASTInclude {
-    Node node;
-    char *filepath;
-    char *fullpath;
-    Node *root;
-} ASTInclude;
-
 typedef struct _ASTPattern {
     Node node;
     char *identifier;
@@ -160,7 +153,6 @@ typedef struct _ASTVisitor {
     void (*visitTranspose)(void *self, ASTTranspose *ast);
     void (*visitStep)(void *self, ASTStep *ast);
     void (*visitNote)(void *self, ASTNote *ast);
-    void (*visitInclude)(void *self, ASTInclude *ast);
     void (*visitPattern)(void *self, ASTPattern *ast);
     void (*visitExpand)(void *self, ASTExpand *ast);
     void (*visitNoteParam)(void *self, ASTNoteParam *ast);
@@ -188,7 +180,6 @@ extern ASTDetune *NAMidiASTDetuneCreate(FileLocation *location);
 extern ASTTranspose *NAMidiASTTransposeCreate(FileLocation *location);
 extern ASTStep *NAMidiASTStepCreate(FileLocation *location);
 extern ASTNote *NAMidiASTNoteCreate(FileLocation *location);
-extern ASTInclude *NAMidiASTIncludeCreate(FileLocation *location);
 extern ASTPattern *NAMidiASTPatternCreate(FileLocation *location);
 extern ASTExpand *NAMidiASTExpandCreate(FileLocation *location);
 extern ASTNoteParam *NAMidiASTNoteParamCreate(FileLocation *location);

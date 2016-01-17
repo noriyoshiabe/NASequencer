@@ -322,28 +322,6 @@ ASTNote *NAMidiASTNoteCreate(FileLocation *location)
     return NodeCreate(ASTNote, location);
 }
 
-static void ASTIncludeAccept(void *self, void *visitor)
-{
-    ((ASTVisitor *)visitor)->visitInclude(visitor, self);
-}
-
-static void ASTIncludeDestroy(void *_self)
-{
-    ASTInclude *self = _self;
-
-    free(self->filepath);
-    free(self->fullpath);
-
-    if (self->root) {
-        NodeRelease(self->root);
-    }
-}
-
-ASTInclude *NAMidiASTIncludeCreate(FileLocation *location)
-{
-    return NodeCreate(ASTInclude, location);
-}
-
 static void ASTPatternAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitPattern(visitor, self);

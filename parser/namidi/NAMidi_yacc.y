@@ -8,13 +8,10 @@
 
 #include "NACString.h"
 
-extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, void **node, const char *message);
+extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, void **node, const char *message);
 
-extern Node *NAMidiParserParseIncludeFile(void *self, FileLocation *location, const char *includeFile, ASTInclude *includeNode);
-extern void NAMidiParserSyntaxError(void *self, FileLocation *location, const char *token);
-extern void NAMidiParserUnExpectedEOF(void *self, FileLocation *location);
-
-#define node(type, yylloc) NAMidiAST##type##Create(&((FileLocation){(char *)filepath, yylloc.first_line, yylloc.first_column}))
+#define location(yylloc) &((FileLocation){NAMidiParserGetCurrentFilepath(NAMidi_get_extra(scanner)), yylloc.first_line, yylloc.first_column})
+#define node(type, yylloc) NAMidiAST##type##Create(location(yylloc))
 #define list() NAArrayCreate(4, NULL)
 #define listAppend(list, node) NAArrayAppend(list, node)
 
@@ -27,7 +24,6 @@ extern void NAMidiParserUnExpectedEOF(void *self, FileLocation *location);
 %pure-parser
 %lex-param   { yyscan_t scanner }
 %parse-param { yyscan_t scanner }
-%parse-param { const char *filepath }
 %parse-param { void **node }
 %locations
 
@@ -45,13 +41,13 @@ extern void NAMidiParserUnExpectedEOF(void *self, FileLocation *location);
 
 %token RESOLUTION TITLE COPYRIGHT TEMPO TIME KEY MARKER PATTERN EXPAND
        END CHANNEL VELOCITY GATETIME STEP VOICE SYNTH VOLUME PAN CHORUS
-       REVERB EXPRESSION DETUNE TRANSPOSE INCLUDE
+       REVERB EXPRESSION DETUNE TRANSPOSE
 %token END_OF_FILE 0
 
 %token <s>NOTE KEY_SIGN IDENTIFIER
 
 %type <node> resolution title copyright tempo time key marker channel velocity gatetime voice
-             synth volume pan chorus reverb expression detune transpose step note include expand
+             synth volume pan chorus reverb expression detune transpose step note expand
 
 %type <node> pattern
 %type <i>    signed_integer
@@ -118,7 +114,6 @@ statement
     | transpose
     | step
     | note
-    | include
     | pattern
     | expand
     | error
@@ -348,17 +343,6 @@ note
         }
     ;
 
-include
-    : INCLUDE STRING
-        {
-            ASTInclude *n = node(Include, @$);
-            n->filepath = $2;
-            FileLocation location = {(char *)filepath, @$.first_line, @$.first_column};
-            n->root = NAMidiParserParseIncludeFile(NAMidi_get_extra(scanner), &location, $2, n);
-            $$ = n;
-        }
-    ;
-
 pattern
     : PATTERN IDENTIFIER statement_list end
         {
@@ -373,8 +357,7 @@ end
     : END
     | END_OF_FILE
         {
-            FileLocation location = {(char *)filepath, @$.first_line, @$.first_column};
-            NAMidiParserUnExpectedEOF(NAMidi_get_extra(scanner), &location);
+            NAMidiParserUnExpectedEOF(NAMidi_get_extra(scanner), location(@$));
         }
     ;
 
@@ -428,9 +411,8 @@ signed_integer
 
 %%
 
-int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, void **node, const char *message)
+int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, void **node, const char *message)
 {
-    FileLocation location = {(char *)filepath, yylloc->first_line, yylloc->first_column};
-    NAMidiParserSyntaxError(NAMidi_get_extra(scanner), &location, NAMidi_get_text(scanner));
+    NAMidiParserSyntaxError(NAMidi_get_extra(scanner), location((*yylloc)), NAMidi_get_text(scanner));
     return 0;
 }

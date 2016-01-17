@@ -494,7 +494,6 @@ signed_integer
 
 int MML_error(YYLTYPE *yylloc, yyscan_t scanner, void **node, const char *message)
 {
-    FileLocation location = {MMLParserGetCurrentFilepath(MML_get_extra(scanner)), yylloc->first_line, yylloc->first_column};
-    MMLParserSyntaxError(MML_get_extra(scanner), &location, MML_get_text(scanner));
+    MMLParserSyntaxError(MML_get_extra(scanner), location((*yylloc)), MML_get_text(scanner));
     return 0;
 }

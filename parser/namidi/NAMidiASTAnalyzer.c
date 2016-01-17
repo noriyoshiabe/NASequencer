@@ -430,20 +430,6 @@ static void visitNote(void *_self, ASTNote *ast)
     append(self->state->list, sem);
 }
 
-static void visitInclude(void *_self, ASTInclude *ast)
-{
-    NAMidiASTAnalyzer *self = _self;
-
-    if (GLOBAL != self->state->name) {
-        appendError(self, ast, NAMidiParseErrorIllegalStateWithInclude, self->state->name, NULL);
-        return;
-    }
-
-    if (ast->root) {
-        ast->root->accept(ast->root, self);
-    }
-}
-
 static void visitPattern(void *_self, ASTPattern *ast)
 {
     NAMidiASTAnalyzer *self = _self;
@@ -514,7 +500,6 @@ Analyzer *NAMidiASTAnalyzerCreate(ParseContext *context)
     self->visitor.visitTranspose = visitTranspose;
     self->visitor.visitStep = visitStep;
     self->visitor.visitNote = visitNote;
-    self->visitor.visitInclude = visitInclude;
     self->visitor.visitPattern = visitPattern;
     self->visitor.visitExpand = visitExpand;
     self->visitor.visitNoteParam = visitNoteParam;

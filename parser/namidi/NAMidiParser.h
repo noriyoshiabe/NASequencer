@@ -36,7 +36,6 @@ typedef enum {
     NAMidiParseErrorIllegalStateWithResolution,
     NAMidiParseErrorIllegalStateWithTitle,
     NAMidiParseErrorIllegalStateWithCopyright,
-    NAMidiParseErrorIllegalStateWithInclude,
     NAMidiParseErrorAlreadyDefinedWithResolution,
     NAMidiParseErrorAlreadyDefinedWithTitle,
     NAMidiParseErrorAlreadyDefinedWithCopyright,
@@ -47,3 +46,7 @@ typedef enum {
 } NAMidiParseError;
 
 extern DSLParser *NAMidiParserCreate(ParseContext *context);
+extern char *NAMidiParserGetCurrentFilepath(void *self);
+extern void NAMidiParserSetCurrentFilepath(void *self, const char *filepath);
+extern void NAMidiParserSyntaxError(void *self, FileLocation *location, const char *token);
+extern void NAMidiParserUnExpectedEOF(void *self, FileLocation *location);

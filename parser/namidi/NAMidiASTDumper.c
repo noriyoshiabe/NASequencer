@@ -186,20 +186,6 @@ static void visitNote(void *_self, ASTNote *ast)
     self->indent -= 4;
 }
 
-static void visitInclude(void *_self, ASTInclude *ast)
-{
-    NAMidiASTDumper *self = _self;
-
-    dump(self, ast, STRING(ast, filepath), NULL);
-    self->indent += 4;
-
-    if (ast->root) {
-        ast->root->accept(ast->root, self);
-    }
-
-    self->indent -= 4;
-}
-
 static void visitPattern(void *_self, ASTPattern *ast)
 {
     NAMidiASTDumper *self = _self;
@@ -263,7 +249,6 @@ Analyzer *NAMidiASTDumperCreate(ParseContext *context)
     self->visitor.visitTranspose = visitTranspose;
     self->visitor.visitStep = visitStep;
     self->visitor.visitNote = visitNote;
-    self->visitor.visitInclude = visitInclude;
     self->visitor.visitPattern = visitPattern;
     self->visitor.visitExpand = visitExpand;
     self->visitor.visitNoteParam = visitNoteParam;

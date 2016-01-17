@@ -1,6 +1,8 @@
 %{
   
 #include "NAMidi_yacc.h"
+#include "NAMidiParser.h"
+#include "NACString.h"
 
 #include <string.h>
 
@@ -28,6 +30,7 @@
 %option case-insensitive
 
 %x COMMENT
+%x x_INCLUDE
 
 NONZERO        [1-9]
 DIGIT          [[:digit:]]
@@ -60,7 +63,6 @@ EXPRESSION     expression
 DETUNE         detune
 TRANSPOSE      transpose
 KEY            key
-INCLUDE        include
 
 KEY_SIGN       [cdefgab](#|b)?(maj(or)?|min(or)?)
 NOTE           [cdefgab](#|##|b|bb|n)?(\-?[[:digit:]]{1,2})?
@@ -68,7 +70,8 @@ ID_STRING      [_[:alpha:]][_[:alnum:]\-]*[_[:alnum:]]
 IDENTIFIER     {ID_STRING}(:{ID_STRING})*
 
 WSPACE         [[:blank:]]+
-LINE_COMMENT   (\/\/|==|--).*$
+
+LOCATION       ^##.+:[[:digit:]]+:[[:digit:]]+\n
 
 %%
 
@@ -101,7 +104,6 @@ LINE_COMMENT   (\/\/|==|--).*$
 {EXPRESSION}     { return EXPRESSION; }
 {DETUNE}         { return DETUNE; }
 {TRANSPOSE}      { return TRANSPOSE; }
-{INCLUDE}        { return INCLUDE; }
 
 {NOTE}           { yylval->s = strdup(yytext); return NOTE; }
 {KEY_SIGN}       { yylval->s = strdup(yytext); return KEY_SIGN; }
@@ -117,12 +119,26 @@ LINE_COMMENT   (\/\/|==|--).*$
 \n               { return '\n'; }
 
 {WSPACE}         { }
-{LINE_COMMENT}   { }
 
-"/*"             { BEGIN(COMMENT); }
-<COMMENT>"*/"    { BEGIN(INITIAL); }
-<COMMENT>\n      { }
-<COMMENT>.       { }
+{LOCATION}       {
+                     char *saveptr, *token, *s = NACStringDuplicate(yytext);
+                     for (int i = 0; (token = strtok_r(s, "#:\n", &saveptr)); ++i) {
+                         switch (i) {
+                         case 0:
+                             NAMidiParserSetCurrentFilepath(yyextra, token);
+                             break;
+                         case 1:
+                             yylineno = atoi(token);
+                             break;
+                         case 2:
+                             yycolumn = atoi(token);
+                             break;
+                         default:
+                             break;
+                         }
+                         s = NULL;
+                     }
+                 }
 
 .                { return 1; }
 <<EOF>>          { return 0; }

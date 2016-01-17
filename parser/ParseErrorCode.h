@@ -43,7 +43,6 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(NAMidiParseErrorIllegalStateWithResolution);
     CASE(NAMidiParseErrorIllegalStateWithTitle);
     CASE(NAMidiParseErrorIllegalStateWithCopyright);
-    CASE(NAMidiParseErrorIllegalStateWithInclude);
     CASE(NAMidiParseErrorAlreadyDefinedWithResolution);
     CASE(NAMidiParseErrorAlreadyDefinedWithTitle);
     CASE(NAMidiParseErrorAlreadyDefinedWithCopyright);
