@@ -132,16 +132,6 @@ typedef struct _ASTDefine {
     char *identifier;
 } ASTDefine;
 
-typedef struct _ASTContext {
-    Node node;
-    NAArray *ctxIdList;
-} ASTContext;
-
-typedef struct _ASTIdentifier {
-    Node node;
-    char *idString;
-} ASTIdentifier;
-
 typedef struct _ASTNoteParam {
     Node node;
     int value;
@@ -173,8 +163,6 @@ typedef struct _ASTVisitor {
     void (*visitInclude)(void *self, ASTInclude *ast);
     void (*visitPattern)(void *self, ASTPattern *ast);
     void (*visitDefine)(void *self, ASTDefine *ast);
-    void (*visitContext)(void *self, ASTContext *ast);
-    void (*visitIdentifier)(void *self, ASTIdentifier *ast);
     void (*visitNoteParam)(void *self, ASTNoteParam *ast);
 } ASTVisitor;
 
@@ -203,6 +191,4 @@ extern ASTNote *NAMidiASTNoteCreate(FileLocation *location);
 extern ASTInclude *NAMidiASTIncludeCreate(FileLocation *location);
 extern ASTPattern *NAMidiASTPatternCreate(FileLocation *location);
 extern ASTDefine *NAMidiASTDefineCreate(FileLocation *location);
-extern ASTContext *NAMidiASTContextCreate(FileLocation *location);
-extern ASTIdentifier *NAMidiASTIdentifierCreate(FileLocation *location);
 extern ASTNoteParam *NAMidiASTNoteParamCreate(FileLocation *location);

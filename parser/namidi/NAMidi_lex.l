@@ -44,7 +44,6 @@ TIME           time
 MARKER         marker
 DEFINE         define
 EXPAND         expand
-CONTEXT        context
 WITH           with
 END            end
 CHANNEL        channel
@@ -61,7 +60,6 @@ EXPRESSION     expression
 DETUNE         detune
 TRANSPOSE      transpose
 KEY            key
-DEFAULT        default
 INCLUDE        include
 
 KEY_SIGN       [cdefgab](#|b)?(maj(or)?|min(or)?)
@@ -88,8 +86,6 @@ LINE_COMMENT   (\/\/|==|--).*$
 {MARKER}         { return MARKER; }
 {DEFINE}         { return DEFINE; }
 {EXPAND}         { return EXPAND; }
-{CONTEXT}        { return CONTEXT; }
-{WITH}           { return WITH; }
 {END}            { return END; }
 {CHANNEL}        { return CHANNEL; }
 {VELOCITY}       { return VELOCITY; }
@@ -104,7 +100,6 @@ LINE_COMMENT   (\/\/|==|--).*$
 {EXPRESSION}     { return EXPRESSION; }
 {DETUNE}         { return DETUNE; }
 {TRANSPOSE}      { return TRANSPOSE; }
-{DEFAULT}        { return DEFAULT; }
 {INCLUDE}        { return INCLUDE; }
 
 {NOTE}           { yylval->s = strdup(yytext); return NOTE; }
@@ -116,9 +111,6 @@ LINE_COMMENT   (\/\/|==|--).*$
 "/"              { return '/'; }
 "("              { return '('; }
 ")"              { return ')'; }
-"{"              { return '{'; }
-"}"              { return '}'; }
-","              { return ','; }
 ";"              { return ';'; }
 ":"              { return ':'; }
 \n               { return '\n'; }

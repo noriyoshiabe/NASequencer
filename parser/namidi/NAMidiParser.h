@@ -26,8 +26,6 @@ typedef enum {
     NAMidiParseErrorIllegalStateWithTitle,
     NAMidiParseErrorIllegalStateWithCopyright,
     NAMidiParseErrorIllegalStateWithInclude,
-    NAMidiParseErrorIllegalStateWithDefine,
-    NAMidiParseErrorIllegalStateWithContext,
     NAMidiParseErrorAlreadyDefinedWithResolution,
     NAMidiParseErrorAlreadyDefinedWithTitle,
     NAMidiParseErrorAlreadyDefinedWithCopyright,

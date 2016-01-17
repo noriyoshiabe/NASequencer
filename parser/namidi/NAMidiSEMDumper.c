@@ -68,7 +68,6 @@ static char *array2String(NAArray *array, char *buffer)
 #define INTEGER(sem, name) #name, NACStringFromInteger(sem->name)
 #define FLOAT(sem, name) #name, NACStringFromFloat(sem->name, 2)
 #define STRING(sem, name) #name, sem->name ? sem->name : "(null)"
-#define STRING_ARRAY(sem, name) #name, array2String(sem->name, alloca(1024))
 
 static void visitList(void *_self, SEMList *sem)
 {
@@ -217,18 +216,7 @@ static void visitNote(void *_self, SEMNote *sem)
 
 static void visitPattern(void *self, SEMPattern *sem)
 {
-    dump(self, sem, STRING(sem, identifier), STRING_ARRAY(sem, ctxIdList), NULL);
-}
-
-static void visitContext(void *_self, SEMContext *sem)
-{
-    NAMidiSEMDumper *self = _self;
-
-    dump(self, sem, STRING_ARRAY(sem, ctxIdList), NULL);
-
-    self->indent += 4;
-    sem->list->node.accept(sem->list, self);
-    self->indent -= 4;
+    dump(self, sem, STRING(sem, identifier), NULL);
 }
 
 Analyzer *NAMidiSEMDumperCreate(ParseContext *context)
@@ -258,7 +246,6 @@ Analyzer *NAMidiSEMDumperCreate(ParseContext *context)
     self->visitor.visitStep = visitStep;
     self->visitor.visitNote = visitNote;
     self->visitor.visitPattern = visitPattern;
-    self->visitor.visitContext = visitContext;
 
     self->analyzer.process = process;
     self->analyzer.destroy = destroy;

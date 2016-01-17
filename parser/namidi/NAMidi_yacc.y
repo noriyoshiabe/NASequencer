@@ -43,9 +43,9 @@ extern void NAMidiParserUnExpectedEOF(void *self, FileLocation *location);
 %token <f>FLOAT
 %token <s>STRING
 
-%token RESOLUTION TITLE COPYRIGHT TEMPO TIME KEY MARKER DEFINE EXPAND CONTEXT WITH
+%token RESOLUTION TITLE COPYRIGHT TEMPO TIME KEY MARKER DEFINE EXPAND
        END CHANNEL VELOCITY GATETIME STEP VOICE SYNTH VOLUME PAN CHORUS
-       REVERB EXPRESSION DETUNE TRANSPOSE DEFAULT INCLUDE
+       REVERB EXPRESSION DETUNE TRANSPOSE INCLUDE
 %token END_OF_FILE 0
 
 %token <s>NOTE KEY_SIGN IDENTIFIER
@@ -53,11 +53,11 @@ extern void NAMidiParserUnExpectedEOF(void *self, FileLocation *location);
 %type <node> resolution title copyright tempo time key marker channel velocity gatetime voice
              synth volume pan chorus reverb expression detune transpose step note include expand
 
-%type <node> define context
+%type <node> define
 %type <i>    signed_integer
 
-%type <node> statement note_param identifier
-%type <list> statement_list identifier_list note_param_list
+%type <node> statement note_param
+%type <list> statement_list note_param_list
 
 %destructor { free($$); } STRING
 %destructor { free($$); } NOTE KEY_SIGN IDENTIFIER
@@ -121,7 +121,6 @@ statement
     | include
     | expand
     | define
-    | context
     | error
         {
             yyclearin;
@@ -368,13 +367,6 @@ expand
             n->node.children = list();
             $$ = n;
         }
-    | EXPAND IDENTIFIER WITH identifier_list
-        {
-            ASTPattern *n = node(Pattern, @$);
-            n->identifier = NACStringToUpperCase($2);
-            n->node.children = $4;
-            $$ = n;
-        }
     ;
 
 define
@@ -387,56 +379,12 @@ define
         }
     ;
 
-context
-    : CONTEXT identifier_list statement_list end
-        {
-            ASTContext *n = node(Context, @$);
-            n->ctxIdList = $2;
-            n->node.children = $3;
-            $$ = n;
-        }
-    ;
-
 end
     : END
     | END_OF_FILE
         {
             FileLocation location = {(char *)filepath, @$.first_line, @$.first_column};
             NAMidiParserUnExpectedEOF(NAMidi_get_extra(scanner), &location);
-        }
-    ;
-
-identifier_list
-    : identifier
-        {
-            $$ = list();
-            listAppend($$, $1);
-        }
-    | identifier_list ',' identifier
-        {
-            $$ = $1;
-            listAppend($$, $3);
-        }
-    ;
-
-identifier
-    : IDENTIFIER
-        {
-            ASTIdentifier *n = node(Identifier, @$);
-            n->idString = NACStringToUpperCase($1);
-            $$ = n;
-        }
-    | DEFAULT
-        {
-            ASTIdentifier *n = node(Identifier, @$);
-            n->idString = strdup("DEFAULT");
-            $$ = n;
-        }
-    | INTEGER
-        {
-            ASTIdentifier *n = node(Identifier, @$);
-            n->idString = strdup(NACStringFromInteger($1));
-            $$ = n;
         }
     ;
 

@@ -20,7 +20,6 @@
 
 static const char *GLOBAL = "global";
 static const char *PATTERN = "pattern";
-static const char *CONTEXT = "context";
 
 typedef struct _State {
     SEMList *list;
@@ -452,27 +451,12 @@ static void visitPattern(void *_self, ASTPattern *ast)
     SEMPattern *sem = node(Pattern, ast);
     sem->identifier = strdup(ast->identifier);
 
-    NAIterator *iterator = NAArrayGetIterator(ast->node.children);
-    while (iterator->hasNext(iterator)) {
-        ASTIdentifier *node = iterator->next(iterator);
-        NAArrayAppend(sem->ctxIdList, strdup(node->idString));
-    }
-
-    if (NAArrayIsEmpty(sem->ctxIdList)) {
-        NAArrayAppend(sem->ctxIdList, strdup("DEFAULT"));
-    }
-
     append(self->state->list, sem);
 }
 
 static void visitDefine(void *_self, ASTDefine *ast)
 {
     NAMidiASTAnalyzer *self = _self;
-
-    if (CONTEXT == self->state->name) {
-        appendError(self, ast, NAMidiParseErrorIllegalStateWithDefine, self->state->name, NULL);
-        return;
-    }
 
     if (NAMapContainsKey(self->state->list->patternMap, ast->identifier)) {
         Node *original = NAMapGet(self->state->list->patternMap, ast->identifier);
@@ -497,47 +481,6 @@ static void visitDefine(void *_self, ASTDefine *ast)
     State *local = self->state;
     self->state = NAStackPop(self->stateStack);
     StateDestroy(local);
-}
-
-static void visitContext(void *_self, ASTContext *ast)
-{
-    NAMidiASTAnalyzer *self = _self;
-
-    if (GLOBAL == self->state->name) {
-        appendError(self, ast, NAMidiParseErrorIllegalStateWithContext, self->state->name, NULL);
-        return;
-    }
-
-    SEMContext *sem = node(Context, ast);
-
-    NAIterator *iterator;
-
-    iterator = NAArrayGetIterator(ast->ctxIdList);
-    while (iterator->hasNext(iterator)) {
-        ASTIdentifier *node = iterator->next(iterator);
-        NAArrayAppend(sem->ctxIdList, strdup(node->idString));
-    }
-
-    sem->list = node(List, ast);
-    NAStackPush(self->stateStack, self->state);
-    self->state = StateCreate(sem->list, CONTEXT);
-
-    iterator = NAArrayGetIterator(ast->node.children);
-    while (iterator->hasNext(iterator)) {
-        Node *node = iterator->next(iterator);
-        node->accept(node, self);
-    }
-
-    State *local = self->state;
-    self->state = NAStackPop(self->stateStack);
-    StateDestroy(local);
-
-    append(self->state->list, sem);
-}
-
-static void visitIdentifier(void *_self, ASTIdentifier *ast)
-{
-    NAMidiASTAnalyzer *self = _self;
 }
 
 static void visitNoteParam(void *_self, ASTNoteParam *ast)
@@ -574,8 +517,6 @@ Analyzer *NAMidiASTAnalyzerCreate(ParseContext *context)
     self->visitor.visitInclude = visitInclude;
     self->visitor.visitPattern = visitPattern;
     self->visitor.visitDefine = visitDefine;
-    self->visitor.visitContext = visitContext;
-    self->visitor.visitIdentifier = visitIdentifier;
     self->visitor.visitNoteParam = visitNoteParam;
 
     self->analyzer.process = process;

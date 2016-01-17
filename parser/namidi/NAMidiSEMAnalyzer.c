@@ -30,8 +30,6 @@ typedef struct _State {
         int octave;
     } channels[16];
 
-    NASet *ctxIdList;
-
     NAMap *patternMap;
     NASet *expandingPatternList;
 
@@ -323,11 +321,6 @@ static void visitPattern(void *_self, SEMPattern *sem)
     NAStackPush(self->stateStack, self->state);
     self->state = StateCopy(self->state);
 
-    NAIterator *iterator = NAArrayGetIterator(sem->ctxIdList);
-    while (iterator->hasNext(iterator)) {
-        NASetAdd(self->state->ctxIdList, iterator->next(iterator));
-    }
-
     NASetAdd(self->state->expandingPatternList, pattern);
     pattern->node.accept(pattern, self);
     NASetRemove(self->state->expandingPatternList, pattern);
@@ -341,21 +334,6 @@ static void visitPattern(void *_self, SEMPattern *sem)
     }
 
     StateDestroy(local);
-}
-
-static void visitContext(void *_self, SEMContext *sem)
-{
-    NAMidiSEMAnalyzer *self = _self;
-
-    NAIterator *iterator = NAArrayGetIterator(sem->ctxIdList);
-    while (iterator->hasNext(iterator)) {
-        if (NASetContains(self->state->ctxIdList, iterator->next(iterator))) {
-            sem->list->node.accept(sem->list, self);
-            return;
-        }
-    }
-
-    FLUSH(self->state);
 }
 
 Analyzer *NAMidiSEMAnalyzerCreate(ParseContext *context)
@@ -385,7 +363,6 @@ Analyzer *NAMidiSEMAnalyzerCreate(ParseContext *context)
     self->visitor.visitStep = visitStep;
     self->visitor.visitNote = visitNote;
     self->visitor.visitPattern = visitPattern;
-    self->visitor.visitContext = visitContext;
 
     self->analyzer.process = process;
     self->analyzer.destroy = destroy;
@@ -417,7 +394,6 @@ static State *StateCreate()
     }
 
     self->patternMap = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
-    self->ctxIdList = NASetCreate(NAHashCString, NADescriptionCString);
     self->expandingPatternList = NASetCreate(NAHashAddress, NADescriptionAddress);
 
     return self;
@@ -425,24 +401,16 @@ static State *StateCreate()
 
 static State *StateCopy(State *self)
 {
-    NAIterator *iterator;
-
     State *copy = calloc(1, sizeof(State));
     memcpy(copy, self, sizeof(State));
 
     NoteTableRetain(copy->noteTable);
    
     copy->patternMap = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
-    iterator = NAMapGetIterator(self->patternMap);
+    NAIterator *iterator = NAMapGetIterator(self->patternMap);
     while (iterator->hasNext(iterator)) {
         NAMapEntry *entry = iterator->next(iterator);
         NAMapPut(copy->patternMap, entry->key, entry->value);
-    }
-
-    copy->ctxIdList = NASetCreate(NAHashCString, NADescriptionCString);
-    iterator = NASetGetIterator(self->ctxIdList);
-    while (iterator->hasNext(iterator)) {
-        NASetAdd(copy->ctxIdList, iterator->next(iterator));
     }
 
     copy->copy = true;
@@ -458,8 +426,6 @@ static void StateDestroy(State *self)
     }
 
     NAMapDestroy(self->patternMap);
-    NASetDestroy(self->ctxIdList);
-
     free(self);
 }
 

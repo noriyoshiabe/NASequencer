@@ -130,14 +130,7 @@ typedef struct _SEMNote {
 typedef struct _SEMPattern {
     Node node;
     char *identifier;
-    NAArray *ctxIdList;
 } SEMPattern;
-
-typedef struct _SEMContext {
-    Node node;
-    NAArray *ctxIdList;
-    SEMList *list;
-} SEMContext;
 
 typedef struct _SEMVisitor {
     void (*visitList)(void *self, SEMList *sem);
@@ -163,7 +156,6 @@ typedef struct _SEMVisitor {
     void (*visitStep)(void *self, SEMStep *sem);
     void (*visitNote)(void *self, SEMNote *sem);
     void (*visitPattern)(void *self, SEMPattern *sem);
-    void (*visitContext)(void *self, SEMContext *sem);
 } SEMVisitor;
 
 extern SEMList *NAMidiSEMListCreate(FileLocation *location);
@@ -189,4 +181,3 @@ extern SEMTranspose *NAMidiSEMTransposeCreate(FileLocation *location);
 extern SEMStep *NAMidiSEMStepCreate(FileLocation *location);
 extern SEMNote *NAMidiSEMNoteCreate(FileLocation *location);
 extern SEMPattern *NAMidiSEMPatternCreate(FileLocation *location);
-extern SEMContext *NAMidiSEMContextCreate(FileLocation *location);

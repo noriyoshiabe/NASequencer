@@ -232,35 +232,6 @@ static void visitDefine(void *_self, ASTDefine *ast)
     self->indent -= 4;
 }
 
-static void visitContext(void *_self, ASTContext *ast)
-{
-    NAMidiASTDumper *self = _self;
-
-    dump(self, ast, NULL);
-    self->indent += 4;
-
-    NAIterator *iterator;
-
-    iterator = NAArrayGetIterator(ast->ctxIdList);
-    while (iterator->hasNext(iterator)) {
-        Node *node = iterator->next(iterator);
-        node->accept(node, self);
-    }
-
-    iterator = NAArrayGetIterator(ast->node.children);
-    while (iterator->hasNext(iterator)) {
-        Node *node = iterator->next(iterator);
-        node->accept(node, self);
-    }
-
-    self->indent -= 4;
-}
-
-static void visitIdentifier(void *self, ASTIdentifier *ast)
-{
-    dump(self, ast, STRING(ast, idString), NULL);
-}
-
 static void visitNoteParam(void *self, ASTNoteParam *ast)
 {
     dump(self, ast, INTEGER(ast, value), NULL);
@@ -295,8 +266,6 @@ Analyzer *NAMidiASTDumperCreate(ParseContext *context)
     self->visitor.visitInclude = visitInclude;
     self->visitor.visitPattern = visitPattern;
     self->visitor.visitDefine = visitDefine;
-    self->visitor.visitContext = visitContext;
-    self->visitor.visitIdentifier = visitIdentifier;
     self->visitor.visitNoteParam = visitNoteParam;
 
     self->analyzer.process = process;

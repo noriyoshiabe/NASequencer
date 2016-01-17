@@ -341,35 +341,11 @@ static void SEMPatternDestroy(void *_self)
 {
     SEMPattern *self = _self;
     free(self->identifier);
-    NAArrayTraverse(self->ctxIdList, free);
-    NAArrayDestroy(self->ctxIdList);
 }
 
 SEMPattern *NAMidiSEMPatternCreate(FileLocation *location)
 {
     SEMPattern *self = NodeCreate(SEMPattern, location);
     self->node.children = NAArrayCreate(4, NULL);
-    self->ctxIdList = NAArrayCreate(4, NULL);
-    return self;
-}
-
-static void SEMContextAccept(void *self, void *visitor)
-{
-    ((SEMVisitor *)visitor)->visitContext(visitor, self);
-}
-
-static void SEMContextDestroy(void *_self)
-{
-    SEMContext *self = _self;
-    NAArrayTraverse(self->ctxIdList, free);
-    NAArrayDestroy(self->ctxIdList);
-    NodeRelease(self->list);
-}
-
-SEMContext *NAMidiSEMContextCreate(FileLocation *location)
-{
-    SEMContext *self = NodeCreate(SEMContext, location);
-    self->node.children = NAArrayCreate(4, NULL);
-    self->ctxIdList = NAArrayCreate(4, NULL);
     return self;
 }

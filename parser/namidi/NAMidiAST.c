@@ -376,39 +376,6 @@ ASTDefine *NAMidiASTDefineCreate(FileLocation *location)
     return NodeCreate(ASTDefine, location);
 }
 
-static void ASTContextAccept(void *self, void *visitor)
-{
-    ((ASTVisitor *)visitor)->visitContext(visitor, self);
-}
-
-static void ASTContextDestroy(void *_self)
-{
-    ASTContext *self = _self;
-    NAArrayTraverse(self->ctxIdList, NodeRelease);
-    NAArrayDestroy(self->ctxIdList);
-}
-
-ASTContext *NAMidiASTContextCreate(FileLocation *location)
-{
-    return NodeCreate(ASTContext, location);
-}
-
-static void ASTIdentifierAccept(void *self, void *visitor)
-{
-    ((ASTVisitor *)visitor)->visitIdentifier(visitor, self);
-}
-
-static void ASTIdentifierDestroy(void *_self)
-{
-    ASTIdentifier *self = _self;
-    free(self->idString);
-}
-
-ASTIdentifier *NAMidiASTIdentifierCreate(FileLocation *location)
-{
-    return NodeCreate(ASTIdentifier, location);
-}
-
 static void ASTNoteParamAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitNoteParam(visitor, self);
