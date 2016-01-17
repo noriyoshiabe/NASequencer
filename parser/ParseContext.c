@@ -1,11 +1,39 @@
 #include "ParseContext.h"
+#include "NAStringBuffer.h"
 
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
 
+static char *errorSignature(const FileLocation *location, int code, va_list argList)
+{
+    NAStringBuffer *buffer = NAStringBufferCreate(128);
+    NAStringBufferAppendFormat(buffer, "%s:%d:%d:%d", location->filepath, location->line, location->column, code);
+
+    const char *str;
+    while ((str = va_arg(argList, const char *))) {
+        NAStringBufferAppendFormat(buffer, ":%s", str);
+    }
+
+    char *ret = NAStringBufferRetriveCString(buffer);
+    NAStringBufferDestroy(buffer);
+    return ret;
+}
+
 static void ParseContextAppendError(ParseContext *self, const FileLocation *location, int code, ...)
 {
+    va_list argList;
+
+    va_start(argList, code);
+    char *signature = errorSignature(location, code, argList);
+    va_end(argList);
+
+    if (NASetContains(self->_errorSignatureSet, signature)) {
+        free(signature);
+        return;
+    }
+    NASetAdd(self->_errorSignatureSet, signature);
+
     ParseError *error = ParseErrorCreate();
 
     error->code = code;
@@ -16,7 +44,6 @@ static void ParseContextAppendError(ParseContext *self, const FileLocation *loca
         error->location.column = location->column;
     }
 
-    va_list argList;
     va_start(argList, code);
 
     const char *str;
@@ -62,6 +89,7 @@ ParseContext *ParseContextCreate(SequenceBuilder *builder)
     self->filepaths = NAArrayCreate(4, NADescriptionCString);
     self->errors = NAArrayCreate(4, NADescriptionAddress);
     self->_fileSet = NASetCreate(NAHashCString, NADescriptionCString);
+    self->_errorSignatureSet = NASetCreate(NAHashCString, NADescriptionCString);
     self->appendError = ParseContextAppendError;
     self->appendFile = ParseContextAppendFile;
     self->buildResult = ParseContextBuildResult;
@@ -81,5 +109,9 @@ void ParseContextDestroy(ParseContext *self)
     }
 
     NASetDestroy(self->_fileSet);
+
+    NASetTraverse(self->_errorSignatureSet, free);
+    NASetDestroy(self->_errorSignatureSet);
+
     free(self);
 }

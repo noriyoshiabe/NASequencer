@@ -10,7 +10,8 @@
 
 extern int MML_error(YYLTYPE *yylloc, yyscan_t scanner, void **node, const char *message);
 
-#define node(type, yylloc) MMLAST##type##Create(&((FileLocation){MMLParserGetCurrentFilepath(MML_get_extra(scanner)), yylloc.first_line, yylloc.first_column}))
+#define location(yylloc) &((FileLocation){MMLParserGetCurrentFilepath(MML_get_extra(scanner)), yylloc.first_line, yylloc.first_column})
+#define node(type, yylloc) MMLAST##type##Create(location(yylloc))
 #define list() NAArrayCreate(4, NULL)
 #define listAppend(list, node) NAArrayAppend(list, node)
 
@@ -50,6 +51,7 @@ extern int MML_error(YYLTYPE *yylloc, yyscan_t scanner, void **node, const char 
 %type <node> transpose tie length gatetime velocity tuplet track_change repeat repeat_break chord
 
 %type <i> signed_integer
+%type <s> tuplet_end
 
 %type <node> statement
 %type <list> statement_list
@@ -403,12 +405,24 @@ velocity
     ;
 
 tuplet
-    : TUPLET_START statement_list TUPLET_END
+    : TUPLET_START statement_list tuplet_end
         {
             ASTTuplet *n = node(Tuplet, @$);
             n->lengthString = $3;
             n->node.children = $2;
             $$ = n;
+        }
+    ;
+
+tuplet_end
+    : TUPLET_END
+        {
+            $$ = $1;
+        }
+    | END_OF_FILE
+        {
+            MMLParserUnExpectedEOF(MML_get_extra(scanner), location(@$));
+            $$ = strdup("");
         }
     ;
 
@@ -421,14 +435,14 @@ track_change
     ;
 
 repeat
-    : REPEAT_START statement_list REPEAT_END
+    : REPEAT_START statement_list repeat_end
         {
             ASTRepeat *n = node(Repeat, @$);
             n->times = 2;
             n->node.children = $2;
             $$ = n;
         }
-    | REPEAT_START INTEGER statement_list REPEAT_END
+    | REPEAT_START INTEGER statement_list repeat_end
         {
             ASTRepeat *n = node(Repeat, @$);
             n->times = $2;
@@ -445,12 +459,28 @@ repeat_break
         }
     ;
 
+repeat_end
+    : REPEAT_END
+    | END_OF_FILE
+        {
+            MMLParserUnExpectedEOF(MML_get_extra(scanner), location(@$));
+        }
+    ;
+
 chord
-    : '[' statement_list ']'
+    : '[' statement_list chord_end
         {
             ASTChord *n = node(Chord, @$);
             n->node.children = $2;
             $$ = n;
+        }
+    ;
+
+chord_end
+    : ']'
+    | END_OF_FILE
+        {
+            MMLParserUnExpectedEOF(MML_get_extra(scanner), location(@$));
         }
     ;
 

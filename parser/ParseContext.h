@@ -15,6 +15,7 @@ struct _ParseContext {
     void *(*buildResult)(ParseContext *self, ParseInfo **info);
 
     NASet *_fileSet;
+    NASet *_errorSignatureSet;
 };
 
 extern ParseContext *ParseContextCreate(SequenceBuilder *builder);
