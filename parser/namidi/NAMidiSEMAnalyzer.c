@@ -321,7 +321,7 @@ static SEMList *findPattern(NAMidiSEMAnalyzer *self, const char *identifier)
     return list;
 }
 
-static void visitPattern(void *_self, SEMPattern *sem)
+static void visitExpand(void *_self, SEMExpand *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
 
@@ -380,7 +380,7 @@ Analyzer *NAMidiSEMAnalyzerCreate(ParseContext *context)
     self->visitor.visitTranspose = visitTranspose;
     self->visitor.visitStep = visitStep;
     self->visitor.visitNote = visitNote;
-    self->visitor.visitPattern = visitPattern;
+    self->visitor.visitExpand = visitExpand;
 
     self->analyzer.process = process;
     self->analyzer.destroy = destroy;

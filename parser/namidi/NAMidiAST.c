@@ -360,20 +360,20 @@ ASTPattern *NAMidiASTPatternCreate(FileLocation *location)
     return NodeCreate(ASTPattern, location);
 }
 
-static void ASTDefineAccept(void *self, void *visitor)
+static void ASTExpandAccept(void *self, void *visitor)
 {
-    ((ASTVisitor *)visitor)->visitDefine(visitor, self);
+    ((ASTVisitor *)visitor)->visitExpand(visitor, self);
 }
 
-static void ASTDefineDestroy(void *_self)
+static void ASTExpandDestroy(void *_self)
 {
-    ASTDefine *self = _self;
+    ASTExpand *self = _self;
     free(self->identifier);
 }
 
-ASTDefine *NAMidiASTDefineCreate(FileLocation *location)
+ASTExpand *NAMidiASTExpandCreate(FileLocation *location)
 {
-    return NodeCreate(ASTDefine, location);
+    return NodeCreate(ASTExpand, location);
 }
 
 static void ASTNoteParamAccept(void *self, void *visitor)

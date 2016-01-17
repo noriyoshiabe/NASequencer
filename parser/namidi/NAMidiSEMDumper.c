@@ -214,7 +214,7 @@ static void visitNote(void *_self, SEMNote *sem)
     printf(" from %s:%d:%d\n", node->location.filepath, node->location.line, node->location.column);
 }
 
-static void visitPattern(void *self, SEMPattern *sem)
+static void visitExpand(void *self, SEMExpand *sem)
 {
     dump(self, sem, STRING(sem, identifier), NULL);
 }
@@ -245,7 +245,7 @@ Analyzer *NAMidiSEMDumperCreate(ParseContext *context)
     self->visitor.visitTranspose = visitTranspose;
     self->visitor.visitStep = visitStep;
     self->visitor.visitNote = visitNote;
-    self->visitor.visitPattern = visitPattern;
+    self->visitor.visitExpand = visitExpand;
 
     self->analyzer.process = process;
     self->analyzer.destroy = destroy;

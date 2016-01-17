@@ -127,10 +127,10 @@ typedef struct _SEMNote {
     char *noteString;
 } SEMNote;
 
-typedef struct _SEMPattern {
+typedef struct _SEMExpand {
     Node node;
     char *identifier;
-} SEMPattern;
+} SEMExpand;
 
 typedef struct _SEMVisitor {
     void (*visitList)(void *self, SEMList *sem);
@@ -155,7 +155,7 @@ typedef struct _SEMVisitor {
     void (*visitTranspose)(void *self, SEMTranspose *sem);
     void (*visitStep)(void *self, SEMStep *sem);
     void (*visitNote)(void *self, SEMNote *sem);
-    void (*visitPattern)(void *self, SEMPattern *sem);
+    void (*visitExpand)(void *self, SEMExpand *sem);
 } SEMVisitor;
 
 extern SEMList *NAMidiSEMListCreate(FileLocation *location);
@@ -180,4 +180,4 @@ extern SEMDetune *NAMidiSEMDetuneCreate(FileLocation *location);
 extern SEMTranspose *NAMidiSEMTransposeCreate(FileLocation *location);
 extern SEMStep *NAMidiSEMStepCreate(FileLocation *location);
 extern SEMNote *NAMidiSEMNoteCreate(FileLocation *location);
-extern SEMPattern *NAMidiSEMPatternCreate(FileLocation *location);
+extern SEMExpand *NAMidiSEMExpandCreate(FileLocation *location);

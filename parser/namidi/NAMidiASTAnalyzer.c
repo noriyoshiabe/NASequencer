@@ -448,16 +448,6 @@ static void visitPattern(void *_self, ASTPattern *ast)
 {
     NAMidiASTAnalyzer *self = _self;
 
-    SEMPattern *sem = node(Pattern, ast);
-    sem->identifier = strdup(ast->identifier);
-
-    append(self->state->list, sem);
-}
-
-static void visitDefine(void *_self, ASTDefine *ast)
-{
-    NAMidiASTAnalyzer *self = _self;
-
     if (NAMapContainsKey(self->state->list->patternMap, ast->identifier)) {
         Node *original = NAMapGet(self->state->list->patternMap, ast->identifier);
         appendError(self, ast, NAMidiParseErrorDuplicatePatternIdentifier,
@@ -481,6 +471,16 @@ static void visitDefine(void *_self, ASTDefine *ast)
     State *local = self->state;
     self->state = NAStackPop(self->stateStack);
     StateDestroy(local);
+}
+
+static void visitExpand(void *_self, ASTExpand *ast)
+{
+    NAMidiASTAnalyzer *self = _self;
+
+    SEMExpand *sem = node(Expand, ast);
+    sem->identifier = strdup(ast->identifier);
+
+    append(self->state->list, sem);
 }
 
 static void visitNoteParam(void *_self, ASTNoteParam *ast)
@@ -516,7 +516,7 @@ Analyzer *NAMidiASTAnalyzerCreate(ParseContext *context)
     self->visitor.visitNote = visitNote;
     self->visitor.visitInclude = visitInclude;
     self->visitor.visitPattern = visitPattern;
-    self->visitor.visitDefine = visitDefine;
+    self->visitor.visitExpand = visitExpand;
     self->visitor.visitNoteParam = visitNoteParam;
 
     self->analyzer.process = process;

@@ -332,20 +332,18 @@ SEMNote *NAMidiSEMNoteCreate(FileLocation *location)
     return NodeCreate(SEMNote, location);
 }
 
-static void SEMPatternAccept(void *self, void *visitor)
+static void SEMExpandAccept(void *self, void *visitor)
 {
-    ((SEMVisitor *)visitor)->visitPattern(visitor, self);
+    ((SEMVisitor *)visitor)->visitExpand(visitor, self);
 }
 
-static void SEMPatternDestroy(void *_self)
+static void SEMExpandDestroy(void *_self)
 {
-    SEMPattern *self = _self;
+    SEMExpand *self = _self;
     free(self->identifier);
 }
 
-SEMPattern *NAMidiSEMPatternCreate(FileLocation *location)
+SEMExpand *NAMidiSEMExpandCreate(FileLocation *location)
 {
-    SEMPattern *self = NodeCreate(SEMPattern, location);
-    self->node.children = NAArrayCreate(4, NULL);
-    return self;
+    return NodeCreate(SEMExpand, location);
 }

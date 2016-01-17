@@ -216,7 +216,7 @@ static void visitPattern(void *_self, ASTPattern *ast)
     self->indent -= 4;
 }
 
-static void visitDefine(void *_self, ASTDefine *ast)
+static void visitExpand(void *_self, ASTExpand *ast)
 {
     NAMidiASTDumper *self = _self;
 
@@ -265,7 +265,7 @@ Analyzer *NAMidiASTDumperCreate(ParseContext *context)
     self->visitor.visitNote = visitNote;
     self->visitor.visitInclude = visitInclude;
     self->visitor.visitPattern = visitPattern;
-    self->visitor.visitDefine = visitDefine;
+    self->visitor.visitExpand = visitExpand;
     self->visitor.visitNoteParam = visitNoteParam;
 
     self->analyzer.process = process;

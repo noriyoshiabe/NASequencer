@@ -42,7 +42,7 @@ COPYRIGHT      copyright
 TEMPO          tempo
 TIME           time
 MARKER         marker
-DEFINE         define
+PATTERN        pattern
 EXPAND         expand
 WITH           with
 END            end
@@ -85,7 +85,7 @@ LINE_COMMENT   (\/\/|==|--).*$
 {TIME}           { return TIME; }
 {KEY}            { return KEY; }
 {MARKER}         { return MARKER; }
-{DEFINE}         { return DEFINE; }
+{PATTERN}        { return PATTERN; }
 {EXPAND}         { return EXPAND; }
 {END}            { return END; }
 {CHANNEL}        { return CHANNEL; }

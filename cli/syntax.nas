@@ -20,8 +20,8 @@ EXPRESSION 127
 TRANSPOSE  0
 PAN        0
 
-DEFINE rhythm-pattern
-  DEFINE default
+PATTERN rhythm-pattern
+  PATTERN default
     ------------------------
     120: C1      C#2 
     120:          
@@ -43,7 +43,7 @@ DEFINE rhythm-pattern
     ------------------------
   END
 
-  DEFINE last
+  PATTERN last
     ------------------------
     120: C1      C#2 127
     120:          
@@ -84,7 +84,7 @@ CHORUS    100
 REVERB    100
 DETUNE    +10
 
-DEFINE piano-chord
+PATTERN piano-chord
   KEY Cmaj
   VELOCITY  100
 

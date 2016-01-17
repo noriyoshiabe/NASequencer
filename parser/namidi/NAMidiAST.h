@@ -127,10 +127,10 @@ typedef struct _ASTPattern {
     char *identifier;
 } ASTPattern;
 
-typedef struct _ASTDefine {
+typedef struct _ASTExpand {
     Node node;
     char *identifier;
-} ASTDefine;
+} ASTExpand;
 
 typedef struct _ASTNoteParam {
     Node node;
@@ -162,7 +162,7 @@ typedef struct _ASTVisitor {
     void (*visitNote)(void *self, ASTNote *ast);
     void (*visitInclude)(void *self, ASTInclude *ast);
     void (*visitPattern)(void *self, ASTPattern *ast);
-    void (*visitDefine)(void *self, ASTDefine *ast);
+    void (*visitExpand)(void *self, ASTExpand *ast);
     void (*visitNoteParam)(void *self, ASTNoteParam *ast);
 } ASTVisitor;
 
@@ -190,5 +190,5 @@ extern ASTStep *NAMidiASTStepCreate(FileLocation *location);
 extern ASTNote *NAMidiASTNoteCreate(FileLocation *location);
 extern ASTInclude *NAMidiASTIncludeCreate(FileLocation *location);
 extern ASTPattern *NAMidiASTPatternCreate(FileLocation *location);
-extern ASTDefine *NAMidiASTDefineCreate(FileLocation *location);
+extern ASTExpand *NAMidiASTExpandCreate(FileLocation *location);
 extern ASTNoteParam *NAMidiASTNoteParamCreate(FileLocation *location);

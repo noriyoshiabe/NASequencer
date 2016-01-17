@@ -43,7 +43,7 @@ extern void NAMidiParserUnExpectedEOF(void *self, FileLocation *location);
 %token <f>FLOAT
 %token <s>STRING
 
-%token RESOLUTION TITLE COPYRIGHT TEMPO TIME KEY MARKER DEFINE EXPAND
+%token RESOLUTION TITLE COPYRIGHT TEMPO TIME KEY MARKER PATTERN EXPAND
        END CHANNEL VELOCITY GATETIME STEP VOICE SYNTH VOLUME PAN CHORUS
        REVERB EXPRESSION DETUNE TRANSPOSE INCLUDE
 %token END_OF_FILE 0
@@ -53,7 +53,7 @@ extern void NAMidiParserUnExpectedEOF(void *self, FileLocation *location);
 %type <node> resolution title copyright tempo time key marker channel velocity gatetime voice
              synth volume pan chorus reverb expression detune transpose step note include expand
 
-%type <node> define
+%type <node> pattern
 %type <i>    signed_integer
 
 %type <node> statement note_param
@@ -119,8 +119,8 @@ statement
     | step
     | note
     | include
+    | pattern
     | expand
-    | define
     | error
         {
             yyclearin;
@@ -359,20 +359,10 @@ include
         }
     ;
 
-expand
-    : EXPAND IDENTIFIER
+pattern
+    : PATTERN IDENTIFIER statement_list end
         {
             ASTPattern *n = node(Pattern, @$);
-            n->identifier = NACStringToUpperCase($2);
-            n->node.children = list();
-            $$ = n;
-        }
-    ;
-
-define
-    : DEFINE IDENTIFIER statement_list end
-        {
-            ASTDefine *n = node(Define, @$);
             n->identifier = NACStringToUpperCase($2);
             n->node.children = $3;
             $$ = n;
@@ -385,6 +375,16 @@ end
         {
             FileLocation location = {(char *)filepath, @$.first_line, @$.first_column};
             NAMidiParserUnExpectedEOF(NAMidi_get_extra(scanner), &location);
+        }
+    ;
+
+expand
+    : EXPAND IDENTIFIER
+        {
+            ASTExpand *n = node(Expand, @$);
+            n->identifier = NACStringToUpperCase($2);
+            n->node.children = list();
+            $$ = n;
         }
     ;
 
