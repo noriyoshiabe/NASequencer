@@ -240,6 +240,7 @@ static void PianoRollViewRenderTrack(PianoRollView *self, RenderContext *context
         prevMeasure = location.m;
     }
 
+    int overedIndex = INT_MAX;
     int *index = &context->indices[track->channel - 1];
     int count = NAArrayCount(track->events);
     NoteEvent **events = NAArrayGetValues(track->events);
@@ -254,6 +255,11 @@ static void PianoRollViewRenderTrack(PianoRollView *self, RenderContext *context
                 continue;
             }
 
+            if (context->to <= tick) {
+                overedIndex = MIN(overedIndex, *index);
+                break;
+            }
+
             int offset = MEASURE_COLUMN_OFFSET + (tick - context->from) / self->columnStep;
             int line = track->noteRange.high - note->noteNo;
             if (tick == note->tick) {
@@ -263,6 +269,10 @@ static void PianoRollViewRenderTrack(PianoRollView *self, RenderContext *context
                 buffer[line][offset] = '-';
             }
         }
+    }
+
+    if (INT_MAX != overedIndex) {
+        *index = overedIndex;
     }
 
     for (int i = 0; i < lineCount; ++i) {
