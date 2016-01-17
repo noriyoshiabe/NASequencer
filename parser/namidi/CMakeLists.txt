@@ -9,6 +9,8 @@ FLEX_TARGET(NAMidi_lex NAMidi_lex.l ${CMAKE_CURRENT_SOURCE_DIR}/NAMidi_lex.c)
 BISON_TARGET(NAMidi_yacc NAMidi_yacc.y ${CMAKE_CURRENT_SOURCE_DIR}/NAMidi_yacc.c)
 ADD_FLEX_BISON_DEPENDENCY(NAMidi_lex NAMidi_yacc)
 
+FLEX_TARGET(NAMidi_preprocessor_lex NAMidi_preprocessor_lex.l ${CMAKE_CURRENT_SOURCE_DIR}/NAMidi_preprocessor_lex.c)
+
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}
   ../
@@ -17,6 +19,7 @@ include_directories(
 
 set(SOURCES
   NAMidiDriver.c
+  NAMidiPreprocessor.c
   NAMidiParser.c
   NAMidiAST.c
   NAMidiASTDumper.c
@@ -30,4 +33,5 @@ add_library(${PROJECT_NAME}
   ${SOURCES}
   ${FLEX_NAMidi_lex_OUTPUTS}
   ${BISON_NAMidi_yacc_OUTPUTS}
+  ${FLEX_NAMidi_preprocessor_lex_OUTPUTS}
 )

@@ -11,6 +11,17 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(GeneralParseErrorFileNotFound);
     CASE(GeneralParseErrorSyntaxError);
 
+    CASE(NAMidiParseErrorUnsupportedFileTypeInclude);
+    CASE(NAMidiParseErrorIncludeFileNotFound);
+    CASE(NAMidiParseErrorCircularFileInclude);
+    CASE(NAMidiParseErrorMacroRedefined);
+    CASE(NAMidiParseErrorDuplicatedMacroArguments);
+    CASE(NAMidiParseErrorUndefinedMacroArgument);
+    CASE(NAMidiParseErrorCircularMacroReference);
+    CASE(NAMidiParseErrorMacroArgumentsMissing);
+    CASE(NAMidiParseErrorWrongNumberOfMacroArguments);
+    CASE(NAMidiParseErrorUndefinedMacroSymbol);
+    CASE(NAMidiParseErrorUnexpectedEOF);
     CASE(NAMidiParseErrorInvalidResolution);
     CASE(NAMidiParseErrorInvalidTempo);
     CASE(NAMidiParseErrorInvalidTimeSign);
@@ -37,13 +48,9 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(NAMidiParseErrorAlreadyDefinedWithTitle);
     CASE(NAMidiParseErrorAlreadyDefinedWithCopyright);
     CASE(NAMidiParseErrorTooManyNoteParams);
-    CASE(NAMidiParseErrorUnsupportedFileTypeInclude);
-    CASE(NAMidiParseErrorIncludeFileNotFound);
-    CASE(NAMidiParseErrorCircularFileInclude);
     CASE(NAMidiParseErrorPatternMissing);
     CASE(NAMidiParseErrorDuplicatePatternIdentifier);
     CASE(NAMidiParseErrorCircularPatternReference);
-    CASE(NAMidiParseErrorUnexpectedEOF);
 
     CASE(ABCParseErrorUnrecognisedVersion);
     CASE(ABCParseErrorUnsupportedFileTypeInclude);

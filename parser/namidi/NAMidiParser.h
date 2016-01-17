@@ -4,7 +4,18 @@
 #include "ParseInfo.h"
 
 typedef enum {
-    NAMidiParseErrorInvalidResolution = ParseErrorKindNAMidi,
+    NAMidiParseErrorUnsupportedFileTypeInclude = ParseErrorKindNAMidi,
+    NAMidiParseErrorIncludeFileNotFound,
+    NAMidiParseErrorCircularFileInclude,
+    NAMidiParseErrorMacroRedefined,
+    NAMidiParseErrorDuplicatedMacroArguments,
+    NAMidiParseErrorUndefinedMacroArgument,
+    NAMidiParseErrorCircularMacroReference,
+    NAMidiParseErrorMacroArgumentsMissing,
+    NAMidiParseErrorWrongNumberOfMacroArguments,
+    NAMidiParseErrorUndefinedMacroSymbol,
+    NAMidiParseErrorUnexpectedEOF,
+    NAMidiParseErrorInvalidResolution,
     NAMidiParseErrorInvalidTempo,
     NAMidiParseErrorInvalidTimeSign,
     NAMidiParseErrorInvalidChannel,
@@ -30,13 +41,9 @@ typedef enum {
     NAMidiParseErrorAlreadyDefinedWithTitle,
     NAMidiParseErrorAlreadyDefinedWithCopyright,
     NAMidiParseErrorTooManyNoteParams,
-    NAMidiParseErrorUnsupportedFileTypeInclude,
-    NAMidiParseErrorIncludeFileNotFound,
-    NAMidiParseErrorCircularFileInclude,
     NAMidiParseErrorPatternMissing,
     NAMidiParseErrorDuplicatePatternIdentifier,
     NAMidiParseErrorCircularPatternReference,
-    NAMidiParseErrorUnexpectedEOF,
 } NAMidiParseError;
 
 extern DSLParser *NAMidiParserCreate(ParseContext *context);

@@ -20,7 +20,7 @@ EXPRESSION 127
 TRANSPOSE  0
 PAN        0
 
-PATTERN rhythm-pattern
+PATTERN rhythm---pattern
   PATTERN default
     ------------------------
     120: C1      C#2 
@@ -70,10 +70,10 @@ PATTERN rhythm-pattern
   EXPAND default
 END
 
-EXPAND rhythm-pattern
-EXPAND rhythm-pattern
-EXPAND rhythm-pattern
-EXPAND rhythm-pattern:last
+EXPAND rhythm---pattern
+EXPAND rhythm---pattern
+EXPAND rhythm---pattern
+EXPAND rhythm---pattern:last
 
 
 CHANNEL   1
