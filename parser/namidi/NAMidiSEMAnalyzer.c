@@ -303,11 +303,29 @@ static void visitNote(void *_self, SEMNote *sem)
     self->builder->appendNote(self->builder, TICK(self->state), channel, noteNo, gatetime, velocity);
 }
 
+static SEMList *findPattern(NAMidiSEMAnalyzer *self, const char *identifier)
+{
+    char **ids = NACStringSplit(NACStringDuplicate(identifier), ":", NULL);
+    NAMap *petternMap = self->state->patternMap;
+    SEMList *list = NULL;
+    while (*ids) {
+        list = NAMapGet(petternMap, *ids);
+        if (!list) {
+            return NULL;
+        }
+
+        petternMap = list->patternMap;
+        ++ids;
+    }
+
+    return list;
+}
+
 static void visitPattern(void *_self, SEMPattern *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
 
-    SEMList *pattern = NAMapGet(self->state->patternMap, sem->identifier);
+    SEMList *pattern = findPattern(self, sem->identifier);
     if (!pattern) {
         appendError(self, sem, NAMidiParseErrorPatternMissing, sem->identifier, NULL);
         return;

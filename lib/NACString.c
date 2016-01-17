@@ -89,7 +89,7 @@ char *NACStringFromBoolean(bool b, char *buffer, int size)
     return buffer;
 }
 
-char *NACStringDuplicate(char *str, char *buffer)
+char *NACStringDuplicate(const char *str, char *buffer)
 {
     strcpy(buffer, str);
     return buffer;

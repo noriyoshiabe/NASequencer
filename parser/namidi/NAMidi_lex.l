@@ -64,7 +64,8 @@ INCLUDE        include
 
 KEY_SIGN       [cdefgab](#|b)?(maj(or)?|min(or)?)
 NOTE           [cdefgab](#|##|b|bb|n)?(\-?[[:digit:]]{1,2})?
-IDENTIFIER     [_[:alnum:]][_[:alnum:]\-]*[_[:alnum:]]
+ID_STRING      [_[:alnum:]][_[:alnum:]\-]*[_[:alnum:]]
+IDENTIFIER     {ID_STRING}(:{ID_STRING})*
 
 WSPACE         [[:blank:]]+
 LINE_COMMENT   (\/\/|==|--).*$

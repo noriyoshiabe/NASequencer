@@ -13,7 +13,7 @@ extern char *NACStringFromInteger(int i, char *buffer, int size);
 extern char *NACStringFromFloat(float f, int point, char *buffer, int size);
 extern char *NACStringFromChar(char c, char *buffer, int size);
 extern char *NACStringFromBoolean(bool b, char *buffer, int size);
-extern char *NACStringDuplicate(char *str, char *buffer);
+extern char *NACStringDuplicate(const char *str, char *buffer);
 extern char *NACStringDuplicateNString(char *str, int length, char *buffer);
 extern int NACStringSplitCount(char *str, char *delim);
 extern char **NACStringSplit(char *str, char *delim, int *length, char **buffer);
