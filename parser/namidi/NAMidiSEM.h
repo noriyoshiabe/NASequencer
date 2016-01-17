@@ -23,6 +23,11 @@ typedef struct _SEMTitle {
     char *title;
 } SEMTitle;
 
+typedef struct _SEMCopyright {
+    Node node;
+    char *text;
+} SEMCopyright;
+
 typedef struct _SEMTempo {
     Node node;
     float tempo;
@@ -128,6 +133,7 @@ typedef struct _SEMVisitor {
     void (*visitList)(void *self, SEMList *sem);
     void (*visitResolution)(void *self, SEMResolution *sem);
     void (*visitTitle)(void *self, SEMTitle *sem);
+    void (*visitCopyright)(void *self, SEMCopyright *sem);
     void (*visitTempo)(void *self, SEMTempo *sem);
     void (*visitTime)(void *self, SEMTime *sem);
     void (*visitKey)(void *self, SEMKey *sem);
@@ -151,6 +157,7 @@ typedef struct _SEMVisitor {
 extern SEMList *NAMidiSEMListCreate(FileLocation *location);
 extern SEMResolution *NAMidiSEMResolutionCreate(FileLocation *location);
 extern SEMTitle *NAMidiSEMTitleCreate(FileLocation *location);
+extern SEMCopyright *NAMidiSEMCopyrightCreate(FileLocation *location);
 extern SEMTempo *NAMidiSEMTempoCreate(FileLocation *location);
 extern SEMTime *NAMidiSEMTimeCreate(FileLocation *location);
 extern SEMKey *NAMidiSEMKeyCreate(FileLocation *location);

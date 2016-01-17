@@ -49,6 +49,7 @@ typedef struct _NAMidiSEMAnalyzer {
     struct {
         Node *resolution;
         Node *title;
+        Node *copyright;
     } definedNode;
 } NAMidiSEMAnalyzer;
 
@@ -132,6 +133,22 @@ static void visitTitle(void *_self, SEMTitle *sem)
 
     self->builder->setTitle(self->builder, sem->title);
     self->definedNode.title = (Node *)sem;
+}
+
+static void visitCopyright(void *_self, SEMCopyright *sem)
+{
+    NAMidiSEMAnalyzer *self = _self;
+
+    if (self->definedNode.copyright) {
+        FileLocation *loc = &self->definedNode.copyright->location;
+        appendError(self, sem, NAMidiParseErrorAlreadyDefinedWithCopyright, loc->filepath, NACStringFromInteger(loc->line), NACStringFromInteger(loc->column), NULL);
+        return;
+    }
+
+    FLUSH(self->state);
+
+    self->builder->setCopyright(self->builder, sem->text);
+    self->definedNode.copyright = (Node *)sem;
 }
 
 static void visitTempo(void *_self, SEMTempo *sem)
@@ -334,6 +351,7 @@ Analyzer *NAMidiSEMAnalyzerCreate(ParseContext *context)
     self->visitor.visitList = visitList;
     self->visitor.visitResolution = visitResolution;
     self->visitor.visitTitle = visitTitle;
+    self->visitor.visitCopyright = visitCopyright;
     self->visitor.visitTempo = visitTempo;
     self->visitor.visitTime = visitTime;
     self->visitor.visitKey = visitKey;

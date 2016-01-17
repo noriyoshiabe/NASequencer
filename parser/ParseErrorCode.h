@@ -29,11 +29,13 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(NAMidiParseErrorInvalidVelocity);
     CASE(NAMidiParseErrorIllegalStateWithResolution);
     CASE(NAMidiParseErrorIllegalStateWithTitle);
+    CASE(NAMidiParseErrorIllegalStateWithCopyright);
     CASE(NAMidiParseErrorIllegalStateWithInclude);
     CASE(NAMidiParseErrorIllegalStateWithDefine);
     CASE(NAMidiParseErrorIllegalStateWithContext);
     CASE(NAMidiParseErrorAlreadyDefinedWithResolution);
     CASE(NAMidiParseErrorAlreadyDefinedWithTitle);
+    CASE(NAMidiParseErrorAlreadyDefinedWithCopyright);
     CASE(NAMidiParseErrorTooManyNoteParams);
     CASE(NAMidiParseErrorUnsupportedFileTypeInclude);
     CASE(NAMidiParseErrorIncludeFileNotFound);

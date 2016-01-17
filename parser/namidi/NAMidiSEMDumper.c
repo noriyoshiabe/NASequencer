@@ -106,6 +106,11 @@ static void visitTitle(void *self, SEMTitle *sem)
     dump(self, sem, STRING(sem, title), NULL);
 }
 
+static void visitCopyright(void *self, SEMCopyright *sem)
+{
+    dump(self, sem, STRING(sem, text), NULL);
+}
+
 static void visitTempo(void *self, SEMTempo *sem)
 {
     dump(self, sem, FLOAT(sem, tempo), NULL);
@@ -223,6 +228,7 @@ Analyzer *NAMidiSEMDumperCreate(ParseContext *context)
     self->visitor.visitList = visitList;
     self->visitor.visitResolution = visitResolution;
     self->visitor.visitTitle = visitTitle;
+    self->visitor.visitCopyright = visitCopyright;
     self->visitor.visitTempo = visitTempo;
     self->visitor.visitTime = visitTime;
     self->visitor.visitKey = visitKey;

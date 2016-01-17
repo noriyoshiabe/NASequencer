@@ -43,14 +43,14 @@ extern void NAMidiParserUnExpectedEOF(void *self, FileLocation *location);
 %token <f>FLOAT
 %token <s>STRING
 
-%token RESOLUTION TITLE TEMPO TIME KEY MARKER DEFINE EXPAND CONTEXT WITH
+%token RESOLUTION TITLE COPYRIGHT TEMPO TIME KEY MARKER DEFINE EXPAND CONTEXT WITH
        END CHANNEL VELOCITY GATETIME STEP VOICE SYNTH VOLUME PAN CHORUS
        REVERB TRANSPOSE DEFAULT INCLUDE
 %token END_OF_FILE 0
 
 %token <s>NOTE KEY_SIGN IDENTIFIER
 
-%type <node> resolution title tempo time key marker channel velocity gatetime voice
+%type <node> resolution title copyright tempo time key marker channel velocity gatetime voice
              synth volume pan chorus reverb transpose step note include expand
 
 %type <node> define context
@@ -98,6 +98,7 @@ statement_list
 statement
     : resolution
     | title
+    | copyright
     | tempo
     | time
     | key
@@ -147,6 +148,15 @@ title
         {
             ASTTitle *n = node(Title, @$);
             n->title = $2;
+            $$ = n;
+        }
+    ;
+
+copyright
+    : COPYRIGHT STRING
+        {
+            ASTCopyright *n = node(Copyright, @$);
+            n->text = $2;
             $$ = n;
         }
     ;

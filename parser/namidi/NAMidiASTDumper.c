@@ -80,6 +80,11 @@ static void visitTitle(void *self, ASTTitle *ast)
     dump(self, ast, STRING(ast, title), NULL);
 }
 
+static void visitCopyright(void *self, ASTCopyright *ast)
+{
+    dump(self, ast, STRING(ast, text), NULL);
+}
+
 static void visitTempo(void *self, ASTTempo *ast)
 {
     dump(self, ast, FLOAT(ast, tempo), NULL);
@@ -258,6 +263,7 @@ Analyzer *NAMidiASTDumperCreate(ParseContext *context)
     self->visitor.visitRoot = visitRoot;
     self->visitor.visitResolution = visitResolution;
     self->visitor.visitTitle = visitTitle;
+    self->visitor.visitCopyright = visitCopyright;
     self->visitor.visitTempo = visitTempo;
     self->visitor.visitTime = visitTime;
     self->visitor.visitKey = visitKey;

@@ -16,6 +16,11 @@ typedef struct _ASTTitle {
     char *title;
 } ASTTitle;
 
+typedef struct _ASTCopyright {
+    Node node;
+    char *text;
+} ASTCopyright;
+
 typedef struct _ASTTempo {
     Node node;
     float tempo;
@@ -136,6 +141,7 @@ typedef struct _ASTVisitor {
     void (*visitRoot)(void *self, ASTRoot *ast);
     void (*visitResolution)(void *self, ASTResolution *ast);
     void (*visitTitle)(void *self, ASTTitle *ast);
+    void (*visitCopyright)(void *self, ASTCopyright *ast);
     void (*visitTempo)(void *self, ASTTempo *ast);
     void (*visitTime)(void *self, ASTTime *ast);
     void (*visitKey)(void *self, ASTKey *ast);
@@ -163,6 +169,7 @@ typedef struct _ASTVisitor {
 extern ASTRoot *NAMidiASTRootCreate(FileLocation *location);
 extern ASTResolution *NAMidiASTResolutionCreate(FileLocation *location);
 extern ASTTitle *NAMidiASTTitleCreate(FileLocation *location);
+extern ASTCopyright *NAMidiASTCopyrightCreate(FileLocation *location);
 extern ASTTempo *NAMidiASTTempoCreate(FileLocation *location);
 extern ASTTime *NAMidiASTTimeCreate(FileLocation *location);
 extern ASTKey *NAMidiASTKeyCreate(FileLocation *location);

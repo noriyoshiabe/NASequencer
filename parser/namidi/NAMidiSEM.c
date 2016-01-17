@@ -56,6 +56,22 @@ SEMTitle *NAMidiSEMTitleCreate(FileLocation *location)
     return NodeCreate(SEMTitle, location);
 }
 
+static void SEMCopyrightAccept(void *self, void *visitor)
+{
+    ((SEMVisitor *)visitor)->visitCopyright(visitor, self);
+}
+
+static void SEMCopyrightDestroy(void *_self)
+{
+    SEMCopyright *self = _self;
+    free(self->text);
+}
+
+SEMCopyright *NAMidiSEMCopyrightCreate(FileLocation *location)
+{
+    return NodeCreate(SEMCopyright, location);
+}
+
 static void SEMTempoAccept(void *self, void *visitor)
 {
     ((SEMVisitor *)visitor)->visitTempo(visitor, self);

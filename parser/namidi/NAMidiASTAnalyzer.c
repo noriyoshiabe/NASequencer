@@ -103,6 +103,20 @@ static void visitTitle(void *_self, ASTTitle *ast)
     append(self->state->list, sem);
 }
 
+static void visitCopyright(void *_self, ASTCopyright *ast)
+{
+    NAMidiASTAnalyzer *self = _self;
+
+    if (GLOBAL != self->state->name) {
+        appendError(self, ast, NAMidiParseErrorIllegalStateWithCopyright, self->state->name, NULL);
+        return;
+    }
+
+    SEMCopyright *sem = node(Copyright, ast);
+    sem->text = strdup(ast->text);
+    append(self->state->list, sem);
+}
+
 static void visitTempo(void *_self, ASTTempo *ast)
 {
     NAMidiASTAnalyzer *self = _self;
@@ -510,6 +524,7 @@ Analyzer *NAMidiASTAnalyzerCreate(ParseContext *context)
     self->visitor.visitRoot = visitRoot;
     self->visitor.visitResolution = visitResolution;
     self->visitor.visitTitle = visitTitle;
+    self->visitor.visitCopyright = visitCopyright;
     self->visitor.visitTempo = visitTempo;
     self->visitor.visitTime = visitTime;
     self->visitor.visitKey = visitKey;

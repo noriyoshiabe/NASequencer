@@ -46,6 +46,22 @@ ASTTitle *NAMidiASTTitleCreate(FileLocation *location)
     return NodeCreate(ASTTitle, location);
 }
 
+static void ASTCopyrightAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitCopyright(visitor, self);
+}
+
+static void ASTCopyrightDestroy(void *_self)
+{
+    ASTCopyright *self = _self;
+    free(self->text);
+}
+
+ASTCopyright *NAMidiASTCopyrightCreate(FileLocation *location)
+{
+    return NodeCreate(ASTCopyright, location);
+}
+
 static void ASTTempoAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitTempo(visitor, self);

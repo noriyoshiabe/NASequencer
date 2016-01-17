@@ -38,6 +38,7 @@ STRING         \"[^\"]*\"|'[^']*'
 
 RESOLUTION     resolution
 TITLE          title
+COPYRIGHT      copyright
 TEMPO          tempo
 TIME           time
 MARKER         marker
@@ -78,6 +79,7 @@ LINE_COMMENT   (\/\/|==|--).*$
 
 {RESOLUTION}     { return RESOLUTION; }
 {TITLE}          { return TITLE; }
+{COPYRIGHT}      { return COPYRIGHT; }
 {TEMPO}          { return TEMPO; }
 {TIME}           { return TIME; }
 {KEY}            { return KEY; }
