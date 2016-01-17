@@ -38,8 +38,7 @@ MACRO_STRING   [_[:alpha:]][_[:alnum:]#\+\(\)]*
 MACRO_SYMBOL   \${MACRO_STRING}
 MACRO_ARGS     \{[[:blank:]]*{MACRO_STRING}([[:blank:]]*,[[:blank:]]*{MACRO_STRING})*[[:blank:]]*\}
 MACRO_DEFINE   {MACRO_SYMBOL}([[:blank:]]*{MACRO_ARGS})?[[:blank:]]*=
-MACRO_REF_ARGS \{[[:blank:]]*[^,[:space:]]+([[:blank:]]*,[[:blank:]]*[^,[:space:]]+)*[[:blank:]]*\}
-MACRO_REF      {MACRO_SYMBOL}([[:blank:]]*{MACRO_REF_ARGS})?
+MACRO_REF      {MACRO_SYMBOL}([[:blank:]]*\{.*\})?
 
 %%
 

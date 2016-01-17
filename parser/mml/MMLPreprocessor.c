@@ -267,9 +267,18 @@ static void MMLPreprocessorExpandMacroInternal(MMLPreprocessor *self, FileLocati
 {
     NAStringBuffer *expandBuffer = NAStringBufferCreate(256);
 
-    char **split = NACStringSplit(NACStringDuplicate(string), "{}", NULL);
-    char *target = NACStringTrimWhiteSpace(split[0]);
-    char *argsString = split[1];
+    char *pc;
+
+    char *target = NACStringDuplicate(string);
+    char *argsString = NULL;
+
+    if ((pc = strchr(target, '{'))) {
+        *pc = '\0';
+        argsString = pc + 1;
+        argsString[strlen(argsString) - 1] = '\0';
+    }
+
+    target = NACStringTrimWhiteSpace(target);
 
     char *remain = NULL;
     Macro *macro = NULL;
@@ -308,14 +317,13 @@ static void MMLPreprocessorExpandMacroInternal(MMLPreprocessor *self, FileLocati
     }
 
     int argc;
-    char **args = NACStringSplit(argsString, ", \t", &argc);
+    char **args = NACStringSplit(argsString, ",", &argc);
     if (macroArgc != argc) {
         self->context->appendError(self->context, location, MMLParseErrorWrongNumberOfMacroArguments, NACStringFromInteger(argc), NACStringFromInteger(macroArgc), NULL);
         goto FINISH;
     }
 
     char *replacement = macro->replacement;
-    char *pc;
     while ((pc = strchr(replacement, '%'))) {
         int from = pc - replacement;
         int to = from + 1;

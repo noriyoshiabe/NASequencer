@@ -28,3 +28,6 @@ $TEST1
 
 $TEST_ARGS{arg1, arg2} = hoge $TEST hoge %arg1 hoge %arg2;
 $TEST_ARGS{CCC, $TEST}
+
+$MACRO{ARG1, ARG2} = %ARG1 %ARG1 F## %ARG2;
+$MACRO{{CDE}4 [CDE] - [CDE], "AAA"} 
