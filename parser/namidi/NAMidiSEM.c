@@ -274,6 +274,20 @@ SEMExpression *NAMidiSEMExpressionCreate(FileLocation *location)
     return NodeCreate(SEMExpression, location);
 }
 
+static void SEMDetuneAccept(void *self, void *visitor)
+{
+    ((SEMVisitor *)visitor)->visitDetune(visitor, self);
+}
+
+static void SEMDetuneDestroy(void *_self)
+{
+}
+
+SEMDetune *NAMidiSEMDetuneCreate(FileLocation *location)
+{
+    return NodeCreate(SEMDetune, location);
+}
+
 static void SEMTransposeAccept(void *self, void *visitor)
 {
     ((SEMVisitor *)visitor)->visitTranspose(visitor, self);

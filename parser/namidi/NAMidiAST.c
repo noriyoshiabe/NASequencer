@@ -264,6 +264,20 @@ ASTExpression *NAMidiASTExpressionCreate(FileLocation *location)
     return NodeCreate(ASTExpression, location);
 }
 
+static void ASTDetuneAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitDetune(visitor, self);
+}
+
+static void ASTDetuneDestroy(void *_self)
+{
+}
+
+ASTDetune *NAMidiASTDetuneCreate(FileLocation *location)
+{
+    return NodeCreate(ASTDetune, location);
+}
+
 static void ASTTransposeAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitTranspose(visitor, self);

@@ -45,15 +45,16 @@ extern void NAMidiParserUnExpectedEOF(void *self, FileLocation *location);
 
 %token RESOLUTION TITLE COPYRIGHT TEMPO TIME KEY MARKER DEFINE EXPAND CONTEXT WITH
        END CHANNEL VELOCITY GATETIME STEP VOICE SYNTH VOLUME PAN CHORUS
-       REVERB EXPRESSION TRANSPOSE DEFAULT INCLUDE
+       REVERB EXPRESSION DETUNE TRANSPOSE DEFAULT INCLUDE
 %token END_OF_FILE 0
 
 %token <s>NOTE KEY_SIGN IDENTIFIER
 
 %type <node> resolution title copyright tempo time key marker channel velocity gatetime voice
-             synth volume pan chorus reverb expression transpose step note include expand
+             synth volume pan chorus reverb expression detune transpose step note include expand
 
 %type <node> define context
+%type <i>    signed_integer
 
 %type <node> statement note_param identifier
 %type <list> statement_list identifier_list note_param_list
@@ -113,6 +114,7 @@ statement
     | chorus
     | reverb
     | expression
+    | detune
     | transpose
     | step
     | note
@@ -230,16 +232,10 @@ gatetime
             ASTGatetime *n = node(Gatetime, @$);
             $$ = n;
         }
-    | GATETIME STEP '-' INTEGER
+    | GATETIME STEP signed_integer
         {
             ASTGatetime *n = node(Gatetime, @$);
-            n->value = -$4;
-            $$ = n;
-        }
-    | GATETIME STEP '+' INTEGER
-        {
-            ASTGatetime *n = node(Gatetime, @$);
-            n->value = $4;
+            n->value = $3;
             $$ = n;
         }
     ;
@@ -274,22 +270,10 @@ volume
     ;
 
 pan
-    : PAN INTEGER
+    : PAN signed_integer
         {
             ASTPan *n = node(Pan, @$);
             n->value = $2;
-            $$ = n;
-        }
-    | PAN '+' INTEGER
-        {
-            ASTPan *n = node(Pan, @$);
-            n->value = $3;
-            $$ = n;
-        }
-    | PAN '-' INTEGER
-        {
-            ASTPan *n = node(Pan, @$);
-            n->value = -$3;
             $$ = n;
         }
     ;
@@ -321,23 +305,20 @@ expression
         }
     ;
 
-transpose
-    : TRANSPOSE INTEGER
+detune
+    : DETUNE signed_integer
         {
-            ASTTranspose *n = node(Transpose, @$);
+            ASTDetune *n = node(Detune, @$);
             n->value = $2;
             $$ = n;
         }
-    | TRANSPOSE '+' INTEGER
+    ;
+
+transpose
+    : TRANSPOSE signed_integer
         {
             ASTTranspose *n = node(Transpose, @$);
-            n->value = $3;
-            $$ = n;
-        }
-    | TRANSPOSE '-' INTEGER
-        {
-            ASTTranspose *n = node(Transpose, @$);
-            n->value = -$3;
+            n->value = $2;
             $$ = n;
         }
     ;
@@ -489,6 +470,12 @@ note_param
             n->value = $1;
             $$ = n;
         }
+    ;
+
+signed_integer
+    : INTEGER { $$ = $1; }
+    | '+' INTEGER { $$ = $2; }
+    | '-' INTEGER { $$ = -$2; }
     ;
 
 %%

@@ -58,6 +58,7 @@ PAN            pan
 CHORUS         chorus
 REVERB         reverb
 EXPRESSION     expression
+DETUNE         detune
 TRANSPOSE      transpose
 KEY            key
 DEFAULT        default
@@ -101,6 +102,7 @@ LINE_COMMENT   (\/\/|==|--).*$
 {CHORUS}         { return CHORUS; }
 {REVERB}         { return REVERB; }
 {EXPRESSION}     { return EXPRESSION; }
+{DETUNE}         { return DETUNE; }
 {TRANSPOSE}      { return TRANSPOSE; }
 {DEFAULT}        { return DEFAULT; }
 {INCLUDE}        { return INCLUDE; }

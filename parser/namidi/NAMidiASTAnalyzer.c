@@ -315,6 +315,20 @@ static void visitExpression(void *_self, ASTExpression *ast)
     append(self->state->list, sem);
 }
 
+static void visitDetune(void *_self, ASTDetune *ast)
+{
+    NAMidiASTAnalyzer *self = _self;
+
+    if (!isValidRange(ast->value, -2400, 2400)) {
+        appendError(self, ast, NAMidiParseErrorInvalidDetune, NACStringFromInteger(ast->value), NULL);
+        return;
+    }
+
+    SEMDetune *sem = node(Detune, ast);
+    sem->value = ast->value;
+    append(self->state->list, sem);
+}
+
 static void visitTranspose(void *_self, ASTTranspose *ast)
 {
     NAMidiASTAnalyzer *self = _self;
@@ -553,6 +567,7 @@ Analyzer *NAMidiASTAnalyzerCreate(ParseContext *context)
     self->visitor.visitChorus = visitChorus;
     self->visitor.visitReverb = visitReverb;
     self->visitor.visitExpression = visitExpression;
+    self->visitor.visitDetune = visitDetune;
     self->visitor.visitTranspose = visitTranspose;
     self->visitor.visitStep = visitStep;
     self->visitor.visitNote = visitNote;

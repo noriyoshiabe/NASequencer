@@ -21,6 +21,7 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(NAMidiParseErrorInvalidChorus);
     CASE(NAMidiParseErrorInvalidReverb);
     CASE(NAMidiParseErrorInvalidExpression);
+    CASE(NAMidiParseErrorInvalidDetune);
     CASE(NAMidiParseErrorInvalidTranspose);
     CASE(NAMidiParseErrorInvalidKeySign);
     CASE(NAMidiParseErrorInvalidStep);
