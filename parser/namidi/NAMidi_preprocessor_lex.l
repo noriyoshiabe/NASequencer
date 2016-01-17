@@ -11,7 +11,9 @@
 
 #define YY_USER_ACTION \
     if (strchr(yytext, '\n')) ++yylineno, yycolumn = 1; \
-    else yycolumn += yyleng;
+    else yycolumn += yyleng; \
+    \
+    NAMidiPreprocessorConsumeExpandingChar(yyextra);\
 
 %}
 
@@ -35,10 +37,10 @@ LINE_COMMENT   ^[[:blank:]]*(\/\/|==|--).*$
 
 INCLUDE        ^[[:blank:]]*#[[:blank:]]*include
 DEFINE         ^[[:blank:]]*#[[:blank:]]*define
-MACRO_SYMBOL   [_[:alpha:]][_[:alnum:]#\+\(\)]*
+MACRO_SYMBOL   [_[:alpha:]][_[:alnum:]#\+-]*
 MACRO_ARGS     \([[:blank:]]*{MACRO_SYMBOL}([[:blank:]]*,[[:blank:]]*{MACRO_SYMBOL})*[[:blank:]]*\)
-MACRO_DEFINE   {MACRO_SYMBOL}([[:blank:]]*{MACRO_ARGS})?.*$
-MACRO_REF      {MACRO_SYMBOL}([[:blank:]]*\(.*\))?
+MACRO_DEFINE   {MACRO_SYMBOL}([[:blank:]]*{MACRO_ARGS})?[[:blank:]].*$
+MACRO_REF      {MACRO_SYMBOL}([[:blank:]]*\([^\(\)]*\))?
 
 %%
 

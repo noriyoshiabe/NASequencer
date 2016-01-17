@@ -15,6 +15,7 @@ extern void NAMidiPreprocessorIncludeFile(NAMidiPreprocessor *self, int line, in
 extern bool NAMidiPreprocessorPopPreviousFile(NAMidiPreprocessor *self);
 extern void NAMidiPreprocessorAppendMacro(NAMidiPreprocessor *self, int line, int column, char *difinition);
 extern char *NAMidiPreprocessorExpandMacro(NAMidiPreprocessor *self, int line, int column, char *string);
+extern void NAMidiPreprocessorConsumeExpandingChar(NAMidiPreprocessor *self);
 extern void NAMidiPreprocessorSyntaxError(NAMidiPreprocessor *self, int line, int column, const char *token);
 extern void NAMidiPreprocessorUnexpectedEOF(NAMidiPreprocessor *self, int line, int column);
 

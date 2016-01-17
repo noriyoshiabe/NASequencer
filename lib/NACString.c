@@ -1,4 +1,5 @@
 #include "NACString.h"
+#include "NAStringBuffer.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,6 +29,31 @@ char *NACStringFormat(const char *format, ...)
     va_end(argList);
 
     return buffer;
+}
+
+char *NACStringReplaceAll(const char *src, const char *search, const char *replacement)
+{
+    NAStringBuffer *buffer = NAStringBufferCreate(128);
+
+    int searchLength = strlen(search);
+
+    const char *pc = src;
+    while (*pc) {
+        const char *s = strstr(pc, search);
+        if (!s) {
+            NAStringBufferAppendString(buffer, pc);
+            break;
+        }
+
+        int from = s - pc;
+        NAStringBufferAppendNString(buffer, pc, from);
+        NAStringBufferAppendString(buffer, replacement);
+        pc += from + searchLength;
+    }
+
+    char *ret = NAStringBufferRetriveCString(buffer);
+    NAStringBufferDestroy(buffer);
+    return ret;
 }
 
 char *NACStringToLowerCase(char *string)

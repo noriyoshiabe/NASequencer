@@ -1,4 +1,0 @@
-MARKER 'included marker'
-/*
-   hoge
-   */

@@ -20,7 +20,6 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(NAMidiParseErrorCircularMacroReference);
     CASE(NAMidiParseErrorMacroArgumentsMissing);
     CASE(NAMidiParseErrorWrongNumberOfMacroArguments);
-    CASE(NAMidiParseErrorUndefinedMacroSymbol);
     CASE(NAMidiParseErrorUnexpectedEOF);
     CASE(NAMidiParseErrorInvalidResolution);
     CASE(NAMidiParseErrorInvalidTempo);

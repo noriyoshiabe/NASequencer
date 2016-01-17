@@ -5,6 +5,8 @@
 #include <stdbool.h>
 
 extern char *NACStringFormat(const char *format, ...);
+extern char *NACStringReplaceAll(const char *src, const char *search, const char *replacement);
+
 extern char *NACStringToLowerCase(char *string);
 extern char *NACStringToUpperCase(char *string);
 extern char *NACStringTrimWhiteSpace(char *string);

@@ -51,6 +51,7 @@ struct _NAMidiPreprocessor {
     NAMap *macros;
     NAArray *orderedMacroList;
     NASet *expandingMacroSet;
+    int expanding;
 };
 
 extern int NAMidi_preprocessor_lex(yyscan_t yyscanner, FILE *stream);
@@ -195,16 +196,44 @@ bool NAMidiPreprocessorPopPreviousFile(NAMidiPreprocessor *self)
     return true;
 }
 
+static void splitToTargetAndReplacement(char *string, char **target, char **replacement)
+{
+    bool inBrackets = false;
+    char *pc = *target = string;
+    while (*pc) {
+        switch (*pc) {
+        case ' ':
+        case '\t':
+            if (!inBrackets) {
+                *pc = '\0';
+                *replacement = NACStringTrimWhiteSpace(pc + 1);
+                return;
+            }
+            break;
+        case '(':
+            inBrackets = true;
+            break;
+        case ')':
+            inBrackets = false;
+            break;
+        default:
+            break;
+        }
+
+        ++pc;
+    }
+}
+
 void NAMidiPreprocessorAppendMacro(NAMidiPreprocessor *self, int line, int column, char *difinition)
 {
-    /*
     FileLocation location = {self->currentBuffer->filepath, line, column};
 
-    char **split = NACStringSplit(NACStringDuplicate(difinition), "=;", NULL);
-    char *target = NACStringTrimWhiteSpace(split[0]);
-    char *replacement = NACStringTrimWhiteSpace(split[1]);
+    char *target;
+    char *replacement;
 
-    split = NACStringSplit(target, "{}", NULL);
+    splitToTargetAndReplacement(NACStringDuplicate(difinition), &target, &replacement);
+
+    char **split = NACStringSplit(target, "()", NULL);
     target = NACStringTrimWhiteSpace(split[0]);
     char *args = split[1];
 
@@ -228,41 +257,19 @@ void NAMidiPreprocessorAppendMacro(NAMidiPreprocessor *self, int line, int colum
                 MacroDestroy(macro);
                 return;
             }
+            else if (!strstr(replacement, split[i])) {
+                self->context->appendError(self->context, &location, NAMidiParseErrorUndefinedMacroArgument, split[i], NULL);
+                MacroDestroy(macro);
+            }
             else {
                 NAMapPut(macro->args, strdup(split[i]), NACIntegerFromInteger(i));
             }
         }
     }
 
-    char *pc;
-    while ((pc = strchr(replacement, '%'))) {
-        int from = pc - replacement;
-        int to = from + 1;
-        char c;
-        while ((c = replacement[to])) {
-            if (isdigit(c) || isalpha(c) || '_' == c || '+' == c || '(' == c || ')' == c) {
-                ++to;
-            }
-            else {
-                break;
-            }
-        }
-
-        char *replace = NACStringDuplicateNString(replacement + from, to - from);
-        if (!NAMapContainsKey(macro->args, replace + 1)) {
-            location.column = strstr(difinition, replace) - difinition + 1;
-            self->context->appendError(self->context, &location, NAMidiParseErrorUndefinedMacroArgument, replace, NULL);
-            MacroDestroy(macro);
-            return;
-        }
-
-        replacement += to;
-    }
-
     NAMapPut(self->macros, macro->target, macro);
     NAArrayAppend(self->orderedMacroList, macro);
     NAArraySort(self->orderedMacroList, MacroLengthComparator);
-    */
 }
 
 static void NAMidiPreprocessorExpandMacroInternal(NAMidiPreprocessor *self, FileLocation *location, NAStringBuffer *buffer, char *string)
@@ -274,7 +281,7 @@ static void NAMidiPreprocessorExpandMacroInternal(NAMidiPreprocessor *self, File
     char *target = NACStringDuplicate(string);
     char *argsString = NULL;
 
-    if ((pc = strchr(target, '{'))) {
+    if ((pc = strchr(target, '('))) {
         *pc = '\0';
         argsString = pc + 1;
         argsString[strlen(argsString) - 1] = '\0';
@@ -282,15 +289,14 @@ static void NAMidiPreprocessorExpandMacroInternal(NAMidiPreprocessor *self, File
 
     target = NACStringTrimWhiteSpace(target);
 
-    char *remain = NULL;
     Macro *macro = NULL;
-    NAIterator *iterator = NAArrayGetIterator(self->orderedMacroList);
+    NAIterator *iterator;
+   
+    iterator = NAArrayGetIterator(self->orderedMacroList);
     while (iterator->hasNext(iterator)) {
         Macro *_macro = iterator->next(iterator);
         char *p = strstr(target, _macro->target);
         if (p) {
-            remain = p + _macro->targetLength;
-
             if (NASetContains(self->expandingMacroSet, _macro)) {
                 self->context->appendError(self->context, location, NAMidiParseErrorCircularMacroReference, _macro->target, NULL);
                 goto FINISH;
@@ -302,8 +308,6 @@ static void NAMidiPreprocessorExpandMacroInternal(NAMidiPreprocessor *self, File
     }
     
     if (!macro) {
-        self->context->appendError(self->context, location, NAMidiParseErrorUndefinedMacroSymbol, target, NULL);
-        remain = target + strlen(target);
         goto FINISH;
     }
 
@@ -325,56 +329,31 @@ static void NAMidiPreprocessorExpandMacroInternal(NAMidiPreprocessor *self, File
         goto FINISH;
     }
 
-    char *replacement = macro->replacement;
-    while ((pc = strchr(replacement, '%'))) {
-        int from = pc - replacement;
-        int to = from + 1;
-        char c;
-        while ((c = replacement[to])) {
-            if (isdigit(c) || isalpha(c) || '_' == c || '+' == c || '(' == c || ')' == c) {
-                ++to;
-            }
-            else {
-                break;
-            }
-        }
-
-        NAStringBufferAppendNString(expandBuffer, replacement, from);
-
-        char *replace = NACStringDuplicateNString(replacement + from, to - from);
-        int *index = NAMapGet(macro->args, replace + 1);
-        if (index) {
-            NAStringBufferAppendString(expandBuffer, args[*index]);
-        }
-
-        replacement += to;
+    char *replacement = strdup(macro->replacement);
+    iterator = NAMapGetIterator(macro->args);
+    while (iterator->hasNext(iterator)) {
+        NAMapEntry *entry = iterator->next(iterator);
+        char *_replacement = NACStringReplaceAll(replacement, entry->key, NACStringTrimWhiteSpace(args[*((int *)entry->value)]));
+        free(replacement);
+        replacement = _replacement;
     }
 
     NAStringBufferAppendString(expandBuffer, replacement);
+    free(replacement);
 
 EXPANDED:
-    ;
+    NASetAdd(self->expandingMacroSet, macro);
 
     char *expanded = NAStringBufferRetriveCString(expandBuffer);
-    if ((pc = strchr(expanded, '$'))) {
-        NAStringBufferAppendNString(buffer, expanded, pc - expanded);
-        NASetAdd(self->expandingMacroSet, macro);
-        NAMidiPreprocessorExpandMacroInternal(self, location, buffer, pc);
-        NASetRemove(self->expandingMacroSet, macro);
-    }
-    else {
-        NAStringBufferAppendString(buffer, expanded);
-    }
+    NAStringBufferAppendString(buffer, expanded);
     free(expanded);
 
 FINISH:
-    NAStringBufferAppendString(buffer, remain);
     NAStringBufferDestroy(expandBuffer);
 }
 
 char *NAMidiPreprocessorExpandMacro(NAMidiPreprocessor *self, int line, int column, char *string)
 {
-    /*
     FileLocation location = {self->currentBuffer->filepath, line, column};
 
     NAStringBuffer *buffer = NAStringBufferCreate(256);
@@ -382,14 +361,22 @@ char *NAMidiPreprocessorExpandMacro(NAMidiPreprocessor *self, int line, int colu
 
     NAMidiPreprocessorExpandMacroInternal(self, &location, buffer, string);
     
-    if (0 < NAStringBufferGetLength(buffer)) {
+    int length = NAStringBufferGetLength(buffer);
+    if (0 < length) {
+        NAStringBufferAppendChar(buffer, ' ');
         ret = NAStringBufferRetriveCString(buffer);
+        self->expanding += length;
     }
-    
+
     NAStringBufferDestroy(buffer);
     return ret;
-    */
-    return NULL;
+}
+
+void NAMidiPreprocessorConsumeExpandingChar(NAMidiPreprocessor *self)
+{
+    if (0 < self->expanding && 0 == --self->expanding) {
+        NASetRemoveAll(self->expandingMacroSet);
+    }
 }
 
 void NAMidiPreprocessorSyntaxError(NAMidiPreprocessor *self, int line, int column, const char *token)

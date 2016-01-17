@@ -112,8 +112,6 @@ LOCATION       ^##.+:[[:digit:]]+:[[:digit:]]+\n
 "+"              { return '+'; }
 "-"              { return '-'; }
 "/"              { return '/'; }
-"("              { return '('; }
-")"              { return ')'; }
 ";"              { return ';'; }
 ":"              { return ':'; }
 \n               { return '\n'; }
