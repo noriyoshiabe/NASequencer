@@ -60,7 +60,7 @@ PAN            @p
 DETUNE         @d
 TEMPO          t
 
-NOTE_LENGTH    ([[:digit:]]+\.{0,2}|%[[:digit:]]+)
+NOTE_LENGTH    ([[:digit:]]*\.{0,2}|%[[:digit:]]+)
 NOTE           [CDEFGAB](\+{1,2}|#{1,2}|-{1,2})?{NOTE_LENGTH}?
 REST           r{NOTE_LENGTH}?
 OCTAVE         o

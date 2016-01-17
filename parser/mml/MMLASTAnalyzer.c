@@ -697,7 +697,9 @@ static void parseNoteLength(char *string, NoteLength *noteLength)
                 ++pc;
             }
 
-            noteLength->length = atoi(digits);
+            if ('\0' != digits[0]) {
+                noteLength->length = atoi(digits);
+            }
         }
     }
 }
