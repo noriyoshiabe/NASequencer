@@ -13,6 +13,7 @@ typedef enum {
     NAMidiParseErrorInvalidPan,
     NAMidiParseErrorInvalidChorus,
     NAMidiParseErrorInvalidReverb,
+    NAMidiParseErrorInvalidExpression,
     NAMidiParseErrorInvalidTranspose,
     NAMidiParseErrorInvalidKeySign,
     NAMidiParseErrorInvalidStep,

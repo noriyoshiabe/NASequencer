@@ -250,6 +250,20 @@ ASTReverb *NAMidiASTReverbCreate(FileLocation *location)
     return NodeCreate(ASTReverb, location);
 }
 
+static void ASTExpressionAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitExpression(visitor, self);
+}
+
+static void ASTExpressionDestroy(void *_self)
+{
+}
+
+ASTExpression *NAMidiASTExpressionCreate(FileLocation *location)
+{
+    return NodeCreate(ASTExpression, location);
+}
+
 static void ASTTransposeAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitTranspose(visitor, self);

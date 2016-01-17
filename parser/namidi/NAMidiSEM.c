@@ -260,6 +260,20 @@ SEMReverb *NAMidiSEMReverbCreate(FileLocation *location)
     return NodeCreate(SEMReverb, location);
 }
 
+static void SEMExpressionAccept(void *self, void *visitor)
+{
+    ((SEMVisitor *)visitor)->visitExpression(visitor, self);
+}
+
+static void SEMExpressionDestroy(void *_self)
+{
+}
+
+SEMExpression *NAMidiSEMExpressionCreate(FileLocation *location)
+{
+    return NodeCreate(SEMExpression, location);
+}
+
 static void SEMTransposeAccept(void *self, void *visitor)
 {
     ((SEMVisitor *)visitor)->visitTranspose(visitor, self);

@@ -12,6 +12,8 @@ voice 0 120 0
 synth 'GeneralUser GS Live-Audigy v1.44'
 pan 64
 chorus 127
+volume 110
+expression 120
 
 #syntaxerror
 

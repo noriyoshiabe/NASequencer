@@ -249,6 +249,13 @@ static void visitReverb(void *_self, SEMReverb *sem)
     self->builder->appendReverb(self->builder, TICK(self->state), self->state->channel, sem->value);
 }
 
+static void visitExpression(void *_self, SEMExpression *sem)
+{
+    NAMidiSEMAnalyzer *self = _self;
+    FLUSH(self->state);
+    self->builder->appendExpression(self->builder, TICK(self->state), self->state->channel, sem->value);
+}
+
 static void visitTranspose(void *_self, SEMTranspose *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
@@ -365,6 +372,7 @@ Analyzer *NAMidiSEMAnalyzerCreate(ParseContext *context)
     self->visitor.visitPan = visitPan;
     self->visitor.visitChorus = visitChorus;
     self->visitor.visitReverb = visitReverb;
+    self->visitor.visitExpression = visitExpression;
     self->visitor.visitTranspose = visitTranspose;
     self->visitor.visitStep = visitStep;
     self->visitor.visitNote = visitNote;

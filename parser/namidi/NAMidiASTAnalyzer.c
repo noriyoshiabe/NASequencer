@@ -301,6 +301,20 @@ static void visitReverb(void *_self, ASTReverb *ast)
     append(self->state->list, sem);
 }
 
+static void visitExpression(void *_self, ASTExpression *ast)
+{
+    NAMidiASTAnalyzer *self = _self;
+
+    if (!isValidRange(ast->value, 0, 127)) {
+        appendError(self, ast, NAMidiParseErrorInvalidExpression, NACStringFromInteger(ast->value), NULL);
+        return;
+    }
+
+    SEMExpression *sem = node(Expression, ast);
+    sem->value = ast->value;
+    append(self->state->list, sem);
+}
+
 static void visitTranspose(void *_self, ASTTranspose *ast)
 {
     NAMidiASTAnalyzer *self = _self;
@@ -538,6 +552,7 @@ Analyzer *NAMidiASTAnalyzerCreate(ParseContext *context)
     self->visitor.visitPan = visitPan;
     self->visitor.visitChorus = visitChorus;
     self->visitor.visitReverb = visitReverb;
+    self->visitor.visitExpression = visitExpression;
     self->visitor.visitTranspose = visitTranspose;
     self->visitor.visitStep = visitStep;
     self->visitor.visitNote = visitNote;
