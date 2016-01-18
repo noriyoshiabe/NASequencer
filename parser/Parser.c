@@ -41,7 +41,7 @@ static Driver *ParserDriverCreate(Parser *self, const char *filepath)
     };
 
     for (int i = 0; i < sizeof(table) / sizeof(table[0]); ++i) {
-        if (0 == strcmp(table[i].ext, ext)) {
+        if (0 == strcasecmp(table[i].ext, ext)) {
             return table[i].factory(self->context);
         }
     }

@@ -95,7 +95,7 @@ ExporterError ExporterExport(Exporter *self, const char *filepath, const char *o
     const char *ext = NAIOGetFileExtenssion(output);
 
     for (int i = 0; i < sizeof(table) / sizeof(table[0]); ++i) {
-        if (0 == strcmp(table[i].ext, ext)) {
+        if (0 == strcasecmp(table[i].ext, ext)) {
             function = table[i].function;
             if (table[i].needSoundSource && !HasSoundSource()) {
                 return ExporterErrorNoSoundSource;

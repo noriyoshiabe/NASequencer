@@ -57,8 +57,8 @@ INTEGER             {NONZERO}{DIGIT}*|0
 FLOAT               ({NONZERO}{DIGIT}*|0)\.{DIGIT}+
 QUOTED_STRING       '.*'|\".*\"
 
-FILEPATH            [0-9a-zA-Z_\-]+\.abh
-QUOTED_FILEPATH     '[0-9a-zA-Z_\- ]+\.abh'|\"[0-9a-zA-Z_\- ]+\.abh\"
+FILEPATH            [0-9a-zA-Z_\-]+\.(?i:abh)
+QUOTED_FILEPATH     '[0-9a-zA-Z_\- ]+\.(?i:abh)'|\"[0-9a-zA-Z_\- ]+\.(?i:abh)\"
 
 PITCH               (?i:[cdefgab])
 NONE                (?i:none)

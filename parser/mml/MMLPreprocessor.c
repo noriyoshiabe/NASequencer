@@ -135,7 +135,7 @@ void MMLPreprocessorIncludeFile(MMLPreprocessor *self, int line, int column, con
     FileLocation location = {self->currentBuffer->filepath, line, column};
 
     const char *ext = NAIOGetFileExtenssion(includeFile);
-    if (0 != strcmp("mml", ext)) {
+    if (0 != strcasecmp("mml", ext)) {
         self->context->appendError(self->context, &location, MMLParseErrorUnsupportedFileTypeInclude, ext, includeFile, NULL);
         return;
     }

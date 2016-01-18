@@ -127,7 +127,7 @@ static bool isAudioFileType(const char *filepath)
 
     const char *ext = NAIOGetFileExtenssion(filepath);
     for (int i = 0; i < sizeof(exts) / sizeof(exts[0]); ++i) {
-        if (0 == strcmp(exts[i], ext)) {
+        if (0 == strcasecmp(exts[i], ext)) {
             return true;
         }
     }

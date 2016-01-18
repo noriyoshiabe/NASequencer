@@ -180,7 +180,7 @@ Node *ABCParserParseIncludeFile(void *_self, FileLocation *location, const char 
     ABCParser *self = _self; 
 
     const char *ext = NAIOGetFileExtenssion(includeFile);
-    if (0 != strcmp("abh", ext)) {
+    if (0 != strcasecmp("abh", ext)) {
         self->context->appendError(self->context, location, ABCParseErrorUnsupportedFileTypeInclude, ext, includeFile, NULL);
         return NULL;
     }
