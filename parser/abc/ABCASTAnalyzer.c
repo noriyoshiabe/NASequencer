@@ -493,6 +493,18 @@ static void visitParts(void *_self, ASTParts *ast)
     }
 }
 
+static void visitTransCopyright(void *_self, ASTTransCopyright *ast)
+{
+    ABCASTAnalyzer *self = _self;
+    
+    if (!self->tune) {
+        appendError(self, ast, ABCParseErrorIllegalStateWithCopyright, State2String(self->state), NULL);
+        return;
+    }
+
+    NAArrayAppend(self->tune->copyrightList, strdup(ast->text));
+}
+
 static void visitInstCharSet(void *self, ASTInstCharSet *ast)
 {
 }
@@ -1152,6 +1164,7 @@ Analyzer *ABCASTAnalyzerCreate(ParseContext *context)
     self->visitor.visitTempo = visitTempo;
     self->visitor.visitTempoParam = visitTempoParam;
     self->visitor.visitParts = visitParts;
+    self->visitor.visitTransCopyright = visitTransCopyright;
     self->visitor.visitInstCharSet = visitInstCharSet;
     self->visitor.visitInstVersion = visitInstVersion;
     self->visitor.visitInstInclude = visitInstInclude;

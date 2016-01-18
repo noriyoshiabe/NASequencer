@@ -172,6 +172,11 @@ static void visitParts(void *self, ASTParts *ast)
     dump(self, ast, STRING(ast, list), NULL);
 }
 
+static void visitTransCopyright(void *self, ASTTransCopyright *ast)
+{
+    dump(self, ast, STRING(ast, text), NULL);
+}
+
 static void visitInstCharSet(void *self, ASTInstCharSet *ast)
 {
     dump(self, ast, STRING(ast, name), NULL);
@@ -430,6 +435,7 @@ Analyzer *ABCASTDumperCreate(ParseContext *context)
     self->visitor.visitTempo = visitTempo;
     self->visitor.visitTempoParam = visitTempoParam;
     self->visitor.visitParts = visitParts;
+    self->visitor.visitTransCopyright = visitTransCopyright;
     self->visitor.visitInstCharSet = visitInstCharSet;
     self->visitor.visitInstVersion = visitInstVersion;
     self->visitor.visitInstInclude = visitInstInclude;

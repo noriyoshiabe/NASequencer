@@ -254,6 +254,18 @@ static void visitTune(void *_self, SEMTune *sem)
 {
     ABCSEMAnalyzer *self = _self;
 
+    if (!NAArrayIsEmpty(sem->titleList)) {
+        char *titleList = NACStringJoinWithStringArray("; ", sem->titleList);
+        self->builder->appendTitle(self->builder, self->file.tick, titleList);
+        free(titleList);
+    }
+
+    if (!NAArrayIsEmpty(sem->copyrightList)) {
+        char *copyrightList = NACStringJoinWithStringArray("; ", sem->copyrightList);
+        self->builder->appendCopyright(self->builder, self->file.tick, copyrightList);
+        free(copyrightList);
+    }
+
     NAMapTraverseValue(self->repeatMap, RepeatContextDestroy);
     NAMapRemoveAll(self->repeatMap);
     NAMapTraverseValue(self->voiceMap, VoiceContextDestroy);

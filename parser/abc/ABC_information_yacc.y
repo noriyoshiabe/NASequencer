@@ -37,7 +37,8 @@ extern void ABC_information_lex_set_error(yyscan_t scanner);
     void *list;
 }
 
-%token REFERENCE_NUMBER TITLE KEY INSTRUCTION METER UNIT_NOTE_LENGTH TEMPO PARTS VOICE
+%token REFERENCE_NUMBER TITLE KEY INSTRUCTION METER UNIT_NOTE_LENGTH TEMPO PARTS TRANSCRIPTION VOICE
+%token TRANS_COPYRIGHT
 %token INST_INCLUDE INST_CHARSET INST_VERSION INST_CREATOR INST_LINEBREAK INST_DECORATION
 %token SYMBOL_LINE CONTINUATION
 
@@ -59,7 +60,7 @@ extern void ABC_information_lex_set_error(yyscan_t scanner);
 %type <i> signed_integer numerator
 
 %type <node> reference_number title key meter unit_note_length tempo parts voice
-%type <node> instruction macro redefinable_symbol
+%type <node> transcription instruction macro redefinable_symbol
 %type <node> string_information symbol_line continuation
 
 %type <node> key_param      tempo_param      voice_param
@@ -96,6 +97,7 @@ statement
     | unit_note_length
     | tempo
     | parts
+    | transcription
     | instruction
     | macro
     | symbol_line
@@ -462,6 +464,15 @@ part_expr
             $$ = realloc($1, strlen($1) + strlen($2) + 1);
             strcat($$, $2);
             free($2);
+        }
+    ;
+
+transcription
+    : TRANSCRIPTION TRANS_COPYRIGHT STRING
+        {
+            ASTTransCopyright *n = node(TransCopyright, @$);
+            n->text = $3;
+            $$ = n;
         }
     ;
 

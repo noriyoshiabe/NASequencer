@@ -145,7 +145,7 @@ static void visitTitle(void *_self, SEMTitle *sem)
         return;
     }
 
-    self->builder->setTitle(self->builder, sem->title);
+    self->builder->appendTitle(self->builder, 0, sem->title);
     self->definedNode.title = (Node *)sem;
 }
 
@@ -159,7 +159,7 @@ static void visitCopyright(void *_self, SEMCopyright *sem)
         return;
     }
 
-    self->builder->setCopyright(self->builder, sem->text);
+    self->builder->appendCopyright(self->builder, 0, sem->text);
     self->definedNode.copyright = (Node *)sem;
 }
 

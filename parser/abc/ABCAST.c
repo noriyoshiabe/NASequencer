@@ -186,6 +186,22 @@ ASTParts *ABCASTPartsCreate(FileLocation *location)
     return NodeCreate(ASTParts, location);
 }
 
+static void ASTTransCopyrightAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitTransCopyright(visitor, self);
+}
+
+static void ASTTransCopyrightDestroy(void *_self)
+{
+    ASTTransCopyright *self = _self;
+    free(self->text);
+}
+
+ASTTransCopyright *ABCASTTransCopyrightCreate(FileLocation *location)
+{
+    return NodeCreate(ASTTransCopyright, location);
+}
+
 static void ASTInstCharSetAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitInstCharSet(visitor, self);

@@ -29,6 +29,8 @@
 %x COMMENT
 
 %x x_STR_INFO
+%x x_TRANSCRIPTION
+%x x_TRANS_COPYRIGHT
 %x x_INSTRUCTION
 %x x_INST_INCLUDE
 %x x_INST_CHARSET
@@ -81,6 +83,8 @@ INST_CREATOR        abc-creator
 INST_LINEBREAK      linebreak
 INST_DECORATION     decoration
 
+TRANS_COPYRIGHT     abc-copyright
+
 MACRO_TARGET        [~[:alnum:]]+
 
 DECORATION          ![[:graph:]]+!|\+[[:graph:]]+\+
@@ -114,7 +118,6 @@ WSPACE              [[:blank:]]+
 ^T:                 { BEGIN(x_STR_INFO); return TITLE; }
 ^W:                 { BEGIN(x_STR_INFO); yylval->c = 'W'; return STRING_INFORMATION; }
 ^w:                 { BEGIN(x_STR_INFO); yylval->c = 'w'; return STRING_INFORMATION; }
-^Z:                 { BEGIN(x_STR_INFO); yylval->c = 'Z'; return STRING_INFORMATION; }
 <x_STR_INFO>.*      { yylval->s = NACStringTrimWhiteSpace(strdup(yytext)); return STRING; }
 
 ^K:                      { BEGIN(x_KEY); return KEY; }
@@ -164,6 +167,10 @@ WSPACE              [[:blank:]]+
 <x_PARTS>"."             { }
 <x_PARTS>"("             { return '('; }
 <x_PARTS>")"             { return ')'; }
+
+^Z:                                { BEGIN(x_TRANSCRIPTION); return TRANSCRIPTION; }
+<x_TRANSCRIPTION>{TRANS_COPYRIGHT} { BEGIN(x_TRANS_COPYRIGHT); return TRANS_COPYRIGHT; }
+<x_TRANS_COPYRIGHT>.*              { yylval->s = NACStringTrimWhiteSpace(strdup(yytext)); return STRING; }
 
 ^I:                                { BEGIN(x_INSTRUCTION); return INSTRUCTION; }
 <x_INSTRUCTION>{INST_INCLUDE}      { BEGIN(x_INST_INCLUDE); return INST_INCLUDE; }

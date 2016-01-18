@@ -56,6 +56,22 @@ char *NACStringReplaceAll(const char *src, const char *search, const char *repla
     return ret;
 }
 
+char *NACStringJoin(const char *delimiter, const char **strings, int count)
+{
+    NAStringBuffer *buffer = NAStringBufferCreate(128);
+
+    for (int i = 0; i < count; ++i) {
+        if (0 < i) {
+            NAStringBufferAppendString(buffer, delimiter);
+        }
+        NAStringBufferAppendString(buffer, strings[i]);
+    }
+
+    char *ret = NAStringBufferRetriveCString(buffer);
+    NAStringBufferDestroy(buffer);
+    return ret;
+}
+
 char *NACStringToLowerCase(char *string)
 {
     char *c = string;

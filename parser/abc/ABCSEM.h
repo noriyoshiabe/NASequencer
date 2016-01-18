@@ -15,6 +15,7 @@ typedef struct _SEMTune {
     Node node;
     int number;
     NAArray *titleList;
+    NAArray *copyrightList;
     char *partSequence;
     NAMap *partMap;
     NAMap *voiceMap;

@@ -90,6 +90,11 @@ typedef struct _ASTParts {
     char *list;
 } ASTParts;
 
+typedef struct _ASTTransCopyright {
+    Node node;
+    char *text;
+} ASTTransCopyright;
+
 typedef struct _ASTInstCharSet {
     Node node;
     char *name;
@@ -281,6 +286,7 @@ typedef struct _ASTVisitor {
     void (*visitTempo)(void *self, ASTTempo *ast);
     void (*visitTempoParam)(void *self, ASTTempoParam *ast);
     void (*visitParts)(void *self, ASTParts *ast);
+    void (*visitTransCopyright)(void *self, ASTTransCopyright *ast);
     void (*visitInstCharSet)(void *self, ASTInstCharSet *ast);
     void (*visitInstVersion)(void *self, ASTInstVersion *ast);
     void (*visitInstInclude)(void *self, ASTInstInclude *ast);
@@ -325,6 +331,7 @@ extern ASTUnitNoteLength *ABCASTUnitNoteLengthCreate(FileLocation *location);
 extern ASTTempo *ABCASTTempoCreate(FileLocation *location);
 extern ASTTempoParam *ABCASTTempoParamCreate(FileLocation *location);
 extern ASTParts *ABCASTPartsCreate(FileLocation *location);
+extern ASTTransCopyright *ABCASTTransCopyrightCreate(FileLocation *location);
 extern ASTInstCharSet *ABCASTInstCharSetCreate(FileLocation *location);
 extern ASTInstVersion *ABCASTInstVersionCreate(FileLocation *location);
 extern ASTInstInclude *ABCASTInstIncludeCreate(FileLocation *location);

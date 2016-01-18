@@ -6,6 +6,7 @@
 
 extern char *NACStringFormat(const char *format, ...);
 extern char *NACStringReplaceAll(const char *src, const char *search, const char *replacement);
+extern char *NACStringJoin(const char *delimiter, const char **strings, int count);
 
 extern char *NACStringToLowerCase(char *string);
 extern char *NACStringToUpperCase(char *string);
@@ -27,3 +28,5 @@ extern char **NACStringSplit(char *str, char *delim, int *length, char **buffer)
 #define NACStringDuplicate(s) NACStringDuplicate(s, alloca(strlen(s) + 1))
 #define NACStringDuplicateNString(s, l) NACStringDuplicateNString(s, l, alloca(l + 1))
 #define NACStringSplit(s, d, pl) NACStringSplit(s, d, pl, alloca(sizeof(char *) * (NACStringSplitCount(s, d) + 1)))
+
+#define NACStringJoinWithStringArray(d, arr) NACStringJoin(d, NAArrayGetValues(arr), NAArrayCount(arr))

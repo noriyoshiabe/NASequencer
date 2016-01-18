@@ -4,8 +4,8 @@ typedef struct _SequenceBuilder {
     void (*destroy)(void *self);
 
     void (*setResolution)(void *self, int resolution);
-    void (*setTitle)(void *self, const char *title);
-    void (*setCopyright)(void *self, const char *text);
+    void (*appendTitle)(void *self, int tick, const char *title);
+    void (*appendCopyright)(void *self, int tick, const char *text);
     void (*appendTempo)(void *self, int tick, float tempo);
     void (*appendTimeSign)(void *self, int tick, int numerator, int denominator);
     void (*appendKey)(void *self, int tick, int sf, int mi);

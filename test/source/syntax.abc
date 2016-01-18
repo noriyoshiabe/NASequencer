@@ -2,6 +2,8 @@
 M: C |
 %abc-2.1
 X: 1
+Z:abc-copyright abechan
+Z:abc-copyright abechan
 % unsupported ---------
 A:area
 B:book
@@ -19,7 +21,8 @@ w:words
 +:continuation
 Z:transcription
 % unsupported ---------
-T: title title
+T: title
+T: title
 K: C minor ^F
 K: syntaxerror clef=treble1-8
 K: octave=-3
@@ -51,6 +54,7 @@ Q: 1/8 1/8=120
 Q:1/4 3/8 1/4 3/8=40
 Q: 1/7
 X:2
+Z:abc-copyright Copyright 2
 P: Z(AB2C2.(YZ)2)2.
 K:C
 P: Z

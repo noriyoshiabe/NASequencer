@@ -32,39 +32,26 @@ static void SequenceBuilderSetResolution(void *_self, int resolution)
     TimeTableSetResolution(self->sequence->timeTable, resolution);
 }
 
-static void SequenceBuilderSetTitle(void *_self, const char *title)
+static void SequenceBuilderAppendTitle(void *_self, int tick, const char *title)
 {
     SequenceBuilderImpl *self = _self;
     Sequence *sequence = self->sequence;
 
-    if (sequence->title) {
-        free(sequence->title);
-    }
-    sequence->title = strdup(title);
-
-    if (self->titleEvent) {
-        int index = NAArrayBSearchIndex(sequence->events, self->titleEvent, MidiEventIDComparator);
-        NAArrayRemoveAt(sequence->events, index);
-        free(self->titleEvent);
+    if (!sequence->title) {
+        sequence->title = strdup(title);
     }
 
-    self->titleEvent = MidiEventAlloc(MidiEventTypeTitle, ++self->id, 0, strlen(title) + 1);
+    self->titleEvent = MidiEventAlloc(MidiEventTypeTitle, ++self->id, tick, strlen(title) + 1);
     strcpy(self->titleEvent->text, title);
     NAArrayAppend(sequence->events, self->titleEvent);
 }
 
-static void SequenceBuilderSetCopyright(void *_self, const char *text)
+static void SequenceBuilderAppendCopyright(void *_self, int tick, const char *text)
 {
     SequenceBuilderImpl *self = _self;
     Sequence *sequence = self->sequence;
 
-    if (self->copyrightEvent) {
-        int index = NAArrayBSearchIndex(sequence->events, self->copyrightEvent, MidiEventIDComparator);
-        NAArrayRemoveAt(sequence->events, index);
-        free(self->copyrightEvent);
-    }
-
-    self->copyrightEvent = MidiEventAlloc(MidiEventTypeCopyright, ++self->id, 0, strlen(text) + 1);
+    self->copyrightEvent = MidiEventAlloc(MidiEventTypeCopyright, ++self->id, tick, strlen(text) + 1);
     strcpy(self->copyrightEvent->text, text);
     NAArrayAppend(sequence->events, self->copyrightEvent);
 }
@@ -248,8 +235,8 @@ SequenceBuilder *SequenceBuilderCreate()
 
     self->interface.destroy = SequenceBuilderDestroy;
     self->interface.setResolution = SequenceBuilderSetResolution;
-    self->interface.setTitle = SequenceBuilderSetTitle;
-    self->interface.setCopyright = SequenceBuilderSetCopyright;
+    self->interface.appendTitle = SequenceBuilderAppendTitle;
+    self->interface.appendCopyright = SequenceBuilderAppendCopyright;
     self->interface.appendTempo = SequenceBuilderAppendTempo;
     self->interface.appendTimeSign = SequenceBuilderAppendTimeSign;
     self->interface.appendKey = SequenceBuilderAppendKey;

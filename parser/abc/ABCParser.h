@@ -24,6 +24,7 @@ typedef enum {
     ABCParseErrorInvalidTempo,
     ABCParseErrorIllegalStateWithParts,
     ABCParseErrorDuplicatedParts,
+    ABCParseErrorIllegalStateWithCopyright,
     ABCParseErrorIllegalStateWithInclude,
     ABCParseErrorIllegalStateWithVoice,
     ABCParseErrorIllegalStateWithTuneBody,
