@@ -493,7 +493,12 @@ static void visitChord(void *_self, SEMChord *sem)
     self->chord.offset = 0;
     self->chord.step = 0;
 
-    preprocessTieInChord(self);
+    if (self->tie) {
+        preprocessTieInChord(self);
+    }
+    else {
+        flushPendingNote(self);
+    }
 
     NAIterator *iterator = NAArrayGetIterator(sem->node.children);
     while (iterator->hasNext(iterator)) {
@@ -505,6 +510,7 @@ static void visitChord(void *_self, SEMChord *sem)
         flushPendingNoteWithoutTie(self);
     }
 
+    self->tie = false;
     self->inChord = false;
 
     self->tick += self->chord.step;
