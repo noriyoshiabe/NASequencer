@@ -1,7 +1,12 @@
 X:1
 M: (1+1+1+1
+M: (1+1+1+1) / 4
 L:1/4
 K:C
+V:B2  middle=d clef=bass      name="Basso II"   snm="B.II" transpose=-24 octave=
+%%MIDI voice B2 instrument=59 bank=
+%%MIDI
+%%MIDI voice B2 instrument=59 bank=15
 ABC {}
 [ABC
 {ABC

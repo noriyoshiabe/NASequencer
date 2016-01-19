@@ -14,6 +14,7 @@ typedef enum {
     NAMidiParseErrorMacroArgumentsMissing,
     NAMidiParseErrorWrongNumberOfMacroArguments,
     NAMidiParseErrorUnexpectedEOF,
+    NAMidiParseErrorUnexpectedEOL,
     NAMidiParseErrorInvalidResolution,
     NAMidiParseErrorInvalidTempo,
     NAMidiParseErrorInvalidTimeSign,

@@ -40,6 +40,7 @@ typedef enum {
     ABCParseErrorInvalidNoteNumber,
     ABCParseErrorIllegalTie,
     ABCParseErrorIllegalOverlay,
+    ABCParseErrorUnexpectedEOL,
 } ABCParseError;
 
 extern DSLParser *ABCParserCreate(ParseContext *context);
@@ -49,6 +50,7 @@ extern Node *ABCParserParseDirective(void *self, const char *filepath, int line,
 extern Node *ABCParserParseTuneBody(void *self, const char *filepath, int line, int columnOffset, const char *string);
 extern Node *ABCParserParseIncludeFile(void *self, FileLocation *location, const char *includeFile, char **fullpath);
 extern void ABCParserSyntaxError(void *self, FileLocation *location, const char *token);
+extern void ABCParserUnExpectedEOL(void *_self, FileLocation *location);
 extern bool ABCParserIsLineBreak(void *self, char c);
 extern bool ABCParserIsDecoration(void *self, char c);
 

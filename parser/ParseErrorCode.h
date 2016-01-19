@@ -21,6 +21,7 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(NAMidiParseErrorMacroArgumentsMissing);
     CASE(NAMidiParseErrorWrongNumberOfMacroArguments);
     CASE(NAMidiParseErrorUnexpectedEOF);
+    CASE(NAMidiParseErrorUnexpectedEOL);
     CASE(NAMidiParseErrorInvalidResolution);
     CASE(NAMidiParseErrorInvalidTempo);
     CASE(NAMidiParseErrorInvalidTimeSign);
@@ -85,6 +86,7 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(ABCParseErrorInvalidNoteNumber);
     CASE(ABCParseErrorIllegalTie);
     CASE(ABCParseErrorIllegalOverlay);
+    CASE(ABCParseErrorUnexpectedEOL);
 
     CASE(MMLParseErrorUnsupportedFileTypeInclude);
     CASE(MMLParseErrorCircularFileInclude);

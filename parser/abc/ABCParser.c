@@ -215,7 +215,18 @@ Node *ABCParserParseIncludeFile(void *_self, FileLocation *location, const char 
 void ABCParserSyntaxError(void *_self, FileLocation *location, const char *token)
 {
     ABCParser *self = _self; 
-    self->context->appendError(self->context, location, GeneralParseErrorSyntaxError, token, NULL);
+    if ('\0' == token[0]) {
+        self->context->appendError(self->context, location, ABCParseErrorUnexpectedEOL, NULL);
+    }
+    else {
+        self->context->appendError(self->context, location, GeneralParseErrorSyntaxError, token, NULL);
+    }
+}
+
+void ABCParserUnExpectedEOL(void *_self, FileLocation *location)
+{
+    ABCParser *self = _self; 
+    self->context->appendError(self->context, location, ABCParseErrorUnexpectedEOL, NULL);
 }
 
 static void ABCParserSetLineBreak(void *_self, char c)

@@ -12,7 +12,8 @@
 
 extern int ABC_tune_body_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, int line, int columnOffset, void **node, const char *message);
 
-#define node(type, yylloc) ABCAST##type##Create(&((FileLocation){(char *)filepath, line, yylloc.first_column + columnOffset}))
+#define location(yylloc) &((FileLocation){(char *)filepath, line, yylloc.first_column + columnOffset})
+#define node(type, yylloc) ABCAST##type##Create(location(yylloc))
 #define list() NAArrayCreate(4, NULL)
 #define listAppend(list, node) NAArrayAppend(list, node)
 
@@ -214,18 +215,26 @@ dot
         }
 
 grace_note
-    : '{' grace_note_statement_list '}'
+    : '{' grace_note_statement_list grace_note_end
         {
             ASTGraceNote *n = node(GraceNote, @$);
             n->node.children = $2;
             $$ = n;
         }
-    | ACCIACCATURA grace_note_statement_list '}'
+    | ACCIACCATURA grace_note_statement_list grace_note_end
         {
             ASTGraceNote *n = node(GraceNote, @$);
             n->acciaccatura = true;
             n->node.children = $2;
             $$ = n;
+        }
+    ;
+
+grace_note_end
+    : '}'
+    | line_break
+        {
+            ABCParserUnExpectedEOL(ABC_tune_body_get_extra(scanner), location(@$));
         }
     ;
 
@@ -318,7 +327,6 @@ reserved
 
 int ABC_tune_body_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, int line, int columnOffset, void **node, const char *message)
 {
-    FileLocation location = {(char *)filepath, line, yylloc->first_column + columnOffset};
-    ABCParserSyntaxError(ABC_tune_body_get_extra(scanner), &location, ABC_tune_body_get_text(scanner));
+    ABCParserSyntaxError(ABC_tune_body_get_extra(scanner), location((*yylloc)), ABC_tune_body_get_text(scanner));
     return 0;
 }

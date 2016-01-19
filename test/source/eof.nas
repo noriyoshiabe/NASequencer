@@ -1,11 +1,13 @@
-INCLUDE 'eof-inc.nas'
+#include 'eof-inc.nas'
 
 240: C
 
-EXPAND test WITH hoge
-EXPAND test2 WITH hoge
+VOICE
 
-DEFINE test2
+EXPAND test:hoge
+EXPAND test2:hoge
+
+PATTERN test2
   240: D
-  CONTEXT hoge
+  PATTERN hoge
     240: D

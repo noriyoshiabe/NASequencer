@@ -71,8 +71,13 @@ char *NAMidiParserGetCurrentFilepath(void *_self)
 
 void NAMidiParserSyntaxError(void *_self, FileLocation *location, const char *token)
 {
-    NAMidiParser *self = _self; 
-    self->context->appendError(self->context, location, GeneralParseErrorSyntaxError, token, NULL);
+    NAMidiParser *self = _self;
+    if ('\n' == token[0]) {
+        self->context->appendError(self->context, location, NAMidiParseErrorUnexpectedEOL, NULL);
+    }
+    else {
+        self->context->appendError(self->context, location, GeneralParseErrorSyntaxError, token, NULL);
+    }
 }
 
 void NAMidiParserUnExpectedEOF(void *_self, FileLocation *location)

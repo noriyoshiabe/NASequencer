@@ -11,7 +11,8 @@
 extern void ABC_directive_lex_set_error(yyscan_t scanner);
 extern int ABC_directive_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, int line, int columnOffset, void **node, const char *message);
 
-#define node(type, yylloc) ABCAST##type##Create(&((FileLocation){(char *)filepath, line, yylloc.first_column + columnOffset}))
+#define location(yylloc) &((FileLocation){(char *)filepath, line, yylloc.first_column + columnOffset})
+#define node(type, yylloc) ABCAST##type##Create(location(yylloc))
 #define list() NAArrayCreate(4, NULL)
 #define listAppend(list, node) NAArrayAppend(list, node)
 
@@ -173,7 +174,6 @@ propagate_accidental
 
 int ABC_directive_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, int line, int columnOffset, void **node, const char *message)
 {
-    FileLocation location = {(char *)filepath, line, yylloc->first_column + columnOffset};
-    ABCParserSyntaxError(ABC_directive_get_extra(scanner), &location, ABC_directive_get_text(scanner));
+    ABCParserSyntaxError(ABC_directive_get_extra(scanner), location((*yylloc)), ABC_directive_get_text(scanner));
     return 0;
 }

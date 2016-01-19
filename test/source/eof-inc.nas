@@ -1,4 +1,4 @@
-DEFINE test
+PATTERN test
   240: D
-  CONTEXT hoge
+  PATTERN hoge
     240: D
