@@ -348,7 +348,7 @@ static void MixerAudioCallback(void *receiver, AudioSample *buffer, uint32_t cou
         buffer[i].R += samples[i].R;
 
         valueLevel.L = MAX(valueLevel.L, fabs(samples[i].L));
-        valueLevel.R = MAX(valueLevel.L, fabs(samples[i].R));
+        valueLevel.R = MAX(valueLevel.R, fabs(samples[i].R));
     }
 
     self->level.L = Value2cB(valueLevel.L);
