@@ -7,6 +7,7 @@ void EnvelopeInit(Envelope *self, EnvelopeType type)
     self->phase = EnvelopePhaseDelay;
     self->startPhaseTime = 0.0;
     self->releasedValue = 0.0;
+    self->pendingRelease = false;
 }
 
 void EnvelopeUpdateRuntimeParams(Envelope *self,
@@ -69,10 +70,22 @@ void EnvelopeUpdateRuntimeParams(Envelope *self,
 
 void EnvelopeRelease(Envelope *self, double time)
 {
-    if (EnvelopePhaseRelease > self->phase) {
+    switch (self->phase) {
+    case EnvelopePhaseDelay:
+    case EnvelopePhaseAttack:
+        // Care for the event with extremely short gatetime
+        self->pendingRelease = true;
+        break;
+    case EnvelopePhaseHold:
+    case EnvelopePhaseDecay:
+    case EnvelopePhaseSustain:
         self->phase = EnvelopePhaseRelease;
         self->startPhaseTime = time;
         self->releasedValue = self->value;
+        break;
+    case EnvelopePhaseRelease:
+    case EnvelopePhaseFinish:
+        break;
     }
 }
 
@@ -99,7 +112,13 @@ static void EnvelopeUpdatePhase(Envelope *self, double time)
     case EnvelopePhaseDecay:
         if ((self->startPhaseTime + self->phaseValues[self->phase]) <= time) {
             ++self->phase;
-            self->startPhaseTime = time;
+
+            if (self->pendingRelease && EnvelopePhaseAttack < self->phase) {
+                EnvelopeRelease(self, time);
+            }
+            else {
+                self->startPhaseTime = time;
+            }
         }
         break;
     case EnvelopePhaseSustain:
