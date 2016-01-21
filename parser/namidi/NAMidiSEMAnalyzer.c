@@ -57,11 +57,11 @@ static void StateDestroy(State *self);
 static int StateTick(State *self);
 static int StateLength(State *self);
 
-#define TICK(state) (state->channels[state->channel].tick)
-#define STEP(state) (state->channels[state->channel].step)
-#define GATETIME(state) (state->channels[state->channel].gatetime)
-#define VELOCITY(state) (state->channels[state->channel].velocity)
-#define OCTAVE(state) (state->channels[state->channel].octave)
+#define TICK(state) (state->channels[state->channel - 1].tick)
+#define STEP(state) (state->channels[state->channel - 1].step)
+#define GATETIME(state) (state->channels[state->channel - 1].gatetime)
+#define VELOCITY(state) (state->channels[state->channel - 1].velocity)
+#define OCTAVE(state) (state->channels[state->channel - 1].octave)
 
 #define FLUSH(state) TICK(state) += STEP(state); STEP(state) = 0
 
@@ -282,9 +282,7 @@ static void visitNote(void *_self, SEMNote *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
 
-    int channel = self->state->channel;
-    int octave = SEMNOTE_OCTAVE_NONE != sem->octave ? sem->octave : self->state->channels[channel].octave;
-
+    int octave = SEMNOTE_OCTAVE_NONE != sem->octave ? sem->octave : OCTAVE(self->state);
     int noteNo = NoteTableGetNoteNo(self->state->noteTable, sem->baseNote, sem->accidental, octave);
     noteNo += self->state->transpose;
 
@@ -293,14 +291,14 @@ static void visitNote(void *_self, SEMNote *sem)
         return;
     }
 
-    self->state->channels[channel].octave = octave;
+    OCTAVE(self->state) = octave;
 
     int gatetime = -1 != sem->gatetime ? sem->gatetime
                  : GATETIME(self->state).absolute ? GATETIME(self->state).value
                  : GATETIME(self->state).step + GATETIME(self->state).value;
     int velocity = -1 != sem->velocity ? sem->velocity : VELOCITY(self->state);
 
-    self->builder->appendNote(self->builder, TICK(self->state), channel, noteNo, gatetime, velocity);
+    self->builder->appendNote(self->builder, TICK(self->state), self->state->channel, noteNo, gatetime, velocity);
 }
 
 static SEMList *findPattern(NAMidiSEMAnalyzer *self, const char *identifier)
