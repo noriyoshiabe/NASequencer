@@ -443,7 +443,7 @@ static void PlayerScanNoteOff(Player *self, int prevTick, int tick)
     while (iterator->hasNext(iterator)) {
         NoteEvent *event = iterator->next(iterator);
         int offTick = event->tick + event->gatetime;
-        if (prevTick <= offTick && offTick < tick) {
+        if (offTick < tick) {
             MixerSendNoteOff(self->mixer, event);
             NAArrayTraverseWithContext(self->observers, self, PlayerNotifySendNoteOff, event);
             iterator->remove(iterator);
