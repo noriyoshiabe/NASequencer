@@ -165,6 +165,12 @@ tempo
             n->tempo = $2;
             $$ = n;
         }
+    | TEMPO INTEGER
+        {
+            ASTTempo *n = node(Tempo, @$);
+            n->tempo = $2;
+            $$ = n;
+        }
     ;
       
 time
