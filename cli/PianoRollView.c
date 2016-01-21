@@ -250,7 +250,7 @@ static void PianoRollViewRenderTrack(PianoRollView *self, RenderContext *context
             break;
         }
 
-        for (int tick = note->tick; tick < note->tick + note->gatetime; tick += self->columnStep) {
+        for (int tick = note->tick; tick < note->tick + MAX(1, note->gatetime); tick += self->columnStep) {
             if (tick < context->from) {
                 continue;
             }
