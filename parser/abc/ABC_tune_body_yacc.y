@@ -259,7 +259,6 @@ grace_note_statement
     : decoration
     | note
     | broken_rhythm
-    | rest
     | tie
     | slur
     | dot

@@ -66,6 +66,7 @@ typedef struct _VoiceContext {
     } chord;
 
     bool inGraceNote;
+    int graceNoteLength;
 
     int lastBarTick;
 
@@ -521,7 +522,7 @@ static void visitNote(void *_self, SEMNote *sem)
         return;
     }
 
-    int velocity = voice->accent ? MIN(voice->velocity + 20, 127) : voice->velocity;
+    int velocity = voice->accent && !voice->inGraceNote ? MIN(voice->velocity + 20, 127) : voice->velocity;
 
     int step;
     if (!calcStep(self, voice, &sem->length, sem, &step)) {
@@ -537,6 +538,11 @@ static void visitNote(void *_self, SEMNote *sem)
         }
         voice->chord.step = MAX(voice->chord.step, step);
     }
+    else if (voice->inGraceNote) {
+        self->builder->appendNote(self->builder, voice->tick, voice->channel, noteNo, step, velocity);
+        voice->tick += step;
+        voice->graceNoteLength += step;
+    }
     else {
         if (voice->tie && processTie(self, voice, step, voice->channel, noteNo)) {
             flushPreviousPendingNoteWithoutTie(self, voice);
@@ -548,6 +554,7 @@ static void visitNote(void *_self, SEMNote *sem)
 
         voice->accent = false;
         voice->tie = false;
+        voice->graceNoteLength = 0;
         voice->tick += step;
     }
 }
@@ -585,7 +592,7 @@ static void visitRest(void *_self, SEMRest *sem)
         break;
     }
 
-    // TODO error in chord
+    // TODO error in chord or grace note
 
     flushPendingNote(self, voice);
     voice->tie = false;
@@ -756,6 +763,7 @@ static void visitChord(void *_self, SEMChord *sem)
 
     voice->accent = false;
     voice->tie = false;
+    voice->graceNoteLength = 0;
     voice->inChord = false;
 
     voice->tick += voice->chord.step;
@@ -939,9 +947,13 @@ static bool calcStep(ABCSEMAnalyzer *self, VoiceContext *voice, NoteLength *leng
         multiplier *= voice->tuplet->time;
         divider *= voice->tuplet->division;
 
-        if (!voice->inChord) {
+        if (!voice->inChord && !voice->inGraceNote) {
             popTupletStack(self, voice);
         }
+    }
+
+    if (voice->inGraceNote) {
+        divider *= 4;
     }
 
     if (0 != voice->unitNoteLength * multiplier % divider) {
@@ -951,6 +963,9 @@ static bool calcStep(ABCSEMAnalyzer *self, VoiceContext *voice, NoteLength *leng
     }
 
     *result = voice->unitNoteLength * multiplier / divider;
+    if (!voice->inGraceNote && voice->graceNoteLength < *result) {
+        *result -= voice->graceNoteLength;
+    }
     return true;
 }
 

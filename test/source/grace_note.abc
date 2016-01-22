@@ -13,4 +13,5 @@ C C [CDE] < {c} C
 C C [CDE] > {c} C
 C C [CDE] {c} < C
 C C [CDE] {c} > C
+BB {cde} C C
 BB {cdef} C
