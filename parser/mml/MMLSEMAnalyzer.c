@@ -87,8 +87,7 @@ static void appendPendingNote(MMLSEMAnalyzer *self, int tick, int channel, int n
 static void flushPendingNote(MMLSEMAnalyzer *self);
 static bool processTie(MMLSEMAnalyzer *self, int step, int channel, int noteNo);
 static void preprocessTieInChord(MMLSEMAnalyzer *self);
-static bool isTiedNoteExsit(MMLSEMAnalyzer *self);
-static void flushPendingNoteWithoutTie(MMLSEMAnalyzer *self);
+static void flushPreviousPendingNoteWithoutTie(MMLSEMAnalyzer *self, int tick);
 
 static Node *process(void *_self, Node *node)
 {
@@ -305,7 +304,7 @@ static void visitNote(void *_self, SEMNote *sem)
     }
     else {
         if (self->tie && processTie(self, step, self->channel, noteNo)) {
-            flushPendingNoteWithoutTie(self);
+            flushPreviousPendingNoteWithoutTie(self, self->tick);
         }
         else {
             flushPendingNote(self);
@@ -506,9 +505,7 @@ static void visitChord(void *_self, SEMChord *sem)
         node->accept(node, self);
     }
 
-    if (isTiedNoteExsit(self)) {
-        flushPendingNoteWithoutTie(self);
-    }
+    flushPreviousPendingNoteWithoutTie(self, self->tick);
 
     self->tie = false;
     self->inChord = false;
@@ -624,24 +621,12 @@ static void preprocessTieInChord(MMLSEMAnalyzer *self)
     }
 }
 
-static bool isTiedNoteExsit(MMLSEMAnalyzer *self)
+static void flushPreviousPendingNoteWithoutTie(MMLSEMAnalyzer *self, int tick)
 {
     NAIterator *iterator = NAArrayGetIterator(self->pendingNotes);
     while (iterator->hasNext(iterator)) {
         Note *note = iterator->next(iterator);
-        if (note->tied) {
-            return true;
-        }
-    }
-    return false;
-}
-
-static void flushPendingNoteWithoutTie(MMLSEMAnalyzer *self)
-{
-    NAIterator *iterator = NAArrayGetIterator(self->pendingNotes);
-    while (iterator->hasNext(iterator)) {
-        Note *note = iterator->next(iterator);
-        if (!note->tied) {
+        if (!note->tied && note->tick != tick) {
             self->builder->appendNote(self->builder, note->tick, note->channel, note->noteNo, note->gatetime, note->velocity);
             iterator->remove(iterator);
             free(note);
