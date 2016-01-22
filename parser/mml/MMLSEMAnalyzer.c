@@ -626,15 +626,14 @@ static void preprocessTieInChord(MMLSEMAnalyzer *self)
 
 static bool isTiedNoteExsit(MMLSEMAnalyzer *self)
 {
-    bool ret = false;
     NAIterator *iterator = NAArrayGetIterator(self->pendingNotes);
     while (iterator->hasNext(iterator)) {
         Note *note = iterator->next(iterator);
         if (note->tied) {
-            ret = true;
+            return true;
         }
     }
-    return ret;
+    return false;
 }
 
 static void flushPendingNoteWithoutTie(MMLSEMAnalyzer *self)
