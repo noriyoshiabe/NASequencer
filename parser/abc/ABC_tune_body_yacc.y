@@ -41,8 +41,7 @@ extern int ABC_tune_body_error(YYLTYPE *yylloc, yyscan_t scanner, const char *fi
     void *list;
 }
 
-%token <s>INLINE_FIELD ANNOTATION DECORATION NOTE REST REPEAT_BAR TUPLET CHORD_END
-%token <c>BROKEN_RHYTHM
+%token <s>INLINE_FIELD ANNOTATION DECORATION NOTE REST REPEAT_BAR TUPLET CHORD_END BROKEN_RHYTHM
 %token ACCIACCATURA
 %token EXTRA_SPACE RESERVED
 
@@ -52,7 +51,7 @@ extern int ABC_tune_body_error(YYLTYPE *yylloc, yyscan_t scanner, const char *fi
 %type <node> statement      grace_note_statement      chord_statement
 %type <list> statement_list grace_note_statement_list chord_statement_list
 
-%destructor { free($$); } INLINE_FIELD ANNOTATION DECORATION NOTE REST REPEAT_BAR TUPLET CHORD_END
+%destructor { free($$); } INLINE_FIELD ANNOTATION DECORATION NOTE REST REPEAT_BAR TUPLET CHORD_END BROKEN_RHYTHM
 
 %%
 
@@ -161,7 +160,8 @@ broken_rhythm
     : BROKEN_RHYTHM
         {
             ASTBrokenRhythm *n = node(BrokenRhythm, @$);
-            n->direction = $1;
+            n->direction = $1[0];
+            n->count = strlen($1);
             $$ = n;
         }
     ;

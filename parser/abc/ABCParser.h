@@ -38,6 +38,7 @@ typedef enum {
     ABCParseErrorMidiVoiceIdMissingInPart,
     ABCParseErrorInvalidCaluculatedNoteLength,
     ABCParseErrorInvalidNoteNumber,
+    ABCParseErrorIllegalBrokenRhythm,
     ABCParseErrorIllegalTie,
     ABCParseErrorIllegalOverlay,
     ABCParseErrorUnexpectedEOL,

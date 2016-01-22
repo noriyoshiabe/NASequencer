@@ -84,6 +84,7 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(ABCParseErrorMidiVoiceIdMissingInPart);
     CASE(ABCParseErrorInvalidCaluculatedNoteLength);
     CASE(ABCParseErrorInvalidNoteNumber);
+    CASE(ABCParseErrorIllegalBrokenRhythm);
     CASE(ABCParseErrorIllegalTie);
     CASE(ABCParseErrorIllegalOverlay);
     CASE(ABCParseErrorUnexpectedEOL);

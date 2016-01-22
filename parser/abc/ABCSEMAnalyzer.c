@@ -69,6 +69,8 @@ typedef struct _VoiceContext {
     bool inGraceNote;
     int graceNoteLength;
 
+    SEMBrokenRhythm *brokenRhythm;
+
     int lastBarTick;
 
     struct {
@@ -152,6 +154,7 @@ static void preprocessTieInChord(ABCSEMAnalyzer *self, VoiceContext *voice);
 static void flushPreviousPendingNoteWithoutTie(ABCSEMAnalyzer *self, VoiceContext *voice);
 static bool calcStep(ABCSEMAnalyzer *self, VoiceContext *voice, NoteLength *length, void *sem, int *result);
 static void popTupletStack(ABCSEMAnalyzer *self, VoiceContext *voice);
+static int calcBrokenRhythmOffset(SEMBrokenRhythm *sem, int step);
 
 static Node *process(void *self, Node *node)
 {
@@ -556,6 +559,7 @@ static void visitNote(void *_self, SEMNote *sem)
         voice->accent = false;
         voice->tie = false;
         voice->graceNoteLength = 0;
+        voice->brokenRhythm = NULL;
         voice->tick += step;
     }
 }
@@ -568,7 +572,32 @@ static void visitBrokenRhythm(void *_self, SEMBrokenRhythm *sem)
         return;
     }
 
-    // TODO
+    VoiceContext *voice = self->voice;
+
+    if (voice->brokenRhythm || 0 == NAArrayCount(voice->pendingNotes)) {
+        appendError(self, sem, ABCParseErrorIllegalBrokenRhythm, NULL);
+        return;
+    }
+
+    NAIterator *iterator;
+    int lastStep = 0;
+
+    iterator = NAArrayGetIterator(voice->pendingNotes);
+    while (iterator->hasNext(iterator)) {
+        Note *note = iterator->next(iterator);
+        lastStep = MAX(lastStep, note->gatetime);
+    }
+
+    int offset = calcBrokenRhythmOffset(sem, lastStep);
+
+    iterator = NAArrayGetIterator(voice->pendingNotes);
+    while (iterator->hasNext(iterator)) {
+        Note *note = iterator->next(iterator);
+        note->gatetime += offset;
+    }
+
+    self->voice->tick += offset;
+    self->voice->brokenRhythm = sem;
 }
 
 static void visitRest(void *_self, SEMRest *sem)
@@ -675,6 +704,7 @@ static void visitTie(void *_self, SEMTie *sem)
     
     if (self->voice->tie) {
         appendError(self, sem, ABCParseErrorIllegalTie, NULL);
+        return;
     }
 
     self->voice->tie = true;
@@ -764,6 +794,7 @@ static void visitChord(void *_self, SEMChord *sem)
     voice->accent = false;
     voice->tie = false;
     voice->graceNoteLength = 0;
+    voice->brokenRhythm = NULL;
     voice->inChord = false;
 
     voice->tick += voice->chord.step;
@@ -968,6 +999,11 @@ static bool calcStep(ABCSEMAnalyzer *self, VoiceContext *voice, NoteLength *leng
     }
 
     *result = voice->unitNoteLength * multiplier / divider;
+
+    if (voice->brokenRhythm) {
+        *result -= calcBrokenRhythmOffset(voice->brokenRhythm, *result);
+    }
+
     if (!voice->inGraceNote && voice->graceNoteLength < *result) {
         *result -= voice->graceNoteLength;
     }
@@ -982,6 +1018,19 @@ static void popTupletStack(ABCSEMAnalyzer *self, VoiceContext *voice)
             voice->tuplet = NAStackPop(voice->tupletStack);
         }
     }
+}
+
+static int calcBrokenRhythmOffset(SEMBrokenRhythm *sem, int step)
+{
+    int _step = step;
+    int increment = step;
+
+    for (int i = 0; i < sem->count; ++i) {
+        increment /= 2;
+        _step += increment * ('<' == sem->direction ? -1 : 1);
+    }
+
+    return _step - step;
 }
 
 static int VoiceIdComparator(const void *_id1, const void *_id2)

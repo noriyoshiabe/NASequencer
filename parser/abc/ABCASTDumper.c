@@ -311,7 +311,7 @@ static void visitNote(void *self, ASTNote *ast)
 
 static void visitBrokenRhythm(void *self, ASTBrokenRhythm *ast)
 {
-    dump(self, ast, CHAR(ast, direction), NULL);
+    dump(self, ast, CHAR(ast, direction), INTEGER(ast, count), NULL);
 }
 
 static void visitRest(void *self, ASTRest *ast)

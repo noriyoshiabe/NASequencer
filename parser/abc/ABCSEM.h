@@ -104,6 +104,7 @@ typedef struct _SEMNote {
 typedef struct _SEMBrokenRhythm {
     Node node;
     char direction;
+    int count;
 } SEMBrokenRhythm;
 
 typedef enum {

@@ -199,6 +199,7 @@ typedef struct _ASTNote {
 typedef struct _ASTBrokenRhythm {
     Node node;
     char direction;
+    int count;
 } ASTBrokenRhythm;
 
 typedef struct _ASTRest {

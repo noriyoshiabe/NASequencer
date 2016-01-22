@@ -207,7 +207,7 @@ static void visitNote(void *_self, SEMNote *sem)
 
 static void visitBrokenRhythm(void *self, SEMBrokenRhythm *sem)
 {
-    dump(self, sem, CHAR(sem, direction), NULL);
+    dump(self, sem, CHAR(sem, direction), INTEGER(sem, count), NULL);
 }
 
 static void visitRest(void *self, SEMRest *sem)

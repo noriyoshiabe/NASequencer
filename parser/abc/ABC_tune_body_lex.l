@@ -35,7 +35,7 @@
 INLINE_FIELD  \[[+[:alpha:]]:[^\]]*\]
 ANNOTATION    \"[^\"]*\"
 NOTE          (^^|^|=|_|__)?[a-gA-G](,|')*[[:digit:]]*(\/[[:digit:]]*)*
-BROKEN_RHYTHM <|>
+BROKEN_RHYTHM <{1,3}|>{1,3}
 REST          [xXzZ][[:digit:]]*(\/[[:digit:]]*)*
 REPEAT_BAR    [\|:\[\]]+([[:digit:]]+[-,[:digit:]]*)?
 ACCIACCATURA  \{\/
@@ -65,7 +65,7 @@ RESERVED      [#\*;\?@]
                 }
 
 {BROKEN_RHYTHM} {
-                    yylval->c = yytext[0];
+                    yylval->s = yytext;
                     return BROKEN_RHYTHM;
                 }
 

@@ -776,6 +776,7 @@ static void visitBrokenRhythm(void *_self, ASTBrokenRhythm *ast)
 
     SEMBrokenRhythm *bRhythm = node(BrokenRhythm, ast);
     bRhythm->direction = ast->direction;
+    bRhythm->count = ast->count;
     append(self->list, bRhythm);
 }
 
