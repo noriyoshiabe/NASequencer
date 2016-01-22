@@ -63,6 +63,7 @@ typedef struct _VoiceContext {
     bool inChord;
     struct {
         int step;
+        SEMChord *sem;
     } chord;
 
     bool inGraceNote;
@@ -743,6 +744,7 @@ static void visitChord(void *_self, SEMChord *sem)
 
     voice->inChord = true;
     voice->chord.step = 0;
+    voice->chord.sem = sem;
 
     if (voice->tie) {
         preprocessTieInChord(self, voice);
@@ -950,6 +952,11 @@ static bool calcStep(ABCSEMAnalyzer *self, VoiceContext *voice, NoteLength *leng
         if (!voice->inChord && !voice->inGraceNote) {
             popTupletStack(self, voice);
         }
+    }
+
+    if (voice->inChord) {
+        multiplier *= voice->chord.sem->length.multiplier;
+        divider *= voice->chord.sem->length.divider;
     }
 
     if (voice->inGraceNote) {
