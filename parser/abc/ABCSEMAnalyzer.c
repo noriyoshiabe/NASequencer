@@ -593,8 +593,6 @@ static void visitRest(void *_self, SEMRest *sem)
         break;
     }
 
-    // TODO error in chord or grace note
-
     flushPendingNote(self, voice);
     voice->tie = false;
     voice->tick += step;

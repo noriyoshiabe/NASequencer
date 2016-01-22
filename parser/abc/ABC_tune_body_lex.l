@@ -30,6 +30,7 @@
 %x x_COMMENT
 %x x_END
 %x x_DECORATION
+%x x_CHORD
 
 INLINE_FIELD  \[[+[:alpha:]]:[^\]]*\]
 ANNOTATION    \"[^\"]*\"
@@ -39,7 +40,8 @@ REST          [xXzZ][[:digit:]]*(\/[[:digit:]]*)*
 REPEAT_BAR    [\|:\[\]]+([[:digit:]]+[-,[:digit:]]*)?
 ACCIACCATURA  \{\/
 TUPLET        \([[:digit:]]+(:[[:digit:]]*)?(:[[:digit:]]*)?
-CHORD         \[({NOTE}|\ )*{NOTE}({NOTE}|\ )*\][[:digit:]]*(\/[[:digit:]]*)?
+CHORD         \[[^\]\[]+\][[:digit:]]*(\/[[:digit:]]*)?
+CHORD_END     \][[:digit:]]*(\/[[:digit:]]*)?
 EXTRA_SPACE   [y][[:digit:]]*
 RESERVED      [#\*;\?@]
 
@@ -85,8 +87,9 @@ RESERVED      [#\*;\?@]
                 }
 
 {CHORD}         {
-                    yylval->s = strdup(yytext);
-                    return CHORD;
+                    yycolumn -= yyleng;
+                    yyless(0);
+                    BEGIN(x_CHORD);
                 }
 
 {EXTRA_SPACE}   { return EXTRA_SPACE; }
@@ -178,5 +181,19 @@ RESERVED      [#\*;\?@]
                                 }
                             }
 <x_DECORATION>[[:space:]]   { return 1; }
+
+<x_CHORD>"["              { return '['; }
+<x_CHORD>{NOTE}           {
+                              yylval->s = strdup(yytext);
+                              return NOTE;
+                          }
+<x_CHORD>"."              { }
+<x_CHORD>!.+!             { }
+<x_CHORD>{CHORD_END}      {
+                              BEGIN(INITIAL);
+                              yylval->s = strdup(yytext + 1);
+                              return CHORD_END;
+                          }
+<x_CHORD>.                { return 1; }
 
 %%

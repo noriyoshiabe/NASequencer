@@ -41,7 +41,7 @@ extern int ABC_tune_body_error(YYLTYPE *yylloc, yyscan_t scanner, const char *fi
     void *list;
 }
 
-%token <s>INLINE_FIELD ANNOTATION DECORATION NOTE REST REPEAT_BAR TUPLET CHORD
+%token <s>INLINE_FIELD ANNOTATION DECORATION NOTE REST REPEAT_BAR TUPLET CHORD_END
 %token <c>BROKEN_RHYTHM
 %token ACCIACCATURA
 %token EXTRA_SPACE RESERVED
@@ -49,10 +49,10 @@ extern int ABC_tune_body_error(YYLTYPE *yylloc, yyscan_t scanner, const char *fi
 %type <node> inline_field line_break annotation decoration note broken_rhythm rest repeat_bar
 %type <node> tie slur dot grace_note tuplet chord extra_space overlay reserved
 
-%type <node> statement      grace_note_statement
-%type <list> statement_list grace_note_statement_list
+%type <node> statement      grace_note_statement      chord_statement
+%type <list> statement_list grace_note_statement_list chord_statement_list
 
-%destructor { free($$); } INLINE_FIELD ANNOTATION DECORATION NOTE REST REPEAT_BAR TUPLET CHORD
+%destructor { free($$); } INLINE_FIELD ANNOTATION DECORATION NOTE REST REPEAT_BAR TUPLET CHORD_END
 
 %%
 
@@ -280,23 +280,39 @@ tuplet
     ;
 
 chord
-    : CHORD
+    : '[' chord_statement_list CHORD_END
         {
-            char *chordStart = $1 + 1;
-            char *chordEnd = strrchr($1, ']');
-            *chordEnd = '\0';
-
             ASTChord *n = node(Chord, @$);
-            n->lengthString = strdup(chordEnd + 1);
-
-            Node *tuneBody = ABCParserParseTuneBody(ABC_tune_body_get_extra(scanner), filepath, line, @$.first_column + columnOffset, chordStart);
-            n->node.children = tuneBody->children;
-            
-            tuneBody->children = NULL;
-            NodeRelease(tuneBody);
-
-            free($1);
+            n->lengthString = $3;
+            n->node.children = $2;
             $$ = n;
+        }
+    ;
+
+chord_statement_list
+    : chord_statement
+        {
+            $$ = list();
+            if ($1) {
+                listAppend($$, $1);
+            }
+        }
+    | chord_statement_list chord_statement
+        {
+            $$ = $1;
+            if ($2) {
+                listAppend($$, $2);
+            }
+        }
+    ;
+
+chord_statement
+    : note
+    | error
+        {
+            yyerrok;
+            yyclearin;
+            $$ = NULL;
         }
     ;
 
