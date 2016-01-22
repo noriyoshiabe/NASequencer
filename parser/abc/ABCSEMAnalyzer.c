@@ -147,8 +147,7 @@ static void appendPendingNote(ABCSEMAnalyzer *self, VoiceContext *voice, void *s
 static void flushPendingNote(ABCSEMAnalyzer *self, VoiceContext *voice);
 static bool processTie(ABCSEMAnalyzer *self, VoiceContext *voice, int step, int channel, int noteNo);
 static void preprocessTieInChord(ABCSEMAnalyzer *self, VoiceContext *voice);
-static bool isTiedNoteExsit(ABCSEMAnalyzer *self, VoiceContext *voice);
-static void flushPendingNoteWithoutTie(ABCSEMAnalyzer *self, VoiceContext *voice);
+static void flushPreviousPendingNoteWithoutTie(ABCSEMAnalyzer *self, VoiceContext *voice);
 static bool calcStep(ABCSEMAnalyzer *self, VoiceContext *voice, NoteLength *length, void *sem, int *result);
 static void popTupletStack(ABCSEMAnalyzer *self, VoiceContext *voice);
 
@@ -522,16 +521,35 @@ static void visitNote(void *_self, SEMNote *sem)
         return;
     }
 
+    int velocity = voice->accent ? MIN(voice->velocity + 20, 127) : voice->velocity;
+
     int step;
     if (!calcStep(self, voice, &sem->length, sem, &step)) {
         return;
     }
 
-    flushPendingNote(self, voice);
-    appendPendingNote(self, voice, sem, voice->tick, voice->channel, noteNo, step, voice->velocity);
+    if (voice->inChord) {
+        if (voice->tie && processTie(self, voice, step, voice->channel, noteNo)) {
+            ;
+        }
+        else {
+            appendPendingNote(self, voice, sem, voice->tick, voice->channel, noteNo, step, velocity);
+        }
+        voice->chord.step = MAX(voice->chord.step, step);
+    }
+    else {
+        if (voice->tie && processTie(self, voice, step, voice->channel, noteNo)) {
+            flushPreviousPendingNoteWithoutTie(self, voice);
+        }
+        else {
+            flushPendingNote(self, voice);
+            appendPendingNote(self, voice, sem, voice->tick, voice->channel, noteNo, step, velocity);
+        }
 
-    voice->tie = false;
-    voice->tick += step;
+        voice->accent = false;
+        voice->tie = false;
+        voice->tick += step;
+    }
 }
 
 static void visitBrokenRhythm(void *_self, SEMBrokenRhythm *sem)
@@ -566,6 +584,8 @@ static void visitRest(void *_self, SEMRest *sem)
         step = RESOLUTION * 4 * self->time.numerator / self->time.denominator;
         break;
     }
+
+    // TODO error in chord
 
     flushPendingNote(self, voice);
     voice->tie = false;
@@ -715,8 +735,14 @@ static void visitChord(void *_self, SEMChord *sem)
     VoiceContext *voice = self->voice;
 
     voice->inChord = true;
+    voice->chord.step = 0;
 
-    flushPendingNote(self, voice);
+    if (voice->tie) {
+        preprocessTieInChord(self, voice);
+    }
+    else {
+        flushPendingNote(self, voice);
+    }
 
     NAIterator *iterator = NAArrayGetIterator(sem->node.children);
     while (iterator->hasNext(iterator)) {
@@ -724,9 +750,15 @@ static void visitChord(void *_self, SEMChord *sem)
         node->accept(node, self);
     }
 
+    flushPreviousPendingNoteWithoutTie(self, voice);
+
     popTupletStack(self, voice);
 
+    voice->accent = false;
+    voice->tie = false;
     voice->inChord = false;
+
+    voice->tick += voice->chord.step;
 }
 
 static void visitOverlay(void *_self, SEMOverlay *sem)
@@ -885,24 +917,12 @@ static void preprocessTieInChord(ABCSEMAnalyzer *self, VoiceContext *voice)
     }
 }
 
-static bool isTiedNoteExsit(ABCSEMAnalyzer *self, VoiceContext *voice)
+static void flushPreviousPendingNoteWithoutTie(ABCSEMAnalyzer *self, VoiceContext *voice)
 {
     NAIterator *iterator = NAArrayGetIterator(voice->pendingNotes);
     while (iterator->hasNext(iterator)) {
         Note *note = iterator->next(iterator);
-        if (note->tied) {
-            return true;
-        }
-    }
-    return false;
-}
-
-static void flushPendingNoteWithoutTie(ABCSEMAnalyzer *self, VoiceContext *voice)
-{
-    NAIterator *iterator = NAArrayGetIterator(voice->pendingNotes);
-    while (iterator->hasNext(iterator)) {
-        Note *note = iterator->next(iterator);
-        if (!note->tied) {
+        if (!note->tied && note->tick != voice->tick) {
             self->builder->appendNote(self->builder, note->tick, note->channel, note->noteNo, note->gatetime, note->velocity);
             iterator->remove(iterator);
             free(note);
