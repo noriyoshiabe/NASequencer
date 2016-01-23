@@ -298,30 +298,26 @@ bool ExporterWriteToSMF(Exporter *self, const char *filepath)
 
 static void ExporterBuildAudioSample(Exporter *self, ExporterAudioBuffer *audioBuffer, void (*callback)(Exporter *, int32_t *, int, void *), void *context)
 {
+#define __TIME_MEASURE__ 1
+#if 1 == __TIME_MEASURE__
+    void *time = NALogTimeMeasureStart();
+#endif
     Mixer *mixer = MixerCreate((AudioOut *)audioBuffer);
 
     double usecPerSample = 1.0 / ExporterAudioBufferGetSampleRate((AudioOut *)audioBuffer) * 1000.0 * 1000.0;
+    double usecPerBuffer = usecPerSample * AUDIO_BUFFER_SIZE;
     int32_t length = TimeTableLength(self->sequence->timeTable);
 
     int bufferCount = 1;
-    int64_t prevUsec = 0;
     int32_t tick = 0;
+    int64_t prevTick = 0;
     int index = 0;
     int progress = -1;
 
     int16_t samples[AUDIO_BUFFER_SIZE][2];
 
     while (tick < length) {
-        int64_t usec = usecPerSample * AUDIO_BUFFER_SIZE * bufferCount;
-
-        if (__IsTrace__) {
-            int sec = usec / 1000000;
-            struct timeval tv;
-            gettimeofday(&tv, NULL);
-            printf("%d%% %d:%02d now=%ld\n", (tick * 100) / length, sec / 60, sec % 60, tv.tv_sec);
-        }
-
-        int32_t prevTick = TimeTableMicroSec2Tick(self->sequence->timeTable, prevUsec);
+        int64_t usec = usecPerBuffer * bufferCount;
         tick = TimeTableMicroSec2Tick(self->sequence->timeTable, usec);
 
         int count = NAArrayCount(self->eventsToWrite);
@@ -368,12 +364,8 @@ static void ExporterBuildAudioSample(Exporter *self, ExporterAudioBuffer *audioB
         audioBuffer->callback(audioBuffer->receiver, audioBuffer->buffer, AUDIO_BUFFER_SIZE);
 
         for (int i = 0; i < AUDIO_BUFFER_SIZE; ++i) {
-            int32_t L = round(0.0f <= audioBuffer->buffer[i].L
-                    ? (double)audioBuffer->buffer[i].L * 32767.0
-                    : (double)audioBuffer->buffer[i].L * 32768.0);
-            int32_t R = round(0.0f <= audioBuffer->buffer[i].R
-                    ? (double)audioBuffer->buffer[i].R * 32767.0
-                    : (double)audioBuffer->buffer[i].R * 32768.0);
+            int32_t L = round((double)audioBuffer->buffer[i].L * 32768.0);
+            int32_t R = round((double)audioBuffer->buffer[i].R * 32768.0);
 
             samples[i][0] = Clip(L, -32768, 32767);
             samples[i][1] = Clip(R, -32768, 32767);
@@ -381,7 +373,7 @@ static void ExporterBuildAudioSample(Exporter *self, ExporterAudioBuffer *audioB
 
         callback(self, (int32_t *)samples, AUDIO_BUFFER_SIZE, context);
 
-        prevUsec = usec;
+        prevTick = tick;
         ++bufferCount;
 
         int _progress = tick * 100 / (length - 1);
@@ -392,6 +384,9 @@ static void ExporterBuildAudioSample(Exporter *self, ExporterAudioBuffer *audioB
     }
 
     MixerDestroy(mixer);
+#if 1 == __TIME_MEASURE__
+    NALogTimeMeasureFinish(time);
+#endif
 }
 
 static void ExporterBuildAudioSampleCallbackWave(Exporter *self, int32_t *data, int count, void *context)
