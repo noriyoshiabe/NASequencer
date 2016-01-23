@@ -35,6 +35,9 @@ extern void MixerSendExpression(Mixer *self, ExpressionEvent *event);
 extern void MixerSendDetune(Mixer *self, DetuneEvent *event);
 extern void MixerSendSynth(Mixer *self, SynthEvent *event);
 
+extern void MixerSetLevelEnable(Mixer *self, bool enable);
+extern Level MixerGetLevel(Mixer *self);
+
 extern NAArray *MixerGetChannels(Mixer *self);
 
 extern int MixerChannelGetNumber(MixerChannel *self);

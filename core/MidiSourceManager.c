@@ -322,6 +322,7 @@ static PresetInfo *DefaultMidiSourceGetPresetInfo(void *self, uint8_t channel)
 }
 
 static void DefaultMidiSourceSetPresetInfo(void *self, uint8_t channel, PresetInfo *presetInfo) { }
+static void DefaultMidiSourceSetLevelEnable(void *self, bool enable) { }
 static Level DefaultMidiSourceGetMasterLevel(void *self) { return (Level){0, 0}; }
 static Level DefaultMidiSourceGetChannelLevel(void *self, uint8_t channel) { return (Level){0, 0}; }
 static void DefaultMidiSourceSetMasterGain(void *self, int16_t cb) { }
@@ -351,6 +352,7 @@ static MidiSource DefaultMidiSource = {
     DefaultMidiSourceGetPresetInfos,
     DefaultMidiSourceGetPresetInfo,
     DefaultMidiSourceSetPresetInfo,
+    DefaultMidiSourceSetLevelEnable,
     DefaultMidiSourceGetMasterLevel,
     DefaultMidiSourceGetChannelLevel,
     DefaultMidiSourceSetMasterGain,

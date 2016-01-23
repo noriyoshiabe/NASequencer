@@ -303,6 +303,7 @@ static void ExporterBuildAudioSample(Exporter *self, ExporterAudioBuffer *audioB
     void *time = NALogTimeMeasureStart();
 #endif
     Mixer *mixer = MixerCreate((AudioOut *)audioBuffer);
+    MixerSetLevelEnable(mixer, false);
 
     double usecPerSample = 1.0 / ExporterAudioBufferGetSampleRate((AudioOut *)audioBuffer) * 1000.0 * 1000.0;
     double usecPerBuffer = usecPerSample * AUDIO_BUFFER_SIZE;

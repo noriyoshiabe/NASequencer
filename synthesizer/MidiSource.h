@@ -51,6 +51,7 @@ struct _MidiSource {
     PresetInfo *(*getPresetInfo)(void *self, uint8_t channel);
     void (*setPresetInfo)(void *self, uint8_t channel, PresetInfo *presetInfo);
 
+    void (*setLevelEnable)(void *self, bool enable);
     Level (*getMasterLevel)(void *self);
     Level (*getChannelLevel)(void *self, uint8_t channel);
 

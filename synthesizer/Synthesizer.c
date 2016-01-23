@@ -47,6 +47,7 @@ struct _Synthesizer {
     int32_t callbackListLength;
 
     struct {
+        bool enable;
         Level master;
         Level channels[CHANNEL_COUNT];
     } level;
@@ -171,6 +172,11 @@ static PresetInfo *getPresetInfo(void *_self, uint8_t channel)
     return self->presetInfos[index];
 }
 
+static void setLevelEnable(void *self, bool enable)
+{
+    ((Synthesizer *)self)->level.enable = enable;
+}
+
 static Level getMasterLevel(void *self)
 {
     return ((Synthesizer *)self)->level.master;
@@ -284,6 +290,7 @@ Synthesizer *SynthesizerCreate(SoundFont *sf, double sampleRate)
     self->srcVtbl.getPresetInfos = getPresetInfos;
     self->srcVtbl.getPresetInfo = getPresetInfo;
     self->srcVtbl.setPresetInfo = setPresetInfo;
+    self->srcVtbl.setLevelEnable = setLevelEnable;
     self->srcVtbl.getMasterLevel = getMasterLevel;
     self->srcVtbl.getChannelLevel = getChannelLevel;
     self->srcVtbl.setMasterGain = setMasterGain;
@@ -335,6 +342,8 @@ Synthesizer *SynthesizerCreate(SoundFont *sf, double sampleRate)
             ChannelInitialize(&self->channels[i], i, self->presets[0]);
         }
     }
+
+    self->level.enable = true;
 
     return self;
 }
@@ -631,7 +640,9 @@ static void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer
             reverb.L += sample.L * reverbSend;
             reverb.R += sample.R * reverbSend;
 
-            LevelMaterAddToChannel(&levelMater, voice->channel->number, &sample);
+            if (self->level.enable) {
+                LevelMaterAddToChannel(&levelMater, voice->channel->number, &sample);
+            }
 
             VoiceIncrementSample(voice);
 
@@ -656,11 +667,15 @@ static void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer
         buffer[i].L += master.L;
         buffer[i].R += master.R;
 
-        LevelMaterUpdate(&levelMater, &master);
+        if (self->level.enable) {
+            LevelMaterUpdate(&levelMater, &master);
+        }
     }
 
-    LevelMaterNormalize(&levelMater, &self->level.master, self->level.channels);
-    SynthesizerNotifyEvent(self, MidiSourceEventChangeLevelMater, &self->level.master, self->level.channels);
+    if (self->level.enable) {
+        LevelMaterNormalize(&levelMater, &self->level.master, self->level.channels);
+        SynthesizerNotifyEvent(self, MidiSourceEventChangeLevelMater, &self->level.master, self->level.channels);
+    }
 
     self->tick += count;
 }

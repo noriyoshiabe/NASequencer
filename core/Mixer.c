@@ -17,6 +17,7 @@ struct _Mixer {
     AudioOut *audioOut;
     NAArray *observers;
     NAArray *channels;
+    bool levelEnable;
     Level level;
     NAMap *sourceMap;
 
@@ -77,6 +78,8 @@ Mixer *MixerCreate(AudioOut *audioOut)
     }
 
     self->audioOut->registerCallback(self->audioOut, MixerAudioCallback, self);
+
+    self->levelEnable = true;
 
     return self;
 }
@@ -284,6 +287,23 @@ void MixerSendSynth(Mixer *self, SynthEvent *event)
     }
 }
 
+void MixerSetLevelEnable(Mixer *self, bool enable)
+{
+    self->levelEnable = enable;
+
+    NAIterator *iterator = NAMapGetIterator(self->sourceMap);
+    while (iterator->hasNext(iterator)) {
+        NAMapEntry *entry = iterator->next(iterator);
+        MidiSource *source = entry->value;
+        source->setLevelEnable(source, enable);
+    }
+}
+
+Level MixerGetLevel(Mixer *self)
+{
+    return self->level;
+}
+
 NAArray *MixerGetChannels(Mixer *self)
 {
     return self->channels;
@@ -300,6 +320,7 @@ static void MixerProcessMessage(Mixer *self)
                 NAArrayAppend(self->activeSources, msg.data);
 
                 MidiSource *source = msg.data;
+                source->setLevelEnable(source, self->levelEnable);
                 source->registerCallback(source, MixerMidiSourceCallback, self);
             }
             break;
@@ -328,31 +349,40 @@ static void MixerAudioCallback(void *receiver, AudioSample *buffer, uint32_t cou
 {
     Mixer *self = receiver;
 
-    AudioSample samples[count];
-    AudioSample *p = samples;
+    if (self->levelEnable) {
+        AudioSample samples[count];
+        AudioSample *p = samples;
 
-    for (int i = 0; i < count; ++i) {
-        *p++ = (AudioSample){0, 0};
+        for (int i = 0; i < count; ++i) {
+            *p++ = (AudioSample){0, 0};
+        }
+
+        NAIterator *iterator = NAArrayGetIterator(self->activeSources);
+        while (iterator->hasNext(iterator)) {
+            MidiSource *source = iterator->next(iterator);
+            source->computeAudioSample(source, samples, count);
+        }
+
+        AudioSample valueLevel = {0, 0};
+
+        for (int i = 0; i < count; ++i) {
+            buffer[i].L += samples[i].L;
+            buffer[i].R += samples[i].R;
+
+            valueLevel.L = MAX(valueLevel.L, fabs(samples[i].L));
+            valueLevel.R = MAX(valueLevel.R, fabs(samples[i].R));
+        }
+
+        self->level.L = Value2cB(valueLevel.L);
+        self->level.R = Value2cB(valueLevel.R);
     }
-
-    NAIterator *iterator = NAArrayGetIterator(self->activeSources);
-    while (iterator->hasNext(iterator)) {
-        MidiSource *source = iterator->next(iterator);
-        source->computeAudioSample(source, samples, count);
+    else {
+        NAIterator *iterator = NAArrayGetIterator(self->activeSources);
+        while (iterator->hasNext(iterator)) {
+            MidiSource *source = iterator->next(iterator);
+            source->computeAudioSample(source, buffer, count);
+        }
     }
-
-    AudioSample valueLevel = {0, 0};
-
-    for (int i = 0; i < count; ++i) {
-        buffer[i].L += samples[i].L;
-        buffer[i].R += samples[i].R;
-
-        valueLevel.L = MAX(valueLevel.L, fabs(samples[i].L));
-        valueLevel.R = MAX(valueLevel.R, fabs(samples[i].R));
-    }
-
-    self->level.L = Value2cB(valueLevel.L);
-    self->level.R = Value2cB(valueLevel.R);
 
     MixerProcessMessage(self);
 }
