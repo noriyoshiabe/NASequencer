@@ -150,7 +150,7 @@ static int VoiceIdComparator(const void *_id1, const void *_id2);
 static void appendPendingNote(ABCSEMAnalyzer *self, VoiceContext *voice, void *sem, int tick, int channel, int noteNo, int gatetime, int velocity);
 static void flushPendingNote(ABCSEMAnalyzer *self, VoiceContext *voice);
 static bool processTie(ABCSEMAnalyzer *self, VoiceContext *voice, int step, int channel, int noteNo);
-static void preprocessTieInChord(ABCSEMAnalyzer *self, VoiceContext *voice);
+static void preprocessTie(ABCSEMAnalyzer *self, VoiceContext *voice);
 static void flushPreviousPendingNoteWithoutTie(ABCSEMAnalyzer *self, VoiceContext *voice);
 static bool calcStep(ABCSEMAnalyzer *self, VoiceContext *voice, NoteLength *length, void *sem, int *result);
 static void popTupletStack(ABCSEMAnalyzer *self, VoiceContext *voice);
@@ -548,6 +548,8 @@ static void visitNote(void *_self, SEMNote *sem)
         voice->graceNoteLength += step;
     }
     else {
+        preprocessTie(self, voice);
+
         if (voice->tie && processTie(self, voice, step, voice->channel, noteNo)) {
             flushPreviousPendingNoteWithoutTie(self, voice);
         }
@@ -775,7 +777,7 @@ static void visitChord(void *_self, SEMChord *sem)
     voice->chord.sem = sem;
 
     if (voice->tie) {
-        preprocessTieInChord(self, voice);
+        preprocessTie(self, voice);
     }
     else {
         flushPendingNote(self, voice);
@@ -947,7 +949,7 @@ static bool processTie(ABCSEMAnalyzer *self, VoiceContext *voice, int step, int 
     return ret;
 }
 
-static void preprocessTieInChord(ABCSEMAnalyzer *self, VoiceContext *voice)
+static void preprocessTie(ABCSEMAnalyzer *self, VoiceContext *voice)
 {
     NAIterator *iterator = NAArrayGetIterator(voice->pendingNotes);
     while (iterator->hasNext(iterator)) {
@@ -961,7 +963,7 @@ static void flushPreviousPendingNoteWithoutTie(ABCSEMAnalyzer *self, VoiceContex
     NAIterator *iterator = NAArrayGetIterator(voice->pendingNotes);
     while (iterator->hasNext(iterator)) {
         Note *note = iterator->next(iterator);
-        if (!note->tied && note->tick != voice->tick) {
+        if (!note->tied && note->tick < voice->tick) {
             self->builder->appendNote(self->builder, note->tick, note->channel, note->noteNo, note->gatetime, note->velocity);
             iterator->remove(iterator);
             free(note);

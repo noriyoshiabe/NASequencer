@@ -86,7 +86,7 @@ typedef struct _MMLSEMAnalyzer {
 static void appendPendingNote(MMLSEMAnalyzer *self, int tick, int channel, int noteNo, int gatetime, int velocity);
 static void flushPendingNote(MMLSEMAnalyzer *self);
 static bool processTie(MMLSEMAnalyzer *self, int step, int channel, int noteNo);
-static void preprocessTieInChord(MMLSEMAnalyzer *self);
+static void preprocessTie(MMLSEMAnalyzer *self);
 static void flushPreviousPendingNoteWithoutTie(MMLSEMAnalyzer *self, int tick);
 
 static Node *process(void *_self, Node *node)
@@ -303,6 +303,8 @@ static void visitNote(void *_self, SEMNote *sem)
         self->chord.step = MAX(self->chord.step, step + self->chord.offset);
     }
     else {
+        preprocessTie(self);
+
         if (self->tie && processTie(self, step, self->channel, noteNo)) {
             flushPreviousPendingNoteWithoutTie(self, self->tick);
         }
@@ -493,7 +495,7 @@ static void visitChord(void *_self, SEMChord *sem)
     self->chord.step = 0;
 
     if (self->tie) {
-        preprocessTieInChord(self);
+        preprocessTie(self);
     }
     else {
         flushPendingNote(self);
@@ -612,7 +614,7 @@ static bool processTie(MMLSEMAnalyzer *self, int step, int channel, int noteNo)
     return ret;
 }
 
-static void preprocessTieInChord(MMLSEMAnalyzer *self)
+static void preprocessTie(MMLSEMAnalyzer *self)
 {
     NAIterator *iterator = NAArrayGetIterator(self->pendingNotes);
     while (iterator->hasNext(iterator)) {
@@ -626,7 +628,7 @@ static void flushPreviousPendingNoteWithoutTie(MMLSEMAnalyzer *self, int tick)
     NAIterator *iterator = NAArrayGetIterator(self->pendingNotes);
     while (iterator->hasNext(iterator)) {
         Note *note = iterator->next(iterator);
-        if (!note->tied && note->tick != tick) {
+        if (!note->tied && note->tick < tick) {
             self->builder->appendNote(self->builder, note->tick, note->channel, note->noteNo, note->gatetime, note->velocity);
             iterator->remove(iterator);
             free(note);
