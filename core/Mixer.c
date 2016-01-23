@@ -392,6 +392,7 @@ static void MixerMidiSourceCallback(void *receiver, MidiSource *source, MidiSour
     Mixer *self = receiver;
 
     switch (event) {
+    case MidiSourceEventChangeMasterGain:
     case MidiSourceEventChangeMasterVolume:
         break;
     case MidiSourceEventChangeVolume:
