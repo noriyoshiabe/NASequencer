@@ -129,7 +129,6 @@ statement
     | chord
     | error
         {
-            yyclearin;
             $$ = NULL;
         }
     ;

@@ -118,7 +118,6 @@ statement
     | expand
     | error
         {
-            yyclearin;
             $$ = NULL;
         }
     | ';'
