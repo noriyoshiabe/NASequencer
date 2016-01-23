@@ -133,6 +133,24 @@ void SoundFontDestroy(SoundFont *self)
 typedef bool (*Processer)(SoundFont *, FILE *, uint32_t, uint32_t);
 static Processer findProcesser(uint32_t chunkID);
 
+static bool SoundFontValidate(SoundFont *self)
+{
+    if (0 == self->ifil.wMajor && 0 == self->ifil.wMinor) return false;
+
+    if (!self->INAM) return false;
+    if (!self->phdr) return false;
+    if (!self->pbag) return false;
+    if (!self->pmod) return false;
+    if (!self->pgen) return false;
+    if (!self->inst) return false;
+    if (!self->ibag) return false;
+    if (!self->imod) return false;
+    if (!self->igen) return false;
+    if (!self->shdr) return false;
+
+    return true;
+}
+
 SoundFont *SoundFontRead(const char *filepath, SoundFontError *error)
 {
     const uint32_t ListTypes[] = {TypeID_INFO, TypeID_sdta, TypeID_pdta};
@@ -202,6 +220,11 @@ SoundFont *SoundFontRead(const char *filepath, SoundFontError *error)
             }
             break;
         }
+    }
+
+    if (!SoundFontValidate(self)) {
+        _error = SoundFontErrorInvalidFileFormat;
+        goto ERROR_2;
     }
 
     fclose(fp);
