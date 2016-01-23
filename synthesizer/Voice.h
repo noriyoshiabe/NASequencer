@@ -66,6 +66,15 @@ typedef struct _Voice {
     int16_t chorusEffectsSend;
     int16_t reverbEffectsSend;
 
+    struct {
+        double chorusEffectsSend;
+        double reverbEffectsSend;
+        double leftAmplifier;
+        double rightAmplifier;
+        double q_cB;
+        double initialAttenuationValue;
+    } computed;
+
     struct _Voice *next;
     struct _Voice *prev;
 } Voice;

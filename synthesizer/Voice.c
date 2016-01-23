@@ -156,6 +156,23 @@ void VoiceUpdateRuntimeParams(Voice* self)
     self->chorusEffectsSend = VoiceGeneratorValue(self, SFGeneratorType_chorusEffectsSend);
     self->reverbEffectsSend = VoiceGeneratorValue(self, SFGeneratorType_reverbEffectsSend);
 
+    self->computed.chorusEffectsSend = (double)self->chorusEffectsSend * 0.001;
+    self->computed.reverbEffectsSend = (double)self->reverbEffectsSend * 0.001;
+
+    int16_t pan = Clip(self->pan, -500, 500);
+    double coef = M_PI / 2.0 / 1000.0;
+    self->computed.leftAmplifier = sin(coef * (-pan + 500));
+    self->computed.rightAmplifier = sin(coef * (pan + 500));
+    self->computed.q_cB = Clip(self->initialFilterQ, 0, 960);
+
+    // Excerpt from fluid_synth
+    //   `Alternate attenuation scale used by EMU10K1 cards when setting the attenuation at the preset or instrument level within the SoundFont bank.`
+    // And TiMidity++ comments it out!! that implementation for initialAttenuation.
+    // This is not doucmented on SF2.4 specification but probably many major soundfont is tunend with EMU10K1's specs.
+    const double AlternateAttenuationScale = 0.4;
+    double attenuation = self->initialAttenuation * AlternateAttenuationScale;
+    self->computed.initialAttenuationValue = cBAttn2Value(attenuation);
+
     EnvelopeUpdateRuntimeParams(&self->modEnv,
             VoiceGeneratorValue(self, SFGeneratorType_delayModEnv),
             VoiceGeneratorValue(self, SFGeneratorType_attackModEnv),
@@ -239,35 +256,21 @@ AudioSample VoiceComputeSample(Voice *self)
 
     double normalized = ((double)indexSample * (1.0 - over) + (double)nextSample * over) / (double)0x7FFFFF;
 
-    int16_t pan = Clip(self->pan, -500, 500);
-    double coef = M_PI / 2.0 / 1000.0;
-    double left = sin(coef * (-pan + 500));
-    double right = sin(coef * (pan + 500));
-
     AudioSample sample;
-    sample.L = normalized * left;
-    sample.R = normalized * right;
+    sample.L = normalized * self->computed.leftAmplifier;
+    sample.R = normalized * self->computed.rightAmplifier;
 
     double frequency_cent = self->initialFilterFc;
     frequency_cent += self->modLfoToFilterFc * LFOValue(&self->modLfo);
     frequency_cent += self->modEnvToFilterFc * EnvelopeValue(&self->modEnv);
     frequency_cent = Clip(frequency_cent, 1500.0, 13500.0);
 
-    double q_cB = Clip(self->initialFilterQ, 0, 960);
-
-    LowPassFilterCalcLPFCoefficient(&self->LPF, self->sampleRate, frequency_cent, q_cB);
+    LowPassFilterCalcLPFCoefficient(&self->LPF, self->sampleRate, frequency_cent, self->computed.q_cB);
     sample = LowPassFilterApply(&self->LPF, sample);
   
-    // Excerpt from fluid_synth
-    //   `Alternate attenuation scale used by EMU10K1 cards when setting the attenuation at the preset or instrument level within the SoundFont bank.`
-    // And TiMidity++ comments it out!! that implementation for initialAttenuation.
-    // This is not doucmented on SF2.4 specification but probably many major soundfont is tunend with EMU10K1's specs.
-    const double AlternateAttenuationScale = 0.4;
-
-    double attenuation = self->initialAttenuation * AlternateAttenuationScale;
-    double volume = cBAttn2Value(attenuation);
-    volume *= cB2Value(self->modLfoToVolume * LFOValue(&self->modLfo));
-    volume *= EnvelopeValue(&self->volEnv);
+    double volume = self->computed.initialAttenuationValue
+        * cB2Value(self->modLfoToVolume * LFOValue(&self->modLfo))
+        * EnvelopeValue(&self->volEnv);
     volume = Clip(volume, 0.0, 1.0);
 
     sample.L *= volume;
@@ -301,12 +304,12 @@ void VoiceIncrementSample(Voice *self)
 
 double VoiceChorusEffectsSend(Voice *self)
 {
-    return (double)self->chorusEffectsSend * 0.001;
+    return self->computed.chorusEffectsSend;
 }
 
 double VoiceReverbEffectsSend(Voice *self)
 {
-    return (double)self->reverbEffectsSend * 0.001;
+    return self->computed.reverbEffectsSend;
 }
 
 void VoiceRelease(Voice *self)
