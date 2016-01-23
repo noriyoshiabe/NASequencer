@@ -32,6 +32,11 @@ char *NAIOBuildPathWithDirectory(const char *directory, const char *filename)
 const char *NAIOGetFileExtenssion(const char *filepath)
 {
     const char *dot = strrchr(filepath, '.');
+    const char *slash = strrchr(filepath, '/');
+
+    if (slash && dot && dot < slash) {
+        return "";
+    }
     
     if (!dot || dot == filepath) {
         return "";

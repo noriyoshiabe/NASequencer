@@ -8,7 +8,13 @@
 static char *errorSignature(const FileLocation *location, int code, va_list argList)
 {
     NAStringBuffer *buffer = NAStringBufferCreate(128);
-    NAStringBufferAppendFormat(buffer, "%s:%d:%d:%d", location->filepath, location->line, location->column, code);
+
+    if (location) {
+        NAStringBufferAppendFormat(buffer, "%s:%d:%d:%d", location->filepath, location->line, location->column, code);
+    }
+    else {
+        NAStringBufferAppendFormat(buffer, ":::%d", code);
+    }
 
     const char *str;
     while ((str = va_arg(argList, const char *))) {
