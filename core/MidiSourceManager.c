@@ -2,9 +2,11 @@
 #include "Synthesizer.h"
 #include "NAMap.h"
 #include "NASet.h"
+#include "NATime.h"
 
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 struct _MidiSourceManager {
     NAArray *observers;
@@ -46,10 +48,26 @@ static MidiSourceManager *MidiSourceManagerCreate()
     return self;
 }
 
+static void MidiSourceManagerDestroy()
+{
+    MidiSourceManager *self = _sharedInstance;
+
+    NATimeWaitUntil(self->observers, 10 * 1000, 50, (void *)NAArrayIsEmpty);
+
+    NAArrayDestroy(self->observers);
+    NAArrayDestroy(self->descriptions);
+    NAArrayDestroy(self->availableDescriptions);
+    NAMapDestroy(self->descriptionMap);
+    NAMapDestroy(self->midiSourceMap);
+
+    free(self);
+}
+
 MidiSourceManager *MidiSourceManagerSharedInstance()
 {
     if (!_sharedInstance) {
         _sharedInstance = MidiSourceManagerCreate();
+        atexit(MidiSourceManagerDestroy);
     }
     return _sharedInstance;
 }

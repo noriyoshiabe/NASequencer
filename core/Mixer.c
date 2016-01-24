@@ -86,7 +86,6 @@ Mixer *MixerCreate(AudioOut *audioOut)
 
 void MixerDestroy(Mixer *self)
 {
-    MidiSourceManagerRemoveObserver(MidiSourceManagerSharedInstance(), self);
     NAMessageQPost(self->msgQ, MixerMessageDestroy, NULL);
 }
 
@@ -108,6 +107,8 @@ static void _MixerDestroy(Mixer *self)
 
     NAArrayTraverseWithContext(self->activeSources, self, _UnregisterCallback, NULL);
     NAArrayDestroy(self->activeSources);
+
+    MidiSourceManagerRemoveObserver(MidiSourceManagerSharedInstance(), self);
 
     NAMapTraverseValue(self->sourceMap, _DeallocMidiSource);
     NAMapDestroy(self->sourceMap);

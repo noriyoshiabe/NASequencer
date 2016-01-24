@@ -83,10 +83,23 @@ static AUAudioOut *AUAudioOutCreate()
     return self;
 }
 
+static void AudioOutDestory()
+{
+    AUAudioOut *self = _sharedInstance;
+
+    AudioOutputUnitStop(self->defaultOutputUnit);
+    AudioUnitUninitialize(self->defaultOutputUnit);
+    AudioComponentInstanceDispose(self->defaultOutputUnit);
+
+    free(self->callbackList);
+    free(self);
+}
+
 AudioOut *AudioOutSharedInstance()
 {
     if (!_sharedInstance) {
         _sharedInstance = AUAudioOutCreate();
+        atexit(AudioOutDestory);
     }
     return (AudioOut *)_sharedInstance;
 }

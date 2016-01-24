@@ -67,6 +67,14 @@ void CLIDestroy(CLI *self)
     PianoRollViewDestroy(self->pianoRollView);
     EventListViewDestroy(self->eventListView);
     MidiSourceManagerRemoveObserver(self->manager, self);
+
+    NAArray *descriptions = MidiSourceManagerGetAvailableDescriptions(self->manager);
+    NAIterator *iterator = NAArrayGetIterator(descriptions);
+    while (iterator->hasNext(iterator)) {
+        MidiSourceDescription *description = iterator->next(iterator);
+        MidiSourceManagerUnloadMidiSourceDescription(self->manager, description);
+    }
+
     NAMidiRemoveObserver(self->namidi, self);
     NAMidiDestroy(self->namidi);
 
