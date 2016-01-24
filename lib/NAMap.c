@@ -87,7 +87,7 @@ static void __NAMapAdd(NAMap *self, void *key, void *value)
     Entry *entry = self->freeList;
     self->freeList = self->freeList->next;
 
-    entry->next = self->buckets[idx] ? self->buckets[idx] : NULL;
+    entry->next = self->buckets[idx];
     self->buckets[idx] = entry;
 
     entry->key = key;
@@ -188,7 +188,7 @@ void *NAMapRemove(NAMap *self, void *key)
                 prev->next = entry->next;
             }
             else {
-                self->buckets[idx] = NULL;
+                self->buckets[idx] = self->buckets[idx]->next;
             }
 
             entry->next = self->freeList;

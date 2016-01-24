@@ -83,7 +83,7 @@ static void __NASetAdd(NASet *self, void *value)
     Entry *entry = self->freeList;
     self->freeList = self->freeList->next;
 
-    entry->next = self->buckets[idx] ? self->buckets[idx] : NULL;
+    entry->next = self->buckets[idx];
     self->buckets[idx] = entry;
 
     entry->value = value;
@@ -166,7 +166,7 @@ bool NASetRemove(NASet *self, void *value)
                 prev->next = entry->next;
             }
             else {
-                self->buckets[idx] = NULL;
+                self->buckets[idx] = self->buckets[idx]->next;
             }
 
             entry->next = self->freeList;
