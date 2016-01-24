@@ -5,6 +5,7 @@ project(namidi-test)
 if (CMAKE_BUILD_TYPE MATCHES "Debug")
   add_definitions(-DDEBUG)
   add_definitions(-D__TEST__)
+  add_definitions(-D__ALLOCATION_CHECK__)
 endif (CMAKE_BUILD_TYPE MATCHES "Debug")
 
 add_subdirectory (../core ${CMAKE_CURRENT_BINARY_DIR}/core)

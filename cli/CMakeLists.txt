@@ -6,6 +6,12 @@ if (CMAKE_BUILD_TYPE MATCHES "Debug")
   add_definitions(-DDEBUG)
 endif (CMAKE_BUILD_TYPE MATCHES "Debug")
 
+if (CMAKE_BUILD_TYPE MATCHES "Stat")
+  add_definitions(-DDEBUG)
+  add_definitions(-D__ALLOCATION_CHECK__)
+  add_definitions(-D__TIME_MEASURE__)
+endif (CMAKE_BUILD_TYPE MATCHES "Stat")
+
 find_library(LIBEDIT edit)
 
 add_subdirectory (../core ${CMAKE_CURRENT_BINARY_DIR}/core)

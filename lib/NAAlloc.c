@@ -6,9 +6,9 @@
 #include <stdint.h>
 #include <dlfcn.h>
 #include <execinfo.h>
-#include <unistd.h>
 
 #include "NAMap.h"
+#include "NATime.h"
 
 typedef struct _Stat {
     void *ptr;
@@ -64,12 +64,21 @@ static void removeStat(void *ptr, void **buffer, int count)
     }
 }
 
+static bool isStatMapEmpty(void *context)
+{
+    return 0 == NAMapCount(statMap);
+}
+
 static void exitMemoryStats()
 {
+    NATimeWaitUntil(NULL, 10 * 1000, 10, isStatMapEmpty);
+
+    if (isStatMapEmpty(NULL)) {
+        return;
+    }
+
     printf("\nexit memory stats.\n");
     printf("--------------------------------------------------------\n");
-
-    usleep(100 * 1000);
 
     bool needSepalator = false;
     NAIterator *iterator = NAMapGetIterator(statMap);

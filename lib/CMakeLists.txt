@@ -21,6 +21,7 @@ set(SOURCES
   NACString.c
   NACInteger.c
   NAAlloc.c
+  NATime.c
 )
 
 if (APPLE)

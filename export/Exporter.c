@@ -11,6 +11,7 @@
 #include "NASet.h"
 #include "NAIO.h"
 #include "NALog.h"
+#include "NATime.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -298,9 +299,8 @@ bool ExporterWriteToSMF(Exporter *self, const char *filepath)
 
 static void ExporterBuildAudioSample(Exporter *self, ExporterAudioBuffer *audioBuffer, void (*callback)(Exporter *, int32_t *, int, void *), void *context)
 {
-#define __TIME_MEASURE__ 0
-#if 1 == __TIME_MEASURE__
-    void *time = NALogTimeMeasureStart();
+#ifdef __TIME_MEASURE__
+    void *time = NATimeMeasureStart();
 #endif
     Mixer *mixer = MixerCreate((AudioOut *)audioBuffer);
     MixerSetLevelEnable(mixer, false);
@@ -385,8 +385,8 @@ static void ExporterBuildAudioSample(Exporter *self, ExporterAudioBuffer *audioB
     }
 
     MixerDestroy(mixer);
-#if 1 == __TIME_MEASURE__
-    NALogTimeMeasureFinish(time);
+#ifdef __TIME_MEASURE__
+    NATimeMeasureFinish(time);
 #endif
 }
 

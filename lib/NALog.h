@@ -26,14 +26,6 @@ extern const int NALogLevelTrace;
 extern int NALogLevel;
 extern FILE *NALogStream;
 
-extern void *NALogTimeMeasureStart(const char *file, const char *function, int line);
-extern void NALogTimeMeasure(void *self, const char *file, const char *function, int line);
-extern void NALogTimeMeasureFinish(void *self, const char *file, const char *function, int line);
-
-#define NALogTimeMeasureStart() NALogTimeMeasureStart(__FILE__, __func__, __LINE__)
-#define NALogTimeMeasure(self) NALogTimeMeasure(self, __FILE__, __func__, __LINE__)
-#define NALogTimeMeasureFinish(self) NALogTimeMeasureFinish(self, __FILE__, __func__, __LINE__)
-
 #else
 
 #define __Trace__   
@@ -50,9 +42,5 @@ extern void NALogTimeMeasureFinish(void *self, const char *file, const char *fun
 
 #define __LogTrace__(...)
 #define __LogDebug__(...)
-
-#define NALogTimeMeasureStart() NULL
-#define NALogTimeMeasure(self)
-#define NALogTimeMeasureFinish(self)
 
 #endif
