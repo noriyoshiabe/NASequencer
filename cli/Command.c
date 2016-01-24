@@ -632,7 +632,7 @@ Command *CommandParse(const char *line)
         s = NULL;
     }
 
-    void (*execute)(Command *, CLI *);
+    void (*execute)(Command *, CLI *) = NULL;
 
     if (0 < NAArrayCount(argv)) {
         for (int i = 0; NULL != commandTable[i].cmd; ++i) {
