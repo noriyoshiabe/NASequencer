@@ -24,6 +24,9 @@ struct _NAMap {
     NAHash keyHash;
     NADescription keyDescription;
     NADescription valueDescription;
+
+    void *(*calloc)(size_t nmemb, size_t size);
+    void (*free)(void *ptr);
 };
 
 typedef struct _NAMapIterator {
@@ -38,9 +41,15 @@ const int NAMapIteratorSize = sizeof(NAMapIterator);
 
 NAMap *NAMapCreate(NAHash keyHash, NADescription keyDescription, NADescription valueDescription)
 {
+    return NAMapCreateWithAllocator(keyHash, keyDescription, valueDescription, calloc, free);
+}
+
+NAMap *NAMapCreateWithAllocator(NAHash keyHash, NADescription keyDescription, NADescription valueDescription,
+        void *(*calloc)(size_t nmemb, size_t size), void (*free)(void *ptr))
+{
     const int __initialSize = 32;
     
-    NAMap *self = (NAMap *)malloc(sizeof(NAMap));
+    NAMap *self = (NAMap *)calloc(1, sizeof(NAMap));
     self->entries = (Entry *)calloc(__initialSize, sizeof(Entry));
     self->buckets = (Entry **)calloc(__initialSize, sizeof(Entry *));
     self->size = __initialSize;
@@ -54,14 +63,17 @@ NAMap *NAMapCreate(NAHash keyHash, NADescription keyDescription, NADescription v
         self->entries[i].next = i < self->size - 1 ? &self->entries[i + 1] : NULL;
     }
 
+    self->calloc = calloc;
+    self->free = free;
+
     return self;
 }
 
 void NAMapDestroy(NAMap *self)
 {
-    free(self->entries);
-    free(self->buckets);
-    free(self);
+    self->free(self->entries);
+    self->free(self->buckets);
+    self->free(self);
 }
 
 bool NAMapContainsKey(NAMap *self, void *key)
@@ -103,8 +115,8 @@ static void __NAMapExtend(NAMap *self)
     int oldSize = self->size;
 
     self->size *= 2;
-    self->entries = (Entry *)calloc(self->size, sizeof(Entry));
-    self->buckets = (Entry **)calloc(self->size, sizeof(Entry *));
+    self->entries = (Entry *)self->calloc(self->size, sizeof(Entry));
+    self->buckets = (Entry **)self->calloc(self->size, sizeof(Entry *));
     self->count = 0;
 
     self->freeList = self->entries;
@@ -120,8 +132,8 @@ static void __NAMapExtend(NAMap *self)
         }
     }
 
-    free(oldEntries);
-    free(oldBuckets);
+    self->free(oldEntries);
+    self->free(oldBuckets);
 }
 
 void *NAMapPut(NAMap *self, void *key, void *value)

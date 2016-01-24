@@ -34,3 +34,5 @@ extern const int NAMapIteratorSize;
 #define NAMapTraverseKey(self, function) NAMapTraverseKey(self, (void *)function)
 #define NAMapTraverseValue(self, function) NAMapTraverseValue(self, (void *)function)
 #define NAMapGetIterator(self) NAMapGetIterator(self, alloca(NAMapIteratorSize))
+
+extern NAMap *NAMapCreateWithAllocator(NAHash keyHash, NADescription keyDescription, NADescription valueDescription, void *(*calloc)(size_t nmemb, size_t size), void (*free)(void *ptr));
