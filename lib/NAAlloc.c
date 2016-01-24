@@ -1,4 +1,3 @@
-#define __ALLOCATION_CHECK__
 #ifdef __ALLOCATION_CHECK__
 
 #include <stdio.h>
@@ -7,6 +6,7 @@
 #include <stdint.h>
 #include <dlfcn.h>
 #include <execinfo.h>
+#include <unistd.h>
 
 #include "NAMap.h"
 
@@ -16,7 +16,7 @@ typedef struct _Stat {
     int count;
 } Stat;
 
-static NAMap *map;
+static NAMap *statMap;
 
 static void *(*libc_malloc)(size_t size);
 static void *(*libc_calloc)(size_t nmemb, size_t size);
@@ -29,6 +29,10 @@ static char *(*libedit_readline)(const char *prompt);
 
 static void putStat(void *ptr, void **buffer, int count)
 {
+    if (!ptr) {
+        return;
+    }
+    
     Stat *stat = libc_malloc(sizeof(Stat));
     stat->ptr = ptr;
     for (int i = 0; i < count; ++i) {
@@ -36,12 +40,16 @@ static void putStat(void *ptr, void **buffer, int count)
     }
     stat->count = count;
 
-    NAMapPut(map, ptr, stat);
+    NAMapPut(statMap, ptr, stat);
 }
 
 static void removeStat(void *ptr, void **buffer, int count)
 {
-    Stat *stat = NAMapRemove(map, ptr);
+    if (!ptr) {
+        return;
+    }
+    
+    Stat *stat = NAMapRemove(statMap, ptr);
     if (!stat) {
         printf("\nmemory stat not found\n");
         printf("--------------------------------------------------------\n");
@@ -61,8 +69,10 @@ static void exitMemoryStats()
     printf("\nexit memory stats.\n");
     printf("--------------------------------------------------------\n");
 
+    usleep(100 * 1000);
+
     bool needSepalator = false;
-    NAIterator *iterator = NAMapGetIterator(map);
+    NAIterator *iterator = NAMapGetIterator(statMap);
     while (iterator->hasNext(iterator)) {
         NAMapEntry *entry = iterator->next(iterator);
         Stat *stat = entry->value;
@@ -81,7 +91,7 @@ static void exitMemoryStats()
         libc_free(stat);
     }
     
-    NAMapDestroy(map);
+    NAMapDestroy(statMap);
 }
 
 void *malloc(size_t size)
@@ -108,10 +118,7 @@ void *realloc(void *ptr, size_t size)
 {
     void *buffer[16];
     int count = backtrace(buffer, 16);
-
-    if (ptr) {
-        removeStat(ptr, buffer, count);
-    }
+    removeStat(ptr, buffer, count);
 
     void *ret = libc_realloc(ptr, size);
     putStat(ret, buffer, count);
@@ -140,11 +147,9 @@ char *strndup(const char *s, size_t n)
 
 void free(void *ptr)
 {
-    if (ptr) {
-        void *buffer[16];
-        int count = backtrace(buffer, 16);
-        removeStat(ptr, buffer, count);
-    }
+    void *buffer[16];
+    int count = backtrace(buffer, 16);
+    removeStat(ptr, buffer, count);
 
     libc_free(ptr);
 }
@@ -171,7 +176,7 @@ static void initialize()
 
     libedit_readline = dlsym(RTLD_NEXT, "readline");
 
-    map = NAMapCreateWithAllocator(NAHashAddress, NADescriptionAddress, NADescriptionAddress, libc_calloc, libc_free);
+    statMap = NAMapCreateWithAllocator(NAHashAddress, NADescriptionAddress, NADescriptionAddress, libc_calloc, libc_free);
     atexit(exitMemoryStats);
 }
 
