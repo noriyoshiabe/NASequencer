@@ -195,3 +195,13 @@ bool NAAllocIsAllocatedMemoryExist()
 }
 
 #endif
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+bool NAAllocIsAllocatedMemoryExist()
+{
+    printf("__ALLOCATION_CHECK__ macro is not enabled.");
+    abort();
+}
