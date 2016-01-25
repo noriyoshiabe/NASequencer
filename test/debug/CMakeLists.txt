@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.2)
 
-project(namidi-test)
+project(namidi-test-debug)
 
 if (CMAKE_BUILD_TYPE MATCHES "Debug")
   add_definitions(-DDEBUG)
@@ -8,22 +8,22 @@ if (CMAKE_BUILD_TYPE MATCHES "Debug")
   add_definitions(-D__ALLOCATION_CHECK__)
 endif (CMAKE_BUILD_TYPE MATCHES "Debug")
 
-add_subdirectory (../core ${CMAKE_CURRENT_BINARY_DIR}/core)
-add_subdirectory (../sequence ${CMAKE_CURRENT_BINARY_DIR}/sequence)
-add_subdirectory (../parser ${CMAKE_CURRENT_BINARY_DIR}/parser)
-add_subdirectory (../lib ${CMAKE_CURRENT_BINARY_DIR}/lib)
-add_subdirectory (../synthesizer ${CMAKE_CURRENT_BINARY_DIR}/synthesizer)
+add_subdirectory (../../core ${CMAKE_CURRENT_BINARY_DIR}/core)
+add_subdirectory (../../sequence ${CMAKE_CURRENT_BINARY_DIR}/sequence)
+add_subdirectory (../../parser ${CMAKE_CURRENT_BINARY_DIR}/parser)
+add_subdirectory (../../lib ${CMAKE_CURRENT_BINARY_DIR}/lib)
+add_subdirectory (../../synthesizer ${CMAKE_CURRENT_BINARY_DIR}/synthesizer)
 
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}
-  ../core
-  ../parser
-  ../parser/namidi
-  ../parser/abc
-  ../parser/mml
-  ../sequence
-  ../lib
-  ../synthesizer
+  ../../core
+  ../../parser
+  ../../parser/namidi
+  ../../parser/abc
+  ../../parser/mml
+  ../../sequence
+  ../../lib
+  ../../synthesizer
 )
 
 add_executable(namidi-parser-test ParserTest.c)
@@ -31,11 +31,6 @@ target_link_libraries(namidi-parser-test namidi-core)
 target_link_libraries(namidi-parser-test namidi-sequence)
 target_link_libraries(namidi-parser-test namidi-parser)
 target_link_libraries(namidi-parser-test namidi-lib)
-
-add_executable(namidi-parse-result-printer ParseResultPrinter.c)
-target_link_libraries(namidi-parse-result-printer namidi-sequence)
-target_link_libraries(namidi-parse-result-printer namidi-parser)
-target_link_libraries(namidi-parse-result-printer namidi-lib)
 
 add_executable(namidi-synthesizer-test SynthesizerTest.c)
 target_link_libraries(namidi-synthesizer-test namidi-synthesizer)
