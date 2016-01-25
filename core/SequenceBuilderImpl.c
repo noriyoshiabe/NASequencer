@@ -9,8 +9,6 @@ typedef struct _SequenceBuilderImpl {
     SequenceBuilder interface;
     Sequence *sequence;
     int id;
-    TitleEvent *titleEvent;
-    CopyrightEvent *copyrightEvent;
 } SequenceBuilderImpl;
 
 static void SequenceBuilderDestroy(void *_self)
@@ -41,9 +39,9 @@ static void SequenceBuilderAppendTitle(void *_self, int tick, const char *title)
         sequence->title = strdup(title);
     }
 
-    self->titleEvent = MidiEventAlloc(MidiEventTypeTitle, ++self->id, tick, strlen(title) + 1);
-    strcpy(self->titleEvent->text, title);
-    NAArrayAppend(sequence->events, self->titleEvent);
+    TitleEvent *titleEvent = MidiEventAlloc(MidiEventTypeTitle, ++self->id, tick, strlen(title) + 1);
+    strcpy(titleEvent->text, title);
+    NAArrayAppend(sequence->events, titleEvent);
 }
 
 static void SequenceBuilderAppendCopyright(void *_self, int tick, const char *text)
@@ -51,9 +49,9 @@ static void SequenceBuilderAppendCopyright(void *_self, int tick, const char *te
     SequenceBuilderImpl *self = _self;
     Sequence *sequence = self->sequence;
 
-    self->copyrightEvent = MidiEventAlloc(MidiEventTypeCopyright, ++self->id, tick, strlen(text) + 1);
-    strcpy(self->copyrightEvent->text, text);
-    NAArrayAppend(sequence->events, self->copyrightEvent);
+    CopyrightEvent *copyrightEvent = MidiEventAlloc(MidiEventTypeCopyright, ++self->id, tick, strlen(text) + 1);
+    strcpy(copyrightEvent->text, text);
+    NAArrayAppend(sequence->events, copyrightEvent);
 }
 
 static void SequenceBuilderAppendTempo(void *_self, int tick, float tempo)

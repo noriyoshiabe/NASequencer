@@ -32,6 +32,11 @@ target_link_libraries(namidi-parser-test namidi-sequence)
 target_link_libraries(namidi-parser-test namidi-parser)
 target_link_libraries(namidi-parser-test namidi-lib)
 
+add_executable(namidi-parse-result-printer ParseResultPrinter.c)
+target_link_libraries(namidi-parse-result-printer namidi-sequence)
+target_link_libraries(namidi-parse-result-printer namidi-parser)
+target_link_libraries(namidi-parse-result-printer namidi-lib)
+
 add_executable(namidi-synthesizer-test SynthesizerTest.c)
 target_link_libraries(namidi-synthesizer-test namidi-synthesizer)
 

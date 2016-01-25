@@ -163,6 +163,7 @@ typedef struct _SynthEvent {
 
 extern void *MidiEventAlloc(MidiEventType type, int id, int tick, int extraSize);
 extern void MidiEventDump(MidiEvent *self, int indent);
+extern int MidiEventGetChannel(const MidiEvent *event);
 extern int MidiEventComparator(const void *event1, const void *event2);
 extern int MidiEventIDComparator(const void *event1, const void *event2);
 

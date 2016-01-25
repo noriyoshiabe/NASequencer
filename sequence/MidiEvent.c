@@ -176,7 +176,7 @@ void MidiEventDump(MidiEvent *self, int indent)
     }
 }
 
-static int MidiEventGetChannel(const MidiEvent *event)
+int MidiEventGetChannel(const MidiEvent *event)
 {
     switch (event->type) {
     case MidiEventTypeNote:
@@ -211,7 +211,7 @@ int MidiEventComparator(const void *_event1, const void *_event2)
         return result;
     }
 
-    return 0 != result ? result : event1->id - event2->id;
+    return event1->id - event2->id;
 }
 
 int MidiEventIDComparator(const void *event1, const void *event2)
