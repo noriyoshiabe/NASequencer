@@ -189,4 +189,9 @@ static void initialize()
     atexit(exitMemoryStats);
 }
 
+bool NAAllocIsAllocatedMemoryExist()
+{
+    return 0 < NAMapCount(statMap);
+}
+
 #endif

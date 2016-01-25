@@ -1,0 +1,206 @@
+---- filenames ----
+oota_isan.mml
+
+---- events ----
+Tempo: tick=0 tempo=110.000000
+Tempo: tick=0 tempo=110.000000
+Tempo: tick=0 tempo=110.000000
+Tempo: tick=0 tempo=110.000000
+Tempo: tick=0 tempo=110.000000
+Tempo: tick=0 tempo=110.000000
+Tempo: tick=0 tempo=110.000000
+Tempo: tick=0 tempo=110.000000
+Tempo: tick=0 tempo=110.000000
+Tempo: tick=16380 tempo=90.000000
+Tempo: tick=16380 tempo=90.000000
+Tempo: tick=16380 tempo=90.000000
+Tempo: tick=16380 tempo=90.000000
+Tempo: tick=16380 tempo=90.000000
+Tempo: tick=16380 tempo=90.000000
+Tempo: tick=16380 tempo=90.000000
+Tempo: tick=16380 tempo=90.000000
+Tempo: tick=16380 tempo=90.000000
+Tempo: tick=17340 tempo=110.000000
+Tempo: tick=17340 tempo=110.000000
+Tempo: tick=17340 tempo=110.000000
+Tempo: tick=17340 tempo=110.000000
+Tempo: tick=17340 tempo=110.000000
+Tempo: tick=17340 tempo=110.000000
+Tempo: tick=17340 tempo=110.000000
+Tempo: tick=17340 tempo=110.000000
+Tempo: tick=17340 tempo=110.000000
+Tempo: tick=21660 tempo=90.000000
+Tempo: tick=21660 tempo=90.000000
+Tempo: tick=21660 tempo=90.000000
+Tempo: tick=21660 tempo=90.000000
+Tempo: tick=21660 tempo=90.000000
+Note: tick=0 channel=1 noteNo=88 gatetime=450 velocity=111
+Note: tick=480 channel=1 noteNo=97 gatetime=337 velocity=111
+Note: tick=480 channel=1 noteNo=64 gatetime=450 velocity=127
+Note: tick=840 channel=1 noteNo=98 gatetime=112 velocity=111
+Note: tick=960 channel=1 noteNo=95 gatetime=450 velocity=111
+Note: tick=960 channel=1 noteNo=92 gatetime=450 velocity=103
+Note: tick=960 channel=1 noteNo=86 gatetime=450 velocity=111
+Note: tick=960 channel=1 noteNo=88 gatetime=450 velocity=119
+Note: tick=960 channel=1 noteNo=76 gatetime=450 velocity=127
+Note: tick=1440 channel=1 noteNo=95 gatetime=450 velocity=111
+Note: tick=1440 channel=1 noteNo=92 gatetime=450 velocity=103
+Note: tick=1440 channel=1 noteNo=86 gatetime=450 velocity=111
+Note: tick=1440 channel=1 noteNo=88 gatetime=450 velocity=119
+Note: tick=1440 channel=1 noteNo=76 gatetime=450 velocity=127
+Note: tick=1920 channel=1 noteNo=95 gatetime=900 velocity=111
+Note: tick=1920 channel=1 noteNo=92 gatetime=900 velocity=103
+Note: tick=1920 channel=1 noteNo=86 gatetime=900 velocity=111
+Note: tick=1920 channel=1 noteNo=88 gatetime=900 velocity=119
+Note: tick=1920 channel=1 noteNo=76 gatetime=900 velocity=127
+Note: tick=2880 channel=1 noteNo=102 gatetime=450 velocity=111
+Note: tick=2880 channel=1 noteNo=98 gatetime=450 velocity=103
+Note: tick=3360 channel=1 noteNo=99 gatetime=337 velocity=111
+Note: tick=3360 channel=1 noteNo=96 gatetime=337 velocity=103
+Note: tick=3360 channel=1 noteNo=69 gatetime=450 velocity=127
+Note: tick=3720 channel=1 noteNo=100 gatetime=112 velocity=111
+Note: tick=3720 channel=1 noteNo=97 gatetime=112 velocity=103
+Note: tick=3840 channel=1 noteNo=105 gatetime=450 velocity=111
+Note: tick=3840 channel=1 noteNo=97 gatetime=450 velocity=103
+Note: tick=3840 channel=1 noteNo=88 gatetime=450 velocity=119
+Note: tick=3840 channel=1 noteNo=81 gatetime=450 velocity=127
+Note: tick=4320 channel=1 noteNo=105 gatetime=450 velocity=111
+Note: tick=4320 channel=1 noteNo=97 gatetime=450 velocity=103
+Note: tick=4320 channel=1 noteNo=88 gatetime=450 velocity=119
+Note: tick=4320 channel=1 noteNo=81 gatetime=450 velocity=127
+Note: tick=4800 channel=1 noteNo=105 gatetime=900 velocity=111
+Note: tick=4800 channel=1 noteNo=97 gatetime=900 velocity=103
+Note: tick=4800 channel=1 noteNo=88 gatetime=900 velocity=119
+Note: tick=4800 channel=1 noteNo=81 gatetime=900 velocity=127
+Note: tick=5760 channel=1 noteNo=97 gatetime=450 velocity=111
+Note: tick=5760 channel=1 noteNo=88 gatetime=450 velocity=103
+Note: tick=6240 channel=1 noteNo=94 gatetime=337 velocity=111
+Note: tick=6240 channel=1 noteNo=85 gatetime=337 velocity=103
+Note: tick=6240 channel=1 noteNo=64 gatetime=450 velocity=127
+Note: tick=6600 channel=1 noteNo=95 gatetime=112 velocity=111
+Note: tick=6600 channel=1 noteNo=86 gatetime=2032 velocity=103
+Note: tick=6720 channel=1 noteNo=98 gatetime=450 velocity=111
+Note: tick=6720 channel=1 noteNo=90 gatetime=450 velocity=111
+Note: tick=6720 channel=1 noteNo=83 gatetime=450 velocity=119
+Note: tick=6720 channel=1 noteNo=76 gatetime=450 velocity=127
+Note: tick=7200 channel=1 noteNo=98 gatetime=450 velocity=111
+Note: tick=7200 channel=1 noteNo=90 gatetime=450 velocity=111
+Note: tick=7200 channel=1 noteNo=83 gatetime=450 velocity=119
+Note: tick=7200 channel=1 noteNo=76 gatetime=450 velocity=127
+Note: tick=7680 channel=1 noteNo=98 gatetime=900 velocity=111
+Note: tick=7680 channel=1 noteNo=90 gatetime=900 velocity=111
+Note: tick=7680 channel=1 noteNo=83 gatetime=900 velocity=119
+Note: tick=7680 channel=1 noteNo=76 gatetime=900 velocity=127
+Note: tick=8640 channel=1 noteNo=92 gatetime=450 velocity=111
+Note: tick=8640 channel=1 noteNo=86 gatetime=450 velocity=103
+Note: tick=9120 channel=1 noteNo=92 gatetime=337 velocity=111
+Note: tick=9120 channel=1 noteNo=86 gatetime=337 velocity=103
+Note: tick=9120 channel=1 noteNo=57 gatetime=450 velocity=127
+Note: tick=9480 channel=1 noteNo=93 gatetime=112 velocity=111
+Note: tick=9480 channel=1 noteNo=85 gatetime=112 velocity=103
+Note: tick=9600 channel=1 noteNo=97 gatetime=450 velocity=111
+Note: tick=9600 channel=1 noteNo=85 gatetime=450 velocity=103
+Note: tick=9600 channel=1 noteNo=88 gatetime=450 velocity=111
+Note: tick=9600 channel=1 noteNo=81 gatetime=450 velocity=119
+Note: tick=9600 channel=1 noteNo=76 gatetime=450 velocity=127
+Note: tick=10080 channel=1 noteNo=97 gatetime=450 velocity=111
+Note: tick=10080 channel=1 noteNo=85 gatetime=450 velocity=103
+Note: tick=10080 channel=1 noteNo=88 gatetime=450 velocity=111
+Note: tick=10080 channel=1 noteNo=81 gatetime=450 velocity=119
+Note: tick=10080 channel=1 noteNo=76 gatetime=450 velocity=127
+Note: tick=10560 channel=1 noteNo=97 gatetime=900 velocity=111
+Note: tick=10560 channel=1 noteNo=85 gatetime=900 velocity=103
+Note: tick=10560 channel=1 noteNo=88 gatetime=900 velocity=111
+Note: tick=10560 channel=1 noteNo=81 gatetime=900 velocity=119
+Note: tick=10560 channel=1 noteNo=76 gatetime=900 velocity=127
+Note: tick=11520 channel=1 noteNo=88 gatetime=930 velocity=95
+Note: tick=12000 channel=1 noteNo=97 gatetime=337 velocity=111
+Note: tick=12000 channel=1 noteNo=92 gatetime=450 velocity=103
+Note: tick=12000 channel=1 noteNo=64 gatetime=450 velocity=127
+Note: tick=12360 channel=1 noteNo=98 gatetime=112 velocity=111
+Note: tick=12480 channel=1 noteNo=95 gatetime=450 velocity=111
+Note: tick=12480 channel=1 noteNo=92 gatetime=450 velocity=103
+Note: tick=12480 channel=1 noteNo=86 gatetime=450 velocity=95
+Note: tick=12480 channel=1 noteNo=88 gatetime=450 velocity=119
+Note: tick=12480 channel=1 noteNo=76 gatetime=450 velocity=127
+Note: tick=12960 channel=1 noteNo=95 gatetime=450 velocity=111
+Note: tick=12960 channel=1 noteNo=92 gatetime=450 velocity=103
+Note: tick=12960 channel=1 noteNo=86 gatetime=450 velocity=95
+Note: tick=12960 channel=1 noteNo=88 gatetime=450 velocity=119
+Note: tick=12960 channel=1 noteNo=76 gatetime=450 velocity=127
+Note: tick=13440 channel=1 noteNo=95 gatetime=900 velocity=111
+Note: tick=13440 channel=1 noteNo=92 gatetime=900 velocity=103
+Note: tick=13440 channel=1 noteNo=86 gatetime=900 velocity=95
+Note: tick=13440 channel=1 noteNo=88 gatetime=900 velocity=119
+Note: tick=13440 channel=1 noteNo=76 gatetime=900 velocity=127
+Note: tick=14400 channel=1 noteNo=102 gatetime=450 velocity=111
+Note: tick=14400 channel=1 noteNo=98 gatetime=450 velocity=103
+Note: tick=14880 channel=1 noteNo=99 gatetime=337 velocity=111
+Note: tick=14880 channel=1 noteNo=96 gatetime=337 velocity=103
+Note: tick=14880 channel=1 noteNo=69 gatetime=450 velocity=127
+Note: tick=15240 channel=1 noteNo=100 gatetime=1132 velocity=111
+Note: tick=15240 channel=1 noteNo=97 gatetime=1072 velocity=103
+Note: tick=15360 channel=1 noteNo=105 gatetime=450 velocity=95
+Note: tick=15360 channel=1 noteNo=109 gatetime=450 velocity=87
+Note: tick=15360 channel=1 noteNo=93 gatetime=450 velocity=111
+Note: tick=15360 channel=1 noteNo=88 gatetime=450 velocity=119
+Note: tick=15360 channel=1 noteNo=81 gatetime=450 velocity=127
+Note: tick=15840 channel=1 noteNo=105 gatetime=510 velocity=95
+Note: tick=15840 channel=1 noteNo=109 gatetime=510 velocity=87
+Note: tick=15840 channel=1 noteNo=93 gatetime=510 velocity=111
+Note: tick=15840 channel=1 noteNo=88 gatetime=510 velocity=119
+Note: tick=15840 channel=1 noteNo=81 gatetime=510 velocity=127
+Note: tick=16320 channel=1 noteNo=96 gatetime=56 velocity=103
+Note: tick=16380 channel=1 noteNo=109 gatetime=900 velocity=111
+Note: tick=16380 channel=1 noteNo=106 gatetime=900 velocity=103
+Note: tick=16380 channel=1 noteNo=100 gatetime=900 velocity=95
+Note: tick=16380 channel=1 noteNo=97 gatetime=900 velocity=87
+Note: tick=16380 channel=1 noteNo=94 gatetime=900 velocity=95
+Note: tick=16380 channel=1 noteNo=90 gatetime=900 velocity=103
+Note: tick=16380 channel=1 noteNo=88 gatetime=900 velocity=111
+Note: tick=16380 channel=1 noteNo=85 gatetime=900 velocity=119
+Note: tick=16380 channel=1 noteNo=78 gatetime=900 velocity=127
+Note: tick=17340 channel=1 noteNo=97 gatetime=450 velocity=111
+Note: tick=17340 channel=1 noteNo=94 gatetime=450 velocity=103
+Note: tick=17820 channel=1 noteNo=97 gatetime=337 velocity=111
+Note: tick=17820 channel=1 noteNo=94 gatetime=337 velocity=103
+Note: tick=17820 channel=1 noteNo=59 gatetime=450 velocity=127
+Note: tick=18180 channel=1 noteNo=98 gatetime=112 velocity=111
+Note: tick=18180 channel=1 noteNo=95 gatetime=112 velocity=103
+Note: tick=18300 channel=1 noteNo=102 gatetime=450 velocity=111
+Note: tick=18300 channel=1 noteNo=95 gatetime=450 velocity=103
+Note: tick=18300 channel=1 noteNo=86 gatetime=450 velocity=111
+Note: tick=18300 channel=1 noteNo=78 gatetime=450 velocity=127
+Note: tick=18780 channel=1 noteNo=102 gatetime=450 velocity=111
+Note: tick=18780 channel=1 noteNo=93 gatetime=450 velocity=103
+Note: tick=18780 channel=1 noteNo=86 gatetime=450 velocity=111
+Note: tick=18780 channel=1 noteNo=83 gatetime=450 velocity=119
+Note: tick=18780 channel=1 noteNo=78 gatetime=450 velocity=127
+Note: tick=19260 channel=1 noteNo=102 gatetime=900 velocity=111
+Note: tick=19260 channel=1 noteNo=92 gatetime=900 velocity=103
+Note: tick=19260 channel=1 noteNo=86 gatetime=900 velocity=111
+Note: tick=19260 channel=1 noteNo=83 gatetime=900 velocity=119
+Note: tick=19260 channel=1 noteNo=76 gatetime=900 velocity=127
+Note: tick=20220 channel=1 noteNo=92 gatetime=450 velocity=111
+Note: tick=20220 channel=1 noteNo=86 gatetime=450 velocity=103
+Note: tick=20700 channel=1 noteNo=95 gatetime=337 velocity=111
+Note: tick=20700 channel=1 noteNo=86 gatetime=337 velocity=103
+Note: tick=20700 channel=1 noteNo=57 gatetime=450 velocity=127
+Note: tick=21060 channel=1 noteNo=93 gatetime=112 velocity=111
+Note: tick=21060 channel=1 noteNo=85 gatetime=112 velocity=103
+Note: tick=21180 channel=1 noteNo=105 gatetime=450 velocity=111
+Note: tick=21180 channel=1 noteNo=97 gatetime=450 velocity=103
+Note: tick=21180 channel=1 noteNo=93 gatetime=1860 velocity=95
+Note: tick=21180 channel=1 noteNo=88 gatetime=450 velocity=111
+Note: tick=21180 channel=1 noteNo=81 gatetime=450 velocity=119
+Note: tick=21180 channel=1 noteNo=76 gatetime=1410 velocity=127
+Note: tick=21660 channel=1 noteNo=105 gatetime=450 velocity=111
+Note: tick=21660 channel=1 noteNo=97 gatetime=450 velocity=103
+Note: tick=21660 channel=1 noteNo=88 gatetime=450 velocity=111
+Note: tick=21660 channel=1 noteNo=81 gatetime=450 velocity=119
+Note: tick=22140 channel=1 noteNo=105 gatetime=1800 velocity=111
+Note: tick=22140 channel=1 noteNo=97 gatetime=1800 velocity=103
+Note: tick=22140 channel=1 noteNo=88 gatetime=1800 velocity=111
+Note: tick=22140 channel=1 noteNo=81 gatetime=900 velocity=119
+
+---- errors ----

@@ -3,6 +3,8 @@
 #include "NAArray.h"
 #include "MidiEvent.h"
 #include "NALog.h"
+#include "NAAlloc.h"
+#include "NAIO.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,47 +33,56 @@ int main(int argc, char **argv)
     NAArray *events = ParserParseFile(parser, argv[1], &info);
     ParserDestroy(parser);
 
-    printf("---- filepaths ----\n");
-    NAArraySort(info->filepaths, (void *)strcmp);
-    iterator = NAArrayGetIterator(info->filepaths);
-    while (iterator->hasNext(iterator)) {
-        printf("%s\n", iterator->next(iterator));
+    if (2 < argc && 0 == strcmp("--silent", argv[2])) {
+        ;
     }
-
-    printf("\n");
-    printf("---- events ----\n");
-    NAArraySort(events, __MidiEventComparator);
-    iterator = NAArrayGetIterator(events);
-    while (iterator->hasNext(iterator)) {
-        MidiEvent *event = iterator->next(iterator);
-        __MidiEventDump(event);
-    }
-
-    printf("\n");
-    printf("---- errors ----\n");
-    NAArraySort(info->errors, __ParseErrorComparator);
-    iterator = NAArrayGetIterator(info->errors);
-    while (iterator->hasNext(iterator)) {
-        ParseError *error = iterator->next(iterator);
-        printf("[ERROR:%d] %s at %s:%d:%d",
-                error->code,
-                ParseErrorCode2String(error->code),
-                error->location.filepath,
-                error->location.line,
-                error->location.column);
-
-        NAIterator *iterator2 = NAArrayGetIterator(error->infos);
-        while (iterator2->hasNext(iterator2)) {
-            printf(" %s", iterator2->next(iterator2));
+    else {
+        printf("---- filenames ----\n");
+        NAArraySort(info->filepaths, (void *)strcmp);
+        iterator = NAArrayGetIterator(info->filepaths);
+        while (iterator->hasNext(iterator)) {
+            printf("%s\n", NAIOGetLastPathComponent(iterator->next(iterator)));
         }
 
         printf("\n");
+        printf("---- events ----\n");
+        NAArraySort(events, __MidiEventComparator);
+        iterator = NAArrayGetIterator(events);
+        while (iterator->hasNext(iterator)) {
+            MidiEvent *event = iterator->next(iterator);
+            __MidiEventDump(event);
+        }
+
+        printf("\n");
+        printf("---- errors ----\n");
+        NAArraySort(info->errors, __ParseErrorComparator);
+        iterator = NAArrayGetIterator(info->errors);
+        while (iterator->hasNext(iterator)) {
+            ParseError *error = iterator->next(iterator);
+            printf("[ERROR:%d] %s at %s:%d:%d",
+                    error->code,
+                    ParseErrorCode2String(error->code),
+                    error->location.filepath,
+                    error->location.line,
+                    error->location.column);
+
+            NAIterator *iterator2 = NAArrayGetIterator(error->infos);
+            while (iterator2->hasNext(iterator2)) {
+                printf(" %s", iterator2->next(iterator2));
+            }
+
+            printf("\n");
+        }
     }
+
+    bool noError = NAArrayIsEmpty(info->errors);
 
     ParseInfoRelease(info);
     builder->destroy(builder);
 
-    return 0;
+    bool leaked = NAAllocIsAllocatedMemoryExist();
+
+    return noError && !leaked ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 

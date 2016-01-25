@@ -1,0 +1,23 @@
+t110 v13 l4 q15
+o5 e<c+8.d16>bbb2 <f+d+8.e16aaa2 o6 c+>a+8.b16<ddd2 >g+g+8.a16<c+c+c+2
+o5 r<c+8.d16>bbb2 <f+d+8.e16&e2&e32 t90 o7c+2 t110 o6 c+c+8.d16f+f+f+2 >g+b8.a16<a t90aa1;
+t110 v12 l4 q15
+o5 rrg+g+g+2 <dc8.c+16c+c+c+2 o5 ec+8.d16&d2&d2 dd8.c+16c+c+c+2
+o5 rg+g+g+g+2 <dc8.c+16&c+2&c32 t90 o6a+2 t110 o5 a+a+8.b16bag+2 dd8.c+16<c+ t90c+c+1;
+t110 v11 l4 q15
+rrrrrr rrrrrr rrrrrr rrrrrr o5 e&eddd2 o6 rr aa&a32 t90 o6e2 t110 rrrrrr rro5a2&a2;
+t110 v10 l4 q15
+rrrrrr rrrrrr rrrrrr rrrrrr rrrrrr o7 rr c+c+&c+32 t90 o6c+2 t110;
+t110 v11 l4 q15
+rrrrrr rrrrrr rrrrrr rrrrrr rrrrrr rrrr r32 t90 o5a+2 t110;
+t110 v12 l4 q15
+rrrrrr rrrrrr rrrrrr rrrrrr rrrrrr rrrr r32 t90 o5f+2 t110;
+t110 v13 l4 q15
+o5 rrddd2 rrrrrr o5 rrf+f+f+2 rreee2
+o5 rrrrrr rraa&a32 t90 o5e2 t110 rr o5ddd2 rre t90ee1;
+t110 v14 l4 q15
+o5 rreee2 rreee2 o4 rrbbb2 rraaa2
+o5 rreee2 rree&e32 t90 o5c+2 t110 rrro4bb2 rra t90aa2;
+t110 v15 l4 q15
+o3 re<eee2 r>a<aaa2 o3 re<eee2 r>>a<<eee2
+o3 re<eee2 r>a<aa&a32 t90 f+2 t110 o2 rb o4f+f+e2 r o2 a o4 e& t90e2;
