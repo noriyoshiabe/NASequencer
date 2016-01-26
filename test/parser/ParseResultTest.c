@@ -85,7 +85,7 @@ int main(int argc, char **argv)
             printf("[ERROR:%d] %s at %s:%d:%d",
                     error->code,
                     ParseErrorCode2String(error->code),
-                    error->location.filepath,
+                    NAIOGetLastPathComponent(error->location.filepath),
                     error->location.line,
                     error->location.column);
 
