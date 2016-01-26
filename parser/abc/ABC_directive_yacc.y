@@ -8,7 +8,6 @@
 
 #include <string.h>
 
-extern void ABC_directive_lex_set_error(yyscan_t scanner);
 extern int ABC_directive_error(YYLTYPE *yylloc, yyscan_t scanner, const char *filepath, int line, int columnOffset, void **node, const char *message);
 
 #define location(yylloc) &((FileLocation){(char *)filepath, line, yylloc.first_column + columnOffset})
@@ -67,11 +66,8 @@ input
 statement
     : midi
     | propagate_accidental
-    | error
+    | error '\n'
         {
-            ABC_directive_lex_set_error(scanner);
-            yyerrok;
-            yyclearin;
             $$ = NULL;
         }
     ;
@@ -140,11 +136,8 @@ midi_param
             n->type = MidiMute;
             $$ = n;
         }
-    | error
+    | error '\n'
         {
-            ABC_directive_lex_set_error(scanner);
-            yyerrok;
-            yyclearin;
             $$ = NULL;
         }
     ;

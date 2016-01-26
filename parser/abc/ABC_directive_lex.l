@@ -25,7 +25,6 @@
 %option bison-bridge
 %option bison-locations
 
-%x ERROR
 %x COMMENT
 
 NONZERO                [1-9]
@@ -71,16 +70,9 @@ UNSUPPORTED            ^%%[^Mp]
 {UNSUPPORTED}           { BEGIN(COMMENT); }
 
 <COMMENT>.              { }
-<ERROR>.                { }
 
 [[:blank:]]             { }
 .                       { return 1; }
 <<EOF>>                 { return 0; }
 
 %%
-
-void ABC_directive_lex_set_error(yyscan_t scanner)
-{
-    struct yyguts_t *yyg = (struct yyguts_t *)scanner;
-    BEGIN(ERROR);
-}
