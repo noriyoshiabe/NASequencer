@@ -210,3 +210,7 @@ Note: tick=7560 channel=10 noteNo=36 gatetime=64 velocity=127
 Note: tick=7560 channel=10 noteNo=44 gatetime=64 velocity=127
 
 ---- errors ----
+
+---- other ----
+resolution: 480
+length: 7680

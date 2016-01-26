@@ -204,3 +204,7 @@ Note: tick=21120 channel=4 noteNo=53 gatetime=1920 velocity=100
 [ERROR:1002] GeneralParseErrorSyntaxError at /Users/abechan/workspace/namidi/test/parser/abc/canzonetta.abc:31:8 program
 [ERROR:1002] GeneralParseErrorSyntaxError at /Users/abechan/workspace/namidi/test/parser/abc/canzonetta.abc:32:8 program
 [ERROR:1002] GeneralParseErrorSyntaxError at /Users/abechan/workspace/namidi/test/parser/abc/canzonetta.abc:33:8 program
+
+---- other ----
+resolution: 0
+length: 23040

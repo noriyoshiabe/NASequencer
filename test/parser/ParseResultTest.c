@@ -96,6 +96,11 @@ int main(int argc, char **argv)
 
             printf("\n");
         }
+
+        printf("\n");
+        printf("---- other ----\n");
+        printf("resolution: %d\n", ((SequenceBuilderImpl *)builder)->resolution);
+        printf("length: %d\n", ((SequenceBuilderImpl *)builder)->length);
     }
 
     bool success = errorCount == NAArrayCount(info->errors);

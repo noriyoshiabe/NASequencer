@@ -824,3 +824,7 @@ Note: tick=288480 channel=1 noteNo=54 gatetime=240 velocity=100
 Note: tick=288720 channel=1 noteNo=55 gatetime=480 velocity=100
 
 ---- errors ----
+
+---- other ----
+resolution: 0
+length: 289200
