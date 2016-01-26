@@ -85,10 +85,6 @@ midi
             n->node.children = $3;
             $$ = n;
         }
-    | MIDI CHORDPROG INTEGER
-        {
-            $$ = NULL; // Unsupported
-        }
     ;
 
 midi_param_list
