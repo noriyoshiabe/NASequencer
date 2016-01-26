@@ -194,7 +194,7 @@ bool NAAllocIsAllocatedMemoryExist()
     return 0 < NAMapCount(statMap);
 }
 
-#endif
+#else
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -205,3 +205,5 @@ bool NAAllocIsAllocatedMemoryExist()
     printf("__ALLOCATION_CHECK__ macro is not enabled.");
     abort();
 }
+
+#endif
