@@ -296,7 +296,7 @@ static void NAMidiPreprocessorExpandMacroInternal(NAMidiPreprocessor *self, File
     while (iterator->hasNext(iterator)) {
         Macro *_macro = iterator->next(iterator);
         char *p = strstr(target, _macro->target);
-        if (p) {
+        if (p == target && strlen(p) == strlen(_macro->target)) {
             if (NASetContains(self->expandingMacroSet, _macro)) {
                 self->context->appendError(self->context, location, NAMidiParseErrorCircularMacroReference, _macro->target, NULL);
                 goto FINISH;

@@ -1,3 +1,12 @@
+#define BD C1
+#define SD E1
+#define HC F#1
+#define HP G#1
+#define HO A#1
+#define CS C#2
+
+// #include 'drums.nas'
+
 TITLE 'Syntax of NAMIDI'
 ========================
 COPYRIGHT  'Copyright (c) 2016, Noriyoshi Abe. All Rights Reserved.'
@@ -33,13 +42,13 @@ PATTERN rhythm---pattern
     120: C1      F#1 
     120:     E1         
     ------------------------
-    120: C1      F#1 
-    120:     E1         
-    120: C1      F#1 
+    120: BD      HC
+    120:     SD         
+    120: BD      HC 
     120:          
-    120:     E1  F#1 
+    120:     SD  HC
     120:          
-    120:         A#1
+    120:         HO
     120:
     ------------------------
   END

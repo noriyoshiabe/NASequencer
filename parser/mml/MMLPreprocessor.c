@@ -286,7 +286,7 @@ static void MMLPreprocessorExpandMacroInternal(MMLPreprocessor *self, FileLocati
     while (iterator->hasNext(iterator)) {
         Macro *_macro = iterator->next(iterator);
         char *p = strstr(target, _macro->target);
-        if (p) {
+        if (p == target) {
             remain = p + _macro->targetLength;
 
             if (NASetContains(self->expandingMacroSet, _macro)) {

@@ -31,3 +31,6 @@ $TEST_ARGS{CCC, $TEST}
 
 $MACRO{ARG1, ARG2} = %ARG1 %ARG1 F## %ARG2;
 $MACRO{{CDE}4 [CDE] - [CDE], "AAA"} 
+
+$C=cd;
+$C2$C4$C8;
