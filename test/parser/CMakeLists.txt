@@ -42,10 +42,11 @@ add_test(abc-reels-result
   ${CMAKE_CURRENT_SOURCE_DIR}/abc/reels.abc \
   | diff - ${CMAKE_CURRENT_SOURCE_DIR}/abc/reels.abc.result")
 
-add_test(abc-canzonetta parse-result-test ${CMAKE_CURRENT_SOURCE_DIR}/abc/canzonetta.abc --silent)
+add_test(abc-canzonetta parse-result-test ${CMAKE_CURRENT_SOURCE_DIR}/abc/canzonetta.abc --silent --error-count=3)
 add_test(abc-canzonetta-result
   bash -c "${PROJECT_BINARY_DIR}/parse-result-test \
   ${CMAKE_CURRENT_SOURCE_DIR}/abc/canzonetta.abc \
+  --error-count=3 \
   | diff - ${CMAKE_CURRENT_SOURCE_DIR}/abc/canzonetta.abc.result")
 
 add_test(mml-bolero parse-result-test ${CMAKE_CURRENT_SOURCE_DIR}/mml/bolero.mml --silent)

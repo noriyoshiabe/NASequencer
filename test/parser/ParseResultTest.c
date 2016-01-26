@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <getopt.h>
 
 typedef struct _SequenceBuilderImpl {
     SequenceBuilder interface;
@@ -23,20 +24,42 @@ static int __MidiEventComparator(const void *_event1, const void *_event2);
 static void __MidiEventDump(MidiEvent *self);
 static int __ParseErrorComparator(const void *_error1, const void *_error2);
 
+static struct option _options[] = {
+    { "silent", no_argument, NULL, 's'},
+    { "error-count", required_argument, NULL, 'e'},
+
+    {NULL, 0, NULL, 0}
+};
+
 int main(int argc, char **argv)
 {
+    int opt;
+
+    bool silent = false;
+    int errorCount = 0;
+
+    while (-1 != (opt = getopt_long(argc, argv, "se:", _options, NULL))) {
+        switch (opt) {
+        case 's':
+            silent = true;
+            break;
+        case 'e':
+            errorCount = atoi(optarg);
+            break;
+        case '?':
+            return EXIT_FAILURE;
+        }
+    }
+
     ParseInfo *info = NULL;
     NAIterator *iterator;
 
     SequenceBuilder *builder = SequenceBuilderCreate();
     Parser *parser = ParserCreate(builder);
-    NAArray *events = ParserParseFile(parser, argv[1], &info);
+    NAArray *events = ParserParseFile(parser, argv[optind], &info);
     ParserDestroy(parser);
 
-    if (2 < argc && 0 == strcmp("--silent", argv[2])) {
-        ;
-    }
-    else {
+    if (!silent) {
         printf("---- filenames ----\n");
         NAArraySort(info->filepaths, (void *)strcmp);
         iterator = NAArrayGetIterator(info->filepaths);
@@ -75,14 +98,14 @@ int main(int argc, char **argv)
         }
     }
 
-    bool noError = NAArrayIsEmpty(info->errors);
+    bool success = errorCount == NAArrayCount(info->errors);
 
     ParseInfoRelease(info);
     builder->destroy(builder);
 
     bool leaked = NAAllocIsAllocatedMemoryExist();
 
-    return noError && !leaked ? EXIT_SUCCESS : EXIT_FAILURE;
+    return success && !leaked ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 
