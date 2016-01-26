@@ -28,6 +28,7 @@
 
 %x x_ESCAPE
 %x x_COMMENT
+%x x_ESCAPE_COMMENT
 %x x_END
 %x x_DECORATION
 %x x_CHORD
@@ -147,6 +148,7 @@ RESERVED      [#\*;\?@]
 <<EOF>>         {
                     switch (YY_START) {
                     case x_ESCAPE:
+                    case x_ESCAPE_COMMENT:
                     case x_END:
                         return 0;
                     case x_DECORATION:
@@ -163,11 +165,12 @@ RESERVED      [#\*;\?@]
                     }
                 }
 
-<x_ESCAPE>"%"         { BEGIN(INITIAL); return '%'; }
+<x_ESCAPE>"%"         { BEGIN(x_ESCAPE_COMMENT); }
 <x_ESCAPE>[[:space:]] { }
 <x_ESCAPE>.           { BEGIN(INITIAL); return 1; }
 
 <x_COMMENT>.          { }
+<x_ESCAPE_COMMENT>.   { }
 
 <x_DECORATION>[[:graph:]]   {
                                 if (yytext[0] == yytext[yyleng - 1]) {
