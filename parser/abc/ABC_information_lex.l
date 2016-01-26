@@ -94,7 +94,7 @@ REDEFINABLE_SYMBOL      [~h-wH-W]
 REDEFINABLE_REPLACEMENT {DECORATION}|{ANNOTATION}
 
 NAME                (?i:name|nm)
-SUBNAME             (?i:subname|snm)
+SUBNAME             (?i:subname|snm|sname)
 VOICE_NAME          \"[^\"]+\"
 STEM                (?i:stem)
 UP                  (?i:up)
