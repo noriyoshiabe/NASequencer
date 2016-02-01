@@ -36,7 +36,8 @@ renderer.heading = function (text, level) {
 }
 
 renderer.link = function (href, title, text) {
-  return '<a href="'+href+'">'+text+'</a>';
+  var targetBlank = href.startsWith('http') ? ' target="_blank"' : '';
+  return '<a href="'+href+'"'+targetBlank+'>'+text+'</a>';
 }
 
 function main(argv, callback) {
