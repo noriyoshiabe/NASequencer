@@ -395,7 +395,7 @@ static void visitNote(void *_self, ASTNote *ast)
     int octave = SEMNOTE_OCTAVE_NONE;
     char *c;
     while (*(c = ++pc)) {
-        switch (*c) {
+        switch (tolower(*c)) {
         case '#':
             accidental = AccidentalSharp == accidental ? AccidentalDoubleSharp : AccidentalSharp;
             break;
