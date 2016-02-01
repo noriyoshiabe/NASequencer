@@ -150,9 +150,12 @@ static void visitKey(void *_self, ASTKey *ast)
     NAMidiASTAnalyzer *self = _self;
 
     BaseNote baseNote = KeyChar2BaseNote(ast->keyString[0]);
-    bool sharp = NULL != strchr(&ast->keyString[1], '#');
-    bool flat = NULL != strchr(&ast->keyString[1], 'b');
-    Mode mode = NULL != strstr(&ast->keyString[1], "min") ? ModeMinor : ModeMajor;
+    char *keyString = NACStringDuplicate(ast->keyString);
+    keyString = NACStringToLowerCase(keyString);
+
+    bool sharp = NULL != strchr(&keyString[1], '#');
+    bool flat = NULL != strchr(&keyString[1], 'b');
+    Mode mode = NULL != strstr(&keyString[1], "min") ? ModeMinor : ModeMajor;
 
     NoteTable *noteTable = NoteTableCreate(baseNote, sharp, flat, mode);
     if (NoteTableHasUnusualKeySign(noteTable)) {
