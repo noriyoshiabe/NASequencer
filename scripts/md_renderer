@@ -29,6 +29,16 @@ var targets = [
   }
 ];
 
+var renderer = new marked.Renderer();
+
+renderer.heading = function (text, level) {
+  return '<h'+level+' id="'+text+'">'+text+'</h' + level + '>';
+}
+
+renderer.link = function (href, title, text) {
+  return '<a href="'+href+'">'+text+'</a>';
+}
+
 function main(argv, callback) {
   var template = fs.readFileSync('../doc/template/syntax.ejs', 'utf-8');
 
@@ -39,7 +49,7 @@ function main(argv, callback) {
 
   for (var i = 0; i < targets.length; ++i) {
     var md = fs.readFileSync(targets[i].src, 'utf8');
-    var body = marked(md, {breaks: true});
+    var body = marked(md, {breaks: true, renderer: renderer});
     var html = ejs.render(template, {title: targets[i].title, body: body});
     fs.writeFileSync(targets[i].dest, html);
   }
