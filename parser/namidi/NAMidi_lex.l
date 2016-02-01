@@ -66,7 +66,7 @@ KEY            key
 
 KEY_SIGN       [cdefgab](#|b)?[[:blank:]]*(maj(or)?|min(or)?)
 NOTE           [cdefgab](#|##|b|bb|n)?(\-?[[:digit:]]{1,2})?
-ID_STRING      [_[:alpha:]][_[:alnum:]\-]*[_[:alnum:]]
+ID_STRING      [_[:alnum:]][_[:alnum:]\-]*
 IDENTIFIER     {ID_STRING}(:{ID_STRING})*
 
 WSPACE         [[:blank:]]+
