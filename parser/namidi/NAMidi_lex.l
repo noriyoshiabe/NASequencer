@@ -29,7 +29,6 @@
 %option bison-locations
 %option case-insensitive
 
-%x COMMENT
 %x x_INCLUDE
 
 NONZERO        [1-9]

@@ -33,7 +33,7 @@
 STRING         \"[^\"]*\"|'[^']*'
 
 WSPACE         [[:blank:]]+
-LINE_COMMENT   ^[[:blank:]]*(\/\/|==|--).*$
+LINE_COMMENT   [[:blank:]]*(\/\/|==|--).*$
 
 INCLUDE        ^[[:blank:]]*#[[:blank:]]*include
 DEFINE         ^[[:blank:]]*#[[:blank:]]*define
