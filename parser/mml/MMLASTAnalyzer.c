@@ -426,6 +426,7 @@ static void visitTransepose(void *_self, ASTTransepose *ast)
     }
 
     SEMTranspose *sem = node(Transpose, ast);
+    sem->relative = ast->relative;
     sem->value = ast->value;
     append(self->state, sem);
 }
