@@ -575,9 +575,31 @@ static void HelpCommandExecute(Command *self, CLI *cli)
 
 static void SyntaxCommandExecute(Command *self, CLI *cli)
 {
-    printf("\n");
-    InformationViewShowSyntax();
-    printf("\n");
+    if (2 > NAArrayCount(self->argv)) {
+        fprintf(stderr, "filetype is missing. <namidi|abc|mml>\n");
+        return;
+    }
+
+    char *filetype = NAArrayGetValueAt(self->argv, 1);
+
+    if (0 == strcmp("namidi", filetype)) {
+        printf("\n");
+        InformationViewShowNAMidiSyntax();
+        printf("\n");
+    }
+    else if (0 == strcmp("abc", filetype)) {
+        printf("\n");
+        InformationViewShowABCSyntax();
+        printf("\n");
+    }
+    else if (0 == strcmp("mml", filetype)) {
+        printf("\n");
+        InformationViewShowMMLSyntax();
+        printf("\n");
+    }
+    else {
+        fprintf(stderr, "unknown filetype [%s]\n", filetype);
+    }
 }
 
 static void AboutCommandExecute(Command *self, CLI *cli)
@@ -732,7 +754,7 @@ static CommandTable commandTable[] = {
     {"unload", UnloadCommandExecute, "unload <index>", "unload synthesizer specifid by index of synthesizers list."},
     {"export", ExportCommandExecute, "export <file>", "export sequence.\nsupported file types are currently .smf, .mid, .midi, .wav, .wave .m4a and .aac."},
     {"help", HelpCommandExecute, "help", "display this help."},
-    {"syntax", SyntaxCommandExecute, "syntax", "syntax reference."},
+    {"syntax", SyntaxCommandExecute, "syntax <namidi|abc|mml>", "syntax reference."},
     {"about", AboutCommandExecute, "about", "about NAMIDI."},
 #ifdef DEBUG
     {"debug", LogCommandExecute, "debug", "for development."},

@@ -29,10 +29,24 @@ add_custom_command(
 )
 
 add_custom_command(
-  OUTPUT syntax.c
+  OUTPUT syntax_namidi.c
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  COMMAND xxd -i syntax.txt ${CMAKE_CURRENT_BINARY_DIR}/syntax.c
-  DEPENDS syntax.txt
+  COMMAND xxd -i ../doc/ja/namidi.md ${CMAKE_CURRENT_BINARY_DIR}/syntax_namidi.c
+  DEPENDS ../doc/ja/namidi.md
+)
+
+add_custom_command(
+  OUTPUT syntax_abc.c
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  COMMAND xxd -i ../doc/ja/abc.md ${CMAKE_CURRENT_BINARY_DIR}/syntax_abc.c
+  DEPENDS ../doc/ja/abc.md
+)
+
+add_custom_command(
+  OUTPUT syntax_mml.c
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  COMMAND xxd -i ../doc/ja/mml.md ${CMAKE_CURRENT_BINARY_DIR}/syntax_mml.c
+  DEPENDS ../doc/ja/mml.md
 )
 
 include_directories(
@@ -56,7 +70,9 @@ set(SOURCES
   EventListView.c
   InformationView.c
   license.c
-  syntax.c
+  syntax_namidi.c
+  syntax_abc.c
+  syntax_mml.c
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

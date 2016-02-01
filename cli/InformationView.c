@@ -5,8 +5,12 @@
 #define VERSION "0.2.1"
 #define VERSION_LONG "namidi-cli Version "VERSION" January 2, 2016\n"
 
-extern unsigned char syntax_txt[];
-extern int syntax_txt_len;
+extern unsigned char ___doc_ja_namidi_md[];
+extern int ___doc_ja_namidi_md_len;
+extern unsigned char ___doc_ja_abc_md[];
+extern int ___doc_ja_abc_md_len;
+extern unsigned char ___doc_ja_mml_md[];
+extern int ___doc_ja_mml_md_len;
 
 extern unsigned char license_txt[];
 extern int license_txt_len;
@@ -50,9 +54,19 @@ void InformationViewShowVersion()
     fputs(VERSION_LONG, stdout);
 }
 
-void InformationViewShowSyntax()
+void InformationViewShowNAMidiSyntax()
 {
-    fwrite(syntax_txt, 1, syntax_txt_len, stdout);
+    fwrite(___doc_ja_namidi_md, 1, ___doc_ja_namidi_md_len, stdout);
+}
+
+void InformationViewShowABCSyntax()
+{
+    fwrite(___doc_ja_abc_md, 1, ___doc_ja_abc_md_len, stdout);
+}
+
+void InformationViewShowMMLSyntax()
+{
+    fwrite(___doc_ja_mml_md, 1, ___doc_ja_mml_md_len, stdout);
 }
 
 void InformationViewShowAbout()
