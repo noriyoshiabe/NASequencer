@@ -14,6 +14,8 @@
 		0201F7DC1C688BB100A201F6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0201F7DB1C688BB100A201F6 /* Assets.xcassets */; };
 		0201F7DF1C688BB100A201F6 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0201F7DD1C688BB100A201F6 /* MainMenu.xib */; };
 		026160BA1C68C57D001E99A9 /* MainWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 026160B91C68C57D001E99A9 /* MainWindowController.m */; };
+		02C947691C690D2200121EA5 /* WelcomeWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02C947671C690D2200121EA5 /* WelcomeWindowController.m */; };
+		02C9476A1C690D2200121EA5 /* WelcomeWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02C947681C690D2200121EA5 /* WelcomeWindowController.xib */; };
 		02E982221C68EEA2006F682E /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02E982201C68EEA2006F682E /* MainViewController.m */; };
 		02E982231C68EEA2006F682E /* MainViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02E982211C68EEA2006F682E /* MainViewController.xib */; };
 		02E982271C68F251006F682E /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02E982251C68F251006F682E /* DetailViewController.m */; };
@@ -34,6 +36,9 @@
 		026160B51C689E18001E99A9 /* NAMIDI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = NAMIDI.entitlements; sourceTree = "<group>"; };
 		026160B81C68C57D001E99A9 /* MainWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainWindowController.h; sourceTree = "<group>"; };
 		026160B91C68C57D001E99A9 /* MainWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainWindowController.m; sourceTree = "<group>"; };
+		02C947661C690D2200121EA5 /* WelcomeWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WelcomeWindowController.h; sourceTree = "<group>"; };
+		02C947671C690D2200121EA5 /* WelcomeWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WelcomeWindowController.m; sourceTree = "<group>"; };
+		02C947681C690D2200121EA5 /* WelcomeWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = WelcomeWindowController.xib; sourceTree = "<group>"; };
 		02E9821F1C68EEA2006F682E /* MainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
 		02E982201C68EEA2006F682E /* MainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
 		02E982211C68EEA2006F682E /* MainViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainViewController.xib; sourceTree = "<group>"; };
@@ -86,6 +91,9 @@
 				02E982261C68F251006F682E /* DetailViewController.xib */,
 				02E982241C68F251006F682E /* DetailViewController.h */,
 				02E982251C68F251006F682E /* DetailViewController.m */,
+				02C947681C690D2200121EA5 /* WelcomeWindowController.xib */,
+				02C947661C690D2200121EA5 /* WelcomeWindowController.h */,
+				02C947671C690D2200121EA5 /* WelcomeWindowController.m */,
 				0201F7DB1C688BB100A201F6 /* Assets.xcassets */,
 				0201F7DD1C688BB100A201F6 /* MainMenu.xib */,
 				0201F7E01C688BB100A201F6 /* Info.plist */,
@@ -166,6 +174,7 @@
 			files = (
 				0201F7DC1C688BB100A201F6 /* Assets.xcassets in Resources */,
 				0201F7DA1C688BB100A201F6 /* MainWindowController.xib in Resources */,
+				02C9476A1C690D2200121EA5 /* WelcomeWindowController.xib in Resources */,
 				02E982281C68F251006F682E /* DetailViewController.xib in Resources */,
 				0201F7DF1C688BB100A201F6 /* MainMenu.xib in Resources */,
 				02E982231C68EEA2006F682E /* MainViewController.xib in Resources */,
@@ -180,6 +189,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0201F7D71C688BB100A201F6 /* Document.m in Sources */,
+				02C947691C690D2200121EA5 /* WelcomeWindowController.m in Sources */,
 				0201F7D41C688BB100A201F6 /* main.m in Sources */,
 				026160BA1C68C57D001E99A9 /* MainWindowController.m in Sources */,
 				02E982221C68EEA2006F682E /* MainViewController.m in Sources */,
