@@ -24,4 +24,9 @@
     // Insert code here to tear down your application
 }
 
+- (BOOL)applicationShouldOpenUntitledFile:(NSApplication *)sender
+{
+    return NO;
+}
+
 @end
