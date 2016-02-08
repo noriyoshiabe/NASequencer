@@ -16,6 +16,8 @@
 		026160BA1C68C57D001E99A9 /* MainWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 026160B91C68C57D001E99A9 /* MainWindowController.m */; };
 		02E982221C68EEA2006F682E /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02E982201C68EEA2006F682E /* MainViewController.m */; };
 		02E982231C68EEA2006F682E /* MainViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02E982211C68EEA2006F682E /* MainViewController.xib */; };
+		02E982271C68F251006F682E /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02E982251C68F251006F682E /* DetailViewController.m */; };
+		02E982281C68F251006F682E /* DetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02E982261C68F251006F682E /* DetailViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +37,9 @@
 		02E9821F1C68EEA2006F682E /* MainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
 		02E982201C68EEA2006F682E /* MainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
 		02E982211C68EEA2006F682E /* MainViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainViewController.xib; sourceTree = "<group>"; };
+		02E982241C68F251006F682E /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
+		02E982251C68F251006F682E /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
+		02E982261C68F251006F682E /* DetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DetailViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +83,9 @@
 				02E982211C68EEA2006F682E /* MainViewController.xib */,
 				02E9821F1C68EEA2006F682E /* MainViewController.h */,
 				02E982201C68EEA2006F682E /* MainViewController.m */,
+				02E982261C68F251006F682E /* DetailViewController.xib */,
+				02E982241C68F251006F682E /* DetailViewController.h */,
+				02E982251C68F251006F682E /* DetailViewController.m */,
 				0201F7DB1C688BB100A201F6 /* Assets.xcassets */,
 				0201F7DD1C688BB100A201F6 /* MainMenu.xib */,
 				0201F7E01C688BB100A201F6 /* Info.plist */,
@@ -158,6 +166,7 @@
 			files = (
 				0201F7DC1C688BB100A201F6 /* Assets.xcassets in Resources */,
 				0201F7DA1C688BB100A201F6 /* MainWindowController.xib in Resources */,
+				02E982281C68F251006F682E /* DetailViewController.xib in Resources */,
 				0201F7DF1C688BB100A201F6 /* MainMenu.xib in Resources */,
 				02E982231C68EEA2006F682E /* MainViewController.xib in Resources */,
 			);
@@ -175,6 +184,7 @@
 				026160BA1C68C57D001E99A9 /* MainWindowController.m in Sources */,
 				02E982221C68EEA2006F682E /* MainViewController.m in Sources */,
 				0201F7D11C688BB100A201F6 /* AppDelegate.m in Sources */,
+				02E982271C68F251006F682E /* DetailViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

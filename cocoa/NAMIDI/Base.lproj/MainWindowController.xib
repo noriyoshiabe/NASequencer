@@ -22,9 +22,33 @@
                 <rect key="frame" x="0.0" y="0.0" width="507" height="413"/>
                 <autoresizingMask key="autoresizingMask"/>
             </view>
+            <toolbar key="toolbar" implicitIdentifier="4ECB914C-A414-4F01-8FBC-326BFB56532E" autosavesConfiguration="NO" allowsUserCustomization="NO" showsBaselineSeparator="NO" displayMode="iconOnly" sizeMode="small" id="Epm-Rf-e6l">
+                <allowedToolbarItems>
+                    <toolbarItem implicitItemIdentifier="NSToolbarSpaceItem" id="RYG-zr-Tvh"/>
+                    <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="lm7-Jm-Vyk"/>
+                    <toolbarItem implicitItemIdentifier="FC852C10-EB8E-4A31-BBA5-697669C0D3C6" label="Toolbar Item" paletteLabel="Toolbar Item" tag="-1" image="NSGoRightTemplate" id="9OQ-Yp-DIO">
+                        <connections>
+                            <action selector="nextButtonTapped:" target="-2" id="QNl-4S-GyS"/>
+                        </connections>
+                    </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="964E2FBF-9953-4B6B-A4FC-E9E9C5B3ABFF" label="Toolbar Item" paletteLabel="Toolbar Item" tag="-1" image="NSGoLeftTemplate" id="afn-eN-FQL">
+                        <connections>
+                            <action selector="backButtonTapped:" target="-2" id="61S-VU-qC0"/>
+                        </connections>
+                    </toolbarItem>
+                </allowedToolbarItems>
+                <defaultToolbarItems>
+                    <toolbarItem reference="afn-eN-FQL"/>
+                    <toolbarItem reference="9OQ-Yp-DIO"/>
+                </defaultToolbarItems>
+            </toolbar>
             <connections>
                 <outlet property="delegate" destination="-2" id="0bl-1N-x8E"/>
             </connections>
         </window>
     </objects>
+    <resources>
+        <image name="NSGoLeftTemplate" width="9" height="12"/>
+        <image name="NSGoRightTemplate" width="9" height="12"/>
+    </resources>
 </document>
