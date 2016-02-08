@@ -7,6 +7,11 @@
 //
 
 #import "MainWindowController.h"
+#import "MainViewController.h"
+
+@interface MainWindowController ()
+@property (strong, nonatomic) MainViewController *mainVC;
+@end
 
 @implementation MainWindowController
 
@@ -19,6 +24,10 @@
 - (void)windowDidLoad
 {
     [super windowDidLoad];
+    
+    self.mainVC = [[MainViewController alloc] init];
+    self.mainVC.view.frame = self.window.contentView.bounds;
+    self.contentViewController = self.mainVC;
 }
 
 @end
