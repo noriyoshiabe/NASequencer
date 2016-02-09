@@ -1,0 +1,25 @@
+nav {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom 0;
+  width: 200px;
+}
+
+.is-menu-open nav {
+  display: block;
+}
+
+main {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  overflow-y: scroll;
+}
+
+.is-menu-open main {
+  left: 200px;
+}

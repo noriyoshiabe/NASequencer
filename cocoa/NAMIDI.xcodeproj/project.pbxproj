@@ -14,6 +14,7 @@
 		020CF8301C6A04830025DF84 /* getting-started in Resources */ = {isa = PBXBuildFile; fileRef = 020CF82F1C6A04830025DF84 /* getting-started */; };
 		020CF8321C6A059C0025DF84 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 020CF8311C6A059C0025DF84 /* WebKit.framework */; };
 		020CF8391C6A1BFD0025DF84 /* GettingStartedWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 020CF8381C6A1BFD0025DF84 /* GettingStartedWindowController.xib */; };
+		020CF83D1C6A3AD30025DF84 /* NAMIDI.help in Resources */ = {isa = PBXBuildFile; fileRef = 020CF83C1C6A3AD30025DF84 /* NAMIDI.help */; };
 		024A5B0D1C69FF990079D22C /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 024A5B0C1C69FF990079D22C /* MainMenu.xib */; };
 		024A5B121C69FFCD0079D22C /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A5B101C69FFCD0079D22C /* DetailViewController.m */; };
 		024A5B131C69FFCD0079D22C /* DetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 024A5B111C69FFCD0079D22C /* DetailViewController.xib */; };
@@ -42,6 +43,7 @@
 		020CF82F1C6A04830025DF84 /* getting-started */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "getting-started"; sourceTree = "<group>"; };
 		020CF8311C6A059C0025DF84 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		020CF8381C6A1BFD0025DF84 /* GettingStartedWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = GettingStartedWindowController.xib; sourceTree = "<group>"; };
+		020CF83C1C6A3AD30025DF84 /* NAMIDI.help */ = {isa = PBXFileReference; lastKnownFileType = folder; path = NAMIDI.help; sourceTree = "<group>"; };
 		024A5B0C1C69FF990079D22C /* MainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
 		024A5B0F1C69FFCD0079D22C /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
 		024A5B101C69FFCD0079D22C /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
@@ -111,6 +113,7 @@
 				024A5B0C1C69FF990079D22C /* MainMenu.xib */,
 				0201F7DB1C688BB100A201F6 /* Assets.xcassets */,
 				0201F7E01C688BB100A201F6 /* Info.plist */,
+				020CF83C1C6A3AD30025DF84 /* NAMIDI.help */,
 				0201F7D21C688BB100A201F6 /* Supporting Files */,
 			);
 			path = NAMIDI;
@@ -241,6 +244,7 @@
 				024A5B2B1C69FFD90079D22C /* WelcomeView.xib in Resources */,
 				024A5B131C69FFCD0079D22C /* DetailViewController.xib in Resources */,
 				024A5B0D1C69FF990079D22C /* MainMenu.xib in Resources */,
+				020CF83D1C6A3AD30025DF84 /* NAMIDI.help in Resources */,
 				020CF8301C6A04830025DF84 /* getting-started in Resources */,
 				024A5B1C1C69FFD40079D22C /* MainViewController.xib in Resources */,
 				024A5B2F1C69FFD90079D22C /* WelcomeWindowController.xib in Resources */,

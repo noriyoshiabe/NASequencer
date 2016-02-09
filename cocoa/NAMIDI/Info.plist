@@ -51,5 +51,9 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>CFBundleHelpBookFolder</key>
+	<string>NAMIDI.help</string>
+	<key>CFBundleHelpBookName</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER).help</string>
 </dict>
 </plist>
