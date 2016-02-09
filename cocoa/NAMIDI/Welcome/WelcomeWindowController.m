@@ -34,7 +34,7 @@
 
 - (void)welcomeView:(WelcomeView *)view closeButtonTapped:(id)sender
 {
-    NSLog(@"%s", __func__);
+    [self close];
 }
 
 - (void)welcomeView:(WelcomeView *)view gettingStartedButtonTapped:(id)sender
