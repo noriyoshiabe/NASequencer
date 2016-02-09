@@ -8,9 +8,11 @@
 
 #import "WelcomeWindowController.h"
 #import "WelcomeView.h"
+#import "GettingStartedWindowController.h"
 
 @interface WelcomeWindowController () <WelcomeViewDelegate>
 @property (weak) IBOutlet WelcomeView *welcomeView;
+@property (strong, nonatomic) GettingStartedWindowController *gettingStartedWC;
 @end
 
 @implementation WelcomeWindowController
@@ -37,7 +39,8 @@
 
 - (void)welcomeView:(WelcomeView *)view gettingStartedButtonTapped:(id)sender
 {
-    NSLog(@"%s", __func__);
+    self.gettingStartedWC = [[GettingStartedWindowController alloc] init];
+    [self.gettingStartedWC showWindow:self];
 }
 
 - (void)welcomeView:(WelcomeView *)view listenToExampleButtonTapped:(id)sender

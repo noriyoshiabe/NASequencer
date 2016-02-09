@@ -18,10 +18,8 @@
 {
     [super awakeFromNib];
     
-    self.styleMask = NSTitledWindowMask | NSClosableWindowMask | NSFullSizeContentViewWindowMask;
     self.titleVisibility = NSWindowTitleHidden;
     self.titlebarAppearsTransparent = YES;
-    
     [self standardWindowButton:NSWindowCloseButton].superview.hidden = YES;
 }
 
