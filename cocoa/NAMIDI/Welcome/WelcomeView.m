@@ -10,6 +10,7 @@
 #import "WelcomeViewRecentTableCell.h"
 
 @interface WelcomeView () <NSTableViewDelegate, NSTableViewDataSource>
+@property (weak) IBOutlet NSView *contentView;
 @property (weak) IBOutlet NSTableView *recentTableView;
 @end
 
@@ -20,10 +21,8 @@
     self = [super initWithCoder:coder];
     
     if (self) {
-        NSNib *nib = [[NSNib alloc] initWithNibNamed:@"WelcomeView" bundle:nil];
-        NSArray *topLevelObjects;
-        if ([nib instantiateWithOwner:self topLevelObjects:&topLevelObjects]) {
-            [self addSubview:topLevelObjects.firstObject];
+        if ([[NSBundle mainBundle] loadNibNamed:@"WelcomeView" owner:self topLevelObjects:nil]) {
+            [self addSubview:self.contentView];
         }
     }
     

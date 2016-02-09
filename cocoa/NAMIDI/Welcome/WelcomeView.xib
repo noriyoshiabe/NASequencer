@@ -7,6 +7,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="WelcomeView">
             <connections>
+                <outlet property="contentView" destination="jV2-TQ-7vm" id="YDz-FX-dcK"/>
                 <outlet property="recentTableView" destination="g1c-Y8-2Ft" id="pzn-1R-U7e"/>
             </connections>
         </customObject>
