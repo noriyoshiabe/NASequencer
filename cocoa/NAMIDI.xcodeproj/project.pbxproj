@@ -14,6 +14,9 @@
 		0201F7DC1C688BB100A201F6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0201F7DB1C688BB100A201F6 /* Assets.xcassets */; };
 		0201F7DF1C688BB100A201F6 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0201F7DD1C688BB100A201F6 /* MainMenu.xib */; };
 		024A5AFD1C69D4E10079D22C /* WelcomeWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A5AFB1C69D4E10079D22C /* WelcomeWindow.m */; };
+		024A5B011C69E29E0079D22C /* WelcomeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A5B001C69E29E0079D22C /* WelcomeView.m */; };
+		024A5B051C69E2D20079D22C /* WelcomeView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 024A5B041C69E2D20079D22C /* WelcomeView.xib */; };
+		024A5B081C69F1F70079D22C /* WelcomeViewRecentTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A5B071C69F1F70079D22C /* WelcomeViewRecentTableCell.m */; };
 		026160BA1C68C57D001E99A9 /* MainWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 026160B91C68C57D001E99A9 /* MainWindowController.m */; };
 		02C947691C690D2200121EA5 /* WelcomeWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02C947671C690D2200121EA5 /* WelcomeWindowController.m */; };
 		02C9476A1C690D2200121EA5 /* WelcomeWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02C947681C690D2200121EA5 /* WelcomeWindowController.xib */; };
@@ -36,6 +39,11 @@
 		0201F7E01C688BB100A201F6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		024A5AFA1C69D4E10079D22C /* WelcomeWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WelcomeWindow.h; sourceTree = "<group>"; };
 		024A5AFB1C69D4E10079D22C /* WelcomeWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WelcomeWindow.m; sourceTree = "<group>"; };
+		024A5AFF1C69E29E0079D22C /* WelcomeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WelcomeView.h; sourceTree = "<group>"; };
+		024A5B001C69E29E0079D22C /* WelcomeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WelcomeView.m; sourceTree = "<group>"; };
+		024A5B041C69E2D20079D22C /* WelcomeView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = WelcomeView.xib; sourceTree = "<group>"; };
+		024A5B061C69F1F70079D22C /* WelcomeViewRecentTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WelcomeViewRecentTableCell.h; sourceTree = "<group>"; };
+		024A5B071C69F1F70079D22C /* WelcomeViewRecentTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WelcomeViewRecentTableCell.m; sourceTree = "<group>"; };
 		026160B51C689E18001E99A9 /* NAMIDI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = NAMIDI.entitlements; sourceTree = "<group>"; };
 		026160B81C68C57D001E99A9 /* MainWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainWindowController.h; sourceTree = "<group>"; };
 		026160B91C68C57D001E99A9 /* MainWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainWindowController.m; sourceTree = "<group>"; };
@@ -99,6 +107,11 @@
 				02C947671C690D2200121EA5 /* WelcomeWindowController.m */,
 				024A5AFA1C69D4E10079D22C /* WelcomeWindow.h */,
 				024A5AFB1C69D4E10079D22C /* WelcomeWindow.m */,
+				024A5B041C69E2D20079D22C /* WelcomeView.xib */,
+				024A5AFF1C69E29E0079D22C /* WelcomeView.h */,
+				024A5B001C69E29E0079D22C /* WelcomeView.m */,
+				024A5B061C69F1F70079D22C /* WelcomeViewRecentTableCell.h */,
+				024A5B071C69F1F70079D22C /* WelcomeViewRecentTableCell.m */,
 				0201F7DB1C688BB100A201F6 /* Assets.xcassets */,
 				0201F7DD1C688BB100A201F6 /* MainMenu.xib */,
 				0201F7E01C688BB100A201F6 /* Info.plist */,
@@ -180,6 +193,7 @@
 				0201F7DC1C688BB100A201F6 /* Assets.xcassets in Resources */,
 				0201F7DA1C688BB100A201F6 /* MainWindowController.xib in Resources */,
 				02C9476A1C690D2200121EA5 /* WelcomeWindowController.xib in Resources */,
+				024A5B051C69E2D20079D22C /* WelcomeView.xib in Resources */,
 				02E982281C68F251006F682E /* DetailViewController.xib in Resources */,
 				0201F7DF1C688BB100A201F6 /* MainMenu.xib in Resources */,
 				02E982231C68EEA2006F682E /* MainViewController.xib in Resources */,
@@ -200,6 +214,8 @@
 				02E982221C68EEA2006F682E /* MainViewController.m in Sources */,
 				0201F7D11C688BB100A201F6 /* AppDelegate.m in Sources */,
 				024A5AFD1C69D4E10079D22C /* WelcomeWindow.m in Sources */,
+				024A5B081C69F1F70079D22C /* WelcomeViewRecentTableCell.m in Sources */,
+				024A5B011C69E29E0079D22C /* WelcomeView.m in Sources */,
 				02E982271C68F251006F682E /* DetailViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

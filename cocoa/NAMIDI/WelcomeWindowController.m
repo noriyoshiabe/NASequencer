@@ -7,9 +7,10 @@
 //
 
 #import "WelcomeWindowController.h"
+#import "WelcomeView.h"
 
-@interface WelcomeWindowController ()
-
+@interface WelcomeWindowController () <WelcomeViewDelegate>
+@property (weak) IBOutlet WelcomeView *welcomeView;
 @end
 
 @implementation WelcomeWindowController
@@ -23,48 +24,55 @@
 {
     [super windowDidLoad];
     
-    // Implement this method to handle any initialization after your window controller's window has been loaded from its nib file.
+    _welcomeView.delegate = self;
+    _welcomeView.recentFiles = @[@"TEST1", @"TEST2"];
 }
 
-- (IBAction)closeButtonTapped:(id)sender
-{
-    NSLog(@"%s", __func__);
-    [self close];
-}
+#pragma mark WelcomeViewDelegate
 
-- (IBAction)gettingStartedButtonTapped:(id)sender
+- (void)welcomeView:(WelcomeView *)view closeButtonTapped:(id)sender
 {
     NSLog(@"%s", __func__);
 }
 
-- (IBAction)listenToExampleButtonTapped:(id)sender
+- (void)welcomeView:(WelcomeView *)view gettingStartedButtonTapped:(id)sender
 {
     NSLog(@"%s", __func__);
 }
 
-- (IBAction)createNewDocumentButtonTapped:(id)sender
+- (void)welcomeView:(WelcomeView *)view listenToExampleButtonTapped:(id)sender
 {
     NSLog(@"%s", __func__);
 }
 
-- (IBAction)helpButtonTapped:(id)sender
+- (void)welcomeView:(WelcomeView *)view createNewDocumentButtonTapped:(id)sender
 {
     NSLog(@"%s", __func__);
 }
 
-- (IBAction)preferenceButtonTapped:(id)sender
+- (void)welcomeView:(WelcomeView *)view helpButtonTapped:(id)sender
 {
     NSLog(@"%s", __func__);
 }
 
-- (IBAction)openOtherDocumentButtonTapped:(id)sender
+- (void)welcomeView:(WelcomeView *)view preferenceButtonTapped:(id)sender
 {
     NSLog(@"%s", __func__);
 }
 
-- (IBAction)showWhelcomeWhenStartsToggled:(NSButton *)sender
+- (void)welcomeView:(WelcomeView *)view openOtherDocumentButtonTapped:(id)sender
+{
+    NSLog(@"%s", __func__);
+}
+
+- (void)welcomeView:(WelcomeView *)view showWelcomeWhenStartsToggled:(NSButton *)sender
 {
     NSLog(@"%s %s", NSOnState == sender.state ? "ON" : "OFF", __func__);
+}
+
+- (void)welcomeView:(WelcomeView *)view recentTableViewSelectionChanged:(id)sender selectedRow:(NSInteger)row
+{
+    NSLog(@"%ld %s", row, __func__);
 }
 
 @end
