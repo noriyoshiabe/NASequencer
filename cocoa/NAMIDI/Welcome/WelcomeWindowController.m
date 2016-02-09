@@ -55,7 +55,8 @@
 
 - (void)welcomeView:(WelcomeView *)view helpButtonTapped:(id)sender
 {
-    NSLog(@"%s", __func__);
+    NSString *bookName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleHelpBookName"];
+    [[NSHelpManager sharedHelpManager] openHelpAnchor:@"top" inBook:bookName];
 }
 
 - (void)welcomeView:(WelcomeView *)view preferenceButtonTapped:(id)sender
