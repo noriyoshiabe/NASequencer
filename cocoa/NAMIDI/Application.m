@@ -16,4 +16,10 @@
     [[About sharedAbout] showWindow];
 }
 
+- (void)openDocumentWithContentsOfURL:(NSURL *)url
+{
+    [[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:url display:YES completionHandler:^(NSDocument * _Nullable document, BOOL documentWasAlreadyOpen, NSError * _Nullable error) {
+    }];
+}
+
 @end

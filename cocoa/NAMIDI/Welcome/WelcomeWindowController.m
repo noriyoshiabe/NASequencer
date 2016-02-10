@@ -10,6 +10,7 @@
 #import "WelcomeView.h"
 #import "GettingStartedWindowController.h"
 #import "Preference.h"
+#import "Application.h"
 
 @interface WelcomeWindowController () <WelcomeViewDelegate>
 @property (weak) IBOutlet WelcomeView *welcomeView;
@@ -78,7 +79,7 @@
 
 - (void)welcomeView:(WelcomeView *)view recentTableViewSelectionChanged:(id)sender selectedRow:(NSInteger)row
 {
-    NSLog(@"%ld %s", row, __func__);
+    [[Application sharedApplication] openDocumentWithContentsOfURL:_welcomeView.recentFiles[row]];
 }
 
 @end

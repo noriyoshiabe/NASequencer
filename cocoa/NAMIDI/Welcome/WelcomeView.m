@@ -11,9 +11,32 @@
 
 #include <pwd.h>
 
-@interface WelcomeView () <NSTableViewDelegate, NSTableViewDataSource>
+@class RecentTableView;
+@protocol RecentTableViewDelegate <NSTableViewDelegate>
+- (void)tableViewDidKeyDownEnter:(RecentTableView *)tableView;
+@end
+
+@interface RecentTableView : NSTableView
+@end
+
+@implementation RecentTableView
+
+- (void)keyDown:(NSEvent *)theEvent
+{
+    unichar key = [[theEvent charactersIgnoringModifiers] characterAtIndex:0];
+    if (NSCarriageReturnCharacter == key && -1 != self.selectedRow) {
+        [((id<RecentTableViewDelegate>)self.delegate) tableViewDidKeyDownEnter:self];
+    }
+    else {
+        [super keyDown:theEvent];
+    }
+}
+
+@end
+
+@interface WelcomeView () <RecentTableViewDelegate, NSTableViewDataSource>
 @property (weak) IBOutlet NSView *contentView;
-@property (weak) IBOutlet NSTableView *recentTableView;
+@property (weak) IBOutlet RecentTableView *recentTableView;
 @end
 
 @implementation WelcomeView
@@ -35,14 +58,18 @@
 {
     [super awakeFromNib];
     
-    self.recentTableView.delegate = self;
-    self.recentTableView.dataSource = self;
+    _recentTableView.delegate = self;
+    _recentTableView.dataSource = self;
 }
 
 - (void)setRecentFiles:(NSArray *)recentFiles
 {
     _recentFiles = recentFiles;
     [_recentTableView reloadData];
+    
+    if (0 < _recentFiles.count) {
+        [_recentTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
+    }
 }
 
 - (IBAction)closeButtonTapped:(id)sender
@@ -88,6 +115,13 @@
 - (IBAction)recentTableViewSelectionChanged:(id)sender
 {
     [_delegate welcomeView:self recentTableViewSelectionChanged:(id)sender selectedRow:[_recentTableView selectedRow]];
+}
+
+#pragma mark RecentTableViewDelegate
+
+- (void)tableViewDidKeyDownEnter:(RecentTableView *)tableView
+{
+    [_delegate welcomeView:self recentTableViewSelectionChanged:nil selectedRow:[_recentTableView selectedRow]];
 }
 
 #pragma mark NSTableViewDelegate
