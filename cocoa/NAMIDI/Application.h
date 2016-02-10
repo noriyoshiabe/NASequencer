@@ -10,4 +10,5 @@
 
 @interface Application : NSApplication
 - (void)openDocumentWithContentsOfURL:(NSURL *)url;
+- (void)openDocument;
 @end

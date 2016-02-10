@@ -1,5 +1,5 @@
 //
-//  About.h
+//  Welcome.h
 //  NAMIDI
 //
 //  Created by abechan on 2/10/16.
@@ -8,7 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
-@interface About : NSObject
-+ (About *)sharedInstance;
+@interface Welcome : NSObject
++ (Welcome *)sharedInstance;
 - (void)showWindow;
+- (void)closeWindow;
 @end

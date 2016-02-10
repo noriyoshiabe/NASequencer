@@ -8,17 +8,30 @@
 
 #import "Application.h"
 #import "About.h"
+#import "Welcome.h"
 
 @implementation Application
 
 - (void)orderFrontStandardAboutPanel:(id)sender
 {
-    [[About sharedAbout] showWindow];
+    [[About sharedInstance] showWindow];
 }
 
 - (void)openDocumentWithContentsOfURL:(NSURL *)url
 {
     [[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:url display:YES completionHandler:^(NSDocument * _Nullable document, BOOL documentWasAlreadyOpen, NSError * _Nullable error) {
+    }];
+}
+
+- (void)openDocument
+{
+    NSOpenPanel *openPanel = [[NSOpenPanel alloc] init];
+    
+    [openPanel beginWithCompletionHandler:^(NSInteger result){
+        if (result == NSFileHandlingPanelOKButton) {
+            [[Welcome sharedInstance] closeWindow];
+            [self openDocumentWithContentsOfURL:[openPanel URL]];
+        }
     }];
 }
 

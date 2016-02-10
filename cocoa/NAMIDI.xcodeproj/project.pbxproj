@@ -40,6 +40,7 @@
 		024A5B2E1C69FFD90079D22C /* WelcomeWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A5B281C69FFD90079D22C /* WelcomeWindowController.m */; };
 		024A5B2F1C69FFD90079D22C /* WelcomeWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 024A5B291C69FFD90079D22C /* WelcomeWindowController.xib */; };
 		024A5B361C6A01280079D22C /* GettingStartedWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A5B341C6A01280079D22C /* GettingStartedWindowController.m */; };
+		02A037911C6B7C49005955FD /* Welcome.m in Sources */ = {isa = PBXBuildFile; fileRef = 02A037901C6B7C49005955FD /* Welcome.m */; };
 		02A673FA1C6B3A5C00914C8B /* ABCIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 02A673E91C6B3A5C00914C8B /* ABCIcon.iconset */; };
 		02A673FB1C6B3A5C00914C8B /* AppIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 02A673EA1C6B3A5C00914C8B /* AppIcon.iconset */; };
 		02A673FC1C6B3A5C00914C8B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 02A673EB1C6B3A5C00914C8B /* Assets.xcassets */; };
@@ -104,6 +105,8 @@
 		024A5B331C6A01280079D22C /* GettingStartedWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GettingStartedWindowController.h; sourceTree = "<group>"; };
 		024A5B341C6A01280079D22C /* GettingStartedWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GettingStartedWindowController.m; sourceTree = "<group>"; };
 		026160B51C689E18001E99A9 /* NAMIDI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = NAMIDI.entitlements; sourceTree = "<group>"; };
+		02A0378F1C6B7C49005955FD /* Welcome.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Welcome.h; sourceTree = "<group>"; };
+		02A037901C6B7C49005955FD /* Welcome.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Welcome.m; sourceTree = "<group>"; };
 		02A673E91C6B3A5C00914C8B /* ABCIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = ABCIcon.iconset; sourceTree = "<group>"; };
 		02A673EA1C6B3A5C00914C8B /* AppIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = AppIcon.iconset; sourceTree = "<group>"; };
 		02A673EB1C6B3A5C00914C8B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -243,6 +246,8 @@
 				024A5B271C69FFD90079D22C /* WelcomeWindowController.h */,
 				024A5B281C69FFD90079D22C /* WelcomeWindowController.m */,
 				024A5B291C69FFD90079D22C /* WelcomeWindowController.xib */,
+				02A0378F1C6B7C49005955FD /* Welcome.h */,
+				02A037901C6B7C49005955FD /* Welcome.m */,
 			);
 			path = Welcome;
 			sourceTree = "<group>";
@@ -378,6 +383,7 @@
 				024A5B2E1C69FFD90079D22C /* WelcomeWindowController.m in Sources */,
 				020CF86C1C6AF4D90025DF84 /* SynthesizerViewController.m in Sources */,
 				020CF8711C6AF53D0025DF84 /* PurchaseViewController.m in Sources */,
+				02A037911C6B7C49005955FD /* Welcome.m in Sources */,
 				020CF8561C6AD4D80025DF84 /* PreferenceWindowController.m in Sources */,
 				020CF8811C6B22C20025DF84 /* About.m in Sources */,
 				024A5B2C1C69FFD90079D22C /* WelcomeViewRecentTableCell.m in Sources */,

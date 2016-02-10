@@ -9,6 +9,6 @@
 #import <Foundation/Foundation.h>
 
 @interface Preference : NSObject
-+ (Preference *)sharedPreference;
++ (Preference *)sharedInstance;
 - (void)showWindow;
 @end

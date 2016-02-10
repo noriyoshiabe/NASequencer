@@ -18,15 +18,15 @@
 
 @implementation Preference
 
-static Preference* _sharedPreference = nil;
+static Preference* _sharedInstance = nil;
 
-+ (Preference *)sharedPreference
++ (Preference *)sharedInstance
 {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        _sharedPreference = [[Preference alloc] init];
+        _sharedInstance = [[Preference alloc] init];
     });
-    return _sharedPreference;
+    return _sharedInstance;
 }
 
 - (void)showWindow

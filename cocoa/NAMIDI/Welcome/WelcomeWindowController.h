@@ -8,6 +8,11 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface WelcomeWindowController : NSWindowController
+@class WelcomeWindowController;
+@protocol WelcomeWindowControllerDelegate <NSObject>
+- (void)welcomeWindowControllerWillClose:(WelcomeWindowController *)controller;
+@end
 
+@interface WelcomeWindowController : NSWindowController
+@property (weak, nonatomic) id<WelcomeWindowControllerDelegate> delegate;
 @end

@@ -15,15 +15,15 @@
 
 @implementation About
 
-static About* _sharedAbout = nil;
+static About* _sharedInstance = nil;
 
-+ (About *)sharedAbout
++ (About *)sharedInstance
 {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        _sharedAbout= [[About alloc] init];
+        _sharedInstance = [[About alloc] init];
     });
-    return _sharedAbout;
+    return _sharedInstance;
 }
 
 - (void)showWindow

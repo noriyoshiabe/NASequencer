@@ -7,10 +7,9 @@
 //
 
 #import "AppDelegate.h"
-#import "WelcomeWindowController.h"
+#import "Welcome.h"
 
 @interface AppDelegate ()
-@property (strong, nonatomic) WelcomeWindowController *welcomeWC;
 @property (nonatomic) BOOL inLaunchOrReopenProcess;
 @end
 
@@ -18,19 +17,18 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    // Insert code here to initialize your application
-    
     self.inLaunchOrReopenProcess = YES;
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification
 {
-    // Insert code here to tear down your application
 }
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
-    [self openWelcomeWindow];
+    if (self.inLaunchOrReopenProcess && ![NSApplication sharedApplication].keyWindow) {
+        [[Welcome sharedInstance] showWindow];
+    }
     self.inLaunchOrReopenProcess = NO;
 }
 
@@ -41,7 +39,7 @@
 
 - (BOOL)application:(NSApplication *)sender openFile:(NSString *)filename
 {
-    [self closeWelcomeWindow];
+    [[Welcome sharedInstance] closeWindow];
     return NO;
 }
 
@@ -49,22 +47,6 @@
 {
     self.inLaunchOrReopenProcess = YES;
     return YES;
-}
-
-- (void)openWelcomeWindow
-{
-    if (self.inLaunchOrReopenProcess && ![NSApplication sharedApplication].keyWindow) {
-        self.welcomeWC = [[WelcomeWindowController alloc] init];
-        [self.welcomeWC showWindow:self];
-    }
-}
-
-- (void)closeWelcomeWindow
-{
-    if (self.welcomeWC) {
-        [self.welcomeWC.window close];
-        self.welcomeWC = nil;
-    }
 }
 
 @end

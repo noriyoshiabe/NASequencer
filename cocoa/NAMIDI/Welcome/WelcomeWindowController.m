@@ -12,7 +12,7 @@
 #import "Preference.h"
 #import "Application.h"
 
-@interface WelcomeWindowController () <WelcomeViewDelegate>
+@interface WelcomeWindowController () <WelcomeViewDelegate, NSWindowDelegate>
 @property (weak) IBOutlet WelcomeView *welcomeView;
 @property (strong, nonatomic) GettingStartedWindowController *gettingStartedWC;
 @end
@@ -27,6 +27,7 @@
 - (void)windowDidLoad
 {
     [super windowDidLoad];
+    self.window.delegate = self;
     self.windowFrameAutosaveName = @"WelcomeWindowFrame";
     
     _welcomeView.delegate = self;
@@ -64,12 +65,12 @@
 
 - (void)welcomeView:(WelcomeView *)view preferenceButtonTapped:(id)sender
 {
-    [[Preference sharedPreference] showWindow];
+    [[Preference sharedInstance] showWindow];
 }
 
 - (void)welcomeView:(WelcomeView *)view openOtherDocumentButtonTapped:(id)sender
 {
-    NSLog(@"%s", __func__);
+    [[Application sharedApplication] openDocument];
 }
 
 - (void)welcomeView:(WelcomeView *)view showWelcomeWhenStartsToggled:(NSButton *)sender
@@ -80,6 +81,13 @@
 - (void)welcomeView:(WelcomeView *)view recentTableViewSelectionChanged:(id)sender selectedRow:(NSInteger)row
 {
     [[Application sharedApplication] openDocumentWithContentsOfURL:_welcomeView.recentFiles[row]];
+}
+
+#pragma mark NSWindowDelegate
+
+- (void)windowWillClose:(NSNotification *)notification
+{
+    [_delegate welcomeWindowControllerWillClose:self];
 }
 
 @end
