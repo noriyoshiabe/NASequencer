@@ -50,7 +50,7 @@
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
-	<string>NSApplication</string>
+	<string>Application</string>
 	<key>CFBundleHelpBookFolder</key>
 	<string>NAMIDI.help</string>
 	<key>CFBundleHelpBookName</key>
