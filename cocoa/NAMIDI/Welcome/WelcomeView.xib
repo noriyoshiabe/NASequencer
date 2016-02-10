@@ -28,7 +28,7 @@
                     </connections>
                 </button>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="s3T-Ne-6NL">
-                    <rect key="frame" x="190" y="226" width="129" height="17"/>
+                    <rect key="frame" x="190" y="215" width="129" height="17"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Welcome to NAMIDI" id="Pv7-7S-Vve">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -181,6 +181,10 @@
                         <action selector="showWelcomeWhenStartsToggled:" target="-2" id="8MJ-Zz-Ppc"/>
                     </connections>
                 </button>
+                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ITM-eX-s7g">
+                    <rect key="frame" x="190" y="241" width="128" height="128"/>
+                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSApplicationIcon" id="86J-8X-DvE"/>
+                </imageView>
             </subviews>
         </view>
     </objects>

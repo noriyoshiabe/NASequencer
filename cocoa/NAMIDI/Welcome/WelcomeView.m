@@ -92,10 +92,12 @@
 
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
 {
+    NSURL *url = [_recentFiles objectAtIndex:row];
+    
     WelcomeViewRecentTableCell *cellView = [tableView makeViewWithIdentifier:tableColumn.identifier owner:self];
-    // TODO cellView.imageView
-    cellView.textField.stringValue = [_recentFiles objectAtIndex:row];
-    cellView.detailTextField.stringValue = [NSString stringWithFormat:@"%@ detail", [_recentFiles objectAtIndex:row] ];
+    cellView.imageView.image = [[NSWorkspace sharedWorkspace] iconForFileType:url.lastPathComponent.pathExtension];
+    cellView.textField.stringValue = url.lastPathComponent;
+    cellView.detailTextField.stringValue = url.absoluteString.stringByDeletingLastPathComponent;
     return cellView;
 }
 

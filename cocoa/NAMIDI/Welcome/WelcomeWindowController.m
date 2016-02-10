@@ -29,7 +29,7 @@
     self.windowFrameAutosaveName = @"WelcomeWindowFrame";
     
     _welcomeView.delegate = self;
-    _welcomeView.recentFiles = @[@"TEST1", @"TEST2"];
+    _welcomeView.recentFiles = [NSDocumentController sharedDocumentController].recentDocumentURLs;
 }
 
 #pragma mark WelcomeViewDelegate

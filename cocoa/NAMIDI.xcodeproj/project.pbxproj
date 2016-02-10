@@ -10,11 +10,9 @@
 		0201F7D11C688BB100A201F6 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0201F7D01C688BB100A201F6 /* AppDelegate.m */; };
 		0201F7D41C688BB100A201F6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0201F7D31C688BB100A201F6 /* main.m */; };
 		0201F7D71C688BB100A201F6 /* Document.m in Sources */ = {isa = PBXBuildFile; fileRef = 0201F7D61C688BB100A201F6 /* Document.m */; };
-		0201F7DC1C688BB100A201F6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0201F7DB1C688BB100A201F6 /* Assets.xcassets */; };
 		020CF8301C6A04830025DF84 /* getting-started in Resources */ = {isa = PBXBuildFile; fileRef = 020CF82F1C6A04830025DF84 /* getting-started */; };
 		020CF8321C6A059C0025DF84 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 020CF8311C6A059C0025DF84 /* WebKit.framework */; };
 		020CF8391C6A1BFD0025DF84 /* GettingStartedWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 020CF8381C6A1BFD0025DF84 /* GettingStartedWindowController.xib */; };
-		020CF83D1C6A3AD30025DF84 /* NAMIDI.help in Resources */ = {isa = PBXBuildFile; fileRef = 020CF83C1C6A3AD30025DF84 /* NAMIDI.help */; };
 		020CF8561C6AD4D80025DF84 /* PreferenceWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 020CF8541C6AD4D80025DF84 /* PreferenceWindowController.m */; };
 		020CF8571C6AD4D80025DF84 /* PreferenceWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 020CF8551C6AD4D80025DF84 /* PreferenceWindowController.xib */; };
 		020CF8621C6AEA5F0025DF84 /* GeneralViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 020CF8601C6AEA5F0025DF84 /* GeneralViewController.m */; };
@@ -42,6 +40,12 @@
 		024A5B2E1C69FFD90079D22C /* WelcomeWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A5B281C69FFD90079D22C /* WelcomeWindowController.m */; };
 		024A5B2F1C69FFD90079D22C /* WelcomeWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 024A5B291C69FFD90079D22C /* WelcomeWindowController.xib */; };
 		024A5B361C6A01280079D22C /* GettingStartedWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A5B341C6A01280079D22C /* GettingStartedWindowController.m */; };
+		02A673FA1C6B3A5C00914C8B /* ABCIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 02A673E91C6B3A5C00914C8B /* ABCIcon.iconset */; };
+		02A673FB1C6B3A5C00914C8B /* AppIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 02A673EA1C6B3A5C00914C8B /* AppIcon.iconset */; };
+		02A673FC1C6B3A5C00914C8B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 02A673EB1C6B3A5C00914C8B /* Assets.xcassets */; };
+		02A673FD1C6B3A5C00914C8B /* MMLIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 02A673EC1C6B3A5C00914C8B /* MMLIcon.iconset */; };
+		02A674041C6B3A5C00914C8B /* NMFIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 02A673F91C6B3A5C00914C8B /* NMFIcon.iconset */; };
+		02A674061C6B3A7600914C8B /* NAMIDI.help in Resources */ = {isa = PBXBuildFile; fileRef = 02A674051C6B3A7600914C8B /* NAMIDI.help */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,12 +55,10 @@
 		0201F7D31C688BB100A201F6 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		0201F7D51C688BB100A201F6 /* Document.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Document.h; sourceTree = "<group>"; };
 		0201F7D61C688BB100A201F6 /* Document.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Document.m; sourceTree = "<group>"; };
-		0201F7DB1C688BB100A201F6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0201F7E01C688BB100A201F6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		020CF82F1C6A04830025DF84 /* getting-started */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "getting-started"; sourceTree = "<group>"; };
 		020CF8311C6A059C0025DF84 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		020CF8381C6A1BFD0025DF84 /* GettingStartedWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = GettingStartedWindowController.xib; sourceTree = "<group>"; };
-		020CF83C1C6A3AD30025DF84 /* NAMIDI.help */ = {isa = PBXFileReference; lastKnownFileType = folder; path = NAMIDI.help; sourceTree = "<group>"; };
 		020CF8531C6AD4D80025DF84 /* PreferenceWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferenceWindowController.h; sourceTree = "<group>"; };
 		020CF8541C6AD4D80025DF84 /* PreferenceWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreferenceWindowController.m; sourceTree = "<group>"; };
 		020CF8551C6AD4D80025DF84 /* PreferenceWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PreferenceWindowController.xib; sourceTree = "<group>"; };
@@ -102,6 +104,12 @@
 		024A5B331C6A01280079D22C /* GettingStartedWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GettingStartedWindowController.h; sourceTree = "<group>"; };
 		024A5B341C6A01280079D22C /* GettingStartedWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GettingStartedWindowController.m; sourceTree = "<group>"; };
 		026160B51C689E18001E99A9 /* NAMIDI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = NAMIDI.entitlements; sourceTree = "<group>"; };
+		02A673E91C6B3A5C00914C8B /* ABCIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = ABCIcon.iconset; sourceTree = "<group>"; };
+		02A673EA1C6B3A5C00914C8B /* AppIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = AppIcon.iconset; sourceTree = "<group>"; };
+		02A673EB1C6B3A5C00914C8B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		02A673EC1C6B3A5C00914C8B /* MMLIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = MMLIcon.iconset; sourceTree = "<group>"; };
+		02A673F91C6B3A5C00914C8B /* NMFIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = NMFIcon.iconset; sourceTree = "<group>"; };
+		02A674051C6B3A7600914C8B /* NAMIDI.help */ = {isa = PBXFileReference; lastKnownFileType = folder; path = NAMIDI.help; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -143,6 +151,7 @@
 				020CF8521C6AD4820025DF84 /* Preference */,
 				020CF8761C6B09E30025DF84 /* About */,
 				026160B51C689E18001E99A9 /* NAMIDI.entitlements */,
+				020CF8681C6AF1A80025DF84 /* NAMIDI-Prefix.pch */,
 				020CF87C1C6B20C50025DF84 /* Application.h */,
 				020CF87D1C6B20C50025DF84 /* Application.m */,
 				0201F7CF1C688BB100A201F6 /* AppDelegate.h */,
@@ -150,11 +159,9 @@
 				0201F7D51C688BB100A201F6 /* Document.h */,
 				0201F7D61C688BB100A201F6 /* Document.m */,
 				024A5B0C1C69FF990079D22C /* MainMenu.xib */,
-				0201F7DB1C688BB100A201F6 /* Assets.xcassets */,
 				0201F7E01C688BB100A201F6 /* Info.plist */,
-				020CF83C1C6A3AD30025DF84 /* NAMIDI.help */,
+				02A673E81C6B3A5C00914C8B /* Resources */,
 				0201F7D21C688BB100A201F6 /* Supporting Files */,
-				020CF8681C6AF1A80025DF84 /* NAMIDI-Prefix.pch */,
 			);
 			path = NAMIDI;
 			sourceTree = "<group>";
@@ -251,6 +258,19 @@
 			path = GettingStarted;
 			sourceTree = "<group>";
 		};
+		02A673E81C6B3A5C00914C8B /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				02A673EB1C6B3A5C00914C8B /* Assets.xcassets */,
+				02A674051C6B3A7600914C8B /* NAMIDI.help */,
+				02A673EA1C6B3A5C00914C8B /* AppIcon.iconset */,
+				02A673F91C6B3A5C00914C8B /* NMFIcon.iconset */,
+				02A673E91C6B3A5C00914C8B /* ABCIcon.iconset */,
+				02A673EC1C6B3A5C00914C8B /* MMLIcon.iconset */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -313,20 +333,24 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0201F7DC1C688BB100A201F6 /* Assets.xcassets in Resources */,
 				020CF86D1C6AF4D90025DF84 /* SynthesizerViewController.xib in Resources */,
 				024A5B2B1C69FFD90079D22C /* WelcomeView.xib in Resources */,
+				02A674061C6B3A7600914C8B /* NAMIDI.help in Resources */,
 				020CF87B1C6B0AB20025DF84 /* AboutWindowController.xib in Resources */,
+				02A674041C6B3A5C00914C8B /* NMFIcon.iconset in Resources */,
+				02A673FD1C6B3A5C00914C8B /* MMLIcon.iconset in Resources */,
 				024A5B131C69FFCD0079D22C /* DetailViewController.xib in Resources */,
 				024A5B0D1C69FF990079D22C /* MainMenu.xib in Resources */,
-				020CF83D1C6A3AD30025DF84 /* NAMIDI.help in Resources */,
+				02A673FA1C6B3A5C00914C8B /* ABCIcon.iconset in Resources */,
 				020CF8301C6A04830025DF84 /* getting-started in Resources */,
 				024A5B1C1C69FFD40079D22C /* MainViewController.xib in Resources */,
 				024A5B2F1C69FFD90079D22C /* WelcomeWindowController.xib in Resources */,
 				020CF8721C6AF53D0025DF84 /* PurchaseViewController.xib in Resources */,
 				024A5B1E1C69FFD40079D22C /* MainWindowController.xib in Resources */,
+				02A673FB1C6B3A5C00914C8B /* AppIcon.iconset in Resources */,
 				020CF8391C6A1BFD0025DF84 /* GettingStartedWindowController.xib in Resources */,
 				020CF8571C6AD4D80025DF84 /* PreferenceWindowController.xib in Resources */,
+				02A673FC1C6B3A5C00914C8B /* Assets.xcassets in Resources */,
 				020CF8631C6AEA5F0025DF84 /* GeneralViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -447,7 +471,6 @@
 		0201F7E41C688BB100A201F6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = NAMIDI/NAMIDI.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = NAMIDI/Info.plist;
@@ -460,7 +483,6 @@
 		0201F7E51C688BB100A201F6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = NAMIDI/NAMIDI.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = NAMIDI/Info.plist;
