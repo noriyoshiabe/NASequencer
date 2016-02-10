@@ -8,6 +8,8 @@
         <customObject id="-2" userLabel="File's Owner" customClass="Application">
             <connections>
                 <outlet property="delegate" destination="Voe-Tx-rLC" id="GzC-gU-4Uq"/>
+                <outlet property="savePanelAccessoryView" destination="VRr-0u-oDY" id="tcW-M8-tWY"/>
+                <outlet property="savePanelFileTypePopupButton" destination="XpB-3p-dfw" id="UgZ-4I-pSl"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
@@ -663,5 +665,46 @@
                 </menuItem>
             </items>
         </menu>
+        <customView id="VRr-0u-oDY">
+            <rect key="frame" x="0.0" y="0.0" width="400" height="50"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XpB-3p-dfw">
+                    <rect key="frame" x="117" y="12" width="245" height="26"/>
+                    <popUpButtonCell key="cell" type="push" title="NMF (Note as MIDI File)" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="mcR-nH-SXn" id="GyR-2C-Cbr">
+                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="menu"/>
+                        <menu key="menu" id="av0-6l-KzY">
+                            <items>
+                                <menuItem title="NMF (Note as MIDI File)" state="on" id="mcR-nH-SXn">
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="representedObject" value="nmf"/>
+                                    </userDefinedRuntimeAttributes>
+                                </menuItem>
+                                <menuItem title="ABC (ABC Notation)" id="oDr-1d-KDp">
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="representedObject" value="abc"/>
+                                    </userDefinedRuntimeAttributes>
+                                </menuItem>
+                                <menuItem title="MML (Music Macro Language)" id="1Uk-xx-Yia">
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="representedObject" value="mml"/>
+                                    </userDefinedRuntimeAttributes>
+                                </menuItem>
+                            </items>
+                        </menu>
+                    </popUpButtonCell>
+                </popUpButton>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kk4-9l-X09">
+                    <rect key="frame" x="51" y="17" width="62" height="17"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="File Type:" id="8KW-cH-jfN">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+            </subviews>
+            <point key="canvasLocation" x="576" y="342"/>
+        </customView>
     </objects>
 </document>

@@ -54,7 +54,7 @@
 
 - (void)welcomeView:(WelcomeView *)view createNewDocumentButtonTapped:(id)sender
 {
-    NSLog(@"%s", __func__);
+    [[Application sharedApplication] createDocument];
 }
 
 - (void)welcomeView:(WelcomeView *)view helpButtonTapped:(id)sender
