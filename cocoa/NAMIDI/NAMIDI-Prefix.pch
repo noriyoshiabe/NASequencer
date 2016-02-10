@@ -1,0 +1,18 @@
+//
+//  NAMIDI-Prefix.pch
+//  NAMIDI
+//
+//  Created by abechan on 2/10/16.
+//  Copyright © 2016 Noriyoshi Abe. All rights reserved.
+//
+
+#ifndef NAMIDI_Prefix_h
+#define NAMIDI_Prefix_h
+
+#import <Foundation/Foundation.h>
+
+#undef NSLocalizedString
+#define NSLocalizedString(key, comment) \
+    [[NSBundle mainBundle] localizedStringForKey:(key) value:(comment) table:nil]
+
+#endif /* NAMIDI_Prefix_h */

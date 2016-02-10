@@ -18,15 +18,10 @@
 
 @implementation MainWindowController
 
-- (void)awakeFromNib
-{
-    [super awakeFromNib];
-    self.window.frameAutosaveName = @"MainWindowFrame";
-}
-
 - (void)windowDidLoad
 {
     [super windowDidLoad];
+    self.windowFrameAutosaveName = @"MainWindowFrame";
     
     self.mainVC = [[MainViewController alloc] init];
     self.detailVC = [[DetailViewController alloc] init];

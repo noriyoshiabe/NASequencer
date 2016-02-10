@@ -8,8 +8,8 @@
 
 #import "PreferenceWindowController.h"
 
-@interface PreferenceWindowController ()  <NSToolbarDelegate>
-@property (weak) IBOutlet NSToolbar *toolBar;
+@interface PreferenceWindowController ()  <NSToolbarDelegate, NSWindowDelegate>
+@property (weak) IBOutlet NSToolbar *toolbar;
 @property (strong, nonatomic) NSMutableArray *viewControllers;
 @property (strong, nonatomic) NSViewController<PreferenceViewController> *selectedViewController;
 @property (readonly, nonatomic) NSArray *toolbarItemIdentifiers;
@@ -34,9 +34,16 @@
 - (void)windowDidLoad
 {
     [super windowDidLoad];
+    self.windowFrameAutosaveName = @"PreferenceWindowFrame";
+    self.window.delegate = self;
     
-    _toolBar.delegate = self;
+    _toolbar.delegate = self;
     self.selectedViewController = _viewControllers[0];
+    
+    NSArray *identifiers = self.toolbarItemIdentifiers;
+    for (int i = 0; i < identifiers.count; ++i) {
+        [_toolbar insertItemWithItemIdentifier:identifiers[i] atIndex: i];
+    }
 }
 
 - (void)setSelectedViewController:(NSViewController<PreferenceViewController> *)controller
@@ -49,8 +56,8 @@
     _selectedViewController = controller;
     
     self.contentViewController = controller;
-    self.window.title = controller.title;
-    [_toolBar setSelectedItemIdentifier:controller.identifier];
+    self.window.title = controller.toolbarItemLabel;
+    [_toolbar setSelectedItemIdentifier:controller.identifier];
 }
 
 - (NSArray *)toolbarItemIdentifiers
@@ -104,6 +111,13 @@
     toolbarItem.action = @selector(toolbarItemDidClick:);
     
     return toolbarItem;
+}
+
+#pragma mark NSWindowDelegate
+
+- (void)windowWillClose:(NSNotification *)notification
+{
+    [_delegate preferenceWindowControllerWillClose:self];
 }
 
 @end

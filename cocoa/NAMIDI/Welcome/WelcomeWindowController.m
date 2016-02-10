@@ -9,6 +9,7 @@
 #import "WelcomeWindowController.h"
 #import "WelcomeView.h"
 #import "GettingStartedWindowController.h"
+#import "Preference.h"
 
 @interface WelcomeWindowController () <WelcomeViewDelegate>
 @property (weak) IBOutlet WelcomeView *welcomeView;
@@ -25,6 +26,7 @@
 - (void)windowDidLoad
 {
     [super windowDidLoad];
+    self.windowFrameAutosaveName = @"WelcomeWindowFrame";
     
     _welcomeView.delegate = self;
     _welcomeView.recentFiles = @[@"TEST1", @"TEST2"];
@@ -61,7 +63,7 @@
 
 - (void)welcomeView:(WelcomeView *)view preferenceButtonTapped:(id)sender
 {
-    NSLog(@"%s", __func__);
+    [[Preference sharedPreference] showWindow];
 }
 
 - (void)welcomeView:(WelcomeView *)view openOtherDocumentButtonTapped:(id)sender
