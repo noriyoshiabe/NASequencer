@@ -15,6 +15,8 @@
 		020CF8321C6A059C0025DF84 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 020CF8311C6A059C0025DF84 /* WebKit.framework */; };
 		020CF8391C6A1BFD0025DF84 /* GettingStartedWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 020CF8381C6A1BFD0025DF84 /* GettingStartedWindowController.xib */; };
 		020CF83D1C6A3AD30025DF84 /* NAMIDI.help in Resources */ = {isa = PBXBuildFile; fileRef = 020CF83C1C6A3AD30025DF84 /* NAMIDI.help */; };
+		020CF8561C6AD4D80025DF84 /* PreferenceWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 020CF8541C6AD4D80025DF84 /* PreferenceWindowController.m */; };
+		020CF8571C6AD4D80025DF84 /* PreferenceWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 020CF8551C6AD4D80025DF84 /* PreferenceWindowController.xib */; };
 		024A5B0D1C69FF990079D22C /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 024A5B0C1C69FF990079D22C /* MainMenu.xib */; };
 		024A5B121C69FFCD0079D22C /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A5B101C69FFCD0079D22C /* DetailViewController.m */; };
 		024A5B131C69FFCD0079D22C /* DetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 024A5B111C69FFCD0079D22C /* DetailViewController.xib */; };
@@ -44,6 +46,9 @@
 		020CF8311C6A059C0025DF84 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		020CF8381C6A1BFD0025DF84 /* GettingStartedWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = GettingStartedWindowController.xib; sourceTree = "<group>"; };
 		020CF83C1C6A3AD30025DF84 /* NAMIDI.help */ = {isa = PBXFileReference; lastKnownFileType = folder; path = NAMIDI.help; sourceTree = "<group>"; };
+		020CF8531C6AD4D80025DF84 /* PreferenceWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferenceWindowController.h; sourceTree = "<group>"; };
+		020CF8541C6AD4D80025DF84 /* PreferenceWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreferenceWindowController.m; sourceTree = "<group>"; };
+		020CF8551C6AD4D80025DF84 /* PreferenceWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PreferenceWindowController.xib; sourceTree = "<group>"; };
 		024A5B0C1C69FF990079D22C /* MainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
 		024A5B0F1C69FFCD0079D22C /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
 		024A5B101C69FFCD0079D22C /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
@@ -105,6 +110,7 @@
 				024A5B321C6A00F50079D22C /* GettingStarted */,
 				024A5B141C69FFD40079D22C /* Main */,
 				024A5B0E1C69FFCD0079D22C /* Detail */,
+				020CF8521C6AD4820025DF84 /* Preference */,
 				026160B51C689E18001E99A9 /* NAMIDI.entitlements */,
 				0201F7CF1C688BB100A201F6 /* AppDelegate.h */,
 				0201F7D01C688BB100A201F6 /* AppDelegate.m */,
@@ -125,6 +131,16 @@
 				0201F7D31C688BB100A201F6 /* main.m */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		020CF8521C6AD4820025DF84 /* Preference */ = {
+			isa = PBXGroup;
+			children = (
+				020CF8531C6AD4D80025DF84 /* PreferenceWindowController.h */,
+				020CF8541C6AD4D80025DF84 /* PreferenceWindowController.m */,
+				020CF8551C6AD4D80025DF84 /* PreferenceWindowController.xib */,
+			);
+			path = Preference;
 			sourceTree = "<group>";
 		};
 		024A5B0E1C69FFCD0079D22C /* Detail */ = {
@@ -250,6 +266,7 @@
 				024A5B2F1C69FFD90079D22C /* WelcomeWindowController.xib in Resources */,
 				024A5B1E1C69FFD40079D22C /* MainWindowController.xib in Resources */,
 				020CF8391C6A1BFD0025DF84 /* GettingStartedWindowController.xib in Resources */,
+				020CF8571C6AD4D80025DF84 /* PreferenceWindowController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -270,6 +287,7 @@
 				024A5B1B1C69FFD40079D22C /* MainViewController.m in Sources */,
 				024A5B121C69FFCD0079D22C /* DetailViewController.m in Sources */,
 				024A5B2E1C69FFD90079D22C /* WelcomeWindowController.m in Sources */,
+				020CF8561C6AD4D80025DF84 /* PreferenceWindowController.m in Sources */,
 				024A5B2C1C69FFD90079D22C /* WelcomeViewRecentTableCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
