@@ -9,6 +9,8 @@
 #import "WelcomeView.h"
 #import "WelcomeViewRecentTableCell.h"
 
+#include <pwd.h>
+
 @interface WelcomeView () <NSTableViewDelegate, NSTableViewDataSource>
 @property (weak) IBOutlet NSView *contentView;
 @property (weak) IBOutlet NSTableView *recentTableView;
@@ -97,7 +99,7 @@
     WelcomeViewRecentTableCell *cellView = [tableView makeViewWithIdentifier:tableColumn.identifier owner:self];
     cellView.imageView.image = [[NSWorkspace sharedWorkspace] iconForFileType:url.lastPathComponent.pathExtension];
     cellView.textField.stringValue = url.lastPathComponent;
-    cellView.detailTextField.stringValue = url.absoluteString.stringByDeletingLastPathComponent;
+    cellView.detailTextField.stringValue = [url.path.stringByDeletingLastPathComponent stringByReplacingOccurrencesOfString:[NSString stringWithCString:getpwuid(getuid())->pw_dir encoding:NSUTF8StringEncoding] withString:@"~"];
     return cellView;
 }
 
