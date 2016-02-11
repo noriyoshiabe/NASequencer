@@ -9,8 +9,12 @@
 #import "ApplicationController.h"
 #import "AboutWindowController.h"
 #import "PreferenceWindowController.h"
+#import "WelcomeWindowController.h"
+#import "GettingStartedWindowController.h"
 
 @interface ApplicationController ()
+@property (strong, nonatomic) WelcomeWindowController *welocomeWC;
+@property (strong, nonatomic) GettingStartedWindowController *gettingStartedWC;
 @property (strong, nonatomic) AboutWindowController *aboutWC;
 @property (strong, nonatomic) PreferenceWindowController *preferenceWC;
 @end
@@ -38,6 +42,23 @@ static ApplicationController* _sharedInstance = nil;
         
     }
     return self;
+}
+
+- (void)showWelcomeWindow
+{
+    self.welocomeWC = [[WelcomeWindowController alloc] init];
+    [_welocomeWC showWindow:self];
+}
+
+- (void)closeWelcomeWindow
+{
+    [_welocomeWC close];
+}
+
+- (void)showGettingStartedWindow
+{
+    self.gettingStartedWC = [[GettingStartedWindowController alloc] init];
+    [_gettingStartedWC showWindow:self];
 }
 
 - (void)showAboutWindow

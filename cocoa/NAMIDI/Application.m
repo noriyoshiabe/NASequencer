@@ -8,7 +8,6 @@
 
 #import "Application.h"
 #import "ApplicationController.h"
-#import "Welcome.h"
 
 #define kSelectedFileTypeForCreation @"Document.SelectedFileTypeForCreation"
 
@@ -38,7 +37,7 @@
 
 - (void)openDocumentWithContentsOfURL:(NSURL *)url
 {
-    [[Welcome sharedInstance] closeWindow];
+    [[ApplicationController sharedInstance] closeWelcomeWindow];
     
     [[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:url display:YES completionHandler:^(NSDocument * _Nullable document, BOOL documentWasAlreadyOpen, NSError * _Nullable error) {
     }];

@@ -7,7 +7,7 @@
 //
 
 #import "AppDelegate.h"
-#import "Welcome.h"
+#import "ApplicationController.h"
 
 @interface AppDelegate ()
 @property (nonatomic) BOOL inLaunchOrReopenProcess;
@@ -27,7 +27,7 @@
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
     if (self.inLaunchOrReopenProcess && ![NSApplication sharedApplication].keyWindow) {
-        [[Welcome sharedInstance] showWindow];
+        [[ApplicationController sharedInstance] showWelcomeWindow];
     }
     self.inLaunchOrReopenProcess = NO;
 }
@@ -39,7 +39,7 @@
 
 - (BOOL)application:(NSApplication *)sender openFile:(NSString *)filename
 {
-    [[Welcome sharedInstance] closeWindow];
+    [[ApplicationController sharedInstance] closeWelcomeWindow];
     return NO;
 }
 

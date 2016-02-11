@@ -8,13 +8,11 @@
 
 #import "WelcomeWindowController.h"
 #import "WelcomeView.h"
-#import "GettingStartedWindowController.h"
 #import "Application.h"
 #import "ApplicationController.h"
 
-@interface WelcomeWindowController () <WelcomeViewDelegate, NSWindowDelegate>
+@interface WelcomeWindowController () <WelcomeViewDelegate>
 @property (weak) IBOutlet WelcomeView *welcomeView;
-@property (strong, nonatomic) GettingStartedWindowController *gettingStartedWC;
 @end
 
 @implementation WelcomeWindowController
@@ -27,7 +25,6 @@
 - (void)windowDidLoad
 {
     [super windowDidLoad];
-    self.window.delegate = self;
     self.windowFrameAutosaveName = @"WelcomeWindowFrame";
     
     _welcomeView.delegate = self;
@@ -43,8 +40,7 @@
 
 - (void)welcomeView:(WelcomeView *)view gettingStartedButtonTapped:(id)sender
 {
-    self.gettingStartedWC = [[GettingStartedWindowController alloc] init];
-    [self.gettingStartedWC showWindow:self];
+    [[ApplicationController sharedInstance] showGettingStartedWindow];
 }
 
 - (void)welcomeView:(WelcomeView *)view listenToExampleButtonTapped:(id)sender
@@ -81,13 +77,6 @@
 - (void)welcomeView:(WelcomeView *)view recentTableViewSelectionChanged:(id)sender selectedRow:(NSInteger)row
 {
     [[Application sharedApplication] openDocumentWithContentsOfURL:_welcomeView.recentFiles[row]];
-}
-
-#pragma mark NSWindowDelegate
-
-- (void)windowWillClose:(NSNotification *)notification
-{
-    [_delegate welcomeWindowControllerWillClose:self];
 }
 
 @end

@@ -10,6 +10,9 @@
 
 @interface ApplicationController : NSObject
 + (ApplicationController *)sharedInstance;
+- (void)showWelcomeWindow;
+- (void)closeWelcomeWindow;
+- (void)showGettingStartedWindow;
 - (void)showAboutWindow;
 - (void)showPreferenceWindow;
 @end
