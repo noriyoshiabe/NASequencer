@@ -32,9 +32,6 @@
 		024A5B1C1C69FFD40079D22C /* MainViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 024A5B171C69FFD40079D22C /* MainViewController.xib */; };
 		024A5B1D1C69FFD40079D22C /* MainWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A5B191C69FFD40079D22C /* MainWindowController.m */; };
 		024A5B1E1C69FFD40079D22C /* MainWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 024A5B1A1C69FFD40079D22C /* MainWindowController.xib */; };
-		024A5B2A1C69FFD90079D22C /* WelcomeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A5B211C69FFD90079D22C /* WelcomeView.m */; };
-		024A5B2B1C69FFD90079D22C /* WelcomeView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 024A5B221C69FFD90079D22C /* WelcomeView.xib */; };
-		024A5B2C1C69FFD90079D22C /* WelcomeViewRecentTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A5B241C69FFD90079D22C /* WelcomeViewRecentTableCell.m */; };
 		024A5B2E1C69FFD90079D22C /* WelcomeWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A5B281C69FFD90079D22C /* WelcomeWindowController.m */; };
 		024A5B2F1C69FFD90079D22C /* WelcomeWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 024A5B291C69FFD90079D22C /* WelcomeWindowController.xib */; };
 		024A5B361C6A01280079D22C /* GettingStartedWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A5B341C6A01280079D22C /* GettingStartedWindowController.m */; };
@@ -87,11 +84,6 @@
 		024A5B181C69FFD40079D22C /* MainWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainWindowController.h; sourceTree = "<group>"; };
 		024A5B191C69FFD40079D22C /* MainWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainWindowController.m; sourceTree = "<group>"; };
 		024A5B1A1C69FFD40079D22C /* MainWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainWindowController.xib; sourceTree = "<group>"; };
-		024A5B201C69FFD90079D22C /* WelcomeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WelcomeView.h; sourceTree = "<group>"; };
-		024A5B211C69FFD90079D22C /* WelcomeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WelcomeView.m; sourceTree = "<group>"; };
-		024A5B221C69FFD90079D22C /* WelcomeView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = WelcomeView.xib; sourceTree = "<group>"; };
-		024A5B231C69FFD90079D22C /* WelcomeViewRecentTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WelcomeViewRecentTableCell.h; sourceTree = "<group>"; };
-		024A5B241C69FFD90079D22C /* WelcomeViewRecentTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WelcomeViewRecentTableCell.m; sourceTree = "<group>"; };
 		024A5B271C69FFD90079D22C /* WelcomeWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WelcomeWindowController.h; sourceTree = "<group>"; };
 		024A5B281C69FFD90079D22C /* WelcomeWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WelcomeWindowController.m; sourceTree = "<group>"; };
 		024A5B291C69FFD90079D22C /* WelcomeWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = WelcomeWindowController.xib; sourceTree = "<group>"; };
@@ -225,11 +217,6 @@
 		024A5B1F1C69FFD90079D22C /* Welcome */ = {
 			isa = PBXGroup;
 			children = (
-				024A5B201C69FFD90079D22C /* WelcomeView.h */,
-				024A5B211C69FFD90079D22C /* WelcomeView.m */,
-				024A5B221C69FFD90079D22C /* WelcomeView.xib */,
-				024A5B231C69FFD90079D22C /* WelcomeViewRecentTableCell.h */,
-				024A5B241C69FFD90079D22C /* WelcomeViewRecentTableCell.m */,
 				024A5B271C69FFD90079D22C /* WelcomeWindowController.h */,
 				024A5B281C69FFD90079D22C /* WelcomeWindowController.m */,
 				024A5B291C69FFD90079D22C /* WelcomeWindowController.xib */,
@@ -324,7 +311,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				020CF86D1C6AF4D90025DF84 /* SynthesizerViewController.xib in Resources */,
-				024A5B2B1C69FFD90079D22C /* WelcomeView.xib in Resources */,
 				02A674061C6B3A7600914C8B /* NAMIDI.help in Resources */,
 				020CF87B1C6B0AB20025DF84 /* AboutWindowController.xib in Resources */,
 				02A674041C6B3A5C00914C8B /* NMFIcon.iconset in Resources */,
@@ -359,7 +345,6 @@
 				0201F7D71C688BB100A201F6 /* Document.m in Sources */,
 				0201F7D41C688BB100A201F6 /* main.m in Sources */,
 				0201F7D11C688BB100A201F6 /* AppDelegate.m in Sources */,
-				024A5B2A1C69FFD90079D22C /* WelcomeView.m in Sources */,
 				024A5B361C6A01280079D22C /* GettingStartedWindowController.m in Sources */,
 				020CF87A1C6B0AB20025DF84 /* AboutWindowController.m in Sources */,
 				024A5B1B1C69FFD40079D22C /* MainViewController.m in Sources */,
@@ -368,7 +353,6 @@
 				020CF86C1C6AF4D90025DF84 /* SynthesizerViewController.m in Sources */,
 				020CF8711C6AF53D0025DF84 /* PurchaseViewController.m in Sources */,
 				020CF8561C6AD4D80025DF84 /* PreferenceWindowController.m in Sources */,
-				024A5B2C1C69FFD90079D22C /* WelcomeViewRecentTableCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
