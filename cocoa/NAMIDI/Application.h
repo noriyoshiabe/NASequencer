@@ -9,7 +9,5 @@
 #import <Cocoa/Cocoa.h>
 
 @interface Application : NSApplication
-- (void)openDocumentWithContentsOfURL:(NSURL *)url;
-- (void)openDocument;
-- (void)createDocument;
+
 @end

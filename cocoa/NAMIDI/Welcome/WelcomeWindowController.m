@@ -7,7 +7,6 @@
 //
 
 #import "WelcomeWindowController.h"
-#import "Application.h"
 #import "ApplicationController.h"
 
 #include <pwd.h>
@@ -90,7 +89,7 @@
 
 - (IBAction)createNewDocumentButtonTapped:(id)sender
 {
-    [[Application sharedApplication] createDocument];
+    [[ApplicationController sharedInstance] createDocument];
 }
 
 - (IBAction)helpButtonTapped:(id)sender
@@ -106,7 +105,7 @@
 
 - (IBAction)openOtherDocumentButtonTapped:(id)sender
 {
-    [[Application sharedApplication] openDocument];
+    [[ApplicationController sharedInstance] openDocument];
 }
 
 - (IBAction)showWelcomeWhenStartsToggled:(NSButton *)sender
@@ -116,14 +115,14 @@
 
 - (IBAction)recentTableViewSelectionChanged:(id)sender
 {
-    [[Application sharedApplication] openDocumentWithContentsOfURL:self.recentDocumentURLs[[_recentTableView selectedRow]]];
+    [[ApplicationController sharedInstance] openDocumentWithContentsOfURL:self.recentDocumentURLs[[_recentTableView selectedRow]]];
 }
 
 #pragma mark RecentTableViewDelegate
 
 - (void)tableViewDidKeyDownEnter:(RecentTableView *)tableView
 {
-    [[Application sharedApplication] openDocumentWithContentsOfURL:self.recentDocumentURLs[[_recentTableView selectedRow]]];
+    [[ApplicationController sharedInstance] openDocumentWithContentsOfURL:self.recentDocumentURLs[[_recentTableView selectedRow]]];
 }
 
 #pragma mark NSTableViewDelegate
