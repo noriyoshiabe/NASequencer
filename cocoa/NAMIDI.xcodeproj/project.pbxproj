@@ -26,8 +26,6 @@
 		020CF87E1C6B20C50025DF84 /* Application.m in Sources */ = {isa = PBXBuildFile; fileRef = 020CF87D1C6B20C50025DF84 /* Application.m */; };
 		0240A2481C6C30F2002D6F72 /* ApplicationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0240A2471C6C30F2002D6F72 /* ApplicationController.m */; };
 		024A5B0D1C69FF990079D22C /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 024A5B0C1C69FF990079D22C /* MainMenu.xib */; };
-		024A5B121C69FFCD0079D22C /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A5B101C69FFCD0079D22C /* DetailViewController.m */; };
-		024A5B131C69FFCD0079D22C /* DetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 024A5B111C69FFCD0079D22C /* DetailViewController.xib */; };
 		024A5B1B1C69FFD40079D22C /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A5B161C69FFD40079D22C /* MainViewController.m */; };
 		024A5B1C1C69FFD40079D22C /* MainViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 024A5B171C69FFD40079D22C /* MainViewController.xib */; };
 		024A5B1D1C69FFD40079D22C /* MainWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A5B191C69FFD40079D22C /* MainWindowController.m */; };
@@ -41,6 +39,8 @@
 		02A673FD1C6B3A5C00914C8B /* MMLIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 02A673EC1C6B3A5C00914C8B /* MMLIcon.iconset */; };
 		02A674041C6B3A5C00914C8B /* NMFIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 02A673F91C6B3A5C00914C8B /* NMFIcon.iconset */; };
 		02A674061C6B3A7600914C8B /* NAMIDI.help in Resources */ = {isa = PBXBuildFile; fileRef = 02A674051C6B3A7600914C8B /* NAMIDI.help */; };
+		02B6EF751C6C4A2F003E1929 /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02B6EF731C6C4A2F003E1929 /* DetailViewController.m */; };
+		02B6EF761C6C4A2F003E1929 /* DetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02B6EF741C6C4A2F003E1929 /* DetailViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -75,9 +75,6 @@
 		0240A2461C6C30F2002D6F72 /* ApplicationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationController.h; sourceTree = "<group>"; };
 		0240A2471C6C30F2002D6F72 /* ApplicationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ApplicationController.m; sourceTree = "<group>"; };
 		024A5B0C1C69FF990079D22C /* MainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
-		024A5B0F1C69FFCD0079D22C /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
-		024A5B101C69FFCD0079D22C /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
-		024A5B111C69FFCD0079D22C /* DetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DetailViewController.xib; sourceTree = "<group>"; };
 		024A5B151C69FFD40079D22C /* MainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
 		024A5B161C69FFD40079D22C /* MainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
 		024A5B171C69FFD40079D22C /* MainViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainViewController.xib; sourceTree = "<group>"; };
@@ -96,6 +93,9 @@
 		02A673EC1C6B3A5C00914C8B /* MMLIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = MMLIcon.iconset; sourceTree = "<group>"; };
 		02A673F91C6B3A5C00914C8B /* NMFIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = NMFIcon.iconset; sourceTree = "<group>"; };
 		02A674051C6B3A7600914C8B /* NAMIDI.help */ = {isa = PBXFileReference; lastKnownFileType = folder; path = NAMIDI.help; sourceTree = "<group>"; };
+		02B6EF721C6C4A2F003E1929 /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
+		02B6EF731C6C4A2F003E1929 /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
+		02B6EF741C6C4A2F003E1929 /* DetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DetailViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -133,7 +133,6 @@
 				024A5B1F1C69FFD90079D22C /* Welcome */,
 				024A5B321C6A00F50079D22C /* GettingStarted */,
 				024A5B141C69FFD40079D22C /* Main */,
-				024A5B0E1C69FFCD0079D22C /* Detail */,
 				020CF8521C6AD4820025DF84 /* Preference */,
 				020CF8761C6B09E30025DF84 /* About */,
 				026160B51C689E18001E99A9 /* NAMIDI.entitlements */,
@@ -191,25 +190,18 @@
 			path = About;
 			sourceTree = "<group>";
 		};
-		024A5B0E1C69FFCD0079D22C /* Detail */ = {
-			isa = PBXGroup;
-			children = (
-				024A5B0F1C69FFCD0079D22C /* DetailViewController.h */,
-				024A5B101C69FFCD0079D22C /* DetailViewController.m */,
-				024A5B111C69FFCD0079D22C /* DetailViewController.xib */,
-			);
-			path = Detail;
-			sourceTree = "<group>";
-		};
 		024A5B141C69FFD40079D22C /* Main */ = {
 			isa = PBXGroup;
 			children = (
-				024A5B151C69FFD40079D22C /* MainViewController.h */,
-				024A5B161C69FFD40079D22C /* MainViewController.m */,
-				024A5B171C69FFD40079D22C /* MainViewController.xib */,
 				024A5B181C69FFD40079D22C /* MainWindowController.h */,
 				024A5B191C69FFD40079D22C /* MainWindowController.m */,
 				024A5B1A1C69FFD40079D22C /* MainWindowController.xib */,
+				024A5B151C69FFD40079D22C /* MainViewController.h */,
+				024A5B161C69FFD40079D22C /* MainViewController.m */,
+				024A5B171C69FFD40079D22C /* MainViewController.xib */,
+				02B6EF721C6C4A2F003E1929 /* DetailViewController.h */,
+				02B6EF731C6C4A2F003E1929 /* DetailViewController.m */,
+				02B6EF741C6C4A2F003E1929 /* DetailViewController.xib */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -315,7 +307,6 @@
 				020CF87B1C6B0AB20025DF84 /* AboutWindowController.xib in Resources */,
 				02A674041C6B3A5C00914C8B /* NMFIcon.iconset in Resources */,
 				02A673FD1C6B3A5C00914C8B /* MMLIcon.iconset in Resources */,
-				024A5B131C69FFCD0079D22C /* DetailViewController.xib in Resources */,
 				024A5B0D1C69FF990079D22C /* MainMenu.xib in Resources */,
 				02A673FA1C6B3A5C00914C8B /* ABCIcon.iconset in Resources */,
 				020CF8301C6A04830025DF84 /* getting-started in Resources */,
@@ -324,6 +315,7 @@
 				020CF8721C6AF53D0025DF84 /* PurchaseViewController.xib in Resources */,
 				024A5B1E1C69FFD40079D22C /* MainWindowController.xib in Resources */,
 				02A673FB1C6B3A5C00914C8B /* AppIcon.iconset in Resources */,
+				02B6EF761C6C4A2F003E1929 /* DetailViewController.xib in Resources */,
 				020CF8391C6A1BFD0025DF84 /* GettingStartedWindowController.xib in Resources */,
 				020CF8571C6AD4D80025DF84 /* PreferenceWindowController.xib in Resources */,
 				02A673FC1C6B3A5C00914C8B /* Assets.xcassets in Resources */,
@@ -343,12 +335,12 @@
 				024A5B1D1C69FFD40079D22C /* MainWindowController.m in Sources */,
 				020CF8621C6AEA5F0025DF84 /* GeneralViewController.m in Sources */,
 				0201F7D71C688BB100A201F6 /* Document.m in Sources */,
+				02B6EF751C6C4A2F003E1929 /* DetailViewController.m in Sources */,
 				0201F7D41C688BB100A201F6 /* main.m in Sources */,
 				0201F7D11C688BB100A201F6 /* AppDelegate.m in Sources */,
 				024A5B361C6A01280079D22C /* GettingStartedWindowController.m in Sources */,
 				020CF87A1C6B0AB20025DF84 /* AboutWindowController.m in Sources */,
 				024A5B1B1C69FFD40079D22C /* MainViewController.m in Sources */,
-				024A5B121C69FFCD0079D22C /* DetailViewController.m in Sources */,
 				024A5B2E1C69FFD90079D22C /* WelcomeWindowController.m in Sources */,
 				020CF86C1C6AF4D90025DF84 /* SynthesizerViewController.m in Sources */,
 				020CF8711C6AF53D0025DF84 /* PurchaseViewController.m in Sources */,
