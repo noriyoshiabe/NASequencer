@@ -7,7 +7,7 @@
 //
 
 #import "Application.h"
-#import "About.h"
+#import "ApplicationController.h"
 #import "Welcome.h"
 
 #define kSelectedFileTypeForCreation @"Document.SelectedFileTypeForCreation"
@@ -33,7 +33,7 @@
 
 - (void)orderFrontStandardAboutPanel:(id)sender
 {
-    [[About sharedInstance] showWindow];
+    [[ApplicationController sharedInstance] showAboutWindow];
 }
 
 - (void)openDocumentWithContentsOfURL:(NSURL *)url

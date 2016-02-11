@@ -15,7 +15,7 @@
 }
 @end
 
-@interface AboutWindowController () <NSWindowDelegate>
+@interface AboutWindowController ()
 @property (weak) IBOutlet NSTextField *appName;
 @property (weak) IBOutlet NSTextField *version;
 @property (weak) IBOutlet NSTextField *copyright;
@@ -34,7 +34,6 @@
 - (void)windowDidLoad
 {
     [super windowDidLoad];
-    self.window.delegate = self;
     
     _appName.stringValue = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
     
@@ -75,13 +74,6 @@
     NSString *body = [NSString stringWithFormat:NSLocalizedString(@"About_MailBody", @"%@"), osVersion];
     NSString *mailtoAddress = [NSString stringWithFormat:@"mailto:%@?Subject=%@&body=%@", sender.stringValue, subject, body];
     [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:[mailtoAddress stringByReplacingOccurrencesOfString:@" " withString:@"%20"]]];
-}
-
-#pragma mark NSWindowDelegate
-
-- (void)windowWillClose:(NSNotification *)notification
-{
-    [_delegate aboutWindowControllerWillClose:self];
 }
 
 @end

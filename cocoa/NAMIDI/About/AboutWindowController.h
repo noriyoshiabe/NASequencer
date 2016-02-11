@@ -11,11 +11,6 @@
 @interface AboutWindowTextLink : NSTextField
 @end
 
-@class AboutWindowController;
-@protocol AboutWindowControllerDelegate <NSObject>
-- (void)aboutWindowControllerWillClose:(AboutWindowController *)controller;
-@end
-
 @interface AboutWindowController : NSWindowController
-@property (weak, nonatomic) id<AboutWindowControllerDelegate> delegate;
+
 @end

@@ -7,8 +7,11 @@
 //
 
 #import "PreferenceWindowController.h"
+#import "GeneralViewController.h"
+#import "SynthesizerViewController.h"
+#import "PurchaseViewController.h"
 
-@interface PreferenceWindowController ()  <NSToolbarDelegate, NSWindowDelegate>
+@interface PreferenceWindowController ()  <NSToolbarDelegate>
 @property (weak) IBOutlet NSToolbar *toolbar;
 @property (strong, nonatomic) NSMutableArray *viewControllers;
 @property (strong, nonatomic) NSViewController<PreferenceViewController> *selectedViewController;
@@ -22,6 +25,10 @@
     self = [self initWithWindowNibName:@"PreferenceWindowController"];
     if (self) {
         self.viewControllers = [NSMutableArray array];
+        
+        [self addViewController:[[GeneralViewController alloc] init]];
+        [self addViewController:[[SynthesizerViewController alloc] init]];
+        [self addViewController:[[PurchaseViewController alloc] init]];
     }
     return self;
 }
@@ -35,7 +42,6 @@
 {
     [super windowDidLoad];
     self.windowFrameAutosaveName = @"PreferenceWindowFrame";
-    self.window.delegate = self;
     
     _toolbar.delegate = self;
     self.selectedViewController = _viewControllers[0];
@@ -111,13 +117,6 @@
     toolbarItem.action = @selector(toolbarItemDidClick:);
     
     return toolbarItem;
-}
-
-#pragma mark NSWindowDelegate
-
-- (void)windowWillClose:(NSNotification *)notification
-{
-    [_delegate preferenceWindowControllerWillClose:self];
 }
 
 @end

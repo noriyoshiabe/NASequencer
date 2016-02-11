@@ -9,8 +9,8 @@
 #import "WelcomeWindowController.h"
 #import "WelcomeView.h"
 #import "GettingStartedWindowController.h"
-#import "Preference.h"
 #import "Application.h"
+#import "ApplicationController.h"
 
 @interface WelcomeWindowController () <WelcomeViewDelegate, NSWindowDelegate>
 @property (weak) IBOutlet WelcomeView *welcomeView;
@@ -65,7 +65,7 @@
 
 - (void)welcomeView:(WelcomeView *)view preferenceButtonTapped:(id)sender
 {
-    [[Preference sharedInstance] showWindow];
+    [[ApplicationController sharedInstance] showPreferenceWindow];
 }
 
 - (void)welcomeView:(WelcomeView *)view openOtherDocumentButtonTapped:(id)sender

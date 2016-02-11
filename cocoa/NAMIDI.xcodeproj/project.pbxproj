@@ -21,11 +21,10 @@
 		020CF86D1C6AF4D90025DF84 /* SynthesizerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 020CF86B1C6AF4D90025DF84 /* SynthesizerViewController.xib */; };
 		020CF8711C6AF53D0025DF84 /* PurchaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 020CF86F1C6AF53D0025DF84 /* PurchaseViewController.m */; };
 		020CF8721C6AF53D0025DF84 /* PurchaseViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 020CF8701C6AF53D0025DF84 /* PurchaseViewController.xib */; };
-		020CF8751C6AF7350025DF84 /* Preference.m in Sources */ = {isa = PBXBuildFile; fileRef = 020CF8741C6AF7350025DF84 /* Preference.m */; };
 		020CF87A1C6B0AB20025DF84 /* AboutWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 020CF8781C6B0AB20025DF84 /* AboutWindowController.m */; };
 		020CF87B1C6B0AB20025DF84 /* AboutWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 020CF8791C6B0AB20025DF84 /* AboutWindowController.xib */; };
 		020CF87E1C6B20C50025DF84 /* Application.m in Sources */ = {isa = PBXBuildFile; fileRef = 020CF87D1C6B20C50025DF84 /* Application.m */; };
-		020CF8811C6B22C20025DF84 /* About.m in Sources */ = {isa = PBXBuildFile; fileRef = 020CF8801C6B22C20025DF84 /* About.m */; };
+		0240A2481C6C30F2002D6F72 /* ApplicationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0240A2471C6C30F2002D6F72 /* ApplicationController.m */; };
 		024A5B0D1C69FF990079D22C /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 024A5B0C1C69FF990079D22C /* MainMenu.xib */; };
 		024A5B121C69FFCD0079D22C /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A5B101C69FFCD0079D22C /* DetailViewController.m */; };
 		024A5B131C69FFCD0079D22C /* DetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 024A5B111C69FFCD0079D22C /* DetailViewController.xib */; };
@@ -73,15 +72,13 @@
 		020CF86E1C6AF53D0025DF84 /* PurchaseViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PurchaseViewController.h; sourceTree = "<group>"; };
 		020CF86F1C6AF53D0025DF84 /* PurchaseViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PurchaseViewController.m; sourceTree = "<group>"; };
 		020CF8701C6AF53D0025DF84 /* PurchaseViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PurchaseViewController.xib; sourceTree = "<group>"; };
-		020CF8731C6AF7350025DF84 /* Preference.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Preference.h; sourceTree = "<group>"; };
-		020CF8741C6AF7350025DF84 /* Preference.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Preference.m; sourceTree = "<group>"; };
 		020CF8771C6B0AB20025DF84 /* AboutWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutWindowController.h; sourceTree = "<group>"; };
 		020CF8781C6B0AB20025DF84 /* AboutWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutWindowController.m; sourceTree = "<group>"; };
 		020CF8791C6B0AB20025DF84 /* AboutWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AboutWindowController.xib; sourceTree = "<group>"; };
 		020CF87C1C6B20C50025DF84 /* Application.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Application.h; sourceTree = "<group>"; };
 		020CF87D1C6B20C50025DF84 /* Application.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Application.m; sourceTree = "<group>"; };
-		020CF87F1C6B22C20025DF84 /* About.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = About.h; sourceTree = "<group>"; };
-		020CF8801C6B22C20025DF84 /* About.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = About.m; sourceTree = "<group>"; };
+		0240A2461C6C30F2002D6F72 /* ApplicationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationController.h; sourceTree = "<group>"; };
+		0240A2471C6C30F2002D6F72 /* ApplicationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ApplicationController.m; sourceTree = "<group>"; };
 		024A5B0C1C69FF990079D22C /* MainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
 		024A5B0F1C69FFCD0079D22C /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
 		024A5B101C69FFCD0079D22C /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
@@ -155,6 +152,8 @@
 				020CF8761C6B09E30025DF84 /* About */,
 				026160B51C689E18001E99A9 /* NAMIDI.entitlements */,
 				020CF8681C6AF1A80025DF84 /* NAMIDI-Prefix.pch */,
+				0240A2461C6C30F2002D6F72 /* ApplicationController.h */,
+				0240A2471C6C30F2002D6F72 /* ApplicationController.m */,
 				020CF87C1C6B20C50025DF84 /* Application.h */,
 				020CF87D1C6B20C50025DF84 /* Application.m */,
 				0201F7CF1C688BB100A201F6 /* AppDelegate.h */,
@@ -192,8 +191,6 @@
 				020CF86E1C6AF53D0025DF84 /* PurchaseViewController.h */,
 				020CF86F1C6AF53D0025DF84 /* PurchaseViewController.m */,
 				020CF8701C6AF53D0025DF84 /* PurchaseViewController.xib */,
-				020CF8731C6AF7350025DF84 /* Preference.h */,
-				020CF8741C6AF7350025DF84 /* Preference.m */,
 			);
 			path = Preference;
 			sourceTree = "<group>";
@@ -204,8 +201,6 @@
 				020CF8771C6B0AB20025DF84 /* AboutWindowController.h */,
 				020CF8781C6B0AB20025DF84 /* AboutWindowController.m */,
 				020CF8791C6B0AB20025DF84 /* AboutWindowController.xib */,
-				020CF87F1C6B22C20025DF84 /* About.h */,
-				020CF8801C6B22C20025DF84 /* About.m */,
 			);
 			path = About;
 			sourceTree = "<group>";
@@ -367,6 +362,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0240A2481C6C30F2002D6F72 /* ApplicationController.m in Sources */,
 				020CF87E1C6B20C50025DF84 /* Application.m in Sources */,
 				024A5B1D1C69FFD40079D22C /* MainWindowController.m in Sources */,
 				020CF8621C6AEA5F0025DF84 /* GeneralViewController.m in Sources */,
@@ -374,7 +370,6 @@
 				0201F7D41C688BB100A201F6 /* main.m in Sources */,
 				0201F7D11C688BB100A201F6 /* AppDelegate.m in Sources */,
 				024A5B2A1C69FFD90079D22C /* WelcomeView.m in Sources */,
-				020CF8751C6AF7350025DF84 /* Preference.m in Sources */,
 				024A5B2D1C69FFD90079D22C /* WelcomeWindow.m in Sources */,
 				024A5B361C6A01280079D22C /* GettingStartedWindowController.m in Sources */,
 				020CF87A1C6B0AB20025DF84 /* AboutWindowController.m in Sources */,
@@ -385,7 +380,6 @@
 				020CF8711C6AF53D0025DF84 /* PurchaseViewController.m in Sources */,
 				02A037911C6B7C49005955FD /* Welcome.m in Sources */,
 				020CF8561C6AD4D80025DF84 /* PreferenceWindowController.m in Sources */,
-				020CF8811C6B22C20025DF84 /* About.m in Sources */,
 				024A5B2C1C69FFD90079D22C /* WelcomeViewRecentTableCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
