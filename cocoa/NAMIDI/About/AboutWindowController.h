@@ -8,9 +8,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface AboutWindowTextLink : NSTextField
-@end
-
 @interface AboutWindowController : NSWindowController
 
 @end

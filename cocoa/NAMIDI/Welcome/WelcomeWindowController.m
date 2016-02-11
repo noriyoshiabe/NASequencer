@@ -80,3 +80,38 @@
 }
 
 @end
+
+
+#pragma mark InterfaceBuilder
+
+@interface WelcomeWindow : NSWindow
+
+@end
+
+@implementation WelcomeWindow
+
+- (void)awakeFromNib
+{
+    [super awakeFromNib];
+    
+    self.titleVisibility = NSWindowTitleHidden;
+    self.titlebarAppearsTransparent = YES;
+    [self standardWindowButton:NSWindowCloseButton].superview.hidden = YES;
+}
+
+- (BOOL)canBecomeKeyWindow
+{
+    return YES;
+}
+
+- (BOOL)canBecomeMainWindow
+{
+    return YES;
+}
+
+- (BOOL)isMovableByWindowBackground
+{
+    return YES;
+}
+
+@end

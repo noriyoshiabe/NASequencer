@@ -8,13 +8,6 @@
 
 #import "AboutWindowController.h"
 
-@implementation AboutWindowTextLink
-- (void)mouseUp:(NSEvent *)theEvent
-{
-    [self sendAction:[self action] to:[self target]];
-}
-@end
-
 @interface AboutWindowController ()
 @property (weak) IBOutlet NSTextField *appName;
 @property (weak) IBOutlet NSTextField *version;
@@ -76,4 +69,18 @@
     [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:[mailtoAddress stringByReplacingOccurrencesOfString:@" " withString:@"%20"]]];
 }
 
+@end
+
+
+#pragma mark InterfaceBuilder
+
+@interface AboutWindowTextLink : NSTextField
+
+@end
+
+@implementation AboutWindowTextLink
+- (void)mouseUp:(NSEvent *)theEvent
+{
+    [self sendAction:[self action] to:[self target]];
+}
 @end
