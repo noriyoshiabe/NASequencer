@@ -15,4 +15,6 @@
 #define NSLocalizedString(key, comment) \
     [[NSBundle mainBundle] localizedStringForKey:(key) value:(comment) table:nil]
 
+#import "NSArray+Support.h"
+
 #endif /* NAMIDI_Prefix_h */

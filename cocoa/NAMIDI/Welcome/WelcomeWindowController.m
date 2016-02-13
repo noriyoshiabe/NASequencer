@@ -11,38 +11,45 @@
 
 #include <pwd.h>
 
-@class RecentTableView;
-@protocol RecentTableViewDelegate <NSTableViewDelegate>
-- (void)tableViewDidKeyDownEnter:(RecentTableView *)tableView;
+@interface RecentFile : NSObject
+@property (readonly) NSURL *url;
+@property (readonly) NSImage *fileTypeIcon;
+@property (readonly) NSString *filename;
+@property (readonly) NSString *directory;
+- (instancetype)init __attribute__((unavailable("use initWithURL")));
 @end
 
-@interface RecentTableView : NSTableView
-@end
+@implementation RecentFile
 
-@implementation RecentTableView
-
-- (void)keyDown:(NSEvent *)theEvent
+- (instancetype)initWithURL:(NSURL *)url
 {
-    unichar key = [[theEvent charactersIgnoringModifiers] characterAtIndex:0];
-    if (NSCarriageReturnCharacter == key && -1 != self.selectedRow) {
-        [((id<RecentTableViewDelegate>)self.delegate) tableViewDidKeyDownEnter:self];
+    self = [super init];
+    if (self) {
+        _url = url;
     }
-    else {
-        [super keyDown:theEvent];
-    }
+    return self;
+}
+
+- (NSImage *)fileTypeIcon
+{
+    return [[NSWorkspace sharedWorkspace] iconForFileType:_url.lastPathComponent.pathExtension];
+}
+
+- (NSString *)filename
+{
+    return _url.lastPathComponent;
+}
+
+- (NSString *)directory
+{
+    return [_url.path.stringByDeletingLastPathComponent stringByReplacingOccurrencesOfString:[NSString stringWithCString:getpwuid(getuid())->pw_dir encoding:NSUTF8StringEncoding] withString:@"~"];
 }
 
 @end
 
-@interface WelcomeViewRecentTableCell : NSTableCellView
-@property (weak) IBOutlet NSTextField *detailTextField;
-@end
-
-@implementation WelcomeViewRecentTableCell
-@end
-
-@interface WelcomeWindowController () <RecentTableViewDelegate, NSTableViewDataSource>
-@property (weak) IBOutlet RecentTableView *recentTableView;
+@interface WelcomeWindowController () <NSTableViewDataSource>
+@property (weak) IBOutlet NSTableView *recentTableView;
+@property (readonly) NSArray *recentDocuments;
 @end
 
 @implementation WelcomeWindowController
@@ -57,19 +64,26 @@
     [super windowDidLoad];
     self.windowFrameAutosaveName = @"WelcomeWindowFrame";
     
-    _recentTableView.delegate = self;
-    _recentTableView.dataSource = self;
+    self.window.titleVisibility = NSWindowTitleHidden;
+    self.window.titlebarAppearsTransparent = YES;
+    self.window.movableByWindowBackground = YES;
+    [self.window standardWindowButton:NSWindowCloseButton].superview.hidden = YES;
     
-    [_recentTableView reloadData];
-    
-    if (0 < self.recentDocumentURLs.count) {
+    if (0 < self.countOfRecentDocuments) {
         [_recentTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
     }
 }
 
-- (NSArray *)recentDocumentURLs
+- (NSUInteger)countOfRecentDocuments
 {
-    return [NSDocumentController sharedDocumentController].recentDocumentURLs;
+    return [NSDocumentController sharedDocumentController].recentDocumentURLs.count;
+}
+
+- (NSArray *)recentDocuments
+{
+    return [[NSDocumentController sharedDocumentController].recentDocumentURLs mapObjectsUsingBlock:^id(id obj) {
+        return [[RecentFile alloc] initWithURL:obj];
+    }];
 }
 
 - (IBAction)closeButtonTapped:(id)sender
@@ -115,69 +129,19 @@
 
 - (IBAction)recentTableViewSelectionChanged:(id)sender
 {
-    [[ApplicationController sharedInstance] openDocumentWithContentsOfURL:self.recentDocumentURLs[[_recentTableView selectedRow]]];
+    RecentFile *recentFile = self.recentDocuments[_recentTableView.selectedRow];
+    [[ApplicationController sharedInstance] openDocumentWithContentsOfURL:recentFile.url];
 }
 
-#pragma mark RecentTableViewDelegate
-
-- (void)tableViewDidKeyDownEnter:(RecentTableView *)tableView
+- (void)keyDown:(NSEvent *)theEvent
 {
-    [[ApplicationController sharedInstance] openDocumentWithContentsOfURL:self.recentDocumentURLs[[_recentTableView selectedRow]]];
-}
-
-#pragma mark NSTableViewDelegate
-
-- (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
-{
-    NSURL *url = [self.recentDocumentURLs objectAtIndex:row];
-    
-    WelcomeViewRecentTableCell *cellView = [tableView makeViewWithIdentifier:tableColumn.identifier owner:self];
-    cellView.imageView.image = [[NSWorkspace sharedWorkspace] iconForFileType:url.lastPathComponent.pathExtension];
-    cellView.textField.stringValue = url.lastPathComponent;
-    cellView.detailTextField.stringValue = [url.path.stringByDeletingLastPathComponent stringByReplacingOccurrencesOfString:[NSString stringWithCString:getpwuid(getuid())->pw_dir encoding:NSUTF8StringEncoding] withString:@"~"];
-    return cellView;
-}
-
-#pragma mark NSTableViewDataSource
-
-- (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView
-{
-    return self.recentDocumentURLs.count;
-}
-
-@end
-
-
-#pragma mark InterfaceBuilder
-
-@interface WelcomeWindow : NSWindow
-
-@end
-
-@implementation WelcomeWindow
-
-- (void)awakeFromNib
-{
-    [super awakeFromNib];
-    
-    self.titleVisibility = NSWindowTitleHidden;
-    self.titlebarAppearsTransparent = YES;
-    [self standardWindowButton:NSWindowCloseButton].superview.hidden = YES;
-}
-
-- (BOOL)canBecomeKeyWindow
-{
-    return YES;
-}
-
-- (BOOL)canBecomeMainWindow
-{
-    return YES;
-}
-
-- (BOOL)isMovableByWindowBackground
-{
-    return YES;
+    unichar key = [[theEvent charactersIgnoringModifiers] characterAtIndex:0];
+    if (NSCarriageReturnCharacter == key && -1 != _recentTableView.selectedRow) {
+        [self recentTableViewSelectionChanged:self];
+    }
+    else {
+        [super keyDown:theEvent];
+    }
 }
 
 @end

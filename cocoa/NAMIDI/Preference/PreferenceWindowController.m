@@ -68,11 +68,9 @@
 
 - (NSArray *)toolbarItemIdentifiers
 {
-    NSMutableArray *identifiers = [NSMutableArray arrayWithCapacity:[_viewControllers count]];
-    for (NSViewController<PreferenceViewController> *controller in _viewControllers) {
-        [identifiers addObject:controller.identifier];
-    }
-    return identifiers;
+    return [_viewControllers mapObjectsUsingBlock:^id(id obj) {
+        return ((id<PreferenceViewController>)obj).identifier;
+    }];
 }
 
 - (NSViewController<PreferenceViewController> *)controllerForIdentifier:(NSString *)identifier

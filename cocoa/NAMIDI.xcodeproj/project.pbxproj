@@ -24,6 +24,7 @@
 		020CF87A1C6B0AB20025DF84 /* AboutWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 020CF8781C6B0AB20025DF84 /* AboutWindowController.m */; };
 		020CF87B1C6B0AB20025DF84 /* AboutWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 020CF8791C6B0AB20025DF84 /* AboutWindowController.xib */; };
 		020CF87E1C6B20C50025DF84 /* Application.m in Sources */ = {isa = PBXBuildFile; fileRef = 020CF87D1C6B20C50025DF84 /* Application.m */; };
+		023BB20F1C6EF17B0030487C /* NSArray+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 023BB20E1C6EF17B0030487C /* NSArray+Support.m */; };
 		0240A2481C6C30F2002D6F72 /* ApplicationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0240A2471C6C30F2002D6F72 /* ApplicationController.m */; };
 		024A5B0D1C69FF990079D22C /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 024A5B0C1C69FF990079D22C /* MainMenu.xib */; };
 		024A5B1B1C69FFD40079D22C /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A5B161C69FFD40079D22C /* MainViewController.m */; };
@@ -72,6 +73,8 @@
 		020CF8791C6B0AB20025DF84 /* AboutWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AboutWindowController.xib; sourceTree = "<group>"; };
 		020CF87C1C6B20C50025DF84 /* Application.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Application.h; sourceTree = "<group>"; };
 		020CF87D1C6B20C50025DF84 /* Application.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Application.m; sourceTree = "<group>"; };
+		023BB20D1C6EF17B0030487C /* NSArray+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+Support.h"; sourceTree = "<group>"; };
+		023BB20E1C6EF17B0030487C /* NSArray+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Support.m"; sourceTree = "<group>"; };
 		0240A2461C6C30F2002D6F72 /* ApplicationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationController.h; sourceTree = "<group>"; };
 		0240A2471C6C30F2002D6F72 /* ApplicationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ApplicationController.m; sourceTree = "<group>"; };
 		024A5B0C1C69FF990079D22C /* MainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
@@ -130,6 +133,7 @@
 		0201F7CE1C688BB100A201F6 /* NAMIDI */ = {
 			isa = PBXGroup;
 			children = (
+				023BB20C1C6EF0CB0030487C /* Extension */,
 				024A5B1F1C69FFD90079D22C /* Welcome */,
 				024A5B321C6A00F50079D22C /* GettingStarted */,
 				024A5B141C69FFD40079D22C /* Main */,
@@ -188,6 +192,15 @@
 				020CF8791C6B0AB20025DF84 /* AboutWindowController.xib */,
 			);
 			path = About;
+			sourceTree = "<group>";
+		};
+		023BB20C1C6EF0CB0030487C /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				023BB20D1C6EF17B0030487C /* NSArray+Support.h */,
+				023BB20E1C6EF17B0030487C /* NSArray+Support.m */,
+			);
+			path = Extension;
 			sourceTree = "<group>";
 		};
 		024A5B141C69FFD40079D22C /* Main */ = {
@@ -334,6 +347,7 @@
 				020CF87E1C6B20C50025DF84 /* Application.m in Sources */,
 				024A5B1D1C69FFD40079D22C /* MainWindowController.m in Sources */,
 				020CF8621C6AEA5F0025DF84 /* GeneralViewController.m in Sources */,
+				023BB20F1C6EF17B0030487C /* NSArray+Support.m in Sources */,
 				0201F7D71C688BB100A201F6 /* Document.m in Sources */,
 				02B6EF751C6C4A2F003E1929 /* DetailViewController.m in Sources */,
 				0201F7D41C688BB100A201F6 /* main.m in Sources */,
