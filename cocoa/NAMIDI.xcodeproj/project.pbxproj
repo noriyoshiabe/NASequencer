@@ -36,6 +36,8 @@
 		024A5B361C6A01280079D22C /* GettingStartedWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A5B341C6A01280079D22C /* GettingStartedWindowController.m */; };
 		0254235E1C6F2EB6007D53CC /* EditorWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0254235C1C6F2EB6007D53CC /* EditorWindowController.m */; };
 		0254235F1C6F2EB6007D53CC /* EditorWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0254235D1C6F2EB6007D53CC /* EditorWindowController.xib */; };
+		025423631C6F31DF007D53CC /* EditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 025423611C6F31DF007D53CC /* EditorViewController.m */; };
+		025423641C6F31DF007D53CC /* EditorViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 025423621C6F31DF007D53CC /* EditorViewController.xib */; };
 		02A673FA1C6B3A5C00914C8B /* ABCIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 02A673E91C6B3A5C00914C8B /* ABCIcon.iconset */; };
 		02A673FB1C6B3A5C00914C8B /* AppIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 02A673EA1C6B3A5C00914C8B /* AppIcon.iconset */; };
 		02A673FC1C6B3A5C00914C8B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 02A673EB1C6B3A5C00914C8B /* Assets.xcassets */; };
@@ -94,6 +96,9 @@
 		0254235B1C6F2EB6007D53CC /* EditorWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorWindowController.h; sourceTree = "<group>"; };
 		0254235C1C6F2EB6007D53CC /* EditorWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditorWindowController.m; sourceTree = "<group>"; };
 		0254235D1C6F2EB6007D53CC /* EditorWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EditorWindowController.xib; sourceTree = "<group>"; };
+		025423601C6F31DF007D53CC /* EditorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorViewController.h; sourceTree = "<group>"; };
+		025423611C6F31DF007D53CC /* EditorViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditorViewController.m; sourceTree = "<group>"; };
+		025423621C6F31DF007D53CC /* EditorViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EditorViewController.xib; sourceTree = "<group>"; };
 		026160B51C689E18001E99A9 /* NAMIDI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = NAMIDI.entitlements; sourceTree = "<group>"; };
 		02A673E91C6B3A5C00914C8B /* ABCIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = ABCIcon.iconset; sourceTree = "<group>"; };
 		02A673EA1C6B3A5C00914C8B /* AppIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = AppIcon.iconset; sourceTree = "<group>"; };
@@ -252,6 +257,9 @@
 				0254235B1C6F2EB6007D53CC /* EditorWindowController.h */,
 				0254235C1C6F2EB6007D53CC /* EditorWindowController.m */,
 				0254235D1C6F2EB6007D53CC /* EditorWindowController.xib */,
+				025423601C6F31DF007D53CC /* EditorViewController.h */,
+				025423611C6F31DF007D53CC /* EditorViewController.m */,
+				025423621C6F31DF007D53CC /* EditorViewController.xib */,
 			);
 			path = Editor;
 			sourceTree = "<group>";
@@ -334,6 +342,7 @@
 				020CF86D1C6AF4D90025DF84 /* SynthesizerViewController.xib in Resources */,
 				02A674061C6B3A7600914C8B /* NAMIDI.help in Resources */,
 				020CF87B1C6B0AB20025DF84 /* AboutWindowController.xib in Resources */,
+				025423641C6F31DF007D53CC /* EditorViewController.xib in Resources */,
 				02A674041C6B3A5C00914C8B /* NMFIcon.iconset in Resources */,
 				02A673FD1C6B3A5C00914C8B /* MMLIcon.iconset in Resources */,
 				024A5B0D1C69FF990079D22C /* MainMenu.xib in Resources */,
@@ -367,6 +376,7 @@
 				023BB20F1C6EF17B0030487C /* NSArray+Support.m in Sources */,
 				0201F7D71C688BB100A201F6 /* Document.m in Sources */,
 				02B6EF751C6C4A2F003E1929 /* DetailViewController.m in Sources */,
+				025423631C6F31DF007D53CC /* EditorViewController.m in Sources */,
 				0201F7D41C688BB100A201F6 /* main.m in Sources */,
 				0201F7D11C688BB100A201F6 /* AppDelegate.m in Sources */,
 				024A5B361C6A01280079D22C /* GettingStartedWindowController.m in Sources */,
