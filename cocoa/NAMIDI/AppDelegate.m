@@ -17,6 +17,7 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+    [[ApplicationController sharedInstance] initialize];
     self.inLaunchOrReopenProcess = YES;
 }
 

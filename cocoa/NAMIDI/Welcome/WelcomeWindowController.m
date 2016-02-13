@@ -16,7 +16,6 @@
 @property (readonly) NSImage *fileTypeIcon;
 @property (readonly) NSString *filename;
 @property (readonly) NSString *directory;
-- (instancetype)init __attribute__((unavailable("use initWithURL")));
 @end
 
 @implementation RecentFile

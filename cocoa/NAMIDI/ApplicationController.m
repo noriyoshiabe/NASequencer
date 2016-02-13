@@ -45,15 +45,15 @@ static ApplicationController* _sharedInstance = nil;
 
 - (void)awakeFromNib
 {
-    self.aboutWC = [[AboutWindowController alloc] init];
-    self.preferenceWC = [[PreferenceWindowController alloc] init];
-    
+    _savePanelFileTypePopupButton.menu.delegate = self;
+}
+
+- (void)initialize
+{
     if (![[NSUserDefaults standardUserDefaults] stringForKey:kSelectedFileTypeForCreation]) {
         [[NSUserDefaults standardUserDefaults] setValue:@"nmf" forKey:kSelectedFileTypeForCreation];
         [[NSUserDefaults standardUserDefaults] synchronize];
     }
-    
-    _savePanelFileTypePopupButton.menu.delegate = self;
 }
 
 - (void)showWelcomeWindow
@@ -75,11 +75,19 @@ static ApplicationController* _sharedInstance = nil;
 
 - (void)showAboutWindow
 {
+    if (!_aboutWC) {
+        self.aboutWC = [[AboutWindowController alloc] init];
+    }
+    
     [_aboutWC showWindow:self];
 }
 
 - (void)showPreferenceWindow
 {
+    if (!_preferenceWC) {
+        self.preferenceWC = [[PreferenceWindowController alloc] init];
+    }
+    
     [_preferenceWC showWindow:self];
 }
 
