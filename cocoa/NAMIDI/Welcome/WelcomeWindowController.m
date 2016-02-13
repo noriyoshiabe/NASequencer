@@ -49,6 +49,7 @@
 @interface WelcomeWindowController () <NSTableViewDataSource>
 @property (weak) IBOutlet NSTableView *recentTableView;
 @property (readonly) NSArray *recentDocuments;
+@property (readonly) BOOL noRecentDocumentsHidden;
 @end
 
 @implementation WelcomeWindowController
@@ -83,6 +84,11 @@
     return [[NSDocumentController sharedDocumentController].recentDocumentURLs mapObjectsUsingBlock:^id(id obj) {
         return [[RecentFile alloc] initWithURL:obj];
     }];
+}
+
+- (BOOL)noRecentDocumentsHidden
+{
+    return 0 < [self countOfRecentDocuments];
 }
 
 - (IBAction)closeButtonTapped:(id)sender
