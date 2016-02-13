@@ -9,9 +9,9 @@
 #import "AboutWindowController.h"
 
 @interface AboutWindowController ()
-@property (weak) IBOutlet NSTextField *appName;
-@property (weak) IBOutlet NSTextField *version;
-@property (weak) IBOutlet NSTextField *copyright;
+@property (readonly) NSString *appName;
+@property (readonly) NSString *version;
+@property (readonly) NSString *copyright;
 @property (weak) IBOutlet NSTextField *license;
 @property (weak) IBOutlet NSTextField *officialSite;
 @property (weak) IBOutlet NSTextField *supportMail;
@@ -28,16 +28,26 @@
 {
     [super windowDidLoad];
     
-    _appName.stringValue = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
-    
-    NSString *shortVersionString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-    NSString *bundleVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
-    _version.stringValue = [NSString stringWithFormat:@"Version %@ (%@)", shortVersionString, bundleVersion];
-    _copyright.stringValue = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSHumanReadableCopyright"];
-    
     [self underLineToTextField:_license];
     [self underLineToTextField:_officialSite];
     [self underLineToTextField:_supportMail];
+}
+
+- (NSString *)appName
+{
+    return [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
+}
+
+- (NSString *)copyright
+{
+    return [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSHumanReadableCopyright"];
+}
+
+- (NSString *)version
+{
+    NSString *shortVersionString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+    NSString *bundleVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
+    return [NSString stringWithFormat:@"Version %@ (%@)", shortVersionString, bundleVersion];
 }
 
 - (void)underLineToTextField:(NSTextField *)textField

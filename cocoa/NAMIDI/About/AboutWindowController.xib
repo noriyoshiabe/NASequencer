@@ -7,18 +7,15 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="AboutWindowController">
             <connections>
-                <outlet property="appName" destination="i2z-et-Wbv" id="3X6-ps-pxk"/>
-                <outlet property="copyright" destination="yVr-aG-vGq" id="HtR-xR-5jR"/>
                 <outlet property="license" destination="mdJ-yE-gCn" id="gsW-ZX-Qfk"/>
                 <outlet property="officialSite" destination="fyN-vI-NMY" id="qqC-7g-0sr"/>
                 <outlet property="supportMail" destination="0Bg-h3-Fct" id="xWh-dr-FH6"/>
-                <outlet property="version" destination="Fcw-Bm-Tha" id="Qby-pD-Iaj"/>
                 <outlet property="window" destination="F0z-JX-Cv5" id="gIp-Ho-8D9"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
-        <window title="About NAMIDI" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" animationBehavior="default" id="F0z-JX-Cv5">
+        <window title="About NAMIDI" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" animationBehavior="default" id="F0z-JX-Cv5" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
             <rect key="contentRect" x="0.0" y="0.0" width="300" height="230"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
@@ -37,6 +34,9 @@
                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
+                        <connections>
+                            <binding destination="-2" name="value" keyPath="version" id="mQA-tv-TCj"/>
+                        </connections>
                     </textField>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="yVr-aG-vGq">
                         <rect key="frame" x="2" y="84" width="300" height="13"/>
@@ -45,6 +45,9 @@
                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
+                        <connections>
+                            <binding destination="-2" name="value" keyPath="copyright" id="C9l-JJ-Avo"/>
+                        </connections>
                     </textField>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mdJ-yE-gCn" customClass="AboutWindowTextLink">
                         <rect key="frame" x="96" y="63" width="109" height="13"/>
@@ -69,7 +72,7 @@
                         </connections>
                     </textField>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0Bg-h3-Fct" customClass="AboutWindowTextLink">
-                        <rect key="frame" x="154" y="20" width="95" height="13"/>
+                        <rect key="frame" x="154" y="20" width="100" height="13"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="support@namidi.io" id="PuE-wm-S7H">
                             <font key="font" metaFont="systemMedium" size="10"/>
                             <color key="textColor" red="0.20392156859999999" green="0.36862745099999999" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
@@ -102,6 +105,9 @@
                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
+                        <connections>
+                            <binding destination="-2" name="value" keyPath="appName" id="DN3-08-iQ7"/>
+                        </connections>
                     </textField>
                 </subviews>
             </view>
