@@ -50,10 +50,9 @@ static ApplicationController* _sharedInstance = nil;
 
 - (void)initialize
 {
-    if (![[NSUserDefaults standardUserDefaults] stringForKey:kSelectedFileTypeForCreation]) {
-        [[NSUserDefaults standardUserDefaults] setValue:@"nmf" forKey:kSelectedFileTypeForCreation];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
+    [[NSUserDefaults standardUserDefaults] registerDefaults:@{
+                                                              kSelectedFileTypeForCreation: @"nmf",
+                                                              }];
 }
 
 - (void)showWelcomeWindow
