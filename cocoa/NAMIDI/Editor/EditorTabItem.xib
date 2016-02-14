@@ -27,6 +27,9 @@
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
+                    <connections>
+                        <binding destination="1T5-Mo-d9l" name="value" keyPath="representedObject.filename" id="VNr-rF-QBd"/>
+                    </connections>
                 </textField>
             </subviews>
             <constraints>

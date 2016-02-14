@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @interface FileRepresentation : NSObject
+@property (readonly) NSString *identifier;
 @property (readonly) NSURL *url;
 @property (readonly) NSImage *fileTypeIcon;
 @property (readonly) NSString *filename;

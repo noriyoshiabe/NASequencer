@@ -8,6 +8,8 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface EditorViewController : NSViewController
+#import "FileRepresentation.h"
 
+@interface EditorViewController : NSViewController
+@property (strong, nonatomic) FileRepresentation *file;
 @end

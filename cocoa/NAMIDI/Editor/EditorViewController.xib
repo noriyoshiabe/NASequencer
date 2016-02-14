@@ -7,6 +7,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="EditorViewController">
             <connections>
+                <outlet property="textView" destination="7Ft-0J-HbF" id="Tf1-Uu-0jM"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
         </customObject>

@@ -9,7 +9,7 @@
 #import "EditorViewController.h"
 
 @interface EditorViewController ()
-
+@property (unsafe_unretained) IBOutlet NSTextView *textView;
 @end
 
 @implementation EditorViewController
@@ -22,6 +22,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    self.textView.string = [NSString stringWithContentsOfURL:_file.url encoding:NSUTF8StringEncoding error:nil];
 }
 
 @end

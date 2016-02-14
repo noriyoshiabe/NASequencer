@@ -22,6 +22,17 @@
     return self;
 }
 
+- (BOOL)isEqual:(id)object
+{
+    FileRepresentation *file = object;
+    return [_url isEqual:file.url];
+}
+
+- (NSString *)identifier
+{
+    return _url.absoluteString;
+}
+
 - (NSImage *)fileTypeIcon
 {
     return [[NSWorkspace sharedWorkspace] iconForFileType:_url.lastPathComponent.pathExtension];

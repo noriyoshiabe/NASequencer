@@ -18,12 +18,15 @@
 {
     [super viewDidLoad];
     self.view.wantsLayer = YES;
+    self.selected = NO;
 }
 
 - (void)setSelected:(BOOL)selected
 {
     [super setSelected:selected];
-    self.view.layer.backgroundColor = selected ? [NSColor grayColor].CGColor : [NSColor clearColor].CGColor;
+    self.view.layer.backgroundColor = selected ? [NSColor darkGrayColor].CGColor : [NSColor lightGrayColor].CGColor;
+    self.textField.textColor = selected ? [NSColor whiteColor] : [NSColor blackColor];
+    self.textField.font = selected ? [NSFont boldSystemFontOfSize:self.textField.font.pointSize] : [NSFont systemFontOfSize:self.textField.font.pointSize];
 }
 
 @end

@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "FileRepresentation.h"
+
 @interface ApplicationController : NSObject
 + (ApplicationController *)sharedInstance;
 - (void)initialize;
@@ -17,6 +19,7 @@
 - (void)showAboutWindow;
 - (void)showPreferenceWindow;
 - (void)showEditorWindow;
+- (void)showEditorWindowWithFile:(FileRepresentation *)file;
 - (void)openDocumentWithContentsOfURL:(NSURL *)url;
 - (void)openDocument;
 - (void)createDocument;

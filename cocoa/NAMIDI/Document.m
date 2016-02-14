@@ -11,7 +11,7 @@
 #import "ApplicationController.h"
 
 @interface Document ()
-
+@property (strong, nonatomic) FileRepresentation *file;
 @end
 
 @implementation Document
@@ -27,7 +27,7 @@
 
 - (BOOL)readFromURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError * _Nullable __autoreleasing *)outError
 {
-    NSLog(@"## %@", [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:nil]);
+    self.file = [[FileRepresentation alloc] initWithURL:url];
     return YES;
 }
 
@@ -36,7 +36,7 @@
     MainWindowController *mainWC = [[MainWindowController alloc] init];
     [self addWindowController: mainWC];
     
-    [[ApplicationController sharedInstance] showEditorWindow];
+    [[ApplicationController sharedInstance] showEditorWindowWithFile:self.file];
 }
 
 @end

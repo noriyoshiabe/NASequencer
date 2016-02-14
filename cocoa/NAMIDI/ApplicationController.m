@@ -94,11 +94,20 @@ static ApplicationController* _sharedInstance = nil;
 
 - (void)showEditorWindow
 {
+    [self showEditorWindowWithFile:nil];
+}
+
+- (void)showEditorWindowWithFile:(FileRepresentation *)file
+{
     if (!_editorWC) {
         self.editorWC = [[EditorWindowController alloc] init];
     }
     
     [_editorWC showWindow:self];
+    
+    if (file) {
+        [_editorWC addFileRepresentation:file];
+    }
 }
 
 - (void)openDocumentWithContentsOfURL:(NSURL *)url

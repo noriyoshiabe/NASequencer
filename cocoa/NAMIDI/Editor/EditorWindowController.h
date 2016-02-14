@@ -8,6 +8,8 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface EditorWindowController : NSWindowController
+#import "FileRepresentation.h"
 
+@interface EditorWindowController : NSWindowController
+- (void)addFileRepresentation:(FileRepresentation *)file;
 @end
