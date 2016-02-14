@@ -11,6 +11,7 @@
 #import "PreferenceWindowController.h"
 #import "WelcomeWindowController.h"
 #import "GettingStartedWindowController.h"
+#import "EditorWindowController.h"
 
 #define kSelectedFileTypeForCreation @"Document.SelectedFileTypeForCreation"
 
@@ -22,6 +23,7 @@
 @property (strong, nonatomic) GettingStartedWindowController *gettingStartedWC;
 @property (strong, nonatomic) AboutWindowController *aboutWC;
 @property (strong, nonatomic) PreferenceWindowController *preferenceWC;
+@property (strong, nonatomic) EditorWindowController *editorWC;
 @end
 
 
@@ -88,6 +90,15 @@ static ApplicationController* _sharedInstance = nil;
     }
     
     [_preferenceWC showWindow:self];
+}
+
+- (void)showEditorWindow
+{
+    if (!_editorWC) {
+        self.editorWC = [[EditorWindowController alloc] init];
+    }
+    
+    [_editorWC showWindow:self];
 }
 
 - (void)openDocumentWithContentsOfURL:(NSURL *)url

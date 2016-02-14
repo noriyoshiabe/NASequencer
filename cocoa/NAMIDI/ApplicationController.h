@@ -16,6 +16,7 @@
 - (void)showGettingStartedWindow;
 - (void)showAboutWindow;
 - (void)showPreferenceWindow;
+- (void)showEditorWindow;
 - (void)openDocumentWithContentsOfURL:(NSURL *)url;
 - (void)openDocument;
 - (void)createDocument;

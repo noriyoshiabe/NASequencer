@@ -8,6 +8,7 @@
 
 #import "Document.h"
 #import "MainWindowController.h"
+#import "ApplicationController.h"
 
 @interface Document ()
 
@@ -34,6 +35,8 @@
 {
     MainWindowController *mainWC = [[MainWindowController alloc] init];
     [self addWindowController: mainWC];
+    
+    [[ApplicationController sharedInstance] showEditorWindow];
 }
 
 @end

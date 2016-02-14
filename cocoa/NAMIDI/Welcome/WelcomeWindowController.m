@@ -8,43 +8,7 @@
 
 #import "WelcomeWindowController.h"
 #import "ApplicationController.h"
-
-#include <pwd.h>
-
-@interface RecentFile : NSObject
-@property (readonly) NSURL *url;
-@property (readonly) NSImage *fileTypeIcon;
-@property (readonly) NSString *filename;
-@property (readonly) NSString *directory;
-@end
-
-@implementation RecentFile
-
-- (instancetype)initWithURL:(NSURL *)url
-{
-    self = [super init];
-    if (self) {
-        _url = url;
-    }
-    return self;
-}
-
-- (NSImage *)fileTypeIcon
-{
-    return [[NSWorkspace sharedWorkspace] iconForFileType:_url.lastPathComponent.pathExtension];
-}
-
-- (NSString *)filename
-{
-    return _url.lastPathComponent;
-}
-
-- (NSString *)directory
-{
-    return [_url.path.stringByDeletingLastPathComponent stringByReplacingOccurrencesOfString:[NSString stringWithCString:getpwuid(getuid())->pw_dir encoding:NSUTF8StringEncoding] withString:@"~"];
-}
-
-@end
+#import "FileRepresentation.h"
 
 @interface WelcomeWindowController () <NSTableViewDataSource>
 @property (weak) IBOutlet NSTableView *recentTableView;
@@ -82,7 +46,7 @@
 - (NSArray *)recentDocuments
 {
     return [[NSDocumentController sharedDocumentController].recentDocumentURLs mapObjectsUsingBlock:^id(id obj) {
-        return [[RecentFile alloc] initWithURL:obj];
+        return [[FileRepresentation alloc] initWithURL:obj];
     }];
 }
 
@@ -134,7 +98,7 @@
 
 - (IBAction)recentTableViewSelectionChanged:(id)sender
 {
-    RecentFile *recentFile = self.recentDocuments[_recentTableView.selectedRow];
+    FileRepresentation *recentFile = self.recentDocuments[_recentTableView.selectedRow];
     [[ApplicationController sharedInstance] openDocumentWithContentsOfURL:recentFile.url];
 }
 
