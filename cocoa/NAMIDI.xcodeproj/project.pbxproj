@@ -38,6 +38,7 @@
 		0254235F1C6F2EB6007D53CC /* EditorWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0254235D1C6F2EB6007D53CC /* EditorWindowController.xib */; };
 		025423631C6F31DF007D53CC /* EditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 025423611C6F31DF007D53CC /* EditorViewController.m */; };
 		025423641C6F31DF007D53CC /* EditorViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 025423621C6F31DF007D53CC /* EditorViewController.xib */; };
+		0255F6281C7111DF00CF4C52 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0255F6271C7111DF00CF4C52 /* CoreText.framework */; };
 		028209221C70A3C0003EBCFB /* EditorTabItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 028209201C70A3C0003EBCFB /* EditorTabItem.m */; };
 		028209231C70A3C0003EBCFB /* EditorTabItem.xib in Resources */ = {isa = PBXBuildFile; fileRef = 028209211C70A3C0003EBCFB /* EditorTabItem.xib */; };
 		028209271C70A5D8003EBCFB /* FileRepresentation.m in Sources */ = {isa = PBXBuildFile; fileRef = 028209261C70A5D8003EBCFB /* FileRepresentation.m */; };
@@ -102,6 +103,7 @@
 		025423601C6F31DF007D53CC /* EditorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorViewController.h; sourceTree = "<group>"; };
 		025423611C6F31DF007D53CC /* EditorViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditorViewController.m; sourceTree = "<group>"; };
 		025423621C6F31DF007D53CC /* EditorViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EditorViewController.xib; sourceTree = "<group>"; };
+		0255F6271C7111DF00CF4C52 /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 		026160B51C689E18001E99A9 /* NAMIDI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = NAMIDI.entitlements; sourceTree = "<group>"; };
 		0282091F1C70A3C0003EBCFB /* EditorTabItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorTabItem.h; sourceTree = "<group>"; };
 		028209201C70A3C0003EBCFB /* EditorTabItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditorTabItem.m; sourceTree = "<group>"; };
@@ -124,6 +126,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0255F6281C7111DF00CF4C52 /* CoreText.framework in Frameworks */,
 				020CF8321C6A059C0025DF84 /* WebKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -134,6 +137,7 @@
 		0201F7C31C688BB100A201F6 = {
 			isa = PBXGroup;
 			children = (
+				0255F6271C7111DF00CF4C52 /* CoreText.framework */,
 				020CF8311C6A059C0025DF84 /* WebKit.framework */,
 				0201F7CE1C688BB100A201F6 /* NAMIDI */,
 				0201F7CD1C688BB100A201F6 /* Products */,

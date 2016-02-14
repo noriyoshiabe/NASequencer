@@ -36,6 +36,25 @@
     return @"EditorWindowController";
 }
 
+- (void)windowDidLoad
+{
+    [super windowDidLoad];
+    
+    self.window.contentView.wantsLayer = YES;
+    self.window.contentView.layer.cornerRadius = 4.0;
+    self.window.contentView.layer.masksToBounds = YES;
+    
+    _tabContainer.wantsLayer = YES;
+    _tabContainer.layer.backgroundColor = [NSColor darkGrayColor].CGColor;
+    
+    _tabScrollView.hasVerticalScroller = NO;
+    _tabCollectionView.wantsLayer = YES;
+    _tabCollectionView.layer.backgroundColor = [NSColor lightGrayColor].CGColor;
+    
+    _tabCollectionView.delegate = self;
+    _tabCollectionView.dataSource = self;
+}
+
 - (void)addFileRepresentation:(FileRepresentation *)file
 {
     NSInteger index = [_files indexOfObject:file];
@@ -54,21 +73,6 @@
     }
 }
 
-- (void)windowDidLoad
-{
-    [super windowDidLoad];
-    
-    _tabContainer.wantsLayer = YES;
-    _tabContainer.layer.backgroundColor = [NSColor darkGrayColor].CGColor;
-    
-    _tabScrollView.hasVerticalScroller = NO;
-    _tabCollectionView.wantsLayer = YES;
-    _tabCollectionView.layer.backgroundColor = [NSColor lightGrayColor].CGColor;
-    
-    _tabCollectionView.delegate = self;
-    _tabCollectionView.dataSource = self;
-}
-
 - (void)selectItemWithIndex:(NSInteger)index
 {
     [_tabCollectionView deselectItemsAtIndexPaths:_tabCollectionView.selectionIndexPaths];
@@ -79,8 +83,14 @@
     
     [_currentController.view removeFromSuperview];
     vc.view.frame = self.contentView.bounds;
-    [self.contentView addSubview:vc.view];
+    [_contentView addSubview:vc.view];
     self.currentController = vc;
+    
+    vc.view.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    [_contentView removeConstraints:_contentView.constraints];
+    [_contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|[view]|" options:0 metrics:nil views:@{@"view": vc.view}]];
+    [_contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[view]|" options:0 metrics:nil views:@{@"view": vc.view}]];
 }
 
 #pragma mark NSCollectionViewDataSource
