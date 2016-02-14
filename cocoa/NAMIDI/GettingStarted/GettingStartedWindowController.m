@@ -16,9 +16,9 @@
 
 @implementation GettingStartedWindowController
 
-- (instancetype)init
+- (NSString *)windowNibName
 {
-    return [self initWithWindowNibName:@"GettingStartedWindowController"];
+    return @"GettingStartedWindowController";
 }
 
 - (void)windowDidLoad

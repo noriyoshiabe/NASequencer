@@ -14,9 +14,9 @@
 
 @implementation PurchaseViewController
 
-- (instancetype)init
+- (NSString *)nibName
 {
-    return [super initWithNibName:@"PurchaseViewController" bundle:nil];
+    return @"PurchaseViewController";
 }
 
 - (NSString *)identifier

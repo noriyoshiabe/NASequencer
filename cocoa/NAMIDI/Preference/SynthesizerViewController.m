@@ -14,9 +14,9 @@
 
 @implementation SynthesizerViewController
 
-- (instancetype)init
+- (NSString *)nibName
 {
-    return [super initWithNibName:@"SynthesizerViewController" bundle:nil];
+    return @"SynthesizerViewController";
 }
 
 - (NSString *)identifier

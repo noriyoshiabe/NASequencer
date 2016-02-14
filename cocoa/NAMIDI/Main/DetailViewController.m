@@ -14,12 +14,13 @@
 
 @implementation DetailViewController
 
-- (instancetype)init
+- (NSString *)nibName
 {
-    return [super initWithNibName:@"DetailViewController" bundle:nil];
+    return @"DetailViewController";
 }
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
     // Do view setup here.
 }

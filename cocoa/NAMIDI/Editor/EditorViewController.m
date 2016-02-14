@@ -14,9 +14,9 @@
 
 @implementation EditorViewController
 
-- (instancetype)init
+- (NSString *)nibName
 {
-    return [super initWithNibName:@"EditorViewController" bundle:nil];
+    return @"EditorViewController";
 }
 
 - (void)viewDidLoad

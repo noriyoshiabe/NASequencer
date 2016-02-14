@@ -14,9 +14,9 @@
 
 @implementation EditorWindowController
 
-- (instancetype)init
+- (NSString *)windowNibName
 {
-    return [super initWithWindowNibName:@"EditorWindowController"];
+    return @"EditorWindowController";
 }
 
 - (void)windowDidLoad

@@ -14,9 +14,9 @@
 
 @implementation MainViewController
 
-- (instancetype)init
+- (NSString *)nibName
 {
-    return [super initWithNibName:@"MainViewController" bundle:nil];
+    return @"MainViewController";
 }
 
 - (void)viewDidLoad

@@ -54,9 +54,9 @@
 
 @implementation WelcomeWindowController
 
-- (instancetype)init
+- (NSString *)windowNibName
 {
-    return [self initWithWindowNibName:@"WelcomeWindowController"];
+    return @"WelcomeWindowController";
 }
 
 - (void)windowDidLoad

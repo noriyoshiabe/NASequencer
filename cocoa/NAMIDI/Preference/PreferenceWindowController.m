@@ -22,7 +22,7 @@
 
 - (instancetype)init
 {
-    self = [self initWithWindowNibName:@"PreferenceWindowController"];
+    self = [super init];
     if (self) {
         self.viewControllers = [NSMutableArray array];
         
@@ -31,6 +31,11 @@
         [self addViewController:[[PurchaseViewController alloc] init]];
     }
     return self;
+}
+
+- (NSString *)windowNibName
+{
+    return @"PreferenceWindowController";
 }
 
 - (void)addViewController:(NSViewController<PreferenceViewController> *)viewController

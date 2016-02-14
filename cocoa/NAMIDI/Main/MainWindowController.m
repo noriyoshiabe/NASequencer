@@ -18,6 +18,11 @@
 
 @implementation MainWindowController
 
+- (NSString *)windowNibName
+{
+    return @"MainWindowController";
+}
+
 - (void)windowDidLoad
 {
     [super windowDidLoad];

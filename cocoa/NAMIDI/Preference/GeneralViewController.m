@@ -14,9 +14,9 @@
 
 @implementation GeneralViewController
 
-- (instancetype)init
+- (NSString *)nibName
 {
-    return [super initWithNibName:@"GeneralViewController" bundle:nil];
+    return @"GeneralViewController";
 }
 
 - (NSString *)identifier

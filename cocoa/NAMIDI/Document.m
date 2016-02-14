@@ -32,7 +32,7 @@
 
 - (void)makeWindowControllers
 {
-    MainWindowController *mainWC = [[MainWindowController alloc] initWithWindowNibName:@"MainWindowController"];
+    MainWindowController *mainWC = [[MainWindowController alloc] init];
     [self addWindowController: mainWC];
 }
 
