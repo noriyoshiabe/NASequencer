@@ -8,15 +8,12 @@
 
 #import "EditorWindowController.h"
 #import "EditorViewController.h"
+#import "EditorStatusViewController.h"
 
-@interface EditorWindowController () <NSCollectionViewDelegate, NSCollectionViewDataSource>
-@property (weak) IBOutlet NSView *tabContainer;
-@property (weak) IBOutlet NSScrollView *tabScrollView;
-@property (weak) IBOutlet NSCollectionView *tabCollectionView;
-@property (weak) IBOutlet NSView *contentView;
+@interface EditorWindowController () <EditorStatusViewControllerDelegate>
 @property (strong, nonatomic) NSMutableArray *files;
 @property (strong, nonatomic) NSMutableDictionary *controllers;
-@property (strong, nonatomic) EditorViewController *currentController;
+@property (strong, nonatomic) EditorStatusViewController *statusViewControlelr;
 @end
 
 @implementation EditorWindowController
@@ -40,26 +37,21 @@
 {
     [super windowDidLoad];
     
+    self.statusViewControlelr = [[EditorStatusViewController alloc] init];
+    _statusViewControlelr.layoutAttribute = NSLayoutAttributeBottom;
+    _statusViewControlelr.delegate = self;
+    [self.window addTitlebarAccessoryViewController:_statusViewControlelr];
+    
     self.window.contentView.wantsLayer = YES;
     self.window.contentView.layer.cornerRadius = 4.0;
     self.window.contentView.layer.masksToBounds = YES;
-    
-    _tabContainer.wantsLayer = YES;
-    _tabContainer.layer.backgroundColor = [NSColor darkGrayColor].CGColor;
-    
-    _tabScrollView.hasVerticalScroller = NO;
-    _tabCollectionView.wantsLayer = YES;
-    _tabCollectionView.layer.backgroundColor = [NSColor lightGrayColor].CGColor;
-    
-    _tabCollectionView.delegate = self;
-    _tabCollectionView.dataSource = self;
 }
 
 - (void)addFileRepresentation:(FileRepresentation *)file
 {
     NSInteger index = [_files indexOfObject:file];
     if (NSNotFound != index) {
-        [self selectItemWithIndex:index];
+        [_statusViewControlelr selectFile:file];
     }
     else {
         [_files addObject:file];
@@ -68,88 +60,16 @@
         vc.file = file;
         [_controllers setObject:vc forKey:file.identifier];
         
-        [_tabCollectionView reloadData];
-        [self selectItemWithIndex:[_files indexOfObject:file]];
+        _statusViewControlelr.files = _files;
+        [_statusViewControlelr selectFile:file];
     }
 }
 
-- (void)selectItemWithIndex:(NSInteger)index
+#pragma mark EditorStatusViewControllerDelegate
+
+- (void)statusViewController:(EditorStatusViewController *)controller didSelectFile:(FileRepresentation *)file
 {
-    [_tabCollectionView deselectItemsAtIndexPaths:_tabCollectionView.selectionIndexPaths];
-    [_tabCollectionView selectItemsAtIndexPaths:[NSSet setWithObject:[NSIndexPath indexPathForItem:index inSection:0]] scrollPosition:NSCollectionViewScrollPositionNone];
-    
-    FileRepresentation *file = _files[index];
-    EditorViewController *vc = _controllers[file.identifier];
-    
-    [_currentController.view removeFromSuperview];
-    vc.view.frame = self.contentView.bounds;
-    [_contentView addSubview:vc.view];
-    self.currentController = vc;
-    
-    vc.view.translatesAutoresizingMaskIntoConstraints = NO;
-    
-    [_contentView removeConstraints:_contentView.constraints];
-    [_contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|[view]|" options:0 metrics:nil views:@{@"view": vc.view}]];
-    [_contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[view]|" options:0 metrics:nil views:@{@"view": vc.view}]];
-}
-
-#pragma mark NSCollectionViewDataSource
-
-- (NSInteger)collectionView:(NSCollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
-{
-    return _files.count;
-}
-
-- (NSCollectionViewItem *)collectionView:(NSCollectionView *)collectionView itemForRepresentedObjectAtIndexPath:(NSIndexPath *)indexPath
-{
-    NSCollectionViewItem *item = [collectionView makeItemWithIdentifier:@"EditorTabItem" forIndexPath:indexPath];
-    item.representedObject = _files[indexPath.item];
-    return item;
-}
-
-
-- (NSSet<NSIndexPath *> *)collectionView:(NSCollectionView *)collectionView shouldSelectItemsAtIndexPaths:(NSSet<NSIndexPath *> *)indexPaths
-{
-    [self selectItemWithIndex:indexPaths.anyObject.item];
-    return nil;
-}
-
-- (NSSet<NSIndexPath *> *)collectionView:(NSCollectionView *)collectionView shouldDeselectItemsAtIndexPaths:(NSSet<NSIndexPath *> *)indexPaths
-{
-    return nil;
-}
-
-@end
-
-#pragma mark Prevent scroll bounce
-
-@interface EditorTabScrollView : NSScrollView
-@end
-
-@implementation EditorTabScrollView
-
-- (void)scrollWheel:(NSEvent *)theEvent
-{
-    [super scrollWheel:theEvent];
-}
-
-@end
-
-#pragma mark Hide scroll bar
-
-@interface EditorTabScroller : NSScroller
-@end
-
-@implementation EditorTabScroller
-
-+ (BOOL)isCompatibleWithOverlayScrollers
-{
-    return YES;
-}
-
-- (void)setHidden:(BOOL)flag
-{
-    [super setHidden:YES];
+    self.window.contentViewController = _controllers[file.identifier];
 }
 
 @end

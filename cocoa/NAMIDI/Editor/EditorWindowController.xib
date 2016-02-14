@@ -7,73 +7,19 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="EditorWindowController">
             <connections>
-                <outlet property="contentView" destination="dfe-81-Chi" id="Ugg-pK-Vcz"/>
-                <outlet property="tabCollectionView" destination="NJn-7n-eH6" id="enh-VX-UJl"/>
-                <outlet property="tabContainer" destination="LdL-Zy-hBR" id="PFq-YH-DYQ"/>
-                <outlet property="tabScrollView" destination="XbN-Fy-XwY" id="TE8-Ku-uQk"/>
                 <outlet property="window" destination="F0z-JX-Cv5" id="gIp-Ho-8D9"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" animationBehavior="default" id="F0z-JX-Cv5">
-            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" fullSizeContentView="YES"/>
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="480" height="270"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
             <view key="contentView" id="se5-gp-TjO">
                 <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
                 <autoresizingMask key="autoresizingMask"/>
-                <subviews>
-                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="LdL-Zy-hBR">
-                        <rect key="frame" x="0.0" y="228" width="480" height="22"/>
-                        <subviews>
-                            <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="XbN-Fy-XwY" customClass="EditorTabScrollView">
-                                <rect key="frame" x="0.0" y="2" width="480" height="20"/>
-                                <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="gzk-W0-W3F">
-                                    <rect key="frame" x="0.0" y="0.0" width="480" height="20"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                    <subviews>
-                                        <collectionView selectable="YES" id="NJn-7n-eH6">
-                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                            <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" id="l5i-BR-h2F">
-                                                <size key="itemSize" width="130" height="20"/>
-                                            </collectionViewFlowLayout>
-                                            <color key="primaryBackgroundColor" white="1" alpha="0.0" colorSpace="deviceWhite"/>
-                                        </collectionView>
-                                    </subviews>
-                                </clipView>
-                                <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="eCe-N3-jB4" customClass="EditorTabScroller">
-                                    <rect key="frame" x="1" y="144" width="233" height="15"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </scroller>
-                                <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="HtX-oT-dYZ" customClass="EditorTabScroller">
-                                    <rect key="frame" x="234" y="1" width="15" height="143"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </scroller>
-                            </scrollView>
-                        </subviews>
-                        <constraints>
-                            <constraint firstAttribute="trailing" secondItem="XbN-Fy-XwY" secondAttribute="trailing" id="I6Q-qH-Ggn"/>
-                            <constraint firstItem="XbN-Fy-XwY" firstAttribute="top" secondItem="LdL-Zy-hBR" secondAttribute="top" id="JEy-a8-e4m"/>
-                            <constraint firstAttribute="height" constant="22" id="NAc-MO-Mfh"/>
-                            <constraint firstItem="XbN-Fy-XwY" firstAttribute="leading" secondItem="LdL-Zy-hBR" secondAttribute="leading" id="SlN-yR-IA0"/>
-                            <constraint firstAttribute="bottom" secondItem="XbN-Fy-XwY" secondAttribute="bottom" constant="2" id="kxA-kv-trm"/>
-                        </constraints>
-                    </customView>
-                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="dfe-81-Chi">
-                        <rect key="frame" x="0.0" y="0.0" width="480" height="228"/>
-                    </customView>
-                </subviews>
-                <constraints>
-                    <constraint firstAttribute="trailing" secondItem="dfe-81-Chi" secondAttribute="trailing" id="85K-cO-jfN"/>
-                    <constraint firstItem="LdL-Zy-hBR" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" id="CIm-0P-7oX"/>
-                    <constraint firstAttribute="bottom" secondItem="dfe-81-Chi" secondAttribute="bottom" id="fwm-6M-ca2"/>
-                    <constraint firstItem="LdL-Zy-hBR" firstAttribute="top" secondItem="se5-gp-TjO" secondAttribute="top" constant="20" id="kxJ-qH-LHO"/>
-                    <constraint firstItem="dfe-81-Chi" firstAttribute="top" secondItem="LdL-Zy-hBR" secondAttribute="bottom" id="lnh-mb-Hnv"/>
-                    <constraint firstAttribute="trailing" secondItem="LdL-Zy-hBR" secondAttribute="trailing" id="qmT-we-TOV"/>
-                    <constraint firstItem="dfe-81-Chi" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" id="uQw-UB-jc7"/>
-                </constraints>
             </view>
             <connections>
                 <outlet property="delegate" destination="-2" id="0bl-1N-AYu"/>
