@@ -10,6 +10,12 @@
 
 #import "FileRepresentation.h"
 
+@class EditorViewController;
+@protocol EditorViewControllerDelegate <NSObject>
+- (void)editorViewController:(EditorViewController *)controller didUpdateLine:(NSUInteger)line column:(NSUInteger)column;
+@end
+
 @interface EditorViewController : NSViewController
+@property (weak, nonatomic) id<EditorViewControllerDelegate> delegate;
 @property (strong, nonatomic) FileRepresentation *file;
 @end

@@ -8,6 +8,7 @@
         <customObject id="-2" userLabel="File's Owner" customClass="EditorStatusViewController">
             <connections>
                 <outlet property="collectionView" destination="toN-2I-CPY" id="f2g-b6-QES"/>
+                <outlet property="potitionField" destination="J0s-km-boH" id="7a3-gQ-2jN"/>
                 <outlet property="scrollView" destination="hdg-sA-R1m" id="6OW-tL-EOj"/>
                 <outlet property="underLine" destination="Vg1-o2-aqw" id="3rs-Ps-a7v"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
@@ -20,12 +21,13 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="hdg-sA-R1m" customClass="EditorTabScrollView">
-                    <rect key="frame" x="0.0" y="2" width="480" height="20"/>
+                    <rect key="frame" x="0.0" y="2" width="421" height="20"/>
                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="0WU-xb-37a">
-                        <rect key="frame" x="0.0" y="0.0" width="480" height="20"/>
+                        <rect key="frame" x="0.0" y="0.0" width="421" height="20"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView selectable="YES" id="toN-2I-CPY">
+                                <rect key="frame" x="0.0" y="0.0" width="421" height="20"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" id="IYe-FT-1h2">
                                     <size key="itemSize" width="130" height="20"/>
@@ -49,15 +51,26 @@
                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="Vg1-o2-aqw">
                     <rect key="frame" x="0.0" y="0.0" width="480" height="2"/>
                 </customView>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="J0s-km-boH">
+                    <rect key="frame" x="422" y="2" width="57" height="18"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="000:000" id="SRW-Uc-yIO">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
             </subviews>
             <constraints>
-                <constraint firstAttribute="trailing" secondItem="hdg-sA-R1m" secondAttribute="trailing" id="95a-lN-Arl"/>
                 <constraint firstItem="hdg-sA-R1m" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="Hp0-bG-JcR"/>
                 <constraint firstAttribute="bottom" secondItem="Vg1-o2-aqw" secondAttribute="bottom" id="Oxx-nl-dCQ"/>
+                <constraint firstItem="J0s-km-boH" firstAttribute="leading" secondItem="hdg-sA-R1m" secondAttribute="trailing" constant="3" id="Prh-IE-X1b"/>
+                <constraint firstItem="J0s-km-boH" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="2" id="Xyw-ey-GLB"/>
+                <constraint firstAttribute="trailing" secondItem="J0s-km-boH" secondAttribute="trailing" constant="3" id="YtS-gh-VDY"/>
                 <constraint firstItem="Vg1-o2-aqw" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="e03-ht-UIj"/>
                 <constraint firstItem="Vg1-o2-aqw" firstAttribute="top" secondItem="hdg-sA-R1m" secondAttribute="bottom" id="feF-Th-gMu"/>
                 <constraint firstItem="hdg-sA-R1m" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" id="nPp-5e-E49"/>
                 <constraint firstAttribute="trailing" secondItem="Vg1-o2-aqw" secondAttribute="trailing" id="tbj-2i-MHS"/>
+                <constraint firstItem="Vg1-o2-aqw" firstAttribute="top" secondItem="J0s-km-boH" secondAttribute="bottom" id="vwa-m5-UDH"/>
             </constraints>
         </customView>
     </objects>

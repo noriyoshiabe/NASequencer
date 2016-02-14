@@ -10,7 +10,7 @@
 #import "EditorViewController.h"
 #import "EditorStatusViewController.h"
 
-@interface EditorWindowController () <EditorStatusViewControllerDelegate>
+@interface EditorWindowController () <EditorStatusViewControllerDelegate, EditorViewControllerDelegate>
 @property (strong, nonatomic) NSMutableArray *files;
 @property (strong, nonatomic) NSMutableDictionary *controllers;
 @property (strong, nonatomic) EditorStatusViewController *statusViewControlelr;
@@ -57,6 +57,7 @@
         [_files addObject:file];
         
         EditorViewController *vc = [[EditorViewController alloc] init];
+        vc.delegate = self;
         vc.file = file;
         [_controllers setObject:vc forKey:file.identifier];
         
@@ -70,6 +71,13 @@
 - (void)statusViewController:(EditorStatusViewController *)controller didSelectFile:(FileRepresentation *)file
 {
     self.window.contentViewController = _controllers[file.identifier];
+}
+
+#pragma mark EditorViewControllerDelegate
+
+- (void)editorViewController:(EditorViewController *)controller didUpdateLine:(NSUInteger)line column:(NSUInteger)column
+{
+    _statusViewControlelr.potitionField.stringValue = [NSString stringWithFormat:@"%lu:%lu", line, column];
 }
 
 @end

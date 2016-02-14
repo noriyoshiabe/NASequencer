@@ -39,6 +39,9 @@
     _textView.enclosingScrollView.rulersVisible = YES;
     
     _textView.string = [NSString stringWithContentsOfURL:_file.url encoding:NSUTF8StringEncoding error:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(selectedRangeDidChange:) name: NSTextViewDidChangeSelectionNotification object:_textView];
+    
     _textView.selectedRange = NSMakeRange(0, 0);
 }
 
@@ -47,28 +50,35 @@
     [self.view.window makeFirstResponder:_textView];
 }
 
-@end
-
-@implementation NSString (LineNumber)
-
-- (NSUInteger)numberOfLinesInRange:(NSRange)range includingLastNewLine:(BOOL)includingLastNewLine
+- (void)dealloc
 {
-    if ([self length] == 0 || range.length == 0) { return 0; }
-    
-    __block NSUInteger count = 0;
-    
-    [self enumerateSubstringsInRange:range
-                             options:NSStringEnumerationByLines | NSStringEnumerationSubstringNotRequired
-                          usingBlock:^(NSString * _Nullable substring, NSRange substringRange, NSRange enclosingRange, BOOL * _Nonnull stop)
-     {
-         count++;
-     }];
-    
-    if (includingLastNewLine && [[NSCharacterSet newlineCharacterSet] characterIsMember:[self characterAtIndex:NSMaxRange(range) - 1]]) {
-        count++;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)selectedRangeDidChange:(NSNotification *)notification
+{
+    if (0 == _textView.selectedRange.location) {
+        [_delegate editorViewController:self didUpdateLine:1 column:1];
+        return;
     }
     
-    return count;
+    __block NSUInteger line = 0;
+    __block NSUInteger column = 0;
+    
+    [_textView.string enumerateSubstringsInRange:NSMakeRange(0, _textView.selectedRange.location)
+                                         options:NSStringEnumerationByLines | NSStringEnumerationSubstringNotRequired
+                                      usingBlock:^(NSString * _Nullable substring, NSRange substringRange, NSRange enclosingRange, BOOL * _Nonnull stop) {
+                                          ++line;
+                                          column = substringRange.length == enclosingRange.length ? substringRange.length + 1 : 1;
+                            }];
+    
+    
+    
+    if ([[NSCharacterSet newlineCharacterSet] characterIsMember:[_textView.string characterAtIndex:_textView.selectedRange.location - 1]]) {
+        ++line;
+    }
+    
+    [_delegate editorViewController:self didUpdateLine:line column:column];
 }
 
 @end
@@ -153,7 +163,14 @@
     NSUInteger lineNum = lineIndex + 1;
     NSUInteger lastLineNum = 0;
     
-    lineNum += [string numberOfLinesInRange:NSMakeRange(0, [layoutManager characterIndexForGlyphAtIndex:visibleGlyphRange.location]) includingLastNewLine:NO];
+    __block NSUInteger count = 0;
+    [string enumerateSubstringsInRange:NSMakeRange(0, [layoutManager characterIndexForGlyphAtIndex:visibleGlyphRange.location])
+                               options:NSStringEnumerationByLines | NSStringEnumerationSubstringNotRequired
+                            usingBlock:^(NSString * _Nullable substring, NSRange substringRange, NSRange enclosingRange, BOOL * _Nonnull stop) {
+         count++;
+    }];
+    
+    lineNum += count;
     
     for (NSUInteger glyphIndex = glyphCount; glyphIndex < NSMaxRange(visibleGlyphRange); ++lineIndex) {
         NSUInteger charIndex = [layoutManager characterIndexForGlyphAtIndex:glyphIndex];
