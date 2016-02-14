@@ -10,7 +10,27 @@
 #import "FileRepresentation.h"
 
 @interface EditorWindowController () <NSCollectionViewDelegate, NSCollectionViewDataSource>
+@property (weak) IBOutlet NSScrollView *tabScrollView;
+@property (weak) IBOutlet NSCollectionView *tabCollectionView;
+@property (weak) IBOutlet NSView *contentView;
 @property (strong, nonatomic) NSMutableArray *files;
+@end
+
+@interface EditorTabScroller : NSScroller
+@end
+
+@implementation EditorTabScroller
+
++ (BOOL)isCompatibleWithOverlayScrollers
+{
+    return YES;
+}
+
+- (void)setHidden:(BOOL)flag
+{
+    [super setHidden:YES];
+}
+
 @end
 
 @implementation EditorWindowController
@@ -20,6 +40,16 @@
     self = [super init];
     if (self) {
         self.files = [NSMutableArray array];
+        [_files addObject:[[FileRepresentation alloc] initWithURL:[NSURL URLWithString:@"file:////Users/abechan/Music/NAMIDI/include/test.nmf"]]];
+        [_files addObject:[[FileRepresentation alloc] initWithURL:[NSURL URLWithString:@"file:////Users/abechan/Music/NAMIDI/include/test.nmf"]]];
+        [_files addObject:[[FileRepresentation alloc] initWithURL:[NSURL URLWithString:@"file:////Users/abechan/Music/NAMIDI/include/test.nmf"]]];
+        [_files addObject:[[FileRepresentation alloc] initWithURL:[NSURL URLWithString:@"file:////Users/abechan/Music/NAMIDI/include/test.nmf"]]];
+        [_files addObject:[[FileRepresentation alloc] initWithURL:[NSURL URLWithString:@"file:////Users/abechan/Music/NAMIDI/include/test.nmf"]]];
+        [_files addObject:[[FileRepresentation alloc] initWithURL:[NSURL URLWithString:@"file:////Users/abechan/Music/NAMIDI/include/test.nmf"]]];
+        [_files addObject:[[FileRepresentation alloc] initWithURL:[NSURL URLWithString:@"file:////Users/abechan/Music/NAMIDI/include/test.nmf"]]];
+        [_files addObject:[[FileRepresentation alloc] initWithURL:[NSURL URLWithString:@"file:////Users/abechan/Music/NAMIDI/include/test.nmf"]]];
+        [_files addObject:[[FileRepresentation alloc] initWithURL:[NSURL URLWithString:@"file:////Users/abechan/Music/NAMIDI/include/test.nmf"]]];
+        [_files addObject:[[FileRepresentation alloc] initWithURL:[NSURL URLWithString:@"file:////Users/abechan/Music/NAMIDI/include/test.nmf"]]];
     }
     return self;
 }
@@ -33,7 +63,11 @@
 {
     [super windowDidLoad];
     
-    // Implement this method to handle any initialization after your window controller's window has been loaded from its nib file.
+    _tabCollectionView.delegate = self;
+    _tabCollectionView.dataSource = self;
+    [_tabCollectionView reloadData];
+    
+    [_tabCollectionView selectItemsAtIndexPaths:[NSSet setWithObject:[NSIndexPath indexPathForItem:0 inSection:0]] scrollPosition:NSCollectionViewScrollPositionNone];
 }
 
 #pragma mark NSCollectionViewDataSource
@@ -49,4 +83,18 @@
     item.representedObject = _files[indexPath.item];
     return item;
 }
+
+
+- (NSSet<NSIndexPath *> *)collectionView:(NSCollectionView *)collectionView shouldSelectItemsAtIndexPaths:(NSSet<NSIndexPath *> *)indexPaths
+{
+    [_tabCollectionView deselectItemsAtIndexPaths:_tabCollectionView.selectionIndexPaths];
+    [_tabCollectionView selectItemsAtIndexPaths:indexPaths scrollPosition:NSCollectionViewScrollPositionNone];
+    return nil;
+}
+
+- (NSSet<NSIndexPath *> *)collectionView:(NSCollectionView *)collectionView shouldDeselectItemsAtIndexPaths:(NSSet<NSIndexPath *> *)indexPaths
+{
+    return nil;
+}
+
 @end

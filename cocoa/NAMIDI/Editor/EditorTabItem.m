@@ -17,7 +17,13 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Do view setup here.
+    self.view.wantsLayer = YES;
+}
+
+- (void)setSelected:(BOOL)selected
+{
+    [super setSelected:selected];
+    self.view.layer.backgroundColor = selected ? [NSColor grayColor].CGColor : [NSColor clearColor].CGColor;
 }
 
 @end
