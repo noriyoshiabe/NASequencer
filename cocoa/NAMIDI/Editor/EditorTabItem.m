@@ -17,16 +17,17 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.view.wantsLayer = YES;
-    self.selected = NO;
+    self.textField.wantsLayer = YES;
+    self.active = NO;
 }
 
-- (void)setSelected:(BOOL)selected
+- (void)setActive:(BOOL)active
 {
-    [super setSelected:selected];
-    self.view.layer.backgroundColor = selected ? [NSColor darkGrayColor].CGColor : [NSColor lightGrayColor].CGColor;
-    self.textField.textColor = selected ? [NSColor whiteColor] : [NSColor blackColor];
-    self.textField.font = selected ? [NSFont boldSystemFontOfSize:self.textField.font.pointSize] : [NSFont systemFontOfSize:self.textField.font.pointSize];
+    _active = active;
+    
+    self.textField.layer.backgroundColor = active ? [NSColor darkGrayColor].CGColor : [NSColor lightGrayColor].CGColor;
+    self.textField.textColor = active ? [NSColor whiteColor] : [NSColor blackColor];
+    self.textField.font = active ? [NSFont boldSystemFontOfSize:self.textField.font.pointSize] : [NSFont systemFontOfSize:self.textField.font.pointSize];
 }
 
 @end

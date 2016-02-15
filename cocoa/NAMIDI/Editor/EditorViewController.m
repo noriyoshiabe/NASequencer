@@ -92,6 +92,8 @@
 
 @end
 
+#pragma mark Line Number
+
 @implementation LineNumberView
 
 - (instancetype)initWithTextView:(NSTextView *)textView
@@ -232,6 +234,20 @@
     NSUInteger length = MAX(log10(lineNum) + 1.0, 3);
     CGFloat requiredWidth = MAX(length * charWidth + 2.0 * padding, width);
     self.ruleThickness = requiredWidth;
+}
+
+@end
+
+#pragma mark Refuse Drag and drop
+
+@interface EditorTextView : NSTextView
+@end
+
+@implementation EditorTextView
+
+- (NSArray<NSString *> *)acceptableDragTypes
+{
+    return nil;
 }
 
 @end

@@ -7,11 +7,16 @@
 //
 
 #import "EditorStatusViewController.h"
+#import "EditorTabItem.h"
 
-@interface EditorStatusViewController () <NSCollectionViewDelegate, NSCollectionViewDataSource>
+@interface EditorStatusViewController () <NSCollectionViewDelegate, NSCollectionViewDataSource> {
+    NSIndexPath *draggingPath;
+}
+
 @property (weak) IBOutlet NSScrollView *scrollView;
 @property (weak) IBOutlet NSCollectionView *collectionView;
 @property (weak) IBOutlet NSView *underLine;
+@property (weak) FileRepresentation *selectedFile;
 @end
 
 @implementation EditorStatusViewController
@@ -25,22 +30,21 @@
     
     _collectionView.delegate = self;
     _collectionView.dataSource = self;
+    
+    [_collectionView registerForDraggedTypes:[NSArray arrayWithObject:NSURLPboardType]];
 }
 
-- (void)setFiles:(NSArray *)files
+- (void)setFiles:(NSMutableArray *)files
 {
     _files = files;
-    [_collectionView reloadData];
+    _selectedFile = nil;
 }
 
 - (void)selectFile:(FileRepresentation *)file;
 {
-    NSUInteger index = [_files indexOfObject:file];
-    
-    [_collectionView deselectItemsAtIndexPaths:_collectionView.selectionIndexPaths];
-    [_collectionView selectItemsAtIndexPaths:[NSSet setWithObject:[NSIndexPath indexPathForItem:index inSection:0]] scrollPosition:NSCollectionViewScrollPositionNone];
-    
+    _selectedFile = file;
     [_delegate statusViewController:self didSelectFile:file];
+    [_collectionView reloadData];
 }
 
 #pragma mark NSCollectionViewDataSource
@@ -52,8 +56,9 @@
 
 - (NSCollectionViewItem *)collectionView:(NSCollectionView *)collectionView itemForRepresentedObjectAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSCollectionViewItem *item = [collectionView makeItemWithIdentifier:@"EditorTabItem" forIndexPath:indexPath];
+    EditorTabItem *item = (EditorTabItem *)[collectionView makeItemWithIdentifier:@"EditorTabItem" forIndexPath:indexPath];
     item.representedObject = _files[indexPath.item];
+    item.active = [item.representedObject isEqual:_selectedFile];
     return item;
 }
 
@@ -68,6 +73,45 @@
 - (NSSet<NSIndexPath *> *)collectionView:(NSCollectionView *)collectionView shouldDeselectItemsAtIndexPaths:(NSSet<NSIndexPath *> *)indexPaths
 {
     return nil;
+}
+
+#pragma mark NSCollectionViewDelegate
+
+- (id <NSPasteboardWriting>)collectionView:(NSCollectionView *)collectionView pasteboardWriterForItemAtIndexPath:(NSIndexPath *)indexPath {
+    NSCollectionViewItem *item = [collectionView itemAtIndex:indexPath.item];
+    FileRepresentation *file = item.representedObject;
+    return file.url.absoluteURL;
+}
+
+- (void)collectionView:(NSCollectionView *)collectionView draggingSession:(NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forItemsAtIndexPaths:(NSSet<NSIndexPath *> *)indexPaths {
+    draggingPath = indexPaths.anyObject;
+}
+
+- (void)collectionView:(NSCollectionView *)collectionView draggingSession:(NSDraggingSession *)session endedAtPoint:(NSPoint)screenPoint dragOperation:(NSDragOperation)operation
+{
+}
+
+- (NSDragOperation)collectionView:(NSCollectionView *)collectionView validateDrop:(id <NSDraggingInfo>)draggingInfo proposedIndexPath:(NSIndexPath **)proposedDropIndexPath dropOperation:(NSCollectionViewDropOperation *)proposedDropOperation {
+    
+    if (![draggingPath isEqual:*proposedDropIndexPath]) {
+        NSInteger fromIndex = draggingPath.item;
+        NSInteger toIndex = (*proposedDropIndexPath).item;
+        
+        if (toIndex < _files.count) {
+            FileRepresentation *file = [_files objectAtIndex:fromIndex];
+            [_files removeObjectAtIndex:fromIndex];
+            [_files insertObject:file atIndex:toIndex];
+            [[collectionView animator] moveItemAtIndexPath:draggingPath toIndexPath:*proposedDropIndexPath];
+            draggingPath = *proposedDropIndexPath;
+        }
+    }
+    
+    return NSDragOperationMove;
+}
+
+- (BOOL)collectionView:(NSCollectionView *)collectionView acceptDrop:(id<NSDraggingInfo>)draggingInfo indexPath:(NSIndexPath *)indexPath dropOperation:(NSCollectionViewDropOperation)dropOperation
+{
+    return YES;
 }
 
 @end

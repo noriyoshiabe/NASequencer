@@ -18,6 +18,6 @@
 @interface EditorStatusViewController : NSViewController
 @property (weak) IBOutlet NSTextField *potitionField;
 @property (weak, nonatomic) id<EditorStatusViewControllerDelegate> delegate;
-@property (strong, nonatomic) NSArray *files;
+@property (strong, nonatomic) NSMutableArray *files;
 - (void)selectFile:(FileRepresentation *)file;
 @end

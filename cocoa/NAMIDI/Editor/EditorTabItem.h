@@ -9,5 +9,5 @@
 #import <Cocoa/Cocoa.h>
 
 @interface EditorTabItem : NSCollectionViewItem
-
+@property (assign, nonatomic) BOOL active;
 @end
