@@ -37,11 +37,12 @@
     _textView.enclosingScrollView.verticalRulerView = [[LineNumberView alloc] initWithTextView:_textView];
     _textView.enclosingScrollView.hasVerticalRuler = YES;
     _textView.enclosingScrollView.rulersVisible = YES;
-    
-    _textView.string = [NSString stringWithContentsOfURL:_file.url encoding:NSUTF8StringEncoding error:nil];
+    _textView.automaticQuoteSubstitutionEnabled = NO;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(selectedRangeDidChange:) name: NSTextViewDidChangeSelectionNotification object:_textView];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textDidChange:) name: NSTextDidChangeNotification object:_textView];
     
+    _textView.string = [NSString stringWithContentsOfURL:_file.url encoding:NSUTF8StringEncoding error:nil];
     _textView.selectedRange = NSMakeRange(0, 0);
 }
 
@@ -79,6 +80,14 @@
     }
     
     [_delegate editorViewController:self didUpdateLine:line column:column];
+}
+
+- (void)textDidChange:(NSNotification *)notification
+{
+    NSTextStorage *storage = [_textView textStorage];
+    NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+    [style setLineBreakMode:NSLineBreakByCharWrapping];
+    [storage addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(0, [storage length])];
 }
 
 @end
