@@ -15,7 +15,7 @@
 - (void)statusViewController:(EditorStatusViewController *)controller didSelectFile:(FileRepresentation *)file;
 @end
 
-@interface EditorStatusViewController : NSTitlebarAccessoryViewController
+@interface EditorStatusViewController : NSViewController
 @property (weak) IBOutlet NSTextField *potitionField;
 @property (weak, nonatomic) id<EditorStatusViewControllerDelegate> delegate;
 @property (strong, nonatomic) NSArray *files;

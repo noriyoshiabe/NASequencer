@@ -7,23 +7,46 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="EditorWindowController">
             <connections>
+                <outlet property="contentView" destination="9bB-V9-SKr" id="6Wy-0n-2uZ"/>
+                <outlet property="tabContainer" destination="zai-Et-OIj" id="yyU-fg-8h0"/>
                 <outlet property="window" destination="F0z-JX-Cv5" id="gIp-Ho-8D9"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" animationBehavior="default" id="F0z-JX-Cv5">
-            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" fullSizeContentView="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="480" height="270"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
             <view key="contentView" id="se5-gp-TjO">
                 <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
                 <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="zai-Et-OIj">
+                        <rect key="frame" x="0.0" y="228" width="480" height="22"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="22" id="9XF-Po-Pdd"/>
+                        </constraints>
+                    </customView>
+                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="9bB-V9-SKr">
+                        <rect key="frame" x="0.0" y="0.0" width="480" height="228"/>
+                    </customView>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="zai-Et-OIj" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" id="5ZZ-1S-wPw"/>
+                    <constraint firstItem="zai-Et-OIj" firstAttribute="top" secondItem="se5-gp-TjO" secondAttribute="top" constant="20" id="8wA-y1-fbY"/>
+                    <constraint firstItem="9bB-V9-SKr" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" id="YCQ-u6-NqD"/>
+                    <constraint firstAttribute="trailing" secondItem="9bB-V9-SKr" secondAttribute="trailing" id="cdG-rv-0cK"/>
+                    <constraint firstAttribute="trailing" secondItem="zai-Et-OIj" secondAttribute="trailing" id="gPj-QP-dGG"/>
+                    <constraint firstAttribute="bottom" secondItem="9bB-V9-SKr" secondAttribute="bottom" id="now-Xl-9ce"/>
+                    <constraint firstItem="9bB-V9-SKr" firstAttribute="top" secondItem="zai-Et-OIj" secondAttribute="bottom" id="uyH-tn-3xB"/>
+                </constraints>
             </view>
             <connections>
                 <outlet property="delegate" destination="-2" id="0bl-1N-AYu"/>
             </connections>
+            <point key="canvasLocation" x="148" y="390"/>
         </window>
     </objects>
 </document>

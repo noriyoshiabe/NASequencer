@@ -11,6 +11,8 @@
 #import "EditorStatusViewController.h"
 
 @interface EditorWindowController () <EditorStatusViewControllerDelegate, EditorViewControllerDelegate>
+@property (weak) IBOutlet NSView *tabContainer;
+@property (weak) IBOutlet NSView *contentView;
 @property (strong, nonatomic) NSMutableArray *files;
 @property (strong, nonatomic) NSMutableDictionary *controllers;
 @property (strong, nonatomic) EditorStatusViewController *statusViewControlelr;
@@ -37,10 +39,14 @@
 {
     [super windowDidLoad];
     
+    //self.window.contentViewController.view = self.contentView;
+    
     self.statusViewControlelr = [[EditorStatusViewController alloc] init];
-    _statusViewControlelr.layoutAttribute = NSLayoutAttributeBottom;
     _statusViewControlelr.delegate = self;
-    [self.window addTitlebarAccessoryViewController:_statusViewControlelr];
+    _statusViewControlelr.view.translatesAutoresizingMaskIntoConstraints = NO;
+    [_tabContainer addSubview:_statusViewControlelr.view];
+    [_tabContainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|[view]|" options:0 metrics:nil views:@{@"view": _statusViewControlelr.view}]];
+    [_tabContainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[view]|" options:0 metrics:nil views:@{@"view": _statusViewControlelr.view}]];
     
     self.window.contentView.wantsLayer = YES;
     self.window.contentView.layer.cornerRadius = 4.0;
@@ -70,7 +76,13 @@
 
 - (void)statusViewController:(EditorStatusViewController *)controller didSelectFile:(FileRepresentation *)file
 {
-    self.window.contentViewController = _controllers[file.identifier];
+    EditorViewController *vc = _controllers[file.identifier];
+    vc.view.translatesAutoresizingMaskIntoConstraints = NO;
+    [_contentView addSubview:vc.view];
+    
+    [_contentView removeConstraints:_contentView.constraints];
+    [_contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|[view]|" options:0 metrics:nil views:@{@"view": vc.view}]];
+    [_contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[view]|" options:0 metrics:nil views:@{@"view": vc.view}]];
 }
 
 #pragma mark EditorViewControllerDelegate
