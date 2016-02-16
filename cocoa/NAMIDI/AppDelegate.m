@@ -52,6 +52,11 @@
 
 #pragma mark Menu Action
 
+- (IBAction)preferenceButtonTapped:(id)sender
+{
+    [[ApplicationController sharedInstance] showPreferenceWindow];
+}
+
 - (IBAction)newDocument:(id)sender
 {
     [[ApplicationController sharedInstance] createDocument];
