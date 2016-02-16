@@ -50,4 +50,11 @@
     return YES;
 }
 
+#pragma mark Menu Action
+
+- (IBAction)newDocument:(id)sender
+{
+    [[ApplicationController sharedInstance] createDocument];
+}
+
 @end
