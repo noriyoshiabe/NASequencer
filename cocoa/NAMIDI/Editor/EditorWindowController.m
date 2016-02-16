@@ -84,6 +84,8 @@
     [_contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[view]|" options:0 metrics:nil views:@{@"view": vc.view}]];
     
     self.currentController = vc;
+    
+    [self.window setTitleWithRepresentedFilename:file.filename];
 }
 
 #pragma mark EditorStatusViewControllerDelegate
