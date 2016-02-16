@@ -8,7 +8,7 @@
         <customObject id="-2" userLabel="File's Owner" customClass="EditorStatusViewController">
             <connections>
                 <outlet property="collectionView" destination="toN-2I-CPY" id="f2g-b6-QES"/>
-                <outlet property="potitionField" destination="J0s-km-boH" id="7a3-gQ-2jN"/>
+                <outlet property="positionField" destination="J0s-km-boH" id="iTo-pt-a4e"/>
                 <outlet property="scrollView" destination="hdg-sA-R1m" id="6OW-tL-EOj"/>
                 <outlet property="underLine" destination="Vg1-o2-aqw" id="3rs-Ps-a7v"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>

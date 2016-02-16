@@ -13,10 +13,11 @@
 @class EditorStatusViewController;
 @protocol EditorStatusViewControllerDelegate <NSObject>
 - (void)statusViewController:(EditorStatusViewController *)controller didSelectFile:(FileRepresentation *)file;
+- (void)statusViewController:(EditorStatusViewController *)controller didPressCloseButten:(FileRepresentation *)file;
 @end
 
 @interface EditorStatusViewController : NSViewController
-@property (weak) IBOutlet NSTextField *potitionField;
+@property (weak) IBOutlet NSTextField *positionField;
 @property (weak, nonatomic) id<EditorStatusViewControllerDelegate> delegate;
 @property (strong, nonatomic) NSMutableArray *files;
 - (void)selectFile:(FileRepresentation *)file;

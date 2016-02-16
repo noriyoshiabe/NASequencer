@@ -16,6 +16,7 @@
 @property (strong, nonatomic) NSMutableArray *files;
 @property (strong, nonatomic) NSMutableDictionary *controllers;
 @property (strong, nonatomic) EditorStatusViewController *statusViewControlelr;
+@property (strong, nonatomic) EditorViewController *currentController;
 @end
 
 @implementation EditorWindowController
@@ -72,9 +73,7 @@
     }
 }
 
-#pragma mark EditorStatusViewControllerDelegate
-
-- (void)statusViewController:(EditorStatusViewController *)controller didSelectFile:(FileRepresentation *)file
+- (void)selectFile:(FileRepresentation *)file
 {
     EditorViewController *vc = _controllers[file.identifier];
     vc.view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -83,13 +82,41 @@
     [_contentView removeConstraints:_contentView.constraints];
     [_contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|[view]|" options:0 metrics:nil views:@{@"view": vc.view}]];
     [_contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[view]|" options:0 metrics:nil views:@{@"view": vc.view}]];
+    
+    self.currentController = vc;
+}
+
+#pragma mark EditorStatusViewControllerDelegate
+
+- (void)statusViewController:(EditorStatusViewController *)controller didSelectFile:(FileRepresentation *)file
+{
+    [self selectFile:file];
+}
+
+- (void)statusViewController:(EditorStatusViewController *)controller didPressCloseButten:(FileRepresentation *)file
+{
+    // TODO when not save change
+    
+    self.currentController = nil;
+    [_controllers removeObjectForKey:file.identifier];
+    [_files removeObject:file];
+    
+    if (0 == [_files count]) {
+        [self close];
+    }
+    else {
+        [self selectFile:_files.firstObject];
+        
+        _statusViewControlelr.files = _files;
+        [_statusViewControlelr selectFile:_files.firstObject];
+    }
 }
 
 #pragma mark EditorViewControllerDelegate
 
 - (void)editorViewController:(EditorViewController *)controller didUpdateLine:(NSUInteger)line column:(NSUInteger)column
 {
-    _statusViewControlelr.potitionField.stringValue = [NSString stringWithFormat:@"%lu:%lu", line, column];
+    _statusViewControlelr.positionField.stringValue = [NSString stringWithFormat:@"%lu:%lu", line, column];
 }
 
 @end

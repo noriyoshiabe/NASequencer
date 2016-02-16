@@ -9,7 +9,7 @@
 #import "EditorStatusViewController.h"
 #import "EditorTabItem.h"
 
-@interface EditorStatusViewController () <NSCollectionViewDelegate, NSCollectionViewDataSource> {
+@interface EditorStatusViewController () <NSCollectionViewDelegate, NSCollectionViewDataSource, EditorTabItemDelegate> {
     NSIndexPath *draggingPath;
 }
 
@@ -57,11 +57,11 @@
 - (NSCollectionViewItem *)collectionView:(NSCollectionView *)collectionView itemForRepresentedObjectAtIndexPath:(NSIndexPath *)indexPath
 {
     EditorTabItem *item = (EditorTabItem *)[collectionView makeItemWithIdentifier:@"EditorTabItem" forIndexPath:indexPath];
+    item.delegate = self;
     item.representedObject = _files[indexPath.item];
     item.active = [item.representedObject isEqual:_selectedFile];
     return item;
 }
-
 
 - (NSSet<NSIndexPath *> *)collectionView:(NSCollectionView *)collectionView shouldSelectItemsAtIndexPaths:(NSSet<NSIndexPath *> *)indexPaths
 {
@@ -112,6 +112,13 @@
 - (BOOL)collectionView:(NSCollectionView *)collectionView acceptDrop:(id<NSDraggingInfo>)draggingInfo indexPath:(NSIndexPath *)indexPath dropOperation:(NSCollectionViewDropOperation)dropOperation
 {
     return YES;
+}
+
+#pragma mark EditorTabItemDelegate
+
+- (void)tabItemDidPressCloseButton:(EditorTabItem *)item
+{
+    [_delegate statusViewController:self didPressCloseButten:item.representedObject];
 }
 
 @end

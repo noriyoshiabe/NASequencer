@@ -17,10 +17,9 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Lvf-C8-K1s">
-                    <rect key="frame" x="-2" y="0.0" width="134" height="20"/>
+                    <rect key="frame" x="-2" y="0.0" width="115" height="20"/>
                     <constraints>
-                        <constraint firstAttribute="width" constant="130" id="3xG-KQ-eeF"/>
-                        <constraint firstAttribute="height" constant="20" id="bVv-AJ-GVU"/>
+                        <constraint firstAttribute="height" constant="20" id="P2V-JS-b7z"/>
                     </constraints>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="example.nmf" id="DV7-1E-7RR">
                         <font key="font" metaFont="system"/>
@@ -31,14 +30,31 @@
                         <binding destination="1T5-Mo-d9l" name="value" keyPath="representedObject.filename" id="VNr-rF-QBd"/>
                     </connections>
                 </textField>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="iBH-zc-EaQ">
+                    <rect key="frame" x="111" y="2" width="17" height="17"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="17" id="KSF-MI-GTF"/>
+                        <constraint firstAttribute="height" constant="17" id="keQ-Id-Jmb"/>
+                    </constraints>
+                    <buttonCell key="cell" type="inline" bezelStyle="inline" image="NSStopProgressFreestandingTemplate" imagePosition="overlaps" alignment="center" imageScaling="proportionallyDown" inset="2" id="iQl-I1-Uys">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="smallSystemBold"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="closeButtonPressed:" target="1T5-Mo-d9l" id="9T7-1d-JGR"/>
+                    </connections>
+                </button>
             </subviews>
             <constraints>
-                <constraint firstAttribute="bottom" secondItem="Lvf-C8-K1s" secondAttribute="bottom" id="2Pn-xd-alR"/>
-                <constraint firstAttribute="trailing" secondItem="Lvf-C8-K1s" secondAttribute="trailing" id="GbX-7f-Exp"/>
-                <constraint firstItem="Lvf-C8-K1s" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="b72-t3-bks"/>
-                <constraint firstItem="Lvf-C8-K1s" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" id="tfP-ur-ws0"/>
+                <constraint firstAttribute="bottom" secondItem="iBH-zc-EaQ" secondAttribute="bottom" constant="2" id="1hY-KZ-vPu"/>
+                <constraint firstAttribute="bottom" secondItem="Lvf-C8-K1s" secondAttribute="bottom" id="7KY-46-Vpb"/>
+                <constraint firstItem="Lvf-C8-K1s" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="IRk-Ec-RPx"/>
+                <constraint firstAttribute="trailing" secondItem="iBH-zc-EaQ" secondAttribute="trailing" constant="2" id="bFD-6t-onZ"/>
+                <constraint firstItem="iBH-zc-EaQ" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="1" id="hVn-cd-yay"/>
+                <constraint firstItem="iBH-zc-EaQ" firstAttribute="leading" secondItem="Lvf-C8-K1s" secondAttribute="trailing" id="tcC-0v-ncN"/>
+                <constraint firstItem="Lvf-C8-K1s" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" id="xO2-6Q-V5S"/>
             </constraints>
-            <point key="canvasLocation" x="240.5" y="198.5"/>
+            <point key="canvasLocation" x="240" y="198"/>
         </customView>
         <collectionViewItem id="1T5-Mo-d9l" customClass="EditorTabItem">
             <connections>
@@ -47,4 +63,7 @@
             </connections>
         </collectionViewItem>
     </objects>
+    <resources>
+        <image name="NSStopProgressFreestandingTemplate" width="14" height="14"/>
+    </resources>
 </document>
