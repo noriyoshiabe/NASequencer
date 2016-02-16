@@ -90,6 +90,13 @@
     [storage addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(0, [storage length])];
 }
 
+#pragma mark Menu Action
+
+- (IBAction)performClose:(id)sender
+{
+    [_delegate editorViewController:self didPerformCloseAction:sender];
+}
+
 @end
 
 #pragma mark Line Number

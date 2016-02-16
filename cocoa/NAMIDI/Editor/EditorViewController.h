@@ -13,6 +13,7 @@
 @class EditorViewController;
 @protocol EditorViewControllerDelegate <NSObject>
 - (void)editorViewController:(EditorViewController *)controller didUpdateLine:(NSUInteger)line column:(NSUInteger)column;
+- (void)editorViewController:(EditorViewController *)controller didPerformCloseAction:(id)sender;
 @end
 
 @interface EditorViewController : NSViewController

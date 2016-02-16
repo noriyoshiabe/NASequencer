@@ -89,14 +89,7 @@
     [self.window setTitleWithRepresentedFilename:file.filename];
 }
 
-#pragma mark EditorStatusViewControllerDelegate
-
-- (void)statusViewController:(EditorStatusViewController *)controller didSelectFile:(FileRepresentation *)file
-{
-    [self selectFile:file];
-}
-
-- (void)statusViewController:(EditorStatusViewController *)controller didPressCloseButten:(FileRepresentation *)file
+- (void)closeFile:(FileRepresentation *)file
 {
     // TODO when not save change
     
@@ -115,11 +108,28 @@
     }
 }
 
+#pragma mark EditorStatusViewControllerDelegate
+
+- (void)statusViewController:(EditorStatusViewController *)controller didSelectFile:(FileRepresentation *)file
+{
+    [self selectFile:file];
+}
+
+- (void)statusViewController:(EditorStatusViewController *)controller didPressCloseButten:(FileRepresentation *)file
+{
+    [self closeFile:file];
+}
+
 #pragma mark EditorViewControllerDelegate
 
 - (void)editorViewController:(EditorViewController *)controller didUpdateLine:(NSUInteger)line column:(NSUInteger)column
 {
     _statusViewControlelr.positionField.stringValue = [NSString stringWithFormat:@"%lu:%lu", line, column];
+}
+
+- (void)editorViewController:(EditorViewController *)controller didPerformCloseAction:(id)sender
+{
+    [self closeFile:controller.file];
 }
 
 #pragma mark Menu Action
