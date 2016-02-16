@@ -136,7 +136,7 @@
 
 - (IBAction)openDocument:(id)sender
 {
-    [[ApplicationController sharedInstance] openDocumentWithCompletion:^(NSURL *url) {
+    [[ApplicationController sharedInstance] openDocumentForWindow:self.window completion:^(NSURL *url) {
         [self addFileRepresentation:[[FileRepresentation alloc] initWithURL:url]];
     }];
 }
@@ -150,10 +150,17 @@
 
 - (IBAction)saveDocumentAs:(id)sender
 {
-    [[ApplicationController sharedInstance] saveDocumentWithCompletion:^(NSURL *url) {
+    [[ApplicationController sharedInstance] saveDocumentForWindow:self.window completion:^(NSURL *url) {
         if ([_currentController.textView.string writeToURL:url atomically:YES encoding:NSUTF8StringEncoding error:nil]) {
             [self addFileRepresentation:[[FileRepresentation alloc] initWithURL:url]];
         }
+    }];
+}
+
+- (IBAction)newDocument:(id)sender
+{
+    [[ApplicationController sharedInstance] createDocumentForWindow:self.window completion:^(NSURL *url) {
+        [self addFileRepresentation:[[FileRepresentation alloc] initWithURL:url]];
     }];
 }
 

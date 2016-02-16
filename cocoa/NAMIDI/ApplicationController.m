@@ -125,32 +125,57 @@ static ApplicationController* _sharedInstance = nil;
 
 - (void)openDocument
 {
-    [self openDocumentWithCompletion:^(NSURL *url) {
+    [self openDocumentForWindow:nil completion:^(NSURL *url) {
         [self openDocumentWithContentsOfURL:url];
     }];
 }
 
-- (void)openDocumentWithCompletion:(void (^)(NSURL *url))completionHandler
+- (void)openDocumentForWindow:(NSWindow *)window completion:(void (^)(NSURL *url))completionHandler
 {
     NSOpenPanel *openPanel = [NSOpenPanel openPanel];
     openPanel.allowedFileTypes = self.allowedFileTypes;
     
-    if (NSFileHandlingPanelOKButton == [openPanel runModal]) {
-        completionHandler([openPanel URL]);
+    if (window) {
+        [openPanel beginSheetModalForWindow:window completionHandler:^(NSInteger result) {
+            if (NSFileHandlingPanelOKButton == result) {
+                completionHandler([openPanel URL]);
+            }
+        }];
+    }
+    else {
+        if (NSFileHandlingPanelOKButton == [openPanel runModal]) {
+            completionHandler([openPanel URL]);
+        }
     }
 }
 
-- (void)saveDocumentWithCompletion:(void (^)(NSURL *url))completionHandler
+- (void)saveDocumentForWindow:(NSWindow *)window completion:(void (^)(NSURL *url))completionHandler
 {
     NSSavePanel *savePanel = [NSSavePanel savePanel];
     savePanel.allowedFileTypes = self.allowedFileTypes;
     
-    if (NSFileHandlingPanelOKButton == [savePanel runModal]) {
-        completionHandler([savePanel URL]);
+    if (window) {
+        [savePanel beginSheetModalForWindow:window completionHandler:^(NSInteger result) {
+            if (NSFileHandlingPanelOKButton == result) {
+                completionHandler([savePanel URL]);
+            }
+        }];
+    }
+    else {
+        if (NSFileHandlingPanelOKButton == [savePanel runModal]) {
+            completionHandler([savePanel URL]);
+        }
     }
 }
 
 - (void)createDocument
+{
+    [self createDocumentForWindow:nil completion:^(NSURL *url) {
+        [self openDocumentWithContentsOfURL:url];
+    }];
+}
+
+- (void)createDocumentForWindow:(NSWindow *)window completion:(void (^)(NSURL *url))completionHandler
 {
     self.savePanel = [NSSavePanel savePanel];
     _savePanel.delegate = self;
@@ -164,20 +189,31 @@ static ApplicationController* _sharedInstance = nil;
     _savePanel.nameFieldStringValue = [_savePanel.nameFieldStringValue stringByAppendingPathExtension:ext];
     _savePanel.allowedFileTypes = @[ext];
     
-    // Avoid unwanted moving on NSSavePanel with runModal
-    _savePanel.message = @" ";
-    _savePanel.styleMask |= NSFullSizeContentViewWindowMask;
-    
-    if (NSFileHandlingPanelOKButton == [_savePanel runModal]) {
-        // Create empty file
-        [[NSData data] writeToURL:[_savePanel URL] atomically:YES];
-        
-        [self openDocumentWithContentsOfURL:[_savePanel URL]];
+    if (window) {
+        [_savePanel beginSheetModalForWindow:window completionHandler:^(NSInteger result) {
+            if (NSFileHandlingPanelOKButton == result) {
+                // Create empty file
+                [[NSData data] writeToURL:[_savePanel URL] atomically:YES];
+                
+                completionHandler([_savePanel URL]);
+                self.savePanel = nil;
+            }
+        }];
     }
-    
-    _savePanel.accessoryView = nil;
-    _savePanel.delegate = nil;
-    self.savePanel = nil;
+    else {
+        // Avoid unwanted moving on NSSavePanel with runModal
+        _savePanel.message = @" ";
+        _savePanel.styleMask |= NSFullSizeContentViewWindowMask;
+        
+        if (NSFileHandlingPanelOKButton == [_savePanel runModal]) {
+            // Create empty file
+            [[NSData data] writeToURL:[_savePanel URL] atomically:YES];
+            
+            completionHandler([_savePanel URL]);
+        }
+        
+        self.savePanel = nil;
+    }
 }
 
 #pragma mark NSMenuDelegate

@@ -6,7 +6,7 @@
 //  Copyright © 2016 Noriyoshi Abe. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
 
 #import "FileRepresentation.h"
 
@@ -22,7 +22,8 @@
 - (void)showEditorWindowWithFile:(FileRepresentation *)file;
 - (void)openDocumentWithContentsOfURL:(NSURL *)url;
 - (void)openDocument;
-- (void)openDocumentWithCompletion:(void (^)(NSURL *url))completionHandler;
-- (void)saveDocumentWithCompletion:(void (^)(NSURL *url))completionHandler;
+- (void)openDocumentForWindow:(NSWindow *)window completion:(void (^)(NSURL *url))completionHandler;
+- (void)saveDocumentForWindow:(NSWindow *)window completion:(void (^)(NSURL *url))completionHandler;
 - (void)createDocument;
+- (void)createDocumentForWindow:(NSWindow *)window completion:(void (^)(NSURL *url))completionHandler;
 @end
