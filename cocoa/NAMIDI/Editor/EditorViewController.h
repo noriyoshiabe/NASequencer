@@ -17,6 +17,7 @@
 @end
 
 @interface EditorViewController : NSViewController
+@property (unsafe_unretained) IBOutlet NSTextView *textView;
 @property (weak, nonatomic) id<EditorViewControllerDelegate> delegate;
 @property (strong, nonatomic) FileRepresentation *file;
 @end

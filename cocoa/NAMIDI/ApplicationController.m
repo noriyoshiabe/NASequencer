@@ -140,6 +140,16 @@ static ApplicationController* _sharedInstance = nil;
     }
 }
 
+- (void)saveDocumentWithCompletion:(void (^)(NSURL *url))completionHandler
+{
+    NSSavePanel *savePanel = [NSSavePanel savePanel];
+    savePanel.allowedFileTypes = self.allowedFileTypes;
+    
+    if (NSFileHandlingPanelOKButton == [savePanel runModal]) {
+        completionHandler([savePanel URL]);
+    }
+}
+
 - (void)createDocument
 {
     self.savePanel = [NSSavePanel savePanel];

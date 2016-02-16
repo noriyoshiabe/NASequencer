@@ -19,7 +19,6 @@
 @end
 
 @interface EditorViewController ()
-@property (unsafe_unretained) IBOutlet NSTextView *textView;
 @end
 
 @implementation EditorViewController

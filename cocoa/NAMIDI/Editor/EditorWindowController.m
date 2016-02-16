@@ -141,4 +141,20 @@
     }];
 }
 
+- (IBAction)saveDocument:(id)sender
+{
+    // TODO Track file changes
+    
+    [_currentController.textView.string writeToURL:_currentController.file.url atomically:YES encoding:NSUTF8StringEncoding error:nil];
+}
+
+- (IBAction)saveDocumentAs:(id)sender
+{
+    [[ApplicationController sharedInstance] saveDocumentWithCompletion:^(NSURL *url) {
+        if ([_currentController.textView.string writeToURL:url atomically:YES encoding:NSUTF8StringEncoding error:nil]) {
+            [self addFileRepresentation:[[FileRepresentation alloc] initWithURL:url]];
+        }
+    }];
+}
+
 @end
