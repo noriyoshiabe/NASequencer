@@ -9,6 +9,7 @@
 #import "EditorWindowController.h"
 #import "EditorViewController.h"
 #import "EditorStatusViewController.h"
+#import "ApplicationController.h"
 
 @interface EditorWindowController () <EditorStatusViewControllerDelegate, EditorViewControllerDelegate>
 @property (weak) IBOutlet NSView *tabContainer;
@@ -119,6 +120,15 @@
 - (void)editorViewController:(EditorViewController *)controller didUpdateLine:(NSUInteger)line column:(NSUInteger)column
 {
     _statusViewControlelr.positionField.stringValue = [NSString stringWithFormat:@"%lu:%lu", line, column];
+}
+
+#pragma mark Menu Action
+
+- (IBAction)openDocument:(id)sender
+{
+    [[ApplicationController sharedInstance] openDocumentWithCompletion:^(NSURL *url) {
+        [self addFileRepresentation:[[FileRepresentation alloc] initWithURL:url]];
+    }];
 }
 
 @end

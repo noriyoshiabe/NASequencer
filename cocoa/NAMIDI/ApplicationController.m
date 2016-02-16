@@ -125,11 +125,18 @@ static ApplicationController* _sharedInstance = nil;
 
 - (void)openDocument
 {
+    [self openDocumentWithCompletion:^(NSURL *url) {
+        [self openDocumentWithContentsOfURL:url];
+    }];
+}
+
+- (void)openDocumentWithCompletion:(void (^)(NSURL *url))completionHandler
+{
     NSOpenPanel *openPanel = [NSOpenPanel openPanel];
     openPanel.allowedFileTypes = self.allowedFileTypes;
     
     if (NSFileHandlingPanelOKButton == [openPanel runModal]) {
-        [self openDocumentWithContentsOfURL:[openPanel URL]];
+        completionHandler([openPanel URL]);
     }
 }
 

@@ -22,5 +22,6 @@
 - (void)showEditorWindowWithFile:(FileRepresentation *)file;
 - (void)openDocumentWithContentsOfURL:(NSURL *)url;
 - (void)openDocument;
+- (void)openDocumentWithCompletion:(void (^)(NSURL *url))completionHandler;
 - (void)createDocument;
 @end
