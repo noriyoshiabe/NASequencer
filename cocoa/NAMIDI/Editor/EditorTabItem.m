@@ -18,6 +18,7 @@
 {
     [super viewDidLoad];
     self.view.wantsLayer = YES;
+    self.textField.wantsLayer = YES;
     self.active = NO;
 }
 
@@ -26,6 +27,7 @@
     _active = active;
     
     self.view.layer.backgroundColor = active ? [NSColor darkGrayColor].CGColor : [NSColor lightGrayColor].CGColor;
+    self.textField.layer.backgroundColor = active ? [NSColor darkGrayColor].CGColor : [NSColor lightGrayColor].CGColor;
     self.textField.textColor = active ? [NSColor whiteColor] : [NSColor blackColor];
     self.textField.font = active ? [NSFont boldSystemFontOfSize:self.textField.font.pointSize] : [NSFont systemFontOfSize:self.textField.font.pointSize];
 }

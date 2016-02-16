@@ -105,17 +105,17 @@ ApplicationController *AppController;
     }
 }
 
+- (NSArray *)allowedFileTypes
+{
+    return @[@"nmf", @"abc", @"mml"];
+}
+
 - (void)openDocumentWithContentsOfURL:(NSURL *)url
 {
     [AppController closeWelcomeWindow];
     
     [[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:url display:YES completionHandler:^(NSDocument * _Nullable document, BOOL documentWasAlreadyOpen, NSError * _Nullable error) {
     }];
-}
-
-- (NSArray *)allowedFileTypes
-{
-    return @[@"nmf", @"abc", @"mml"];
 }
 
 - (void)openDocument

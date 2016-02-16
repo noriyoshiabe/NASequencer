@@ -11,6 +11,10 @@
 #import "EditorStatusViewController.h"
 #import "ApplicationController.h"
 
+@interface EditorView : NSView
+@property (weak, nonatomic) EditorWindowController *controller;
+@end
+
 @interface EditorWindowController () <EditorStatusViewControllerDelegate, EditorViewControllerDelegate>
 @property (weak) IBOutlet NSView *tabContainer;
 @property (weak) IBOutlet NSView *contentView;
@@ -41,8 +45,6 @@
 {
     [super windowDidLoad];
     
-    //self.window.contentViewController.view = self.contentView;
-    
     self.statusViewControlelr = [[EditorStatusViewController alloc] init];
     _statusViewControlelr.delegate = self;
     _statusViewControlelr.view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -53,6 +55,8 @@
     self.window.contentView.wantsLayer = YES;
     self.window.contentView.layer.cornerRadius = 4.0;
     self.window.contentView.layer.masksToBounds = YES;
+    
+    ((EditorView *)self.window.contentView).controller = self;
 }
 
 - (void)addFileRepresentation:(FileRepresentation *)file
@@ -162,6 +166,39 @@
     [AppController createDocumentForWindow:self.window completion:^(NSURL *url) {
         [self addFileRepresentation:[[FileRepresentation alloc] initWithURL:url]];
     }];
+}
+
+@end
+
+#pragma mark Drag and Drop
+
+@implementation EditorView
+
+- (void)awakeFromNib
+{
+    [self registerForDraggedTypes:@[NSFilenamesPboardType]];
+}
+
+- (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender
+{
+    NSArray *files = [[sender draggingPasteboard] propertyListForType:NSFilenamesPboardType];
+    for (NSString *filename in files) {
+        if (![AppController.allowedFileTypes containsObject:filename.pathExtension.lowercaseString]) {
+            return NSDragOperationNone;
+        }
+    }
+    
+    return NSDragOperationCopy;
+}
+
+- (BOOL)performDragOperation:(id<NSDraggingInfo>)sender
+{
+    NSArray *files = [[sender draggingPasteboard] propertyListForType:NSFilenamesPboardType];
+    for (NSString *filename in files) {
+        NSURL *url = [NSURL fileURLWithPath:filename];
+        [_controller addFileRepresentation:[[FileRepresentation alloc] initWithURL:url]];
+    }
+    return YES;
 }
 
 @end

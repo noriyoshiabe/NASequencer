@@ -31,7 +31,7 @@
     _collectionView.delegate = self;
     _collectionView.dataSource = self;
     
-    [_collectionView registerForDraggedTypes:[NSArray arrayWithObject:NSURLPboardType]];
+    [_collectionView registerForDraggedTypes:@[NSStringPboardType]];
 }
 
 - (void)setFiles:(NSMutableArray *)files
@@ -65,7 +65,7 @@
 
 - (NSSet<NSIndexPath *> *)collectionView:(NSCollectionView *)collectionView shouldSelectItemsAtIndexPaths:(NSSet<NSIndexPath *> *)indexPaths
 {
-    NSCollectionViewItem *item = [collectionView itemAtIndex:indexPaths.anyObject.item];
+    NSCollectionViewItem *item = [collectionView itemAtIndexPath:indexPaths.anyObject];
     [self selectFile:item.representedObject];
     return nil;
 }
@@ -80,7 +80,7 @@
 - (id <NSPasteboardWriting>)collectionView:(NSCollectionView *)collectionView pasteboardWriterForItemAtIndexPath:(NSIndexPath *)indexPath {
     NSCollectionViewItem *item = [collectionView itemAtIndex:indexPath.item];
     FileRepresentation *file = item.representedObject;
-    return file.url.absoluteURL;
+    return file.url.path;
 }
 
 - (void)collectionView:(NSCollectionView *)collectionView draggingSession:(NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forItemsAtIndexPaths:(NSSet<NSIndexPath *> *)indexPaths {
