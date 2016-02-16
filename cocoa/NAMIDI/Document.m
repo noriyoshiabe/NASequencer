@@ -36,7 +36,7 @@
     MainWindowController *mainWC = [[MainWindowController alloc] init];
     [self addWindowController: mainWC];
     
-    [[ApplicationController sharedInstance] showEditorWindowWithFile:self.file];
+    [AppController showEditorWindowWithFile:self.file];
 }
 
 @end

@@ -11,7 +11,6 @@
 #import "FileRepresentation.h"
 
 @interface ApplicationController : NSObject
-+ (ApplicationController *)sharedInstance;
 - (void)initialize;
 - (void)showWelcomeWindow;
 - (void)closeWelcomeWindow;
@@ -27,3 +26,5 @@
 - (void)createDocument;
 - (void)createDocumentForWindow:(NSWindow *)window completion:(void (^)(NSURL *url))completionHandler;
 @end
+
+extern ApplicationController *AppController;

@@ -62,7 +62,7 @@
 
 - (IBAction)gettingStartedButtonTapped:(id)sender
 {
-    [[ApplicationController sharedInstance] showGettingStartedWindow];
+    [AppController showGettingStartedWindow];
 }
 
 - (IBAction)listenToExampleButtonTapped:(id)sender
@@ -72,7 +72,7 @@
 
 - (IBAction)createNewDocumentButtonTapped:(id)sender
 {
-    [[ApplicationController sharedInstance] createDocument];
+    [AppController createDocument];
 }
 
 - (IBAction)helpButtonTapped:(id)sender
@@ -83,12 +83,12 @@
 
 - (IBAction)preferenceButtonTapped:(id)sender
 {
-    [[ApplicationController sharedInstance] showPreferenceWindow];
+    [AppController showPreferenceWindow];
 }
 
 - (IBAction)openOtherDocumentButtonTapped:(id)sender
 {
-    [[ApplicationController sharedInstance] openDocument];
+    [AppController openDocument];
 }
 
 - (IBAction)showWelcomeWhenStartsToggled:(NSButton *)sender
@@ -99,7 +99,7 @@
 - (IBAction)recentTableViewSelectionChanged:(id)sender
 {
     FileRepresentation *recentFile = self.recentDocuments[_recentTableView.selectedRow];
-    [[ApplicationController sharedInstance] openDocumentWithContentsOfURL:recentFile.url];
+    [AppController openDocumentWithContentsOfURL:recentFile.url];
 }
 
 - (void)keyDown:(NSEvent *)theEvent

@@ -17,7 +17,7 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    [[ApplicationController sharedInstance] initialize];
+    [AppController initialize];
     self.inLaunchOrReopenProcess = YES;
 }
 
@@ -28,7 +28,7 @@
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
     if (self.inLaunchOrReopenProcess && ![NSApplication sharedApplication].keyWindow) {
-        [[ApplicationController sharedInstance] showWelcomeWindow];
+        [AppController showWelcomeWindow];
     }
     self.inLaunchOrReopenProcess = NO;
 }
@@ -40,7 +40,7 @@
 
 - (BOOL)application:(NSApplication *)sender openFile:(NSString *)filename
 {
-    [[ApplicationController sharedInstance] closeWelcomeWindow];
+    [AppController closeWelcomeWindow];
     return NO;
 }
 
@@ -54,12 +54,12 @@
 
 - (IBAction)preferenceButtonTapped:(id)sender
 {
-    [[ApplicationController sharedInstance] showPreferenceWindow];
+    [AppController showPreferenceWindow];
 }
 
 - (IBAction)newDocument:(id)sender
 {
-    [[ApplicationController sharedInstance] createDocument];
+    [AppController createDocument];
 }
 
 @end

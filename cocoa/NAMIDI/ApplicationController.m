@@ -15,6 +15,8 @@
 
 #define kSelectedFileTypeForCreation @"Document.SelectedFileTypeForCreation"
 
+ApplicationController *AppController;
+
 @interface ApplicationController () <NSMenuDelegate, NSOpenSavePanelDelegate>
 @property (strong) NSSavePanel *savePanel;
 @property (strong) IBOutlet NSView *savePanelAccessoryView;
@@ -29,18 +31,11 @@
 
 @implementation ApplicationController
 
-static ApplicationController* _sharedInstance = nil;
-
-+ (ApplicationController *)sharedInstance
-{
-    return _sharedInstance;
-}
-
 - (instancetype)init
 {
     self = [super init];
     if (self) {
-        _sharedInstance = self;
+        AppController = self;
     }
     return self;
 }
@@ -112,7 +107,7 @@ static ApplicationController* _sharedInstance = nil;
 
 - (void)openDocumentWithContentsOfURL:(NSURL *)url
 {
-    [[ApplicationController sharedInstance] closeWelcomeWindow];
+    [AppController closeWelcomeWindow];
     
     [[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:url display:YES completionHandler:^(NSDocument * _Nullable document, BOOL documentWasAlreadyOpen, NSError * _Nullable error) {
     }];

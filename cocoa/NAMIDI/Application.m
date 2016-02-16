@@ -13,7 +13,7 @@
 
 - (void)orderFrontStandardAboutPanel:(id)sender
 {
-    [[ApplicationController sharedInstance] showAboutWindow];
+    [AppController showAboutWindow];
 }
 
 @end
