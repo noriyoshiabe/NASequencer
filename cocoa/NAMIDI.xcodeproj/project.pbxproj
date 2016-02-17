@@ -48,6 +48,11 @@
 		02633EA21C74B6C100B9FF0E /* MixerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02633EA01C74B6C100B9FF0E /* MixerViewController.xib */; };
 		02633EA61C74B74900B9FF0E /* TrackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EA41C74B74900B9FF0E /* TrackViewController.m */; };
 		02633EA71C74B74900B9FF0E /* TrackViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02633EA51C74B74900B9FF0E /* TrackViewController.xib */; };
+		02633EAB1C74C80400B9FF0E /* MixerChannelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EA91C74C80400B9FF0E /* MixerChannelViewController.m */; };
+		02633EAC1C74C80400B9FF0E /* MixerChannelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02633EAA1C74C80400B9FF0E /* MixerChannelViewController.xib */; };
+		02633EB01C74C83D00B9FF0E /* TrackChannelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EAE1C74C83D00B9FF0E /* TrackChannelViewController.m */; };
+		02633EB11C74C83D00B9FF0E /* TrackChannelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02633EAF1C74C83D00B9FF0E /* TrackChannelViewController.xib */; };
+		02633EB81C74ED9300B9FF0E /* NSView+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EB71C74ED9200B9FF0E /* NSView+Support.m */; };
 		028209221C70A3C0003EBCFB /* EditorTabItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 028209201C70A3C0003EBCFB /* EditorTabItem.m */; };
 		028209231C70A3C0003EBCFB /* EditorTabItem.xib in Resources */ = {isa = PBXBuildFile; fileRef = 028209211C70A3C0003EBCFB /* EditorTabItem.xib */; };
 		028209271C70A5D8003EBCFB /* FileRepresentation.m in Sources */ = {isa = PBXBuildFile; fileRef = 028209261C70A5D8003EBCFB /* FileRepresentation.m */; };
@@ -130,6 +135,14 @@
 		02633EA31C74B74900B9FF0E /* TrackViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrackViewController.h; sourceTree = "<group>"; };
 		02633EA41C74B74900B9FF0E /* TrackViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TrackViewController.m; sourceTree = "<group>"; };
 		02633EA51C74B74900B9FF0E /* TrackViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TrackViewController.xib; sourceTree = "<group>"; };
+		02633EA81C74C80400B9FF0E /* MixerChannelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MixerChannelViewController.h; sourceTree = "<group>"; };
+		02633EA91C74C80400B9FF0E /* MixerChannelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MixerChannelViewController.m; sourceTree = "<group>"; };
+		02633EAA1C74C80400B9FF0E /* MixerChannelViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MixerChannelViewController.xib; sourceTree = "<group>"; };
+		02633EAD1C74C83D00B9FF0E /* TrackChannelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrackChannelViewController.h; sourceTree = "<group>"; };
+		02633EAE1C74C83D00B9FF0E /* TrackChannelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TrackChannelViewController.m; sourceTree = "<group>"; };
+		02633EAF1C74C83D00B9FF0E /* TrackChannelViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TrackChannelViewController.xib; sourceTree = "<group>"; };
+		02633EB61C74ED9200B9FF0E /* NSView+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSView+Support.h"; sourceTree = "<group>"; };
+		02633EB71C74ED9200B9FF0E /* NSView+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSView+Support.m"; sourceTree = "<group>"; };
 		0282091F1C70A3C0003EBCFB /* EditorTabItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorTabItem.h; sourceTree = "<group>"; };
 		028209201C70A3C0003EBCFB /* EditorTabItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditorTabItem.m; sourceTree = "<group>"; };
 		028209211C70A3C0003EBCFB /* EditorTabItem.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EditorTabItem.xib; sourceTree = "<group>"; };
@@ -251,6 +264,8 @@
 			children = (
 				023BB20D1C6EF17B0030487C /* NSArray+Support.h */,
 				023BB20E1C6EF17B0030487C /* NSArray+Support.m */,
+				02633EB61C74ED9200B9FF0E /* NSView+Support.h */,
+				02633EB71C74ED9200B9FF0E /* NSView+Support.m */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -273,9 +288,15 @@
 				02633E9E1C74B6C100B9FF0E /* MixerViewController.h */,
 				02633E9F1C74B6C100B9FF0E /* MixerViewController.m */,
 				02633EA01C74B6C100B9FF0E /* MixerViewController.xib */,
+				02633EA81C74C80400B9FF0E /* MixerChannelViewController.h */,
+				02633EA91C74C80400B9FF0E /* MixerChannelViewController.m */,
+				02633EAA1C74C80400B9FF0E /* MixerChannelViewController.xib */,
 				02633EA31C74B74900B9FF0E /* TrackViewController.h */,
 				02633EA41C74B74900B9FF0E /* TrackViewController.m */,
 				02633EA51C74B74900B9FF0E /* TrackViewController.xib */,
+				02633EAD1C74C83D00B9FF0E /* TrackChannelViewController.h */,
+				02633EAE1C74C83D00B9FF0E /* TrackChannelViewController.m */,
+				02633EAF1C74C83D00B9FF0E /* TrackChannelViewController.xib */,
 				02B6EF721C6C4A2F003E1929 /* DetailViewController.h */,
 				02B6EF731C6C4A2F003E1929 /* DetailViewController.m */,
 				02B6EF741C6C4A2F003E1929 /* DetailViewController.xib */,
@@ -409,12 +430,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02633EB11C74C83D00B9FF0E /* TrackChannelViewController.xib in Resources */,
 				020CF86D1C6AF4D90025DF84 /* SynthesizerViewController.xib in Resources */,
 				02633EA21C74B6C100B9FF0E /* MixerViewController.xib in Resources */,
 				02A674061C6B3A7600914C8B /* NAMIDI.help in Resources */,
 				020CF87B1C6B0AB20025DF84 /* AboutWindowController.xib in Resources */,
 				025423641C6F31DF007D53CC /* EditorViewController.xib in Resources */,
 				02A674041C6B3A5C00914C8B /* NMFIcon.iconset in Resources */,
+				02633EAC1C74C80400B9FF0E /* MixerChannelViewController.xib in Resources */,
 				02A673FD1C6B3A5C00914C8B /* MMLIcon.iconset in Resources */,
 				024A5B0D1C69FF990079D22C /* MainMenu.xib in Resources */,
 				02A673FA1C6B3A5C00914C8B /* ABCIcon.iconset in Resources */,
@@ -449,6 +472,7 @@
 				020CF87E1C6B20C50025DF84 /* Application.m in Sources */,
 				02633E981C74AC9F00B9FF0E /* Color.m in Sources */,
 				028209271C70A5D8003EBCFB /* FileRepresentation.m in Sources */,
+				02633EB01C74C83D00B9FF0E /* TrackChannelViewController.m in Sources */,
 				024A5B1D1C69FFD40079D22C /* MainWindowController.m in Sources */,
 				02633E941C74AAC800B9FF0E /* ConductorViewController.m in Sources */,
 				020CF8621C6AEA5F0025DF84 /* GeneralViewController.m in Sources */,
@@ -459,6 +483,8 @@
 				025423631C6F31DF007D53CC /* EditorViewController.m in Sources */,
 				0201F7D41C688BB100A201F6 /* main.m in Sources */,
 				02633EA11C74B6C100B9FF0E /* MixerViewController.m in Sources */,
+				02633EAB1C74C80400B9FF0E /* MixerChannelViewController.m in Sources */,
+				02633EB81C74ED9300B9FF0E /* NSView+Support.m in Sources */,
 				0201F7D11C688BB100A201F6 /* AppDelegate.m in Sources */,
 				028209221C70A3C0003EBCFB /* EditorTabItem.m in Sources */,
 				024A5B361C6A01280079D22C /* GettingStartedWindowController.m in Sources */,

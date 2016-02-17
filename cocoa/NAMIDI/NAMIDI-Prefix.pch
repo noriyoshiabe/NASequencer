@@ -16,5 +16,6 @@
     [[NSBundle mainBundle] localizedStringForKey:(key) value:(comment) table:nil]
 
 #import "NSArray+Support.h"
+#import "NSView+Support.h"
 
 #endif /* NAMIDI_Prefix_h */
