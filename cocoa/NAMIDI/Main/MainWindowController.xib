@@ -26,20 +26,47 @@
                 <allowedToolbarItems>
                     <toolbarItem implicitItemIdentifier="NSToolbarSpaceItem" id="RYG-zr-Tvh"/>
                     <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="lm7-Jm-Vyk"/>
-                    <toolbarItem implicitItemIdentifier="FC852C10-EB8E-4A31-BBA5-697669C0D3C6" label="Toolbar Item" paletteLabel="Toolbar Item" tag="-1" image="NSGoRightTemplate" id="9OQ-Yp-DIO">
+                    <toolbarItem implicitItemIdentifier="774FB5B2-74CA-47D4-B46E-1512CC1C68DE" explicitItemIdentifier="back" label="Back" paletteLabel="Back" tag="-1" image="back" id="BN2-JS-ffX">
                         <connections>
-                            <action selector="nextButtonTapped:" target="-2" id="QNl-4S-GyS"/>
+                            <action selector="goBack:" target="-1" id="RQ8-pb-Pco"/>
                         </connections>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="964E2FBF-9953-4B6B-A4FC-E9E9C5B3ABFF" label="Toolbar Item" paletteLabel="Toolbar Item" tag="-1" image="NSGoLeftTemplate" id="afn-eN-FQL">
+                    <toolbarItem implicitItemIdentifier="FFE9B390-33DA-489A-A9B3-B8F16992640B" label="Rewind" paletteLabel="Rewind" tag="-1" image="rewind" id="Oxv-we-Y8q">
                         <connections>
-                            <action selector="backButtonTapped:" target="-2" id="61S-VU-qC0"/>
+                            <action selector="rewind:" target="-1" id="VvW-8j-nvN"/>
+                        </connections>
+                    </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="6834C4EA-8491-473A-A118-7376404E361A" label="Play" paletteLabel="Play" tag="-1" image="play" id="OLm-EI-7a4">
+                        <connections>
+                            <action selector="playPause:" target="-1" id="fSV-tn-nP6"/>
+                        </connections>
+                    </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="C2E39991-876C-45F0-B9D6-F1F6C87A3A18" label="Backward" paletteLabel="Backward" tag="-1" image="backward" id="sEP-7w-sfO">
+                        <connections>
+                            <action selector="backward:" target="-1" id="XSH-Hs-RPR"/>
+                        </connections>
+                    </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="C9BC6574-C250-4286-8607-3DB43B3AD189" label="Forward" paletteLabel="Forward" tag="-1" image="forward" id="te0-bl-VQh">
+                        <connections>
+                            <action selector="forward:" target="-1" id="pqK-53-bTV"/>
+                        </connections>
+                    </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="116150C3-7CAC-409E-AD39-7A2C83CE3742" label="Export" paletteLabel="Export" tag="-1" image="export" id="YUF-3s-pU0">
+                        <connections>
+                            <action selector="export:" target="-1" id="CJu-ZW-J9x"/>
                         </connections>
                     </toolbarItem>
                 </allowedToolbarItems>
                 <defaultToolbarItems>
-                    <toolbarItem reference="afn-eN-FQL"/>
-                    <toolbarItem reference="9OQ-Yp-DIO"/>
+                    <toolbarItem reference="BN2-JS-ffX"/>
+                    <toolbarItem reference="RYG-zr-Tvh"/>
+                    <toolbarItem reference="Oxv-we-Y8q"/>
+                    <toolbarItem reference="OLm-EI-7a4"/>
+                    <toolbarItem reference="RYG-zr-Tvh"/>
+                    <toolbarItem reference="sEP-7w-sfO"/>
+                    <toolbarItem reference="te0-bl-VQh"/>
+                    <toolbarItem reference="lm7-Jm-Vyk"/>
+                    <toolbarItem reference="YUF-3s-pU0"/>
                 </defaultToolbarItems>
             </toolbar>
             <connections>
@@ -48,7 +75,11 @@
         </window>
     </objects>
     <resources>
-        <image name="NSGoLeftTemplate" width="9" height="12"/>
-        <image name="NSGoRightTemplate" width="9" height="12"/>
+        <image name="back" width="24" height="24"/>
+        <image name="backward" width="24" height="24"/>
+        <image name="export" width="24" height="24"/>
+        <image name="forward" width="24" height="24"/>
+        <image name="play" width="24" height="24"/>
+        <image name="rewind" width="24" height="24"/>
     </resources>
 </document>
