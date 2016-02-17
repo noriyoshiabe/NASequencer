@@ -13,7 +13,7 @@
 
 @interface MainViewController ()
 @property (weak) IBOutlet NSScrollView *mixerView;
-@property (weak) IBOutlet NSScrollView *conductorView;
+@property (weak) IBOutlet NSScrollView *measureView;
 @property (weak) IBOutlet NSScrollView *trackView;
 @end
 
@@ -37,14 +37,14 @@
     
     imageView = [[FlipImageView alloc] initWithFrame:CGRectMake(0, 0, 1000, 56)];
     imageView.image = image;
-    _conductorView.documentView = imageView;
+    _measureView.documentView = imageView;
     
     imageView = [[FlipImageView alloc] initWithFrame:CGRectMake(0, 0, 1000, 1000)];
     imageView.image = image;
     _trackView.documentView = imageView;
     
     _mixerView.contentView.postsBoundsChangedNotifications = YES;
-    _conductorView.contentView.postsBoundsChangedNotifications = YES;
+    _measureView.contentView.postsBoundsChangedNotifications = YES;
     _trackView.contentView.postsBoundsChangedNotifications = YES;
     
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -55,7 +55,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(scrollViewContentBoundsDidChange:)
                                                  name:NSViewBoundsDidChangeNotification
-                                               object:_conductorView.contentView];
+                                               object:_measureView.contentView];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(scrollViewContentBoundsDidChange:)
@@ -81,7 +81,7 @@
             [_trackView reflectScrolledClipView:_trackView.contentView];
         }
     }
-    else if (changedContentView == _conductorView.contentView) {
+    else if (changedContentView == _measureView.contentView) {
         NSPoint offset = _trackView.contentView.bounds.origin;
         if (offset.x != changedBoundsOrigin.x) {
             offset.x = changedBoundsOrigin.x;
@@ -92,11 +92,11 @@
     else if (changedContentView == _trackView.contentView) {
         NSPoint offset;
         
-        offset = _conductorView.contentView.bounds.origin;
+        offset = _measureView.contentView.bounds.origin;
         if (offset.x != changedBoundsOrigin.x) {
             offset.x = changedBoundsOrigin.x;
-            [_conductorView.contentView scrollToPoint:offset];
-            [_conductorView reflectScrolledClipView:_conductorView.contentView];
+            [_measureView.contentView scrollToPoint:offset];
+            [_measureView reflectScrolledClipView:_measureView.contentView];
         }
         
         if (offset.y != changedBoundsOrigin.y) {

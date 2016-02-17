@@ -7,7 +7,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="MainViewController">
             <connections>
-                <outlet property="conductorView" destination="qO1-kw-qV6" id="8jP-3F-sGT"/>
+                <outlet property="measureView" destination="qO1-kw-qV6" id="Wa4-8j-ezz"/>
                 <outlet property="mixerView" destination="ltP-sB-C6c" id="koO-Q0-rqM"/>
                 <outlet property="trackView" destination="cdL-nW-Cez" id="Mva-CR-PW0"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
