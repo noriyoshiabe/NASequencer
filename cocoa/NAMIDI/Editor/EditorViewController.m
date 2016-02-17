@@ -23,11 +23,6 @@
 
 @implementation EditorViewController
 
-- (NSString *)nibName
-{
-    return @"EditorViewController";
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];

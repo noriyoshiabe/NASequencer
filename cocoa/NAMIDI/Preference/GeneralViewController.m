@@ -14,11 +14,6 @@
 
 @implementation GeneralViewController
 
-- (NSString *)nibName
-{
-    return @"GeneralViewController";
-}
-
 - (NSString *)identifier
 {
     return @"General";

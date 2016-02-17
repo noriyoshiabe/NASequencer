@@ -14,11 +14,6 @@
 
 @implementation PurchaseViewController
 
-- (NSString *)nibName
-{
-    return @"PurchaseViewController";
-}
-
 - (NSString *)identifier
 {
     return @"Purchase";

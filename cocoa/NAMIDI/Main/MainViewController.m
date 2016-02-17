@@ -28,11 +28,6 @@
 
 @implementation MainViewController
 
-- (NSString *)nibName
-{
-    return @"MainViewController";
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];

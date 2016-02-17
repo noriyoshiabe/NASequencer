@@ -14,11 +14,6 @@
 
 @implementation SynthesizerViewController
 
-- (NSString *)nibName
-{
-    return @"SynthesizerViewController";
-}
-
 - (NSString *)identifier
 {
     return @"Synthesizer";

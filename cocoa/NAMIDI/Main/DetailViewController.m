@@ -14,11 +14,6 @@
 
 @implementation DetailViewController
 
-- (NSString *)nibName
-{
-    return @"DetailViewController";
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
