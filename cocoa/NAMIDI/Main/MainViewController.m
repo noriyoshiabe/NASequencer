@@ -7,14 +7,23 @@
 //
 
 #import "MainViewController.h"
-
-@interface FlipImageView : NSImageView
-@end
+#import "ConductorViewController.h"
+#import "MeasureViewController.h"
+#import "MixerViewController.h"
+#import "TrackViewController.h"
+#import "Color.h"
 
 @interface MainViewController ()
+@property (weak) IBOutlet NSView *conductorView;
 @property (weak) IBOutlet NSScrollView *mixerView;
 @property (weak) IBOutlet NSScrollView *measureView;
 @property (weak) IBOutlet NSScrollView *trackView;
+@property (strong, nonatomic) ConductorViewController *conductorVC;
+@property (strong, nonatomic) MeasureViewController *measureVC;
+@property (strong, nonatomic) MixerViewController *mixerVC;
+@property (strong, nonatomic) TrackViewController *trackVC;
+@property (weak) IBOutlet NSView *horizontalLine;
+@property (weak) IBOutlet NSView *verticalLine;
 @end
 
 @implementation MainViewController
@@ -28,20 +37,24 @@
 {
     [super viewDidLoad];
     
-    NSImage *image = [NSApp applicationIconImage];
-    NSImageView *imageView;
+    _conductorView.layer.backgroundColor = [Color darkGray].CGColor;
+    _mixerView.backgroundColor = [Color darkGray];
+    _measureView.backgroundColor = [Color darkGray];
     
-    imageView = [[FlipImageView alloc] initWithFrame:CGRectMake(0, 0, 250, 1000)];
-    imageView.image = image;
-    _mixerView.documentView = imageView;
+    _horizontalLine.layer.backgroundColor = [Color gray].CGColor;
+    _verticalLine.layer.backgroundColor = [Color gray].CGColor;
     
-    imageView = [[FlipImageView alloc] initWithFrame:CGRectMake(0, 0, 1000, 56)];
-    imageView.image = image;
-    _measureView.documentView = imageView;
+    self.conductorVC = [[ConductorViewController alloc] init];
+    self.measureVC = [[MeasureViewController alloc] init];
+    self.mixerVC = [[MixerViewController alloc] init];
+    self.trackVC = [[TrackViewController alloc] init];
     
-    imageView = [[FlipImageView alloc] initWithFrame:CGRectMake(0, 0, 1000, 1000)];
-    imageView.image = image;
-    _trackView.documentView = imageView;
+    _conductorVC.view.frame = _conductorView.bounds;
+    
+    [_conductorView addSubview:_conductorVC.view];
+    _measureView.documentView = _measureVC.view;
+    _mixerView.documentView = _mixerVC.view;
+    _trackView.documentView = _trackVC.view;
     
     _mixerView.contentView.postsBoundsChangedNotifications = YES;
     _measureView.contentView.postsBoundsChangedNotifications = YES;
@@ -71,7 +84,7 @@
 - (void)scrollViewContentBoundsDidChange:(NSNotification *)notification
 {
     NSClipView *changedContentView = [notification object];
-    NSPoint changedBoundsOrigin = [changedContentView documentVisibleRect].origin;
+    NSPoint changedBoundsOrigin = changedContentView.bounds.origin;
     
     if (changedContentView == _mixerView.contentView) {
         NSPoint offset = _trackView.contentView.bounds.origin;
@@ -106,17 +119,6 @@
             [_mixerView reflectScrolledClipView:_mixerView.contentView];
         }
     }
-}
-
-@end
-
-#pragma mark Flip
-
-@implementation FlipImageView
-
-- (BOOL)isFlipped
-{
-    return YES;
 }
 
 @end
