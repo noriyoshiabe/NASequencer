@@ -63,7 +63,7 @@
 {
     NSInteger index = [_files indexOfObject:file];
     if (NSNotFound != index) {
-        [_statusViewControlelr selectFile:file];
+        [_statusViewControlelr selectFile:[_files objectAtIndex:index]];
     }
     else {
         [_files addObject:file];
@@ -90,7 +90,8 @@
     
     self.currentController = vc;
     
-    [self.window setTitleWithRepresentedFilename:file.filename];
+    self.window.titleWithRepresentedFilename = file.filename;
+    self.window.representedURL = file.url;
 }
 
 - (void)closeFile:(FileRepresentation *)file
