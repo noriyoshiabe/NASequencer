@@ -174,10 +174,10 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="S9j-Mx-J04">
+                <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="S9j-Mx-J04" customClass="LevelIndicator">
                     <rect key="frame" x="26" y="21" width="210" height="11"/>
                 </customView>
-                <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1bj-BM-9gp">
+                <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1bj-BM-9gp" customClass="LevelIndicator">
                     <rect key="frame" x="26" y="8" width="210" height="11"/>
                 </customView>
                 <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dBZ-rb-fEQ">
