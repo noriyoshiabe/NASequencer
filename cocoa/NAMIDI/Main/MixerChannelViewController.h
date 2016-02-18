@@ -8,6 +8,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#import "Stub.h"
+
 @interface MixerChannelViewController : NSViewController
 @property (assign, nonatomic) int channel;
 @property (assign, nonatomic) bool mute;
@@ -16,6 +18,13 @@
 @property (assign, nonatomic) int pan;
 @property (assign, nonatomic) int chorus;
 @property (assign, nonatomic) int reverb;
-//@property (readonly, nonatomic) NSArray *synthsizerIdentifiers;
-//@property (strong, nonatomic) NSString *synthsizerIdentifier;
+@property (assign, nonatomic) int L;
+@property (assign, nonatomic) int R;
+
+@property (readonly) NSMutableArray *midiSources;
+@property (readonly) NSArray *presets;
+
+@property (strong, nonatomic) MidiSourceRepresentation *midiSource;
+@property (strong, nonatomic) PresetRepresentation *preset;
+
 @end

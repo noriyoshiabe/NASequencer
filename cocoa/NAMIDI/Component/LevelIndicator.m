@@ -13,6 +13,8 @@
     NSColor *green;
     NSColor *offRed;
     NSColor *offGreen;
+    
+    int _intValue;
 }
 
 @end
@@ -34,7 +36,7 @@
     CGContextRef ctx = [NSGraphicsContext currentContext].graphicsPort;
     CGContextSetLineWidth(ctx, 2.0);
     
-    int level = self.floatValue * 50.0;
+    int level = (_intValue + 1000) / 20;
     CGFloat xPerLevel = self.bounds.size.width / 50.0;
     CGFloat height = self.bounds.size.height;
     
@@ -54,6 +56,17 @@
         CGContextAddLineToPoint(ctx, x, height);
         CGContextStrokePath(ctx);
     }
+}
+
+- (void)setIntValue:(int)intValue
+{
+    _intValue = intValue;
+    self.needsDisplay = YES;
+}
+
+- (int)intValue
+{
+    return _intValue;
 }
 
 @end

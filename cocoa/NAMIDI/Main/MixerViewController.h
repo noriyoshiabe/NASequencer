@@ -9,5 +9,6 @@
 #import <Cocoa/Cocoa.h>
 
 @interface MixerViewController : NSViewController
-
+@property (assign, nonatomic) int L;
+@property (assign, nonatomic) int R;
 @end

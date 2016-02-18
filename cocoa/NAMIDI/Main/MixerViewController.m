@@ -8,9 +8,12 @@
 
 #import "MixerViewController.h"
 #import "MixerChannelViewController.h"
+#import "LevelIndicator.h"
 
 @interface MixerViewController ()
 @property (strong) IBOutlet NSView *masterChannelView;
+@property (weak) IBOutlet LevelIndicator *indicatorL;
+@property (weak) IBOutlet LevelIndicator *indicatorR;
 @property (strong, nonatomic) NSMutableArray *controllers;
 @end
 
@@ -21,6 +24,9 @@
     self = [super init];
     if (self) {
         self.controllers = [NSMutableArray array];
+        
+        _L = -200;
+        _R = -200;
     }
     return self;
 }
@@ -28,6 +34,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    [_indicatorL bind:@"intValue" toObject:self withKeyPath:@"L" options:nil];
+    [_indicatorR bind:@"intValue" toObject:self withKeyPath:@"R" options:nil];
     
     for (int i = 0; i < 16; ++i) {
         MixerChannelViewController *channelVC = [[MixerChannelViewController alloc] init];
