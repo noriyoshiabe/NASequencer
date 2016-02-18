@@ -19,4 +19,14 @@
     [super viewDidLoad];
 }
 
+- (NSString *)tempo
+{
+    return [NSString stringWithFormat:@"%.2f", 124.20];
+}
+
+- (NSString *)timeSign
+{
+    return [NSString stringWithFormat:@"%d/%d", 3, 4];
+}
+
 @end

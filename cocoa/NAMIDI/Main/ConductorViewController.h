@@ -9,5 +9,6 @@
 #import <Cocoa/Cocoa.h>
 
 @interface ConductorViewController : NSViewController
-
+@property (readonly) NSString *tempo;
+@property (readonly) NSString *timeSign;
 @end
