@@ -11,4 +11,5 @@
 @interface Color : NSObject
 + (NSColor *)darkGray;
 + (NSColor *)gray;
++ (NSColor *)lightGray;
 @end

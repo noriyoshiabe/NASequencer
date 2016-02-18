@@ -14,6 +14,7 @@
 
 static NSColor *DarkGray;
 static NSColor *Gray;
+static NSColor *LightGray;
 
 @implementation Color
 
@@ -21,6 +22,7 @@ static NSColor *Gray;
 {
     DarkGray = GSCALE(74.0);
     Gray = GSCALE(151.0);
+    LightGray = GSCALE(216.0);
 }
 
 + (NSColor *)darkGray
@@ -31,6 +33,11 @@ static NSColor *Gray;
 + (NSColor *)gray
 {
     return Gray;
+}
+
++ (NSColor *)lightGray
+{
+    return LightGray;
 }
 
 @end

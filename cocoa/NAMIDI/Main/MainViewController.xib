@@ -22,6 +22,30 @@
             <rect key="frame" x="0.0" y="0.0" width="600" height="400"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
+                <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="qO1-kw-qV6">
+                    <rect key="frame" x="251" y="344" width="349" height="56"/>
+                    <clipView key="contentView" copiesOnScroll="NO" id="NWZ-P5-A2C">
+                        <rect key="frame" x="0.0" y="0.0" width="349" height="56"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ahB-cP-dpZ">
+                                <rect key="frame" x="0.0" y="-38" width="350" height="56"/>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </clipView>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="56" id="bfy-Cg-WDb"/>
+                    </constraints>
+                    <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="JhV-wg-nhP" customClass="MainWindowScroller">
+                        <rect key="frame" x="-100" y="-100" width="350" height="16"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </scroller>
+                    <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="0.078947368421052655" horizontal="NO" id="u49-Sm-TCg" customClass="MainWindowScroller">
+                        <rect key="frame" x="-100" y="-100" width="16" height="56"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </scroller>
+                </scrollView>
                 <customView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9mB-kI-Jlu">
                     <rect key="frame" x="0.0" y="344" width="250" height="56"/>
                     <constraints>
@@ -50,30 +74,6 @@
                     </scroller>
                     <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="6iU-DL-msc" customClass="MainWindowScroller">
                         <rect key="frame" x="-100" y="-100" width="16" height="344"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </scroller>
-                </scrollView>
-                <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="qO1-kw-qV6">
-                    <rect key="frame" x="251" y="344" width="349" height="56"/>
-                    <clipView key="contentView" copiesOnScroll="NO" id="NWZ-P5-A2C">
-                        <rect key="frame" x="0.0" y="0.0" width="349" height="56"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <view fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ahB-cP-dpZ">
-                                <rect key="frame" x="0.0" y="-38" width="350" height="56"/>
-                            </view>
-                        </subviews>
-                        <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
-                    </clipView>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="56" id="bfy-Cg-WDb"/>
-                    </constraints>
-                    <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="JhV-wg-nhP" customClass="MainWindowScroller">
-                        <rect key="frame" x="-100" y="-100" width="350" height="16"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </scroller>
-                    <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="0.078947368421052655" horizontal="NO" id="u49-Sm-TCg" customClass="MainWindowScroller">
-                        <rect key="frame" x="-100" y="-100" width="16" height="56"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
                 </scrollView>

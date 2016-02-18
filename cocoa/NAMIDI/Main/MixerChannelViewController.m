@@ -10,17 +10,6 @@
 #import "LevelIndicator.h"
 #import "Color.h"
 
-@interface MidiSourceRepresentationFormatter : NSFormatter
-@end
-@implementation MidiSourceRepresentationFormatter
-
-- (NSString *)stringForObjectValue:(id)obj
-{
-    return ((MidiSourceRepresentation *)obj).name;
-}
-
-@end
-
 @interface MixerChannelViewController () {
     NSMutableArray *_midiSources;
     NSArray *_presets;

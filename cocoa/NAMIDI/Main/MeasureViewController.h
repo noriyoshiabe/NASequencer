@@ -9,5 +9,5 @@
 #import <Cocoa/Cocoa.h>
 
 @interface MeasureViewController : NSViewController
-
+@property (assign, nonatomic) CGFloat scale;
 @end
