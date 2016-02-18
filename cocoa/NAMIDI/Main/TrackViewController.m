@@ -46,16 +46,19 @@
     self.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, 0);
     
     CGFloat y = 0;
+    CGFloat width = 0;
     for (int i = 0; i < 16; ++i) {
         TrackChannelViewController *channelVC = _controllers[i];
         y += channelVC.view.frame.size.height;
+        width = MAX(width, channelVC.view.frame.size.width);
+        
         channelVC.view.frame = CGRectFromRectWithXY(channelVC.view.frame, 0, -y);
         [self.view addSubview:channelVC.view];
     }
     
     y += _masterTrackView.frame.size.height;
-    _masterTrackView.frame = CGRectFromRectWithXY(_masterTrackView.frame, 0, -y);
-    self.view.frame = CGRectMake(0, 0, self.view.frame.size.width, y);
+    _masterTrackView.frame = CGRectMake(0, -y, width, _masterTrackView.frame.size.height);
+    self.view.frame = CGRectMake(0, 0, width, y);
 }
 
 @end

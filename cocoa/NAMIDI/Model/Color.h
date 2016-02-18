@@ -12,4 +12,5 @@
 + (NSColor *)darkGray;
 + (NSColor *)gray;
 + (NSColor *)lightGray;
++ (NSColor *)channelColor:(int)channel;
 @end

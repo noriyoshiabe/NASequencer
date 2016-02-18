@@ -174,7 +174,7 @@
     for (MidiEventRepresentation *event in _sequence.eventsOfConductorTrack) {
         int tick = event.tick;
         if (lastTick != tick) {
-            CGFloat x = round(event.tick * pixelPerTick) + MEASURE_OFFSET;
+            CGFloat x = round(tick * pixelPerTick) + MEASURE_OFFSET;
             CGRect rect = CGRectMake(x - EVENT_RADIUS, EVENT_Y - EVENT_RADIUS, EVENT_RADIUS * 2, EVENT_RADIUS * 2);
             if (CGRectIntersectsRect(dirtyRect, rect)) {
                 CGContextFillEllipseInRect(ctx, rect);

@@ -56,15 +56,59 @@ typedef enum {
     MidiEventTypeSynth,
 } MidiEventType;
 
+typedef struct _MidiEvent {
+    MidiEventType type;
+    int id;
+    int tick;
+} MidiEvent;
+
+typedef struct _NoteEvent {
+    MidiEventType type;
+    int id;
+    int tick;
+    int channel;
+    int noteNo;
+    int gatetime;
+    int velocity;
+} NoteEvent;
+
+typedef struct _TempoEvent {
+    MidiEventType type;
+    int id;
+    int tick;
+    float tempo;
+} TempoEvent;
+
+typedef struct _TimeEvent {
+    MidiEventType type;
+    int id;
+    int tick;
+    int numerator;
+    int denominator;
+} TimeEvent;
+
 @interface MidiEventRepresentation : NSObject
 @property (readonly, nonatomic) MidiEventType type;
 @property (readonly, nonatomic) int tick;
+@property (readonly, nonatomic) MidiEvent *raw;
+@end
+
+typedef struct _NoteRange {
+    int16_t low;
+    int16_t high;
+} NoteRange;
+
+@interface ChannelRepresentation : NSObject
+@property (readonly, nonatomic) int number;
+@property (readonly, nonatomic) NSArray *events;
+@property (readonly, nonatomic) NoteRange noteRange;
 @end
 
 @interface SequenceRepresentation : NSObject
 @property (readonly, nonatomic) int32_t length;
+@property (readonly, nonatomic) NSArray<MidiEventRepresentation *> *eventsOfConductorTrack;
+@property (readonly, nonatomic) NSArray<ChannelRepresentation *> *channels;
 - (TimeSign)timeSignByTick:(int)tick;
 - (Location)locationByTick:(int)tick;
 - (int)tickByLocation:(Location)location;
-- (NSArray *)eventsOfConductorTrack;
 @end

@@ -10,4 +10,5 @@
 
 @interface TrackChannelViewController : NSViewController
 @property (assign, nonatomic) int channel;
+@property (assign, nonatomic) CGFloat scale;
 @end
