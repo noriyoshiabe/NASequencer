@@ -36,6 +36,11 @@
     [_scaleAssistant addObserver:self forKeyPath:@"scale" options:0 context:NULL];
 }
 
+- (void)dealloc
+{
+    [_scaleAssistant removeObserver:self forKeyPath:@"scale"];
+}
+
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context
 {
     if (object == _scaleAssistant) {

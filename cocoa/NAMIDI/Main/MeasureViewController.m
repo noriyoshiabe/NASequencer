@@ -43,6 +43,11 @@
     [_scaleAssistant addObserver:self forKeyPath:@"scale" options:0 context:NULL];
 }
 
+- (void)dealloc
+{
+    [_scaleAssistant removeObserver:self forKeyPath:@"scale"];
+}
+
 - (void)scrollWheel:(NSEvent *)theEvent
 {
     if (![_scaleAssistant scrollWheel:theEvent]) {
