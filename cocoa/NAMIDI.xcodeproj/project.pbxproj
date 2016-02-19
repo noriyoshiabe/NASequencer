@@ -70,6 +70,7 @@
 		02A674061C6B3A7600914C8B /* NAMIDI.help in Resources */ = {isa = PBXBuildFile; fileRef = 02A674051C6B3A7600914C8B /* NAMIDI.help */; };
 		02B6EF751C6C4A2F003E1929 /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02B6EF731C6C4A2F003E1929 /* DetailViewController.m */; };
 		02B6EF761C6C4A2F003E1929 /* DetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02B6EF741C6C4A2F003E1929 /* DetailViewController.xib */; };
+		02CAF6A91C771F6E00AD81B2 /* SynchronizedScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CAF6A81C771F6E00AD81B2 /* SynchronizedScrollView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -172,6 +173,8 @@
 		02B6EF721C6C4A2F003E1929 /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
 		02B6EF731C6C4A2F003E1929 /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
 		02B6EF741C6C4A2F003E1929 /* DetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DetailViewController.xib; sourceTree = "<group>"; };
+		02CAF6A71C771F6E00AD81B2 /* SynchronizedScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SynchronizedScrollView.h; sourceTree = "<group>"; };
+		02CAF6A81C771F6E00AD81B2 /* SynchronizedScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SynchronizedScrollView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -366,6 +369,8 @@
 				02633EBB1C75062300B9FF0E /* LevelIndicator.m */,
 				024A19041C768AC800B0AC56 /* FlippedView.h */,
 				024A19051C768AC800B0AC56 /* FlippedView.m */,
+				02CAF6A71C771F6E00AD81B2 /* SynchronizedScrollView.h */,
+				02CAF6A81C771F6E00AD81B2 /* SynchronizedScrollView.m */,
 			);
 			path = Component;
 			sourceTree = "<group>";
@@ -509,6 +514,7 @@
 				0201F7D71C688BB100A201F6 /* Document.m in Sources */,
 				02B6EF751C6C4A2F003E1929 /* DetailViewController.m in Sources */,
 				02633EA61C74B74900B9FF0E /* TrackViewController.m in Sources */,
+				02CAF6A91C771F6E00AD81B2 /* SynchronizedScrollView.m in Sources */,
 				025423631C6F31DF007D53CC /* EditorViewController.m in Sources */,
 				0201F7D41C688BB100A201F6 /* main.m in Sources */,
 				02633EA11C74B6C100B9FF0E /* MixerViewController.m in Sources */,
