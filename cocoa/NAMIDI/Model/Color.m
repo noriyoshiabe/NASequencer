@@ -8,10 +8,10 @@
 
 #import "Color.h"
 
-#define RGBA(r,g,b,a) [NSColor colorWithCalibratedRed:r/255.0 green:r/255.0 blue:r/255.0 alpha:a/255.0]
+#define RGBA(r,g,b,a) [NSColor colorWithRed:r/255.0 green:r/255.0 blue:r/255.0 alpha:a/255.0]
 #define RGB(r,g,b)    RGBA(r,g,b,255.0)
 #define GSCALE(b)     RGBA(b,b,b,255.0)
-#define HSBA(h,s,b,a) [NSColor  colorWithCalibratedHue:h saturation:s brightness:b alpha:a]
+#define HSBA(h,s,b,a) [NSColor colorWithHue:h saturation:s brightness:b alpha:a]
 #define HSB(h,s,b)    HSBA(h,s,b,1.0)
 
 static NSColor *DarkGray;
