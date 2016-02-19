@@ -53,7 +53,6 @@
     [_tabContainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[view]|" options:0 metrics:nil views:@{@"view": _statusViewControlelr.view}]];
     
     self.window.contentView.wantsLayer = YES;
-    self.window.contentView.layer.cornerRadius = 4.0;
     self.window.contentView.layer.masksToBounds = YES;
     
     ((EditorView *)self.window.contentView).controller = self;
