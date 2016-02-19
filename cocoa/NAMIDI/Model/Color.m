@@ -18,6 +18,7 @@ static NSColor *DarkGray;
 static NSColor *Gray;
 static NSColor *LightGray;
 static NSColor *ChannelColor[16];
+static NSColor *StatusBackground;
 
 @implementation Color
 
@@ -30,6 +31,8 @@ static NSColor *ChannelColor[16];
     for (int i = 0; i < 16; ++i) {
         ChannelColor[i] = HSB(1.0 / 16.0 * i, 1.0, 1.0);
     }
+    
+    StatusBackground = [NSColor colorWithWhite:0 alpha:0.5];
 }
 
 + (NSColor *)darkGray
@@ -50,6 +53,11 @@ static NSColor *ChannelColor[16];
 + (NSColor *)channelColor:(int)channel
 {
     return ChannelColor[channel - 1];
+}
+
++ (NSColor *)statusBackground
+{
+    return StatusBackground;
 }
 
 @end

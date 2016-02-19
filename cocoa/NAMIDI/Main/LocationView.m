@@ -7,6 +7,7 @@
 //
 
 #import "LocationView.h"
+#import "Color.h"
 
 @interface LocationView ()
 @property (weak) IBOutlet NSTextField *locationField;
@@ -17,7 +18,7 @@
 - (void)awakeFromNib
 {
     self.wantsLayer = YES;
-    self.layer.backgroundColor = [NSColor colorWithWhite:0 alpha:0.5].CGColor;
+    self.layer.backgroundColor = [Color statusBackground].CGColor;
     self.layer.cornerRadius = 10.0;
     self.layer.masksToBounds = YES;
 }

@@ -74,6 +74,8 @@
 		02CAF6AD1C772CD100AD81B2 /* PlayLineViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CAF6AB1C772CD100AD81B2 /* PlayLineViewController.m */; };
 		02CAF6AE1C772CD100AD81B2 /* PlayLineViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02CAF6AC1C772CD100AD81B2 /* PlayLineViewController.xib */; };
 		02CAF6C01C77858000AD81B2 /* LocationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CAF6BF1C77858000AD81B2 /* LocationView.m */; };
+		02CAF6C41C778C2200AD81B2 /* ErrorWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CAF6C21C778C2200AD81B2 /* ErrorWindowController.m */; };
+		02CAF6C51C778C2200AD81B2 /* ErrorWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02CAF6C31C778C2200AD81B2 /* ErrorWindowController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -183,6 +185,9 @@
 		02CAF6AC1C772CD100AD81B2 /* PlayLineViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PlayLineViewController.xib; sourceTree = "<group>"; };
 		02CAF6BE1C77858000AD81B2 /* LocationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocationView.h; sourceTree = "<group>"; };
 		02CAF6BF1C77858000AD81B2 /* LocationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocationView.m; sourceTree = "<group>"; };
+		02CAF6C11C778C2200AD81B2 /* ErrorWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ErrorWindowController.h; sourceTree = "<group>"; };
+		02CAF6C21C778C2200AD81B2 /* ErrorWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ErrorWindowController.m; sourceTree = "<group>"; };
+		02CAF6C31C778C2200AD81B2 /* ErrorWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ErrorWindowController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -331,6 +336,9 @@
 				02CAF6AC1C772CD100AD81B2 /* PlayLineViewController.xib */,
 				02CAF6BE1C77858000AD81B2 /* LocationView.h */,
 				02CAF6BF1C77858000AD81B2 /* LocationView.m */,
+				02CAF6C11C778C2200AD81B2 /* ErrorWindowController.h */,
+				02CAF6C21C778C2200AD81B2 /* ErrorWindowController.m */,
+				02CAF6C31C778C2200AD81B2 /* ErrorWindowController.xib */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -482,6 +490,7 @@
 				02A674061C6B3A7600914C8B /* NAMIDI.help in Resources */,
 				020CF87B1C6B0AB20025DF84 /* AboutWindowController.xib in Resources */,
 				025423641C6F31DF007D53CC /* EditorViewController.xib in Resources */,
+				02CAF6C51C778C2200AD81B2 /* ErrorWindowController.xib in Resources */,
 				02A674041C6B3A5C00914C8B /* NMFIcon.iconset in Resources */,
 				02633EAC1C74C80400B9FF0E /* MixerChannelViewController.xib in Resources */,
 				02A673FD1C6B3A5C00914C8B /* MMLIcon.iconset in Resources */,
@@ -534,6 +543,7 @@
 				02633EA11C74B6C100B9FF0E /* MixerViewController.m in Sources */,
 				02CAF6C01C77858000AD81B2 /* LocationView.m in Sources */,
 				02633EAB1C74C80400B9FF0E /* MixerChannelViewController.m in Sources */,
+				02CAF6C41C778C2200AD81B2 /* ErrorWindowController.m in Sources */,
 				02633EB81C74ED9300B9FF0E /* NSView+Support.m in Sources */,
 				0201F7D11C688BB100A201F6 /* AppDelegate.m in Sources */,
 				024A19061C768AC800B0AC56 /* FlippedView.m in Sources */,

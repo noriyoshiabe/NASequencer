@@ -13,4 +13,5 @@
 + (NSColor *)gray;
 + (NSColor *)lightGray;
 + (NSColor *)channelColor:(int)channel;
++ (NSColor *)statusBackground;
 @end
