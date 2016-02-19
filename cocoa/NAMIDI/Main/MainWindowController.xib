@@ -7,6 +7,8 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="MainWindowController">
             <connections>
+                <outlet property="contentView" destination="90Z-5k-1hx" id="9YG-29-6JX"/>
+                <outlet property="locationView" destination="180-O6-x48" id="BLt-bt-vRr"/>
                 <outlet property="window" destination="xOd-HO-29H" id="JIz-fz-R2o"/>
             </connections>
         </customObject>
@@ -21,6 +23,47 @@
             <view key="contentView" id="gIp-Ho-8D9">
                 <rect key="frame" x="0.0" y="0.0" width="507" height="413"/>
                 <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="90Z-5k-1hx">
+                        <rect key="frame" x="0.0" y="0.0" width="507" height="413"/>
+                    </customView>
+                    <customView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="180-O6-x48" customClass="LocationView">
+                        <rect key="frame" x="117" y="15" width="370" height="50"/>
+                        <subviews>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="FCo-5s-WTY">
+                                <rect key="frame" x="-2" y="6" width="374" height="39"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="002:01:240  00:01:999" id="iOq-mn-QOa">
+                                    <font key="font" metaFont="system" size="32"/>
+                                    <color key="textColor" red="1" green="1" blue="1" alpha="0.84999999999999998" colorSpace="calibratedRGB"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="FCo-5s-WTY" firstAttribute="leading" secondItem="180-O6-x48" secondAttribute="leading" id="6hR-WK-24a"/>
+                            <constraint firstAttribute="height" constant="50" id="FDI-Mj-m7x"/>
+                            <constraint firstAttribute="width" constant="370" id="JPA-iv-0uv"/>
+                            <constraint firstItem="FCo-5s-WTY" firstAttribute="top" secondItem="180-O6-x48" secondAttribute="top" constant="5" id="Qe6-S3-DDT"/>
+                            <constraint firstAttribute="trailing" secondItem="FCo-5s-WTY" secondAttribute="trailing" id="TEn-zO-ABT"/>
+                            <constraint firstAttribute="bottom" secondItem="FCo-5s-WTY" secondAttribute="bottom" constant="6" id="bnI-x9-wGI"/>
+                        </constraints>
+                        <shadow key="shadow" blurRadius="4">
+                            <size key="offset" width="0.0" height="-2"/>
+                            <color key="color" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        </shadow>
+                        <connections>
+                            <outlet property="locationField" destination="FCo-5s-WTY" id="g1v-ge-E8c"/>
+                        </connections>
+                    </customView>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="90Z-5k-1hx" firstAttribute="top" secondItem="gIp-Ho-8D9" secondAttribute="top" id="7Qv-U2-UMs"/>
+                    <constraint firstAttribute="trailing" secondItem="90Z-5k-1hx" secondAttribute="trailing" id="7sJ-jJ-L5f"/>
+                    <constraint firstItem="90Z-5k-1hx" firstAttribute="leading" secondItem="gIp-Ho-8D9" secondAttribute="leading" id="EFs-j6-Coh"/>
+                    <constraint firstAttribute="trailing" secondItem="180-O6-x48" secondAttribute="trailing" constant="20" id="VUj-ej-YJK"/>
+                    <constraint firstAttribute="bottom" secondItem="180-O6-x48" secondAttribute="bottom" constant="15" id="wAL-Vm-h4a"/>
+                    <constraint firstAttribute="bottom" secondItem="90Z-5k-1hx" secondAttribute="bottom" id="yhb-9u-6mG"/>
+                </constraints>
             </view>
             <toolbar key="toolbar" implicitIdentifier="4ECB914C-A414-4F01-8FBC-326BFB56532E" autosavesConfiguration="NO" allowsUserCustomization="NO" showsBaselineSeparator="NO" displayMode="iconOnly" sizeMode="small" id="Epm-Rf-e6l">
                 <allowedToolbarItems>

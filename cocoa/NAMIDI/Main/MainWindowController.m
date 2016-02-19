@@ -9,8 +9,11 @@
 #import "MainWindowController.h"
 #import "MainViewController.h"
 #import "DetailViewController.h"
+#import "LocationView.h"
 
 @interface MainWindowController ()
+@property (weak) IBOutlet NSView *contentView;
+@property (weak) IBOutlet LocationView *locationView;
 @property (strong, nonatomic) MainViewController *mainVC;
 @property (strong, nonatomic) DetailViewController *detailVC;
 @end
@@ -27,11 +30,18 @@
     [super windowDidLoad];
     self.windowFrameAutosaveName = @"MainWindowFrame";
     
-    self.mainVC = [[MainViewController alloc] init];
-    self.detailVC = [[DetailViewController alloc] init];
+    self.window.contentView.wantsLayer = YES;
+    self.window.contentView.layer.masksToBounds = YES;
     
-    self.mainVC.view.frame = self.window.contentView.bounds;
-    self.contentViewController = self.mainVC;
+    _mainVC = [[MainViewController alloc] init];
+    _detailVC = [[DetailViewController alloc] init];
+    
+    _mainVC.view.translatesAutoresizingMaskIntoConstraints = NO;
+    [_contentView addSubview:_mainVC.view];
+    [_contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[view]|" options:0 metrics:nil views:@{@"view": _mainVC.view}]];
+    [_contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[view]|" options:0 metrics:nil views:@{@"view": _mainVC.view}]];
+    
+    _locationView.player = [[PlayerRepresentation alloc]init];
 }
 
 #pragma mark Toolbar Action

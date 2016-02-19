@@ -1,32 +1,30 @@
 //
-//  LocationViewController.m
+//  LocationView.m
 //  NAMIDI
 //
-//  Created by abechan on 2/19/16.
+//  Created by abechan on 2/20/16.
 //  Copyright © 2016 Noriyoshi Abe. All rights reserved.
 //
 
-#import "LocationViewController.h"
-#import "Stub.h"
+#import "LocationView.h"
 
-@interface LocationViewController ()
+@interface LocationView ()
 @property (weak) IBOutlet NSTextField *locationField;
-@property (strong, nonatomic) PlayerRepresentation *player;
 @end
 
-@implementation LocationViewController
+@implementation LocationView
 
 - (void)awakeFromNib
 {
-    self.view.wantsLayer = YES;
-    self.view.layer.backgroundColor = [NSColor colorWithWhite:0 alpha:0.5].CGColor;
+    self.wantsLayer = YES;
+    self.layer.backgroundColor = [NSColor colorWithWhite:0 alpha:0.5].CGColor;
+    self.layer.cornerRadius = 10.0;
+    self.layer.masksToBounds = YES;
 }
 
-- (void)viewDidLoad
+- (void)setPlayer:(PlayerRepresentation *)player
 {
-    [super viewDidLoad];
-    _player = [[PlayerRepresentation alloc] init];
-    
+    _player = player;
     [self update];
 }
 
