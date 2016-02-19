@@ -73,6 +73,8 @@
 		02CAF6A91C771F6E00AD81B2 /* SynchronizedScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CAF6A81C771F6E00AD81B2 /* SynchronizedScrollView.m */; };
 		02CAF6AD1C772CD100AD81B2 /* PlayLineViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CAF6AB1C772CD100AD81B2 /* PlayLineViewController.m */; };
 		02CAF6AE1C772CD100AD81B2 /* PlayLineViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02CAF6AC1C772CD100AD81B2 /* PlayLineViewController.xib */; };
+		02CAF6B71C7764BD00AD81B2 /* LocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CAF6B51C7764BD00AD81B2 /* LocationViewController.m */; };
+		02CAF6B81C7764BD00AD81B2 /* LocationViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02CAF6B61C7764BD00AD81B2 /* LocationViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -180,6 +182,9 @@
 		02CAF6AA1C772CD100AD81B2 /* PlayLineViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayLineViewController.h; sourceTree = "<group>"; };
 		02CAF6AB1C772CD100AD81B2 /* PlayLineViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayLineViewController.m; sourceTree = "<group>"; };
 		02CAF6AC1C772CD100AD81B2 /* PlayLineViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PlayLineViewController.xib; sourceTree = "<group>"; };
+		02CAF6B41C7764BD00AD81B2 /* LocationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocationViewController.h; sourceTree = "<group>"; };
+		02CAF6B51C7764BD00AD81B2 /* LocationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocationViewController.m; sourceTree = "<group>"; };
+		02CAF6B61C7764BD00AD81B2 /* LocationViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LocationViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -326,6 +331,9 @@
 				02CAF6AA1C772CD100AD81B2 /* PlayLineViewController.h */,
 				02CAF6AB1C772CD100AD81B2 /* PlayLineViewController.m */,
 				02CAF6AC1C772CD100AD81B2 /* PlayLineViewController.xib */,
+				02CAF6B41C7764BD00AD81B2 /* LocationViewController.h */,
+				02CAF6B51C7764BD00AD81B2 /* LocationViewController.m */,
+				02CAF6B61C7764BD00AD81B2 /* LocationViewController.xib */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -484,6 +492,7 @@
 				02A673FA1C6B3A5C00914C8B /* ABCIcon.iconset in Resources */,
 				02CAF6AE1C772CD100AD81B2 /* PlayLineViewController.xib in Resources */,
 				020CF8301C6A04830025DF84 /* getting-started in Resources */,
+				02CAF6B81C7764BD00AD81B2 /* LocationViewController.xib in Resources */,
 				024A5B1C1C69FFD40079D22C /* MainViewController.xib in Resources */,
 				024A5B2F1C69FFD90079D22C /* WelcomeWindowController.xib in Resources */,
 				02633E9D1C74B5A800B9FF0E /* MeasureViewController.xib in Resources */,
@@ -529,6 +538,7 @@
 				02633EA11C74B6C100B9FF0E /* MixerViewController.m in Sources */,
 				02633EAB1C74C80400B9FF0E /* MixerChannelViewController.m in Sources */,
 				02633EB81C74ED9300B9FF0E /* NSView+Support.m in Sources */,
+				02CAF6B71C7764BD00AD81B2 /* LocationViewController.m in Sources */,
 				0201F7D11C688BB100A201F6 /* AppDelegate.m in Sources */,
 				024A19061C768AC800B0AC56 /* FlippedView.m in Sources */,
 				028209221C70A3C0003EBCFB /* EditorTabItem.m in Sources */,
