@@ -9,7 +9,6 @@
 #import <Cocoa/Cocoa.h>
 
 #define CGRectPrint(rect) NSLog(@"%s: {{%0.0f, %0.0f}, {%0.0f, %0.0f}", #rect, rect.origin.x, rect.origin.y, rect.size.width, rect.size.height)
-# define CGRectFromRectWithXY(rect, x, y) CGRectMake(x, y, rect.size.width, rect.size.height)
 
 @interface NSView (Support)
 - (void)showHierarchy;

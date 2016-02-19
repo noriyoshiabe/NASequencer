@@ -10,7 +10,6 @@
 #import "Color.h"
 #import "Stub.h"
 
-#define MEASURE_OFFSET 10.5
 #define NOTE_OFFSET_Y 10.5
 
 @interface TrackChannelView : NSView {
@@ -21,11 +20,9 @@
 }
 
 @property (assign, nonatomic) int channel;
-@property (assign, nonatomic) CGFloat scale;
+@property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
 @property (assign, nonatomic) NSColor *baseColor;
 @property (strong, nonatomic) SequenceRepresentation *sequence;
-@property (readonly, nonatomic) CGFloat pixelPerTick;
-@property (readonly, nonatomic) CGFloat tickPerPixel;
 @end
 
 @interface TrackChannelViewController ()
@@ -33,25 +30,14 @@
 @end
 
 @implementation TrackChannelViewController
-@dynamic scale;
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     _trackChannelView.baseColor = [Color channelColor:_channel];
     _trackChannelView.channel = _channel;
-    _trackChannelView.scale = 1.0;
+    _trackChannelView.scaleAssistant = _scaleAssistant;
     _trackChannelView.sequence = [[SequenceRepresentation alloc] init];
-}
-
-- (void)setScale:(CGFloat)scale
-{
-    _trackChannelView.scale = scale;
-}
-
-- (CGFloat)scale
-{
-    return _trackChannelView.scale;
 }
 
 @end
@@ -68,6 +54,14 @@
     if (_gradient) {
         CGGradientRelease(_gradient);
     }
+    
+    if (_outsideEdgeColor) {
+        CGColorRelease(_outsideEdgeColor);
+    }
+    
+    if (_insideEdgeColor) {
+        CGColorRelease(_insideEdgeColor);
+    }
 }
 
 - (BOOL)isFlipped
@@ -75,19 +69,10 @@
     return YES;
 }
 
-- (CGFloat)pixelPerTick
-{
-    return 20.0 / 480.0 * _scale;
-}
-
-- (CGFloat)tickPerPixel
-{
-    return 1.0 / self.pixelPerTick;
-}
-
 - (void)setBaseColor:(NSColor *)baseColor
 {
     _baseColor = baseColor;
+    
     _outsideEdgeColor = [NSColor colorWithCalibratedHue:_baseColor.hueComponent
                                              saturation:_baseColor.saturationComponent
                                              brightness:_baseColor.brightnessComponent * 0.7
@@ -96,6 +81,9 @@
                                             saturation:_baseColor.saturationComponent * 0.3
                                             brightness:_baseColor.brightnessComponent
                                                  alpha:_baseColor.alphaComponent].CGColor;
+    
+    CGColorRetain(_outsideEdgeColor);
+    CGColorRetain(_insideEdgeColor);
     
     if (!_gradient) {
         NSColor *topColor = [NSColor colorWithCalibratedHue:_baseColor.hueComponent
@@ -121,12 +109,6 @@
     }
 }
 
-- (void)setScale:(CGFloat)scale
-{
-    _scale = scale;
-    [self layout];
-}
-
 - (void)setSequence:(SequenceRepresentation *)sequence
 {
     _sequence = sequence;
@@ -135,7 +117,7 @@
 
 - (void)layout
 {
-    self.frame = CGRectMake(0, 0, self.pixelPerTick * _sequence.length + MEASURE_OFFSET * 2, self.bounds.size.height);
+    self.frame = CGRectMake(0, self.frame.origin.y, _scaleAssistant.pixelPerTick * _sequence.length + _scaleAssistant.measureOffset * 2, self.bounds.size.height);
     [super layout];
 }
 
@@ -156,13 +138,14 @@
     CGContextSetLineWidth(ctx, 1.0);
     
     CGContextSetStrokeColorWithColor(ctx, _outsideEdgeColor);
-    CGContextAddRect(ctx, CGRectInset(dirtyRect, 0.5, 0.5));
+    CGContextAddRect(ctx, CGRectInset(self.bounds, 0.5, 0.5));
     CGContextStrokePath(ctx);
     
     CGContextSetStrokeColorWithColor(ctx, _insideEdgeColor);
-    CGContextAddRect(ctx, CGRectInset(dirtyRect, 1.5, 1.5));
+    CGContextAddRect(ctx, CGRectInset(self.bounds, 1.5, 1.5));
     CGContextStrokePath(ctx);
-    CGContextFillPath(ctx);
+    
+    CGContextClipToRect(ctx, dirtyRect);
     
     CGContextRestoreGState(ctx);
 }
@@ -171,7 +154,7 @@
 {
     CGContextSaveGState(ctx);
     
-    CGContextAddRect(ctx, CGRectInset(dirtyRect, 2, 2));
+    CGContextAddRect(ctx, CGRectInset(self.bounds, 2, 2));
     CGContextClip(ctx);
     
     CGContextDrawLinearGradient(ctx,
@@ -189,14 +172,16 @@
     
     CGContextSetStrokeColorWithColor(ctx, _blackColor);
     
-    CGFloat pixelPerTick = self.pixelPerTick;
+    CGFloat pixelPerTick = _scaleAssistant.pixelPerTick;
+    CGFloat measureOffset = _scaleAssistant.measureOffset;
+    
     ChannelRepresentation *channel = _sequence.channels[_channel - 1];
     CGFloat heightPerKey = (self.bounds.size.height - NOTE_OFFSET_Y * 2) / (channel.noteRange.high - channel.noteRange.low);
     
     for (MidiEventRepresentation *event in channel.events) {
         if (MidiEventTypeNote == event.type) {
             NoteEvent *note = (NoteEvent *)event.raw;
-            CGFloat left = round(note->tick * pixelPerTick) + MEASURE_OFFSET;
+            CGFloat left = round(note->tick * pixelPerTick) + measureOffset;
             CGFloat right = left + round(note->gatetime * pixelPerTick);
             CGFloat y = floor(self.bounds.size.height - NOTE_OFFSET_Y - heightPerKey * (note->noteNo - channel.noteRange.low)) + 0.5;
             if (CGRectContainsPoint(dirtyRect, CGPointMake(left, y)) || CGRectContainsPoint(dirtyRect, CGPointMake(right, y))) {

@@ -52,19 +52,27 @@
 
 - (void)layout
 {
-    self.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, 0);
+    CGFloat height = 0;
+    CGFloat width = 0;
+    
+    for (int i = 0; i < 16; ++i) {
+        MixerChannelViewController *channelVC = _controllers[i];
+        height += channelVC.view.frame.size.height;
+        width = MAX(width, channelVC.view.frame.size.width);
+    }
+    
+    height += _masterChannelView.frame.size.height;
+    
+    self.view.frame = CGRectMake(0, self.view.frame.origin.y, width, height);
     
     CGFloat y = 0;
     for (int i = 0; i < 16; ++i) {
         MixerChannelViewController *channelVC = _controllers[i];
+        channelVC.view.frame = CGRectMake(0, y, width, channelVC.view.frame.size.height);
         y += channelVC.view.frame.size.height;
-        channelVC.view.frame = CGRectFromRectWithXY(channelVC.view.frame, 0, -y);
-        [self.view addSubview:channelVC.view];
     }
     
-    y += _masterChannelView.frame.size.height;
-    _masterChannelView.frame = CGRectFromRectWithXY(_masterChannelView.frame, 0, -y);
-    self.view.frame = CGRectMake(0, 0, self.view.frame.size.width, y);
+    _masterChannelView.frame = CGRectMake(0, y, width, _masterChannelView.frame.size.height);
 }
 
 @end

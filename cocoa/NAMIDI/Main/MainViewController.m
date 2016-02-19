@@ -11,6 +11,7 @@
 #import "MeasureViewController.h"
 #import "MixerViewController.h"
 #import "TrackViewController.h"
+#import "MeasureScaleAssistant.h"
 #import "Color.h"
 
 @interface MainViewController ()
@@ -22,6 +23,7 @@
 @property (strong, nonatomic) MeasureViewController *measureVC;
 @property (strong, nonatomic) MixerViewController *mixerVC;
 @property (strong, nonatomic) TrackViewController *trackVC;
+@property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
 @property (weak) IBOutlet NSView *horizontalLine;
 @property (weak) IBOutlet NSView *verticalLine;
 @end
@@ -39,10 +41,14 @@
     _horizontalLine.layer.backgroundColor = [Color gray].CGColor;
     _verticalLine.layer.backgroundColor = [Color gray].CGColor;
     
-    self.conductorVC = [[ConductorViewController alloc] init];
-    self.measureVC = [[MeasureViewController alloc] init];
-    self.mixerVC = [[MixerViewController alloc] init];
-    self.trackVC = [[TrackViewController alloc] init];
+    _conductorVC = [[ConductorViewController alloc] init];
+    _measureVC = [[MeasureViewController alloc] init];
+    _mixerVC = [[MixerViewController alloc] init];
+    _trackVC = [[TrackViewController alloc] init];
+    
+    _scaleAssistant = [[MeasureScaleAssistant alloc] init];
+    _measureVC.scaleAssistant = _scaleAssistant;
+    _trackVC.scaleAssistant = _scaleAssistant;
     
     _conductorVC.view.frame = _conductorView.bounds;
     

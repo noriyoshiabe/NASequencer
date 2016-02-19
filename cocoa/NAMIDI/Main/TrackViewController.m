@@ -32,33 +32,63 @@
     for (int i = 0; i < 16; ++i) {
         TrackChannelViewController *channelVC = [[TrackChannelViewController alloc] init];
         channelVC.channel = i + 1;
+        channelVC.scaleAssistant = _scaleAssistant;
         [_controllers addObject:channelVC];
         [self.view addSubview:channelVC.view];
     }
     
     [self.view addSubview:_masterTrackView];
     
+    [_scaleAssistant addObserver:self forKeyPath:@"scale" options:0 context:NULL];
+    
     [self layout];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context
+{
+    if (object == _scaleAssistant) {
+        CGFloat width = 0;
+        for (int i = 0; i < 16; ++i) {
+            TrackChannelViewController *channelVC = _controllers[i];
+            [channelVC.view layout];
+            width = MAX(width, channelVC.view.frame.size.width);
+        }
+        
+        _masterTrackView.frame = CGRectMake(0, _masterTrackView.frame.origin.y, width, _masterTrackView.frame.size.height);
+        self.view.frame = CGRectMake(0, self.view.frame.origin.y, width, self.view.frame.size.height);
+    }
 }
 
 - (void)layout
 {
-    self.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, 0);
-    
-    CGFloat y = 0;
+    CGFloat height = 0;
     CGFloat width = 0;
+    
     for (int i = 0; i < 16; ++i) {
         TrackChannelViewController *channelVC = _controllers[i];
-        y += channelVC.view.frame.size.height;
+        height += channelVC.view.frame.size.height;
         width = MAX(width, channelVC.view.frame.size.width);
-        
-        channelVC.view.frame = CGRectFromRectWithXY(channelVC.view.frame, 0, -y);
-        [self.view addSubview:channelVC.view];
     }
     
-    y += _masterTrackView.frame.size.height;
-    _masterTrackView.frame = CGRectMake(0, -y, width, _masterTrackView.frame.size.height);
-    self.view.frame = CGRectMake(0, 0, width, y);
+    height += _masterTrackView.frame.size.height;
+    
+    self.view.frame = CGRectMake(0, self.view.frame.origin.y, width, height);
+    
+    CGFloat y = 0;
+    for (int i = 0; i < 16; ++i) {
+        TrackChannelViewController *channelVC = _controllers[i];
+        channelVC.view.frame = CGRectMake(0, y, width, channelVC.view.frame.size.height);
+        y += channelVC.view.frame.size.height;
+    }
+    
+    _masterTrackView.frame = CGRectMake(0, y, width, _masterTrackView.frame.size.height);
+}
+
+- (void)scrollWheel:(NSEvent *)theEvent
+{
+    if (![_scaleAssistant scrollWheel:theEvent]) {
+        [super scrollWheel:theEvent];
+    }
 }
 
 @end

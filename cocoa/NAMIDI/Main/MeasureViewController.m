@@ -10,7 +10,6 @@
 #import "Color.h"
 #import "Stub.h"
 
-#define MEASURE_OFFSET 10.5
 #define MEASURE_LINE_HEIGHT 15.0
 #define BEAT_LINE_HEIGHT 10.0
 #define CONDUCTOR_LINE_Y 36.5
@@ -25,10 +24,8 @@
     NSDictionary *_measureNumberAttrs;
 }
 
-@property (assign, nonatomic) CGFloat scale;
+@property (assign, nonatomic) MeasureScaleAssistant *scaleAssistant;
 @property (strong, nonatomic) SequenceRepresentation *sequence;
-@property (readonly, nonatomic) CGFloat pixelPerTick;
-@property (readonly, nonatomic) CGFloat tickPerPixel;
 @end
 
 @interface MeasureViewController ()
@@ -36,23 +33,28 @@
 @end
 
 @implementation MeasureViewController
-@dynamic scale;
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    _measureView.scale = 1.0;
+    _measureView.scaleAssistant = _scaleAssistant;
     _measureView.sequence = [[SequenceRepresentation alloc] init];
+    
+    [_scaleAssistant addObserver:self forKeyPath:@"scale" options:0 context:NULL];
 }
 
-- (void)setScale:(CGFloat)scale
+- (void)scrollWheel:(NSEvent *)theEvent
 {
-    _measureView.scale = scale;
+    if (![_scaleAssistant scrollWheel:theEvent]) {
+        [super scrollWheel:theEvent];
+    }
 }
 
-- (CGFloat)scale
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context
 {
-    return _measureView.scale;
+    if (object == _scaleAssistant) {
+        [_measureView layout];
+    }
 }
 
 @end
@@ -73,22 +75,6 @@
     return YES;
 }
 
-- (CGFloat)pixelPerTick
-{
-    return 20.0 / 480.0 * _scale;
-}
-
-- (CGFloat)tickPerPixel
-{
-    return 1.0 / self.pixelPerTick;
-}
-
-- (void)setScale:(CGFloat)scale
-{
-    _scale = scale;
-    [self layout];
-}
-
 - (void)setSequence:(SequenceRepresentation *)sequence
 {
     _sequence = sequence;
@@ -97,7 +83,7 @@
 
 - (void)layout
 {
-    self.frame = CGRectMake(0, 0, self.pixelPerTick * _sequence.length + MEASURE_OFFSET * 2, self.bounds.size.height);
+    self.frame = CGRectMake(0, 0, _scaleAssistant.pixelPerTick * _sequence.length + _scaleAssistant.measureOffset * 2, self.bounds.size.height);
     [super layout];
 }
 
@@ -106,8 +92,26 @@
     [super drawRect:dirtyRect];
     
     CGContextRef ctx = [NSGraphicsContext currentContext].graphicsPort;
+    
+    [self drawConductorLine:dirtyRect context:ctx];
     [self drawMeasure:dirtyRect context:ctx];
     [self drawEvent:dirtyRect context:ctx];
+}
+
+- (void)drawConductorLine:(NSRect)dirtyRect context:(CGContextRef)ctx
+{
+    CGContextSaveGState(ctx);
+    
+    CGContextSetLineWidth(ctx, 1.0);
+    CGContextSetStrokeColorWithColor(ctx, _grayColor);
+    
+    CGContextMoveToPoint(ctx, 0, CONDUCTOR_LINE_Y);
+    CGContextAddLineToPoint(ctx, self.bounds.size.width, CONDUCTOR_LINE_Y);
+    CGContextStrokePath(ctx);
+    
+    CGContextClipToRect(ctx, dirtyRect);
+    
+    CGContextRestoreGState(ctx);
 }
 
 - (void)drawMeasure:(NSRect)dirtyRect context:(CGContextRef)ctx
@@ -117,25 +121,22 @@
     CGContextSetLineWidth(ctx, 1.0);
     CGContextSetStrokeColorWithColor(ctx, _grayColor);
     
-    CGContextMoveToPoint(ctx, dirtyRect.origin.x, CONDUCTOR_LINE_Y);
-    CGContextAddLineToPoint(ctx, dirtyRect.size.width, CONDUCTOR_LINE_Y);
-    CGContextStrokePath(ctx);
-    
-    CGFloat tickPerPixel = self.tickPerPixel;
-    CGFloat pixelPerTick = self.pixelPerTick;
+    CGFloat tickPerPixel = _scaleAssistant.tickPerPixel;
+    CGFloat pixelPerTick = _scaleAssistant.pixelPerTick;
+    CGFloat measureOffset = _scaleAssistant.measureOffset;
     
     int tick = (dirtyRect.origin.x) * tickPerPixel;
-    int tickTo = (dirtyRect.origin.x + dirtyRect.size.width - MEASURE_OFFSET * 2) * tickPerPixel;
+    int tickTo = (dirtyRect.origin.x + dirtyRect.size.width) * tickPerPixel;
     
     Location location = [_sequence locationByTick:tick];
     location.t = 0;
     tick = [_sequence tickByLocation:location];
     TimeSign timeSign = [_sequence timeSignByTick:tick];
     
-    while (tick <= tickTo) {
+    while (tick <= tickTo && tick <= _sequence.length) {
         bool isMeasure = 1 == location.b;
         
-        CGFloat x = round(tick * pixelPerTick) + MEASURE_OFFSET;
+        CGFloat x = round(tick * pixelPerTick) + measureOffset;
         CGFloat y = isMeasure ? MEASURE_LINE_HEIGHT : BEAT_LINE_HEIGHT;
         
         CGContextMoveToPoint(ctx, x, 0);
@@ -168,13 +169,14 @@
     
     CGContextSetFillColorWithColor(ctx, _lightGrayColor);
     
-    CGFloat pixelPerTick = self.pixelPerTick;
+    CGFloat pixelPerTick = _scaleAssistant.pixelPerTick;
+    CGFloat measureOffset = _scaleAssistant.measureOffset;
     int lastTick = -1;
     
     for (MidiEventRepresentation *event in _sequence.eventsOfConductorTrack) {
         int tick = event.tick;
         if (lastTick != tick) {
-            CGFloat x = round(tick * pixelPerTick) + MEASURE_OFFSET;
+            CGFloat x = round(tick * pixelPerTick) + measureOffset;
             CGRect rect = CGRectMake(x - EVENT_RADIUS, EVENT_Y - EVENT_RADIUS, EVENT_RADIUS * 2, EVENT_RADIUS * 2);
             if (CGRectIntersectsRect(dirtyRect, rect)) {
                 CGContextFillEllipseInRect(ctx, rect);

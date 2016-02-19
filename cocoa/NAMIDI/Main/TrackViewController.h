@@ -7,7 +7,8 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "MeasureScaleAssistant.h"
 
 @interface TrackViewController : NSViewController
-
+@property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
 @end

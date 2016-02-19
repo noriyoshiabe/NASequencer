@@ -7,8 +7,9 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "MeasureScaleAssistant.h"
 
 @interface TrackChannelViewController : NSViewController
 @property (assign, nonatomic) int channel;
-@property (assign, nonatomic) CGFloat scale;
+@property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
 @end

@@ -7,7 +7,8 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "MeasureScaleAssistant.h"
 
 @interface MeasureViewController : NSViewController
-@property (assign, nonatomic) CGFloat scale;
+@property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
 @end

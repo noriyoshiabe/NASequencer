@@ -26,6 +26,8 @@
 		020CF87E1C6B20C50025DF84 /* Application.m in Sources */ = {isa = PBXBuildFile; fileRef = 020CF87D1C6B20C50025DF84 /* Application.m */; };
 		023BB20F1C6EF17B0030487C /* NSArray+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 023BB20E1C6EF17B0030487C /* NSArray+Support.m */; };
 		0240A2481C6C30F2002D6F72 /* ApplicationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0240A2471C6C30F2002D6F72 /* ApplicationController.m */; };
+		024A19031C76799200B0AC56 /* MeasureScaleAssistant.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A19021C76799200B0AC56 /* MeasureScaleAssistant.m */; };
+		024A19061C768AC800B0AC56 /* FlippedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A19051C768AC800B0AC56 /* FlippedView.m */; };
 		024A5B0D1C69FF990079D22C /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 024A5B0C1C69FF990079D22C /* MainMenu.xib */; };
 		024A5B1B1C69FFD40079D22C /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A5B161C69FFD40079D22C /* MainViewController.m */; };
 		024A5B1C1C69FFD40079D22C /* MainViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 024A5B171C69FFD40079D22C /* MainViewController.xib */; };
@@ -103,6 +105,10 @@
 		023BB20E1C6EF17B0030487C /* NSArray+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Support.m"; sourceTree = "<group>"; };
 		0240A2461C6C30F2002D6F72 /* ApplicationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationController.h; sourceTree = "<group>"; };
 		0240A2471C6C30F2002D6F72 /* ApplicationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ApplicationController.m; sourceTree = "<group>"; };
+		024A19011C76799200B0AC56 /* MeasureScaleAssistant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MeasureScaleAssistant.h; sourceTree = "<group>"; };
+		024A19021C76799200B0AC56 /* MeasureScaleAssistant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MeasureScaleAssistant.m; sourceTree = "<group>"; };
+		024A19041C768AC800B0AC56 /* FlippedView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlippedView.h; sourceTree = "<group>"; };
+		024A19051C768AC800B0AC56 /* FlippedView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FlippedView.m; sourceTree = "<group>"; };
 		024A5B0C1C69FF990079D22C /* MainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
 		024A5B151C69FFD40079D22C /* MainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
 		024A5B161C69FFD40079D22C /* MainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
@@ -307,6 +313,8 @@
 				02B6EF721C6C4A2F003E1929 /* DetailViewController.h */,
 				02B6EF731C6C4A2F003E1929 /* DetailViewController.m */,
 				02B6EF741C6C4A2F003E1929 /* DetailViewController.xib */,
+				024A19011C76799200B0AC56 /* MeasureScaleAssistant.h */,
+				024A19021C76799200B0AC56 /* MeasureScaleAssistant.m */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -356,6 +364,8 @@
 			children = (
 				02633EBA1C75062300B9FF0E /* LevelIndicator.h */,
 				02633EBB1C75062300B9FF0E /* LevelIndicator.m */,
+				024A19041C768AC800B0AC56 /* FlippedView.h */,
+				024A19051C768AC800B0AC56 /* FlippedView.m */,
 			);
 			path = Component;
 			sourceTree = "<group>";
@@ -492,6 +502,7 @@
 				028209271C70A5D8003EBCFB /* FileRepresentation.m in Sources */,
 				02633EB01C74C83D00B9FF0E /* TrackChannelViewController.m in Sources */,
 				024A5B1D1C69FFD40079D22C /* MainWindowController.m in Sources */,
+				024A19031C76799200B0AC56 /* MeasureScaleAssistant.m in Sources */,
 				02633E941C74AAC800B9FF0E /* ConductorViewController.m in Sources */,
 				020CF8621C6AEA5F0025DF84 /* GeneralViewController.m in Sources */,
 				023BB20F1C6EF17B0030487C /* NSArray+Support.m in Sources */,
@@ -504,6 +515,7 @@
 				02633EAB1C74C80400B9FF0E /* MixerChannelViewController.m in Sources */,
 				02633EB81C74ED9300B9FF0E /* NSView+Support.m in Sources */,
 				0201F7D11C688BB100A201F6 /* AppDelegate.m in Sources */,
+				024A19061C768AC800B0AC56 /* FlippedView.m in Sources */,
 				028209221C70A3C0003EBCFB /* EditorTabItem.m in Sources */,
 				024A5B361C6A01280079D22C /* GettingStartedWindowController.m in Sources */,
 				020CF87A1C6B0AB20025DF84 /* AboutWindowController.m in Sources */,
