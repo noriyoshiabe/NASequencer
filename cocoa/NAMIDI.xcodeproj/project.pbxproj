@@ -71,6 +71,8 @@
 		02B6EF751C6C4A2F003E1929 /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02B6EF731C6C4A2F003E1929 /* DetailViewController.m */; };
 		02B6EF761C6C4A2F003E1929 /* DetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02B6EF741C6C4A2F003E1929 /* DetailViewController.xib */; };
 		02CAF6A91C771F6E00AD81B2 /* SynchronizedScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CAF6A81C771F6E00AD81B2 /* SynchronizedScrollView.m */; };
+		02CAF6AD1C772CD100AD81B2 /* PlayLineViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CAF6AB1C772CD100AD81B2 /* PlayLineViewController.m */; };
+		02CAF6AE1C772CD100AD81B2 /* PlayLineViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02CAF6AC1C772CD100AD81B2 /* PlayLineViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -175,6 +177,9 @@
 		02B6EF741C6C4A2F003E1929 /* DetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DetailViewController.xib; sourceTree = "<group>"; };
 		02CAF6A71C771F6E00AD81B2 /* SynchronizedScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SynchronizedScrollView.h; sourceTree = "<group>"; };
 		02CAF6A81C771F6E00AD81B2 /* SynchronizedScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SynchronizedScrollView.m; sourceTree = "<group>"; };
+		02CAF6AA1C772CD100AD81B2 /* PlayLineViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayLineViewController.h; sourceTree = "<group>"; };
+		02CAF6AB1C772CD100AD81B2 /* PlayLineViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayLineViewController.m; sourceTree = "<group>"; };
+		02CAF6AC1C772CD100AD81B2 /* PlayLineViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PlayLineViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -318,6 +323,9 @@
 				02B6EF741C6C4A2F003E1929 /* DetailViewController.xib */,
 				024A19011C76799200B0AC56 /* MeasureScaleAssistant.h */,
 				024A19021C76799200B0AC56 /* MeasureScaleAssistant.m */,
+				02CAF6AA1C772CD100AD81B2 /* PlayLineViewController.h */,
+				02CAF6AB1C772CD100AD81B2 /* PlayLineViewController.m */,
+				02CAF6AC1C772CD100AD81B2 /* PlayLineViewController.xib */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -474,6 +482,7 @@
 				02A673FD1C6B3A5C00914C8B /* MMLIcon.iconset in Resources */,
 				024A5B0D1C69FF990079D22C /* MainMenu.xib in Resources */,
 				02A673FA1C6B3A5C00914C8B /* ABCIcon.iconset in Resources */,
+				02CAF6AE1C772CD100AD81B2 /* PlayLineViewController.xib in Resources */,
 				020CF8301C6A04830025DF84 /* getting-started in Resources */,
 				024A5B1C1C69FFD40079D22C /* MainViewController.xib in Resources */,
 				024A5B2F1C69FFD90079D22C /* WelcomeWindowController.xib in Resources */,
@@ -530,6 +539,7 @@
 				024A5B2E1C69FFD90079D22C /* WelcomeWindowController.m in Sources */,
 				02633E9C1C74B5A800B9FF0E /* MeasureViewController.m in Sources */,
 				02633EBF1C75B09F00B9FF0E /* Stub.m in Sources */,
+				02CAF6AD1C772CD100AD81B2 /* PlayLineViewController.m in Sources */,
 				020CF86C1C6AF4D90025DF84 /* SynthesizerViewController.m in Sources */,
 				0254235E1C6F2EB6007D53CC /* EditorWindowController.m in Sources */,
 				020CF8711C6AF53D0025DF84 /* PurchaseViewController.m in Sources */,

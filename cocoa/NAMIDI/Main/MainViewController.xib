@@ -11,6 +11,7 @@
                 <outlet property="horizontalLine" destination="k9j-SC-SQW" id="G48-8J-jkJ"/>
                 <outlet property="measureView" destination="qO1-kw-qV6" id="Wa4-8j-ezz"/>
                 <outlet property="mixerView" destination="ltP-sB-C6c" id="koO-Q0-rqM"/>
+                <outlet property="playLineView" destination="JFw-Ha-HOa" id="tME-Wr-zGE"/>
                 <outlet property="trackView" destination="cdL-nW-Cez" id="Mva-CR-PW0"/>
                 <outlet property="verticalLine" destination="0bT-Jz-t0M" id="UrU-MB-doa"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
@@ -22,7 +23,7 @@
             <rect key="frame" x="0.0" y="0.0" width="600" height="400"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="qO1-kw-qV6">
+                <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="qO1-kw-qV6" customClass="SynchronizedScrollView">
                     <rect key="frame" x="251" y="344" width="349" height="56"/>
                     <clipView key="contentView" copiesOnScroll="NO" id="NWZ-P5-A2C">
                         <rect key="frame" x="0.0" y="0.0" width="349" height="56"/>
@@ -53,7 +54,7 @@
                         <constraint firstAttribute="height" constant="56" id="xQn-vm-nXQ"/>
                     </constraints>
                 </customView>
-                <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="ltP-sB-C6c">
+                <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="ltP-sB-C6c" customClass="SynchronizedScrollView">
                     <rect key="frame" x="0.0" y="0.0" width="250" height="343"/>
                     <clipView key="contentView" copiesOnScroll="NO" id="aRX-cZ-OgB">
                         <rect key="frame" x="0.0" y="0.0" width="250" height="343"/>
@@ -77,7 +78,7 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
                 </scrollView>
-                <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cdL-nW-Cez">
+                <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cdL-nW-Cez" customClass="SynchronizedScrollView">
                     <rect key="frame" x="251" y="0.0" width="349" height="343"/>
                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="R4r-av-AwJ">
                         <rect key="frame" x="0.0" y="0.0" width="349" height="343"/>
@@ -110,12 +111,35 @@
                         <constraint firstAttribute="width" constant="1" id="BGb-FO-0GT"/>
                     </constraints>
                 </customView>
+                <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="JFw-Ha-HOa" customClass="SynchronizedScrollView">
+                    <rect key="frame" x="251" y="0.0" width="349" height="400"/>
+                    <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="HB5-ay-hMJ">
+                        <rect key="frame" x="0.0" y="0.0" width="349" height="400"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XkL-Xe-hD6">
+                                <rect key="frame" x="0.0" y="306" width="181" height="94"/>
+                            </view>
+                        </subviews>
+                    </clipView>
+                    <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="rhW-nf-ZTd">
+                        <rect key="frame" x="-100" y="-100" width="347" height="16"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </scroller>
+                    <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="Png-8a-soY">
+                        <rect key="frame" x="-100" y="-100" width="16" height="398"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </scroller>
+                </scrollView>
             </subviews>
             <constraints>
                 <constraint firstItem="ltP-sB-C6c" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="1nQ-FM-ZWe"/>
                 <constraint firstAttribute="bottom" secondItem="ltP-sB-C6c" secondAttribute="bottom" id="2AH-0C-siu"/>
+                <constraint firstAttribute="bottom" secondItem="JFw-Ha-HOa" secondAttribute="bottom" id="5oH-xP-gSU"/>
                 <constraint firstAttribute="bottom" secondItem="0bT-Jz-t0M" secondAttribute="bottom" id="6lJ-Ce-cDE"/>
                 <constraint firstItem="9mB-kI-Jlu" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="6yN-d2-SgI"/>
+                <constraint firstItem="JFw-Ha-HOa" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" id="8sg-8L-JDK"/>
+                <constraint firstItem="JFw-Ha-HOa" firstAttribute="leading" secondItem="0bT-Jz-t0M" secondAttribute="trailing" id="GUY-9k-oXh"/>
                 <constraint firstAttribute="trailing" secondItem="k9j-SC-SQW" secondAttribute="trailing" id="InV-Az-Zgh"/>
                 <constraint firstAttribute="bottom" secondItem="cdL-nW-Cez" secondAttribute="bottom" id="ObF-H9-USu"/>
                 <constraint firstItem="cdL-nW-Cez" firstAttribute="leading" secondItem="0bT-Jz-t0M" secondAttribute="trailing" id="RoZ-fS-ddV"/>
@@ -131,9 +155,10 @@
                 <constraint firstItem="qO1-kw-qV6" firstAttribute="leading" secondItem="9mB-kI-Jlu" secondAttribute="trailing" constant="1" id="n3S-FI-fiH"/>
                 <constraint firstItem="k9j-SC-SQW" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="nZT-e9-t6O"/>
                 <constraint firstItem="k9j-SC-SQW" firstAttribute="top" secondItem="qO1-kw-qV6" secondAttribute="bottom" id="pdK-K9-52N"/>
+                <constraint firstAttribute="trailing" secondItem="JFw-Ha-HOa" secondAttribute="trailing" id="t25-wm-kkQ"/>
                 <constraint firstItem="qO1-kw-qV6" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" id="xGc-dh-4MX"/>
             </constraints>
-            <point key="canvasLocation" x="325.5" y="390"/>
+            <point key="canvasLocation" x="325" y="390"/>
         </customView>
     </objects>
 </document>

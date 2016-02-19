@@ -54,6 +54,8 @@
 
 - (void)observeScrollForScrollView:(NSScrollView *)scrollView x:(BOOL)x y:(BOOL)y
 {
+    scrollView.contentView.postsBoundsChangedNotifications = YES;
+    
     [_observeMap setObject:[[SynchronizedScrollViewObserveInfo alloc] initWithX:x Y:y] forKey:scrollView.contentView];
     
     [[NSNotificationCenter defaultCenter] addObserver:self

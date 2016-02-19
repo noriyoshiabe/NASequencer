@@ -11,18 +11,22 @@
 #import "MeasureViewController.h"
 #import "MixerViewController.h"
 #import "TrackViewController.h"
+#import "PlayLineViewController.h"
 #import "MeasureScaleAssistant.h"
+#import "SynchronizedScrollView.h"
 #import "Color.h"
 
 @interface MainViewController ()
 @property (weak) IBOutlet NSView *conductorView;
-@property (weak) IBOutlet NSScrollView *mixerView;
-@property (weak) IBOutlet NSScrollView *measureView;
-@property (weak) IBOutlet NSScrollView *trackView;
+@property (weak) IBOutlet SynchronizedScrollView *mixerView;
+@property (weak) IBOutlet SynchronizedScrollView *measureView;
+@property (weak) IBOutlet SynchronizedScrollView *trackView;
+@property (weak) IBOutlet SynchronizedScrollView *playLineView;
 @property (strong, nonatomic) ConductorViewController *conductorVC;
 @property (strong, nonatomic) MeasureViewController *measureVC;
 @property (strong, nonatomic) MixerViewController *mixerVC;
 @property (strong, nonatomic) TrackViewController *trackVC;
+@property (strong, nonatomic) PlayLineViewController *playLineVC;
 @property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
 @property (weak) IBOutlet NSView *horizontalLine;
 @property (weak) IBOutlet NSView *verticalLine;
@@ -45,10 +49,13 @@
     _measureVC = [[MeasureViewController alloc] init];
     _mixerVC = [[MixerViewController alloc] init];
     _trackVC = [[TrackViewController alloc] init];
+    _playLineVC = [[PlayLineViewController alloc] init];
+    _playLineVC.containerView = _playLineView;
     
     _scaleAssistant = [[MeasureScaleAssistant alloc] init];
     _measureVC.scaleAssistant = _scaleAssistant;
     _trackVC.scaleAssistant = _scaleAssistant;
+    _playLineVC.scaleAssistant = _scaleAssistant;
     
     _conductorVC.view.frame = _conductorView.bounds;
     
@@ -56,70 +63,15 @@
     _measureView.documentView = _measureVC.view;
     _mixerView.documentView = _mixerVC.view;
     _trackView.documentView = _trackVC.view;
+    _playLineView.documentView = _playLineVC.view;
     
-    _mixerView.contentView.postsBoundsChangedNotifications = YES;
-    _measureView.contentView.postsBoundsChangedNotifications = YES;
-    _trackView.contentView.postsBoundsChangedNotifications = YES;
+    _playLineView.userInteractionEnabled = NO;
     
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(scrollViewContentBoundsDidChange:)
-                                                 name:NSViewBoundsDidChangeNotification
-                                               object:_mixerView.contentView];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(scrollViewContentBoundsDidChange:)
-                                                 name:NSViewBoundsDidChangeNotification
-                                               object:_measureView.contentView];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(scrollViewContentBoundsDidChange:)
-                                                 name:NSViewBoundsDidChangeNotification
-                                               object:_trackView.contentView];
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)scrollViewContentBoundsDidChange:(NSNotification *)notification
-{
-    NSClipView *changedContentView = [notification object];
-    NSPoint changedBoundsOrigin = changedContentView.bounds.origin;
-    
-    if (changedContentView == _mixerView.contentView) {
-        NSPoint offset = _trackView.contentView.bounds.origin;
-        if (offset.y != changedBoundsOrigin.y) {
-            offset.y = changedBoundsOrigin.y;
-            [_trackView.contentView scrollToPoint:offset];
-            [_trackView reflectScrolledClipView:_trackView.contentView];
-        }
-    }
-    else if (changedContentView == _measureView.contentView) {
-        NSPoint offset = _trackView.contentView.bounds.origin;
-        if (offset.x != changedBoundsOrigin.x) {
-            offset.x = changedBoundsOrigin.x;
-            [_trackView.contentView scrollToPoint:offset];
-            [_trackView reflectScrolledClipView:_trackView.contentView];
-        }
-    }
-    else if (changedContentView == _trackView.contentView) {
-        NSPoint offset;
-        
-        offset = _measureView.contentView.bounds.origin;
-        if (offset.x != changedBoundsOrigin.x) {
-            offset.x = changedBoundsOrigin.x;
-            [_measureView.contentView scrollToPoint:offset];
-            [_measureView reflectScrolledClipView:_measureView.contentView];
-        }
-        
-        if (offset.y != changedBoundsOrigin.y) {
-            offset = _mixerView.contentView.bounds.origin;
-            offset.y = changedBoundsOrigin.y;
-            [_mixerView.contentView scrollToPoint:offset];
-            [_mixerView reflectScrolledClipView:_mixerView.contentView];
-        }
-    }
+    [_measureView observeScrollForScrollView:_trackView x:YES y:NO];
+    [_mixerView observeScrollForScrollView:_trackView x:NO y:YES];
+    [_trackView observeScrollForScrollView:_measureView x:YES y:NO];
+    [_trackView observeScrollForScrollView:_mixerView x:NO y:YES];
+    [_playLineView observeScrollForScrollView:_trackView x:YES y:NO];
 }
 
 @end
