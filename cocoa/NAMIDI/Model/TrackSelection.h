@@ -19,6 +19,8 @@
 - (BOOL)isTrackSelected:(int)trackNo;
 - (BOOL)isTrackSelectionChanged:(int)trackNo;
 - (void)click:(int)trackNo event:(NSEvent *)event;
+- (void)select:(int)trackNo;
+- (void)deselect:(int)trackNo;
 - (void)selectAll;
 - (void)deselectAll;
 @end

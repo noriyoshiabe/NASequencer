@@ -49,7 +49,7 @@
                 case 1:
                     if (![self isTrackSelected:trackNo]) {
                         [self deselectAll];
-                        [self select:trackNo];
+                        [self select:trackNo withUpdateLast:YES];
                     }
                     break;
                 case 2:
@@ -66,8 +66,15 @@
 
 - (void)select:(int)trackNo
 {
+    [self select:trackNo withUpdateLast:NO];
+}
+
+- (void)select:(int)trackNo withUpdateLast:(BOOL)updateLast
+{
     self.selectionFlags = _selectionFlags | (1 << trackNo);
-    _lastSelected = trackNo;
+    if (updateLast) {
+        _lastSelected = trackNo;
+    }
 }
 
 - (void)selectFromLastSelectedTo:(int)trackNo
@@ -95,7 +102,7 @@
         [self deselect:trackNo];
     }
     else {
-        [self select:trackNo];
+        [self select:trackNo withUpdateLast:YES];
     }
 }
 

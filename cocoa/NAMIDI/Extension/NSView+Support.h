@@ -12,4 +12,5 @@
 
 @interface NSView (Support)
 - (void)showHierarchy;
+- (void)addSubviewWithFitConstraints:(NSView *)aView;
 @end

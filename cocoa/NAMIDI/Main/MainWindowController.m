@@ -71,21 +71,13 @@
 - (void)showMainView
 {
     [_detailVC.view removeFromSuperview];
-    
-    _mainVC.view.translatesAutoresizingMaskIntoConstraints = NO;
-    [_contentView addSubview:_mainVC.view];
-    [_contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[view]|" options:0 metrics:nil views:@{@"view": _mainVC.view}]];
-    [_contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[view]|" options:0 metrics:nil views:@{@"view": _mainVC.view}]];
+    [_contentView addSubviewWithFitConstraints:_mainVC.view];
 }
 
 - (void)showDetailView
 {
     [_mainVC.view removeFromSuperview];
-    
-    _detailVC.view.translatesAutoresizingMaskIntoConstraints = NO;
-    [_contentView addSubview:_detailVC.view];
-    [_contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[view]|" options:0 metrics:nil views:@{@"view": _detailVC.view}]];
-    [_contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[view]|" options:0 metrics:nil views:@{@"view": _detailVC.view}]];
+    [_contentView addSubviewWithFitConstraints:_detailVC.view];
 }
 
 #pragma mark Toolbar Action

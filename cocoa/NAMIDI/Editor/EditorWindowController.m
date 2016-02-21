@@ -47,10 +47,7 @@
     
     self.statusViewControlelr = [[EditorStatusViewController alloc] init];
     _statusViewControlelr.delegate = self;
-    _statusViewControlelr.view.translatesAutoresizingMaskIntoConstraints = NO;
-    [_tabContainer addSubview:_statusViewControlelr.view];
-    [_tabContainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|[view]|" options:0 metrics:nil views:@{@"view": _statusViewControlelr.view}]];
-    [_tabContainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[view]|" options:0 metrics:nil views:@{@"view": _statusViewControlelr.view}]];
+    [_tabContainer addSubviewWithFitConstraints:_statusViewControlelr.view];
     
     self.window.contentView.wantsLayer = YES;
     self.window.contentView.layer.masksToBounds = YES;
@@ -80,12 +77,7 @@
 - (void)selectFile:(FileRepresentation *)file
 {
     EditorViewController *vc = _controllers[file.identifier];
-    vc.view.translatesAutoresizingMaskIntoConstraints = NO;
-    [_contentView addSubview:vc.view];
-    
-    [_contentView removeConstraints:_contentView.constraints];
-    [_contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|[view]|" options:0 metrics:nil views:@{@"view": vc.view}]];
-    [_contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[view]|" options:0 metrics:nil views:@{@"view": vc.view}]];
+    [_contentView addSubviewWithFitConstraints:vc.view];
     
     self.currentController = vc;
     

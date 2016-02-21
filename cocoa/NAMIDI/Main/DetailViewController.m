@@ -7,9 +7,10 @@
 //
 
 #import "DetailViewController.h"
+#import "DetailSelectionViewController.h"
 
 #define VERTICAL_SPLIT_LEFT_MAX 400
-#define VERTICAL_SPLIT_LEFT_MIN 240
+#define VERTICAL_SPLIT_LEFT_MIN 232
 
 #define HORIZONTAL_SPLIT_BOTTOM_MAX 160
 #define HORIZONTAL_SPLIT_BOTTOM_MIN 40
@@ -27,20 +28,19 @@
 @property (weak) IBOutlet NSView *pianoRollView;
 @property (weak) IBOutlet NSView *velocityView;
 @property (weak) IBOutlet NSLayoutConstraint *selectionViewHeightConstraint;
+@property (strong, nonatomic) DetailSelectionViewController *selectionVC;
 @end
 
 @implementation DetailViewController
 
 - (void)awakeFromNib
 {
-    _selectionView.wantsLayer = YES;
     _eventListView.wantsLayer = YES;
     _measureView.wantsLayer = YES;
     _conductorView.wantsLayer = YES;
     _pianoRollView.wantsLayer = YES;
     _velocityView.wantsLayer = YES;
     
-    _selectionView.layer.backgroundColor = [NSColor redColor].CGColor;
     _eventListView.layer.backgroundColor = [NSColor blueColor].CGColor;
     _measureView.layer.backgroundColor = [NSColor greenColor].CGColor;
     _conductorView.layer.backgroundColor = [NSColor yellowColor].CGColor;
@@ -54,11 +54,10 @@
     
     _verticalSplitView.delegate = self;
     _horizontalSplitView.delegate = self;
-}
-
-- (void)viewDidAppear
-{
-    [super viewDidAppear];
+    
+    _selectionVC = [[DetailSelectionViewController alloc] init];
+    _selectionVC.trackSelection = _trackSelection;
+    [_selectionView addSubviewWithFitConstraints:_selectionVC.view];
     
     [_verticalSplitView setPosition:VERTICAL_SPLIT_LEFT_MAX ofDividerAtIndex:0];
     [_horizontalSplitView setPosition:CGRectGetHeight(self.view.frame) - HORIZONTAL_SPLIT_BOTTOM_MAX ofDividerAtIndex:0];

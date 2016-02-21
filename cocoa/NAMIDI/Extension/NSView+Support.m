@@ -26,4 +26,13 @@
     }
 }
 
+- (void)addSubviewWithFitConstraints:(NSView *)aView
+{
+    aView.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    [self addSubview:aView];
+    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[view]|" options:0 metrics:nil views:@{@"view": aView}]];
+    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[view]|" options:0 metrics:nil views:@{@"view": aView}]];
+}
+
 @end

@@ -70,6 +70,9 @@
 		02A674061C6B3A7600914C8B /* NAMIDI.help in Resources */ = {isa = PBXBuildFile; fileRef = 02A674051C6B3A7600914C8B /* NAMIDI.help */; };
 		02A973C21C7974CD00C21B8E /* TrackSelection.m in Sources */ = {isa = PBXBuildFile; fileRef = 02A973C11C7974CD00C21B8E /* TrackSelection.m */; };
 		02A973C51C798B6100C21B8E /* NSColor+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 02A973C41C798B6100C21B8E /* NSColor+Support.m */; };
+		02A973C91C79E54900C21B8E /* DetailSelectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02A973C71C79E54900C21B8E /* DetailSelectionViewController.m */; };
+		02A973CA1C79E54900C21B8E /* DetailSelectionViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02A973C81C79E54900C21B8E /* DetailSelectionViewController.xib */; };
+		02A973CD1C79F02200C21B8E /* SelectionButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 02A973CC1C79F02200C21B8E /* SelectionButton.m */; };
 		02B6EF751C6C4A2F003E1929 /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02B6EF731C6C4A2F003E1929 /* DetailViewController.m */; };
 		02B6EF761C6C4A2F003E1929 /* DetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02B6EF741C6C4A2F003E1929 /* DetailViewController.xib */; };
 		02CAF6A91C771F6E00AD81B2 /* SynchronizedScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CAF6A81C771F6E00AD81B2 /* SynchronizedScrollView.m */; };
@@ -181,6 +184,11 @@
 		02A973C11C7974CD00C21B8E /* TrackSelection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TrackSelection.m; sourceTree = "<group>"; };
 		02A973C31C798B6100C21B8E /* NSColor+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSColor+Support.h"; sourceTree = "<group>"; };
 		02A973C41C798B6100C21B8E /* NSColor+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSColor+Support.m"; sourceTree = "<group>"; };
+		02A973C61C79E54900C21B8E /* DetailSelectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailSelectionViewController.h; sourceTree = "<group>"; };
+		02A973C71C79E54900C21B8E /* DetailSelectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailSelectionViewController.m; sourceTree = "<group>"; };
+		02A973C81C79E54900C21B8E /* DetailSelectionViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DetailSelectionViewController.xib; sourceTree = "<group>"; };
+		02A973CB1C79F02200C21B8E /* SelectionButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SelectionButton.h; sourceTree = "<group>"; };
+		02A973CC1C79F02200C21B8E /* SelectionButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SelectionButton.m; sourceTree = "<group>"; };
 		02B6EF721C6C4A2F003E1929 /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
 		02B6EF731C6C4A2F003E1929 /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
 		02B6EF741C6C4A2F003E1929 /* DetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DetailViewController.xib; sourceTree = "<group>"; };
@@ -347,6 +355,9 @@
 				02CAF6C11C778C2200AD81B2 /* ErrorWindowController.h */,
 				02CAF6C21C778C2200AD81B2 /* ErrorWindowController.m */,
 				02CAF6C31C778C2200AD81B2 /* ErrorWindowController.xib */,
+				02A973C61C79E54900C21B8E /* DetailSelectionViewController.h */,
+				02A973C71C79E54900C21B8E /* DetailSelectionViewController.m */,
+				02A973C81C79E54900C21B8E /* DetailSelectionViewController.xib */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -400,6 +411,8 @@
 				024A19051C768AC800B0AC56 /* FlippedView.m */,
 				02CAF6A71C771F6E00AD81B2 /* SynchronizedScrollView.h */,
 				02CAF6A81C771F6E00AD81B2 /* SynchronizedScrollView.m */,
+				02A973CB1C79F02200C21B8E /* SelectionButton.h */,
+				02A973CC1C79F02200C21B8E /* SelectionButton.m */,
 			);
 			path = Component;
 			sourceTree = "<group>";
@@ -501,6 +514,7 @@
 				020CF87B1C6B0AB20025DF84 /* AboutWindowController.xib in Resources */,
 				025423641C6F31DF007D53CC /* EditorViewController.xib in Resources */,
 				02CAF6C51C778C2200AD81B2 /* ErrorWindowController.xib in Resources */,
+				02A973CA1C79E54900C21B8E /* DetailSelectionViewController.xib in Resources */,
 				02A674041C6B3A5C00914C8B /* NMFIcon.iconset in Resources */,
 				02633EAC1C74C80400B9FF0E /* MixerChannelViewController.xib in Resources */,
 				02A673FD1C6B3A5C00914C8B /* MMLIcon.iconset in Resources */,
@@ -536,9 +550,11 @@
 			files = (
 				02A973C21C7974CD00C21B8E /* TrackSelection.m in Sources */,
 				0240A2481C6C30F2002D6F72 /* ApplicationController.m in Sources */,
+				02A973C91C79E54900C21B8E /* DetailSelectionViewController.m in Sources */,
 				020CF87E1C6B20C50025DF84 /* Application.m in Sources */,
 				02633E981C74AC9F00B9FF0E /* Color.m in Sources */,
 				028209271C70A5D8003EBCFB /* FileRepresentation.m in Sources */,
+				02A973CD1C79F02200C21B8E /* SelectionButton.m in Sources */,
 				02633EB01C74C83D00B9FF0E /* TrackChannelViewController.m in Sources */,
 				024A5B1D1C69FFD40079D22C /* MainWindowController.m in Sources */,
 				024A19031C76799200B0AC56 /* MeasureScaleAssistant.m in Sources */,
