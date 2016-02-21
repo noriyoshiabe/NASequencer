@@ -7,6 +7,14 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="DetailViewController">
             <connections>
+                <outlet property="conductorView" destination="VGM-e2-eUH" id="3QM-Ww-T5v"/>
+                <outlet property="eventListView" destination="t3y-Yw-Duj" id="5Dm-kr-A5P"/>
+                <outlet property="horizontalSplitView" destination="uMa-gy-tSR" id="nxI-G4-baI"/>
+                <outlet property="measureView" destination="FvW-xR-hSb" id="jbI-Zu-hkx"/>
+                <outlet property="pianoRollView" destination="gWT-fp-nME" id="LqY-Yh-46C"/>
+                <outlet property="selectionView" destination="ouw-RD-alU" id="cpH-gR-krO"/>
+                <outlet property="velocityView" destination="Zcs-3Y-Wez" id="5zA-Uh-mFO"/>
+                <outlet property="verticalSplitView" destination="otb-Lv-gLa" id="ohT-4v-1eD"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
         </customObject>
@@ -16,15 +24,104 @@
             <rect key="frame" x="0.0" y="0.0" width="480" height="272"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eOc-Mr-LeF">
-                    <rect key="frame" x="31" y="221" width="39" height="17"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Detail" id="Ai9-Ns-7LH">
-                        <font key="font" metaFont="system"/>
-                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
+                <splitView dividerStyle="thin" vertical="YES" translatesAutoresizingMaskIntoConstraints="NO" id="otb-Lv-gLa">
+                    <rect key="frame" x="0.0" y="0.0" width="480" height="272"/>
+                    <subviews>
+                        <customView id="04C-xb-Cyf">
+                            <rect key="frame" x="0.0" y="0.0" width="242" height="272"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                            <subviews>
+                                <customView translatesAutoresizingMaskIntoConstraints="NO" id="ouw-RD-alU">
+                                    <rect key="frame" x="0.0" y="247" width="242" height="25"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="25" id="gOe-yX-NnZ"/>
+                                    </constraints>
+                                </customView>
+                                <customView translatesAutoresizingMaskIntoConstraints="NO" id="t3y-Yw-Duj">
+                                    <rect key="frame" x="0.0" y="0.0" width="242" height="247"/>
+                                </customView>
+                            </subviews>
+                            <constraints>
+                                <constraint firstAttribute="bottom" secondItem="t3y-Yw-Duj" secondAttribute="bottom" id="0TH-Oo-zVn"/>
+                                <constraint firstItem="t3y-Yw-Duj" firstAttribute="leading" secondItem="04C-xb-Cyf" secondAttribute="leading" id="6y7-JO-tln"/>
+                                <constraint firstItem="ouw-RD-alU" firstAttribute="top" secondItem="04C-xb-Cyf" secondAttribute="top" id="7Dm-Wf-LAS"/>
+                                <constraint firstAttribute="trailing" secondItem="ouw-RD-alU" secondAttribute="trailing" id="QKg-q3-H2Q"/>
+                                <constraint firstItem="ouw-RD-alU" firstAttribute="leading" secondItem="04C-xb-Cyf" secondAttribute="leading" id="ma6-Mg-Y60"/>
+                                <constraint firstItem="t3y-Yw-Duj" firstAttribute="top" secondItem="ouw-RD-alU" secondAttribute="bottom" id="ntp-Ou-VVC"/>
+                                <constraint firstAttribute="trailing" secondItem="t3y-Yw-Duj" secondAttribute="trailing" id="utc-fU-pkX"/>
+                            </constraints>
+                        </customView>
+                        <customView id="SbB-iv-dtU">
+                            <rect key="frame" x="243" y="0.0" width="237" height="272"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                            <subviews>
+                                <splitView dividerStyle="thin" translatesAutoresizingMaskIntoConstraints="NO" id="uMa-gy-tSR">
+                                    <rect key="frame" x="0.0" y="0.0" width="237" height="272"/>
+                                    <subviews>
+                                        <customView id="aVl-T0-46s">
+                                            <rect key="frame" x="0.0" y="0.0" width="237" height="132"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <customView translatesAutoresizingMaskIntoConstraints="NO" id="FvW-xR-hSb">
+                                                    <rect key="frame" x="0.0" y="99" width="237" height="33"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="33" id="V3H-8E-hhj"/>
+                                                    </constraints>
+                                                </customView>
+                                                <customView translatesAutoresizingMaskIntoConstraints="NO" id="VGM-e2-eUH">
+                                                    <rect key="frame" x="0.0" y="55" width="237" height="44"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="44" id="Axo-35-QJp"/>
+                                                    </constraints>
+                                                </customView>
+                                                <customView translatesAutoresizingMaskIntoConstraints="NO" id="gWT-fp-nME">
+                                                    <rect key="frame" x="0.0" y="0.0" width="237" height="55"/>
+                                                </customView>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="trailing" secondItem="VGM-e2-eUH" secondAttribute="trailing" id="2QC-3C-PPg"/>
+                                                <constraint firstItem="gWT-fp-nME" firstAttribute="leading" secondItem="aVl-T0-46s" secondAttribute="leading" id="75g-Gy-nSR"/>
+                                                <constraint firstItem="FvW-xR-hSb" firstAttribute="leading" secondItem="aVl-T0-46s" secondAttribute="leading" id="Hf1-jy-DDL"/>
+                                                <constraint firstAttribute="trailing" secondItem="gWT-fp-nME" secondAttribute="trailing" id="Imv-Em-qR9"/>
+                                                <constraint firstItem="FvW-xR-hSb" firstAttribute="top" secondItem="aVl-T0-46s" secondAttribute="top" id="Uk5-TU-vnS"/>
+                                                <constraint firstItem="gWT-fp-nME" firstAttribute="top" secondItem="VGM-e2-eUH" secondAttribute="bottom" id="kWt-Xz-3nC"/>
+                                                <constraint firstItem="VGM-e2-eUH" firstAttribute="leading" secondItem="aVl-T0-46s" secondAttribute="leading" id="lpO-k6-pXH"/>
+                                                <constraint firstItem="VGM-e2-eUH" firstAttribute="top" secondItem="FvW-xR-hSb" secondAttribute="bottom" id="pix-en-6Fd"/>
+                                                <constraint firstAttribute="bottom" secondItem="gWT-fp-nME" secondAttribute="bottom" id="q8I-8C-QFp"/>
+                                                <constraint firstAttribute="trailing" secondItem="FvW-xR-hSb" secondAttribute="trailing" id="xC5-az-7Tw"/>
+                                            </constraints>
+                                        </customView>
+                                        <customView fixedFrame="YES" id="Zcs-3Y-Wez">
+                                            <rect key="frame" x="0.0" y="133" width="237" height="139"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </customView>
+                                    </subviews>
+                                    <holdingPriorities>
+                                        <real value="250"/>
+                                        <real value="250"/>
+                                    </holdingPriorities>
+                                </splitView>
+                            </subviews>
+                            <constraints>
+                                <constraint firstAttribute="bottom" secondItem="uMa-gy-tSR" secondAttribute="bottom" id="Wgb-fr-tOS"/>
+                                <constraint firstAttribute="trailing" secondItem="uMa-gy-tSR" secondAttribute="trailing" id="bGs-sM-fSg"/>
+                                <constraint firstItem="uMa-gy-tSR" firstAttribute="top" secondItem="SbB-iv-dtU" secondAttribute="top" id="eg7-t3-gFE"/>
+                                <constraint firstItem="uMa-gy-tSR" firstAttribute="leading" secondItem="SbB-iv-dtU" secondAttribute="leading" id="j7l-wv-SQS"/>
+                            </constraints>
+                        </customView>
+                    </subviews>
+                    <holdingPriorities>
+                        <real value="250"/>
+                        <real value="250"/>
+                    </holdingPriorities>
+                </splitView>
             </subviews>
+            <constraints>
+                <constraint firstItem="otb-Lv-gLa" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="Yja-3D-L64"/>
+                <constraint firstItem="otb-Lv-gLa" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" id="cgR-Be-oQ5"/>
+                <constraint firstAttribute="trailing" secondItem="otb-Lv-gLa" secondAttribute="trailing" id="dPd-UO-hby"/>
+                <constraint firstAttribute="bottom" secondItem="otb-Lv-gLa" secondAttribute="bottom" id="uKo-hZ-Gbd"/>
+            </constraints>
         </customView>
     </objects>
 </document>
