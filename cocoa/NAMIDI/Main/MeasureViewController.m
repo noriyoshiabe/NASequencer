@@ -21,11 +21,13 @@
     CGColorRef _grayColor;
     CGColorRef _whiteColor;
     CGColorRef _lightGrayColor;
+    CGColorRef _blackColor;
     NSDictionary *_measureNumberAttrs;
 }
 
 @property (assign, nonatomic) MeasureScaleAssistant *scaleAssistant;
 @property (strong, nonatomic) SequenceRepresentation *sequence;
+@property (strong, nonatomic) TrackSelection *trackSelection;
 @end
 
 @interface MeasureViewController ()
@@ -41,14 +43,17 @@
     _sequence = [[SequenceRepresentation alloc] init];
     
     _measureView.scaleAssistant = _scaleAssistant;
+    _measureView.trackSelection = _trackSelection;
     _measureView.sequence = _sequence;
     
     [_scaleAssistant addObserver:self forKeyPath:@"scale" options:0 context:NULL];
+    [_trackSelection addObserver:self forKeyPath:@"selectionFlags" options:0 context:NULL];
 }
 
 - (void)dealloc
 {
     [_scaleAssistant removeObserver:self forKeyPath:@"scale"];
+    [_trackSelection removeObserver:self forKeyPath:@"selectionFlags"];
 }
 
 - (void)scrollWheel:(NSEvent *)theEvent
@@ -62,6 +67,11 @@
 {
     if (object == _scaleAssistant) {
         [_measureView layout];
+    }
+    else if (object == _trackSelection) {
+        if ([_trackSelection isTrackSelectionChanged:0]) {
+            _measureView.needsDisplay = YES;
+        }
     }
 }
 
@@ -91,6 +101,7 @@
     _grayColor = [Color gray].CGColor;
     _whiteColor = [NSColor whiteColor].CGColor;
     _lightGrayColor = [Color lightGray].CGColor;
+    _blackColor = [NSColor blackColor].CGColor;
     
     _measureNumberAttrs = @{NSFontAttributeName:[NSFont boldSystemFontOfSize:11.0], NSForegroundColorAttributeName: [NSColor whiteColor]};
 }
@@ -118,25 +129,10 @@
     
     CGContextRef ctx = [NSGraphicsContext currentContext].graphicsPort;
     
-    [self drawConductorLine:dirtyRect context:ctx];
     [self drawMeasure:dirtyRect context:ctx];
+    [self drawConductorLine:dirtyRect context:ctx];
+    [self drawConductorBackground:dirtyRect context:ctx];
     [self drawEvent:dirtyRect context:ctx];
-}
-
-- (void)drawConductorLine:(NSRect)dirtyRect context:(CGContextRef)ctx
-{
-    CGContextSaveGState(ctx);
-    
-    CGContextSetLineWidth(ctx, 1.0);
-    CGContextSetStrokeColorWithColor(ctx, _grayColor);
-    
-    CGContextMoveToPoint(ctx, 0, CONDUCTOR_LINE_Y);
-    CGContextAddLineToPoint(ctx, self.bounds.size.width, CONDUCTOR_LINE_Y);
-    CGContextStrokePath(ctx);
-    
-    CGContextClipToRect(ctx, dirtyRect);
-    
-    CGContextRestoreGState(ctx);
 }
 
 - (void)drawMeasure:(NSRect)dirtyRect context:(CGContextRef)ctx
@@ -188,11 +184,39 @@
     CGContextRestoreGState(ctx);
 }
 
+- (void)drawConductorLine:(NSRect)dirtyRect context:(CGContextRef)ctx
+{
+    CGContextSaveGState(ctx);
+    
+    CGContextSetLineWidth(ctx, 1.0);
+    CGContextSetStrokeColorWithColor(ctx, _grayColor);
+    
+    CGContextMoveToPoint(ctx, 0, CONDUCTOR_LINE_Y);
+    CGContextAddLineToPoint(ctx, self.bounds.size.width, CONDUCTOR_LINE_Y);
+    CGContextStrokePath(ctx);
+    
+    CGContextClipToRect(ctx, dirtyRect);
+    
+    CGContextRestoreGState(ctx);
+}
+
+- (void)drawConductorBackground:(NSRect)dirtyRect context:(CGContextRef)ctx
+{
+    if ([_trackSelection isTrackSelected:0]) {
+        CGContextSaveGState(ctx);
+        CGContextSetFillColorWithColor(ctx, _whiteColor);
+        CGFloat y = CONDUCTOR_LINE_Y + 1;
+        CGContextFillRect(ctx, CGRectMake(0, y, self.bounds.size.width, self.bounds.size.height - y));
+        CGContextClipToRect(ctx, dirtyRect);
+        CGContextRestoreGState(ctx);
+    }
+}
+
 - (void)drawEvent:(NSRect)dirtyRect context:(CGContextRef)ctx
 {
     CGContextSaveGState(ctx);
     
-    CGContextSetFillColorWithColor(ctx, _lightGrayColor);
+    CGContextSetFillColorWithColor(ctx, [_trackSelection isTrackSelected:0] ? _blackColor : _lightGrayColor);
     
     CGFloat pixelPerTick = _scaleAssistant.pixelPerTick;
     CGFloat measureOffset = _scaleAssistant.measureOffset;

@@ -11,6 +11,7 @@
 #import "DetailViewController.h"
 #import "LocationView.h"
 #import "ErrorWindowController.h"
+#import "TrackSelection.h"
 
 @interface MainWindowController ()
 @property (weak) IBOutlet NSView *contentView;
@@ -18,6 +19,7 @@
 @property (strong, nonatomic) MainViewController *mainVC;
 @property (strong, nonatomic) DetailViewController *detailVC;
 @property (strong, nonatomic) ErrorWindowController *errorWC;
+@property (strong, nonatomic) TrackSelection *trackSelection;
 @end
 
 @implementation MainWindowController
@@ -37,6 +39,10 @@
     
     _mainVC = [[MainViewController alloc] init];
     _detailVC = [[DetailViewController alloc] init];
+    
+    _trackSelection = [[TrackSelection alloc] init];
+    _mainVC.trackSelection = _trackSelection;
+    _detailVC.trackSelection = _trackSelection;
     
     _mainVC.view.translatesAutoresizingMaskIntoConstraints = NO;
     [_contentView addSubview:_mainVC.view];

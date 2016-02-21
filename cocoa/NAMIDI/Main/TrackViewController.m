@@ -33,6 +33,7 @@
         TrackChannelViewController *channelVC = [[TrackChannelViewController alloc] init];
         channelVC.channel = i + 1;
         channelVC.scaleAssistant = _scaleAssistant;
+        channelVC.trackSelection = _trackSelection;
         [_controllers addObject:channelVC];
         [self.view addSubview:channelVC.view];
     }

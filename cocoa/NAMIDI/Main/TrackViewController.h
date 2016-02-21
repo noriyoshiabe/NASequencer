@@ -8,6 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "MeasureScaleAssistant.h"
+#import "TrackSelection.h"
 
 @class TrackViewController;
 @protocol TrackViewControllerDelegate <NSObject>
@@ -17,4 +18,5 @@
 @interface TrackViewController : NSViewController
 @property (weak, nonatomic) id<TrackViewControllerDelegate> delegate;
 @property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
+@property (strong, nonatomic) TrackSelection *trackSelection;
 @end

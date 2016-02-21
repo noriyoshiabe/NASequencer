@@ -14,13 +14,18 @@
 
 @interface TrackChannelView : NSView {
     CGColorRef _blackColor;
+    CGColorRef _whiteColor;
     CGColorRef _outsideEdgeColor;
     CGColorRef _insideEdgeColor;
+    CGColorRef _outsideEdgeInverseColor;
+    
     CGGradientRef _gradient;
+    CGGradientRef _gradientInverse;
 }
 
 @property (assign, nonatomic) int channel;
 @property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
+@property (strong, nonatomic) TrackSelection *trackSelection;
 @property (assign, nonatomic) NSColor *baseColor;
 @property (strong, nonatomic) SequenceRepresentation *sequence;
 @end
@@ -37,7 +42,24 @@
     _trackChannelView.baseColor = [Color channelColor:_channel];
     _trackChannelView.channel = _channel;
     _trackChannelView.scaleAssistant = _scaleAssistant;
+    _trackChannelView.trackSelection = _trackSelection;
     _trackChannelView.sequence = [[SequenceRepresentation alloc] init];
+    
+    [_trackSelection addObserver:self forKeyPath:@"selectionFlags" options:0 context:NULL];
+}
+
+- (void)dealloc
+{
+    [_trackSelection removeObserver:self forKeyPath:@"selectionFlags"];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context
+{
+    if (object == _trackSelection) {
+        if ([_trackSelection isTrackSelectionChanged:_channel]) {
+            _trackChannelView.needsDisplay = YES;
+        }
+    }
 }
 
 @end
@@ -47,6 +69,7 @@
 - (void)awakeFromNib
 {
     _blackColor = [NSColor blackColor].CGColor;
+    _whiteColor = [NSColor whiteColor].CGColor;
 }
 
 - (void)dealloc
@@ -55,12 +78,20 @@
         CGGradientRelease(_gradient);
     }
     
+    if (_gradientInverse) {
+        CGGradientRelease(_gradientInverse);
+    }
+    
     if (_outsideEdgeColor) {
         CGColorRelease(_outsideEdgeColor);
     }
     
     if (_insideEdgeColor) {
         CGColorRelease(_insideEdgeColor);
+    }
+    
+    if (_outsideEdgeInverseColor) {
+        CGColorRelease(_outsideEdgeInverseColor);
     }
 }
 
@@ -81,9 +112,14 @@
                                             saturation:_baseColor.saturationComponent * 0.3
                                             brightness:_baseColor.brightnessComponent
                                                  alpha:_baseColor.alphaComponent].CGColor;
+    _outsideEdgeInverseColor = [NSColor colorWithCalibratedHue:_baseColor.hueComponent
+                                                    saturation:_baseColor.saturationComponent
+                                                    brightness:_baseColor.brightnessComponent * 0.2
+                                                         alpha:_baseColor.alphaComponent].CGColor;
     
     CGColorRetain(_outsideEdgeColor);
     CGColorRetain(_insideEdgeColor);
+    CGColorRetain(_outsideEdgeInverseColor);
     
     if (!_gradient) {
         NSColor *topColor = [NSColor colorWithCalibratedHue:_baseColor.hueComponent
@@ -95,17 +131,14 @@
                                                     brightness:_baseColor.brightnessComponent
                                                          alpha:_baseColor.alphaComponent];
         
-        CGColorSpaceRef colorSpaceRef = CGColorSpaceCreateDeviceRGB();
-        CGFloat components[] = {
-            topColor.redComponent, topColor.greenComponent, topColor.blueComponent, topColor.alphaComponent,
-            bottomColor.redComponent, bottomColor.greenComponent, bottomColor.blueComponent, bottomColor.alphaComponent,
-        };
-        CGFloat locations[] = {0.0f, 1.0f};
-        size_t count = sizeof(components) / (sizeof(CGFloat) * 4);
+        _gradient = [NSColor createVerticalGradientWithTopColor:topColor bottomColor:bottomColor];
         
-        _gradient = CGGradientCreateWithColorComponents(colorSpaceRef, components, locations, count);
-        
-        CGColorSpaceRelease(colorSpaceRef);
+    }
+    
+    if (!_gradientInverse) {
+        NSColor *topColor = [NSColor colorWith8bitRed:85 green:87 blue:93 alpha:255];
+        NSColor *bottomColor = [NSColor colorWith8bitRed:27 green:30 blue:38 alpha:255];
+        _gradientInverse = [NSColor createVerticalGradientWithTopColor:topColor bottomColor:bottomColor];
     }
 }
 
@@ -137,7 +170,7 @@
     
     CGContextSetLineWidth(ctx, 1.0);
     
-    CGContextSetStrokeColorWithColor(ctx, _outsideEdgeColor);
+    CGContextSetStrokeColorWithColor(ctx, [_trackSelection isTrackSelected:_channel] ? _outsideEdgeInverseColor :_outsideEdgeColor);
     CGContextAddRect(ctx, CGRectInset(self.bounds, 0.5, 0.5));
     CGContextStrokePath(ctx);
     
@@ -158,7 +191,7 @@
     CGContextClip(ctx);
     
     CGContextDrawLinearGradient(ctx,
-                                _gradient,
+                                [_trackSelection isTrackSelected:_channel] ? _gradientInverse : _gradient,
                                 CGPointMake(0, 0),
                                 CGPointMake(0, dirtyRect.size.height),
                                 kCGGradientDrawsAfterEndLocation);
@@ -170,7 +203,7 @@
 {
     CGContextSaveGState(ctx);
     
-    CGContextSetStrokeColorWithColor(ctx, _blackColor);
+    CGContextSetStrokeColorWithColor(ctx, [_trackSelection isTrackSelected:_channel] ? _whiteColor : _blackColor);
     
     CGFloat pixelPerTick = _scaleAssistant.pixelPerTick;
     CGFloat measureOffset = _scaleAssistant.measureOffset;

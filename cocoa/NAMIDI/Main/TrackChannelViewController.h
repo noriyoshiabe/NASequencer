@@ -8,8 +8,10 @@
 
 #import <Cocoa/Cocoa.h>
 #import "MeasureScaleAssistant.h"
+#import "TrackSelection.h"
 
 @interface TrackChannelViewController : NSViewController
 @property (assign, nonatomic) int channel;
 @property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
+@property (strong, nonatomic) TrackSelection *trackSelection;
 @end

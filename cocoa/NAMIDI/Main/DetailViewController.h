@@ -7,7 +7,8 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "TrackSelection.h"
 
 @interface DetailViewController : NSViewController
-
+@property (strong, nonatomic) TrackSelection *trackSelection;
 @end

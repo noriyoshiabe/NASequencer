@@ -17,5 +17,6 @@
 
 #import "NSArray+Support.h"
 #import "NSView+Support.h"
+#import "NSColor+Support.h"
 
 #endif /* NAMIDI_Prefix_h */

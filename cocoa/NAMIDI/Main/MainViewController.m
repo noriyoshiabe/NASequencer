@@ -57,6 +57,9 @@
     _trackVC.scaleAssistant = _scaleAssistant;
     _playLineVC.scaleAssistant = _scaleAssistant;
     
+    _measureVC.trackSelection = _trackSelection;
+    _trackVC.trackSelection = _trackSelection;
+    
     _conductorVC.view.frame = _conductorView.bounds;
     
     [_conductorView addSubview:_conductorVC.view];
@@ -77,6 +80,11 @@
     _trackVC.delegate = self;
 }
 
+- (void)viewDidAppear
+{
+    [self.view.window makeFirstResponder:self.view];
+}
+
 #pragma mark MeasureViewControllerDelegate
 
 - (void)measureViewControllerDidClickMeasure:(MeasureViewController *)controller tick:(int)tick
@@ -86,14 +94,26 @@
 
 - (void)measureViewControllerDidClickConductorTrack:(MeasureViewController *)controller
 {
-    NSLog(@"measureViewControllerDidClickConductorTrack:");
+    [_trackSelection click:0];
 }
 
 #pragma mark TrackViewControllerDelegate
 
 - (void)trackViewController:(TrackViewController *)controller didClickChannel:(int)channel
 {
-    NSLog(@"trackViewController:didClickChannel %d", channel);
+    [_trackSelection click:channel];
+}
+
+#pragma mark Menu Action
+
+- (IBAction)selectAll:(id)sender
+{
+    [_trackSelection selectAll];
+}
+
+- (void)cancelOperation:(id)sender
+{
+    [_trackSelection deselectAll];
 }
 
 @end
