@@ -14,6 +14,9 @@
 #define HORIZONTAL_SPLIT_BOTTOM_MAX 160
 #define HORIZONTAL_SPLIT_BOTTOM_MIN 40
 
+#define SELECTION_VIEW_HEIGHT_NARROW 25
+#define SELECTION_VIEW_HEIGHT_WIDE 46
+
 @interface DetailViewController () <NSSplitViewDelegate>
 @property (weak) IBOutlet NSSplitView *verticalSplitView;
 @property (weak) IBOutlet NSSplitView *horizontalSplitView;
@@ -23,6 +26,7 @@
 @property (weak) IBOutlet NSView *conductorView;
 @property (weak) IBOutlet NSView *pianoRollView;
 @property (weak) IBOutlet NSView *velocityView;
+@property (weak) IBOutlet NSLayoutConstraint *selectionViewHeightConstraint;
 @end
 
 @implementation DetailViewController
@@ -89,6 +93,18 @@
     }
     else {
         return splitView.subviews[0] == view;
+    }
+}
+
+- (void)splitViewDidResizeSubviews:(NSNotification *)notification
+{
+    if (notification.object == _verticalSplitView) {
+        if (VERTICAL_SPLIT_LEFT_MAX > CGRectGetWidth(_verticalSplitView.subviews[0].frame)) {
+            _selectionViewHeightConstraint.constant = SELECTION_VIEW_HEIGHT_WIDE;
+        }
+        else {
+            _selectionViewHeightConstraint.constant = SELECTION_VIEW_HEIGHT_NARROW;
+        }
     }
 }
 

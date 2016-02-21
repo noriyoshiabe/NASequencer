@@ -13,6 +13,7 @@
                 <outlet property="measureView" destination="FvW-xR-hSb" id="jbI-Zu-hkx"/>
                 <outlet property="pianoRollView" destination="gWT-fp-nME" id="LqY-Yh-46C"/>
                 <outlet property="selectionView" destination="ouw-RD-alU" id="cpH-gR-krO"/>
+                <outlet property="selectionViewHeightConstraint" destination="gOe-yX-NnZ" id="bgs-A6-qnb"/>
                 <outlet property="velocityView" destination="Zcs-3Y-Wez" id="5zA-Uh-mFO"/>
                 <outlet property="verticalSplitView" destination="otb-Lv-gLa" id="ohT-4v-1eD"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
