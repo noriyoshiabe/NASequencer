@@ -56,11 +56,46 @@ typedef enum {
     MidiEventTypeSynth,
 } MidiEventType;
 
+static inline char *MidiEventType2String(MidiEventType type)
+{
+#define CASE(type) case type: return &(#type[13])
+    switch (type) {
+            CASE(MidiEventTypeNote);
+            CASE(MidiEventTypeTempo);
+            CASE(MidiEventTypeTime);
+            CASE(MidiEventTypeKey);
+            CASE(MidiEventTypeTitle);
+            CASE(MidiEventTypeCopyright);
+            CASE(MidiEventTypeMarker);
+            CASE(MidiEventTypeVoice);
+            CASE(MidiEventTypeVolume);
+            CASE(MidiEventTypePan);
+            CASE(MidiEventTypeChorus);
+            CASE(MidiEventTypeReverb);
+            CASE(MidiEventTypeExpression);
+            CASE(MidiEventTypeDetune);
+            CASE(MidiEventTypeSynth);
+            
+        default:
+            break;
+    }
+    
+    return "Unknown event type";
+#undef CASE
+}
+
 typedef struct _MidiEvent {
     MidiEventType type;
     int id;
     int tick;
 } MidiEvent;
+
+typedef struct _ChannelEvent {
+    MidiEventType type;
+    int id;
+    int tick;
+    int channel;
+} ChannelEvent;
 
 typedef struct _NoteEvent {
     MidiEventType type;
@@ -90,6 +125,7 @@ typedef struct _TimeEvent {
 @interface MidiEventRepresentation : NSObject
 @property (readonly, nonatomic) MidiEventType type;
 @property (readonly, nonatomic) int tick;
+@property (readonly, nonatomic) int channel;
 @property (readonly, nonatomic) MidiEvent *raw;
 @end
 
@@ -106,6 +142,7 @@ typedef struct _NoteRange {
 
 @interface SequenceRepresentation : NSObject
 @property (readonly, nonatomic) int32_t length;
+@property (readonly, nonatomic) NSArray<MidiEventRepresentation *> *events;
 @property (readonly, nonatomic) NSArray<MidiEventRepresentation *> *eventsOfConductorTrack;
 @property (readonly, nonatomic) NSArray<ChannelRepresentation *> *channels;
 - (TimeSign)timeSignByTick:(int)tick;

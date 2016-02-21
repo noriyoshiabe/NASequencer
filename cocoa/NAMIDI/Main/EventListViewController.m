@@ -35,9 +35,13 @@
 
 @implementation EventListViewController
 
-- (void)awakeFromNib
+- (instancetype)init
 {
-    _events = [NSMutableArray array];
+    self = [super init];
+    if (self) {
+        _events = [[NSMutableArray alloc] init];
+    }
+    return self;
 }
 
 - (void)viewDidLoad
@@ -82,17 +86,9 @@
 {
     [_events removeAllObjects];
     
-    if ([_trackSelection isTrackSelected:0]) {
-        for (MidiEventRepresentation *event in _sequence.eventsOfConductorTrack) {
+    for (MidiEventRepresentation *event in _sequence.events) {
+        if ([_trackSelection isTrackSelected:event.channel]) {
             [_events addObject:event];
-        }
-    }
-    
-    for (ChannelRepresentation *channel in _sequence.channels) {
-        if ([_trackSelection isTrackSelected:channel.number]) {
-            for (MidiEventRepresentation *event in channel.events) {
-                [_events addObject:event];
-            }
         }
     }
     
@@ -110,7 +106,16 @@
 
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
 {
-    NSTableCellView *view = [tableView makeViewWithIdentifier:@"EventRow" owner:self];
+    MidiEventRepresentation *event = _events[row];
+    MidiEvent *raw = event.raw;
+    Location location = [_sequence locationByTick:raw->tick];
+    
+    EventListCellView *view = [tableView makeViewWithIdentifier:@"EventRow" owner:self];
+    view.location.stringValue = [NSString stringWithFormat:@"%03d:%02d:%03d", location.m, location.b, location.t];
+    view.type.stringValue = [NSString stringWithUTF8String:MidiEventType2String(raw->type)];
+    
+    // TODO
+    
     return view;
 }
 

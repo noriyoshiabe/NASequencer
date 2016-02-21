@@ -81,6 +81,24 @@
     return _raw->tick;
 }
 
+- (int)channel
+{
+    switch (_raw->type) {
+        case MidiEventTypeNote:
+        case MidiEventTypeVoice:
+        case MidiEventTypeVolume:
+        case MidiEventTypePan:
+        case MidiEventTypeChorus:
+        case MidiEventTypeReverb:
+        case MidiEventTypeSynth:
+        case MidiEventTypeExpression:
+        case MidiEventTypeDetune:
+            return ((ChannelEvent *)_raw)->channel;
+        default:
+            return 0;
+    }
+}
+
 @end
 
 @interface ChannelRepresentation ()
@@ -110,6 +128,7 @@
 @end
 
 @interface SequenceRepresentation () {
+    NSMutableArray *_events;
     NSMutableArray *_eventsOfConductorTrack;
     NSMutableArray *_channels;
 }
@@ -122,6 +141,7 @@
 {
     self = [super init];
     if (self) {
+        _events = [NSMutableArray array];
         _eventsOfConductorTrack = [NSMutableArray array];
         _channels = [NSMutableArray array];
         
@@ -133,6 +153,7 @@
         event.raw->id = ++_id;
         event.raw->type = MidiEventTypeTempo;
         event.raw->tick = 0;
+        [_events addObject:event];
         [_eventsOfConductorTrack addObject:event];
         
         event = [[MidiEventRepresentation alloc] init];
@@ -140,6 +161,7 @@
         event.raw->id = ++_id;
         event.raw->type = MidiEventTypeTime;
         event.raw->tick = 0;
+        [_events addObject:event];
         [_eventsOfConductorTrack addObject:event];
         
         event = [[MidiEventRepresentation alloc] init];
@@ -147,6 +169,7 @@
         event.raw->id = ++_id;
         event.raw->type = MidiEventTypeTempo;
         event.raw->tick = 1920 * 4;
+        [_events addObject:event];
         [_eventsOfConductorTrack addObject:event];
         
         for (int i = 0; i < 16; ++i) {
@@ -164,10 +187,15 @@
                 note->gatetime = 480;
                 note->velocity = (2 * i) % 20 + 100;
                 event.raw = (MidiEvent *)note;
+                [_events addObject:event];
                 [(NSMutableArray *)channel.events addObject:event];
             }
             [_channels addObject:channel];
         }
+        
+        [_events sortUsingComparator:^NSComparisonResult(MidiEventRepresentation *obj1, MidiEventRepresentation *obj2) {
+            return obj1.tick - obj2.tick;
+        }];
     }
     return self;
 }
