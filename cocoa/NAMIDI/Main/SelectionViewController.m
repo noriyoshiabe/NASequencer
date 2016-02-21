@@ -1,15 +1,15 @@
 //
-//  DetailSelectionViewController.m
+//  SelectionViewController.m
 //  NAMIDI
 //
 //  Created by abechan on 2/21/16.
 //  Copyright © 2016 Noriyoshi Abe. All rights reserved.
 //
 
-#import "DetailSelectionViewController.h"
+#import "SelectionViewController.h"
 #import "Color.h"
 
-@interface DetailSelectionViewController () {
+@interface SelectionViewController () {
     NSArray<NSButton *> *_buttons;
 }
 
@@ -32,7 +32,7 @@
 @property (weak) IBOutlet NSButton *channel16;
 @end
 
-@implementation DetailSelectionViewController
+@implementation SelectionViewController
 
 - (void)awakeFromNib
 {

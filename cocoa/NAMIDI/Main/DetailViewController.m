@@ -7,7 +7,7 @@
 //
 
 #import "DetailViewController.h"
-#import "DetailSelectionViewController.h"
+#import "SelectionViewController.h"
 
 #define VERTICAL_SPLIT_LEFT_MAX 400
 #define VERTICAL_SPLIT_LEFT_MIN 232
@@ -28,7 +28,7 @@
 @property (weak) IBOutlet NSView *pianoRollView;
 @property (weak) IBOutlet NSView *velocityView;
 @property (weak) IBOutlet NSLayoutConstraint *selectionViewHeightConstraint;
-@property (strong, nonatomic) DetailSelectionViewController *selectionVC;
+@property (strong, nonatomic) SelectionViewController *selectionVC;
 @end
 
 @implementation DetailViewController
@@ -55,7 +55,7 @@
     _verticalSplitView.delegate = self;
     _horizontalSplitView.delegate = self;
     
-    _selectionVC = [[DetailSelectionViewController alloc] init];
+    _selectionVC = [[SelectionViewController alloc] init];
     _selectionVC.trackSelection = _trackSelection;
     [_selectionView addSubviewWithFitConstraints:_selectionVC.view];
     

@@ -1,5 +1,5 @@
 //
-//  DetailSelectionViewController.h
+//  SelectionViewController.h
 //  NAMIDI
 //
 //  Created by abechan on 2/21/16.
@@ -9,6 +9,6 @@
 #import <Cocoa/Cocoa.h>
 #import "TrackSelection.h"
 
-@interface DetailSelectionViewController : NSViewController
+@interface SelectionViewController : NSViewController
 @property (strong, nonatomic) TrackSelection *trackSelection;
 @end
