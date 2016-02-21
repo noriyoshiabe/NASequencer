@@ -9,9 +9,11 @@
 #import "Document.h"
 #import "MainWindowController.h"
 #import "ApplicationController.h"
+#import "Stub.h"
 
 @interface Document ()
 @property (strong, nonatomic) FileRepresentation *file;
+@property (strong, nonatomic) NAMidiRepresentation *namidi;
 @end
 
 @implementation Document
@@ -27,13 +29,15 @@
 
 - (BOOL)readFromURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError * _Nullable __autoreleasing *)outError
 {
-    self.file = [[FileRepresentation alloc] initWithURL:url];
+    _file = [[FileRepresentation alloc] initWithURL:url];
+    _namidi = [[NAMidiRepresentation alloc] init];
     return YES;
 }
 
 - (void)makeWindowControllers
 {
     MainWindowController *mainWC = [[MainWindowController alloc] init];
+    mainWC.namidi = _namidi;
     [self addWindowController: mainWC];
     
     [AppController showEditorWindowWithFile:self.file];

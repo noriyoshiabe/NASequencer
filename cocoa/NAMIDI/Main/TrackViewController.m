@@ -32,6 +32,7 @@
     for (int i = 0; i < 16; ++i) {
         TrackChannelViewController *channelVC = [[TrackChannelViewController alloc] init];
         channelVC.channel = i + 1;
+        channelVC.namidi = _namidi;
         channelVC.scaleAssistant = _scaleAssistant;
         channelVC.trackSelection = _trackSelection;
         [_controllers addObject:channelVC];

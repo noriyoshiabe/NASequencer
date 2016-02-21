@@ -7,8 +7,8 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "Stub.h"
 
 @interface ConductorViewController : NSViewController
-@property (readonly) NSString *tempo;
-@property (readonly) NSString *timeSign;
+@property (strong, nonatomic) NAMidiRepresentation *namidi;
 @end

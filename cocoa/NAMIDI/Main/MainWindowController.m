@@ -40,13 +40,17 @@
     _mainVC = [[MainViewController alloc] init];
     _detailVC = [[DetailViewController alloc] init];
     
+    _mainVC.namidi = _namidi;
+    _detailVC.namidi = _namidi;
+    
     _trackSelection = [[TrackSelection alloc] init];
     _trackSelection.delegate = self;
     
     _mainVC.trackSelection = _trackSelection;
     _detailVC.trackSelection = _trackSelection;
     
-    _locationView.player = [[PlayerRepresentation alloc]init];
+    _locationView.player = _namidi.player;
+    
     [self showMainView];
     
     [self showErrorWindow];
@@ -56,6 +60,8 @@
 {
     if (!_errorWC) {
         _errorWC = [[ErrorWindowController alloc] init];
+        _errorWC.namidi = _namidi;
+        
         CGRect frame = self.window.frame;
         frame.origin.x = frame.origin.x + frame.size.width / 2 - CGRectGetWidth(_errorWC.window.frame) / 2;
         frame.origin.y = frame.origin.y + frame.size.height / 2 - CGRectGetHeight(_errorWC.window.frame) / 2;

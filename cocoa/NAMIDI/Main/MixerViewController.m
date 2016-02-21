@@ -15,6 +15,8 @@
 @property (weak) IBOutlet LevelIndicator *indicatorL;
 @property (weak) IBOutlet LevelIndicator *indicatorR;
 @property (strong, nonatomic) NSMutableArray *controllers;
+@property (assign, nonatomic) int L;
+@property (assign, nonatomic) int R;
 @end
 
 @implementation MixerViewController

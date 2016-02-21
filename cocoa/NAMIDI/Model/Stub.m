@@ -233,3 +233,21 @@
 }
 
 @end
+
+@interface NAMidiRepresentation ()
+@end
+
+@implementation NAMidiRepresentation
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        _sequence = [[SequenceRepresentation alloc] init];
+        _player = [[PlayerRepresentation alloc] init];
+    }
+    return self;
+}
+
+@end
+

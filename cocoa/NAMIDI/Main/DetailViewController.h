@@ -8,7 +8,9 @@
 
 #import <Cocoa/Cocoa.h>
 #import "TrackSelection.h"
+#import "Stub.h"
 
 @interface DetailViewController : NSViewController
+@property (strong, nonatomic) NAMidiRepresentation *namidi;
 @property (strong, nonatomic) TrackSelection *trackSelection;
 @end

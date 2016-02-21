@@ -30,7 +30,6 @@
 @property (weak) IBOutlet NSView *headerBackground;
 @property (weak) IBOutlet NSView *headerLine;
 @property (weak) IBOutlet NSTableView *tableView;
-@property (strong, nonatomic) SequenceRepresentation *sequence;
 @end
 
 @implementation EventListViewController
@@ -58,8 +57,6 @@
     
     _tableView.dataSource = self;
     _tableView.delegate = self;
-    
-    _sequence = [[SequenceRepresentation alloc] init];
 }
 
 - (void)viewDidAppear
@@ -86,7 +83,7 @@
 {
     [_events removeAllObjects];
     
-    for (MidiEventRepresentation *event in _sequence.events) {
+    for (MidiEventRepresentation *event in _namidi.sequence.events) {
         if ([_trackSelection isTrackSelected:event.channel]) {
             [_events addObject:event];
         }
@@ -108,7 +105,7 @@
 {
     MidiEventRepresentation *event = _events[row];
     MidiEvent *raw = event.raw;
-    Location location = [_sequence locationByTick:raw->tick];
+    Location location = [_namidi.sequence locationByTick:raw->tick];
     
     EventListCellView *view = [tableView makeViewWithIdentifier:@"EventRow" owner:self];
     view.location.stringValue = [NSString stringWithFormat:@"%03d:%02d:%03d", location.m, location.b, location.t];

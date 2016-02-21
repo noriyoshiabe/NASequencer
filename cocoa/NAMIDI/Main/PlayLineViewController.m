@@ -30,8 +30,8 @@
     [super viewDidLoad];
     _playLineView.containerView = _containerView;
     _playLineView.scaleAssistant = _scaleAssistant;
-    _playLineView.sequence = [[SequenceRepresentation alloc] init];
-    _playLineView.player = [[PlayerRepresentation alloc] init];
+    _playLineView.sequence = _namidi.sequence;
+    _playLineView.player = _namidi.player;
     
     [_scaleAssistant addObserver:self forKeyPath:@"scale" options:0 context:NULL];
 }

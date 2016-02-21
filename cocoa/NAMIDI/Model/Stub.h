@@ -149,3 +149,8 @@ typedef struct _NoteRange {
 - (Location)locationByTick:(int)tick;
 - (int)tickByLocation:(Location)location;
 @end
+
+@interface NAMidiRepresentation : NSObject
+@property (readonly, nonatomic) SequenceRepresentation *sequence;
+@property (readonly, nonatomic) PlayerRepresentation *player;
+@end

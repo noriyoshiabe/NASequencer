@@ -8,8 +8,10 @@
 
 #import <Cocoa/Cocoa.h>
 #import "MeasureScaleAssistant.h"
+#import "Stub.h"
 
 @interface PlayLineViewController : NSViewController
 @property (weak, nonatomic) NSView *containerView;
+@property (strong, nonatomic) NAMidiRepresentation *namidi;
 @property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
 @end

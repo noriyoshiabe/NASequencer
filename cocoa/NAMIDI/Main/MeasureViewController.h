@@ -9,8 +9,10 @@
 #import <Cocoa/Cocoa.h>
 #import "MeasureScaleAssistant.h"
 #import "TrackSelection.h"
+#import "Stub.h"
 
 @interface MeasureViewController : NSViewController
+@property (strong, nonatomic) NAMidiRepresentation *namidi;
 @property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
 @property (strong, nonatomic) TrackSelection *trackSelection;
 @end

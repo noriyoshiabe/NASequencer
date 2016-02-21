@@ -56,9 +56,11 @@
     _horizontalSplitView.delegate = self;
     
     _selectionVC = [[SelectionViewController alloc] init];
-    _selectionVC.trackSelection = _trackSelection;
-    
     _eventListVC = [[EventListViewController alloc] init];
+    
+    _eventListVC.namidi = _namidi;
+    
+    _selectionVC.trackSelection = _trackSelection;
     _eventListVC.trackSelection = _trackSelection;
     
     [_selectionView addSubviewWithFitConstraints:_selectionVC.view];

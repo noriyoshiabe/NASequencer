@@ -18,6 +18,18 @@
 @property (weak) IBOutlet LevelIndicator *indicatorL;
 @property (weak) IBOutlet LevelIndicator *indicatorR;
 @property (weak) IBOutlet NSView *underLine;
+
+@property (assign, nonatomic) bool mute;
+@property (assign, nonatomic) bool solo;
+@property (assign, nonatomic) int volume;
+@property (assign, nonatomic) int pan;
+@property (assign, nonatomic) int chorus;
+@property (assign, nonatomic) int reverb;
+@property (assign, nonatomic) int L;
+@property (assign, nonatomic) int R;
+
+@property (strong, nonatomic) MidiSourceRepresentation *midiSource;
+@property (strong, nonatomic) PresetRepresentation *preset;
 @end
 
 @implementation MixerChannelViewController

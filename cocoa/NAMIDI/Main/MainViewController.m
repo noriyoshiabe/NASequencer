@@ -52,6 +52,12 @@
     _playLineVC = [[PlayLineViewController alloc] init];
     _playLineVC.containerView = _playLineView;
     
+    _conductorVC.namidi = _namidi;
+    _measureVC.namidi = _namidi;
+    _mixerVC.namidi = _namidi;
+    _trackVC.namidi = _namidi;
+    _playLineVC.namidi = _namidi;
+    
     _scaleAssistant = [[MeasureScaleAssistant alloc] init];
     _measureVC.scaleAssistant = _scaleAssistant;
     _trackVC.scaleAssistant = _scaleAssistant;

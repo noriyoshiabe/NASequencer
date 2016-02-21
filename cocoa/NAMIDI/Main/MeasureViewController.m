@@ -32,7 +32,6 @@
 
 @interface MeasureViewController ()
 @property (strong, nonatomic) IBOutlet MeasureView *measureView;
-@property (strong, nonatomic) SequenceRepresentation *sequence;
 @end
 
 @implementation MeasureViewController
@@ -40,11 +39,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    _sequence = [[SequenceRepresentation alloc] init];
-    
     _measureView.scaleAssistant = _scaleAssistant;
     _measureView.trackSelection = _trackSelection;
-    _measureView.sequence = _sequence;
+    _measureView.sequence = _namidi.sequence;
     
     [_scaleAssistant addObserver:self forKeyPath:@"scale" options:0 context:NULL];
     [_trackSelection addObserver:self forKeyPath:@"selectionFlags" options:0 context:NULL];
@@ -84,10 +81,10 @@
     }
     else {
         int tick = (point.x - _scaleAssistant.measureOffset) * _scaleAssistant.tickPerPixel;
-        Location location = [_sequence locationByTick:tick];
+        Location location = [_namidi.sequence locationByTick:tick];
         location.t = 0;
         location.b = 1;
-        tick = [_sequence tickByLocation:location];
+        tick = [_namidi.sequence tickByLocation:location];
         // TODO move measure
     }
 }

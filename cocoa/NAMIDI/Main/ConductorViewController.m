@@ -21,12 +21,15 @@
 
 - (NSString *)tempo
 {
-    return [NSString stringWithFormat:@"%.2f", 124.20];
+    // TODO notify change
+    return [NSString stringWithFormat:@"%.2f", _namidi.player.tempo];
 }
 
 - (NSString *)timeSign
 {
-    return [NSString stringWithFormat:@"%d/%d", 3, 4];
+    // TODO notify change
+    TimeSign timeSign = _namidi.player.timeSign;
+    return [NSString stringWithFormat:@"%d/%d", timeSign.numerator, timeSign.denominator];
 }
 
 @end

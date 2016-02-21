@@ -43,7 +43,7 @@
     _trackChannelView.channel = _channel;
     _trackChannelView.scaleAssistant = _scaleAssistant;
     _trackChannelView.trackSelection = _trackSelection;
-    _trackChannelView.sequence = [[SequenceRepresentation alloc] init];
+    _trackChannelView.sequence = _namidi.sequence;
     
     [_trackSelection addObserver:self forKeyPath:@"selectionFlags" options:0 context:NULL];
 }
