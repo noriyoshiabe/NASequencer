@@ -26,6 +26,8 @@
 		020CF87E1C6B20C50025DF84 /* Application.m in Sources */ = {isa = PBXBuildFile; fileRef = 020CF87D1C6B20C50025DF84 /* Application.m */; };
 		023BB20F1C6EF17B0030487C /* NSArray+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 023BB20E1C6EF17B0030487C /* NSArray+Support.m */; };
 		0240A2481C6C30F2002D6F72 /* ApplicationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0240A2471C6C30F2002D6F72 /* ApplicationController.m */; };
+		02463FB71C7A1C6000C24AD3 /* EventListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02463FB51C7A1C6000C24AD3 /* EventListViewController.m */; };
+		02463FB81C7A1C6000C24AD3 /* EventListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02463FB61C7A1C6000C24AD3 /* EventListViewController.xib */; };
 		024A19031C76799200B0AC56 /* MeasureScaleAssistant.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A19021C76799200B0AC56 /* MeasureScaleAssistant.m */; };
 		024A19061C768AC800B0AC56 /* FlippedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A19051C768AC800B0AC56 /* FlippedView.m */; };
 		024A5B0D1C69FF990079D22C /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 024A5B0C1C69FF990079D22C /* MainMenu.xib */; };
@@ -116,6 +118,9 @@
 		023BB20E1C6EF17B0030487C /* NSArray+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Support.m"; sourceTree = "<group>"; };
 		0240A2461C6C30F2002D6F72 /* ApplicationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationController.h; sourceTree = "<group>"; };
 		0240A2471C6C30F2002D6F72 /* ApplicationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ApplicationController.m; sourceTree = "<group>"; };
+		02463FB41C7A1C6000C24AD3 /* EventListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventListViewController.h; sourceTree = "<group>"; };
+		02463FB51C7A1C6000C24AD3 /* EventListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventListViewController.m; sourceTree = "<group>"; };
+		02463FB61C7A1C6000C24AD3 /* EventListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EventListViewController.xib; sourceTree = "<group>"; };
 		024A19011C76799200B0AC56 /* MeasureScaleAssistant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MeasureScaleAssistant.h; sourceTree = "<group>"; };
 		024A19021C76799200B0AC56 /* MeasureScaleAssistant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MeasureScaleAssistant.m; sourceTree = "<group>"; };
 		024A19041C768AC800B0AC56 /* FlippedView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlippedView.h; sourceTree = "<group>"; };
@@ -358,6 +363,9 @@
 				02A973C61C79E54900C21B8E /* SelectionViewController.h */,
 				02A973C71C79E54900C21B8E /* SelectionViewController.m */,
 				02A973C81C79E54900C21B8E /* SelectionViewController.xib */,
+				02463FB41C7A1C6000C24AD3 /* EventListViewController.h */,
+				02463FB51C7A1C6000C24AD3 /* EventListViewController.m */,
+				02463FB61C7A1C6000C24AD3 /* EventListViewController.xib */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -516,6 +524,7 @@
 				02CAF6C51C778C2200AD81B2 /* ErrorWindowController.xib in Resources */,
 				02A973CA1C79E54900C21B8E /* SelectionViewController.xib in Resources */,
 				02A674041C6B3A5C00914C8B /* NMFIcon.iconset in Resources */,
+				02463FB81C7A1C6000C24AD3 /* EventListViewController.xib in Resources */,
 				02633EAC1C74C80400B9FF0E /* MixerChannelViewController.xib in Resources */,
 				02A673FD1C6B3A5C00914C8B /* MMLIcon.iconset in Resources */,
 				024A5B0D1C69FF990079D22C /* MainMenu.xib in Resources */,
@@ -573,6 +582,7 @@
 				02CAF6C41C778C2200AD81B2 /* ErrorWindowController.m in Sources */,
 				02633EB81C74ED9300B9FF0E /* NSView+Support.m in Sources */,
 				0201F7D11C688BB100A201F6 /* AppDelegate.m in Sources */,
+				02463FB71C7A1C6000C24AD3 /* EventListViewController.m in Sources */,
 				024A19061C768AC800B0AC56 /* FlippedView.m in Sources */,
 				028209221C70A3C0003EBCFB /* EditorTabItem.m in Sources */,
 				024A5B361C6A01280079D22C /* GettingStartedWindowController.m in Sources */,
