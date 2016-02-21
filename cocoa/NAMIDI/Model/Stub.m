@@ -176,16 +176,16 @@
             ChannelRepresentation *channel = [[ChannelRepresentation alloc] init];
             channel.number = i + 1;
             channel.noteRange = (NoteRange){40, 68};
-            for (int i = 0; i < 64; ++i) {
+            for (int j = 0; j < 64; ++j) {
                 event = [[MidiEventRepresentation alloc] init];
                 NoteEvent *note = malloc(sizeof(NoteEvent));
                 note->id = ++_id;
                 note->type = MidiEventTypeNote;
-                note->tick = 480 * i;
+                note->tick = 480 * j;
                 note->channel = i + 1;
-                note->noteNo = (2 * i) % 30 + 40;
+                note->noteNo = (2 * j) % 30 + 40;
                 note->gatetime = 480;
-                note->velocity = (2 * i) % 20 + 100;
+                note->velocity = (2 * j) % 20 + 100;
                 event.raw = (MidiEvent *)note;
                 [_events addObject:event];
                 [(NSMutableArray *)channel.events addObject:event];
