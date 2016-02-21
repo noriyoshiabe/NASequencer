@@ -96,4 +96,19 @@
     }
 }
 
+- (void)mouseDown:(NSEvent *)theEvent
+{
+    CGPoint point = [self.view convertPoint:theEvent.locationInWindow fromView:self.view.window.contentView];
+    
+    for (int i = 0; i < 16; ++i) {
+        TrackChannelViewController *channelVC = _controllers[i];
+        if (CGRectContainsPoint(channelVC.view.frame, point)) {
+            [_delegate trackViewController:self didClickChannel:channelVC.channel];
+            return;
+        }
+    }
+    
+    [_delegate trackViewController:self didClickChannel:-1];
+}
+
 @end

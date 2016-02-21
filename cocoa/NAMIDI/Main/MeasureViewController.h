@@ -9,6 +9,13 @@
 #import <Cocoa/Cocoa.h>
 #import "MeasureScaleAssistant.h"
 
+@class MeasureViewController;
+@protocol MeasureViewControllerDelegate <NSObject>
+- (void)measureViewControllerDidClickMeasure:(MeasureViewController *)controller tick:(int)tick;
+- (void)measureViewControllerDidClickConductorTrack:(MeasureViewController *)controller;
+@end
+
 @interface MeasureViewController : NSViewController
+@property (weak, nonatomic) id<MeasureViewControllerDelegate> delegate;
 @property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
 @end

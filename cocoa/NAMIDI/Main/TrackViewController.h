@@ -9,6 +9,12 @@
 #import <Cocoa/Cocoa.h>
 #import "MeasureScaleAssistant.h"
 
+@class TrackViewController;
+@protocol TrackViewControllerDelegate <NSObject>
+- (void)trackViewController:(TrackViewController *)controller didClickChannel:(int)channel;
+@end
+
 @interface TrackViewController : NSViewController
+@property (weak, nonatomic) id<TrackViewControllerDelegate> delegate;
 @property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
 @end

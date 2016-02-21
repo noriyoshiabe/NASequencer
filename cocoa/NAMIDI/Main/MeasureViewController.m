@@ -30,6 +30,7 @@
 
 @interface MeasureViewController ()
 @property (strong, nonatomic) IBOutlet MeasureView *measureView;
+@property (strong, nonatomic) SequenceRepresentation *sequence;
 @end
 
 @implementation MeasureViewController
@@ -37,8 +38,10 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    _sequence = [[SequenceRepresentation alloc] init];
+    
     _measureView.scaleAssistant = _scaleAssistant;
-    _measureView.sequence = [[SequenceRepresentation alloc] init];
+    _measureView.sequence = _sequence;
     
     [_scaleAssistant addObserver:self forKeyPath:@"scale" options:0 context:NULL];
 }
@@ -59,6 +62,23 @@
 {
     if (object == _scaleAssistant) {
         [_measureView layout];
+    }
+}
+
+- (void)mouseDown:(NSEvent *)theEvent
+{
+    CGPoint point = [self.view convertPoint:theEvent.locationInWindow fromView:self.view.window.contentView];
+    
+    if (CONDUCTOR_LINE_Y < point.y) {
+        [_delegate measureViewControllerDidClickConductorTrack:self];
+    }
+    else {
+        int tick = (point.x - _scaleAssistant.measureOffset) * _scaleAssistant.tickPerPixel;
+        Location location = [_sequence locationByTick:tick];
+        location.t = 0;
+        location.b = 1;
+        tick = [_sequence tickByLocation:location];
+        [_delegate measureViewControllerDidClickMeasure:self tick:tick];
     }
 }
 
