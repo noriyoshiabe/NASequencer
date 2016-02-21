@@ -80,7 +80,7 @@
     CGPoint point = [self.view convertPoint:theEvent.locationInWindow fromView:self.view.window.contentView];
     
     if (CONDUCTOR_LINE_Y < point.y) {
-        [_delegate measureViewControllerDidClickConductorTrack:self];
+        [_trackSelection click:0 event:theEvent];
     }
     else {
         int tick = (point.x - _scaleAssistant.measureOffset) * _scaleAssistant.tickPerPixel;
@@ -88,7 +88,7 @@
         location.t = 0;
         location.b = 1;
         tick = [_sequence tickByLocation:location];
-        [_delegate measureViewControllerDidClickMeasure:self tick:tick];
+        // TODO move measure
     }
 }
 

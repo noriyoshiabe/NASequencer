@@ -8,11 +8,17 @@
 
 #import <Foundation/Foundation.h>
 
+@class TrackSelection;
+@protocol TrackSelectionDelegate <NSObject>
+- (void)trackSelectionDidEnterSelection:(TrackSelection *)trackSelection;
+@end
+
 @interface TrackSelection : NSObject
+@property (weak, nonatomic) id<TrackSelectionDelegate> delegate;
 @property (readonly, nonatomic) unsigned int selectionFlags;
 - (BOOL)isTrackSelected:(int)trackNo;
 - (BOOL)isTrackSelectionChanged:(int)trackNo;
-- (void)click:(int)trackNo;
+- (void)click:(int)trackNo event:(NSEvent *)event;
 - (void)selectAll;
 - (void)deselectAll;
 @end

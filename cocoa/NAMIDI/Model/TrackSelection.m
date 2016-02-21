@@ -35,7 +35,7 @@
     [self didChangeValueForKey:@"selectionFlags"];
 }
 
-- (void)click:(int)trackNo
+- (void)click:(int)trackNo event:(NSEvent *)event
 {
     if (0 <= trackNo && trackNo <= 16) {
         if (NSCommandKeyMask & [NSEvent modifierFlags]) {
@@ -45,7 +45,18 @@
             [self selectFromLastSelectedTo:trackNo];
         }
         else {
-            [self select:trackNo];
+            switch (event.clickCount) {
+                case 1:
+                    if (![self isTrackSelected:trackNo]) {
+                        [self deselectAll];
+                        [self select:trackNo];
+                    }
+                    break;
+                case 2:
+                    [_delegate trackSelectionDidEnterSelection:self];
+                    break;
+            }
+            
         }
     }
     else {
@@ -55,13 +66,13 @@
 
 - (void)select:(int)trackNo
 {
-    self.selectionFlags = (1 << trackNo);
+    self.selectionFlags = _selectionFlags | (1 << trackNo);
     _lastSelected = trackNo;
 }
 
 - (void)selectFromLastSelectedTo:(int)trackNo
 {
-    unsigned int selectionFlags = 0;
+    unsigned int selectionFlags = _selectionFlags;
     
     int from = _lastSelected < trackNo ? _lastSelected : trackNo;
     int to = _lastSelected < trackNo ? trackNo : _lastSelected;

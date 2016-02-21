@@ -16,7 +16,7 @@
 #import "SynchronizedScrollView.h"
 #import "Color.h"
 
-@interface MainViewController () <MeasureViewControllerDelegate, TrackViewControllerDelegate>
+@interface MainViewController ()
 @property (weak) IBOutlet NSView *conductorView;
 @property (weak) IBOutlet SynchronizedScrollView *mixerView;
 @property (weak) IBOutlet SynchronizedScrollView *measureView;
@@ -75,33 +75,11 @@
     [_trackView observeScrollForScrollView:_measureView x:YES y:NO];
     [_trackView observeScrollForScrollView:_mixerView x:NO y:YES];
     [_playLineView observeScrollForScrollView:_trackView x:YES y:NO];
-    
-    _measureVC.delegate = self;
-    _trackVC.delegate = self;
 }
 
 - (void)viewDidAppear
 {
     [self.view.window makeFirstResponder:self.view];
-}
-
-#pragma mark MeasureViewControllerDelegate
-
-- (void)measureViewControllerDidClickMeasure:(MeasureViewController *)controller tick:(int)tick
-{
-    NSLog(@"measureViewControllerDidClickMeasure:tick: %d", tick);
-}
-
-- (void)measureViewControllerDidClickConductorTrack:(MeasureViewController *)controller
-{
-    [_trackSelection click:0];
-}
-
-#pragma mark TrackViewControllerDelegate
-
-- (void)trackViewController:(TrackViewController *)controller didClickChannel:(int)channel
-{
-    [_trackSelection click:channel];
 }
 
 #pragma mark Menu Action

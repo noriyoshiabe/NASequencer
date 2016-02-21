@@ -13,7 +13,7 @@
 #import "ErrorWindowController.h"
 #import "TrackSelection.h"
 
-@interface MainWindowController ()
+@interface MainWindowController () <TrackSelectionDelegate>
 @property (weak) IBOutlet NSView *contentView;
 @property (weak) IBOutlet LocationView *locationView;
 @property (strong, nonatomic) MainViewController *mainVC;
@@ -41,15 +41,13 @@
     _detailVC = [[DetailViewController alloc] init];
     
     _trackSelection = [[TrackSelection alloc] init];
+    _trackSelection.delegate = self;
+    
     _mainVC.trackSelection = _trackSelection;
     _detailVC.trackSelection = _trackSelection;
     
-    _mainVC.view.translatesAutoresizingMaskIntoConstraints = NO;
-    [_contentView addSubview:_mainVC.view];
-    [_contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[view]|" options:0 metrics:nil views:@{@"view": _mainVC.view}]];
-    [_contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[view]|" options:0 metrics:nil views:@{@"view": _mainVC.view}]];
-    
     _locationView.player = [[PlayerRepresentation alloc]init];
+    [self showMainView];
     
     [self showErrorWindow];
 }
@@ -70,12 +68,32 @@
     [_errorWC showWindow:self];
 }
 
+- (void)showMainView
+{
+    [_detailVC.view removeFromSuperview];
+    
+    _mainVC.view.translatesAutoresizingMaskIntoConstraints = NO;
+    [_contentView addSubview:_mainVC.view];
+    [_contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[view]|" options:0 metrics:nil views:@{@"view": _mainVC.view}]];
+    [_contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[view]|" options:0 metrics:nil views:@{@"view": _mainVC.view}]];
+}
+
+- (void)showDetailView
+{
+    [_mainVC.view removeFromSuperview];
+    
+    _detailVC.view.translatesAutoresizingMaskIntoConstraints = NO;
+    [_contentView addSubview:_detailVC.view];
+    [_contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[view]|" options:0 metrics:nil views:@{@"view": _detailVC.view}]];
+    [_contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[view]|" options:0 metrics:nil views:@{@"view": _detailVC.view}]];
+}
+
 #pragma mark Toolbar Action
 
 - (BOOL)validateToolbarItem:(NSToolbarItem *)theItem
 {
     if ([theItem.itemIdentifier isEqualToString:@"back"]) {
-        return NO;
+        return nil != _detailVC.view.superview;
     }
     else {
         return YES;
@@ -84,7 +102,7 @@
 
 - (IBAction)goBack:(id)sender
 {
-    NSLog(@"%s", __func__);
+    [self showMainView];
 }
 
 - (IBAction)rewind:(id)sender
@@ -112,6 +130,13 @@
 - (IBAction)export:(id)sender
 {
     NSLog(@"%s", __func__);
+}
+
+#pragma mark TrackSelectionDelegate
+
+- (void)trackSelectionDidEnterSelection:(TrackSelection *)trackSelection
+{
+    [self showDetailView];
 }
 
 @end
