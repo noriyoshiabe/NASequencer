@@ -26,13 +26,8 @@
 		020CF87E1C6B20C50025DF84 /* Application.m in Sources */ = {isa = PBXBuildFile; fileRef = 020CF87D1C6B20C50025DF84 /* Application.m */; };
 		023BB20F1C6EF17B0030487C /* NSArray+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 023BB20E1C6EF17B0030487C /* NSArray+Support.m */; };
 		0240A2481C6C30F2002D6F72 /* ApplicationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0240A2471C6C30F2002D6F72 /* ApplicationController.m */; };
-		02463FB71C7A1C6000C24AD3 /* EventListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02463FB51C7A1C6000C24AD3 /* EventListViewController.m */; };
-		02463FB81C7A1C6000C24AD3 /* EventListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02463FB61C7A1C6000C24AD3 /* EventListViewController.xib */; };
-		024A19031C76799200B0AC56 /* MeasureScaleAssistant.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A19021C76799200B0AC56 /* MeasureScaleAssistant.m */; };
 		024A19061C768AC800B0AC56 /* FlippedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A19051C768AC800B0AC56 /* FlippedView.m */; };
 		024A5B0D1C69FF990079D22C /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 024A5B0C1C69FF990079D22C /* MainMenu.xib */; };
-		024A5B1B1C69FFD40079D22C /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A5B161C69FFD40079D22C /* MainViewController.m */; };
-		024A5B1C1C69FFD40079D22C /* MainViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 024A5B171C69FFD40079D22C /* MainViewController.xib */; };
 		024A5B1D1C69FFD40079D22C /* MainWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A5B191C69FFD40079D22C /* MainWindowController.m */; };
 		024A5B1E1C69FFD40079D22C /* MainWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 024A5B1A1C69FFD40079D22C /* MainWindowController.xib */; };
 		024A5B2E1C69FFD90079D22C /* WelcomeWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A5B281C69FFD90079D22C /* WelcomeWindowController.m */; };
@@ -43,22 +38,33 @@
 		025423631C6F31DF007D53CC /* EditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 025423611C6F31DF007D53CC /* EditorViewController.m */; };
 		025423641C6F31DF007D53CC /* EditorViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 025423621C6F31DF007D53CC /* EditorViewController.xib */; };
 		0255F6281C7111DF00CF4C52 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0255F6271C7111DF00CF4C52 /* CoreText.framework */; };
-		02633E941C74AAC800B9FF0E /* ConductorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633E921C74AAC800B9FF0E /* ConductorViewController.m */; };
-		02633E951C74AAC800B9FF0E /* ConductorViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02633E931C74AAC800B9FF0E /* ConductorViewController.xib */; };
 		02633E981C74AC9F00B9FF0E /* Color.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633E971C74AC9F00B9FF0E /* Color.m */; };
-		02633E9C1C74B5A800B9FF0E /* MeasureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633E9A1C74B5A800B9FF0E /* MeasureViewController.m */; };
-		02633E9D1C74B5A800B9FF0E /* MeasureViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02633E9B1C74B5A800B9FF0E /* MeasureViewController.xib */; };
-		02633EA11C74B6C100B9FF0E /* MixerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633E9F1C74B6C100B9FF0E /* MixerViewController.m */; };
-		02633EA21C74B6C100B9FF0E /* MixerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02633EA01C74B6C100B9FF0E /* MixerViewController.xib */; };
-		02633EA61C74B74900B9FF0E /* TrackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EA41C74B74900B9FF0E /* TrackViewController.m */; };
-		02633EA71C74B74900B9FF0E /* TrackViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02633EA51C74B74900B9FF0E /* TrackViewController.xib */; };
-		02633EAB1C74C80400B9FF0E /* MixerChannelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EA91C74C80400B9FF0E /* MixerChannelViewController.m */; };
-		02633EAC1C74C80400B9FF0E /* MixerChannelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02633EAA1C74C80400B9FF0E /* MixerChannelViewController.xib */; };
-		02633EB01C74C83D00B9FF0E /* TrackChannelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EAE1C74C83D00B9FF0E /* TrackChannelViewController.m */; };
-		02633EB11C74C83D00B9FF0E /* TrackChannelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02633EAF1C74C83D00B9FF0E /* TrackChannelViewController.xib */; };
 		02633EB81C74ED9300B9FF0E /* NSView+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EB71C74ED9200B9FF0E /* NSView+Support.m */; };
 		02633EBC1C75062300B9FF0E /* LevelIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EBB1C75062300B9FF0E /* LevelIndicator.m */; };
 		02633EBF1C75B09F00B9FF0E /* Stub.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EBE1C75B09F00B9FF0E /* Stub.m */; };
+		026D42D61C7ABC08000267AD /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 026D42B21C7ABC08000267AD /* DetailViewController.m */; };
+		026D42D71C7ABC08000267AD /* DetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 026D42B31C7ABC08000267AD /* DetailViewController.xib */; };
+		026D42D81C7ABC08000267AD /* EventListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 026D42B51C7ABC08000267AD /* EventListViewController.m */; };
+		026D42D91C7ABC08000267AD /* EventListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 026D42B61C7ABC08000267AD /* EventListViewController.xib */; };
+		026D42DA1C7ABC08000267AD /* SelectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 026D42B81C7ABC08000267AD /* SelectionViewController.m */; };
+		026D42DB1C7ABC08000267AD /* SelectionViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 026D42B91C7ABC08000267AD /* SelectionViewController.xib */; };
+		026D42DC1C7ABC08000267AD /* ConductorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 026D42BC1C7ABC08000267AD /* ConductorViewController.m */; };
+		026D42DD1C7ABC08000267AD /* ConductorViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 026D42BD1C7ABC08000267AD /* ConductorViewController.xib */; };
+		026D42DE1C7ABC08000267AD /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 026D42BF1C7ABC08000267AD /* MainViewController.m */; };
+		026D42DF1C7ABC08000267AD /* MainViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 026D42C01C7ABC08000267AD /* MainViewController.xib */; };
+		026D42E01C7ABC08000267AD /* MeasureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 026D42C21C7ABC08000267AD /* MeasureViewController.m */; };
+		026D42E11C7ABC08000267AD /* MeasureViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 026D42C31C7ABC08000267AD /* MeasureViewController.xib */; };
+		026D42E21C7ABC08000267AD /* MixerChannelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 026D42C51C7ABC08000267AD /* MixerChannelViewController.m */; };
+		026D42E31C7ABC08000267AD /* MixerChannelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 026D42C61C7ABC08000267AD /* MixerChannelViewController.xib */; };
+		026D42E41C7ABC08000267AD /* MixerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 026D42C81C7ABC08000267AD /* MixerViewController.m */; };
+		026D42E51C7ABC08000267AD /* MixerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 026D42C91C7ABC08000267AD /* MixerViewController.xib */; };
+		026D42E61C7ABC08000267AD /* TrackChannelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 026D42CB1C7ABC08000267AD /* TrackChannelViewController.m */; };
+		026D42E71C7ABC08000267AD /* TrackChannelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 026D42CC1C7ABC08000267AD /* TrackChannelViewController.xib */; };
+		026D42E81C7ABC08000267AD /* TrackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 026D42CE1C7ABC08000267AD /* TrackViewController.m */; };
+		026D42E91C7ABC08000267AD /* TrackViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 026D42CF1C7ABC08000267AD /* TrackViewController.xib */; };
+		026D42EA1C7ABC08000267AD /* MeasureScaleAssistant.m in Sources */ = {isa = PBXBuildFile; fileRef = 026D42D21C7ABC08000267AD /* MeasureScaleAssistant.m */; };
+		026D42EB1C7ABC08000267AD /* PlayLineViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 026D42D41C7ABC08000267AD /* PlayLineViewController.m */; };
+		026D42EC1C7ABC08000267AD /* PlayLineViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 026D42D51C7ABC08000267AD /* PlayLineViewController.xib */; };
 		028209221C70A3C0003EBCFB /* EditorTabItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 028209201C70A3C0003EBCFB /* EditorTabItem.m */; };
 		028209231C70A3C0003EBCFB /* EditorTabItem.xib in Resources */ = {isa = PBXBuildFile; fileRef = 028209211C70A3C0003EBCFB /* EditorTabItem.xib */; };
 		028209271C70A5D8003EBCFB /* FileRepresentation.m in Sources */ = {isa = PBXBuildFile; fileRef = 028209261C70A5D8003EBCFB /* FileRepresentation.m */; };
@@ -72,14 +78,8 @@
 		02A674061C6B3A7600914C8B /* NAMIDI.help in Resources */ = {isa = PBXBuildFile; fileRef = 02A674051C6B3A7600914C8B /* NAMIDI.help */; };
 		02A973C21C7974CD00C21B8E /* TrackSelection.m in Sources */ = {isa = PBXBuildFile; fileRef = 02A973C11C7974CD00C21B8E /* TrackSelection.m */; };
 		02A973C51C798B6100C21B8E /* NSColor+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 02A973C41C798B6100C21B8E /* NSColor+Support.m */; };
-		02A973C91C79E54900C21B8E /* SelectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02A973C71C79E54900C21B8E /* SelectionViewController.m */; };
-		02A973CA1C79E54900C21B8E /* SelectionViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02A973C81C79E54900C21B8E /* SelectionViewController.xib */; };
 		02A973CD1C79F02200C21B8E /* SelectionButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 02A973CC1C79F02200C21B8E /* SelectionButton.m */; };
-		02B6EF751C6C4A2F003E1929 /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02B6EF731C6C4A2F003E1929 /* DetailViewController.m */; };
-		02B6EF761C6C4A2F003E1929 /* DetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02B6EF741C6C4A2F003E1929 /* DetailViewController.xib */; };
 		02CAF6A91C771F6E00AD81B2 /* SynchronizedScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CAF6A81C771F6E00AD81B2 /* SynchronizedScrollView.m */; };
-		02CAF6AD1C772CD100AD81B2 /* PlayLineViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CAF6AB1C772CD100AD81B2 /* PlayLineViewController.m */; };
-		02CAF6AE1C772CD100AD81B2 /* PlayLineViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02CAF6AC1C772CD100AD81B2 /* PlayLineViewController.xib */; };
 		02CAF6C01C77858000AD81B2 /* LocationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CAF6BF1C77858000AD81B2 /* LocationView.m */; };
 		02CAF6C41C778C2200AD81B2 /* ErrorWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CAF6C21C778C2200AD81B2 /* ErrorWindowController.m */; };
 		02CAF6C51C778C2200AD81B2 /* ErrorWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02CAF6C31C778C2200AD81B2 /* ErrorWindowController.xib */; };
@@ -118,17 +118,9 @@
 		023BB20E1C6EF17B0030487C /* NSArray+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Support.m"; sourceTree = "<group>"; };
 		0240A2461C6C30F2002D6F72 /* ApplicationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationController.h; sourceTree = "<group>"; };
 		0240A2471C6C30F2002D6F72 /* ApplicationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ApplicationController.m; sourceTree = "<group>"; };
-		02463FB41C7A1C6000C24AD3 /* EventListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventListViewController.h; sourceTree = "<group>"; };
-		02463FB51C7A1C6000C24AD3 /* EventListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventListViewController.m; sourceTree = "<group>"; };
-		02463FB61C7A1C6000C24AD3 /* EventListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EventListViewController.xib; sourceTree = "<group>"; };
-		024A19011C76799200B0AC56 /* MeasureScaleAssistant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MeasureScaleAssistant.h; sourceTree = "<group>"; };
-		024A19021C76799200B0AC56 /* MeasureScaleAssistant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MeasureScaleAssistant.m; sourceTree = "<group>"; };
 		024A19041C768AC800B0AC56 /* FlippedView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlippedView.h; sourceTree = "<group>"; };
 		024A19051C768AC800B0AC56 /* FlippedView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FlippedView.m; sourceTree = "<group>"; };
 		024A5B0C1C69FF990079D22C /* MainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
-		024A5B151C69FFD40079D22C /* MainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
-		024A5B161C69FFD40079D22C /* MainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
-		024A5B171C69FFD40079D22C /* MainViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainViewController.xib; sourceTree = "<group>"; };
 		024A5B181C69FFD40079D22C /* MainWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainWindowController.h; sourceTree = "<group>"; };
 		024A5B191C69FFD40079D22C /* MainWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainWindowController.m; sourceTree = "<group>"; };
 		024A5B1A1C69FFD40079D22C /* MainWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainWindowController.xib; sourceTree = "<group>"; };
@@ -145,32 +137,49 @@
 		025423621C6F31DF007D53CC /* EditorViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EditorViewController.xib; sourceTree = "<group>"; };
 		0255F6271C7111DF00CF4C52 /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 		026160B51C689E18001E99A9 /* NAMIDI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = NAMIDI.entitlements; sourceTree = "<group>"; };
-		02633E911C74AAC800B9FF0E /* ConductorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConductorViewController.h; sourceTree = "<group>"; };
-		02633E921C74AAC800B9FF0E /* ConductorViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConductorViewController.m; sourceTree = "<group>"; };
-		02633E931C74AAC800B9FF0E /* ConductorViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ConductorViewController.xib; sourceTree = "<group>"; };
 		02633E961C74AC9F00B9FF0E /* Color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Color.h; sourceTree = "<group>"; };
 		02633E971C74AC9F00B9FF0E /* Color.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Color.m; sourceTree = "<group>"; };
-		02633E991C74B5A800B9FF0E /* MeasureViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MeasureViewController.h; sourceTree = "<group>"; };
-		02633E9A1C74B5A800B9FF0E /* MeasureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MeasureViewController.m; sourceTree = "<group>"; };
-		02633E9B1C74B5A800B9FF0E /* MeasureViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MeasureViewController.xib; sourceTree = "<group>"; };
-		02633E9E1C74B6C100B9FF0E /* MixerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MixerViewController.h; sourceTree = "<group>"; };
-		02633E9F1C74B6C100B9FF0E /* MixerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MixerViewController.m; sourceTree = "<group>"; };
-		02633EA01C74B6C100B9FF0E /* MixerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MixerViewController.xib; sourceTree = "<group>"; };
-		02633EA31C74B74900B9FF0E /* TrackViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrackViewController.h; sourceTree = "<group>"; };
-		02633EA41C74B74900B9FF0E /* TrackViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TrackViewController.m; sourceTree = "<group>"; };
-		02633EA51C74B74900B9FF0E /* TrackViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TrackViewController.xib; sourceTree = "<group>"; };
-		02633EA81C74C80400B9FF0E /* MixerChannelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MixerChannelViewController.h; sourceTree = "<group>"; };
-		02633EA91C74C80400B9FF0E /* MixerChannelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MixerChannelViewController.m; sourceTree = "<group>"; };
-		02633EAA1C74C80400B9FF0E /* MixerChannelViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MixerChannelViewController.xib; sourceTree = "<group>"; };
-		02633EAD1C74C83D00B9FF0E /* TrackChannelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrackChannelViewController.h; sourceTree = "<group>"; };
-		02633EAE1C74C83D00B9FF0E /* TrackChannelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TrackChannelViewController.m; sourceTree = "<group>"; };
-		02633EAF1C74C83D00B9FF0E /* TrackChannelViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TrackChannelViewController.xib; sourceTree = "<group>"; };
 		02633EB61C74ED9200B9FF0E /* NSView+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSView+Support.h"; sourceTree = "<group>"; };
 		02633EB71C74ED9200B9FF0E /* NSView+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSView+Support.m"; sourceTree = "<group>"; };
 		02633EBA1C75062300B9FF0E /* LevelIndicator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LevelIndicator.h; sourceTree = "<group>"; };
 		02633EBB1C75062300B9FF0E /* LevelIndicator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LevelIndicator.m; sourceTree = "<group>"; };
 		02633EBD1C75B08400B9FF0E /* Stub.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Stub.h; sourceTree = "<group>"; };
 		02633EBE1C75B09F00B9FF0E /* Stub.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Stub.m; sourceTree = "<group>"; };
+		026D42B11C7ABC08000267AD /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
+		026D42B21C7ABC08000267AD /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
+		026D42B31C7ABC08000267AD /* DetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DetailViewController.xib; sourceTree = "<group>"; };
+		026D42B41C7ABC08000267AD /* EventListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventListViewController.h; sourceTree = "<group>"; };
+		026D42B51C7ABC08000267AD /* EventListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventListViewController.m; sourceTree = "<group>"; };
+		026D42B61C7ABC08000267AD /* EventListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EventListViewController.xib; sourceTree = "<group>"; };
+		026D42B71C7ABC08000267AD /* SelectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SelectionViewController.h; sourceTree = "<group>"; };
+		026D42B81C7ABC08000267AD /* SelectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SelectionViewController.m; sourceTree = "<group>"; };
+		026D42B91C7ABC08000267AD /* SelectionViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SelectionViewController.xib; sourceTree = "<group>"; };
+		026D42BB1C7ABC08000267AD /* ConductorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConductorViewController.h; sourceTree = "<group>"; };
+		026D42BC1C7ABC08000267AD /* ConductorViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConductorViewController.m; sourceTree = "<group>"; };
+		026D42BD1C7ABC08000267AD /* ConductorViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ConductorViewController.xib; sourceTree = "<group>"; };
+		026D42BE1C7ABC08000267AD /* MainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
+		026D42BF1C7ABC08000267AD /* MainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
+		026D42C01C7ABC08000267AD /* MainViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainViewController.xib; sourceTree = "<group>"; };
+		026D42C11C7ABC08000267AD /* MeasureViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MeasureViewController.h; sourceTree = "<group>"; };
+		026D42C21C7ABC08000267AD /* MeasureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MeasureViewController.m; sourceTree = "<group>"; };
+		026D42C31C7ABC08000267AD /* MeasureViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MeasureViewController.xib; sourceTree = "<group>"; };
+		026D42C41C7ABC08000267AD /* MixerChannelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MixerChannelViewController.h; sourceTree = "<group>"; };
+		026D42C51C7ABC08000267AD /* MixerChannelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MixerChannelViewController.m; sourceTree = "<group>"; };
+		026D42C61C7ABC08000267AD /* MixerChannelViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MixerChannelViewController.xib; sourceTree = "<group>"; };
+		026D42C71C7ABC08000267AD /* MixerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MixerViewController.h; sourceTree = "<group>"; };
+		026D42C81C7ABC08000267AD /* MixerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MixerViewController.m; sourceTree = "<group>"; };
+		026D42C91C7ABC08000267AD /* MixerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MixerViewController.xib; sourceTree = "<group>"; };
+		026D42CA1C7ABC08000267AD /* TrackChannelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrackChannelViewController.h; sourceTree = "<group>"; };
+		026D42CB1C7ABC08000267AD /* TrackChannelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TrackChannelViewController.m; sourceTree = "<group>"; };
+		026D42CC1C7ABC08000267AD /* TrackChannelViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TrackChannelViewController.xib; sourceTree = "<group>"; };
+		026D42CD1C7ABC08000267AD /* TrackViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrackViewController.h; sourceTree = "<group>"; };
+		026D42CE1C7ABC08000267AD /* TrackViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TrackViewController.m; sourceTree = "<group>"; };
+		026D42CF1C7ABC08000267AD /* TrackViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TrackViewController.xib; sourceTree = "<group>"; };
+		026D42D11C7ABC08000267AD /* MeasureScaleAssistant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MeasureScaleAssistant.h; sourceTree = "<group>"; };
+		026D42D21C7ABC08000267AD /* MeasureScaleAssistant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MeasureScaleAssistant.m; sourceTree = "<group>"; };
+		026D42D31C7ABC08000267AD /* PlayLineViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayLineViewController.h; sourceTree = "<group>"; };
+		026D42D41C7ABC08000267AD /* PlayLineViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayLineViewController.m; sourceTree = "<group>"; };
+		026D42D51C7ABC08000267AD /* PlayLineViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PlayLineViewController.xib; sourceTree = "<group>"; };
 		0282091F1C70A3C0003EBCFB /* EditorTabItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorTabItem.h; sourceTree = "<group>"; };
 		028209201C70A3C0003EBCFB /* EditorTabItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditorTabItem.m; sourceTree = "<group>"; };
 		028209211C70A3C0003EBCFB /* EditorTabItem.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EditorTabItem.xib; sourceTree = "<group>"; };
@@ -189,19 +198,10 @@
 		02A973C11C7974CD00C21B8E /* TrackSelection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TrackSelection.m; sourceTree = "<group>"; };
 		02A973C31C798B6100C21B8E /* NSColor+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSColor+Support.h"; sourceTree = "<group>"; };
 		02A973C41C798B6100C21B8E /* NSColor+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSColor+Support.m"; sourceTree = "<group>"; };
-		02A973C61C79E54900C21B8E /* SelectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SelectionViewController.h; sourceTree = "<group>"; };
-		02A973C71C79E54900C21B8E /* SelectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SelectionViewController.m; sourceTree = "<group>"; };
-		02A973C81C79E54900C21B8E /* SelectionViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SelectionViewController.xib; sourceTree = "<group>"; };
-		02A973CB1C79F02200C21B8E /* SelectionButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SelectionButton.h; sourceTree = "<group>"; };
-		02A973CC1C79F02200C21B8E /* SelectionButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SelectionButton.m; sourceTree = "<group>"; };
-		02B6EF721C6C4A2F003E1929 /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
-		02B6EF731C6C4A2F003E1929 /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
-		02B6EF741C6C4A2F003E1929 /* DetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DetailViewController.xib; sourceTree = "<group>"; };
+		02A973CB1C79F02200C21B8E /* SelectionButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SelectionButton.h; path = ../../Component/SelectionButton.h; sourceTree = "<group>"; };
+		02A973CC1C79F02200C21B8E /* SelectionButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SelectionButton.m; path = ../../Component/SelectionButton.m; sourceTree = "<group>"; };
 		02CAF6A71C771F6E00AD81B2 /* SynchronizedScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SynchronizedScrollView.h; sourceTree = "<group>"; };
 		02CAF6A81C771F6E00AD81B2 /* SynchronizedScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SynchronizedScrollView.m; sourceTree = "<group>"; };
-		02CAF6AA1C772CD100AD81B2 /* PlayLineViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayLineViewController.h; sourceTree = "<group>"; };
-		02CAF6AB1C772CD100AD81B2 /* PlayLineViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayLineViewController.m; sourceTree = "<group>"; };
-		02CAF6AC1C772CD100AD81B2 /* PlayLineViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PlayLineViewController.xib; sourceTree = "<group>"; };
 		02CAF6BE1C77858000AD81B2 /* LocationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocationView.h; sourceTree = "<group>"; };
 		02CAF6BF1C77858000AD81B2 /* LocationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocationView.m; sourceTree = "<group>"; };
 		02CAF6C11C778C2200AD81B2 /* ErrorWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ErrorWindowController.h; sourceTree = "<group>"; };
@@ -323,49 +323,17 @@
 		024A5B141C69FFD40079D22C /* Main */ = {
 			isa = PBXGroup;
 			children = (
+				026D42BA1C7ABC08000267AD /* Main */,
+				026D42B01C7ABC08000267AD /* Detail */,
+				026D42D01C7ABC08000267AD /* Shared */,
 				024A5B181C69FFD40079D22C /* MainWindowController.h */,
 				024A5B191C69FFD40079D22C /* MainWindowController.m */,
 				024A5B1A1C69FFD40079D22C /* MainWindowController.xib */,
-				024A5B151C69FFD40079D22C /* MainViewController.h */,
-				024A5B161C69FFD40079D22C /* MainViewController.m */,
-				024A5B171C69FFD40079D22C /* MainViewController.xib */,
-				02633E911C74AAC800B9FF0E /* ConductorViewController.h */,
-				02633E921C74AAC800B9FF0E /* ConductorViewController.m */,
-				02633E931C74AAC800B9FF0E /* ConductorViewController.xib */,
-				02633E991C74B5A800B9FF0E /* MeasureViewController.h */,
-				02633E9A1C74B5A800B9FF0E /* MeasureViewController.m */,
-				02633E9B1C74B5A800B9FF0E /* MeasureViewController.xib */,
-				02633E9E1C74B6C100B9FF0E /* MixerViewController.h */,
-				02633E9F1C74B6C100B9FF0E /* MixerViewController.m */,
-				02633EA01C74B6C100B9FF0E /* MixerViewController.xib */,
-				02633EA81C74C80400B9FF0E /* MixerChannelViewController.h */,
-				02633EA91C74C80400B9FF0E /* MixerChannelViewController.m */,
-				02633EAA1C74C80400B9FF0E /* MixerChannelViewController.xib */,
-				02633EA31C74B74900B9FF0E /* TrackViewController.h */,
-				02633EA41C74B74900B9FF0E /* TrackViewController.m */,
-				02633EA51C74B74900B9FF0E /* TrackViewController.xib */,
-				02633EAD1C74C83D00B9FF0E /* TrackChannelViewController.h */,
-				02633EAE1C74C83D00B9FF0E /* TrackChannelViewController.m */,
-				02633EAF1C74C83D00B9FF0E /* TrackChannelViewController.xib */,
-				02B6EF721C6C4A2F003E1929 /* DetailViewController.h */,
-				02B6EF731C6C4A2F003E1929 /* DetailViewController.m */,
-				02B6EF741C6C4A2F003E1929 /* DetailViewController.xib */,
-				024A19011C76799200B0AC56 /* MeasureScaleAssistant.h */,
-				024A19021C76799200B0AC56 /* MeasureScaleAssistant.m */,
-				02CAF6AA1C772CD100AD81B2 /* PlayLineViewController.h */,
-				02CAF6AB1C772CD100AD81B2 /* PlayLineViewController.m */,
-				02CAF6AC1C772CD100AD81B2 /* PlayLineViewController.xib */,
 				02CAF6BE1C77858000AD81B2 /* LocationView.h */,
 				02CAF6BF1C77858000AD81B2 /* LocationView.m */,
 				02CAF6C11C778C2200AD81B2 /* ErrorWindowController.h */,
 				02CAF6C21C778C2200AD81B2 /* ErrorWindowController.m */,
 				02CAF6C31C778C2200AD81B2 /* ErrorWindowController.xib */,
-				02A973C61C79E54900C21B8E /* SelectionViewController.h */,
-				02A973C71C79E54900C21B8E /* SelectionViewController.m */,
-				02A973C81C79E54900C21B8E /* SelectionViewController.xib */,
-				02463FB41C7A1C6000C24AD3 /* EventListViewController.h */,
-				02463FB51C7A1C6000C24AD3 /* EventListViewController.m */,
-				02463FB61C7A1C6000C24AD3 /* EventListViewController.xib */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -419,10 +387,66 @@
 				024A19051C768AC800B0AC56 /* FlippedView.m */,
 				02CAF6A71C771F6E00AD81B2 /* SynchronizedScrollView.h */,
 				02CAF6A81C771F6E00AD81B2 /* SynchronizedScrollView.m */,
+			);
+			path = Component;
+			sourceTree = "<group>";
+		};
+		026D42B01C7ABC08000267AD /* Detail */ = {
+			isa = PBXGroup;
+			children = (
+				026D42B11C7ABC08000267AD /* DetailViewController.h */,
+				026D42B21C7ABC08000267AD /* DetailViewController.m */,
+				026D42B31C7ABC08000267AD /* DetailViewController.xib */,
+				026D42B41C7ABC08000267AD /* EventListViewController.h */,
+				026D42B51C7ABC08000267AD /* EventListViewController.m */,
+				026D42B61C7ABC08000267AD /* EventListViewController.xib */,
+				026D42B71C7ABC08000267AD /* SelectionViewController.h */,
+				026D42B81C7ABC08000267AD /* SelectionViewController.m */,
+				026D42B91C7ABC08000267AD /* SelectionViewController.xib */,
 				02A973CB1C79F02200C21B8E /* SelectionButton.h */,
 				02A973CC1C79F02200C21B8E /* SelectionButton.m */,
 			);
-			path = Component;
+			path = Detail;
+			sourceTree = "<group>";
+		};
+		026D42BA1C7ABC08000267AD /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				026D42BB1C7ABC08000267AD /* ConductorViewController.h */,
+				026D42BC1C7ABC08000267AD /* ConductorViewController.m */,
+				026D42BD1C7ABC08000267AD /* ConductorViewController.xib */,
+				026D42BE1C7ABC08000267AD /* MainViewController.h */,
+				026D42BF1C7ABC08000267AD /* MainViewController.m */,
+				026D42C01C7ABC08000267AD /* MainViewController.xib */,
+				026D42C11C7ABC08000267AD /* MeasureViewController.h */,
+				026D42C21C7ABC08000267AD /* MeasureViewController.m */,
+				026D42C31C7ABC08000267AD /* MeasureViewController.xib */,
+				026D42C41C7ABC08000267AD /* MixerChannelViewController.h */,
+				026D42C51C7ABC08000267AD /* MixerChannelViewController.m */,
+				026D42C61C7ABC08000267AD /* MixerChannelViewController.xib */,
+				026D42C71C7ABC08000267AD /* MixerViewController.h */,
+				026D42C81C7ABC08000267AD /* MixerViewController.m */,
+				026D42C91C7ABC08000267AD /* MixerViewController.xib */,
+				026D42CA1C7ABC08000267AD /* TrackChannelViewController.h */,
+				026D42CB1C7ABC08000267AD /* TrackChannelViewController.m */,
+				026D42CC1C7ABC08000267AD /* TrackChannelViewController.xib */,
+				026D42CD1C7ABC08000267AD /* TrackViewController.h */,
+				026D42CE1C7ABC08000267AD /* TrackViewController.m */,
+				026D42CF1C7ABC08000267AD /* TrackViewController.xib */,
+			);
+			path = Main;
+			sourceTree = "<group>";
+		};
+		026D42D01C7ABC08000267AD /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				026D42D11C7ABC08000267AD /* MeasureScaleAssistant.h */,
+				026D42D21C7ABC08000267AD /* MeasureScaleAssistant.m */,
+				026D42D31C7ABC08000267AD /* PlayLineViewController.h */,
+				026D42D41C7ABC08000267AD /* PlayLineViewController.m */,
+				026D42D51C7ABC08000267AD /* PlayLineViewController.xib */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 		028209241C70A5A0003EBCFB /* Model */ = {
@@ -515,37 +539,37 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				02633EB11C74C83D00B9FF0E /* TrackChannelViewController.xib in Resources */,
+				026D42E31C7ABC08000267AD /* MixerChannelViewController.xib in Resources */,
 				020CF86D1C6AF4D90025DF84 /* SynthesizerViewController.xib in Resources */,
-				02633EA21C74B6C100B9FF0E /* MixerViewController.xib in Resources */,
+				026D42DF1C7ABC08000267AD /* MainViewController.xib in Resources */,
+				026D42E11C7ABC08000267AD /* MeasureViewController.xib in Resources */,
 				02A674061C6B3A7600914C8B /* NAMIDI.help in Resources */,
+				026D42DD1C7ABC08000267AD /* ConductorViewController.xib in Resources */,
 				020CF87B1C6B0AB20025DF84 /* AboutWindowController.xib in Resources */,
 				025423641C6F31DF007D53CC /* EditorViewController.xib in Resources */,
+				026D42EC1C7ABC08000267AD /* PlayLineViewController.xib in Resources */,
 				02CAF6C51C778C2200AD81B2 /* ErrorWindowController.xib in Resources */,
-				02A973CA1C79E54900C21B8E /* SelectionViewController.xib in Resources */,
 				02A674041C6B3A5C00914C8B /* NMFIcon.iconset in Resources */,
-				02463FB81C7A1C6000C24AD3 /* EventListViewController.xib in Resources */,
-				02633EAC1C74C80400B9FF0E /* MixerChannelViewController.xib in Resources */,
 				02A673FD1C6B3A5C00914C8B /* MMLIcon.iconset in Resources */,
 				024A5B0D1C69FF990079D22C /* MainMenu.xib in Resources */,
+				026D42E91C7ABC08000267AD /* TrackViewController.xib in Resources */,
 				02A673FA1C6B3A5C00914C8B /* ABCIcon.iconset in Resources */,
-				02CAF6AE1C772CD100AD81B2 /* PlayLineViewController.xib in Resources */,
+				026D42DB1C7ABC08000267AD /* SelectionViewController.xib in Resources */,
+				026D42E71C7ABC08000267AD /* TrackChannelViewController.xib in Resources */,
 				020CF8301C6A04830025DF84 /* getting-started in Resources */,
-				024A5B1C1C69FFD40079D22C /* MainViewController.xib in Resources */,
 				024A5B2F1C69FFD90079D22C /* WelcomeWindowController.xib in Resources */,
-				02633E9D1C74B5A800B9FF0E /* MeasureViewController.xib in Resources */,
 				020CF8721C6AF53D0025DF84 /* PurchaseViewController.xib in Resources */,
 				0254235F1C6F2EB6007D53CC /* EditorWindowController.xib in Resources */,
 				028209231C70A3C0003EBCFB /* EditorTabItem.xib in Resources */,
 				024A5B1E1C69FFD40079D22C /* MainWindowController.xib in Resources */,
-				02633E951C74AAC800B9FF0E /* ConductorViewController.xib in Resources */,
+				026D42D71C7ABC08000267AD /* DetailViewController.xib in Resources */,
 				028589561C71320A00A53B8C /* EditorStatusViewController.xib in Resources */,
 				02A673FB1C6B3A5C00914C8B /* AppIcon.iconset in Resources */,
-				02B6EF761C6C4A2F003E1929 /* DetailViewController.xib in Resources */,
 				020CF8391C6A1BFD0025DF84 /* GettingStartedWindowController.xib in Resources */,
-				02633EA71C74B74900B9FF0E /* TrackViewController.xib in Resources */,
 				020CF8571C6AD4D80025DF84 /* PreferenceWindowController.xib in Resources */,
+				026D42E51C7ABC08000267AD /* MixerViewController.xib in Resources */,
 				02A673FC1C6B3A5C00914C8B /* Assets.xcassets in Resources */,
+				026D42D91C7ABC08000267AD /* EventListViewController.xib in Resources */,
 				020CF8631C6AEA5F0025DF84 /* GeneralViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -557,43 +581,43 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				026D42DC1C7ABC08000267AD /* ConductorViewController.m in Sources */,
+				026D42E21C7ABC08000267AD /* MixerChannelViewController.m in Sources */,
 				02A973C21C7974CD00C21B8E /* TrackSelection.m in Sources */,
 				0240A2481C6C30F2002D6F72 /* ApplicationController.m in Sources */,
-				02A973C91C79E54900C21B8E /* SelectionViewController.m in Sources */,
 				020CF87E1C6B20C50025DF84 /* Application.m in Sources */,
 				02633E981C74AC9F00B9FF0E /* Color.m in Sources */,
+				026D42E41C7ABC08000267AD /* MixerViewController.m in Sources */,
+				026D42E61C7ABC08000267AD /* TrackChannelViewController.m in Sources */,
 				028209271C70A5D8003EBCFB /* FileRepresentation.m in Sources */,
 				02A973CD1C79F02200C21B8E /* SelectionButton.m in Sources */,
-				02633EB01C74C83D00B9FF0E /* TrackChannelViewController.m in Sources */,
 				024A5B1D1C69FFD40079D22C /* MainWindowController.m in Sources */,
-				024A19031C76799200B0AC56 /* MeasureScaleAssistant.m in Sources */,
-				02633E941C74AAC800B9FF0E /* ConductorViewController.m in Sources */,
 				020CF8621C6AEA5F0025DF84 /* GeneralViewController.m in Sources */,
 				023BB20F1C6EF17B0030487C /* NSArray+Support.m in Sources */,
+				026D42D61C7ABC08000267AD /* DetailViewController.m in Sources */,
 				0201F7D71C688BB100A201F6 /* Document.m in Sources */,
-				02B6EF751C6C4A2F003E1929 /* DetailViewController.m in Sources */,
-				02633EA61C74B74900B9FF0E /* TrackViewController.m in Sources */,
+				026D42DA1C7ABC08000267AD /* SelectionViewController.m in Sources */,
 				02CAF6A91C771F6E00AD81B2 /* SynchronizedScrollView.m in Sources */,
 				025423631C6F31DF007D53CC /* EditorViewController.m in Sources */,
+				026D42EA1C7ABC08000267AD /* MeasureScaleAssistant.m in Sources */,
 				0201F7D41C688BB100A201F6 /* main.m in Sources */,
-				02633EA11C74B6C100B9FF0E /* MixerViewController.m in Sources */,
 				02CAF6C01C77858000AD81B2 /* LocationView.m in Sources */,
-				02633EAB1C74C80400B9FF0E /* MixerChannelViewController.m in Sources */,
+				026D42E81C7ABC08000267AD /* TrackViewController.m in Sources */,
+				026D42EB1C7ABC08000267AD /* PlayLineViewController.m in Sources */,
 				02CAF6C41C778C2200AD81B2 /* ErrorWindowController.m in Sources */,
+				026D42DE1C7ABC08000267AD /* MainViewController.m in Sources */,
+				026D42E01C7ABC08000267AD /* MeasureViewController.m in Sources */,
 				02633EB81C74ED9300B9FF0E /* NSView+Support.m in Sources */,
+				026D42D81C7ABC08000267AD /* EventListViewController.m in Sources */,
 				0201F7D11C688BB100A201F6 /* AppDelegate.m in Sources */,
-				02463FB71C7A1C6000C24AD3 /* EventListViewController.m in Sources */,
 				024A19061C768AC800B0AC56 /* FlippedView.m in Sources */,
 				028209221C70A3C0003EBCFB /* EditorTabItem.m in Sources */,
 				024A5B361C6A01280079D22C /* GettingStartedWindowController.m in Sources */,
 				020CF87A1C6B0AB20025DF84 /* AboutWindowController.m in Sources */,
-				024A5B1B1C69FFD40079D22C /* MainViewController.m in Sources */,
 				028589551C71320A00A53B8C /* EditorStatusViewController.m in Sources */,
 				02A973C51C798B6100C21B8E /* NSColor+Support.m in Sources */,
 				024A5B2E1C69FFD90079D22C /* WelcomeWindowController.m in Sources */,
-				02633E9C1C74B5A800B9FF0E /* MeasureViewController.m in Sources */,
 				02633EBF1C75B09F00B9FF0E /* Stub.m in Sources */,
-				02CAF6AD1C772CD100AD81B2 /* PlayLineViewController.m in Sources */,
 				020CF86C1C6AF4D90025DF84 /* SynthesizerViewController.m in Sources */,
 				0254235E1C6F2EB6007D53CC /* EditorWindowController.m in Sources */,
 				020CF8711C6AF53D0025DF84 /* PurchaseViewController.m in Sources */,
