@@ -144,26 +144,6 @@
                                         <autoresizingMask key="autoresizingMask"/>
                                     </scroller>
                                 </scrollView>
-                                <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="SqX-ur-3Ac" customClass="SynchronizedScrollView">
-                                    <rect key="frame" x="61" y="0.0" width="419" height="319"/>
-                                    <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="sgV-bP-LVI">
-                                        <rect key="frame" x="0.0" y="0.0" width="419" height="319"/>
-                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                        <subviews>
-                                            <view fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="a9D-1I-XeE">
-                                                <rect key="frame" x="0.0" y="225" width="181" height="94"/>
-                                            </view>
-                                        </subviews>
-                                    </clipView>
-                                    <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="IcU-9U-1r0">
-                                        <rect key="frame" x="-100" y="-100" width="347" height="16"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                    </scroller>
-                                    <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="hF9-mh-WA1">
-                                        <rect key="frame" x="-100" y="-100" width="16" height="398"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                    </scroller>
-                                </scrollView>
                                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="lUO-sL-70u">
                                     <rect key="frame" x="0.0" y="286" width="480" height="1"/>
                                     <constraints>
@@ -191,22 +171,18 @@
                                 <constraint firstItem="Lon-in-61N" firstAttribute="leading" secondItem="Zfw-6n-hDb" secondAttribute="leading" id="8RF-4V-OwU"/>
                                 <constraint firstItem="JrS-PZ-Jiz" firstAttribute="leading" secondItem="Zfw-6n-hDb" secondAttribute="leading" id="EWv-r9-P6z"/>
                                 <constraint firstItem="Lon-in-61N" firstAttribute="top" secondItem="TXv-JK-Tih" secondAttribute="bottom" id="GKW-Il-UKq"/>
-                                <constraint firstItem="SqX-ur-3Ac" firstAttribute="top" secondItem="Zfw-6n-hDb" secondAttribute="top" id="IPL-u6-Kgh"/>
                                 <constraint firstItem="kha-dd-MvH" firstAttribute="top" secondItem="lUO-sL-70u" secondAttribute="bottom" id="Iaa-Qy-lHY"/>
                                 <constraint firstItem="ybx-SB-wZM" firstAttribute="leading" secondItem="3bl-eI-hpH" secondAttribute="trailing" id="JOV-Pd-TPx"/>
                                 <constraint firstAttribute="bottom" secondItem="3bl-eI-hpH" secondAttribute="bottom" id="MkV-Iz-gai"/>
                                 <constraint firstItem="TXv-JK-Tih" firstAttribute="top" secondItem="lUO-sL-70u" secondAttribute="bottom" id="RzX-Z1-Bi7"/>
-                                <constraint firstItem="SqX-ur-3Ac" firstAttribute="leading" secondItem="3bl-eI-hpH" secondAttribute="trailing" id="VKM-qt-Yby"/>
                                 <constraint firstAttribute="trailing" secondItem="ybx-SB-wZM" secondAttribute="trailing" id="baT-Q6-8k3"/>
                                 <constraint firstAttribute="bottom" secondItem="JrS-PZ-Jiz" secondAttribute="bottom" id="dlY-yB-bUO"/>
                                 <constraint firstItem="TXv-JK-Tih" firstAttribute="leading" secondItem="3bl-eI-hpH" secondAttribute="trailing" id="iJg-FP-Nak"/>
                                 <constraint firstItem="de5-yB-AfE" firstAttribute="leading" secondItem="3bl-eI-hpH" secondAttribute="trailing" id="izD-KA-lic"/>
                                 <constraint firstItem="JrS-PZ-Jiz" firstAttribute="top" secondItem="Lon-in-61N" secondAttribute="bottom" id="jPd-y4-bcz"/>
                                 <constraint firstItem="N1g-DM-1Wr" firstAttribute="leading" secondItem="Zfw-6n-hDb" secondAttribute="leading" id="m1K-di-Inz"/>
-                                <constraint firstAttribute="bottom" secondItem="SqX-ur-3Ac" secondAttribute="bottom" id="n8I-lQ-Hoq"/>
                                 <constraint firstItem="ybx-SB-wZM" firstAttribute="top" secondItem="Zfw-6n-hDb" secondAttribute="top" id="nuB-JU-uWE"/>
                                 <constraint firstItem="kha-dd-MvH" firstAttribute="leading" secondItem="Zfw-6n-hDb" secondAttribute="leading" id="oFM-fP-EVD"/>
-                                <constraint firstAttribute="trailing" secondItem="SqX-ur-3Ac" secondAttribute="trailing" id="oMD-hm-nCP"/>
                                 <constraint firstItem="3bl-eI-hpH" firstAttribute="leading" secondItem="N1g-DM-1Wr" secondAttribute="trailing" id="pZz-Nw-Yfj"/>
                                 <constraint firstAttribute="trailing" secondItem="de5-yB-AfE" secondAttribute="trailing" id="r6b-Cq-coC"/>
                                 <constraint firstAttribute="trailing" secondItem="Lon-in-61N" secondAttribute="trailing" id="rBP-fv-pkH"/>
@@ -273,10 +249,34 @@
                         <real value="250"/>
                     </holdingPriorities>
                 </splitView>
+                <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="SqX-ur-3Ac" customClass="SynchronizedScrollView">
+                    <rect key="frame" x="61" y="0.0" width="419" height="480"/>
+                    <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="sgV-bP-LVI">
+                        <rect key="frame" x="0.0" y="0.0" width="419" height="480"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="a9D-1I-XeE">
+                                <rect key="frame" x="0.0" y="-94" width="181" height="94"/>
+                            </view>
+                        </subviews>
+                    </clipView>
+                    <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="IcU-9U-1r0">
+                        <rect key="frame" x="-100" y="-100" width="347" height="16"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </scroller>
+                    <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="hF9-mh-WA1">
+                        <rect key="frame" x="-100" y="-100" width="16" height="398"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </scroller>
+                </scrollView>
             </subviews>
             <constraints>
+                <constraint firstAttribute="trailing" secondItem="SqX-ur-3Ac" secondAttribute="trailing" id="9VM-00-US4"/>
                 <constraint firstAttribute="trailing" secondItem="OAz-5W-sI4" secondAttribute="trailing" id="KcH-DN-seh"/>
+                <constraint firstItem="SqX-ur-3Ac" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" id="OIN-4A-MPe"/>
+                <constraint firstItem="SqX-ur-3Ac" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="61" id="UXj-eS-q92"/>
                 <constraint firstAttribute="bottom" secondItem="OAz-5W-sI4" secondAttribute="bottom" id="XAs-rS-EAm"/>
+                <constraint firstAttribute="bottom" secondItem="SqX-ur-3Ac" secondAttribute="bottom" id="Zk5-11-mRM"/>
                 <constraint firstItem="OAz-5W-sI4" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" id="qZ9-yN-rUx"/>
                 <constraint firstItem="OAz-5W-sI4" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="yqH-NX-iPN"/>
             </constraints>

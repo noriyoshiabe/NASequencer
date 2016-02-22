@@ -16,12 +16,15 @@
 #define BOTTOM_LINE_Y 36.5
 
 @interface MeasureView : NSView {
-    CGColorRef _grayColor;
     NSDictionary *_measureNumberAttrs;
 }
 
 @property (assign, nonatomic) MeasureScaleAssistant *scaleAssistant;
 @property (strong, nonatomic) SequenceRepresentation *sequence;
+@property (assign, nonatomic) CGFloat measureNoY;
+@property (assign, nonatomic) BOOL needBottomLine;
+@property (strong, nonatomic) NSColor *lineColor;
+@property (strong, nonatomic) NSColor *measureNoColor;
 @end
 
 @interface MeasureViewController ()
@@ -30,11 +33,28 @@
 
 @implementation MeasureViewController
 
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        _measureNoY = MEASURE_NO_Y;
+        _needBottomLine = YES;
+        _lineColor = [Color gray];
+        _measureNoColor = [NSColor whiteColor];
+    }
+    return self;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     _measureView.scaleAssistant = _scaleAssistant;
     _measureView.sequence = _namidi.sequence;
+    
+    _measureView.measureNoY = _measureNoY;
+    _measureView.needBottomLine = _needBottomLine;
+    _measureView.lineColor = _lineColor;
+    _measureView.measureNoColor = _measureNoColor;
     
     [_scaleAssistant addObserver:self forKeyPath:@"scale" options:0 context:NULL];
 }
@@ -75,15 +95,19 @@
 
 @implementation MeasureView
 
-- (void)awakeFromNib
-{
-    _grayColor = [Color gray].CGColor;
-    _measureNumberAttrs = @{NSFontAttributeName:[NSFont boldSystemFontOfSize:11.0], NSForegroundColorAttributeName: [NSColor whiteColor]};
-}
-
 - (BOOL)isFlipped
 {
     return YES;
+}
+
+- (void)setLineColor:(NSColor *)lineColor
+{
+    _lineColor = lineColor;
+}
+
+- (void)setMeasureNoColor:(NSColor *)measureNoColor
+{
+    _measureNumberAttrs = @{NSFontAttributeName:[NSFont systemFontOfSize:11.0], NSForegroundColorAttributeName: measureNoColor};
 }
 
 - (void)setSequence:(SequenceRepresentation *)sequence
@@ -105,15 +129,18 @@
     CGContextRef ctx = [NSGraphicsContext currentContext].graphicsPort;
 
     [self drawMeasure:dirtyRect context:ctx];
-    [self drawBottomLine:dirtyRect context:ctx];
+    
+    if (_needBottomLine) {
+        [self drawBottomLine:dirtyRect context:ctx];
+    }
 }
 
 - (void)drawMeasure:(NSRect)dirtyRect context:(CGContextRef)ctx
 {
     CGContextSaveGState(ctx);
     
-    CGContextSetLineWidth(ctx, 1.0);
-    CGContextSetStrokeColorWithColor(ctx, _grayColor);
+    CGContextSetLineWidth(ctx, 0.5);
+    CGContextSetStrokeColorWithColor(ctx, _lineColor.CGColor);
     
     CGFloat tickPerPixel = _scaleAssistant.tickPerPixel;
     CGFloat pixelPerTick = _scaleAssistant.pixelPerTick;
@@ -141,7 +168,7 @@
             CGContextSaveGState(ctx);
             NSString *string = [NSString stringWithFormat:@"%d", location.m];
             CGFloat width = [string sizeWithAttributes:_measureNumberAttrs].width;
-            [string drawAtPoint:CGPointMake(x - width / 2.0, MEASURE_NO_Y) withAttributes:_measureNumberAttrs];
+            [string drawAtPoint:CGPointMake(x - width / 2.0, _measureNoY) withAttributes:_measureNumberAttrs];
             CGContextRestoreGState(ctx);
         }
         
@@ -162,7 +189,7 @@
     CGContextSaveGState(ctx);
     
     CGContextSetLineWidth(ctx, 1.0);
-    CGContextSetStrokeColorWithColor(ctx, _grayColor);
+    CGContextSetStrokeColorWithColor(ctx, _lineColor.CGColor);
     
     CGContextMoveToPoint(ctx, 0, BOTTOM_LINE_Y);
     CGContextAddLineToPoint(ctx, self.bounds.size.width, BOTTOM_LINE_Y);

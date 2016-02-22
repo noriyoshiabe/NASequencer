@@ -14,4 +14,8 @@
 @interface MeasureViewController : NSViewController
 @property (strong, nonatomic) NAMidiRepresentation *namidi;
 @property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
+@property (assign, nonatomic) CGFloat measureNoY;
+@property (assign, nonatomic) BOOL needBottomLine;
+@property (strong, nonatomic) NSColor *lineColor;
+@property (strong, nonatomic) NSColor *measureNoColor;
 @end

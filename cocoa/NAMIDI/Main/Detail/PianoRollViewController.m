@@ -7,6 +7,8 @@
 //
 
 #import "PianoRollViewController.h"
+#import "MeasureViewController.h"
+#import "PlayLineViewController.h"
 #import "SynchronizedScrollView.h"
 #import "Color.h"
 
@@ -28,6 +30,9 @@
 @property (weak) IBOutlet NSView *conductorBottomLineView;
 @property (weak) IBOutlet NSView *pianoRollVerticalLineView;
 @property (weak) IBOutlet NSView *verocityVerticalLineView;
+
+@property (strong, nonatomic) MeasureViewController *measureVC;
+@property (strong, nonatomic) PlayLineViewController *playLineVC;
 @end
 
 @implementation PianoRollViewController
@@ -61,6 +66,27 @@
     _verocityVerticalLineView.layer.backgroundColor = [Color gray].CGColor;
     
     _playLineView.userInteractionEnabled = NO;
+    
+    _measureVC = [[MeasureViewController alloc] init];
+    _measureVC.lineColor = [NSColor blackColor];
+    _measureVC.measureNoColor = [NSColor blackColor];
+    _measureVC.measureNoY = 16.5;
+    _measureVC.needBottomLine = NO;
+    
+    _playLineVC = [[PlayLineViewController alloc] init];
+    _playLineVC.containerView = _playLineView;
+    
+    _measureVC.namidi = _namidi;
+    _playLineVC.namidi = _namidi;
+    
+    _measureVC.scaleAssistant = _scaleAssistant;
+    _playLineVC.scaleAssistant = _scaleAssistant;
+    
+    _measureView.documentView = _measureVC.view;
+    _playLineView.documentView = _playLineVC.view;
+    
+    _measureVC.view.frame = _measureView.frame;
+    _measureVC.view.needsLayout = YES;
     
     [_measureView observeScrollForScrollView:_conductorView x:YES y:NO];
     [_conductorView observeScrollForScrollView:_pianoRollView x:YES y:NO];
