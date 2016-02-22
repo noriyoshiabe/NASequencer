@@ -7,38 +7,70 @@
 //
 
 #import "PianoRollViewController.h"
+#import "SynchronizedScrollView.h"
+#import "Color.h"
 
 #define VELOCITY_VIEW_HEIGHT_MAX 160
 #define VELOCITY_VIEW_HEIGHT_MIN 40
 
 @interface PianoRollViewController () <NSSplitViewDelegate>
 @property (weak) IBOutlet NSSplitView *horizontalSplitView;
-@property (weak) IBOutlet NSView *measureView;
-@property (weak) IBOutlet NSView *conductorView;
-@property (weak) IBOutlet NSView *pianoRollView;
-@property (weak) IBOutlet NSView *velocityView;
+@property (weak) IBOutlet NSView *emptyHeaderView;
+@property (weak) IBOutlet NSView *conductorLabelView;
+@property (weak) IBOutlet NSView *velocityLabelView;
+@property (weak) IBOutlet SynchronizedScrollView *measureView;
+@property (weak) IBOutlet SynchronizedScrollView *conductorView;
+@property (weak) IBOutlet SynchronizedScrollView *keyboardView;
+@property (weak) IBOutlet SynchronizedScrollView *pianoRollView;
+@property (weak) IBOutlet SynchronizedScrollView *velocityView;
+@property (weak) IBOutlet SynchronizedScrollView *playLineView;
+@property (weak) IBOutlet NSView *measureBottomLineView;
+@property (weak) IBOutlet NSView *conductorBottomLineView;
+@property (weak) IBOutlet NSView *pianoRollVerticalLineView;
+@property (weak) IBOutlet NSView *verocityVerticalLineView;
 @end
 
 @implementation PianoRollViewController
-
-- (void)awakeFromNib
-{
-    _measureView.wantsLayer = YES;
-    _conductorView.wantsLayer = YES;
-    _pianoRollView.wantsLayer = YES;
-    _velocityView.wantsLayer = YES;
-    
-    _measureView.layer.backgroundColor = [NSColor greenColor].CGColor;
-    _conductorView.layer.backgroundColor = [NSColor yellowColor].CGColor;
-    _pianoRollView.layer.backgroundColor = [NSColor magentaColor].CGColor;
-    _velocityView.layer.backgroundColor = [NSColor cyanColor].CGColor;
-}
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
     _horizontalSplitView.delegate = self;
+    
+    _emptyHeaderView.wantsLayer = YES;
+    _emptyHeaderView.layer.backgroundColor = [Color ultraLightGray].CGColor;
+    _conductorLabelView.wantsLayer = YES;
+    _conductorLabelView.layer.backgroundColor = [NSColor whiteColor].CGColor;
+    _velocityLabelView.wantsLayer = YES;
+    _velocityLabelView.layer.backgroundColor = [NSColor whiteColor].CGColor;
+    
+    _measureView.backgroundColor = [Color ultraLightGray];
+    _conductorView.backgroundColor = [NSColor whiteColor];
+    _keyboardView.backgroundColor = [NSColor whiteColor];
+    _pianoRollView.backgroundColor = [NSColor whiteColor];
+    _velocityView.backgroundColor = [NSColor whiteColor];
+    
+    _measureBottomLineView.wantsLayer = YES;
+    _measureBottomLineView.layer.backgroundColor = [Color gray].CGColor;
+    _conductorBottomLineView.wantsLayer = YES;
+    _conductorBottomLineView.layer.backgroundColor = [Color gray].CGColor;
+    _pianoRollVerticalLineView.wantsLayer = YES;
+    _pianoRollVerticalLineView.layer.backgroundColor = [Color gray].CGColor;
+    _verocityVerticalLineView.wantsLayer = YES;
+    _verocityVerticalLineView.layer.backgroundColor = [Color gray].CGColor;
+    
+    _playLineView.userInteractionEnabled = NO;
+    
+    [_measureView observeScrollForScrollView:_conductorView x:YES y:NO];
+    [_conductorView observeScrollForScrollView:_pianoRollView x:YES y:NO];
+    [_pianoRollView observeScrollForScrollView:_velocityView x:YES y:NO];
+    [_velocityView observeScrollForScrollView:_measureView x:YES y:NO];
+    
+    [_playLineView observeScrollForScrollView:_pianoRollView x:YES y:NO];
+    
+    [_keyboardView observeScrollForScrollView:_pianoRollView x:NO y:YES];
+    [_pianoRollView observeScrollForScrollView:_keyboardView x:NO y:YES];
     
     [_horizontalSplitView setPosition:CGRectGetHeight(self.view.frame) - VELOCITY_VIEW_HEIGHT_MAX ofDividerAtIndex:0];
 }

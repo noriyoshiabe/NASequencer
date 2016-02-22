@@ -12,6 +12,7 @@
 + (NSColor *)darkGray;
 + (NSColor *)gray;
 + (NSColor *)lightGray;
++ (NSColor *)ultraLightGray;
 + (NSColor *)channelColor:(int)channel;
 + (NSColor *)statusBackground;
 @end

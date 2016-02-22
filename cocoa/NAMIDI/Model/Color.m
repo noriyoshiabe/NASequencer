@@ -17,6 +17,7 @@
 static NSColor *DarkGray;
 static NSColor *Gray;
 static NSColor *LightGray;
+static NSColor *UltraLightGray;
 static NSColor *ChannelColor[16];
 static NSColor *StatusBackground;
 
@@ -27,6 +28,7 @@ static NSColor *StatusBackground;
     DarkGray = GSCALE(74.0);
     Gray = GSCALE(151.0);
     LightGray = GSCALE(216.0);
+    UltraLightGray = GSCALE(242.0);
     
     for (int i = 0; i < 16; ++i) {
         ChannelColor[i] = HSB(1.0 / 16.0 * i, 1.0, 1.0);
@@ -48,6 +50,11 @@ static NSColor *StatusBackground;
 + (NSColor *)lightGray
 {
     return LightGray;
+}
+
++ (NSColor *)ultraLightGray
+{
+    return UltraLightGray;
 }
 
 + (NSColor *)channelColor:(int)channel
