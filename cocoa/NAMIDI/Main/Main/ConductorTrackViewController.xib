@@ -5,16 +5,16 @@
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9532"/>
     </dependencies>
     <objects>
-        <customObject id="-2" userLabel="File's Owner" customClass="MeasureViewController">
+        <customObject id="-2" userLabel="File's Owner" customClass="ConductorTrackViewController">
             <connections>
-                <outlet property="measureView" destination="Hz6-mo-xeY" id="cf2-e0-FeF"/>
+                <outlet property="conductorTrackView" destination="Hz6-mo-xeY" id="3zw-qP-eQB"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
-        <customView id="Hz6-mo-xeY" customClass="MeasureView">
-            <rect key="frame" x="0.0" y="0.0" width="500" height="37"/>
+        <customView id="Hz6-mo-xeY" customClass="ConductorTrackView">
+            <rect key="frame" x="0.0" y="0.0" width="500" height="19"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
         </customView>
     </objects>

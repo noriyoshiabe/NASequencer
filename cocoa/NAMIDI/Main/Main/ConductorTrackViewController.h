@@ -1,5 +1,5 @@
 //
-//  MeasureViewController.h
+//  ConductorTrackViewController.h
 //  NAMIDI
 //
 //  Created by abechan on 2/17/16.
@@ -11,7 +11,8 @@
 #import "TrackSelection.h"
 #import "Stub.h"
 
-@interface MeasureViewController : NSViewController
+@interface ConductorTrackViewController : NSViewController
 @property (strong, nonatomic) NAMidiRepresentation *namidi;
 @property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
+@property (strong, nonatomic) TrackSelection *trackSelection;
 @end

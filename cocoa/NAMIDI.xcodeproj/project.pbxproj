@@ -24,6 +24,8 @@
 		020CF87A1C6B0AB20025DF84 /* AboutWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 020CF8781C6B0AB20025DF84 /* AboutWindowController.m */; };
 		020CF87B1C6B0AB20025DF84 /* AboutWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 020CF8791C6B0AB20025DF84 /* AboutWindowController.xib */; };
 		020CF87E1C6B20C50025DF84 /* Application.m in Sources */ = {isa = PBXBuildFile; fileRef = 020CF87D1C6B20C50025DF84 /* Application.m */; };
+		0216EDF71C7AC431009A7B90 /* ConductorTrackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0216EDF51C7AC431009A7B90 /* ConductorTrackViewController.m */; };
+		0216EDF81C7AC431009A7B90 /* ConductorTrackViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0216EDF61C7AC431009A7B90 /* ConductorTrackViewController.xib */; };
 		023BB20F1C6EF17B0030487C /* NSArray+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 023BB20E1C6EF17B0030487C /* NSArray+Support.m */; };
 		0240A2481C6C30F2002D6F72 /* ApplicationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0240A2471C6C30F2002D6F72 /* ApplicationController.m */; };
 		024A19061C768AC800B0AC56 /* FlippedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A19051C768AC800B0AC56 /* FlippedView.m */; };
@@ -114,6 +116,9 @@
 		020CF8791C6B0AB20025DF84 /* AboutWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AboutWindowController.xib; sourceTree = "<group>"; };
 		020CF87C1C6B20C50025DF84 /* Application.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Application.h; sourceTree = "<group>"; };
 		020CF87D1C6B20C50025DF84 /* Application.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Application.m; sourceTree = "<group>"; };
+		0216EDF41C7AC431009A7B90 /* ConductorTrackViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConductorTrackViewController.h; sourceTree = "<group>"; };
+		0216EDF51C7AC431009A7B90 /* ConductorTrackViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConductorTrackViewController.m; sourceTree = "<group>"; };
+		0216EDF61C7AC431009A7B90 /* ConductorTrackViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ConductorTrackViewController.xib; sourceTree = "<group>"; };
 		023BB20D1C6EF17B0030487C /* NSArray+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+Support.h"; sourceTree = "<group>"; };
 		023BB20E1C6EF17B0030487C /* NSArray+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Support.m"; sourceTree = "<group>"; };
 		0240A2461C6C30F2002D6F72 /* ApplicationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationController.h; sourceTree = "<group>"; };
@@ -415,6 +420,9 @@
 				026D42BB1C7ABC08000267AD /* ConductorViewController.h */,
 				026D42BC1C7ABC08000267AD /* ConductorViewController.m */,
 				026D42BD1C7ABC08000267AD /* ConductorViewController.xib */,
+				0216EDF41C7AC431009A7B90 /* ConductorTrackViewController.h */,
+				0216EDF51C7AC431009A7B90 /* ConductorTrackViewController.m */,
+				0216EDF61C7AC431009A7B90 /* ConductorTrackViewController.xib */,
 				026D42BE1C7ABC08000267AD /* MainViewController.h */,
 				026D42BF1C7ABC08000267AD /* MainViewController.m */,
 				026D42C01C7ABC08000267AD /* MainViewController.xib */,
@@ -562,6 +570,7 @@
 				0254235F1C6F2EB6007D53CC /* EditorWindowController.xib in Resources */,
 				028209231C70A3C0003EBCFB /* EditorTabItem.xib in Resources */,
 				024A5B1E1C69FFD40079D22C /* MainWindowController.xib in Resources */,
+				0216EDF81C7AC431009A7B90 /* ConductorTrackViewController.xib in Resources */,
 				026D42D71C7ABC08000267AD /* DetailViewController.xib in Resources */,
 				028589561C71320A00A53B8C /* EditorStatusViewController.xib in Resources */,
 				02A673FB1C6B3A5C00914C8B /* AppIcon.iconset in Resources */,
@@ -610,6 +619,7 @@
 				02633EB81C74ED9300B9FF0E /* NSView+Support.m in Sources */,
 				026D42D81C7ABC08000267AD /* EventListViewController.m in Sources */,
 				0201F7D11C688BB100A201F6 /* AppDelegate.m in Sources */,
+				0216EDF71C7AC431009A7B90 /* ConductorTrackViewController.m in Sources */,
 				024A19061C768AC800B0AC56 /* FlippedView.m in Sources */,
 				028209221C70A3C0003EBCFB /* EditorTabItem.m in Sources */,
 				024A5B361C6A01280079D22C /* GettingStartedWindowController.m in Sources */,

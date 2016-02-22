@@ -12,22 +12,16 @@
 
 #define MEASURE_LINE_HEIGHT 15.0
 #define BEAT_LINE_HEIGHT 10.0
-#define CONDUCTOR_LINE_Y 36.5
 #define MEASURE_NO_Y 20.0
-#define EVENT_Y      46.0
-#define EVENT_RADIUS 4.0
+#define BOTTOM_LINE_Y 36.5
 
 @interface MeasureView : NSView {
     CGColorRef _grayColor;
-    CGColorRef _whiteColor;
-    CGColorRef _lightGrayColor;
-    CGColorRef _blackColor;
     NSDictionary *_measureNumberAttrs;
 }
 
 @property (assign, nonatomic) MeasureScaleAssistant *scaleAssistant;
 @property (strong, nonatomic) SequenceRepresentation *sequence;
-@property (strong, nonatomic) TrackSelection *trackSelection;
 @end
 
 @interface MeasureViewController ()
@@ -40,17 +34,14 @@
 {
     [super viewDidLoad];
     _measureView.scaleAssistant = _scaleAssistant;
-    _measureView.trackSelection = _trackSelection;
     _measureView.sequence = _namidi.sequence;
     
     [_scaleAssistant addObserver:self forKeyPath:@"scale" options:0 context:NULL];
-    [_trackSelection addObserver:self forKeyPath:@"selectionFlags" options:0 context:NULL];
 }
 
 - (void)dealloc
 {
     [_scaleAssistant removeObserver:self forKeyPath:@"scale"];
-    [_trackSelection removeObserver:self forKeyPath:@"selectionFlags"];
 }
 
 - (void)scrollWheel:(NSEvent *)theEvent
@@ -65,28 +56,19 @@
     if (object == _scaleAssistant) {
         [_measureView layout];
     }
-    else if (object == _trackSelection) {
-        if ([_trackSelection isTrackSelectionChanged:0]) {
-            _measureView.needsDisplay = YES;
-        }
-    }
 }
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
     CGPoint point = [self.view convertPoint:theEvent.locationInWindow fromView:self.view.window.contentView];
     
-    if (CONDUCTOR_LINE_Y < point.y) {
-        [_trackSelection click:0 event:theEvent];
-    }
-    else {
-        int tick = (point.x - _scaleAssistant.measureOffset) * _scaleAssistant.tickPerPixel;
-        Location location = [_namidi.sequence locationByTick:tick];
-        location.t = 0;
-        location.b = 1;
-        tick = [_namidi.sequence tickByLocation:location];
-        // TODO move measure
-    }
+    int tick = (point.x - _scaleAssistant.measureOffset) * _scaleAssistant.tickPerPixel;
+    Location location = [_namidi.sequence locationByTick:tick];
+    location.t = 0;
+    location.b = 1;
+    tick = [_namidi.sequence tickByLocation:location];
+    
+    // TODO move measure
 }
 
 @end
@@ -96,10 +78,6 @@
 - (void)awakeFromNib
 {
     _grayColor = [Color gray].CGColor;
-    _whiteColor = [NSColor whiteColor].CGColor;
-    _lightGrayColor = [Color lightGray].CGColor;
-    _blackColor = [NSColor blackColor].CGColor;
-    
     _measureNumberAttrs = @{NSFontAttributeName:[NSFont boldSystemFontOfSize:11.0], NSForegroundColorAttributeName: [NSColor whiteColor]};
 }
 
@@ -125,11 +103,9 @@
     [super drawRect:dirtyRect];
     
     CGContextRef ctx = [NSGraphicsContext currentContext].graphicsPort;
-    
+
     [self drawMeasure:dirtyRect context:ctx];
-    [self drawConductorLine:dirtyRect context:ctx];
-    [self drawConductorBackground:dirtyRect context:ctx];
-    [self drawEvent:dirtyRect context:ctx];
+    [self drawBottomLine:dirtyRect context:ctx];
 }
 
 - (void)drawMeasure:(NSRect)dirtyRect context:(CGContextRef)ctx
@@ -181,55 +157,18 @@
     CGContextRestoreGState(ctx);
 }
 
-- (void)drawConductorLine:(NSRect)dirtyRect context:(CGContextRef)ctx
+- (void)drawBottomLine:(NSRect)dirtyRect context:(CGContextRef)ctx
 {
     CGContextSaveGState(ctx);
     
     CGContextSetLineWidth(ctx, 1.0);
     CGContextSetStrokeColorWithColor(ctx, _grayColor);
     
-    CGContextMoveToPoint(ctx, 0, CONDUCTOR_LINE_Y);
-    CGContextAddLineToPoint(ctx, self.bounds.size.width, CONDUCTOR_LINE_Y);
+    CGContextMoveToPoint(ctx, 0, BOTTOM_LINE_Y);
+    CGContextAddLineToPoint(ctx, self.bounds.size.width, BOTTOM_LINE_Y);
     CGContextStrokePath(ctx);
     
     CGContextClipToRect(ctx, dirtyRect);
-    
-    CGContextRestoreGState(ctx);
-}
-
-- (void)drawConductorBackground:(NSRect)dirtyRect context:(CGContextRef)ctx
-{
-    if ([_trackSelection isTrackSelected:0]) {
-        CGContextSaveGState(ctx);
-        CGContextSetFillColorWithColor(ctx, _whiteColor);
-        CGFloat y = CONDUCTOR_LINE_Y + 1;
-        CGContextFillRect(ctx, CGRectMake(0, y, self.bounds.size.width, self.bounds.size.height - y));
-        CGContextClipToRect(ctx, dirtyRect);
-        CGContextRestoreGState(ctx);
-    }
-}
-
-- (void)drawEvent:(NSRect)dirtyRect context:(CGContextRef)ctx
-{
-    CGContextSaveGState(ctx);
-    
-    CGContextSetFillColorWithColor(ctx, [_trackSelection isTrackSelected:0] ? _blackColor : _lightGrayColor);
-    
-    CGFloat pixelPerTick = _scaleAssistant.pixelPerTick;
-    CGFloat measureOffset = _scaleAssistant.measureOffset;
-    int lastTick = -1;
-    
-    for (MidiEventRepresentation *event in _sequence.eventsOfConductorTrack) {
-        int tick = event.tick;
-        if (lastTick != tick) {
-            CGFloat x = round(tick * pixelPerTick) + measureOffset;
-            CGRect rect = CGRectMake(x - EVENT_RADIUS, EVENT_Y - EVENT_RADIUS, EVENT_RADIUS * 2, EVENT_RADIUS * 2);
-            if (CGRectIntersectsRect(dirtyRect, rect)) {
-                CGContextFillEllipseInRect(ctx, rect);
-            }
-            lastTick = tick;
-        }
-    }
     
     CGContextRestoreGState(ctx);
 }
