@@ -30,7 +30,6 @@
 @property (strong, nonatomic) MixerViewController *mixerVC;
 @property (strong, nonatomic) TrackViewController *trackVC;
 @property (strong, nonatomic) PlayLineViewController *playLineVC;
-@property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
 @property (weak) IBOutlet NSView *horizontalLine;
 @property (weak) IBOutlet NSView *verticalLine;
 @end
@@ -64,7 +63,6 @@
     _trackVC.namidi = _namidi;
     _playLineVC.namidi = _namidi;
     
-    _scaleAssistant = [[MeasureScaleAssistant alloc] init];
     _measureVC.scaleAssistant = _scaleAssistant;
     _conductorTrackVC.scaleAssistant = _scaleAssistant;
     _trackVC.scaleAssistant = _scaleAssistant;

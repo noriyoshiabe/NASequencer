@@ -26,6 +26,8 @@
 		020CF87E1C6B20C50025DF84 /* Application.m in Sources */ = {isa = PBXBuildFile; fileRef = 020CF87D1C6B20C50025DF84 /* Application.m */; };
 		0216EDF71C7AC431009A7B90 /* ConductorTrackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0216EDF51C7AC431009A7B90 /* ConductorTrackViewController.m */; };
 		0216EDF81C7AC431009A7B90 /* ConductorTrackViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0216EDF61C7AC431009A7B90 /* ConductorTrackViewController.xib */; };
+		0216EDFC1C7ADA09009A7B90 /* PianoRollViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0216EDFA1C7ADA09009A7B90 /* PianoRollViewController.m */; };
+		0216EDFD1C7ADA09009A7B90 /* PianoRollViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0216EDFB1C7ADA09009A7B90 /* PianoRollViewController.xib */; };
 		023BB20F1C6EF17B0030487C /* NSArray+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 023BB20E1C6EF17B0030487C /* NSArray+Support.m */; };
 		0240A2481C6C30F2002D6F72 /* ApplicationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0240A2471C6C30F2002D6F72 /* ApplicationController.m */; };
 		024A19061C768AC800B0AC56 /* FlippedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A19051C768AC800B0AC56 /* FlippedView.m */; };
@@ -119,6 +121,9 @@
 		0216EDF41C7AC431009A7B90 /* ConductorTrackViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConductorTrackViewController.h; sourceTree = "<group>"; };
 		0216EDF51C7AC431009A7B90 /* ConductorTrackViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConductorTrackViewController.m; sourceTree = "<group>"; };
 		0216EDF61C7AC431009A7B90 /* ConductorTrackViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ConductorTrackViewController.xib; sourceTree = "<group>"; };
+		0216EDF91C7ADA09009A7B90 /* PianoRollViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PianoRollViewController.h; sourceTree = "<group>"; };
+		0216EDFA1C7ADA09009A7B90 /* PianoRollViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PianoRollViewController.m; sourceTree = "<group>"; };
+		0216EDFB1C7ADA09009A7B90 /* PianoRollViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PianoRollViewController.xib; sourceTree = "<group>"; };
 		023BB20D1C6EF17B0030487C /* NSArray+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+Support.h"; sourceTree = "<group>"; };
 		023BB20E1C6EF17B0030487C /* NSArray+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Support.m"; sourceTree = "<group>"; };
 		0240A2461C6C30F2002D6F72 /* ApplicationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationController.h; sourceTree = "<group>"; };
@@ -165,9 +170,9 @@
 		026D42BE1C7ABC08000267AD /* MainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
 		026D42BF1C7ABC08000267AD /* MainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
 		026D42C01C7ABC08000267AD /* MainViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainViewController.xib; sourceTree = "<group>"; };
-		026D42C11C7ABC08000267AD /* MeasureViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MeasureViewController.h; sourceTree = "<group>"; };
-		026D42C21C7ABC08000267AD /* MeasureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MeasureViewController.m; sourceTree = "<group>"; };
-		026D42C31C7ABC08000267AD /* MeasureViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MeasureViewController.xib; sourceTree = "<group>"; };
+		026D42C11C7ABC08000267AD /* MeasureViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MeasureViewController.h; path = ../Main/MeasureViewController.h; sourceTree = "<group>"; };
+		026D42C21C7ABC08000267AD /* MeasureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MeasureViewController.m; path = ../Main/MeasureViewController.m; sourceTree = "<group>"; };
+		026D42C31C7ABC08000267AD /* MeasureViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MeasureViewController.xib; path = ../Main/MeasureViewController.xib; sourceTree = "<group>"; };
 		026D42C41C7ABC08000267AD /* MixerChannelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MixerChannelViewController.h; sourceTree = "<group>"; };
 		026D42C51C7ABC08000267AD /* MixerChannelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MixerChannelViewController.m; sourceTree = "<group>"; };
 		026D42C61C7ABC08000267AD /* MixerChannelViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MixerChannelViewController.xib; sourceTree = "<group>"; };
@@ -410,6 +415,9 @@
 				026D42B91C7ABC08000267AD /* SelectionViewController.xib */,
 				02A973CB1C79F02200C21B8E /* SelectionButton.h */,
 				02A973CC1C79F02200C21B8E /* SelectionButton.m */,
+				0216EDF91C7ADA09009A7B90 /* PianoRollViewController.h */,
+				0216EDFA1C7ADA09009A7B90 /* PianoRollViewController.m */,
+				0216EDFB1C7ADA09009A7B90 /* PianoRollViewController.xib */,
 			);
 			path = Detail;
 			sourceTree = "<group>";
@@ -426,9 +434,6 @@
 				026D42BE1C7ABC08000267AD /* MainViewController.h */,
 				026D42BF1C7ABC08000267AD /* MainViewController.m */,
 				026D42C01C7ABC08000267AD /* MainViewController.xib */,
-				026D42C11C7ABC08000267AD /* MeasureViewController.h */,
-				026D42C21C7ABC08000267AD /* MeasureViewController.m */,
-				026D42C31C7ABC08000267AD /* MeasureViewController.xib */,
 				026D42C41C7ABC08000267AD /* MixerChannelViewController.h */,
 				026D42C51C7ABC08000267AD /* MixerChannelViewController.m */,
 				026D42C61C7ABC08000267AD /* MixerChannelViewController.xib */,
@@ -450,6 +455,9 @@
 			children = (
 				026D42D11C7ABC08000267AD /* MeasureScaleAssistant.h */,
 				026D42D21C7ABC08000267AD /* MeasureScaleAssistant.m */,
+				026D42C11C7ABC08000267AD /* MeasureViewController.h */,
+				026D42C21C7ABC08000267AD /* MeasureViewController.m */,
+				026D42C31C7ABC08000267AD /* MeasureViewController.xib */,
 				026D42D31C7ABC08000267AD /* PlayLineViewController.h */,
 				026D42D41C7ABC08000267AD /* PlayLineViewController.m */,
 				026D42D51C7ABC08000267AD /* PlayLineViewController.xib */,
@@ -570,6 +578,7 @@
 				0254235F1C6F2EB6007D53CC /* EditorWindowController.xib in Resources */,
 				028209231C70A3C0003EBCFB /* EditorTabItem.xib in Resources */,
 				024A5B1E1C69FFD40079D22C /* MainWindowController.xib in Resources */,
+				0216EDFD1C7ADA09009A7B90 /* PianoRollViewController.xib in Resources */,
 				0216EDF81C7AC431009A7B90 /* ConductorTrackViewController.xib in Resources */,
 				026D42D71C7ABC08000267AD /* DetailViewController.xib in Resources */,
 				028589561C71320A00A53B8C /* EditorStatusViewController.xib in Resources */,
@@ -629,6 +638,7 @@
 				024A5B2E1C69FFD90079D22C /* WelcomeWindowController.m in Sources */,
 				02633EBF1C75B09F00B9FF0E /* Stub.m in Sources */,
 				020CF86C1C6AF4D90025DF84 /* SynthesizerViewController.m in Sources */,
+				0216EDFC1C7ADA09009A7B90 /* PianoRollViewController.m in Sources */,
 				0254235E1C6F2EB6007D53CC /* EditorWindowController.m in Sources */,
 				020CF8711C6AF53D0025DF84 /* PurchaseViewController.m in Sources */,
 				02633EBC1C75062300B9FF0E /* LevelIndicator.m in Sources */,

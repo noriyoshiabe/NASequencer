@@ -19,6 +19,7 @@
 @property (strong, nonatomic) MainViewController *mainVC;
 @property (strong, nonatomic) DetailViewController *detailVC;
 @property (strong, nonatomic) ErrorWindowController *errorWC;
+@property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
 @property (strong, nonatomic) TrackSelection *trackSelection;
 @end
 
@@ -48,6 +49,11 @@
     
     _mainVC.trackSelection = _trackSelection;
     _detailVC.trackSelection = _trackSelection;
+    
+    _scaleAssistant = [[MeasureScaleAssistant alloc] init];
+    
+    _mainVC.scaleAssistant = _scaleAssistant;
+    _detailVC.scaleAssistant = _scaleAssistant;
     
     _locationView.player = _namidi.player;
     
