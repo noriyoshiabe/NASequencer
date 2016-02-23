@@ -9,11 +9,16 @@
 #import "PianoRollConductorViewController.h"
 #import "Color.h"
 
+#define EVENT_FONT_SIZE 8.0
+#define EVENT_RADIUS 6.0
+
 @interface PianoRollConductorView : NSView {
     CGColorRef _gridColor;
     CGColorRef _gridWeakColor;
     NSDictionary *_eventTextAttrs;
-    CGSize _textSize;
+    CGColorRef _eventBorderColor;
+    CGColorRef _eventFillColor;
+    CGSize _letterSize;
 }
 
 @property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
@@ -65,8 +70,19 @@
 {
     _gridColor = [Color grid].CGColor;
     _gridWeakColor = [Color gridWeak].CGColor;
-    _eventTextAttrs = @{NSFontAttributeName:[NSFont systemFontOfSize:8.0], NSForegroundColorAttributeName: [Color darkGray]};
-    _textSize = [@"8" sizeWithAttributes:_eventTextAttrs];
+    _eventTextAttrs = @{NSFontAttributeName:[NSFont systemFontOfSize:EVENT_FONT_SIZE], NSForegroundColorAttributeName: [Color darkGray]};
+    _letterSize = [@"8" sizeWithAttributes:_eventTextAttrs];
+    _eventBorderColor = [Color gray].CGColor;
+    _eventFillColor = [NSColor colorWith8bitRed:87.0 green:90.0 blue:112.0 alpha:76.5].CGColor;
+    
+    CGColorRetain(_eventFillColor);
+}
+
+- (void)dealloc
+{
+    if (_eventFillColor) {
+        CGColorRelease(_eventFillColor);
+    }
 }
 
 - (BOOL)isFlipped
@@ -156,6 +172,8 @@
     CGFloat measureOffset = _scaleAssistant.measureOffset;
     CGFloat sixth = floor(self.bounds.size.height / 6);
     
+    CGContextSetLineWidth(ctx, 1.0);
+    
     for (MidiEventRepresentation *event in _sequence.eventsOfConductorTrack) {
         NSString *text = nil;
         MidiEvent *raw = event.raw;
@@ -166,29 +184,41 @@
             {
                 TimeEvent *time = (TimeEvent *)raw;
                 text = [NSString stringWithFormat:@"%d/%d", time->numerator, time->denominator];
-                y = sixth + 0.5 - _textSize.height / 2.0;
+                y = sixth + 0.5;
                 break;
             }
             case MidiEventTypeTempo:
             {
                 TempoEvent *tempo = (TempoEvent *)raw;
                 text = [NSString stringWithFormat:@"%.2f", tempo->tempo];
-                y = sixth * 3 + 0.5 - _textSize.height / 2.0;
+                y = sixth * 3 + 0.5;
                 break;
             }
             case MidiEventTypeMarker:
             {
                 MarkerEvent *marker = (MarkerEvent *)raw;
                 text = [NSString stringWithUTF8String:marker->text];
-                y = sixth * 5 + 0.5 - _textSize.height / 2.0;
+                y = sixth * 5 + 0.5;
                 break;
             }
             default:
                 continue;
         }
         
-        CGFloat x = round(raw->tick * pixelPerTick) + measureOffset - _textSize.width / 2.0;
-        [text drawAtPoint:CGPointMake(x, y) withAttributes:_eventTextAttrs];
+        CGFloat x = round(raw->tick * pixelPerTick) + measureOffset;
+        CGSize textSize = [text sizeWithAttributes:_eventTextAttrs];
+        
+        CGFloat left = x - MIN(EVENT_RADIUS, textSize.width / 2.0);
+        CGFloat right = x + textSize.width + MIN(EVENT_RADIUS, textSize.width / 2.0) - _letterSize.width;
+        CGRect rect = CGRectMake(left, y - EVENT_RADIUS, right - left, EVENT_RADIUS * 2);
+        
+        if (CGRectIntersectsRect(dirtyRect, rect)) {
+            CGContextSetFillColorWithColor(ctx, _eventFillColor);
+            CGContextSetStrokeColorWithColor(ctx, _eventBorderColor);
+            [self drawRoundedRect:rect constext:ctx rarius:EVENT_RADIUS fill:YES stroke:YES];
+            
+            [text drawAtPoint:CGPointMake(CGRectGetMidX(rect) - textSize.width / 2.0, CGRectGetMidY(rect) - EVENT_FONT_SIZE * 3.0 / 4.0) withAttributes:_eventTextAttrs];
+        }
     }
     
     CGContextRestoreGState(ctx);

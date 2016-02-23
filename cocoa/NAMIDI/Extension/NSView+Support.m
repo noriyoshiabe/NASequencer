@@ -35,4 +35,37 @@
     [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[view]|" options:0 metrics:nil views:@{@"view": aView}]];
 }
 
+- (void)drawRoundedRect:(CGRect)rect constext:(CGContextRef)ctx rarius:(CGFloat)rarius fill:(BOOL)fill stroke:(BOOL)stroke
+{
+    CGFloat lx = CGRectGetMinX(rect);
+    CGFloat cx = CGRectGetMidX(rect);
+    CGFloat rx = CGRectGetMaxX(rect);
+    CGFloat by = CGRectGetMinY(rect);
+    CGFloat cy = CGRectGetMidY(rect);
+    CGFloat ty = CGRectGetMaxY(rect);
+    CGFloat r = MIN(rect.size.width / 2, rarius);
+    
+    if (fill) {
+        CGContextMoveToPoint(ctx, lx, cy);
+        CGContextAddArcToPoint(ctx, lx, by, cx, by, r);
+        CGContextAddArcToPoint(ctx, rx, by, rx, cy, r);
+        CGContextAddArcToPoint(ctx, rx, ty, cx, ty, r);
+        CGContextAddArcToPoint(ctx, lx, ty, lx, cy, r);
+        CGContextClosePath(ctx);
+        
+        CGContextFillPath(ctx);
+    }
+    
+    if (stroke) {
+        CGContextMoveToPoint(ctx, lx, cy);
+        CGContextAddArcToPoint(ctx, lx, by, cx, by, r);
+        CGContextAddArcToPoint(ctx, rx, by, rx, cy, r);
+        CGContextAddArcToPoint(ctx, rx, ty, cx, ty, r);
+        CGContextAddArcToPoint(ctx, lx, ty, lx, cy, r);
+        CGContextClosePath(ctx);
+        
+        CGContextStrokePath(ctx);
+    }
+}
+
 @end

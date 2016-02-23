@@ -13,4 +13,5 @@
 @interface NSView (Support)
 - (void)showHierarchy;
 - (void)addSubviewWithFitConstraints:(NSView *)aView;
+- (void)drawRoundedRect:(CGRect)rect constext:(CGContextRef)ctx rarius:(CGFloat)rarius fill:(BOOL)fill stroke:(BOOL)stroke;
 @end
