@@ -49,6 +49,7 @@
 		025423641C6F31DF007D53CC /* EditorViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 025423621C6F31DF007D53CC /* EditorViewController.xib */; };
 		0255F6281C7111DF00CF4C52 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0255F6271C7111DF00CF4C52 /* CoreText.framework */; };
 		025FA8FB1C7CECBA00E4C3B3 /* TrackSelection.m in Sources */ = {isa = PBXBuildFile; fileRef = 025FA8FA1C7CECBA00E4C3B3 /* TrackSelection.m */; };
+		025FA8FE1C7CFC9800E4C3B3 /* EventListRowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 025FA8FD1C7CFC9800E4C3B3 /* EventListRowView.m */; };
 		02633E981C74AC9F00B9FF0E /* Color.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633E971C74AC9F00B9FF0E /* Color.m */; };
 		02633EB81C74ED9300B9FF0E /* NSView+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EB71C74ED9200B9FF0E /* NSView+Support.m */; };
 		02633EBC1C75062300B9FF0E /* LevelIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EBB1C75062300B9FF0E /* LevelIndicator.m */; };
@@ -164,6 +165,8 @@
 		0255F6271C7111DF00CF4C52 /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 		025FA8F91C7CECBA00E4C3B3 /* TrackSelection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrackSelection.h; sourceTree = "<group>"; };
 		025FA8FA1C7CECBA00E4C3B3 /* TrackSelection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TrackSelection.m; sourceTree = "<group>"; };
+		025FA8FC1C7CFC9800E4C3B3 /* EventListRowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventListRowView.h; sourceTree = "<group>"; };
+		025FA8FD1C7CFC9800E4C3B3 /* EventListRowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventListRowView.m; sourceTree = "<group>"; };
 		026160B51C689E18001E99A9 /* NAMIDI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = NAMIDI.entitlements; sourceTree = "<group>"; };
 		02633E961C74AC9F00B9FF0E /* Color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Color.h; sourceTree = "<group>"; };
 		02633E971C74AC9F00B9FF0E /* Color.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Color.m; sourceTree = "<group>"; };
@@ -426,6 +429,8 @@
 				026D42B41C7ABC08000267AD /* EventListViewController.h */,
 				026D42B51C7ABC08000267AD /* EventListViewController.m */,
 				026D42B61C7ABC08000267AD /* EventListViewController.xib */,
+				025FA8FC1C7CFC9800E4C3B3 /* EventListRowView.h */,
+				025FA8FD1C7CFC9800E4C3B3 /* EventListRowView.m */,
 				026D42B71C7ABC08000267AD /* SelectionViewController.h */,
 				026D42B81C7ABC08000267AD /* SelectionViewController.m */,
 				026D42B91C7ABC08000267AD /* SelectionViewController.xib */,
@@ -628,6 +633,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				026D42DC1C7ABC08000267AD /* ConductorViewController.m in Sources */,
+				025FA8FE1C7CFC9800E4C3B3 /* EventListRowView.m in Sources */,
 				026D42E21C7ABC08000267AD /* MixerChannelViewController.m in Sources */,
 				0240A2481C6C30F2002D6F72 /* ApplicationController.m in Sources */,
 				020CF87E1C6B20C50025DF84 /* Application.m in Sources */,

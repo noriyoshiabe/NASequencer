@@ -7,21 +7,9 @@
 //
 
 #import "EventListViewController.h"
+#import "EventListRowView.h"
 #import "Color.h"
 #import "Stub.h"
-
-@interface EventListCellView : NSTableCellView
-@property (weak) IBOutlet NSTextField *location;
-@property (weak) IBOutlet NSTextField *type;
-@property (weak) IBOutlet NSTextField *channel;
-@property (weak) IBOutlet NSTextField *note;
-@property (weak) IBOutlet NSTextField *gatetime;
-@property (weak) IBOutlet NSTextField *velocity;
-@property (weak) IBOutlet NSTextField *other;
-@end
-
-@implementation EventListCellView
-@end
 
 @interface EventListViewController () <NSTableViewDataSource, NSTableViewDelegate> {
     NSMutableArray<MidiEventRepresentation *> *_events;
@@ -107,11 +95,30 @@
     MidiEvent *raw = event.raw;
     Location location = [_namidi.sequence locationByTick:raw->tick];
     
-    EventListCellView *view = [tableView makeViewWithIdentifier:@"EventRow" owner:self];
-    view.location.stringValue = [NSString stringWithFormat:@"%03d:%02d:%03d", location.m, location.b, location.t];
-    view.type.stringValue = [NSString stringWithUTF8String:MidiEventType2String(raw->type)];
+    EventListRowView *view = [tableView makeViewWithIdentifier:@"EventListRow" owner:nil];
+    view.location = [NSString stringWithFormat:@"%03d:%02d:%03d", location.m, location.b, location.t];
+    view.type = [NSString stringWithUTF8String:MidiEventType2String(raw->type)];
     
-    // TODO
+    if (MidiEventTypeNote == raw->type) {
+        const char *labels[] = {
+            "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
+        };
+        
+        NoteEvent *note = (NoteEvent *)raw;
+        view.channel = [NSString stringWithFormat:@"%d", note->channel];
+        view.note = [NSString stringWithFormat:@"%s%d", labels[note->noteNo % 12], note->noteNo / 12 - 2];
+        view.gatetime = [NSString stringWithFormat:@"%d", note->gatetime];
+        view.velocity = [NSString stringWithFormat:@"%d", note->velocity];
+    }
+    else {
+        view.channel = nil;
+        view.note = nil;
+        view.gatetime = nil;
+        view.velocity = nil;
+        
+        // TODO
+        view.other = @"Copyright (c) 2016, Noriyoshi Abe. All right reserved.";
+    }
     
     return view;
 }
