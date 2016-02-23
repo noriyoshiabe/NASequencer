@@ -19,4 +19,10 @@
 #import "NSView+Support.h"
 #import "NSColor+Support.h"
 
+#ifdef DEBUG
+#define __Trace__ NSLog(@"%s - %d", __func__, __LINE__);
+#else
+#define __Trace__
+#endif
+
 #endif /* NAMIDI_Prefix_h */

@@ -30,9 +30,7 @@
 - (void)setSelectionFlags:(unsigned int)selectionFlags
 {
     _previousSelectionFlags = _selectionFlags;
-    [self willChangeValueForKey:@"selectionFlags"];
     _selectionFlags = selectionFlags;
-    [self didChangeValueForKey:@"selectionFlags"];
 }
 
 - (void)click:(int)trackNo event:(NSEvent *)event
