@@ -153,6 +153,7 @@
         event.raw->id = ++_id;
         event.raw->type = MidiEventTypeTempo;
         event.raw->tick = 0;
+        ((TempoEvent *)event.raw)->tempo = 124.50;
         [_events addObject:event];
         [_eventsOfConductorTrack addObject:event];
         
@@ -161,6 +162,8 @@
         event.raw->id = ++_id;
         event.raw->type = MidiEventTypeTime;
         event.raw->tick = 0;
+        ((TimeEvent *)event.raw)->numerator = 4;
+        ((TimeEvent *)event.raw)->denominator = 4;
         [_events addObject:event];
         [_eventsOfConductorTrack addObject:event];
         
@@ -169,6 +172,7 @@
         event.raw->id = ++_id;
         event.raw->type = MidiEventTypeTempo;
         event.raw->tick = 1920 * 4;
+        ((TempoEvent *)event.raw)->tempo = 140.50;
         [_events addObject:event];
         [_eventsOfConductorTrack addObject:event];
         

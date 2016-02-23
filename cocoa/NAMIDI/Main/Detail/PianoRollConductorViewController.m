@@ -12,6 +12,8 @@
 @interface PianoRollConductorView : NSView {
     CGColorRef _gridColor;
     CGColorRef _gridWeakColor;
+    NSDictionary *_eventTextAttrs;
+    CGSize _textSize;
 }
 
 @property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
@@ -63,6 +65,8 @@
 {
     _gridColor = [Color grid].CGColor;
     _gridWeakColor = [Color gridWeak].CGColor;
+    _eventTextAttrs = @{NSFontAttributeName:[NSFont systemFontOfSize:8.0], NSForegroundColorAttributeName: [Color darkGray]};
+    _textSize = [@"8" sizeWithAttributes:_eventTextAttrs];
 }
 
 - (BOOL)isFlipped
@@ -146,7 +150,48 @@
 
 - (void)drawEvents:(NSRect)dirtyRect context:(CGContextRef)ctx
 {
+    CGContextSaveGState(ctx);
     
+    CGFloat pixelPerTick = _scaleAssistant.pixelPerTick;
+    CGFloat measureOffset = _scaleAssistant.measureOffset;
+    CGFloat sixth = floor(self.bounds.size.height / 6);
+    
+    for (MidiEventRepresentation *event in _sequence.eventsOfConductorTrack) {
+        NSString *text = nil;
+        MidiEvent *raw = event.raw;
+        CGFloat y;
+        
+        switch (raw->type) {
+            case MidiEventTypeTime:
+            {
+                TimeEvent *time = (TimeEvent *)raw;
+                text = [NSString stringWithFormat:@"%d/%d", time->numerator, time->denominator];
+                y = sixth + 0.5 - _textSize.height / 2.0;
+                break;
+            }
+            case MidiEventTypeTempo:
+            {
+                TempoEvent *tempo = (TempoEvent *)raw;
+                text = [NSString stringWithFormat:@"%.2f", tempo->tempo];
+                y = sixth * 3 + 0.5 - _textSize.height / 2.0;
+                break;
+            }
+            case MidiEventTypeMarker:
+            {
+                MarkerEvent *marker = (MarkerEvent *)raw;
+                text = [NSString stringWithUTF8String:marker->text];
+                y = sixth * 5 + 0.5 - _textSize.height / 2.0;
+                break;
+            }
+            default:
+                continue;
+        }
+        
+        CGFloat x = round(raw->tick * pixelPerTick) + measureOffset - _textSize.width / 2.0;
+        [text drawAtPoint:CGPointMake(x, y) withAttributes:_eventTextAttrs];
+    }
+    
+    CGContextRestoreGState(ctx);
 }
 
 @end

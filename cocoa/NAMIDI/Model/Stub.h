@@ -122,6 +122,13 @@ typedef struct _TimeEvent {
     int denominator;
 } TimeEvent;
 
+typedef struct _MarkerEvent {
+    MidiEventType type;
+    int id;
+    int tick;
+    char text[];
+} MarkerEvent;
+
 @interface MidiEventRepresentation : NSObject
 @property (readonly, nonatomic) MidiEventType type;
 @property (readonly, nonatomic) int tick;
