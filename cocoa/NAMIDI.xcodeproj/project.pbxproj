@@ -50,6 +50,8 @@
 		0255F6281C7111DF00CF4C52 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0255F6271C7111DF00CF4C52 /* CoreText.framework */; };
 		025FA8FB1C7CECBA00E4C3B3 /* TrackSelection.m in Sources */ = {isa = PBXBuildFile; fileRef = 025FA8FA1C7CECBA00E4C3B3 /* TrackSelection.m */; };
 		025FA8FE1C7CFC9800E4C3B3 /* EventListRowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 025FA8FD1C7CFC9800E4C3B3 /* EventListRowView.m */; };
+		025FA9021C7D1BE900E4C3B3 /* PianoRollKeyboardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 025FA9001C7D1BE900E4C3B3 /* PianoRollKeyboardViewController.m */; };
+		025FA9031C7D1BE900E4C3B3 /* PianoRollKeyboardViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 025FA9011C7D1BE900E4C3B3 /* PianoRollKeyboardViewController.xib */; };
 		02633E981C74AC9F00B9FF0E /* Color.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633E971C74AC9F00B9FF0E /* Color.m */; };
 		02633EB81C74ED9300B9FF0E /* NSView+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EB71C74ED9200B9FF0E /* NSView+Support.m */; };
 		02633EBC1C75062300B9FF0E /* LevelIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EBB1C75062300B9FF0E /* LevelIndicator.m */; };
@@ -167,6 +169,9 @@
 		025FA8FA1C7CECBA00E4C3B3 /* TrackSelection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TrackSelection.m; sourceTree = "<group>"; };
 		025FA8FC1C7CFC9800E4C3B3 /* EventListRowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventListRowView.h; sourceTree = "<group>"; };
 		025FA8FD1C7CFC9800E4C3B3 /* EventListRowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventListRowView.m; sourceTree = "<group>"; };
+		025FA8FF1C7D1BE900E4C3B3 /* PianoRollKeyboardViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PianoRollKeyboardViewController.h; sourceTree = "<group>"; };
+		025FA9001C7D1BE900E4C3B3 /* PianoRollKeyboardViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PianoRollKeyboardViewController.m; sourceTree = "<group>"; };
+		025FA9011C7D1BE900E4C3B3 /* PianoRollKeyboardViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PianoRollKeyboardViewController.xib; sourceTree = "<group>"; };
 		026160B51C689E18001E99A9 /* NAMIDI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = NAMIDI.entitlements; sourceTree = "<group>"; };
 		02633E961C74AC9F00B9FF0E /* Color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Color.h; sourceTree = "<group>"; };
 		02633E971C74AC9F00B9FF0E /* Color.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Color.m; sourceTree = "<group>"; };
@@ -447,6 +452,9 @@
 				0216EE081C7C5D15009A7B90 /* PianoRollNoteViewController.h */,
 				0216EE091C7C5D15009A7B90 /* PianoRollNoteViewController.m */,
 				0216EE0A1C7C5D15009A7B90 /* PianoRollNoteViewController.xib */,
+				025FA8FF1C7D1BE900E4C3B3 /* PianoRollKeyboardViewController.h */,
+				025FA9001C7D1BE900E4C3B3 /* PianoRollKeyboardViewController.m */,
+				025FA9011C7D1BE900E4C3B3 /* PianoRollKeyboardViewController.xib */,
 				0216EE0D1C7C689F009A7B90 /* PianoRollLayout.h */,
 				0216EE0E1C7C689F009A7B90 /* PianoRollLayout.m */,
 			);
@@ -598,6 +606,7 @@
 				026D42EC1C7ABC08000267AD /* PlayLineViewController.xib in Resources */,
 				02CAF6C51C778C2200AD81B2 /* ErrorWindowController.xib in Resources */,
 				02A674041C6B3A5C00914C8B /* NMFIcon.iconset in Resources */,
+				025FA9031C7D1BE900E4C3B3 /* PianoRollKeyboardViewController.xib in Resources */,
 				02A673FD1C6B3A5C00914C8B /* MMLIcon.iconset in Resources */,
 				024A5B0D1C69FF990079D22C /* MainMenu.xib in Resources */,
 				026D42E91C7ABC08000267AD /* TrackViewController.xib in Resources */,
@@ -640,6 +649,7 @@
 				02633E981C74AC9F00B9FF0E /* Color.m in Sources */,
 				026D42E41C7ABC08000267AD /* MixerViewController.m in Sources */,
 				026D42E61C7ABC08000267AD /* TrackChannelViewController.m in Sources */,
+				025FA9021C7D1BE900E4C3B3 /* PianoRollKeyboardViewController.m in Sources */,
 				0216EE001C7C3333009A7B90 /* PianoRollConductorLabelView.m in Sources */,
 				028209271C70A5D8003EBCFB /* FileRepresentation.m in Sources */,
 				0216EE0B1C7C5D15009A7B90 /* PianoRollNoteViewController.m in Sources */,

@@ -11,6 +11,7 @@
 @interface Color : NSObject
 + (NSColor *)darkGray;
 + (NSColor *)gray;
++ (NSColor *)semiLightGray;
 + (NSColor *)lightGray;
 + (NSColor *)ultraLightGray;
 + (NSColor *)channelColor:(int)channel;

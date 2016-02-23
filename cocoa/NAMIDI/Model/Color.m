@@ -16,6 +16,7 @@
 
 static NSColor *DarkGray;
 static NSColor *Gray;
+static NSColor *SemiLightGray;
 static NSColor *LightGray;
 static NSColor *UltraLightGray;
 static NSColor *ChannelColor[16];
@@ -29,6 +30,7 @@ static NSColor *GridWeak;
 {
     DarkGray = GSCALE(74.0);
     Gray = GSCALE(151.0);
+    SemiLightGray = GSCALE(200.0);
     LightGray = GSCALE(216.0);
     UltraLightGray = GSCALE(242.0);
     
@@ -49,6 +51,11 @@ static NSColor *GridWeak;
 + (NSColor *)gray
 {
     return Gray;
+}
+
++ (NSColor *)semiLightGray
+{
+    return SemiLightGray;
 }
 
 + (NSColor *)lightGray

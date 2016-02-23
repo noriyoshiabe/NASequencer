@@ -12,6 +12,7 @@
 #import "SynchronizedScrollView.h"
 #import "PianoRollConductorViewController.h"
 #import "PianoRollNoteViewController.h"
+#import "PianoRollKeyboardViewController.h"
 #import "Color.h"
 
 #define VELOCITY_VIEW_HEIGHT_MAX 160
@@ -37,6 +38,7 @@
 @property (strong, nonatomic) PlayLineViewController *playLineVC;
 @property (strong, nonatomic) PianoRollConductorViewController *conductorVC;
 @property (strong, nonatomic) PianoRollNoteViewController *noteVC;
+@property (strong, nonatomic) PianoRollKeyboardViewController *keyboardVC;
 @end
 
 @implementation PianoRollViewController
@@ -82,6 +84,7 @@
     
     _conductorVC = [[PianoRollConductorViewController alloc] init];
     _noteVC = [[PianoRollNoteViewController alloc] init];
+    _keyboardVC = [[PianoRollKeyboardViewController alloc] init];
     
     _measureVC.namidi = _namidi;
     _playLineVC.namidi = _namidi;
@@ -100,6 +103,7 @@
     _playLineView.documentView = _playLineVC.view;
     _conductorView.documentView = _conductorVC.view;
     _noteView.documentView = _noteVC.view;
+    _keyboardView.documentView = _keyboardVC.view;
     
     _measureVC.view.frame = _measureView.frame;
     _measureVC.view.needsLayout = YES;
@@ -111,8 +115,8 @@
     
     [_playLineView observeScrollForScrollView:_noteView x:YES y:NO];
     
-    //[_keyboardView observeScrollForScrollView:_noteView x:NO y:YES];
-    //[_noteView observeScrollForScrollView:_keyboardView x:NO y:YES];
+    [_keyboardView observeScrollForScrollView:_noteView x:NO y:YES];
+    [_noteView observeScrollForScrollView:_keyboardView x:NO y:YES];
     
     [_horizontalSplitView setPosition:CGRectGetHeight(self.view.frame) - VELOCITY_VIEW_HEIGHT_MAX ofDividerAtIndex:0];
 }
