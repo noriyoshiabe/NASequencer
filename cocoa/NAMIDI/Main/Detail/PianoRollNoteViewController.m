@@ -10,16 +10,19 @@
 #import "Color.h"
 #import "PianoRollLayout.h"
 
+#define EVENT_RADIUS 3.0
+
 @interface PianoRollNoteView : NSView {
     CGColorRef _gridColor;
     CGColorRef _gridWeakColor;
-    CGColorRef _eventBorderColor;
-    CGColorRef _eventFillColor;
+    CGColorRef _eventBorderColor[16];
+    CGColorRef _eventFillColor[16];
 }
 
 @property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
 @property (strong, nonatomic) TrackSelection *trackSelection;
 @property (strong, nonatomic) SequenceRepresentation *sequence;
+@property (assign, nonatomic) NSColor *baseColor;
 @end
 
 @interface PianoRollNoteViewController ()
@@ -37,11 +40,13 @@
     _noteView.sequence = _namidi.sequence;
     
     [_scaleAssistant addObserver:self forKeyPath:@"scale" options:0 context:NULL];
+    [_trackSelection addObserver:self forKeyPath:@"selectionFlags" options:0 context:NULL];
 }
 
 - (void)dealloc
 {
     [_scaleAssistant removeObserver:self forKeyPath:@"scale"];
+    [_trackSelection removeObserver:self forKeyPath:@"selectionFlags"];
 }
 
 - (void)scrollWheel:(NSEvent *)theEvent
@@ -56,6 +61,9 @@
     if (object == _scaleAssistant) {
         [_noteView layout];
     }
+    else if (object == _trackSelection) {
+        _noteView.needsDisplay = YES;
+    }
 }
 
 @end
@@ -67,13 +75,24 @@
     _gridColor = [Color grid].CGColor;
     _gridWeakColor = [Color gridWeak].CGColor;
     
-    //_eventBorderColor = ;
-    //_eventFillColor = ;
+    for (int i = 0; i < 16; ++i) {
+        NSColor *baseColor = [Color channelColor:i + 1];
+        _eventBorderColor[i] = [NSColor colorWithHue:baseColor.hueComponent saturation:0.64 brightness:0.89 alpha:1.0].CGColor;
+        _eventFillColor[i] = [NSColor colorWithHue:baseColor.hueComponent saturation:0.64 brightness:0.89 alpha:0.3].CGColor;
+        
+        CGColorRetain(_eventBorderColor[i]);
+        CGColorRetain(_eventFillColor[i]);
+    }
 }
 
 - (void)dealloc
 {
-    // TODO
+    if (_eventBorderColor[0]) {
+        for (int i = 0; i < 16; ++i) {
+            CGColorRelease(_eventBorderColor[i]);
+            CGColorRelease(_eventFillColor[i]);
+        }
+    }
 }
 
 - (BOOL)isFlipped
@@ -109,7 +128,7 @@
     CGContextSetLineWidth(ctx, 0.5);
     
     int octaveFrom = MAX(-2, floor(dirtyRect.origin.y / PianoRollLayoutOctaveHeight) - 2);
-    int octaveTo = MIN(8, octaveFrom + ceil(dirtyRect.size.height / PianoRollLayoutOctaveHeight));
+    int octaveTo = MIN(8, ceil((dirtyRect.origin.y + dirtyRect.size.height) / PianoRollLayoutOctaveHeight));
     
     for (int i = octaveFrom; i <= octaveTo; ++i) {
         for (int j = 0; j < 12; ++j) {
@@ -167,7 +186,45 @@
 {
     CGContextSaveGState(ctx);
     
-    // TODO
+    CGFloat pixelPerTick = _scaleAssistant.pixelPerTick;
+    CGFloat measureOffset = _scaleAssistant.measureOffset;
+    
+    CGContextSetLineWidth(ctx, 1.0);
+    
+    for (ChannelRepresentation *channel in _sequence.channels) {
+        if (![_trackSelection isTrackSelected:channel.number]) {
+            continue;
+        }
+        
+        int colorIndex = channel.number - 1;
+        
+        for (MidiEventRepresentation *event in channel.events) {
+            MidiEvent *raw = event.raw;
+            if (MidiEventTypeNote != raw->type) {
+                continue;
+            }
+            
+            NoteEvent *note = (NoteEvent *)raw;
+            
+            int octave = note->noteNo / 12;
+            int noteNoInOctave = note->noteNo % 12;
+            
+            CGFloat x = round(note->tick * pixelPerTick) + measureOffset;
+            CGFloat y = PianoRollLayoutNoteYInOctave[noteNoInOctave]
+                      + PianoRollLayoutOctaveHeight * octave
+                      + PianoRollLayoutNoteHeight + 0.5;
+            CGFloat width = round(note->gatetime * pixelPerTick);
+            
+            CGFloat left = x - MIN(EVENT_RADIUS, width / 2.0);
+            CGRect rect = CGRectMake(left, y - EVENT_RADIUS, width, EVENT_RADIUS * 2);
+            
+            if (CGRectIntersectsRect(dirtyRect, rect)) {
+                CGContextSetFillColorWithColor(ctx, _eventFillColor[colorIndex]);
+                CGContextSetStrokeColorWithColor(ctx, _eventBorderColor[colorIndex]);
+                [self drawRoundedRect:rect constext:ctx rarius:EVENT_RADIUS fill:YES stroke:YES];
+            }
+        }
+    }
     
     CGContextRestoreGState(ctx);
 }

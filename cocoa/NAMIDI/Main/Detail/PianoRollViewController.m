@@ -111,8 +111,8 @@
     
     [_playLineView observeScrollForScrollView:_noteView x:YES y:NO];
     
-    [_keyboardView observeScrollForScrollView:_noteView x:NO y:YES];
-    [_noteView observeScrollForScrollView:_keyboardView x:NO y:YES];
+    //[_keyboardView observeScrollForScrollView:_noteView x:NO y:YES];
+    //[_noteView observeScrollForScrollView:_keyboardView x:NO y:YES];
     
     [_horizontalSplitView setPosition:CGRectGetHeight(self.view.frame) - VELOCITY_VIEW_HEIGHT_MAX ofDividerAtIndex:0];
 }
