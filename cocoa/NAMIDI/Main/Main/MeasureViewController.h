@@ -8,7 +8,6 @@
 
 #import <Cocoa/Cocoa.h>
 #import "MeasureScaleAssistant.h"
-#import "TrackSelection.h"
 #import "Stub.h"
 
 @interface MeasureViewController : NSViewController

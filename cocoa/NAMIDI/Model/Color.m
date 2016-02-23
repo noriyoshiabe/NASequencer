@@ -8,7 +8,7 @@
 
 #import "Color.h"
 
-#define RGBA(r,g,b,a) [NSColor colorWithRed:r/255.0 green:r/255.0 blue:r/255.0 alpha:a/255.0]
+#define RGBA(r,g,b,a) [NSColor colorWithRed:r/255.0 green:g/255.0 blue:b/255.0 alpha:a/255.0]
 #define RGB(r,g,b)    RGBA(r,g,b,255.0)
 #define GSCALE(b)     RGBA(b,b,b,255.0)
 #define HSBA(h,s,b,a) [NSColor colorWithHue:h saturation:s brightness:b alpha:a]
@@ -20,6 +20,8 @@ static NSColor *LightGray;
 static NSColor *UltraLightGray;
 static NSColor *ChannelColor[16];
 static NSColor *StatusBackground;
+static NSColor *Grid;
+static NSColor *GridWeak;
 
 @implementation Color
 
@@ -35,6 +37,8 @@ static NSColor *StatusBackground;
     }
     
     StatusBackground = [NSColor colorWithWhite:0 alpha:0.5];
+    Grid = RGBA(200.0, 200.0, 250.0, 255.0);
+    GridWeak = RGBA(240.0, 240.0, 250.0, 255.0);
 }
 
 + (NSColor *)darkGray
@@ -65,6 +69,16 @@ static NSColor *StatusBackground;
 + (NSColor *)statusBackground
 {
     return StatusBackground;
+}
+
++ (NSColor *)grid
+{
+    return Grid;
+}
+
++ (NSColor *)gridWeak
+{
+    return GridWeak;
 }
 
 @end

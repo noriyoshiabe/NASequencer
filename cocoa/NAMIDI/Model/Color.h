@@ -15,4 +15,6 @@
 + (NSColor *)ultraLightGray;
 + (NSColor *)channelColor:(int)channel;
 + (NSColor *)statusBackground;
++ (NSColor *)grid;
++ (NSColor *)gridWeak;
 @end

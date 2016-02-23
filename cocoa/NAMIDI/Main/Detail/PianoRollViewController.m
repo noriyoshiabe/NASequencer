@@ -10,6 +10,7 @@
 #import "MeasureViewController.h"
 #import "PlayLineViewController.h"
 #import "SynchronizedScrollView.h"
+#import "PianoRollConductorViewController.h"
 #import "Color.h"
 
 #define VELOCITY_VIEW_HEIGHT_MAX 160
@@ -33,6 +34,7 @@
 
 @property (strong, nonatomic) MeasureViewController *measureVC;
 @property (strong, nonatomic) PlayLineViewController *playLineVC;
+@property (strong, nonatomic) PianoRollConductorViewController *conductorVC;
 @end
 
 @implementation PianoRollViewController
@@ -76,14 +78,21 @@
     _playLineVC = [[PlayLineViewController alloc] init];
     _playLineVC.containerView = _playLineView;
     
+    _conductorVC = [[PianoRollConductorViewController alloc] init];
+    
     _measureVC.namidi = _namidi;
     _playLineVC.namidi = _namidi;
+    _conductorVC.namidi = _namidi;
     
     _measureVC.scaleAssistant = _scaleAssistant;
     _playLineVC.scaleAssistant = _scaleAssistant;
+    _conductorVC.scaleAssistant = _scaleAssistant;
+    
+    _conductorVC.trackSelection = _trackSelection;
     
     _measureView.documentView = _measureVC.view;
     _playLineView.documentView = _playLineVC.view;
+    _conductorView.documentView = _conductorVC.view;
     
     _measureVC.view.frame = _measureView.frame;
     _measureVC.view.needsLayout = YES;
