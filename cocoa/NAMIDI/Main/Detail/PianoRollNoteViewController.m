@@ -214,9 +214,7 @@
                       + PianoRollLayoutOctaveHeight * octave
                       + PianoRollLayoutNoteHeight + 0.5;
             CGFloat width = round(note->gatetime * pixelPerTick);
-            
-            CGFloat left = x - MIN(EVENT_RADIUS, width / 2.0);
-            CGRect rect = CGRectMake(left, y - EVENT_RADIUS, width, EVENT_RADIUS * 2);
+            CGRect rect = CGRectMake(x, y - EVENT_RADIUS, width, EVENT_RADIUS * 2);
             
             if (CGRectIntersectsRect(dirtyRect, rect)) {
                 CGContextSetFillColorWithColor(ctx, _eventFillColor[colorIndex]);

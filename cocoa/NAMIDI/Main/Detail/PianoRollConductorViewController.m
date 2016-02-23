@@ -207,10 +207,8 @@
         
         CGFloat x = round(raw->tick * pixelPerTick) + measureOffset;
         CGSize textSize = [text sizeWithAttributes:_eventTextAttrs];
-        
-        CGFloat left = x - MIN(EVENT_RADIUS, textSize.width / 2.0);
-        CGFloat right = x + textSize.width + MIN(EVENT_RADIUS, textSize.width / 2.0) - _letterSize.width;
-        CGRect rect = CGRectMake(left, y - EVENT_RADIUS, right - left, EVENT_RADIUS * 2);
+        CGFloat width = textSize.width + _letterSize.width;
+        CGRect rect = CGRectMake(x, y - EVENT_RADIUS, width, EVENT_RADIUS * 2);
         
         if (CGRectIntersectsRect(dirtyRect, rect)) {
             CGContextSetFillColorWithColor(ctx, _eventFillColor);
