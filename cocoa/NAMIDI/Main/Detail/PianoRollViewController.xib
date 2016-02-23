@@ -44,7 +44,7 @@
                                         <constraint firstAttribute="height" constant="32" id="R2o-Le-xPh"/>
                                     </constraints>
                                 </customView>
-                                <customView translatesAutoresizingMaskIntoConstraints="NO" id="kha-dd-MvH">
+                                <customView translatesAutoresizingMaskIntoConstraints="NO" id="kha-dd-MvH" customClass="PianoRollConductorLabelView">
                                     <rect key="frame" x="0.0" y="243" width="60" height="43"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="43" id="9iH-AA-L6G"/>
@@ -58,7 +58,7 @@
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
                                             <view fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eZN-qB-9gr">
-                                                <rect key="frame" x="0.0" y="-62" width="350" height="56"/>
+                                                <rect key="frame" x="60" y="-142" width="181" height="49"/>
                                             </view>
                                         </subviews>
                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -82,7 +82,7 @@
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
                                             <view fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tAh-iZ-AmG">
-                                                <rect key="frame" x="0.0" y="-51" width="350" height="56"/>
+                                                <rect key="frame" x="144" y="-175" width="103" height="181"/>
                                             </view>
                                         </subviews>
                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -106,7 +106,7 @@
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
                                             <view fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jGh-iR-d4a">
-                                                <rect key="frame" x="0.0" y="148" width="350" height="56"/>
+                                                <rect key="frame" x="-160" y="-89" width="17" height="87"/>
                                             </view>
                                         </subviews>
                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -130,7 +130,7 @@
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
                                             <view fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Qay-1f-yqe">
-                                                <rect key="frame" x="0.0" y="148" width="350" height="56"/>
+                                                <rect key="frame" x="-80" y="-18" width="152" height="53"/>
                                             </view>
                                         </subviews>
                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -209,7 +209,7 @@
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
                                             <view fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zEV-r5-vGs">
-                                                <rect key="frame" x="0.0" y="66" width="350" height="56"/>
+                                                <rect key="frame" x="-144" y="179" width="5" height="176"/>
                                             </view>
                                         </subviews>
                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -256,7 +256,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="a9D-1I-XeE">
-                                <rect key="frame" x="0.0" y="-94" width="181" height="94"/>
+                                <rect key="frame" x="126" y="-500" width="13" height="167"/>
                             </view>
                         </subviews>
                     </clipView>
