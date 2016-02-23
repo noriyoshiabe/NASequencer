@@ -31,6 +31,9 @@
 		0216EE001C7C3333009A7B90 /* PianoRollConductorLabelView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0216EDFF1C7C3333009A7B90 /* PianoRollConductorLabelView.m */; };
 		0216EE061C7C3C76009A7B90 /* PianoRollConductorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0216EE041C7C3C76009A7B90 /* PianoRollConductorViewController.m */; };
 		0216EE071C7C3C76009A7B90 /* PianoRollConductorViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0216EE051C7C3C76009A7B90 /* PianoRollConductorViewController.xib */; };
+		0216EE0B1C7C5D15009A7B90 /* PianoRollNoteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0216EE091C7C5D15009A7B90 /* PianoRollNoteViewController.m */; };
+		0216EE0C1C7C5D15009A7B90 /* PianoRollNoteViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0216EE0A1C7C5D15009A7B90 /* PianoRollNoteViewController.xib */; };
+		0216EE0F1C7C689F009A7B90 /* PianoRollLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 0216EE0E1C7C689F009A7B90 /* PianoRollLayout.m */; };
 		023BB20F1C6EF17B0030487C /* NSArray+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 023BB20E1C6EF17B0030487C /* NSArray+Support.m */; };
 		0240A2481C6C30F2002D6F72 /* ApplicationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0240A2471C6C30F2002D6F72 /* ApplicationController.m */; };
 		024A19061C768AC800B0AC56 /* FlippedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A19051C768AC800B0AC56 /* FlippedView.m */; };
@@ -132,6 +135,11 @@
 		0216EE031C7C3C76009A7B90 /* PianoRollConductorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PianoRollConductorViewController.h; sourceTree = "<group>"; };
 		0216EE041C7C3C76009A7B90 /* PianoRollConductorViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PianoRollConductorViewController.m; sourceTree = "<group>"; };
 		0216EE051C7C3C76009A7B90 /* PianoRollConductorViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PianoRollConductorViewController.xib; sourceTree = "<group>"; };
+		0216EE081C7C5D15009A7B90 /* PianoRollNoteViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PianoRollNoteViewController.h; sourceTree = "<group>"; };
+		0216EE091C7C5D15009A7B90 /* PianoRollNoteViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PianoRollNoteViewController.m; sourceTree = "<group>"; };
+		0216EE0A1C7C5D15009A7B90 /* PianoRollNoteViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PianoRollNoteViewController.xib; sourceTree = "<group>"; };
+		0216EE0D1C7C689F009A7B90 /* PianoRollLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PianoRollLayout.h; sourceTree = "<group>"; };
+		0216EE0E1C7C689F009A7B90 /* PianoRollLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PianoRollLayout.m; sourceTree = "<group>"; };
 		023BB20D1C6EF17B0030487C /* NSArray+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+Support.h"; sourceTree = "<group>"; };
 		023BB20E1C6EF17B0030487C /* NSArray+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Support.m"; sourceTree = "<group>"; };
 		0240A2461C6C30F2002D6F72 /* ApplicationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationController.h; sourceTree = "<group>"; };
@@ -431,6 +439,11 @@
 				0216EE031C7C3C76009A7B90 /* PianoRollConductorViewController.h */,
 				0216EE041C7C3C76009A7B90 /* PianoRollConductorViewController.m */,
 				0216EE051C7C3C76009A7B90 /* PianoRollConductorViewController.xib */,
+				0216EE081C7C5D15009A7B90 /* PianoRollNoteViewController.h */,
+				0216EE091C7C5D15009A7B90 /* PianoRollNoteViewController.m */,
+				0216EE0A1C7C5D15009A7B90 /* PianoRollNoteViewController.xib */,
+				0216EE0D1C7C689F009A7B90 /* PianoRollLayout.h */,
+				0216EE0E1C7C689F009A7B90 /* PianoRollLayout.m */,
 			);
 			path = Detail;
 			sourceTree = "<group>";
@@ -585,6 +598,7 @@
 				026D42E91C7ABC08000267AD /* TrackViewController.xib in Resources */,
 				02A673FA1C6B3A5C00914C8B /* ABCIcon.iconset in Resources */,
 				026D42DB1C7ABC08000267AD /* SelectionViewController.xib in Resources */,
+				0216EE0C1C7C5D15009A7B90 /* PianoRollNoteViewController.xib in Resources */,
 				026D42E71C7ABC08000267AD /* TrackChannelViewController.xib in Resources */,
 				020CF8301C6A04830025DF84 /* getting-started in Resources */,
 				024A5B2F1C69FFD90079D22C /* WelcomeWindowController.xib in Resources */,
@@ -623,6 +637,7 @@
 				026D42E61C7ABC08000267AD /* TrackChannelViewController.m in Sources */,
 				0216EE001C7C3333009A7B90 /* PianoRollConductorLabelView.m in Sources */,
 				028209271C70A5D8003EBCFB /* FileRepresentation.m in Sources */,
+				0216EE0B1C7C5D15009A7B90 /* PianoRollNoteViewController.m in Sources */,
 				02A973CD1C79F02200C21B8E /* SelectionButton.m in Sources */,
 				024A5B1D1C69FFD40079D22C /* MainWindowController.m in Sources */,
 				020CF8621C6AEA5F0025DF84 /* GeneralViewController.m in Sources */,
@@ -638,6 +653,7 @@
 				026D42E81C7ABC08000267AD /* TrackViewController.m in Sources */,
 				026D42EB1C7ABC08000267AD /* PlayLineViewController.m in Sources */,
 				02CAF6C41C778C2200AD81B2 /* ErrorWindowController.m in Sources */,
+				0216EE0F1C7C689F009A7B90 /* PianoRollLayout.m in Sources */,
 				026D42DE1C7ABC08000267AD /* MainViewController.m in Sources */,
 				026D42E01C7ABC08000267AD /* MeasureViewController.m in Sources */,
 				02633EB81C74ED9300B9FF0E /* NSView+Support.m in Sources */,

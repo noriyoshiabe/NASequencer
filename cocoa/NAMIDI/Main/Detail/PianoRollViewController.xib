@@ -15,8 +15,8 @@
                 <outlet property="keyboardView" destination="JrS-PZ-Jiz" id="5MB-pr-IYf"/>
                 <outlet property="measureBottomLineView" destination="lUO-sL-70u" id="89g-Jg-SYN"/>
                 <outlet property="measureView" destination="ybx-SB-wZM" id="Jlk-JY-gLx"/>
+                <outlet property="noteView" destination="de5-yB-AfE" id="KFs-dM-paG"/>
                 <outlet property="pianoRollVerticalLineView" destination="3bl-eI-hpH" id="MVe-hD-gj9"/>
-                <outlet property="pianoRollView" destination="de5-yB-AfE" id="ntz-9C-XcR"/>
                 <outlet property="playLineView" destination="SqX-ur-3Ac" id="8Q0-hK-Gxo"/>
                 <outlet property="velocityLabelView" destination="zyW-hQ-tP2" id="WYJ-2U-4Ln"/>
                 <outlet property="velocityView" destination="y2F-Sz-qCt" id="MYi-pQ-k8t"/>
