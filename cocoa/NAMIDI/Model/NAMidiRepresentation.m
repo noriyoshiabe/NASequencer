@@ -7,6 +7,7 @@
 //
 
 #import "NAMidiRepresentation.h"
+#import "NAMidi.h"
 
 @interface NAMidiRepresentation () {
     NAMidi *_namidi;
@@ -16,15 +17,27 @@
 
 @implementation NAMidiRepresentation
 
-- (instancetype)initWithNAMidi:(NAMidi *)namidi
+- (instancetype)init
 {
     self = [super init];
     if (self) {
-        _namidi = namidi;
-        _sequence = [[SequenceRepresentation alloc] initWithSequence:NAMidiGetSequence(_namidi)];
-        _player = [[PlayerRepresentation alloc] initWithPlayer:NAMidiGetPlayer(_namidi)];
+        _namidi = NAMidiCreate();
     }
     return self;
+}
+
+- (void)parse
+{
+    NAMidiSetWatchEnable(_namidi, true);
+    NAMidiParse(_namidi, [_file.url.path UTF8String]);
+    
+    _sequence = [[SequenceRepresentation alloc] initWithSequence:NAMidiGetSequence(_namidi)];
+    _player = [[PlayerRepresentation alloc] initWithPlayer:NAMidiGetPlayer(_namidi)];
+}
+
+- (void)dealloc
+{
+    NAMidiDestroy(_namidi);
 }
 
 @end

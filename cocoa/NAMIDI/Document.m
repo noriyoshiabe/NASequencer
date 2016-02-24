@@ -32,6 +32,8 @@
 {
     _file = [[FileRepresentation alloc] initWithURL:url];
     _namidi = [[NAMidiRepresentation alloc] init];
+    _namidi.file = _file;
+    [_namidi parse];
     return YES;
 }
 
