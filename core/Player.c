@@ -158,9 +158,24 @@ uint64_t PlayerGetUsec(Player *self)
     return self->usec;
 }
 
+int PlayerGetTick(Player *self)
+{
+    return self->tick;
+}
+
 Location PlayerGetLocation(Player *self)
 {
     return self->location;
+}
+
+float PlayerGetTempo(Player *self)
+{
+    return TimeTableTempoOnTick(self->sequence->timeTable, self->tick);
+}
+
+TimeSign PlayerGetTimeSign(Player *self)
+{
+    return TimeTableTimeSignOnTick(self->sequence->timeTable, self->tick);
 }
 
 static void *PlayerRun(void *_self)

@@ -40,7 +40,10 @@ extern void PlayerSeek(Player *self, int measure);
 
 extern bool PlayerIsPlaying(Player *self);
 extern uint64_t PlayerGetUsec(Player *self);
+extern int PlayerGetTick(Player *self);
 extern Location PlayerGetLocation(Player *self);
+extern float PlayerGetTempo(Player *self);
+extern TimeSign PlayerGetTimeSign(Player *self);
 
 static inline const char *PlayerEvent2String(PlayerEvent event)
 {
