@@ -62,6 +62,7 @@
 		025FAF831C7E4A5500E4C3B3 /* NAMidiRepresentation.m in Sources */ = {isa = PBXBuildFile; fileRef = 025FAF821C7E4A5500E4C3B3 /* NAMidiRepresentation.m */; };
 		025FAF881C7E503900E4C3B3 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 025FAF871C7E503900E4C3B3 /* AudioUnit.framework */; };
 		025FAF8A1C7E504B00E4C3B3 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 025FAF891C7E504B00E4C3B3 /* AudioToolbox.framework */; };
+		025FAF8D1C7E653500E4C3B3 /* ParseInfoRepresentation.m in Sources */ = {isa = PBXBuildFile; fileRef = 025FAF8C1C7E653500E4C3B3 /* ParseInfoRepresentation.m */; };
 		02633E981C74AC9F00B9FF0E /* Color.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633E971C74AC9F00B9FF0E /* Color.m */; };
 		02633EB81C74ED9300B9FF0E /* NSView+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EB71C74ED9200B9FF0E /* NSView+Support.m */; };
 		02633EBC1C75062300B9FF0E /* LevelIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EBB1C75062300B9FF0E /* LevelIndicator.m */; };
@@ -215,6 +216,8 @@
 		025FAF821C7E4A5500E4C3B3 /* NAMidiRepresentation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NAMidiRepresentation.m; sourceTree = "<group>"; };
 		025FAF871C7E503900E4C3B3 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		025FAF891C7E504B00E4C3B3 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		025FAF8B1C7E653500E4C3B3 /* ParseInfoRepresentation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParseInfoRepresentation.h; sourceTree = "<group>"; };
+		025FAF8C1C7E653500E4C3B3 /* ParseInfoRepresentation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ParseInfoRepresentation.m; sourceTree = "<group>"; };
 		026160B51C689E18001E99A9 /* NAMIDI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = NAMIDI.entitlements; sourceTree = "<group>"; };
 		02633E961C74AC9F00B9FF0E /* Color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Color.h; sourceTree = "<group>"; };
 		02633E971C74AC9F00B9FF0E /* Color.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Color.m; sourceTree = "<group>"; };
@@ -585,6 +588,8 @@
 				025FAF7F1C7E469A00E4C3B3 /* PlayerRepresentation.m */,
 				025FAF811C7E4A5500E4C3B3 /* NAMidiRepresentation.h */,
 				025FAF821C7E4A5500E4C3B3 /* NAMidiRepresentation.m */,
+				025FAF8B1C7E653500E4C3B3 /* ParseInfoRepresentation.h */,
+				025FAF8C1C7E653500E4C3B3 /* ParseInfoRepresentation.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -784,6 +789,7 @@
 				0254235E1C6F2EB6007D53CC /* EditorWindowController.m in Sources */,
 				020CF8711C6AF53D0025DF84 /* PurchaseViewController.m in Sources */,
 				02633EBC1C75062300B9FF0E /* LevelIndicator.m in Sources */,
+				025FAF8D1C7E653500E4C3B3 /* ParseInfoRepresentation.m in Sources */,
 				020CF8561C6AD4D80025DF84 /* PreferenceWindowController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -26,6 +26,16 @@
     return self;
 }
 
+- (void)addObserver:(id<NAMidiRepresentationObserver>)observer
+{
+    
+}
+
+- (void)removeObserver:(id<NAMidiRepresentationObserver>)observer
+{
+    
+}
+
 - (void)parse
 {
     NAMidiSetWatchEnable(_namidi, true);
