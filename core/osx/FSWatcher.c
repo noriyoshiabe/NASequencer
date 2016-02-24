@@ -68,8 +68,11 @@ static struct tm *getModifiedTime(const char *filepath)
     }
 }
 
-static void onFSChanged(FSWatcher *self)
+static void fsCallback(ConstFSEventStreamRef streamRef, void *_self, size_t numEvents,
+        void *eventPaths, const FSEventStreamEventFlags eventFlags[], const FSEventStreamEventId eventIds[])
 {
+    FSWatcher *self = _self;
+
     CFIndex count = CFDictionaryGetCount(self->files);
     CFStringRef filepaths[count];
     struct tm *lastModifiedTimes[count];
@@ -92,20 +95,6 @@ static void onFSChanged(FSWatcher *self)
                 onFileChanged(self, cstring);
                 break;
             }
-        }
-    }
-}
-
-static void fsCallback(ConstFSEventStreamRef streamRef, void *_self, size_t numEvents,
-        void *eventPaths, const FSEventStreamEventFlags eventFlags[], const FSEventStreamEventId eventIds[])
-{
-    FSWatcher *self = _self;
-
-    for (int i = 0; i < numEvents; ++i) {
-        if (eventFlags[i] & (kFSEventStreamEventFlagItemCreated | kFSEventStreamEventFlagItemRemoved
-                    | kFSEventStreamEventFlagItemRenamed | kFSEventStreamEventFlagItemModified)) {
-            onFSChanged(self);
-            return;
         }
     }
 }
