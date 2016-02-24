@@ -196,7 +196,7 @@
                             <rect key="frame" x="0.0" y="320" width="480" height="160"/>
                             <autoresizingMask key="autoresizingMask"/>
                             <subviews>
-                                <customView translatesAutoresizingMaskIntoConstraints="NO" id="zyW-hQ-tP2">
+                                <customView translatesAutoresizingMaskIntoConstraints="NO" id="zyW-hQ-tP2" customClass="PianoRollVelocityLabelView">
                                     <rect key="frame" x="0.0" y="0.0" width="60" height="160"/>
                                     <constraints>
                                         <constraint firstAttribute="width" constant="60" id="lPj-Cz-5HT"/>

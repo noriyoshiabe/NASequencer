@@ -9,7 +9,7 @@
 #import "PianoRollConductorLabelView.h"
 #import "Color.h"
 
-#define LABEL_X 4.0
+#define LABEL_X 3.0
 
 @interface PianoRollConductorLabelView () {
     CGColorRef _lineColor;
