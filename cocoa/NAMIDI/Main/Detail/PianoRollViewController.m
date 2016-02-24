@@ -13,6 +13,7 @@
 #import "PianoRollConductorViewController.h"
 #import "PianoRollNoteViewController.h"
 #import "PianoRollKeyboardViewController.h"
+#import "PianoRollVelocityViewController.h"
 #import "Color.h"
 
 #define VELOCITY_VIEW_HEIGHT_MAX 160
@@ -39,6 +40,7 @@
 @property (strong, nonatomic) PianoRollConductorViewController *conductorVC;
 @property (strong, nonatomic) PianoRollNoteViewController *noteVC;
 @property (strong, nonatomic) PianoRollKeyboardViewController *keyboardVC;
+@property (strong, nonatomic) PianoRollVelocityViewController *velocityVC;
 @end
 
 @implementation PianoRollViewController
@@ -85,25 +87,30 @@
     _conductorVC = [[PianoRollConductorViewController alloc] init];
     _noteVC = [[PianoRollNoteViewController alloc] init];
     _keyboardVC = [[PianoRollKeyboardViewController alloc] init];
+    _velocityVC = [[PianoRollVelocityViewController alloc] init];
     
     _measureVC.namidi = _namidi;
     _playLineVC.namidi = _namidi;
     _conductorVC.namidi = _namidi;
     _noteVC.namidi = _namidi;
+    _velocityVC.namidi = _namidi;
     
     _measureVC.scaleAssistant = _scaleAssistant;
     _playLineVC.scaleAssistant = _scaleAssistant;
     _conductorVC.scaleAssistant = _scaleAssistant;
     _noteVC.scaleAssistant = _scaleAssistant;
+    _velocityVC.scaleAssistant = _scaleAssistant;
     
     _conductorVC.trackSelection = _trackSelection;
     _noteVC.trackSelection = _trackSelection;
+    _velocityVC.trackSelection = _trackSelection;
     
     _measureView.documentView = _measureVC.view;
     _playLineView.documentView = _playLineVC.view;
     _conductorView.documentView = _conductorVC.view;
     _noteView.documentView = _noteVC.view;
     _keyboardView.documentView = _keyboardVC.view;
+    _velocityView.documentView = _velocityVC.view;
     
     _measureVC.view.frame = _measureView.frame;
     _measureVC.view.needsLayout = YES;

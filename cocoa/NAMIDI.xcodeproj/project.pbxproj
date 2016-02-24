@@ -53,6 +53,8 @@
 		025FA9021C7D1BE900E4C3B3 /* PianoRollKeyboardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 025FA9001C7D1BE900E4C3B3 /* PianoRollKeyboardViewController.m */; };
 		025FA9031C7D1BE900E4C3B3 /* PianoRollKeyboardViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 025FA9011C7D1BE900E4C3B3 /* PianoRollKeyboardViewController.xib */; };
 		025FA9061C7D27BD00E4C3B3 /* PianoRollVelocityLabelView.m in Sources */ = {isa = PBXBuildFile; fileRef = 025FA9051C7D27BD00E4C3B3 /* PianoRollVelocityLabelView.m */; };
+		025FA90F1C7D2CE700E4C3B3 /* PianoRollVelocityViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 025FA90D1C7D2CE700E4C3B3 /* PianoRollVelocityViewController.m */; };
+		025FA9101C7D2CE700E4C3B3 /* PianoRollVelocityViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 025FA90E1C7D2CE700E4C3B3 /* PianoRollVelocityViewController.xib */; };
 		02633E981C74AC9F00B9FF0E /* Color.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633E971C74AC9F00B9FF0E /* Color.m */; };
 		02633EB81C74ED9300B9FF0E /* NSView+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EB71C74ED9200B9FF0E /* NSView+Support.m */; };
 		02633EBC1C75062300B9FF0E /* LevelIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EBB1C75062300B9FF0E /* LevelIndicator.m */; };
@@ -175,6 +177,9 @@
 		025FA9011C7D1BE900E4C3B3 /* PianoRollKeyboardViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PianoRollKeyboardViewController.xib; sourceTree = "<group>"; };
 		025FA9041C7D27BD00E4C3B3 /* PianoRollVelocityLabelView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PianoRollVelocityLabelView.h; sourceTree = "<group>"; };
 		025FA9051C7D27BD00E4C3B3 /* PianoRollVelocityLabelView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PianoRollVelocityLabelView.m; sourceTree = "<group>"; };
+		025FA90C1C7D2CE700E4C3B3 /* PianoRollVelocityViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PianoRollVelocityViewController.h; sourceTree = "<group>"; };
+		025FA90D1C7D2CE700E4C3B3 /* PianoRollVelocityViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PianoRollVelocityViewController.m; sourceTree = "<group>"; };
+		025FA90E1C7D2CE700E4C3B3 /* PianoRollVelocityViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PianoRollVelocityViewController.xib; sourceTree = "<group>"; };
 		026160B51C689E18001E99A9 /* NAMIDI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = NAMIDI.entitlements; sourceTree = "<group>"; };
 		02633E961C74AC9F00B9FF0E /* Color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Color.h; sourceTree = "<group>"; };
 		02633E971C74AC9F00B9FF0E /* Color.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Color.m; sourceTree = "<group>"; };
@@ -462,6 +467,9 @@
 				0216EE0E1C7C689F009A7B90 /* PianoRollLayout.m */,
 				025FA9041C7D27BD00E4C3B3 /* PianoRollVelocityLabelView.h */,
 				025FA9051C7D27BD00E4C3B3 /* PianoRollVelocityLabelView.m */,
+				025FA90C1C7D2CE700E4C3B3 /* PianoRollVelocityViewController.h */,
+				025FA90D1C7D2CE700E4C3B3 /* PianoRollVelocityViewController.m */,
+				025FA90E1C7D2CE700E4C3B3 /* PianoRollVelocityViewController.xib */,
 			);
 			path = Detail;
 			sourceTree = "<group>";
@@ -613,6 +621,7 @@
 				02A674041C6B3A5C00914C8B /* NMFIcon.iconset in Resources */,
 				025FA9031C7D1BE900E4C3B3 /* PianoRollKeyboardViewController.xib in Resources */,
 				02A673FD1C6B3A5C00914C8B /* MMLIcon.iconset in Resources */,
+				025FA9101C7D2CE700E4C3B3 /* PianoRollVelocityViewController.xib in Resources */,
 				024A5B0D1C69FF990079D22C /* MainMenu.xib in Resources */,
 				026D42E91C7ABC08000267AD /* TrackViewController.xib in Resources */,
 				02A673FA1C6B3A5C00914C8B /* ABCIcon.iconset in Resources */,
@@ -672,6 +681,7 @@
 				02CAF6C01C77858000AD81B2 /* LocationView.m in Sources */,
 				025FA8FB1C7CECBA00E4C3B3 /* TrackSelection.m in Sources */,
 				026D42E81C7ABC08000267AD /* TrackViewController.m in Sources */,
+				025FA90F1C7D2CE700E4C3B3 /* PianoRollVelocityViewController.m in Sources */,
 				025FA9061C7D27BD00E4C3B3 /* PianoRollVelocityLabelView.m in Sources */,
 				026D42EB1C7ABC08000267AD /* PlayLineViewController.m in Sources */,
 				02CAF6C41C778C2200AD81B2 /* ErrorWindowController.m in Sources */,
