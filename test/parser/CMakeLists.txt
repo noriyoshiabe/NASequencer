@@ -24,11 +24,11 @@ target_link_libraries(parse-result-test namidi-sequence)
 target_link_libraries(parse-result-test namidi-parser)
 target_link_libraries(parse-result-test namidi-lib)
 
-add_test(namidi-syntax parse-result-test ${CMAKE_CURRENT_SOURCE_DIR}/namidi/syntax.nas --silent)
+add_test(namidi-syntax parse-result-test ${CMAKE_CURRENT_SOURCE_DIR}/namidi/syntax.nmf --silent)
 add_test(namidi-syntax-result
   bash -c "${PROJECT_BINARY_DIR}/parse-result-test \
-  ${CMAKE_CURRENT_SOURCE_DIR}/namidi/syntax.nas \
-  | diff - ${CMAKE_CURRENT_SOURCE_DIR}/namidi/syntax.nas.result")
+  ${CMAKE_CURRENT_SOURCE_DIR}/namidi/syntax.nmf \
+  | diff - ${CMAKE_CURRENT_SOURCE_DIR}/namidi/syntax.nmf.result")
 
 add_test(abc-english parse-result-test ${CMAKE_CURRENT_SOURCE_DIR}/abc/english.abc --silent)
 add_test(abc-english-result

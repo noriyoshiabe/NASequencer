@@ -1,5 +1,5 @@
 TITLE 'include test'
-#include 'preprocess_inc.nas'
+#include 'preprocess_inc.nmf'
 // AAAA
 -- AAAA
 240: C

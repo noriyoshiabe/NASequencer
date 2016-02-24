@@ -5,7 +5,7 @@
 #define HO A#1
 #define CS C#2
 
-// #include 'drums.nas'
+// #include 'drums.nmf'
 
 TITLE 'Syntax of NAMIDI'
 ========================
