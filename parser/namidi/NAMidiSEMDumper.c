@@ -50,21 +50,6 @@ static void dump(NAMidiSEMDumper *self, void *_node, ...)
     printf(" from %s:%d:%d\n", node->location.filepath, node->location.line, node->location.column);
 }
 
-static char *array2String(NAArray *array, char *buffer)
-{
-    buffer[0] = '\0';
-
-    NAIterator *iterator = NAArrayGetIterator(array);
-    while (iterator->hasNext(iterator)) {
-        if (buffer[0]) {
-            strcat(buffer, ",");
-        }
-        strcat(buffer, iterator->next(iterator));
-    }
-
-    return buffer;
-}
-
 #define INTEGER(sem, name) #name, NACStringFromInteger(sem->name)
 #define FLOAT(sem, name) #name, NACStringFromFloat(sem->name, 2)
 #define STRING(sem, name) #name, sem->name ? sem->name : "(null)"

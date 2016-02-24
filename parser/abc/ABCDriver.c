@@ -24,8 +24,6 @@ static const AnalyzerFactory AnalyzerFactories[] = {
     ABCSEMAnalyzerCreate,
 };
 
-static const int AnalyzerCount = sizeof(AnalyzerFactories) / sizeof(AnalyzerFactories[0]);
-
 static void *ABCDriverParse(void *_self, const char *filepath, ParseInfo **info)
 {
     ABCDriver *self =  _self;

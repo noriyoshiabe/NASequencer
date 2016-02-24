@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.2)
 
 project(namidi-cli)
 
+add_definitions(-Wall)
+
 if (CMAKE_BUILD_TYPE MATCHES "Debug")
   add_definitions(-DDEBUG)
 endif (CMAKE_BUILD_TYPE MATCHES "Debug")

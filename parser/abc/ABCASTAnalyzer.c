@@ -1071,8 +1071,6 @@ static void visitMidi(void *_self, ASTMidi *ast)
         node->accept(node, self);
     }
 
-    SEMVoice *voice = NULL;
-
     if (FileHeader == self->state) {
         append(self->file, midiVoice);
     }

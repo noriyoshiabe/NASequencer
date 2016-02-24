@@ -618,7 +618,7 @@ static void LevelMaterNormalize(LevelMater *self, Level *master, Level *channels
 
 static void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer, uint32_t count)
 {
-    LevelMater levelMater = {0};
+    LevelMater levelMater = {};
 
     for (int i = 0; i < count; ++i) {
         AudioSample direct = { .L = 0.0, .R = 0.0 };

@@ -54,7 +54,6 @@ typedef struct _NAMidiSEMAnalyzer {
 static State *StateCreate();
 static State *StateCopy(State *self);
 static void StateDestroy(State *self);
-static int StateTick(State *self);
 static int StateLength(State *self);
 
 #define TICK(state) (state->channels[state->channel - 1].tick)

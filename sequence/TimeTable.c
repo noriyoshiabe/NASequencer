@@ -47,7 +47,7 @@ TimeTable *TimeTableCreate()
     self->timeSignRecords = NAArrayCreate(4, NULL);
     self->tempoRecords = NAArrayCreate(4, NULL);
     TimeSignRecord *timeSign = malloc(sizeof(TimeSignRecord));
-    memcpy(timeSign, &((TimeSignRecord){0, INT32_MAX, 4, 4, 1, INT32_MAX, 480 * 4}), sizeof(TimeSignRecord));
+    memcpy(timeSign, &((TimeSignRecord){0, INT32_MAX, {4, 4}, 1, INT32_MAX, 480 * 4}), sizeof(TimeSignRecord));
     NAArrayAppend(self->timeSignRecords, timeSign);
     TempoRecord *tempo = malloc(sizeof(TempoRecord));
     memcpy(tempo, &((TempoRecord){0, INT32_MAX, 120.0, 0, INT64_MAX}), sizeof(TempoRecord));
@@ -173,7 +173,6 @@ int32_t TimeTableLength(TimeTable *self)
 
 int32_t TimeTableTickByMeasure(TimeTable *self, int32_t measure)
 {
-    int count = NAArrayCount(self->timeSignRecords);
     TimeSignRecord **records = NAArrayGetValues(self->timeSignRecords);
     int i = NAArrayBSearchIndex(self->timeSignRecords, &measure, TimeSignRecordFindByMeasureComparator);
 
@@ -182,7 +181,6 @@ int32_t TimeTableTickByMeasure(TimeTable *self, int32_t measure)
 
 int32_t TimeTableTickByLocation(TimeTable *self, Location location)
 {
-    int count = NAArrayCount(self->timeSignRecords);
     TimeSignRecord **records = NAArrayGetValues(self->timeSignRecords);
     int i = NAArrayBSearchIndex(self->timeSignRecords, &location.m, TimeSignRecordFindByMeasureComparator);
 
@@ -194,7 +192,6 @@ int32_t TimeTableTickByLocation(TimeTable *self, Location location)
 
 TimeSign TimeTableTimeSignOnTick(TimeTable *self, int32_t tick)
 {
-    int count = NAArrayCount(self->timeSignRecords);
     TimeSignRecord **records = NAArrayGetValues(self->timeSignRecords);
     int i = NAArrayBSearchIndex(self->timeSignRecords, &tick, TimeSignRecordFindByTickComparator);
     return records[i]->timeSign;
@@ -202,7 +199,6 @@ TimeSign TimeTableTimeSignOnTick(TimeTable *self, int32_t tick)
 
 float TimeTableTempoOnTick(TimeTable *self, int32_t tick)
 {
-    int count = NAArrayCount(self->tempoRecords);
     TempoRecord **records = NAArrayGetValues(self->tempoRecords);
     int i = NAArrayBSearchIndex(self->tempoRecords, &tick, TempoRecordFindByTickComparator);
     return records[i]->tempo;
@@ -210,7 +206,6 @@ float TimeTableTempoOnTick(TimeTable *self, int32_t tick)
 
 Location TimeTableTick2Location(TimeTable *self, int32_t tick)
 {
-    int count = NAArrayCount(self->timeSignRecords);
     TimeSignRecord **records = NAArrayGetValues(self->timeSignRecords);
     int i = NAArrayBSearchIndex(self->timeSignRecords, &tick, TimeSignRecordFindByTickComparator);
 
@@ -227,7 +222,6 @@ Location TimeTableTick2Location(TimeTable *self, int32_t tick)
 
 int64_t TimeTableTick2MicroSec(TimeTable *self, int32_t tick)
 {
-    int count = NAArrayCount(self->tempoRecords);
     TempoRecord **records = NAArrayGetValues(self->tempoRecords);
     int i = NAArrayBSearchIndex(self->tempoRecords, &tick, TempoRecordFindByTickComparator);
 
@@ -237,7 +231,6 @@ int64_t TimeTableTick2MicroSec(TimeTable *self, int32_t tick)
 
 int32_t TimeTableMicroSec2Tick(TimeTable *self, int64_t usec)
 {
-    int count = NAArrayCount(self->tempoRecords);
     TempoRecord **records = NAArrayGetValues(self->tempoRecords);
     int i = NAArrayBSearchIndex(self->tempoRecords, &usec, TempoRecordFindByUsecComparator);
 

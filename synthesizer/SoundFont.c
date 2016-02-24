@@ -392,7 +392,7 @@ static bool process_pgen_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
         case SFGeneratorType_instrument:
             self->pgen[i].genAmount.wAmount = WORD_FROM_LE(self->pgen[i].genAmount.wAmount);
             break;
-        define:
+        default:
             self->pgen[i].genAmount.shAmount = SHORT_FROM_LE(self->pgen[i].genAmount.shAmount);
             break;
         }
@@ -475,7 +475,7 @@ static bool process_igen_Chunk(SoundFont *self, FILE *fp, uint32_t chunkId, uint
         case SFGeneratorType_instrument:
             self->igen[i].genAmount.wAmount = WORD_FROM_LE(self->igen[i].genAmount.wAmount);
             break;
-        define:
+        default:
             self->igen[i].genAmount.shAmount = SHORT_FROM_LE(self->igen[i].genAmount.shAmount);
             break;
         }

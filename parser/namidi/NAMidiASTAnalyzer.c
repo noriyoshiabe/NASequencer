@@ -474,7 +474,6 @@ static void visitExpand(void *_self, ASTExpand *ast)
 
 static void visitNoteParam(void *_self, ASTNoteParam *ast)
 {
-    NAMidiASTAnalyzer *self = _self;
 }
 
 Analyzer *NAMidiASTAnalyzerCreate(ParseContext *context)

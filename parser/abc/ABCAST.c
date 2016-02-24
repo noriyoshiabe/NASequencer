@@ -532,7 +532,6 @@ static void ASTTieAccept(void *self, void *visitor)
 
 static void ASTTieDestroy(void *_self)
 {
-    ASTTie *self = _self;
 }
 
 ASTTie *ABCASTTieCreate(FileLocation *location)
@@ -547,7 +546,6 @@ static void ASTSlurAccept(void *self, void *visitor)
 
 static void ASTSlurDestroy(void *_self)
 {
-    ASTSlur *self = _self;
 }
 
 ASTSlur *ABCASTSlurCreate(FileLocation *location)
@@ -562,7 +560,6 @@ static void ASTDotAccept(void *self, void *visitor)
 
 static void ASTDotDestroy(void *_self)
 {
-    ASTDot *self = _self;
 }
 
 ASTDot *ABCASTDotCreate(FileLocation *location)

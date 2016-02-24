@@ -24,8 +24,6 @@ static const AnalyzerFactory AnalyzerFactories[] = {
     MMLSEMAnalyzerCreate,
 };
 
-static const int AnalyzerCount = sizeof(AnalyzerFactories) / sizeof(AnalyzerFactories[0]);
-
 static void *MMLDriverParse(void *_self, const char *filepath, ParseInfo **info)
 {
     MMLDriver *self =  _self;

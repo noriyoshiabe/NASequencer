@@ -128,7 +128,6 @@ ExporterError ExporterExport(Exporter *self, const char *filepath, const char *o
         ret = ExporterErrorCouldNotWriteFile;
     }
 
-EXIT:
     SequenceRelease(sequence);
     ParseInfoRelease(info);
 

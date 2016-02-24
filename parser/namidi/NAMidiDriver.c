@@ -24,8 +24,6 @@ static const AnalyzerFactory AnalyzerFactories[] = {
     NAMidiSEMAnalyzerCreate,
 };
 
-static const int AnalyzerCount = sizeof(AnalyzerFactories) / sizeof(AnalyzerFactories[0]);
-
 static void *NAMidiDriverParse(void *_self, const char *filepath, ParseInfo **info)
 {
     NAMidiDriver *self =  _self;

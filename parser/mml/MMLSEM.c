@@ -9,7 +9,6 @@ static void SEMListAccept(void *self, void *visitor)
 
 static void SEMListDestroy(void *_self)
 {
-    SEMList *self = _self;
 }
 
 SEMList *MMLSEMListCreate(FileLocation *location)

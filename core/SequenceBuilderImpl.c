@@ -25,8 +25,6 @@ static void SequenceBuilderDestroy(void *_self)
 static void SequenceBuilderSetResolution(void *_self, int resolution)
 {
     SequenceBuilderImpl *self = _self;
-    Sequence *sequence = self->sequence;
-
     TimeTableSetResolution(self->sequence->timeTable, resolution);
 }
 
