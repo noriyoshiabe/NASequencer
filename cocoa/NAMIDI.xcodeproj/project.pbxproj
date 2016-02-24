@@ -60,6 +60,8 @@
 		025FAF7D1C7E34ED00E4C3B3 /* SequenceRepresentation.m in Sources */ = {isa = PBXBuildFile; fileRef = 025FAF7C1C7E34ED00E4C3B3 /* SequenceRepresentation.m */; };
 		025FAF801C7E469A00E4C3B3 /* PlayerRepresentation.m in Sources */ = {isa = PBXBuildFile; fileRef = 025FAF7F1C7E469A00E4C3B3 /* PlayerRepresentation.m */; };
 		025FAF831C7E4A5500E4C3B3 /* NAMidiRepresentation.m in Sources */ = {isa = PBXBuildFile; fileRef = 025FAF821C7E4A5500E4C3B3 /* NAMidiRepresentation.m */; };
+		025FAF881C7E503900E4C3B3 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 025FAF871C7E503900E4C3B3 /* AudioUnit.framework */; };
+		025FAF8A1C7E504B00E4C3B3 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 025FAF891C7E504B00E4C3B3 /* AudioToolbox.framework */; };
 		02633E981C74AC9F00B9FF0E /* Color.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633E971C74AC9F00B9FF0E /* Color.m */; };
 		02633EB81C74ED9300B9FF0E /* NSView+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EB71C74ED9200B9FF0E /* NSView+Support.m */; };
 		02633EBC1C75062300B9FF0E /* LevelIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EBB1C75062300B9FF0E /* LevelIndicator.m */; };
@@ -211,6 +213,8 @@
 		025FAF7F1C7E469A00E4C3B3 /* PlayerRepresentation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerRepresentation.m; sourceTree = "<group>"; };
 		025FAF811C7E4A5500E4C3B3 /* NAMidiRepresentation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NAMidiRepresentation.h; sourceTree = "<group>"; };
 		025FAF821C7E4A5500E4C3B3 /* NAMidiRepresentation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NAMidiRepresentation.m; sourceTree = "<group>"; };
+		025FAF871C7E503900E4C3B3 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
+		025FAF891C7E504B00E4C3B3 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		026160B51C689E18001E99A9 /* NAMIDI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = NAMIDI.entitlements; sourceTree = "<group>"; };
 		02633E961C74AC9F00B9FF0E /* Color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Color.h; sourceTree = "<group>"; };
 		02633E971C74AC9F00B9FF0E /* Color.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Color.m; sourceTree = "<group>"; };
@@ -288,6 +292,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				025FAF6D1C7E302A00E4C3B3 /* libNAMIDI-Core.a in Frameworks */,
+				025FAF881C7E503900E4C3B3 /* AudioUnit.framework in Frameworks */,
+				025FAF8A1C7E504B00E4C3B3 /* AudioToolbox.framework in Frameworks */,
 				0255F6281C7111DF00CF4C52 /* CoreText.framework in Frameworks */,
 				020CF8321C6A059C0025DF84 /* WebKit.framework in Frameworks */,
 			);
@@ -300,6 +306,8 @@
 			isa = PBXGroup;
 			children = (
 				025FAF561C7E19BA00E4C3B3 /* NAMIDI-Core.xcodeproj */,
+				025FAF871C7E503900E4C3B3 /* AudioUnit.framework */,
+				025FAF891C7E504B00E4C3B3 /* AudioToolbox.framework */,
 				0255F6271C7111DF00CF4C52 /* CoreText.framework */,
 				020CF8311C6A059C0025DF84 /* WebKit.framework */,
 				0201F7CE1C688BB100A201F6 /* NAMIDI */,
