@@ -7,7 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "Stub.h"
+#import "NAMidiRepresentation.h"
 
 @interface ConductorViewController : NSViewController
 @property (strong, nonatomic) NAMidiRepresentation *namidi;

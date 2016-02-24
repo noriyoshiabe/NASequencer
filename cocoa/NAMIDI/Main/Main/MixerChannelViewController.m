@@ -9,6 +9,7 @@
 #import "MixerChannelViewController.h"
 #import "LevelIndicator.h"
 #import "Color.h"
+#import "Stub.h"
 
 @interface MixerChannelViewController () {
     NSMutableArray *_midiSources;

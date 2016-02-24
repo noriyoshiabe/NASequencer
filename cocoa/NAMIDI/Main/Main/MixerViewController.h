@@ -7,7 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "Stub.h"
+#import "NAMidiRepresentation.h"
 
 @interface MixerViewController : NSViewController
 @property (strong, nonatomic) NAMidiRepresentation *namidi;

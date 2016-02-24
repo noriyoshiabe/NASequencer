@@ -7,7 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "Stub.h"
+#import "NAMidiRepresentation.h"
 #import "MeasureScaleAssistant.h"
 #import "TrackSelection.h"
 

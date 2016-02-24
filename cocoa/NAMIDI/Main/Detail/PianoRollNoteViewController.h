@@ -9,7 +9,7 @@
 #import <Cocoa/Cocoa.h>
 #import "MeasureScaleAssistant.h"
 #import "TrackSelection.h"
-#import "Stub.h"
+#import "NAMidiRepresentation.h"
 
 @interface PianoRollNoteViewController : NSViewController
 @property (strong, nonatomic) NAMidiRepresentation *namidi;

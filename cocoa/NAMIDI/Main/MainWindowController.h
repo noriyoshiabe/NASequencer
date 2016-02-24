@@ -7,7 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "Stub.h"
+#import "NAMidiRepresentation.h"
 
 @interface MainWindowController : NSWindowController
 @property (strong, nonatomic) NAMidiRepresentation *namidi;

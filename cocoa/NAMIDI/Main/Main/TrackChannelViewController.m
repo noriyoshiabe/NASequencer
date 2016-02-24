@@ -8,7 +8,6 @@
 
 #import "TrackChannelViewController.h"
 #import "Color.h"
-#import "Stub.h"
 
 #define NOTE_OFFSET_Y 10.5
 

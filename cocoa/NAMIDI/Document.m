@@ -9,7 +9,8 @@
 #import "Document.h"
 #import "MainWindowController.h"
 #import "ApplicationController.h"
-#import "Stub.h"
+#import "FileRepresentation.h"
+#import "NAMidiRepresentation.h"
 
 @interface Document ()
 @property (strong, nonatomic) FileRepresentation *file;

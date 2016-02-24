@@ -7,7 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "Stub.h"
+#import "NAMidiRepresentation.h"
 
 @interface MixerChannelViewController : NSViewController
 @property (assign, nonatomic) int channel;

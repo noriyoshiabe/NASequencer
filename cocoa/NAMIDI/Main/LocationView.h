@@ -7,7 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "Stub.h"
+#import "PlayerRepresentation.h"
 
 @interface LocationView : NSView
 @property (strong, nonatomic) PlayerRepresentation *player;

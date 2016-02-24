@@ -9,7 +9,6 @@
 #import "EventListViewController.h"
 #import "EventListRowView.h"
 #import "Color.h"
-#import "Stub.h"
 
 @interface EventListViewController () <NSTableViewDataSource, NSTableViewDelegate> {
     NSMutableArray<MidiEventRepresentation *> *_events;

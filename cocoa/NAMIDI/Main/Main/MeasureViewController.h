@@ -8,7 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "MeasureScaleAssistant.h"
-#import "Stub.h"
+#import "NAMidiRepresentation.h"
 
 @interface MeasureViewController : NSViewController
 @property (strong, nonatomic) NAMidiRepresentation *namidi;

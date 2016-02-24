@@ -7,7 +7,6 @@
 //
 
 #import "PlayLineViewController.h"
-#import "Stub.h"
 
 @import QuartzCore;
 

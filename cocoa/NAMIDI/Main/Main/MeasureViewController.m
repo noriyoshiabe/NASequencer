@@ -8,7 +8,6 @@
 
 #import "MeasureViewController.h"
 #import "Color.h"
-#import "Stub.h"
 
 #define MEASURE_LINE_HEIGHT 15.0
 #define BEAT_LINE_HEIGHT 10.0

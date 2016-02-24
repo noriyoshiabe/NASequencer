@@ -8,7 +8,6 @@
 
 #import "ConductorTrackViewController.h"
 #import "Color.h"
-#import "Stub.h"
 
 #define EVENT_Y      9.5
 #define EVENT_RADIUS 4.0

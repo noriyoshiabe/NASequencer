@@ -8,7 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "TrackSelection.h"
-#import "Stub.h"
+#import "NAMidiRepresentation.h"
 
 @interface EventListViewController : NSViewController
 @property (strong, nonatomic) NAMidiRepresentation *namidi;
