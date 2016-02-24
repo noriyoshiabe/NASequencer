@@ -8,7 +8,7 @@
 #define UCHAR2WORD(c1,c2) (c1|c2<<8)
 #define DWORD_FROM_LE(v) UCHAR2DWORD(((uint8_t *)&v)[0],((uint8_t *)&v)[1],((uint8_t *)&v)[2],((uint8_t *)&v)[3])
 #define WORD_FROM_LE(v) UCHAR2WORD(((uint8_t *)&v)[0],((uint8_t *)&v)[1])
-#define SHORT_FROM_LE(v) UCHAR2WORD(((int8_t *)&v)[0],((int8_t *)&v)[1])
+#define SHORT_FROM_LE(v) UCHAR2WORD(((uint8_t *)&v)[0],((uint8_t *)&v)[1])
 
 // RIFF
 #define ChunkID_RIFF UCHAR2DWORD('R','I','F','F')
