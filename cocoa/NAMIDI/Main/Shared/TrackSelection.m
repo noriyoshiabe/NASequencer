@@ -17,9 +17,19 @@
 
 @implementation TrackSelection
 
+- (BOOL)isAvailable:(int)trackNo
+{
+    if (0 == trackNo) {
+        return 0 < _namidi.sequence.eventsOfConductorTrack.count;
+    }
+    else {
+        return _namidi.sequence.channels[trackNo - 1].exist;
+    }
+}
+
 - (BOOL)isTrackSelected:(int)trackNo
 {
-    return 0 != (_selectionFlags & (1 << trackNo));
+    return [self isAvailable:trackNo] && 0 != (_selectionFlags & (1 << trackNo));
 }
 
 - (BOOL)isTrackSelectionChanged:(int)trackNo

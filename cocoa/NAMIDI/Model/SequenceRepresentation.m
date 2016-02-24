@@ -31,7 +31,7 @@
     return self;
 }
 
-- (BOOL)exsit
+- (BOOL)exist
 {
     return 0 < [_events count];
 }

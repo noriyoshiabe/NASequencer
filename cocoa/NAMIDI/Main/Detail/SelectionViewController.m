@@ -74,7 +74,14 @@
     [super viewDidAppear];
     
     for (int i = 0; i < _buttons.count; ++i) {
-        _buttons[i].state = [_trackSelection isTrackSelected:i] ? NSOnState : NSOffState;
+        if ([_trackSelection isAvailable:i]) {
+            _buttons[i].enabled = YES;
+            _buttons[i].state = [_trackSelection isTrackSelected:i] ? NSOnState : NSOffState;
+        }
+        else {
+            _buttons[i].enabled = NO;
+            _buttons[i].state = NSOffState;
+        }
     }
 }
 

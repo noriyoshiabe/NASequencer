@@ -17,7 +17,7 @@ typedef struct _NoteRange {
 
 @interface ChannelRepresentation : NSObject
 @property (readonly, nonatomic) int number;
-@property (readonly, nonatomic) BOOL exsit;
+@property (readonly, nonatomic) BOOL exist;
 @property (readonly, nonatomic) NSArray *events;
 @property (readonly, nonatomic) NoteRange noteRange;
 @end

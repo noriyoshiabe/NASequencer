@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "NAMidiRepresentation.h"
 
 @class TrackSelection;
 @protocol TrackSelectionDelegate <NSObject>
@@ -14,8 +15,10 @@
 @end
 
 @interface TrackSelection : NSObject
+@property (strong, nonatomic) NAMidiRepresentation *namidi;
 @property (weak, nonatomic) id<TrackSelectionDelegate> delegate;
 @property (readonly, nonatomic) unsigned int selectionFlags;
+- (BOOL)isAvailable:(int)trackNo;
 - (BOOL)isTrackSelected:(int)trackNo;
 - (BOOL)isTrackSelectionChanged:(int)trackNo;
 - (void)click:(int)trackNo event:(NSEvent *)event;

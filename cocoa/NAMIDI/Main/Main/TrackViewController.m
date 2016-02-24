@@ -72,9 +72,11 @@
     CGFloat width = 0;
     
     for (int i = 0; i < 16; ++i) {
-        TrackChannelViewController *channelVC = _controllers[i];
-        height += channelVC.view.frame.size.height;
-        width = MAX(width, channelVC.view.frame.size.width);
+        if (_namidi.sequence.channels[i].exist) {
+            TrackChannelViewController *channelVC = _controllers[i];
+            height += channelVC.view.frame.size.height;
+            width = MAX(width, channelVC.view.frame.size.width);
+        }
     }
     
     height += _masterTrackView.frame.size.height;
@@ -84,8 +86,15 @@
     CGFloat y = 0;
     for (int i = 0; i < 16; ++i) {
         TrackChannelViewController *channelVC = _controllers[i];
-        channelVC.view.frame = CGRectMake(0, y, width, channelVC.view.frame.size.height);
-        y += channelVC.view.frame.size.height;
+        
+        if (_namidi.sequence.channels[i].exist) {
+            channelVC.view.hidden = NO;
+            channelVC.view.frame = CGRectMake(0, y, width, channelVC.view.frame.size.height);
+            y += channelVC.view.frame.size.height;
+        }
+        else {
+            channelVC.view.hidden = YES;
+        }
     }
     
     _masterTrackView.frame = CGRectMake(0, y, width, _masterTrackView.frame.size.height);

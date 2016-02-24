@@ -58,9 +58,11 @@
     CGFloat width = 0;
     
     for (int i = 0; i < 16; ++i) {
-        MixerChannelViewController *channelVC = _controllers[i];
-        height += channelVC.view.frame.size.height;
-        width = MAX(width, channelVC.view.frame.size.width);
+        if (_namidi.sequence.channels[i].exist) {
+            MixerChannelViewController *channelVC = _controllers[i];
+            height += channelVC.view.frame.size.height;
+            width = MAX(width, channelVC.view.frame.size.width);
+        }
     }
     
     height += _masterChannelView.frame.size.height;
@@ -70,8 +72,15 @@
     CGFloat y = 0;
     for (int i = 0; i < 16; ++i) {
         MixerChannelViewController *channelVC = _controllers[i];
-        channelVC.view.frame = CGRectMake(0, y, width, channelVC.view.frame.size.height);
-        y += channelVC.view.frame.size.height;
+        
+        if (_namidi.sequence.channels[i].exist) {
+            channelVC.view.hidden = NO;
+            channelVC.view.frame = CGRectMake(0, y, width, channelVC.view.frame.size.height);
+            y += channelVC.view.frame.size.height;
+        }
+        else {
+            channelVC.view.hidden = YES;
+        }
     }
     
     _masterChannelView.frame = CGRectMake(0, y, width, _masterChannelView.frame.size.height);

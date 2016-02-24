@@ -46,6 +46,7 @@
     
     _trackSelection = [[TrackSelection alloc] init];
     _trackSelection.delegate = self;
+    _trackSelection.namidi = _namidi;
     
     _mainVC.trackSelection = _trackSelection;
     _detailVC.trackSelection = _trackSelection;

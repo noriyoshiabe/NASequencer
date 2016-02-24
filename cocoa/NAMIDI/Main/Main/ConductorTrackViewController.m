@@ -67,7 +67,9 @@
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
-    [_trackSelection click:0 event:theEvent];
+    if (0 < _namidi.sequence.eventsOfConductorTrack.count) {
+        [_trackSelection click:0 event:theEvent];
+    }
 }
 
 @end
