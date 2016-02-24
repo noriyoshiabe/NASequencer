@@ -853,6 +853,14 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = NAMIDI/NAMIDI.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
+				HEADER_SEARCH_PATHS = (
+					"../core/**",
+					"../export/**",
+					"../lib/**",
+					"../parser/**",
+					"../sequence/**",
+					"../synthesizer/**",
+				);
 				INFOPLIST_FILE = NAMIDI/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = io.namidi.NAMIDI;
@@ -865,6 +873,14 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = NAMIDI/NAMIDI.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
+				HEADER_SEARCH_PATHS = (
+					"../core/**",
+					"../export/**",
+					"../lib/**",
+					"../parser/**",
+					"../sequence/**",
+					"../synthesizer/**",
+				);
 				INFOPLIST_FILE = NAMIDI/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = io.namidi.NAMIDI;
