@@ -55,6 +55,7 @@
 		025FA9061C7D27BD00E4C3B3 /* PianoRollVelocityLabelView.m in Sources */ = {isa = PBXBuildFile; fileRef = 025FA9051C7D27BD00E4C3B3 /* PianoRollVelocityLabelView.m */; };
 		025FA90F1C7D2CE700E4C3B3 /* PianoRollVelocityViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 025FA90D1C7D2CE700E4C3B3 /* PianoRollVelocityViewController.m */; };
 		025FA9101C7D2CE700E4C3B3 /* PianoRollVelocityViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 025FA90E1C7D2CE700E4C3B3 /* PianoRollVelocityViewController.xib */; };
+		025FAF6D1C7E302A00E4C3B3 /* libNAMIDI-Core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 025FAF5B1C7E19BA00E4C3B3 /* libNAMIDI-Core.a */; };
 		02633E981C74AC9F00B9FF0E /* Color.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633E971C74AC9F00B9FF0E /* Color.m */; };
 		02633EB81C74ED9300B9FF0E /* NSView+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EB71C74ED9200B9FF0E /* NSView+Support.m */; };
 		02633EBC1C75062300B9FF0E /* LevelIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EBB1C75062300B9FF0E /* LevelIndicator.m */; };
@@ -100,6 +101,23 @@
 		02CAF6C41C778C2200AD81B2 /* ErrorWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CAF6C21C778C2200AD81B2 /* ErrorWindowController.m */; };
 		02CAF6C51C778C2200AD81B2 /* ErrorWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02CAF6C31C778C2200AD81B2 /* ErrorWindowController.xib */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		025FAF5A1C7E19BA00E4C3B3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 025FAF561C7E19BA00E4C3B3 /* NAMIDI-Core.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 025FAD8F1C7DD15B00E4C3B3;
+			remoteInfo = "NAMIDI-Core";
+		};
+		025FAF5E1C7E1A2600E4C3B3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 025FAF561C7E19BA00E4C3B3 /* NAMIDI-Core.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 025FAD8E1C7DD15B00E4C3B3;
+			remoteInfo = "NAMIDI-Core";
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		0201F7CC1C688BB100A201F6 /* NAMIDI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NAMIDI.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -180,6 +198,7 @@
 		025FA90C1C7D2CE700E4C3B3 /* PianoRollVelocityViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PianoRollVelocityViewController.h; sourceTree = "<group>"; };
 		025FA90D1C7D2CE700E4C3B3 /* PianoRollVelocityViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PianoRollVelocityViewController.m; sourceTree = "<group>"; };
 		025FA90E1C7D2CE700E4C3B3 /* PianoRollVelocityViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PianoRollVelocityViewController.xib; sourceTree = "<group>"; };
+		025FAF561C7E19BA00E4C3B3 /* NAMIDI-Core.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = "NAMIDI-Core.xcodeproj"; sourceTree = "<group>"; };
 		026160B51C689E18001E99A9 /* NAMIDI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = NAMIDI.entitlements; sourceTree = "<group>"; };
 		02633E961C74AC9F00B9FF0E /* Color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Color.h; sourceTree = "<group>"; };
 		02633E971C74AC9F00B9FF0E /* Color.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Color.m; sourceTree = "<group>"; };
@@ -256,6 +275,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				025FAF6D1C7E302A00E4C3B3 /* libNAMIDI-Core.a in Frameworks */,
 				0255F6281C7111DF00CF4C52 /* CoreText.framework in Frameworks */,
 				020CF8321C6A059C0025DF84 /* WebKit.framework in Frameworks */,
 			);
@@ -267,6 +287,7 @@
 		0201F7C31C688BB100A201F6 = {
 			isa = PBXGroup;
 			children = (
+				025FAF561C7E19BA00E4C3B3 /* NAMIDI-Core.xcodeproj */,
 				0255F6271C7111DF00CF4C52 /* CoreText.framework */,
 				020CF8311C6A059C0025DF84 /* WebKit.framework */,
 				0201F7CE1C688BB100A201F6 /* NAMIDI */,
@@ -420,6 +441,14 @@
 			path = Editor;
 			sourceTree = "<group>";
 		};
+		025FAF571C7E19BA00E4C3B3 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				025FAF5B1C7E19BA00E4C3B3 /* libNAMIDI-Core.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		02633EB91C7505FA00B9FF0E /* Component */ = {
 			isa = PBXGroup;
 			children = (
@@ -559,6 +588,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				025FAF5F1C7E1A2600E4C3B3 /* PBXTargetDependency */,
 			);
 			name = NAMIDI;
 			productName = NAMIDI;
@@ -595,12 +625,28 @@
 			mainGroup = 0201F7C31C688BB100A201F6;
 			productRefGroup = 0201F7CD1C688BB100A201F6 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 025FAF571C7E19BA00E4C3B3 /* Products */;
+					ProjectRef = 025FAF561C7E19BA00E4C3B3 /* NAMIDI-Core.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				0201F7CB1C688BB100A201F6 /* NAMIDI */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		025FAF5B1C7E19BA00E4C3B3 /* libNAMIDI-Core.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libNAMIDI-Core.a";
+			remoteRef = 025FAF5A1C7E19BA00E4C3B3 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		0201F7CA1C688BB100A201F6 /* Resources */ = {
@@ -711,6 +757,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		025FAF5F1C7E1A2600E4C3B3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "NAMIDI-Core";
+			targetProxy = 025FAF5E1C7E1A2600E4C3B3 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		0201F7E11C688BB100A201F6 /* Debug */ = {
