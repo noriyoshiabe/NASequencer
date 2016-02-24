@@ -56,6 +56,7 @@
 		025FA90F1C7D2CE700E4C3B3 /* PianoRollVelocityViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 025FA90D1C7D2CE700E4C3B3 /* PianoRollVelocityViewController.m */; };
 		025FA9101C7D2CE700E4C3B3 /* PianoRollVelocityViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 025FA90E1C7D2CE700E4C3B3 /* PianoRollVelocityViewController.xib */; };
 		025FAF6D1C7E302A00E4C3B3 /* libNAMIDI-Core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 025FAF5B1C7E19BA00E4C3B3 /* libNAMIDI-Core.a */; };
+		025FAF771C7E32B500E4C3B3 /* MidiEventRepresentation.m in Sources */ = {isa = PBXBuildFile; fileRef = 025FAF761C7E32B500E4C3B3 /* MidiEventRepresentation.m */; };
 		02633E981C74AC9F00B9FF0E /* Color.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633E971C74AC9F00B9FF0E /* Color.m */; };
 		02633EB81C74ED9300B9FF0E /* NSView+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EB71C74ED9200B9FF0E /* NSView+Support.m */; };
 		02633EBC1C75062300B9FF0E /* LevelIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EBB1C75062300B9FF0E /* LevelIndicator.m */; };
@@ -199,6 +200,8 @@
 		025FA90D1C7D2CE700E4C3B3 /* PianoRollVelocityViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PianoRollVelocityViewController.m; sourceTree = "<group>"; };
 		025FA90E1C7D2CE700E4C3B3 /* PianoRollVelocityViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PianoRollVelocityViewController.xib; sourceTree = "<group>"; };
 		025FAF561C7E19BA00E4C3B3 /* NAMIDI-Core.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = "NAMIDI-Core.xcodeproj"; sourceTree = "<group>"; };
+		025FAF751C7E32B500E4C3B3 /* MidiEventRepresentation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MidiEventRepresentation.h; sourceTree = "<group>"; };
+		025FAF761C7E32B500E4C3B3 /* MidiEventRepresentation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MidiEventRepresentation.m; sourceTree = "<group>"; };
 		026160B51C689E18001E99A9 /* NAMIDI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = NAMIDI.entitlements; sourceTree = "<group>"; };
 		02633E961C74AC9F00B9FF0E /* Color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Color.h; sourceTree = "<group>"; };
 		02633E971C74AC9F00B9FF0E /* Color.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Color.m; sourceTree = "<group>"; };
@@ -557,6 +560,8 @@
 				02633E971C74AC9F00B9FF0E /* Color.m */,
 				02633EBD1C75B08400B9FF0E /* Stub.h */,
 				02633EBE1C75B09F00B9FF0E /* Stub.m */,
+				025FAF751C7E32B500E4C3B3 /* MidiEventRepresentation.h */,
+				025FAF761C7E32B500E4C3B3 /* MidiEventRepresentation.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -727,6 +732,7 @@
 				02CAF6C01C77858000AD81B2 /* LocationView.m in Sources */,
 				025FA8FB1C7CECBA00E4C3B3 /* TrackSelection.m in Sources */,
 				026D42E81C7ABC08000267AD /* TrackViewController.m in Sources */,
+				025FAF771C7E32B500E4C3B3 /* MidiEventRepresentation.m in Sources */,
 				025FA90F1C7D2CE700E4C3B3 /* PianoRollVelocityViewController.m in Sources */,
 				025FA9061C7D27BD00E4C3B3 /* PianoRollVelocityLabelView.m in Sources */,
 				026D42EB1C7ABC08000267AD /* PlayLineViewController.m in Sources */,
