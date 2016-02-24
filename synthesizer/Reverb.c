@@ -7,15 +7,11 @@
 struct _Reverb {
     CombFilter *combFilters[4];
     AllPassFilter *allPassFilters[2];
-    LowPassFilter *lowPassFilter;
 };
 
 Reverb *ReverbCreate(double sampleRate, double reverbTime)
 {
     Reverb *self = calloc(1, sizeof(Reverb));
-
-    // Reduce high frequency noise with pre LPF
-    self->lowPassFilter = LowPassFilterCreate(sampleRate, 1000.0, 1.0);
 
     // Parameters are from the Schroeder Reverberator simulating a medium-sized concert hall
     // Excerpt from https://www.nativesystems.inf.ethz.ch/pub/Main/WebHomeLecturesReconfigurableSystems/lec7.pdf
@@ -53,16 +49,12 @@ void ReverbDestroy(Reverb *self)
     AllPassFilterDestroy(self->allPassFilters[0]);
     AllPassFilterDestroy(self->allPassFilters[1]);
 
-    LowPassFilterDestroy(self->lowPassFilter);
-
     free(self);
 }
 
 AudioSample ReverbComputeSample(Reverb *self, AudioSample input)
 {
     AudioSample combResults[4];
-
-    input = LowPassFilterApply(self->lowPassFilter, input);
 
     combResults[0] = CombFilterApply(self->combFilters[0], input);
     combResults[1] = CombFilterApply(self->combFilters[1], input);

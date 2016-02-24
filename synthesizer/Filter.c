@@ -176,13 +176,13 @@ void AllPassFilterDestroy(AllPassFilter *self)
 AudioSample AllPassFilterApply(AllPassFilter *self, AudioSample input)
 {
     AudioSample output = self->history[self->index];
-    
-    self->history[self->index].L = input.L + output.L * self->g;
-    self->history[self->index].R = input.R + output.R * self->g;
 
     output.L -= input.L * self->g;
     output.R -= input.R * self->g;
     
+    self->history[self->index].L = input.L + output.L * self->g;
+    self->history[self->index].R = input.R + output.R * self->g;
+
     if (self->historyLength <= ++self->index) {
         self->index = 0;
     }

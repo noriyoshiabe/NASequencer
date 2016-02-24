@@ -13,8 +13,8 @@ Key: tick=3840 sf=0 mi=0
 Key: tick=5520 sf=-3 mi=1
 Synth: tick=0 identifier=GeneralUser GS Live-Audigy v1.44
 Voice: tick=0 channel=1 msb=0 lsb=0 programNo=0
-Chorus: tick=0 channel=1 value=100
-Reverb: tick=0 channel=1 value=100
+Chorus: tick=0 channel=1 value=20
+Reverb: tick=0 channel=1 value=20
 Detune: tick=0 value=10
 Note: tick=0 channel=1 noteNo=48 gatetime=470 velocity=100
 Note: tick=0 channel=1 noteNo=52 gatetime=470 velocity=100
@@ -126,8 +126,8 @@ Note: tick=7440 channel=1 noteNo=55 gatetime=230 velocity=60
 Note: tick=7440 channel=1 noteNo=58 gatetime=230 velocity=127
 Synth: tick=0 identifier=GeneralUser GS Live-Audigy v1.44
 Voice: tick=0 channel=10 msb=0 lsb=120 programNo=0
-Chorus: tick=0 channel=10 value=100
-Reverb: tick=0 channel=10 value=100
+Chorus: tick=0 channel=10 value=20
+Reverb: tick=0 channel=10 value=20
 Volume: tick=0 channel=10 value=100
 Expression: tick=0 value=127
 Pan: tick=0 channel=10 value=0

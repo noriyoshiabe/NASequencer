@@ -21,8 +21,8 @@ CHANNEL   10
 ------------------------
 SYNTH      'GeneralUser GS Live-Audigy v1.44'
 VOICE      0 120 0
-CHORUS     100
-REVERB     100
+CHORUS     20
+REVERB     20
 VOLUME     100
 VELOCITY   127
 EXPRESSION 127
@@ -90,8 +90,8 @@ CHANNEL   1
 ------------------------
 SYNTH     'GeneralUser GS Live-Audigy v1.44'
 VOICE     0 0 0
-CHORUS    100
-REVERB    100
+CHORUS    20
+REVERB    20
 DETUNE    +10
 GATETIME  STEP - 10
 
