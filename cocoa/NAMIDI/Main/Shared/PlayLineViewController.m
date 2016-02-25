@@ -10,7 +10,7 @@
 
 @import QuartzCore;
 
-@interface PlayLineView : NSView
+@interface PlayLineView : NSView <PlayerRepresentationObserver>
 @property (weak, nonatomic) NSView *containerView;
 @property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
 @property (strong, nonatomic) SequenceRepresentation *sequence;
@@ -56,6 +56,11 @@
     self.layer.backgroundColor = [NSColor yellowColor].CGColor;
 }
 
+- (void)dealloc
+{
+    [_player removeObserver:self];
+}
+
 - (BOOL)isFlipped
 {
     return YES;
@@ -70,6 +75,7 @@
 - (void)setPlayer:(PlayerRepresentation *)player
 {
     _player = player;
+    [_player addObserver:self];
     [self update];
 }
 
@@ -94,6 +100,13 @@
     [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
     self.layer.transform = CATransform3DMakeTranslation(x, 0, 0);
     [CATransaction commit];
+}
+
+#pragma mark PlayerRepresentationObserver
+
+- (void)player:(PlayerRepresentation *)player onNotifyClock:(int)tick usec:(int64_t)usec location:(Location)location
+{
+    [self update];
 }
 
 @end

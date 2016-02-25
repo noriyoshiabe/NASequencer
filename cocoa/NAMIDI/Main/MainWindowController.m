@@ -71,6 +71,7 @@
 - (void)dealloc
 {
     [_namidi removeObserver:self];
+    [_namidi.player removeObserver:self];
 }
 
 - (void)showErrorWindow

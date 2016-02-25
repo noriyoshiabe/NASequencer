@@ -9,7 +9,7 @@
 #import "LocationView.h"
 #import "Color.h"
 
-@interface LocationView ()
+@interface LocationView () <PlayerRepresentationObserver>
 @property (weak) IBOutlet NSTextField *locationField;
 @end
 
@@ -23,9 +23,15 @@
     self.layer.masksToBounds = YES;
 }
 
+- (void)dealloc
+{
+    [_player removeObserver:self];
+}
+
 - (void)setPlayer:(PlayerRepresentation *)player
 {
     _player = player;
+    [_player addObserver:self];
     [self update];
 }
 
@@ -40,6 +46,13 @@
     
     _locationField.stringValue = [NSString stringWithFormat:@"%03d:%02d:%03d  %02d:%02d:%03d",
                                   location.m, location.b, location.t, min, sec, msec];
+}
+
+#pragma mark PlayerRepresentationObserver
+
+- (void)player:(PlayerRepresentation *)player onNotifyClock:(int)tick usec:(int64_t)usec location:(Location)location
+{
+    [self update];
 }
 
 @end
