@@ -186,7 +186,7 @@ static void NAMidiFSWatcherOnFileChanged(void *receiver, const char *changedFile
 
 static void NAMidiFSWatcherOnError(void *receiver, int error, const char *message)
 {
-    printf("%s: message=%s\n", __FUNCTION__, message);
+    printf("%s: errno:%d message=%s\n", __FUNCTION__, error, message);
 }
 
 static FSWatcherCallbacks NAMidiFSWatcherCallbacks = {

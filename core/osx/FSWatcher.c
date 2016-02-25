@@ -1,19 +1,29 @@
 #include "FSWatcher.h"
+#include "NAMap.h"
+#include "NAArray.h"
+#include "NACInteger.h"
 
-#include <CoreServices/CoreServices.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stddef.h>
+#include <errno.h>
+#include <unistd.h>
+#include <fcntl.h>
 #include <pthread.h>
-#include <stdarg.h>
 #include <limits.h>
 #include <libgen.h>
+#include <sys/types.h>
+#include <sys/event.h>
+#include <sys/time.h>
 #include <sys/stat.h>
 
 struct _FSWatcher {
     FSWatcherCallbacks *callbacks;
     void *receiver;
     pthread_t thread;
-    CFMutableDictionaryRef files;
-    CFMutableSetRef dirPaths;
-    CFRunLoopRef runloop;
+    bool exit;
+    NAMap *watchingPaths;
 };
 
 FSWatcher *FSWatcherCreate(FSWatcherCallbacks *callbacks, void *receiver)
@@ -22,26 +32,22 @@ FSWatcher *FSWatcherCreate(FSWatcherCallbacks *callbacks, void *receiver)
     self->callbacks = callbacks;
     self->receiver = receiver;
 
-    self->files = CFDictionaryCreateMutable(NULL, 0, &kCFTypeDictionaryKeyCallBacks, NULL);
-    self->dirPaths = CFSetCreateMutable(NULL, 0, &kCFTypeSetCallBacks);
+    self->watchingPaths = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
 
     return self;
 }
 
 void FSWatcherDestroy(FSWatcher *self)
 {
-    CFRunLoopStop(self->runloop);
-    pthread_join(self->thread, NULL);
+    self->exit = true;
 
-    CFIndex count = CFDictionaryGetCount(self->files);
-    struct tm *lastModifiedTimes[count];
-    CFDictionaryGetKeysAndValues(self->files, NULL, (const void **)lastModifiedTimes);
-    for (int i = 0; i < count; ++i) {
-        free(lastModifiedTimes[i]);
+    if (0 < self->thread) {
+        pthread_join(self->thread, NULL);
     }
 
-    CFRelease(self->files);
-    CFRelease(self->dirPaths);
+    NAMapTraverseKey(self->watchingPaths, free);
+    NAMapTraverseValue(self->watchingPaths, free);
+    NAMapDestroy(self->watchingPaths);
 
     free(self);
 }
@@ -68,56 +74,20 @@ static struct tm *getModifiedTime(const char *filepath)
     }
 }
 
-static void fsCallback(ConstFSEventStreamRef streamRef, void *_self, size_t numEvents,
-        void *eventPaths, const FSEventStreamEventFlags eventFlags[], const FSEventStreamEventId eventIds[])
-{
-    FSWatcher *self = _self;
-
-    CFIndex count = CFDictionaryGetCount(self->files);
-    CFStringRef filepaths[count];
-    struct tm *lastModifiedTimes[count];
-    CFDictionaryGetKeysAndValues(self->files, (const void **)filepaths, (const void **)lastModifiedTimes);
-
-    for (int i = 0; i < count; ++i) {
-        CFIndex length = CFStringGetLength(filepaths[i]) + 1;
-        char cstring[length];
-        CFStringGetCString(filepaths[i], cstring, length, kCFStringEncodingUTF8);
-
-        struct tm *clock = getModifiedTime(cstring);
-        if (!clock) {
-            onError(self);
-        }
-        else {
-            struct tm *lastModifiedTime = (struct tm *)CFDictionaryGetValue(self->files, filepaths[i]);
-
-            if (memcmp(clock, lastModifiedTime, offsetof(struct tm, tm_isdst))) {
-                memcpy(lastModifiedTime, clock, sizeof(struct tm));
-                onFileChanged(self, cstring);
-                break;
-            }
-        }
-    }
-}
-
 void FSWatcherRegisterFilepath(FSWatcher *self, const char *filepath)
 {
-    struct tm* clock;
+    struct tm *clock;
     char buf[PATH_MAX + 1];
     char *actualpath = realpath(filepath, buf);
-
-    if (!(clock = getModifiedTime(actualpath))) {
-        onError(self);
+    if (!actualpath || !(clock = getModifiedTime(actualpath))) {
+        onError(self);        
     }
     else {
-        struct tm* _clock = malloc(sizeof(struct tm));
-        memcpy(_clock, clock, sizeof(struct tm));
-
-        CFStringRef path = CFStringCreateWithCString(NULL, actualpath, kCFStringEncodingUTF8);
-        CFStringRef dirPath = CFStringCreateWithCString(NULL, dirname(actualpath), kCFStringEncodingUTF8);
-        CFDictionarySetValue(self->files, path, _clock);
-        CFSetAddValue(self->dirPaths, dirPath);
-        CFRelease(path);
-        CFRelease(dirPath);
+        if (!NAMapContainsKey(self->watchingPaths, actualpath)) {
+            struct tm *_clock = malloc(sizeof(struct tm));
+            memcpy(_clock, clock, sizeof(struct tm));
+            NAMapPut(self->watchingPaths, strdup(actualpath), _clock);
+        }
     }
 }
 
@@ -125,28 +95,85 @@ static void *run(void *_self)
 {
     FSWatcher *self = _self;
 
-    CFIndex count = CFSetGetCount(self->dirPaths);
-    CFTypeRef *values = (CFTypeRef *)malloc(count * sizeof(CFTypeRef));
-    CFSetGetValues(self->dirPaths, (const void **)values);
-    CFArrayRef _paths = CFArrayCreate(NULL, values, count, &kCFTypeArrayCallBacks);
-    free(values);
+    NAIterator *iterator;
+    struct timespec timeout;
+    
+    int kq = kqueue();
+    if (0 > kq) {
+        onError(self);        
+        return NULL;
+    }
 
-    FSEventStreamContext context = {0, self, NULL, NULL, NULL};
- 
-    FSEventStreamRef stream = FSEventStreamCreate(kCFAllocatorDefault, fsCallback, &context,
-            _paths, kFSEventStreamEventIdSinceNow, 0, kFSEventStreamCreateFlagNone);
+    int fileNum = NAMapCount(self->watchingPaths);
+    struct kevent *changes = calloc(fileNum, sizeof(struct kevent));
+    struct kevent *events = calloc(fileNum, sizeof(struct kevent));
+    NAArray *fileDescriptors = NAArrayCreate(4, NADescriptionCInteger);
 
-    CFRelease(_paths);
+    int index = 0;
+    iterator = NAMapGetIterator(self->watchingPaths);
+    while (iterator->hasNext(iterator)) {
+        NAMapEntry *entry = iterator->next(iterator);
+        char *filepath = entry->key;
+        int fd = open(filepath, O_EVTONLY);
+        if (0 > fd) {
+            onError(self);        
+            goto ERROR;
+        }
 
-    self->runloop = CFRunLoopGetCurrent();
-    FSEventStreamScheduleWithRunLoop(stream, self->runloop, kCFRunLoopDefaultMode);
-    FSEventStreamStart(stream);
+        EV_SET(&changes[index++], fd,
+                EVFILT_VNODE,
+                EV_ADD | EV_CLEAR,
+                NOTE_DELETE | NOTE_WRITE | NOTE_EXTEND | NOTE_ATTRIB | NOTE_LINK | NOTE_RENAME | NOTE_REVOKE,
+                0,
+                filepath);
 
-    CFRunLoopRun();
+        NAArrayAppend(fileDescriptors, NACIntegerFromInteger(fd));
+    }
 
-    FSEventStreamStop(stream);
-    FSEventStreamInvalidate(stream);
-    FSEventStreamRelease(stream);
+    while (!self->exit) {
+        timeout.tv_sec = 0;
+        timeout.tv_nsec = 50 * 1000 * 1000;
+
+        int count = kevent(kq, changes, fileNum, events, fileNum, &timeout);
+        for (int i = 0; i < count; ++i) {
+            if (EV_ERROR == events[i].flags) {
+                onError(self);
+            }
+            else {
+                struct tm *clock = getModifiedTime(events[i].udata);
+                if (!clock) {
+                    if (events[i].fflags & NOTE_RENAME) {
+                        ; // notified with normal saving
+                    }
+                    else {
+                        onError(self);
+                    }
+                }
+                else {
+                    struct tm *lastModifiedTime = NAMapGet(self->watchingPaths, events[i].udata);
+                    if (memcmp(clock, lastModifiedTime, offsetof(struct tm, tm_isdst))) {
+                        memcpy(lastModifiedTime, clock, sizeof(struct tm));
+                        onFileChanged(self, events[i].udata);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+ERROR:
+    close(kq);
+
+    iterator = NAArrayGetIterator(fileDescriptors);
+    while (iterator->hasNext(iterator)) {
+        int *fd = iterator->next(iterator);
+        close(*fd);
+        free(fd);
+    }
+    NAArrayDestroy(fileDescriptors);
+
+    free(changes);
+    free(events);
 
     return NULL;
 }
