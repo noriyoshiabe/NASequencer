@@ -7,3 +7,5 @@ NAMIDI.app/
 help/*.html
 *.dmg
 release/
+
+*.sf2

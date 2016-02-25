@@ -12,6 +12,7 @@
 #import "WelcomeWindowController.h"
 #import "GettingStartedWindowController.h"
 #import "EditorWindowController.h"
+#import "MidiSourceManagerRepresentation.h"
 
 #define kSelectedFileTypeForCreation @"Document.SelectedFileTypeForCreation"
 
@@ -50,6 +51,9 @@ ApplicationController *AppController;
     [[NSUserDefaults standardUserDefaults] registerDefaults:@{
                                                               kSelectedFileTypeForCreation: @"nmf",
                                                               }];
+    
+    NSString *filepath = [[NSBundle mainBundle] pathForResource:@"GeneralUser GS Live-Audigy v1.44" ofType:@"sf2"];
+    [[MidiSourceManagerRepresentation sharedInstance] loadMidiSourceDescriptionFromSoundFont:filepath];
 }
 
 - (void)showWelcomeWindow
