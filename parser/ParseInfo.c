@@ -52,7 +52,7 @@ void ParseInfoRelease(ParseInfo *_self)
             NAArrayTraverse(self->info.errors, ParseErrorDestroy);
             NAArrayDestroy(self->info.errors);
         }
-    }
 
-    free(self);
+        free(self);
+    }
 }
