@@ -63,6 +63,7 @@
 		025FAF881C7E503900E4C3B3 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 025FAF871C7E503900E4C3B3 /* AudioUnit.framework */; };
 		025FAF8A1C7E504B00E4C3B3 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 025FAF891C7E504B00E4C3B3 /* AudioToolbox.framework */; };
 		025FAF8D1C7E653500E4C3B3 /* ParseInfoRepresentation.m in Sources */ = {isa = PBXBuildFile; fileRef = 025FAF8C1C7E653500E4C3B3 /* ParseInfoRepresentation.m */; };
+		025FAF931C7F182700E4C3B3 /* NSThread+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 025FAF921C7F182700E4C3B3 /* NSThread+Support.m */; };
 		02633E981C74AC9F00B9FF0E /* Color.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633E971C74AC9F00B9FF0E /* Color.m */; };
 		02633EB81C74ED9300B9FF0E /* NSView+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EB71C74ED9200B9FF0E /* NSView+Support.m */; };
 		02633EBC1C75062300B9FF0E /* LevelIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EBB1C75062300B9FF0E /* LevelIndicator.m */; };
@@ -218,6 +219,8 @@
 		025FAF891C7E504B00E4C3B3 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		025FAF8B1C7E653500E4C3B3 /* ParseInfoRepresentation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParseInfoRepresentation.h; sourceTree = "<group>"; };
 		025FAF8C1C7E653500E4C3B3 /* ParseInfoRepresentation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ParseInfoRepresentation.m; sourceTree = "<group>"; };
+		025FAF911C7F182700E4C3B3 /* NSThread+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSThread+Support.h"; sourceTree = "<group>"; };
+		025FAF921C7F182700E4C3B3 /* NSThread+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSThread+Support.m"; sourceTree = "<group>"; };
 		026160B51C689E18001E99A9 /* NAMIDI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = NAMIDI.entitlements; sourceTree = "<group>"; };
 		02633E961C74AC9F00B9FF0E /* Color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Color.h; sourceTree = "<group>"; };
 		02633E971C74AC9F00B9FF0E /* Color.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Color.m; sourceTree = "<group>"; };
@@ -402,6 +405,8 @@
 				02633EB71C74ED9200B9FF0E /* NSView+Support.m */,
 				02A973C31C798B6100C21B8E /* NSColor+Support.h */,
 				02A973C41C798B6100C21B8E /* NSColor+Support.m */,
+				025FAF911C7F182700E4C3B3 /* NSThread+Support.h */,
+				025FAF921C7F182700E4C3B3 /* NSThread+Support.m */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -780,6 +785,7 @@
 				020CF87A1C6B0AB20025DF84 /* AboutWindowController.m in Sources */,
 				028589551C71320A00A53B8C /* EditorStatusViewController.m in Sources */,
 				02A973C51C798B6100C21B8E /* NSColor+Support.m in Sources */,
+				025FAF931C7F182700E4C3B3 /* NSThread+Support.m in Sources */,
 				024A5B2E1C69FFD90079D22C /* WelcomeWindowController.m in Sources */,
 				02633EBF1C75B09F00B9FF0E /* Stub.m in Sources */,
 				025FAF801C7E469A00E4C3B3 /* PlayerRepresentation.m in Sources */,

@@ -60,21 +60,28 @@ static NAMidiObserverCallbacks callbacks = {onBeforeParse, onParseFinish};
 
 - (void)onBeforeParse:(BOOL)fileChanged
 {
-    for (id<NAMidiRepresentationObserver> observer in _observers) {
-        if ([observer respondsToSelector:@selector(namidiWillParse:fileChanged:)]) {
-            [observer namidiWillParse:self fileChanged:fileChanged];
+    [NSThread performBlockOnMainThread:^{
+        for (id<NAMidiRepresentationObserver> observer in _observers) {
+            if ([observer respondsToSelector:@selector(namidiWillParse:fileChanged:)]) {
+                [observer namidiWillParse:self fileChanged:fileChanged];
+            }
         }
-    }
+    }];
 }
 
 - (void)onParseFinish:(Sequence *)sequence info:(ParseInfo *)info
 {
-    _sequence = [[SequenceRepresentation alloc] initWithSequence:NAMidiGetSequence(_namidi)];
-    _parseInfo = [[ParseInfoRepresentation alloc] initWithParseInfo:NAMidiGetParseInfo(_namidi)];
+    SequenceRepresentation *__sequence = [[SequenceRepresentation alloc] initWithSequence:NAMidiGetSequence(_namidi)];
+    ParseInfoRepresentation *__parseInfo = [[ParseInfoRepresentation alloc] initWithParseInfo:NAMidiGetParseInfo(_namidi)];
     
-    for (id<NAMidiRepresentationObserver> observer in _observers) {
-        [observer namidiDidParse:self sequence:_sequence parseInfo:_parseInfo];
-    }
+    [NSThread performBlockOnMainThread:^{
+        _sequence = __sequence;
+        _parseInfo = __parseInfo;
+        
+        for (id<NAMidiRepresentationObserver> observer in _observers) {
+            [observer namidiDidParse:self sequence:_sequence parseInfo:_parseInfo];
+        }
+    }];
 }
 
 - (void)parse

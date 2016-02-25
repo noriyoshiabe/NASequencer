@@ -18,6 +18,7 @@
 #import "NSArray+Support.h"
 #import "NSView+Support.h"
 #import "NSColor+Support.h"
+#import "NSThread+Support.h"
 
 #ifdef DEBUG
 #define __Trace__ NSLog(@"%s - %d", __func__, __LINE__);
