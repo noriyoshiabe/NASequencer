@@ -13,7 +13,7 @@
 #import "ErrorWindowController.h"
 #import "TrackSelection.h"
 
-@interface MainWindowController () <TrackSelectionDelegate, NAMidiRepresentationObserver>
+@interface MainWindowController () <TrackSelectionDelegate, NAMidiRepresentationObserver, PlayerRepresentationObserver>
 @property (weak) IBOutlet NSView *contentView;
 @property (weak) IBOutlet LocationView *locationView;
 @property (strong, nonatomic) MainViewController *mainVC;
@@ -39,6 +39,7 @@
     self.window.contentView.layer.masksToBounds = YES;
     
     [_namidi addObserver:self];
+    [_namidi.player addObserver:self];
     
     _mainVC = [[MainViewController alloc] init];
     _detailVC = [[DetailViewController alloc] init];
@@ -102,6 +103,14 @@
     [_contentView addSubviewWithFitConstraints:_detailVC.view];
 }
 
+- (void)updateToolBarItem
+{
+    NSToolbarItem *item = [self.window.toolbar.items objectPassingTest:^BOOL(__kindof NSToolbarItem *obj, NSUInteger idx, BOOL *stop) {
+        return *stop = [obj.itemIdentifier isEqualToString:@"PlayPause"];
+    }];
+    item.image = [NSImage imageNamed:_namidi.player.isPlaying ?  @"pause" : @"play"];
+}
+
 #pragma mark Toolbar Action
 
 - (BOOL)validateToolbarItem:(NSToolbarItem *)theItem
@@ -121,24 +130,22 @@
 
 - (IBAction)rewind:(id)sender
 {
-    NSLog(@"%s", __func__);
+    [_namidi.player rewind];
 }
 
 - (IBAction)playPause:(NSToolbarItem *)sender
 {
-    NSLog(@"%s", __func__);
-    sender.tag = !sender.tag;
-    sender.image = [NSImage imageNamed:sender.tag ? @"play" : @"pause"];
+    [_namidi.player playPause];
 }
 
 - (IBAction)backward:(id)sender
 {
-    NSLog(@"%s", __func__);
+    [_namidi.player backward];
 }
 
 - (IBAction)forward:(id)sender
 {
-    NSLog(@"%s", __func__);
+    [_namidi.player forward];
 }
 
 - (IBAction)export:(id)sender
@@ -162,6 +169,20 @@
     }
     else {
         [_errorWC close];
+    }
+}
+
+#pragma mark PlayerRepresentationObserver
+
+- (void)player:(PlayerRepresentation *)player onNotifyEvent:(PlayerEvent)event
+{
+    switch (event) {
+        case PlayerEventPlay:
+        case PlayerEventStop:
+            [self updateToolBarItem];
+            break;
+        default:
+            break;
     }
 }
 

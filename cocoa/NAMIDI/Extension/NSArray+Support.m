@@ -19,4 +19,10 @@
     return result;
 }
 
+- (id)objectPassingTest:(BOOL (^)(id obj, NSUInteger idx, BOOL *stop))predicate
+{
+    NSUInteger index = [self indexOfObjectPassingTest:predicate];
+    return NSNotFound != index ? self[index] : nil;
+}
+
 @end

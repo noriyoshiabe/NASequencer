@@ -146,4 +146,29 @@ static PlayerObserverCallbacks callbacks = {onNotifyClock, onNotifyEvent, onSend
     return PlayerGetTimeSign(_player);
 }
 
+- (bool)isPlaying
+{
+    return PlayerIsPlaying(_player);
+}
+
+- (void)playPause
+{
+    PlayerPlayPause(_player);
+}
+
+- (void)rewind
+{
+    PlayerRewind(_player);
+}
+
+- (void)forward
+{
+    PlayerForward(_player);
+}
+
+- (void)backward
+{
+    PlayerBackWard(_player);
+}
+
 @end

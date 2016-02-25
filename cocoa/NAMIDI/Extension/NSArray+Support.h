@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface NSArray (Support)
-- (NSArray *)mapObjectsUsingBlock:(id (^)(id obj))block;
+@interface NSArray<__covariant ObjectType> (Support)
+- (NSArray *)mapObjectsUsingBlock:(ObjectType (^)(ObjectType obj))block;
+- (ObjectType)objectPassingTest:(BOOL (^)(ObjectType obj, NSUInteger idx, BOOL *stop))predicate;
 @end

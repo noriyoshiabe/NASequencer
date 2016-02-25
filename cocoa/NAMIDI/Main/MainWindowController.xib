@@ -79,7 +79,7 @@
                             <action selector="rewind:" target="-1" id="VvW-8j-nvN"/>
                         </connections>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="6834C4EA-8491-473A-A118-7376404E361A" label="Play" paletteLabel="Play" tag="-1" image="play" id="OLm-EI-7a4">
+                    <toolbarItem implicitItemIdentifier="6834C4EA-8491-473A-A118-7376404E361A" explicitItemIdentifier="PlayPause" label="Play" paletteLabel="Play" tag="-1" image="play" id="OLm-EI-7a4">
                         <connections>
                             <action selector="playPause:" target="-1" id="fSV-tn-nP6"/>
                         </connections>
