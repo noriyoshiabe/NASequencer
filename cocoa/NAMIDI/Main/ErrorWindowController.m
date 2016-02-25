@@ -10,8 +10,11 @@
 #import "Color.h"
 #import "ParseErrorCode.h"
 
-@interface ErrorWindowController () <NAMidiRepresentationObserver>
-@property (weak) IBOutlet NSTextField *errorTextField;
+#define HEIGHT_WITHOUT_TEXT 54
+
+@interface ErrorWindowController () <NAMidiRepresentationObserver, NSWindowDelegate>
+@property (weak) IBOutlet NSView *backGroundView;
+@property (unsafe_unretained) IBOutlet NSTextView *textView;
 @end
 
 @implementation ErrorWindowController
@@ -27,10 +30,14 @@
     self.window.opaque = NO;
     self.window.backgroundColor = [NSColor clearColor];
     self.window.movableByWindowBackground = YES;
-    self.window.contentView.wantsLayer = YES;
-    self.window.contentView.layer.backgroundColor = [Color statusBackground].CGColor;
-    self.window.contentView.layer.cornerRadius = 10.0;
-    self.window.contentView.layer.masksToBounds = YES;
+    
+    _backGroundView.wantsLayer = YES;
+    _backGroundView.layer.backgroundColor = [Color statusBackground].CGColor;
+    _backGroundView.layer.cornerRadius = 10.0;
+    _backGroundView.layer.masksToBounds = YES;
+    
+    _textView.font = [NSFont systemFontOfSize:12.0];
+    _textView.textColor = [NSColor whiteColor];
     
     [_namidi addObserver:self];
     [self update];
@@ -50,7 +57,16 @@
         }
         [string appendString:[self formattedStringWithParseError:error]];
     }
-    _errorTextField.stringValue = string;
+    _textView.string = string;
+    
+    [_textView.textContainer setLineFragmentPadding:0.0];
+    [_textView.layoutManager glyphRangeForTextContainer:_textView.textContainer];
+    CGRect contentRect = [_textView.layoutManager usedRectForTextContainer:_textView.textContainer];
+    
+    CGFloat height = MIN(500.0, contentRect.size.height + HEIGHT_WITHOUT_TEXT);
+    CGFloat offsetY = self.window.frame.size.height - height;
+    [self.window setFrame:CGRectMake(self.window.frame.origin.x, self.window.frame.origin.y + offsetY,
+                                     self.window.frame.size.width, height) display:YES];
 }
 
 - (NSString *)formattedStringWithParseError:(ParseErrorRepresentation *)error
