@@ -61,7 +61,9 @@ static NAMidiObserverCallbacks callbacks = {onBeforeParse, onParseFinish};
 - (void)onBeforeParse:(BOOL)fileChanged
 {
     for (id<NAMidiRepresentationObserver> observer in _observers) {
-        [observer namidiWillParse:self fileChanged:fileChanged];
+        if ([observer respondsToSelector:@selector(namidiWillParse:fileChanged:)]) {
+            [observer namidiWillParse:self fileChanged:fileChanged];
+        }
     }
 }
 
@@ -79,6 +81,11 @@ static NAMidiObserverCallbacks callbacks = {onBeforeParse, onParseFinish};
 {
     NAMidiSetWatchEnable(_namidi, true);
     NAMidiParse(_namidi, [_file.url.path UTF8String]);
+}
+
+- (BOOL)hasError
+{
+    return 0 < _parseInfo.errors.count;
 }
 
 - (void)dealloc

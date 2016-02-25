@@ -13,7 +13,7 @@
 #import "ErrorWindowController.h"
 #import "TrackSelection.h"
 
-@interface MainWindowController () <TrackSelectionDelegate>
+@interface MainWindowController () <TrackSelectionDelegate, NAMidiRepresentationObserver>
 @property (weak) IBOutlet NSView *contentView;
 @property (weak) IBOutlet LocationView *locationView;
 @property (strong, nonatomic) MainViewController *mainVC;
@@ -38,6 +38,8 @@
     self.window.contentView.wantsLayer = YES;
     self.window.contentView.layer.masksToBounds = YES;
     
+    [_namidi addObserver:self];
+    
     _mainVC = [[MainViewController alloc] init];
     _detailVC = [[DetailViewController alloc] init];
     
@@ -60,7 +62,14 @@
     
     [self showMainView];
     
-    [self showErrorWindow];
+    if (_namidi.hasError) {
+        [self showErrorWindow];
+    }
+}
+
+- (void)dealloc
+{
+    [_namidi removeObserver:self];
 }
 
 - (void)showErrorWindow
@@ -142,6 +151,18 @@
 - (void)trackSelectionDidEnterSelection:(TrackSelection *)trackSelection
 {
     [self showDetailView];
+}
+
+#pragma mark NAMidiRepresentationObserver
+
+- (void)namidiDidParse:(NAMidiRepresentation *)namidi sequence:(SequenceRepresentation *)sequence parseInfo:(ParseInfoRepresentation *)parseInfo
+{
+    if (namidi.hasError) {
+        [self showErrorWindow];
+    }
+    else {
+        [_errorWC close];
+    }
 }
 
 @end
