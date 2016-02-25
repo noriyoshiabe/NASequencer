@@ -43,11 +43,14 @@
     
     _sequence = [[SequenceRepresentation alloc] initWithSequence:NAMidiGetSequence(_namidi)];
     _player = [[PlayerRepresentation alloc] initWithPlayer:NAMidiGetPlayer(_namidi)];
+    _parseInfo = [[ParseInfoRepresentation alloc] initWithParseInfo:NAMidiGetParseInfo(_namidi)];
 }
 
 - (void)dealloc
 {
-    NAMidiDestroy(_namidi);
+    if(_namidi) {
+        NAMidiDestroy(_namidi);
+    }
 }
 
 @end

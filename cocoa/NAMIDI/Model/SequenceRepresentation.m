@@ -95,8 +95,17 @@
             
             [_events addObject:event];
         }
+        
+        SequenceRetain(_sequence);
     }
     return self;
+}
+
+- (void)dealloc
+{
+    if (_sequence) {
+        SequenceRelease(_sequence);
+    }
 }
 
 - (NSString *)title

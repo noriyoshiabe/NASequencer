@@ -171,6 +171,11 @@ Sequence *NAMidiGetSequence(NAMidi *self)
     return self->sequence;
 }
 
+ParseInfo *NAMidiGetParseInfo(NAMidi *self)
+{
+    return self->info;
+}
+
 static void NAMidiFSWatcherOnFileChanged(void *receiver, const char *changedFile)
 {
     NAMidi *self = receiver;
