@@ -25,5 +25,6 @@ add_library(${PROJECT_NAME} ${SOURCES})
 
 if (APPLE)
   find_library(AUDIO_TOOLBOX AudioToolbox)
-  target_link_libraries(${PROJECT_NAME} ${AUDIO_TOOLBOX})
+  find_library(CF CoreFoundation)
+  target_link_libraries(${PROJECT_NAME} ${AUDIO_TOOLBOX} ${CF})
 endif (APPLE)
