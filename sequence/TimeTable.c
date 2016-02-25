@@ -185,7 +185,7 @@ int32_t TimeTableTickByLocation(TimeTable *self, Location location)
     int i = NAArrayBSearchIndex(self->timeSignRecords, &location.m, TimeSignRecordFindByMeasureComparator);
 
     int32_t ret = records[i]->tickStart + records[i]->measureLength * (location.m - records[i]->measureStart);
-    ret += (location.b - 1) * self->resolution * 4 / records[i]->timeSign.denominator * records[i]->timeSign.numerator;
+    ret += (location.b - 1) * self->resolution * 4 / records[i]->timeSign.denominator;
     ret += location.t;
     return ret;
 }
