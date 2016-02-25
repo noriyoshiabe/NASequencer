@@ -48,6 +48,14 @@ static NAMidiObserverCallbacks callbacks = {onBeforeParse, onParseFinish};
     return self;
 }
 
+- (void)dealloc
+{
+    if(_namidi) {
+        NAMidiRemoveObserver(_namidi, (__bridge void *)self);
+        NAMidiDestroy(_namidi);
+    }
+}
+
 - (void)addObserver:(id<NAMidiRepresentationObserver>)observer
 {
     [_observers addObject:observer];
@@ -93,14 +101,6 @@ static NAMidiObserverCallbacks callbacks = {onBeforeParse, onParseFinish};
 - (BOOL)hasError
 {
     return 0 < _parseInfo.errors.count;
-}
-
-- (void)dealloc
-{
-    if(_namidi) {
-        NAMidiRemoveObserver(_namidi, (__bridge void *)self);
-        NAMidiDestroy(_namidi);
-    }
 }
 
 @end
