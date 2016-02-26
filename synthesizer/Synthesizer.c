@@ -585,10 +585,10 @@ typedef struct _LevelMater {
     } buffer;
 } LevelMater;
 
-static void LevelMaterAddToChannel(LevelMater *self, uint8_t channel, AudioSample *sample)
+static void LevelMaterAddToChannel(LevelMater *self, uint8_t channel, AudioSample *sample, double gain)
 {
-    self->buffer.channels[channel].L += sample->L;
-    self->buffer.channels[channel].R += sample->R;
+    self->buffer.channels[channel].L += sample->L * gain;
+    self->buffer.channels[channel].R += sample->R * gain;
 }
 
 static void LevelMaterUpdate(LevelMater *self, AudioSample *master)
@@ -641,7 +641,7 @@ static void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer
             reverb.R += sample.R * reverbSend;
 
             if (self->level.enable) {
-                LevelMaterAddToChannel(&levelMater, voice->channel->number, &sample);
+                LevelMaterAddToChannel(&levelMater, voice->channel->number, &sample, (1.0 + chorusSend + reverbSend) * self->masterGain);
             }
 
             VoiceIncrementSample(voice);
