@@ -14,6 +14,14 @@
     MixerChannelRepresentation *_mixerChannel;
 }
 
+@property (weak) IBOutlet NSButton *muteButton;
+@property (weak) IBOutlet NSButton *soloButton;
+@property (weak) IBOutlet NSPopUpButton *synthButton;
+@property (weak) IBOutlet NSPopUpButton *presetButton;
+@property (weak) IBOutlet NSSlider *volumeSlider;
+@property (weak) IBOutlet NSSlider *panSlider;
+@property (weak) IBOutlet NSSlider *chorusSlider;
+@property (weak) IBOutlet NSSlider *reverbSlider;
 @property (weak) IBOutlet LevelIndicator *indicatorL;
 @property (weak) IBOutlet LevelIndicator *indicatorR;
 @property (weak) IBOutlet NSView *underLine;
@@ -24,8 +32,9 @@
 @property (assign, nonatomic) int pan;
 @property (assign, nonatomic) int chorus;
 @property (assign, nonatomic) int reverb;
-@property (assign, nonatomic) int L;
-@property (assign, nonatomic) int R;
+
+@property (readonly, nonatomic) int L;
+@property (readonly, nonatomic) int R;
 
 @property (readonly, nonatomic) NSArray<MidiSourceDescriptionRepresentation *> *availableDescriptions;
 @property (readonly, nonatomic) NSArray<PresetRepresentation *> *presets;
@@ -39,8 +48,6 @@
 {
     _channel = channel;
     _mixerChannel = _mixer.channels[channel - 1];
-    _L = -1440;
-    _R = -1440;
 }
 
 - (void)viewDidLoad
@@ -48,6 +55,27 @@
     [super viewDidLoad];
     _underLine.wantsLayer = YES;
     _underLine.layer.backgroundColor = [Color gray].CGColor;
+}
+
+- (void)viewDidAppear
+{
+    [super viewDidAppear];
+    
+    [_muteButton bind:@"value" toObject:self withKeyPath:@"mute" options:nil];
+    [_soloButton bind:@"value" toObject:self withKeyPath:@"solo" options:nil];
+    
+    [_synthButton bind:@"content" toObject:self withKeyPath:@"availableDescriptions" options:nil];
+    [_synthButton bind:@"contentValues" toObject:self withKeyPath:@"availableDescriptions.name" options:nil];
+    [_synthButton bind:@"selectedObject" toObject:self withKeyPath:@"midiSourceDescription" options:nil];
+    
+    [_presetButton bind:@"content" toObject:self withKeyPath:@"presets" options:nil];
+    [_presetButton bind:@"contentValues" toObject:self withKeyPath:@"presets.selectionLabel" options:nil];
+    [_presetButton bind:@"selectedObject" toObject:self withKeyPath:@"preset" options:nil];
+    
+    [_volumeSlider bind:@"value" toObject:self withKeyPath:@"volume" options:nil];
+    [_panSlider bind:@"value" toObject:self withKeyPath:@"pan" options:nil];
+    [_chorusSlider bind:@"value" toObject:self withKeyPath:@"chorus" options:nil];
+    [_reverbSlider bind:@"value" toObject:self withKeyPath:@"reverb" options:nil];
     
     [_indicatorL bind:@"intValue" toObject:self withKeyPath:@"L" options:nil];
     [_indicatorR bind:@"intValue" toObject:self withKeyPath:@"R" options:nil];
@@ -55,8 +83,29 @@
     [_mixer addObserver:self];
 }
 
-- (void)dealloc
+- (void)viewDidDisappear
 {
+    [super viewDidDisappear];
+    
+    [_muteButton unbind:@"value"];
+    [_soloButton unbind:@"value"];
+    
+    [_synthButton unbind:@"contentValues"];
+    [_synthButton unbind:@"content"];
+    [_synthButton unbind:@"selectedObject"];
+    
+    [_presetButton unbind:@"contentValues"];
+    [_presetButton unbind:@"content"];
+    [_presetButton unbind:@"selectedObject"];
+    
+    [_volumeSlider unbind:@"value"];
+    [_panSlider unbind:@"value"];
+    [_chorusSlider unbind:@"value"];
+    [_reverbSlider unbind:@"value"];
+    
+    [_indicatorL unbind:@"intValue"];
+    [_indicatorR unbind:@"intValue"];
+    
     [_mixer removeObserver:self];
 }
 
@@ -110,6 +159,16 @@
     return _mixerChannel.reverb;
 }
 
+- (int)L
+{
+    return _mixerChannel.level.L;
+}
+
+- (int)R
+{
+    return _mixerChannel.level.R;
+}
+
 - (void)setMidiSourceDescription:(MidiSourceDescriptionRepresentation *)midiSourceDescription
 {
     _mixerChannel.midiSourceDescription = midiSourceDescription;
@@ -148,12 +207,6 @@
 - (void)setReverb:(int)reverb
 {
     _mixerChannel.reverb = reverb;
-}
-
-- (void)notifyValueChangeForKey:(NSString *)key
-{
-    [self willChangeValueForKey:key];
-    [self didChangeValueForKey:key];
 }
 
 #pragma mark MixerRepresentationObserver
@@ -200,8 +253,8 @@
 
 - (void)mixerOnLevelUpdate:(MixerRepresentation *)mixer
 {
-    self.L = _mixerChannel.level.L;
-    self.R = _mixerChannel.level.R;
+    [self notifyValueChangeForKey:@"L"];
+    [self notifyValueChangeForKey:@"R"];
 }
 
 @end

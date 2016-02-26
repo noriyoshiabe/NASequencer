@@ -32,8 +32,15 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
     _conductorTrackView.scaleAssistant = _scaleAssistant;
     _conductorTrackView.trackSelection = _trackSelection;
+}
+
+- (void)viewDidAppear
+{
+    [super viewDidAppear];
+    
     _conductorTrackView.sequence = _namidi.sequence;
     
     [_scaleAssistant addObserver:self forKeyPath:@"scale" options:0 context:NULL];
@@ -41,8 +48,10 @@
     [_namidi addObserver:self];
 }
 
-- (void)dealloc
+- (void)viewDidDisappear
 {
+    [super viewDidDisappear];
+    
     [_scaleAssistant removeObserver:self forKeyPath:@"scale"];
     [_trackSelection removeObserver:self forKeyPath:@"selectionFlags"];
     [_namidi removeObserver:self];

@@ -15,6 +15,7 @@
 #define NSLocalizedString(key, comment) \
     [[NSBundle mainBundle] localizedStringForKey:(key) value:(comment) table:nil]
 
+#import "NSObject+Support.h"
 #import "NSArray+Support.h"
 #import "NSView+Support.h"
 #import "NSColor+Support.h"

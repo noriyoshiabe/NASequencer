@@ -10,13 +10,16 @@
 #import "MixerChannelViewController.h"
 #import "LevelIndicator.h"
 
-@interface MixerViewController () <NAMidiRepresentationObserver, MixerRepresentationObserver>
+@interface MixerViewController () <NAMidiRepresentationObserver, MixerRepresentationObserver> {
+    MixerRepresentation *_mixer;
+}
+
 @property (strong) IBOutlet NSView *masterChannelView;
 @property (weak) IBOutlet LevelIndicator *indicatorL;
 @property (weak) IBOutlet LevelIndicator *indicatorR;
 @property (strong, nonatomic) NSMutableArray *controllers;
-@property (assign, nonatomic) int L;
-@property (assign, nonatomic) int R;
+@property (readonly, nonatomic) int L;
+@property (readonly, nonatomic) int R;
 @end
 
 @implementation MixerViewController
@@ -26,8 +29,6 @@
     self = [super init];
     if (self) {
         _controllers = [NSMutableArray array];
-        _L = -1440;
-        _R = -1440;
     }
     return self;
 }
@@ -36,18 +37,25 @@
 {
     [super viewDidLoad];
     
-    [_indicatorL bind:@"intValue" toObject:self withKeyPath:@"L" options:nil];
-    [_indicatorR bind:@"intValue" toObject:self withKeyPath:@"R" options:nil];
+    _mixer = _namidi.mixer;
     
     for (int i = 0; i < 16; ++i) {
         MixerChannelViewController *channelVC = [[MixerChannelViewController alloc] init];
-        channelVC.mixer = _namidi.mixer;
+        channelVC.mixer = _mixer;
         channelVC.channel = i + 1;
         [_controllers addObject:channelVC];
         [self.view addSubview:channelVC.view];
     }
     
     [self.view addSubview:_masterChannelView];
+}
+
+- (void)viewDidAppear
+{
+    [super viewDidAppear];
+    
+    [_indicatorL bind:@"intValue" toObject:self withKeyPath:@"L" options:nil];
+    [_indicatorR bind:@"intValue" toObject:self withKeyPath:@"R" options:nil];
     
     [_namidi addObserver:self];
     [_namidi.mixer addObserver:self];
@@ -55,8 +63,13 @@
     [self layout];
 }
 
-- (void)dealloc
+- (void)viewDidDisappear
 {
+    [super viewDidDisappear];
+    
+    [_indicatorL unbind:@"intValue"];
+    [_indicatorR unbind:@"intValue"];
+    
     [_namidi removeObserver:self];
     [_namidi.mixer removeObserver:self];
 }
@@ -95,6 +108,16 @@
     _masterChannelView.frame = CGRectMake(0, y, width, _masterChannelView.frame.size.height);
 }
 
+- (int)L
+{
+    return _mixer.level.L;
+}
+
+- (int)R
+{
+    return _mixer.level.L;
+}
+
 #pragma mark NAMidiRepresentationObserver
 
 - (void)namidiDidParse:(NAMidiRepresentation *)namidi sequence:(SequenceRepresentation *)sequence parseInfo:(ParseInfoRepresentation *)parseInfo
@@ -106,8 +129,8 @@
 
 - (void)mixerOnLevelUpdate:(MixerRepresentation *)mixer
 {
-    self.L = mixer.level.L;
-    self.R = mixer.level.R;
+    [self notifyValueChangeForKey:@"L"];
+    [self notifyValueChangeForKey:@"R"];
 }
 
 @end

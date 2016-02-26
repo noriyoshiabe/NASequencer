@@ -40,6 +40,11 @@
     }
     
     [self.view addSubview:_masterTrackView];
+}
+
+- (void)viewDidAppear
+{
+    [super viewDidAppear];
     
     [_scaleAssistant addObserver:self forKeyPath:@"scale" options:0 context:NULL];
     [_namidi addObserver:self];
@@ -47,8 +52,10 @@
     [self layout];
 }
 
-- (void)dealloc
+- (void)viewDidDisappear
 {
+    [super viewDidDisappear];
+    
     [_scaleAssistant removeObserver:self forKeyPath:@"scale"];
     [_namidi removeObserver:self];
 }

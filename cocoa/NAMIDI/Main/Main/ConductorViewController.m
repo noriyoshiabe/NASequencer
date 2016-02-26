@@ -17,12 +17,22 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+}
+
+- (void)viewDidAppear
+{
+    [super viewDidAppear];
+    
+    [self updateTempo];
+    [self updateTimeSign];
+    
     [_namidi addObserver:self];
     [_namidi.player addObserver:self];
 }
 
-- (void)dealloc
+- (void)viewDidDisappear
 {
+    [super viewDidDisappear];
     [_namidi removeObserver:self];
     [_namidi.player removeObserver:self];
 }

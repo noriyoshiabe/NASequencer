@@ -67,6 +67,7 @@
 		025FAF991C7FAB1600E4C3B3 /* MidiSourceManagerRepresentation.m in Sources */ = {isa = PBXBuildFile; fileRef = 025FAF981C7FAB1600E4C3B3 /* MidiSourceManagerRepresentation.m */; };
 		025FAF9B1C7FAD7200E4C3B3 /* GeneralUser GS Live-Audigy v1.44.sf2 in Resources */ = {isa = PBXBuildFile; fileRef = 025FAF9A1C7FAD7200E4C3B3 /* GeneralUser GS Live-Audigy v1.44.sf2 */; };
 		025FAF9F1C8065C300E4C3B3 /* MixerRepresentation.m in Sources */ = {isa = PBXBuildFile; fileRef = 025FAF9E1C8065C300E4C3B3 /* MixerRepresentation.m */; };
+		025FAFA21C81129C00E4C3B3 /* NSObject+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 025FAFA11C81129C00E4C3B3 /* NSObject+Support.m */; };
 		02633E981C74AC9F00B9FF0E /* Color.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633E971C74AC9F00B9FF0E /* Color.m */; };
 		02633EB81C74ED9300B9FF0E /* NSView+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EB71C74ED9200B9FF0E /* NSView+Support.m */; };
 		02633EBC1C75062300B9FF0E /* LevelIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EBB1C75062300B9FF0E /* LevelIndicator.m */; };
@@ -228,6 +229,8 @@
 		025FAF9A1C7FAD7200E4C3B3 /* GeneralUser GS Live-Audigy v1.44.sf2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GeneralUser GS Live-Audigy v1.44.sf2"; sourceTree = "<group>"; };
 		025FAF9D1C8065C300E4C3B3 /* MixerRepresentation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MixerRepresentation.h; sourceTree = "<group>"; };
 		025FAF9E1C8065C300E4C3B3 /* MixerRepresentation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MixerRepresentation.m; sourceTree = "<group>"; };
+		025FAFA01C81129C00E4C3B3 /* NSObject+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+Support.h"; sourceTree = "<group>"; };
+		025FAFA11C81129C00E4C3B3 /* NSObject+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+Support.m"; sourceTree = "<group>"; };
 		026160B51C689E18001E99A9 /* NAMIDI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = NAMIDI.entitlements; sourceTree = "<group>"; };
 		02633E961C74AC9F00B9FF0E /* Color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Color.h; sourceTree = "<group>"; };
 		02633E971C74AC9F00B9FF0E /* Color.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Color.m; sourceTree = "<group>"; };
@@ -412,6 +415,8 @@
 				02A973C41C798B6100C21B8E /* NSColor+Support.m */,
 				025FAF911C7F182700E4C3B3 /* NSThread+Support.h */,
 				025FAF921C7F182700E4C3B3 /* NSThread+Support.m */,
+				025FAFA01C81129C00E4C3B3 /* NSObject+Support.h */,
+				025FAFA11C81129C00E4C3B3 /* NSObject+Support.m */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -769,6 +774,7 @@
 				0201F7D71C688BB100A201F6 /* Document.m in Sources */,
 				026D42DA1C7ABC08000267AD /* SelectionViewController.m in Sources */,
 				025FAF9F1C8065C300E4C3B3 /* MixerRepresentation.m in Sources */,
+				025FAFA21C81129C00E4C3B3 /* NSObject+Support.m in Sources */,
 				02CAF6A91C771F6E00AD81B2 /* SynchronizedScrollView.m in Sources */,
 				025423631C6F31DF007D53CC /* EditorViewController.m in Sources */,
 				026D42EA1C7ABC08000267AD /* MeasureScaleAssistant.m in Sources */,

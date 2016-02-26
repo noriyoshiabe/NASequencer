@@ -7,10 +7,18 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="MixerChannelViewController">
             <connections>
+                <outlet property="chorusSlider" destination="MmY-t4-WQM" id="Jzc-Iv-Ktd"/>
                 <outlet property="indicatorL" destination="S9j-Mx-J04" id="h3S-kD-Lvf"/>
                 <outlet property="indicatorR" destination="1bj-BM-9gp" id="nAO-DC-Kmc"/>
+                <outlet property="muteButton" destination="MRJ-sG-6VX" id="mAo-KV-4PJ"/>
+                <outlet property="panSlider" destination="nqu-lM-LFU" id="2kB-z1-Lmq"/>
+                <outlet property="presetButton" destination="Vt7-Dd-Dj2" id="8eb-oY-t2d"/>
+                <outlet property="reverbSlider" destination="dVU-h4-ehB" id="9hO-ax-x0K"/>
+                <outlet property="soloButton" destination="CRd-H7-6bk" id="qW4-vX-wU9"/>
+                <outlet property="synthButton" destination="E4Y-Lg-yud" id="0d6-YB-Y6g"/>
                 <outlet property="underLine" destination="dBZ-rb-fEQ" id="LQC-ut-D6H"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
+                <outlet property="volumeSlider" destination="jJp-BM-afA" id="YOT-i0-WM0"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
@@ -40,9 +48,6 @@
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
-                    <connections>
-                        <binding destination="-2" name="value" keyPath="mute" id="F3c-q8-TTy"/>
-                    </connections>
                 </button>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CRd-H7-6bk">
                     <rect key="frame" x="178" y="119" width="62" height="32"/>
@@ -50,9 +55,6 @@
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
-                    <connections>
-                        <binding destination="-2" name="value" keyPath="solo" id="Aa1-fP-e8z"/>
-                    </connections>
                 </button>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="HGt-5d-DJd" userLabel="SynthLabel">
                     <rect key="frame" x="12" y="100" width="39" height="17"/>
@@ -83,11 +85,6 @@
                             </items>
                         </menu>
                     </popUpButtonCell>
-                    <connections>
-                        <binding destination="VaH-Gg-hj3" name="content" keyPath="arrangedObjects" id="uiL-wo-9dX"/>
-                        <binding destination="VaH-Gg-hj3" name="contentValues" keyPath="arrangedObjects.name" previousBinding="uiL-wo-9dX" id="HZa-K8-lC2"/>
-                        <binding destination="-2" name="selectedObject" keyPath="midiSourceDescription" previousBinding="HZa-K8-lC2" id="XxY-C5-Gie"/>
-                    </connections>
                 </popUpButton>
                 <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vt7-Dd-Dj2" userLabel="Preset">
                     <rect key="frame" x="78" y="72" width="161" height="26"/>
@@ -102,11 +99,6 @@
                             </items>
                         </menu>
                     </popUpButtonCell>
-                    <connections>
-                        <binding destination="uTa-GZ-OY4" name="content" keyPath="arrangedObjects" id="TUY-M6-Fmr"/>
-                        <binding destination="uTa-GZ-OY4" name="contentValues" keyPath="arrangedObjects.selectionLabel" previousBinding="TUY-M6-Fmr" id="nf7-rF-wjB"/>
-                        <binding destination="-2" name="selectedObject" keyPath="preset" previousBinding="nf7-rF-wjB" id="Y8n-tK-ApI"/>
-                    </connections>
                 </popUpButton>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="O2Q-wV-lLf" userLabel="VolumeLabel">
                     <rect key="frame" x="12" y="55" width="43" height="17"/>
@@ -143,30 +135,18 @@
                 <slider horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jJp-BM-afA" userLabel="Volume">
                     <rect key="frame" x="12" y="38" width="53" height="21"/>
                     <sliderCell key="cell" continuous="YES" alignment="left" maxValue="127" tickMarkPosition="below" allowsTickMarkValuesOnly="YES" sliderType="linear" id="BIK-4Z-7uV"/>
-                    <connections>
-                        <binding destination="-2" name="value" keyPath="volume" id="Y3C-fO-2Vq"/>
-                    </connections>
                 </slider>
                 <slider horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nqu-lM-LFU" userLabel="Pan">
                     <rect key="frame" x="69" y="38" width="53" height="21"/>
                     <sliderCell key="cell" continuous="YES" alignment="left" minValue="-64" maxValue="64" tickMarkPosition="below" allowsTickMarkValuesOnly="YES" sliderType="linear" id="a56-JO-BGd"/>
-                    <connections>
-                        <binding destination="-2" name="value" keyPath="pan" id="Ugk-J1-Icb"/>
-                    </connections>
                 </slider>
                 <slider horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MmY-t4-WQM" userLabel="Chorus">
                     <rect key="frame" x="126" y="38" width="53" height="21"/>
                     <sliderCell key="cell" continuous="YES" alignment="left" maxValue="127" tickMarkPosition="below" allowsTickMarkValuesOnly="YES" sliderType="linear" id="lE3-iR-mkg"/>
-                    <connections>
-                        <binding destination="-2" name="value" keyPath="chorus" id="1RX-2T-X4R"/>
-                    </connections>
                 </slider>
                 <slider horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dVU-h4-ehB" userLabel="Reverb">
                     <rect key="frame" x="183" y="38" width="53" height="21"/>
                     <sliderCell key="cell" continuous="YES" alignment="left" maxValue="127" tickMarkPosition="below" allowsTickMarkValuesOnly="YES" sliderType="linear" id="fUG-wi-bKk"/>
-                    <connections>
-                        <binding destination="-2" name="value" keyPath="reverb" id="1Il-aU-vU2"/>
-                    </connections>
                 </slider>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TMz-rW-Bkt">
                     <rect key="frame" x="12" y="17" width="18" height="17"/>
@@ -196,15 +176,5 @@
             </subviews>
             <point key="canvasLocation" x="303" y="389.5"/>
         </customView>
-        <arrayController id="VaH-Gg-hj3" userLabel="Synthesizers">
-            <connections>
-                <binding destination="-2" name="contentArray" keyPath="availableDescriptions" id="d25-4T-PEM"/>
-            </connections>
-        </arrayController>
-        <arrayController id="uTa-GZ-OY4" userLabel="Presets">
-            <connections>
-                <binding destination="-2" name="contentArray" keyPath="presets" id="Ofk-kf-axq"/>
-            </connections>
-        </arrayController>
     </objects>
 </document>

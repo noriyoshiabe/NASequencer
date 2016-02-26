@@ -42,14 +42,22 @@
     _trackChannelView.channel = _channel;
     _trackChannelView.scaleAssistant = _scaleAssistant;
     _trackChannelView.trackSelection = _trackSelection;
+}
+
+- (void)viewDidAppear
+{
+    [super viewDidAppear];
+    
     _trackChannelView.sequence = _namidi.sequence;
     
     [_trackSelection addObserver:self forKeyPath:@"selectionFlags" options:0 context:NULL];
     [_namidi addObserver:self];
 }
 
-- (void)dealloc
+- (void)viewDidDisappear
 {
+    [super viewDidDisappear];
+    
     [_trackSelection removeObserver:self forKeyPath:@"selectionFlags"];
     [_namidi removeObserver:self];
 }
