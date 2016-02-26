@@ -9,11 +9,23 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+typedef enum {
+    MixerChannelStatusKindMidiSourceDescription,
+    MixerChannelStatusKindPreset,
+    MixerChannelStatusKindVolume,
+    MixerChannelStatusKindPan,
+    MixerChannelStatusKindChorusSend,
+    MixerChannelStatusKindReverbSend,
+    MixerChannelStatusKindExpressionSend,
+    MixerChannelStatusKindMute,
+    MixerChannelStatusKindSolo,
+} MixerChannelStatusKind;
+
 typedef struct _Mixer Mixer;
 typedef struct _MixerChannel MixerChannel;
 
 typedef struct _MixerObserverCallbacks {
-    void (*onChannelStatusChange)(void *receiver, MixerChannel *channel);
+    void (*onChannelStatusChange)(void *receiver, MixerChannel *channel, MixerChannelStatusKind kind);
     void (*onAvailableMidiSourceChange)(void *receiver, NAArray *descriptions);
     void (*onLevelUpdate)(void *receiver);
 } MixerObserverCallbacks;
@@ -63,3 +75,21 @@ extern void MixerChannelSetReverbSend(MixerChannel *self, int value);
 extern void MixerChannelSetExpressionSend(MixerChannel *self, int value);
 extern void MixerChannelSetMute(MixerChannel *self, bool mute);
 extern void MixerChannelSetSolo(MixerChannel *self, bool solo);
+
+static inline const char *MixerChannelStatusKind2String(MixerChannelStatusKind kind)
+{
+#define CASE(kind) case kind: return &(#kind[22])
+    switch (kind) {
+    CASE(MixerChannelStatusKindMidiSourceDescription);
+    CASE(MixerChannelStatusKindPreset);
+    CASE(MixerChannelStatusKindVolume);
+    CASE(MixerChannelStatusKindPan);
+    CASE(MixerChannelStatusKindChorusSend);
+    CASE(MixerChannelStatusKindReverbSend);
+    CASE(MixerChannelStatusKindExpressionSend);
+    CASE(MixerChannelStatusKindMute);
+    CASE(MixerChannelStatusKindSolo);
+    }
+    return "Unknown status kind";
+#undef CASE
+}

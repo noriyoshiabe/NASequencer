@@ -390,12 +390,12 @@ static void MixerAudioCallback(void *receiver, AudioSample *buffer, uint32_t cou
 
 static void _MixerNotifyChannelStatusChange(Mixer *self, Observer *observer, va_list argList)
 {
-    observer->callbacks->onChannelStatusChange(observer->receiver, va_arg(argList, MixerChannel *));
+    observer->callbacks->onChannelStatusChange(observer->receiver, va_arg(argList, MixerChannel *), va_arg(argList, MixerChannelStatusKind));
 }
 
-static void MixerNotifyChannelStatusChange(Mixer *self, MixerChannel *channel)
+static void MixerNotifyChannelStatusChange(Mixer *self, MixerChannel *channel, MixerChannelStatusKind kind)
 {
-    NAArrayTraverseWithContext(self->observers, self, _MixerNotifyChannelStatusChange, channel);
+    NAArrayTraverseWithContext(self->observers, self, _MixerNotifyChannelStatusChange, channel, kind);
 }
 
 static void _MixerNotifyAvailableMidiSourceChange(Mixer *self, Observer *observer, va_list argList)
@@ -434,7 +434,30 @@ static void MixerMidiSourceCallback(void *receiver, MidiSource *source, MidiSour
     case MidiSourceEventChangePreset:
         {
             uint8_t channel = *((uint8_t *)arg1);
-            MixerNotifyChannelStatusChange(self, NAArrayGetValueAt(self->channels, channel));
+            MixerChannel *mixerChannel = NAArrayGetValueAt(self->channels, channel - 1);
+
+            switch (event) {
+            case MidiSourceEventChangeVolume:
+                MixerNotifyChannelStatusChange(self, mixerChannel, MixerChannelStatusKindVolume);
+                break;
+            case MidiSourceEventChangePan:
+                MixerNotifyChannelStatusChange(self, mixerChannel, MixerChannelStatusKindPan);
+                break;
+            case MidiSourceEventChangeChorusSend:
+                MixerNotifyChannelStatusChange(self, mixerChannel, MixerChannelStatusKindChorusSend);
+                break;
+            case MidiSourceEventChangeReverbSend:
+                MixerNotifyChannelStatusChange(self, mixerChannel, MixerChannelStatusKindReverbSend);
+                break;
+            case MidiSourceEventChangeExpressionSend:
+                MixerNotifyChannelStatusChange(self, mixerChannel, MixerChannelStatusKindExpressionSend);
+                break;
+            case MidiSourceEventChangePreset:
+                MixerNotifyChannelStatusChange(self, mixerChannel, MixerChannelStatusKindPreset);
+                break;
+            default:
+                break;
+            }
         }
         break;
     case MidiSourceEventChangeLevelMater:
@@ -462,14 +485,7 @@ static void MixerUpdateActiveChannles(Mixer *self)
     iterator = NAArrayGetIterator(self->channels);
     while (iterator->hasNext(iterator)) {
         MixerChannel *channel = iterator->next(iterator);
-        bool active = !channel->mute && (channel->solo || !soloExists);
-        bool notify = channel->active != active;
-
-        channel->active = active;
-
-        if (notify) {
-            MixerNotifyChannelStatusChange(self, channel);
-        }
+        channel->active = !channel->mute && (channel->solo || !soloExists);
     }
 }
 
@@ -512,6 +528,8 @@ static void MixerMidiSourceManagerOnUnloadAvailableMidiSourceDescription(void *r
                 channel->description = defaultDescription;
 
                 NAMessageQPost(self->msgQ, MixerMessageAttachSource, source);
+
+                MixerNotifyChannelStatusChange(self, channel, MixerChannelStatusKindMidiSourceDescription);
             }
         }
 
@@ -607,7 +625,7 @@ void MixerChannelSetMidiSourceDescription(MixerChannel *self, MidiSourceDescript
 
     NAMessageQPost(self->mixer->msgQ, MixerMessageAttachSource, self->source);
 
-    MixerNotifyChannelStatusChange(self->mixer, self);
+    MixerNotifyChannelStatusChange(self->mixer, self, MixerChannelStatusKindMidiSourceDescription);
 }
 
 void MixerChannelSetPresetInfo(MixerChannel *self, PresetInfo *presetInfo)
@@ -643,13 +661,13 @@ void MixerChannelSetExpressionSend(MixerChannel *self, int value)
 void MixerChannelSetMute(MixerChannel *self, bool mute)
 {
     self->mute = mute;
-    MixerNotifyChannelStatusChange(self->mixer, self);
+    MixerNotifyChannelStatusChange(self->mixer, self, MixerChannelStatusKindMute);
     MixerUpdateActiveChannles(self->mixer);
 }
 
 void MixerChannelSetSolo(MixerChannel *self, bool solo)
 {
     self->solo = solo;
-    MixerNotifyChannelStatusChange(self->mixer, self);
+    MixerNotifyChannelStatusChange(self->mixer, self, MixerChannelStatusKindSolo);
     MixerUpdateActiveChannles(self->mixer);
 }
