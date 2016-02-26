@@ -27,6 +27,7 @@ struct _Mixer {
 
 struct _MixerChannel {
     int number;
+    int midiNumber;
     MidiSourceDescription *description;
     MidiSource *source;
     bool mute;
@@ -70,6 +71,7 @@ Mixer *MixerCreate(AudioOut *audioOut)
     for (int i = 0; i < 16; ++i) {
         MixerChannel *channel = calloc(1, sizeof(MixerChannel));
         channel->number = i + 1;
+        channel->midiNumber = i;
         channel->description = description;
         channel->source = source;
         channel->active = true;
@@ -80,6 +82,8 @@ Mixer *MixerCreate(AudioOut *audioOut)
     self->audioOut->registerCallback(self->audioOut, MixerAudioCallback, self);
 
     self->levelEnable = true;
+    source->setLevelEnable(source, self->levelEnable);
+    source->registerCallback(source, MixerMidiSourceCallback, self);
 
     return self;
 }
@@ -144,7 +148,7 @@ void MixerSendNoteOn(Mixer *self, NoteEvent *event)
 {
     MixerChannel *channel = NAArrayGetValueAt(self->channels, event->channel - 1);
     if (channel->active) {
-        uint8_t bytes[3] = {0x90 | (0x0F & channel->number), event->noteNo, event->velocity};
+        uint8_t bytes[3] = {0x90 | (0x0F & channel->midiNumber), event->noteNo, event->velocity};
         channel->source->send(channel->source, bytes, 3);
     }
 }
@@ -153,7 +157,7 @@ void MixerSendNoteOff(Mixer *self, NoteEvent *event)
 {
     MixerChannel *channel = NAArrayGetValueAt(self->channels, event->channel - 1);
     if (channel->active) {
-        uint8_t bytes[3] = {0x80 | (0x0F & channel->number), event->noteNo, 0};
+        uint8_t bytes[3] = {0x80 | (0x0F & channel->midiNumber), event->noteNo, 0};
         channel->source->send(channel->source, bytes, 3);
     }
 }
@@ -174,7 +178,7 @@ void MixerSendVoice(Mixer *self, VoiceEvent *event)
     if (channel->active) {
         uint8_t bytes[3];
 
-        bytes[0] = 0xB0 | (0x0F & channel->number);
+        bytes[0] = 0xB0 | (0x0F & channel->midiNumber);
         bytes[1] = 0x00;
         bytes[2] = event->msb;
         channel->source->send(channel->source, bytes, 3);
@@ -183,7 +187,7 @@ void MixerSendVoice(Mixer *self, VoiceEvent *event)
         bytes[2] = event->lsb;
         channel->source->send(channel->source, bytes, 3);
 
-        bytes[0] = 0xC0 | (0x0F & channel->number);
+        bytes[0] = 0xC0 | (0x0F & channel->midiNumber);
         bytes[1] = event->programNo;
         channel->source->send(channel->source, bytes, 2);
     }
@@ -193,7 +197,7 @@ void MixerSendVolume(Mixer *self, VolumeEvent *event)
 {
     MixerChannel *channel = NAArrayGetValueAt(self->channels, event->channel - 1);
     if (channel->active) {
-        channel->source->setVolume(channel->source, channel->number, event->value);
+        channel->source->setVolume(channel->source, channel->midiNumber, event->value);
     }
 }
 
@@ -202,7 +206,7 @@ void MixerSendPan(Mixer *self, PanEvent *event)
     MixerChannel *channel = NAArrayGetValueAt(self->channels, event->channel - 1);
     if (channel->active) {
         int value = Clip(event->value + 64, 0, 127);
-        channel->source->setPan(channel->source, channel->number, value);
+        channel->source->setPan(channel->source, channel->midiNumber, value);
     }
 }
 
@@ -210,7 +214,7 @@ void MixerSendChorus(Mixer *self, ChorusEvent *event)
 {
     MixerChannel *channel = NAArrayGetValueAt(self->channels, event->channel - 1);
     if (channel->active) {
-        channel->source->setChorusSend(channel->source, channel->number, event->value);
+        channel->source->setChorusSend(channel->source, channel->midiNumber, event->value);
     }
 }
 
@@ -218,7 +222,7 @@ void MixerSendReverb(Mixer *self, ReverbEvent *event)
 {
     MixerChannel *channel = NAArrayGetValueAt(self->channels, event->channel - 1);
     if (channel->active) {
-        channel->source->setReverbSend(channel->source, channel->number, event->value);
+        channel->source->setReverbSend(channel->source, channel->midiNumber, event->value);
     }
 }
 
@@ -226,7 +230,7 @@ void MixerSendExpression(Mixer *self, ExpressionEvent *event)
 {
     MixerChannel *channel = NAArrayGetValueAt(self->channels, event->channel - 1);
     if (channel->active) {
-        channel->source->setExpressionSend(channel->source, channel->number, event->value);
+        channel->source->setExpressionSend(channel->source, channel->midiNumber, event->value);
     }
 }
 
@@ -236,7 +240,7 @@ void MixerSendDetune(Mixer *self, DetuneEvent *event)
     if (channel->active) {
         uint8_t bytes[3];
 
-        bytes[0] = 0xB0 | (0x0F & channel->number);
+        bytes[0] = 0xB0 | (0x0F & channel->midiNumber);
 
         bytes[1] = 101;
         bytes[2] = 0;
@@ -433,8 +437,8 @@ static void MixerMidiSourceCallback(void *receiver, MidiSource *source, MidiSour
     case MidiSourceEventChangeExpressionSend:
     case MidiSourceEventChangePreset:
         {
-            uint8_t channel = *((uint8_t *)arg1);
-            MixerChannel *mixerChannel = NAArrayGetValueAt(self->channels, channel - 1);
+            uint8_t midiChannelNumber = *((uint8_t *)arg1);
+            MixerChannel *mixerChannel = NAArrayGetValueAt(self->channels, midiChannelNumber);
 
             switch (event) {
             case MidiSourceEventChangeVolume:
@@ -568,37 +572,37 @@ PresetInfo **MixerChannelGetPresetInfos(MixerChannel *self)
 
 PresetInfo *MixerChannelGetPresetInfo(MixerChannel *self)
 {
-    return self->source->getPresetInfo(self->source, self->number - 1);
+    return self->source->getPresetInfo(self->source, self->midiNumber);
 }
 
 Level MixerChannelGetLevel(MixerChannel *self)
 {
-    return self->source->getChannelLevel(self->source, self->number - 1);
+    return self->source->getChannelLevel(self->source, self->midiNumber);
 }
 
 int MixerChannelGetVolume(MixerChannel *self)
 {
-    return self->source->getVolume(self->source, self->number - 1);
+    return self->source->getVolume(self->source, self->midiNumber);
 }
 
 int MixerChannelGetPan(MixerChannel *self)
 {
-    return self->source->getPan(self->source, self->number - 1);
+    return self->source->getPan(self->source, self->midiNumber) - 64;
 }
 
 int MixerChannelGetChorusSend(MixerChannel *self)
 {
-    return self->source->getChorusSend(self->source, self->number - 1);
+    return self->source->getChorusSend(self->source, self->midiNumber);
 }
 
 int MixerChannelGetReverbSend(MixerChannel *self)
 {
-    return self->source->getReverbSend(self->source, self->number - 1);
+    return self->source->getReverbSend(self->source, self->midiNumber);
 }
 
 int MixerChannelGetExpressionSend(MixerChannel *self)
 {
-    return self->source->getExpressionSend(self->source, self->number - 1);
+    return self->source->getExpressionSend(self->source, self->midiNumber);
 }
 
 bool MixerChannelGetMute(MixerChannel *self)
@@ -629,32 +633,32 @@ void MixerChannelSetMidiSourceDescription(MixerChannel *self, MidiSourceDescript
 
 void MixerChannelSetPresetInfo(MixerChannel *self, PresetInfo *presetInfo)
 {
-    self->source->setPresetInfo(self->source, self->number, presetInfo);
+    self->source->setPresetInfo(self->source, self->midiNumber, presetInfo);
 }
 
 void MixerChannelSetVolume(MixerChannel *self, int value)
 {
-    self->source->setVolume(self->source, self->number, value);
+    self->source->setVolume(self->source, self->midiNumber, value);
 }
 
 void MixerChannelSetPan(MixerChannel *self, int value)
 {
-    self->source->setPan(self->source, self->number, value);
+    self->source->setPan(self->source, self->midiNumber, Clip(value + 64, 0, 127));
 }
 
 void MixerChannelSetChorusSend(MixerChannel *self, int value)
 {
-    self->source->setChorusSend(self->source, self->number, value);
+    self->source->setChorusSend(self->source, self->midiNumber, value);
 }
 
 void MixerChannelSetReverbSend(MixerChannel *self, int value)
 {
-    self->source->setReverbSend(self->source, self->number, value);
+    self->source->setReverbSend(self->source, self->midiNumber, value);
 }
 
 void MixerChannelSetExpressionSend(MixerChannel *self, int value)
 {
-    self->source->setExpressionSend(self->source, self->number, value);
+    self->source->setExpressionSend(self->source, self->midiNumber, value);
 }
 
 void MixerChannelSetMute(MixerChannel *self, bool mute)

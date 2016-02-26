@@ -142,24 +142,16 @@
                 </textField>
                 <slider horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jJp-BM-afA" userLabel="Volume">
                     <rect key="frame" x="12" y="38" width="53" height="21"/>
-                    <sliderCell key="cell" continuous="YES" alignment="left" maxValue="127" tickMarkPosition="below" allowsTickMarkValuesOnly="YES" sliderType="linear" id="BIK-4Z-7uV">
-                        <connections>
-                            <binding destination="-2" name="value" keyPath="volume" id="sFu-Ex-1Kd"/>
-                        </connections>
-                    </sliderCell>
+                    <sliderCell key="cell" continuous="YES" alignment="left" maxValue="127" tickMarkPosition="below" allowsTickMarkValuesOnly="YES" sliderType="linear" id="BIK-4Z-7uV"/>
                     <connections>
                         <binding destination="-2" name="value" keyPath="volume" id="Y3C-fO-2Vq"/>
                     </connections>
                 </slider>
                 <slider horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nqu-lM-LFU" userLabel="Pan">
                     <rect key="frame" x="69" y="38" width="53" height="21"/>
-                    <sliderCell key="cell" continuous="YES" alignment="left" minValue="-64" maxValue="64" tickMarkPosition="below" allowsTickMarkValuesOnly="YES" sliderType="linear" id="a56-JO-BGd">
-                        <connections>
-                            <binding destination="-2" name="value" keyPath="reverb" id="W4Y-n1-uV9"/>
-                        </connections>
-                    </sliderCell>
+                    <sliderCell key="cell" continuous="YES" alignment="left" minValue="-64" maxValue="64" tickMarkPosition="below" allowsTickMarkValuesOnly="YES" sliderType="linear" id="a56-JO-BGd"/>
                     <connections>
-                        <binding destination="-2" name="value" keyPath="pan" id="dKc-QV-VLh"/>
+                        <binding destination="-2" name="value" keyPath="pan" id="Ugk-J1-Icb"/>
                     </connections>
                 </slider>
                 <slider horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MmY-t4-WQM" userLabel="Chorus">
@@ -173,7 +165,7 @@
                     <rect key="frame" x="183" y="38" width="53" height="21"/>
                     <sliderCell key="cell" continuous="YES" alignment="left" maxValue="127" tickMarkPosition="below" allowsTickMarkValuesOnly="YES" sliderType="linear" id="fUG-wi-bKk"/>
                     <connections>
-                        <binding destination="-2" name="value" keyPath="reverb" id="Ixh-Dq-p06"/>
+                        <binding destination="-2" name="value" keyPath="reverb" id="1Il-aU-vU2"/>
                     </connections>
                 </slider>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TMz-rW-Bkt">

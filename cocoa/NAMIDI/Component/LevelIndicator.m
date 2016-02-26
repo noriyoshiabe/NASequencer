@@ -36,7 +36,7 @@
     CGContextRef ctx = [NSGraphicsContext currentContext].graphicsPort;
     CGContextSetLineWidth(ctx, 2.0);
     
-    int level = (_intValue + 1000) / 20;
+    int level = (MAX(-500, _intValue) + 500) / 10;
     CGFloat xPerLevel = self.bounds.size.width / 50.0;
     CGFloat height = self.bounds.size.height;
     

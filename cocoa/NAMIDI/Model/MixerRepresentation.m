@@ -148,7 +148,7 @@
 
 - (void)setPreset:(PresetRepresentation *)preset
 {
-    MixerChannelSetPresetInfo(_raw, _preset.raw);
+    MixerChannelSetPresetInfo(_raw, preset.raw);
 }
 
 - (void)setVolume:(int)volume

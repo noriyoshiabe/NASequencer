@@ -25,7 +25,9 @@
 {
     self = [super init];
     if (self) {
-        self.controllers = [NSMutableArray array];
+        _controllers = [NSMutableArray array];
+        _L = -1440;
+        _R = -1440;
     }
     return self;
 }

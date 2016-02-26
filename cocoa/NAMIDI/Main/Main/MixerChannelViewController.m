@@ -39,6 +39,8 @@
 {
     _channel = channel;
     _mixerChannel = _mixer.channels[channel - 1];
+    _L = -1440;
+    _R = -1440;
 }
 
 - (void)viewDidLoad
