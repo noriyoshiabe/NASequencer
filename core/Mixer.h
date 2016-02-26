@@ -38,6 +38,7 @@ extern void MixerRemoveObserver(Mixer *self, void *receiver);
 extern void MixerSendNoteOn(Mixer *self, NoteEvent *event);
 extern void MixerSendNoteOff(Mixer *self, NoteEvent *event);
 extern void MixerSendAllNoteOff(Mixer *self);
+extern void MixerSendAllSoundOff(Mixer *self, int midiChannelNumber);
 extern void MixerSendVoice(Mixer *self, VoiceEvent *event);
 extern void MixerSendVolume(Mixer *self, VolumeEvent *event);
 extern void MixerSendPan(Mixer *self, PanEvent *event);

@@ -172,6 +172,13 @@ void MixerSendAllNoteOff(Mixer *self)
     }
 }
 
+void MixerSendAllSoundOff(Mixer *self, int midiChannelNumber)
+{
+    uint8_t bytes[3] = {0xB0 | midiChannelNumber, 0x78, 0x00};
+    MixerChannel *channel = NAArrayGetValueAt(self->channels, midiChannelNumber);
+    channel->source->send(channel->source, bytes, 3);
+}
+
 void MixerSendVoice(Mixer *self, VoiceEvent *event)
 {
     MixerChannel *channel = NAArrayGetValueAt(self->channels, event->channel - 1);
@@ -489,7 +496,11 @@ static void MixerUpdateActiveChannles(Mixer *self)
     iterator = NAArrayGetIterator(self->channels);
     while (iterator->hasNext(iterator)) {
         MixerChannel *channel = iterator->next(iterator);
-        channel->active = !channel->mute && (channel->solo || !soloExists);
+        bool active = !channel->mute && (channel->solo || !soloExists);
+        if (channel->active && !active) {
+            MixerSendAllSoundOff(self, channel->midiNumber);
+        }
+        channel->active = active;
     }
 }
 
