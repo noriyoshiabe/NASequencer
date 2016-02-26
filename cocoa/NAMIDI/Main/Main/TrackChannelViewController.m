@@ -105,7 +105,7 @@
 
 - (BOOL)isFlipped
 {
-    return YES;
+    return NO;
 }
 
 - (void)setBaseColor:(NSColor *)baseColor
@@ -221,14 +221,17 @@
     CGFloat measureOffset = _scaleAssistant.measureOffset;
     
     ChannelRepresentation *channel = _sequence.channels[_channel - 1];
-    CGFloat heightPerKey = (self.bounds.size.height - NOTE_OFFSET_Y * 2) / (channel.noteRange.high - channel.noteRange.low);
+    
+    CGFloat centerY = CGRectGetMidY(self.bounds);
+    CGFloat heightPerKey = (self.bounds.size.height - NOTE_OFFSET_Y * 2) / MAX(12.0, channel.noteRange.high - channel.noteRange.low);
+    int centerNoteNo = (channel.noteRange.high + channel.noteRange.low) / 2;
     
     for (MidiEventRepresentation *event in channel.events) {
         if (MidiEventTypeNote == event.type) {
             NoteEvent *note = (NoteEvent *)event.raw;
             CGFloat left = round(note->tick * pixelPerTick) + measureOffset;
             CGFloat right = left + round(note->gatetime * pixelPerTick);
-            CGFloat y = floor(self.bounds.size.height - NOTE_OFFSET_Y - heightPerKey * (note->noteNo - channel.noteRange.low)) + 0.5;
+            CGFloat y = floor(centerY + heightPerKey * (note->noteNo - centerNoteNo)) + 0.5;
             if (CGRectContainsPoint(dirtyRect, CGPointMake(left, y)) || CGRectContainsPoint(dirtyRect, CGPointMake(right, y))) {
                 CGContextMoveToPoint(ctx, left, y);
                 CGContextAddLineToPoint(ctx, right, y);
