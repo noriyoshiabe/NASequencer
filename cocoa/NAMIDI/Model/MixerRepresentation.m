@@ -99,6 +99,11 @@
     return _description;
 }
 
+- (PresetRepresentation *)preset
+{
+    return _preset;
+}
+
 - (Level)level
 {
     return MixerChannelGetLevel(_raw);
@@ -132,6 +137,11 @@
 - (bool)solo
 {
     return MixerChannelGetSolo(_raw);
+}
+
+- (void)setDescription:(MidiSourceDescriptionRepresentation *)description
+{
+    MixerChannelSetMidiSourceDescription(_raw, description.raw);
 }
 
 - (void)setPreset:(PresetRepresentation *)preset
@@ -241,7 +251,9 @@ static MixerObserverCallbacks callbacks = {onChannelStatusChange, onAvailableMid
     
     [NSThread performBlockOnMainThread:^{
         for (id<MixerRepresentationObserver> observer in _observers) {
-            [observer mixer:self onChannelStatusChange:__channel];
+            if ([observer respondsToSelector:@selector(mixer:onChannelStatusChange:)]) {
+                [observer mixer:self onChannelStatusChange:__channel];
+            }
         }
     }];
 }
@@ -252,7 +264,9 @@ static MixerObserverCallbacks callbacks = {onChannelStatusChange, onAvailableMid
     
     [NSThread performBlockOnMainThread:^{
         for (id<MixerRepresentationObserver> observer in _observers) {
-            [observer mixer:self onAvailableMidiSourceChange:availableDescriptions];
+            if ([observer respondsToSelector:@selector(mixer:onAvailableMidiSourceChange:)]) {
+                [observer mixer:self onAvailableMidiSourceChange:availableDescriptions];
+            }
         }
     }];
 }
@@ -261,7 +275,9 @@ static MixerObserverCallbacks callbacks = {onChannelStatusChange, onAvailableMid
 {
     [NSThread performBlockOnMainThread:^{
         for (id<MixerRepresentationObserver> observer in _observers) {
-            [observer mixerOnLevelUpdate:self];
+            if ([observer respondsToSelector:@selector(mixerOnLevelUpdate:)]) {
+                [observer mixerOnLevelUpdate:self];
+            }
         }
     }];
 }

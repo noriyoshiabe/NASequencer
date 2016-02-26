@@ -70,7 +70,6 @@
 		02633E981C74AC9F00B9FF0E /* Color.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633E971C74AC9F00B9FF0E /* Color.m */; };
 		02633EB81C74ED9300B9FF0E /* NSView+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EB71C74ED9200B9FF0E /* NSView+Support.m */; };
 		02633EBC1C75062300B9FF0E /* LevelIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EBB1C75062300B9FF0E /* LevelIndicator.m */; };
-		02633EBF1C75B09F00B9FF0E /* Stub.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EBE1C75B09F00B9FF0E /* Stub.m */; };
 		026D42D61C7ABC08000267AD /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 026D42B21C7ABC08000267AD /* DetailViewController.m */; };
 		026D42D71C7ABC08000267AD /* DetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 026D42B31C7ABC08000267AD /* DetailViewController.xib */; };
 		026D42D81C7ABC08000267AD /* EventListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 026D42B51C7ABC08000267AD /* EventListViewController.m */; };
@@ -236,8 +235,6 @@
 		02633EB71C74ED9200B9FF0E /* NSView+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSView+Support.m"; sourceTree = "<group>"; };
 		02633EBA1C75062300B9FF0E /* LevelIndicator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LevelIndicator.h; sourceTree = "<group>"; };
 		02633EBB1C75062300B9FF0E /* LevelIndicator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LevelIndicator.m; sourceTree = "<group>"; };
-		02633EBD1C75B08400B9FF0E /* Stub.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Stub.h; sourceTree = "<group>"; };
-		02633EBE1C75B09F00B9FF0E /* Stub.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Stub.m; sourceTree = "<group>"; };
 		026D42B11C7ABC08000267AD /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
 		026D42B21C7ABC08000267AD /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
 		026D42B31C7ABC08000267AD /* DetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DetailViewController.xib; sourceTree = "<group>"; };
@@ -591,8 +588,6 @@
 				028209261C70A5D8003EBCFB /* FileRepresentation.m */,
 				02633E961C74AC9F00B9FF0E /* Color.h */,
 				02633E971C74AC9F00B9FF0E /* Color.m */,
-				02633EBD1C75B08400B9FF0E /* Stub.h */,
-				02633EBE1C75B09F00B9FF0E /* Stub.m */,
 				025FAF751C7E32B500E4C3B3 /* MidiEventRepresentation.h */,
 				025FAF761C7E32B500E4C3B3 /* MidiEventRepresentation.m */,
 				025FAF7B1C7E34ED00E4C3B3 /* SequenceRepresentation.h */,
@@ -803,7 +798,6 @@
 				02A973C51C798B6100C21B8E /* NSColor+Support.m in Sources */,
 				025FAF931C7F182700E4C3B3 /* NSThread+Support.m in Sources */,
 				024A5B2E1C69FFD90079D22C /* WelcomeWindowController.m in Sources */,
-				02633EBF1C75B09F00B9FF0E /* Stub.m in Sources */,
 				025FAF801C7E469A00E4C3B3 /* PlayerRepresentation.m in Sources */,
 				020CF86C1C6AF4D90025DF84 /* SynthesizerViewController.m in Sources */,
 				0216EDFC1C7ADA09009A7B90 /* PianoRollViewController.m in Sources */,

@@ -10,7 +10,7 @@
 #import "MixerChannelViewController.h"
 #import "LevelIndicator.h"
 
-@interface MixerViewController () <NAMidiRepresentationObserver>
+@interface MixerViewController () <NAMidiRepresentationObserver, MixerRepresentationObserver>
 @property (strong) IBOutlet NSView *masterChannelView;
 @property (weak) IBOutlet LevelIndicator *indicatorL;
 @property (weak) IBOutlet LevelIndicator *indicatorR;
@@ -26,9 +26,6 @@
     self = [super init];
     if (self) {
         self.controllers = [NSMutableArray array];
-        
-        _L = -200;
-        _R = -200;
     }
     return self;
 }
@@ -42,6 +39,7 @@
     
     for (int i = 0; i < 16; ++i) {
         MixerChannelViewController *channelVC = [[MixerChannelViewController alloc] init];
+        channelVC.mixer = _namidi.mixer;
         channelVC.channel = i + 1;
         [_controllers addObject:channelVC];
         [self.view addSubview:channelVC.view];
@@ -50,6 +48,7 @@
     [self.view addSubview:_masterChannelView];
     
     [_namidi addObserver:self];
+    [_namidi.mixer addObserver:self];
     
     [self layout];
 }
@@ -57,6 +56,7 @@
 - (void)dealloc
 {
     [_namidi removeObserver:self];
+    [_namidi.mixer removeObserver:self];
 }
 
 - (void)layout
@@ -98,6 +98,14 @@
 - (void)namidiDidParse:(NAMidiRepresentation *)namidi sequence:(SequenceRepresentation *)sequence parseInfo:(ParseInfoRepresentation *)parseInfo
 {
     [self layout];
+}
+
+#pragma mark MixerRepresentationObserver
+
+- (void)mixerOnLevelUpdate:(MixerRepresentation *)mixer
+{
+    self.L = mixer.level.L;
+    self.R = mixer.level.R;
 }
 
 @end

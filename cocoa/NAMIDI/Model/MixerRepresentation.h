@@ -18,9 +18,9 @@
 
 @interface MixerChannelRepresentation : NSObject
 @property (readonly, nonatomic) int number;
-@property (readonly, nonatomic) MidiSourceDescriptionRepresentation *description;
 @property (readonly, nonatomic) NSArray<PresetRepresentation *> *presets;
 @property (readonly, nonatomic) Level level;
+@property (strong, nonatomic) MidiSourceDescriptionRepresentation *description;
 @property (strong, nonatomic) PresetRepresentation *preset;
 @property (assign, nonatomic) int volume;
 @property (assign, nonatomic) int pan;
@@ -32,6 +32,7 @@
 
 @class MixerRepresentation;
 @protocol MixerRepresentationObserver <NSObject>
+@optional
 - (void)mixer:(MixerRepresentation *)mixer onChannelStatusChange:(MixerChannelRepresentation *)channel;
 - (void)mixer:(MixerRepresentation *)mixer onAvailableMidiSourceChange:(NSArray<MidiSourceDescriptionRepresentation *> *)descriptions;
 - (void)mixerOnLevelUpdate:(MixerRepresentation *)mixer;

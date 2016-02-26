@@ -9,11 +9,9 @@
 #import "MixerChannelViewController.h"
 #import "LevelIndicator.h"
 #import "Color.h"
-#import "Stub.h"
 
 @interface MixerChannelViewController () {
-    NSMutableArray *_midiSources;
-    NSArray *_presets;
+    MixerChannelRepresentation *_mixerChannel;
 }
 
 @property (weak) IBOutlet LevelIndicator *indicatorL;
@@ -29,39 +27,18 @@
 @property (assign, nonatomic) int L;
 @property (assign, nonatomic) int R;
 
-@property (strong, nonatomic) MidiSourceRepresentation *midiSource;
-@property (strong, nonatomic) PresetRepresentation *preset;
+@property (readonly, nonatomic) NSArray<MidiSourceDescriptionRepresentation *> *availableDescriptions;
+@property (readonly, nonatomic) MidiSourceDescriptionRepresentation *description;
+@property (readonly, nonatomic) NSArray<PresetRepresentation *> *presets;
+@property (readonly, nonatomic) PresetRepresentation *preset;
 @end
 
 @implementation MixerChannelViewController
 
-- (instancetype)init
+- (void)setChannel:(int)channel
 {
-    self = [super init];
-    if (self) {
-        // TODO
-        
-        _midiSources = [@[
-                         [[MidiSourceRepresentation alloc] init],
-                         [[MidiSourceRepresentation alloc] init],
-                         [[MidiSourceRepresentation alloc] init],
-                         ] mutableCopy];
-        
-        _midiSource = _midiSources.firstObject;
-        
-        _presets = @[
-                     [[PresetRepresentation alloc] init],
-                     [[PresetRepresentation alloc] init],
-                     [[PresetRepresentation alloc] init],
-                     ];
-        
-        _preset = _presets.firstObject;
-        
-        _L = -300;
-        _R = -300;
-        
-    }
-    return self;
+    _channel = channel;
+    _mixerChannel = _mixer.channels[channel - 1];
 }
 
 - (void)viewDidLoad
@@ -72,6 +49,56 @@
     
     [_indicatorL bind:@"intValue" toObject:self withKeyPath:@"L" options:nil];
     [_indicatorR bind:@"intValue" toObject:self withKeyPath:@"R" options:nil];
+}
+
+- (NSArray<MidiSourceDescriptionRepresentation *> *)availableDescriptions
+{
+    return [MidiSourceManagerRepresentation sharedInstance].availableDescriptions;
+}
+
+- (MidiSourceDescriptionRepresentation *)description
+{
+    return _mixerChannel.description;
+}
+
+- (NSArray<PresetRepresentation *> *)presets
+{
+    return _mixerChannel.presets;
+}
+
+- (PresetRepresentation *)preset
+{
+    return _mixerChannel.preset;
+}
+
+- (bool)mute
+{
+    return _mixerChannel.mute;
+}
+
+- (bool)solo
+{
+    return _mixerChannel.solo;
+}
+
+- (int)volume
+{
+    return _mixerChannel.volume;
+}
+
+- (int)pan
+{
+    return _mixerChannel.pan;
+}
+
+- (int)chorus
+{
+    return _mixerChannel.chorus;
+}
+
+- (int)reverb
+{
+    return _mixerChannel.reverb;
 }
 
 - (void)setMute:(bool)mute

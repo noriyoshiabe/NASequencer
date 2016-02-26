@@ -44,6 +44,7 @@ static NAMidiObserverCallbacks callbacks = {onBeforeParse, onParseFinish};
         NAMidiAddObserver(_namidi, (__bridge void *)self, &callbacks);
         
         _player = [[PlayerRepresentation alloc] initWithPlayer:NAMidiGetPlayer(_namidi)];
+        _mixer = [[MixerRepresentation alloc] initWithMixer:NAMidiGetMixer(_namidi)];
     }
     return self;
 }

@@ -7,9 +7,9 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "NAMidiRepresentation.h"
+#import "MixerRepresentation.h"
 
 @interface MixerChannelViewController : NSViewController
+@property (strong, nonatomic) MixerRepresentation *mixer;
 @property (assign, nonatomic) int channel;
-@property (strong, nonatomic) NAMidiRepresentation *namidi;
 @end
