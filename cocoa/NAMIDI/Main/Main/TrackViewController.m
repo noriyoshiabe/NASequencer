@@ -121,7 +121,7 @@
     
     for (int i = 0; i < 16; ++i) {
         TrackChannelViewController *channelVC = _controllers[i];
-        if (CGRectContainsPoint(channelVC.view.frame, point)) {
+        if (!channelVC.view.hidden && CGRectContainsPoint(channelVC.view.frame, point)) {
             [_trackSelection click:channelVC.channel event:theEvent];
             return;
         }
