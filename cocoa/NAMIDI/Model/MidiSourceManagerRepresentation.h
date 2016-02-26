@@ -14,6 +14,7 @@
 @property (readonly, nonatomic) NSString *filepath;
 @property (readonly, nonatomic) BOOL available;
 @property (readonly, nonatomic) MidiSourceDescriptionError error;
+@property (readonly, nonatomic) MidiSourceDescription *raw;
 @end
 
 @class MidiSourceManagerRepresentation;
@@ -26,8 +27,8 @@
 @end
 
 @interface MidiSourceManagerRepresentation : NSObject
-@property (readonly, nonatomic) NSArray *descriptions;
-@property (readonly, nonatomic) NSArray *availableDescriptions;
+@property (readonly, nonatomic) NSArray<MidiSourceDescriptionRepresentation *> *descriptions;
+@property (readonly, nonatomic) NSArray<MidiSourceDescriptionRepresentation *> *availableDescriptions;
 + (MidiSourceManagerRepresentation *)sharedInstance;
 - (void)addObserver:(id<MidiSourceManagerRepresentationObserver>)observer;
 - (void)removeObserver:(id<MidiSourceManagerRepresentationObserver>)observer;

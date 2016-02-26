@@ -10,7 +10,6 @@
 
 @interface MidiSourceDescriptionRepresentation ()
 - (instancetype)initWithMidiSourceDescription:(MidiSourceDescription *)description;
-@property (readonly, nonatomic) MidiSourceDescription *raw;
 @end
 
 @implementation MidiSourceDescriptionRepresentation
