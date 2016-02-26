@@ -59,11 +59,10 @@ static PlayerObserverCallbacks callbacks = {onNotifyClock, onNotifyEvent, onSend
     return self;
 }
 
-- (void)dealloc
+- (void)finalize
 {
     if(_player) {
         PlayerRemoveObserver(_player, (__bridge void *)self);
-        PlayerDestroy(_player);
     }
 }
 

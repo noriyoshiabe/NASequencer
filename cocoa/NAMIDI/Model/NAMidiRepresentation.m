@@ -9,6 +9,14 @@
 #import "NAMidiRepresentation.h"
 #import "NAMidi.h"
 
+@interface PlayerRepresentation (Finalize)
+- (void)finalize;
+@end
+
+@interface MixerRepresentation (Finalize)
+- (void)finalize;
+@end
+
 @interface NAMidiRepresentation () {
     NAMidi *_namidi;
     NSHashTable *_observers;
@@ -52,6 +60,9 @@ static NAMidiObserverCallbacks callbacks = {onBeforeParse, onParseFinish};
 - (void)dealloc
 {
     if(_namidi) {
+        [_player finalize];
+        [_mixer finalize];
+        
         NAMidiRemoveObserver(_namidi, (__bridge void *)self);
         NAMidiDestroy(_namidi);
     }

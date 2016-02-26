@@ -235,9 +235,11 @@ static MixerObserverCallbacks callbacks = {onChannelStatusChange, onAvailableMid
     
 }
 
-- (void)dealloc
+- (void)finalize
 {
-    MixerRemoveObserver(_mixer, (__bridge void *)self);
+    if (_mixer) {
+        MixerRemoveObserver(_mixer, (__bridge void *)self);
+    }
 }
 
 - (void)addObserver:(id<MixerRepresentationObserver>)observer
