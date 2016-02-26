@@ -138,11 +138,13 @@ static MidiSourceManagerRepresentation *_sharedInstance = nil;
     MidiSourceDescriptionRepresentation *_description = [[MidiSourceDescriptionRepresentation alloc] initWithMidiSourceDescription:description];
     [_descriptions addObject:_description];
     
-    for (id<MidiSourceManagerRepresentationObserver> observer in _observers) {
-        if ([observer respondsToSelector:@selector(midiSourceManager:onLoadMidiSourceDescription:)]) {
-            [observer midiSourceManager:self onLoadMidiSourceDescription:_description];
+    [NSThread performBlockOnMainThread:^{
+        for (id<MidiSourceManagerRepresentationObserver> observer in _observers) {
+            if ([observer respondsToSelector:@selector(midiSourceManager:onLoadMidiSourceDescription:)]) {
+                [observer midiSourceManager:self onLoadMidiSourceDescription:_description];
+            }
         }
-    }
+    }];
 }
 
 - (void)onLoadAvailableMidiSourceDescription:(MidiSourceDescription *)description
@@ -150,11 +152,13 @@ static MidiSourceManagerRepresentation *_sharedInstance = nil;
     MidiSourceDescriptionRepresentation *_description = [[MidiSourceDescriptionRepresentation alloc] initWithMidiSourceDescription:description];
     [_availableDescriptions addObject:_description];
     
-    for (id<MidiSourceManagerRepresentationObserver> observer in _observers) {
-        if ([observer respondsToSelector:@selector(midiSourceManager:onLoadAvailableMidiSourceDescription:)]) {
-            [observer midiSourceManager:self onLoadAvailableMidiSourceDescription:_description];
+    [NSThread performBlockOnMainThread:^{
+        for (id<MidiSourceManagerRepresentationObserver> observer in _observers) {
+            if ([observer respondsToSelector:@selector(midiSourceManager:onLoadAvailableMidiSourceDescription:)]) {
+                [observer midiSourceManager:self onLoadAvailableMidiSourceDescription:_description];
+            }
         }
-    }
+    }];
 }
 
 - (void)onUnloadMidiSourceDescription:(MidiSourceDescription *)description
@@ -162,11 +166,13 @@ static MidiSourceManagerRepresentation *_sharedInstance = nil;
     MidiSourceDescriptionRepresentation *_description = [[MidiSourceDescriptionRepresentation alloc] initWithMidiSourceDescription:description];
     [_descriptions removeObject:_description];
     
-    for (id<MidiSourceManagerRepresentationObserver> observer in _observers) {
-        if ([observer respondsToSelector:@selector(midiSourceManager:onUnloadMidiSourceDescription:)]) {
-            [observer midiSourceManager:self onUnloadMidiSourceDescription:_description];
+    [NSThread performBlockOnMainThread:^{
+        for (id<MidiSourceManagerRepresentationObserver> observer in _observers) {
+            if ([observer respondsToSelector:@selector(midiSourceManager:onUnloadMidiSourceDescription:)]) {
+                [observer midiSourceManager:self onUnloadMidiSourceDescription:_description];
+            }
         }
-    }
+    }];
 }
 
 - (void)onUnloadAvailableMidiSourceDescription:(MidiSourceDescription *)description
@@ -174,11 +180,13 @@ static MidiSourceManagerRepresentation *_sharedInstance = nil;
     MidiSourceDescriptionRepresentation *_description = [[MidiSourceDescriptionRepresentation alloc] initWithMidiSourceDescription:description];
     [_availableDescriptions removeObject:_description];
     
-    for (id<MidiSourceManagerRepresentationObserver> observer in _observers) {
-        if ([observer respondsToSelector:@selector(midiSourceManager:onUnloadAvailableMidiSourceDescription:)]) {
-            [observer midiSourceManager:self onUnloadAvailableMidiSourceDescription:_description];
+    [NSThread performBlockOnMainThread:^{
+        for (id<MidiSourceManagerRepresentationObserver> observer in _observers) {
+            if ([observer respondsToSelector:@selector(midiSourceManager:onUnloadAvailableMidiSourceDescription:)]) {
+                [observer midiSourceManager:self onUnloadAvailableMidiSourceDescription:_description];
+            }
         }
-    }
+    }];
 }
 
 @end

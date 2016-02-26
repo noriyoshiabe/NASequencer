@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "MidiSourceManagerRepresentation.h"
+#import "Mixer.h"
 
 @interface PresetRepresentation : NSObject
 @property (readonly, nonatomic) NSString *name;
@@ -37,7 +38,9 @@
 @end
 
 @interface MixerRepresentation : NSObject
+@property (readonly, nonatomic) NSArray<MixerChannelRepresentation *> *channels;
 @property (readonly, nonatomic) Level level;
+- (instancetype)initWithMixer:(Mixer *)mixer;
 - (void)addObserver:(id<MixerRepresentationObserver>)observer;
 - (void)removeObserver:(id<MixerRepresentationObserver>)observer;
 @end

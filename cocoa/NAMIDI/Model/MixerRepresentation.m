@@ -7,7 +7,6 @@
 //
 
 #import "MixerRepresentation.h"
-#import "Mixer.h"
 
 @interface PresetRepresentation ()
 - (instancetype)initWithPresetInfo:(PresetInfo *)presetInfo;
@@ -172,6 +171,99 @@
 
 @end
 
+@interface MixerRepresentation () {
+    Mixer *_mixer;
+    NSHashTable *_observers;
+    NSMutableArray<MixerChannelRepresentation *> *_channels;
+}
+- (void)onChannelStatusChange:(MixerChannel *)channel;
+- (void)onAvailableMidiSourceChange:(NAArray *)descriptions;
+- (void)onLevelUpdate;
+@end
+
+static void onChannelStatusChange(void *receiver, MixerChannel *channel)
+{
+    MixerRepresentation *mixer = (__bridge MixerRepresentation *)receiver;
+    [mixer onChannelStatusChange:channel];
+}
+
+static void onAvailableMidiSourceChange(void *receiver, NAArray *descriptions)
+{
+    MixerRepresentation *mixer = (__bridge MixerRepresentation *)receiver;
+    [mixer onAvailableMidiSourceChange:descriptions];
+}
+
+static void onLevelUpdate(void *receiver)
+{
+    MixerRepresentation *mixer = (__bridge MixerRepresentation *)receiver;
+    [mixer onLevelUpdate];
+}
+
+static MixerObserverCallbacks callbacks = {onChannelStatusChange, onAvailableMidiSourceChange, onLevelUpdate};
+
 @implementation MixerRepresentation
+
+- (instancetype)initWithMixer:(Mixer *)mixer
+{
+    self = [super init];
+    if (self) {
+        _mixer = mixer;
+        _observers = [NSHashTable weakObjectsHashTable];
+        _channels = [NSMutableArray array];
+        
+        NAArray *channels = MixerGetChannels(_mixer);
+        NAIterator *iterator = NAArrayGetIterator(channels);
+        while (iterator->hasNext(iterator)) {
+            [_channels addObject:[[MixerChannelRepresentation alloc] initWithMixerChannel:iterator->next(iterator)]];
+        }
+    }
+    return self;
+}
+
+- (void)addObserver:(id<MixerRepresentationObserver>)observer
+{
+    [_observers addObject:observer];
+}
+
+- (void)removeObserver:(id<MixerRepresentationObserver>)observer
+{
+    [_observers removeObject:observer];
+}
+
+- (Level)level
+{
+    return MixerGetLevel(_mixer);
+}
+
+- (void)onChannelStatusChange:(MixerChannel *)channel
+{
+    MixerChannelRepresentation *__channel = _channels[MixerChannelGetNumber(channel) - 1];
+    
+    [NSThread performBlockOnMainThread:^{
+        for (id<MixerRepresentationObserver> observer in _observers) {
+            [observer mixer:self onChannelStatusChange:__channel];
+        }
+    }];
+}
+
+- (void)onAvailableMidiSourceChange:(NAArray *)descriptions
+{
+    NSArray<MidiSourceDescriptionRepresentation *> *availableDescriptions = [MidiSourceManagerRepresentation sharedInstance].availableDescriptions;
+    
+    [NSThread performBlockOnMainThread:^{
+        for (id<MixerRepresentationObserver> observer in _observers) {
+            [observer mixer:self onAvailableMidiSourceChange:availableDescriptions];
+        }
+    }];
+}
+
+- (void)onLevelUpdate
+{
+    [NSThread performBlockOnMainThread:^{
+        for (id<MixerRepresentationObserver> observer in _observers) {
+            [observer mixerOnLevelUpdate:self];
+        }
+    }];
+}
 
 @end
