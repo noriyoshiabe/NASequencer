@@ -424,6 +424,12 @@ static void PlayerScanEvents(Player *self, int32_t prevTick, int32_t tick)
                 case MidiEventTypeSynth:
                     MixerSendSynth(self->mixer, (SynthEvent *)event);
                     break;
+                case MidiEventTypeTempo:
+                    PlayerTriggerEvent(self, PlayerEventTempoChange);
+                    break;
+                case MidiEventTypeTime:
+                    PlayerTriggerEvent(self, PlayerEventTimeSignChange);
+                    break;
                 default:
                     break;
                 }

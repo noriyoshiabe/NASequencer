@@ -9,7 +9,7 @@
 #import "TrackViewController.h"
 #import "TrackChannelViewController.h"
 
-@interface TrackViewController ()
+@interface TrackViewController () <NAMidiRepresentationObserver>
 @property (strong) IBOutlet NSView *masterTrackView;
 @property (strong, nonatomic) NSMutableArray *controllers;
 @end
@@ -42,6 +42,7 @@
     [self.view addSubview:_masterTrackView];
     
     [_scaleAssistant addObserver:self forKeyPath:@"scale" options:0 context:NULL];
+    [_namidi addObserver:self];
     
     [self layout];
 }
@@ -49,6 +50,7 @@
 - (void)dealloc
 {
     [_scaleAssistant removeObserver:self forKeyPath:@"scale"];
+    [_namidi removeObserver:self];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context
@@ -68,14 +70,13 @@
 
 - (void)layout
 {
+    CGFloat width = _scaleAssistant.pixelPerTick * _namidi.sequence.length + _scaleAssistant.measureOffset * 2;
     CGFloat height = 0;
-    CGFloat width = 0;
     
     for (int i = 0; i < 16; ++i) {
         if (_namidi.sequence.channels[i].exist) {
             TrackChannelViewController *channelVC = _controllers[i];
             height += channelVC.view.frame.size.height;
-            width = MAX(width, channelVC.view.frame.size.width);
         }
     }
     
@@ -120,6 +121,13 @@
     }
     
     [_trackSelection click:-1 event:theEvent];
+}
+
+#pragma mark NAMidiRepresentationObserver
+
+- (void)namidiDidParse:(NAMidiRepresentation *)namidi sequence:(SequenceRepresentation *)sequence parseInfo:(ParseInfoRepresentation *)parseInfo
+{
+    [self layout];
 }
 
 @end

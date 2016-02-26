@@ -26,7 +26,7 @@
 @property (strong, nonatomic) NSColor *measureNoColor;
 @end
 
-@interface MeasureViewController ()
+@interface MeasureViewController () <NAMidiRepresentationObserver>
 @property (strong, nonatomic) IBOutlet MeasureView *measureView;
 @end
 
@@ -56,11 +56,13 @@
     _measureView.measureNoColor = _measureNoColor;
     
     [_scaleAssistant addObserver:self forKeyPath:@"scale" options:0 context:NULL];
+    [_namidi addObserver:self];
 }
 
 - (void)dealloc
 {
     [_scaleAssistant removeObserver:self forKeyPath:@"scale"];
+    [_namidi removeObserver:self];
 }
 
 - (void)scrollWheel:(NSEvent *)theEvent
@@ -90,6 +92,13 @@
     // TODO move measure
 }
 
+#pragma mark NAMidiRepresentationObserver
+
+- (void)namidiDidParse:(NAMidiRepresentation *)namidi sequence:(SequenceRepresentation *)sequence parseInfo:(ParseInfoRepresentation *)parseInfo
+{
+    _measureView.sequence = sequence;
+}
+
 @end
 
 @implementation MeasureView
@@ -112,7 +121,9 @@
 - (void)setSequence:(SequenceRepresentation *)sequence
 {
     _sequence = sequence;
-    [self layout];
+    
+    self.needsLayout = YES;
+    self.needsDisplay = YES;
 }
 
 - (void)layout

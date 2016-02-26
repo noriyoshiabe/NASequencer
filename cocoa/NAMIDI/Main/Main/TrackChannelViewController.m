@@ -29,7 +29,7 @@
 @property (strong, nonatomic) SequenceRepresentation *sequence;
 @end
 
-@interface TrackChannelViewController ()
+@interface TrackChannelViewController ()  <NAMidiRepresentationObserver>
 @property (strong) IBOutlet TrackChannelView *trackChannelView;
 @end
 
@@ -45,11 +45,13 @@
     _trackChannelView.sequence = _namidi.sequence;
     
     [_trackSelection addObserver:self forKeyPath:@"selectionFlags" options:0 context:NULL];
+    [_namidi addObserver:self];
 }
 
 - (void)dealloc
 {
     [_trackSelection removeObserver:self forKeyPath:@"selectionFlags"];
+    [_namidi removeObserver:self];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context
@@ -59,6 +61,13 @@
             _trackChannelView.needsDisplay = YES;
         }
     }
+}
+
+#pragma mark NAMidiRepresentationObserver
+
+- (void)namidiDidParse:(NAMidiRepresentation *)namidi sequence:(SequenceRepresentation *)sequence parseInfo:(ParseInfoRepresentation *)parseInfo
+{
+    _trackChannelView.sequence = sequence;
 }
 
 @end
@@ -144,7 +153,9 @@
 - (void)setSequence:(SequenceRepresentation *)sequence
 {
     _sequence = sequence;
-    [self layout];
+    
+    self.needsLayout = YES;
+    self.needsDisplay = YES;
 }
 
 - (void)layout

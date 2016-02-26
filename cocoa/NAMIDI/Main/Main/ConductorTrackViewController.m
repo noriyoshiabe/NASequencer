@@ -23,7 +23,7 @@
 @property (strong, nonatomic) TrackSelection *trackSelection;
 @end
 
-@interface ConductorTrackViewController ()
+@interface ConductorTrackViewController () <NAMidiRepresentationObserver>
 @property (strong, nonatomic) IBOutlet ConductorTrackView *conductorTrackView;
 @end
 
@@ -38,12 +38,14 @@
     
     [_scaleAssistant addObserver:self forKeyPath:@"scale" options:0 context:NULL];
     [_trackSelection addObserver:self forKeyPath:@"selectionFlags" options:0 context:NULL];
+    [_namidi addObserver:self];
 }
 
 - (void)dealloc
 {
     [_scaleAssistant removeObserver:self forKeyPath:@"scale"];
     [_trackSelection removeObserver:self forKeyPath:@"selectionFlags"];
+    [_namidi removeObserver:self];
 }
 
 - (void)scrollWheel:(NSEvent *)theEvent
@@ -72,6 +74,13 @@
     }
 }
 
+#pragma mark NAMidiRepresentationObserver
+
+- (void)namidiDidParse:(NAMidiRepresentation *)namidi sequence:(SequenceRepresentation *)sequence parseInfo:(ParseInfoRepresentation *)parseInfo
+{
+    _conductorTrackView.sequence = sequence;
+}
+
 @end
 
 @implementation ConductorTrackView
@@ -91,7 +100,9 @@
 - (void)setSequence:(SequenceRepresentation *)sequence
 {
     _sequence = sequence;
-    [self layout];
+    
+    self.needsLayout = YES;
+    self.needsDisplay = YES;
 }
 
 - (void)layout

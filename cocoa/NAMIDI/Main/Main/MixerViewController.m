@@ -10,7 +10,7 @@
 #import "MixerChannelViewController.h"
 #import "LevelIndicator.h"
 
-@interface MixerViewController ()
+@interface MixerViewController () <NAMidiRepresentationObserver>
 @property (strong) IBOutlet NSView *masterChannelView;
 @property (weak) IBOutlet LevelIndicator *indicatorL;
 @property (weak) IBOutlet LevelIndicator *indicatorR;
@@ -49,7 +49,14 @@
     
     [self.view addSubview:_masterChannelView];
     
+    [_namidi addObserver:self];
+    
     [self layout];
+}
+
+- (void)dealloc
+{
+    [_namidi removeObserver:self];
 }
 
 - (void)layout
@@ -84,6 +91,13 @@
     }
     
     _masterChannelView.frame = CGRectMake(0, y, width, _masterChannelView.frame.size.height);
+}
+
+#pragma mark NAMidiRepresentationObserver
+
+- (void)namidiDidParse:(NAMidiRepresentation *)namidi sequence:(SequenceRepresentation *)sequence parseInfo:(ParseInfoRepresentation *)parseInfo
+{
+    [self layout];
 }
 
 @end

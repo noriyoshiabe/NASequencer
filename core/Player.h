@@ -13,6 +13,8 @@ typedef enum {
     PlayerEventBackward,
     PlayerEventSeek,
     PlayerEventReachEnd,
+    PlayerEventTempoChange,
+    PlayerEventTimeSignChange,
 } PlayerEvent;
 
 typedef struct _Player Player;
@@ -56,6 +58,8 @@ static inline const char *PlayerEvent2String(PlayerEvent event)
     CASE(PlayerEventBackward);
     CASE(PlayerEventSeek);
     CASE(PlayerEventReachEnd);
+    CASE(PlayerEventTempoChange);
+    CASE(PlayerEventTimeSignChange);
     }
     return "Unknown player event";
 #undef CASE

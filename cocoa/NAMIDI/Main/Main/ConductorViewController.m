@@ -8,7 +8,7 @@
 
 #import "ConductorViewController.h"
 
-@interface ConductorViewController ()
+@interface ConductorViewController () <NAMidiRepresentationObserver, PlayerRepresentationObserver>
 
 @end
 
@@ -17,19 +17,65 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [_namidi addObserver:self];
+    [_namidi.player addObserver:self];
+}
+
+- (void)dealloc
+{
+    [_namidi removeObserver:self];
+    [_namidi.player removeObserver:self];
 }
 
 - (NSString *)tempo
 {
-    // TODO notify change
     return [NSString stringWithFormat:@"%.2f", _namidi.player.tempo];
 }
 
 - (NSString *)timeSign
 {
-    // TODO notify change
     TimeSign timeSign = _namidi.player.timeSign;
     return [NSString stringWithFormat:@"%d/%d", timeSign.numerator, timeSign.denominator];
+}
+
+- (void)updateTempo
+{
+    [self willChangeValueForKey:@"tempo"];
+    [self didChangeValueForKey:@"tempo"];
+}
+
+- (void)updateTimeSign
+{
+    [self willChangeValueForKey:@"timeSign"];
+    [self didChangeValueForKey:@"timeSign"];
+}
+
+#pragma mark NAMidiRepresentationObserver
+
+- (void)namidiDidParse:(NAMidiRepresentation *)namidi sequence:(SequenceRepresentation *)sequence parseInfo:(ParseInfoRepresentation *)parseInfo
+{
+    [self updateTempo];
+    [self updateTimeSign];
+}
+
+#pragma mark PlayerRepresentationObserver
+
+- (void)player:(PlayerRepresentation *)player onNotifyEvent:(PlayerEvent)event
+{
+    switch (event) {
+        case PlayerEventTempoChange:
+            [self updateTempo];
+            break;
+        case PlayerEventTimeSignChange:
+            [self updateTimeSign];
+            break;
+        case PlayerEventRewind:
+            [self updateTempo];
+            [self updateTimeSign];
+            break;
+        default:
+            break;
+    }
 }
 
 @end
