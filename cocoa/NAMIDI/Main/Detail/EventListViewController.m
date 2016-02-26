@@ -10,7 +10,7 @@
 #import "EventListRowView.h"
 #import "Color.h"
 
-@interface EventListViewController () <NSTableViewDataSource, NSTableViewDelegate> {
+@interface EventListViewController () <NSTableViewDataSource, NSTableViewDelegate, NAMidiRepresentationObserver> {
     NSMutableArray<MidiEventRepresentation *> *_events;
 }
 
@@ -51,12 +51,14 @@
     [super viewDidAppear];
     [self buildEvents];
     [_trackSelection addObserver:self forKeyPath:@"selectionFlags" options:0 context:NULL];
+    [_namidi addObserver:self];
 }
 
 - (void)viewDidDisappear
 {
     [super viewDidDisappear];
     [_trackSelection removeObserver:self forKeyPath:@"selectionFlags"];
+    [_namidi removeObserver:self];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context
@@ -120,6 +122,13 @@
     }
     
     return view;
+}
+
+#pragma mark NAMidiRepresentationObserver
+
+- (void)namidiDidParse:(NAMidiRepresentation *)namidi sequence:(SequenceRepresentation *)sequence parseInfo:(ParseInfoRepresentation *)parseInfo
+{
+    [self buildEvents];
 }
 
 @end

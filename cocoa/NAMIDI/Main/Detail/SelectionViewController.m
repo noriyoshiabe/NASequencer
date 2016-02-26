@@ -9,7 +9,7 @@
 #import "SelectionViewController.h"
 #import "Color.h"
 
-@interface SelectionViewController () {
+@interface SelectionViewController () <NAMidiRepresentationObserver> {
     NSArray<NSButton *> *_buttons;
 }
 
@@ -73,6 +73,18 @@
 {
     [super viewDidAppear];
     
+    [self update];
+    [_namidi addObserver:self];
+}
+
+- (void)viewDidDisappear
+{
+    [super viewDidDisappear];
+    [_namidi removeObserver:self];
+}
+
+- (void)update
+{
     for (int i = 0; i < _buttons.count; ++i) {
         if ([_trackSelection isAvailable:i]) {
             _buttons[i].enabled = YES;
@@ -95,6 +107,13 @@
     else {
         [_trackSelection deselect:trackNo];
     }
+}
+
+#pragma mark NAMidiRepresentationObserver
+
+- (void)namidiDidParse:(NAMidiRepresentation *)namidi sequence:(SequenceRepresentation *)sequence parseInfo:(ParseInfoRepresentation *)parseInfo
+{
+    [self update];
 }
 
 @end

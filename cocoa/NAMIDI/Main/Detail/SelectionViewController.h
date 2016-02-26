@@ -10,5 +10,6 @@
 #import "TrackSelection.h"
 
 @interface SelectionViewController : NSViewController
+@property (strong, nonatomic) NAMidiRepresentation *namidi;
 @property (strong, nonatomic) TrackSelection *trackSelection;
 @end

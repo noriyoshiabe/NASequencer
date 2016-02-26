@@ -40,6 +40,7 @@
     _eventListVC = [[EventListViewController alloc] init];
     _pianoRollVC = [[PianoRollViewController alloc] init];
     
+    _selectionVC.namidi = _namidi;
     _eventListVC.namidi = _namidi;
     _pianoRollVC.namidi = _namidi;
     
