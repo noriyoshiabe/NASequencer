@@ -55,6 +55,7 @@
     _detailVC.trackSelection = _trackSelection;
     
     _scaleAssistant = [[MeasureScaleAssistant alloc] init];
+    _scaleAssistant.namidi = _namidi;
     
     _mainVC.scaleAssistant = _scaleAssistant;
     _detailVC.scaleAssistant = _scaleAssistant;

@@ -81,7 +81,7 @@
 
 - (void)layout
 {
-    self.frame = CGRectMake(0, 0, _scaleAssistant.pixelPerTick * _sequence.length + _scaleAssistant.measureOffset * 2, _containerView.frame.size.height);
+    self.frame = CGRectMake(0, 0, _scaleAssistant.viewWidth, _containerView.frame.size.height);
     
     [CATransaction begin];
     [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];

@@ -128,7 +128,7 @@
 
 - (void)layout
 {
-    self.frame = CGRectMake(0, 0, _scaleAssistant.pixelPerTick * _sequence.length + _scaleAssistant.measureOffset * 2, self.bounds.size.height);
+    self.frame = CGRectMake(0, 0, _scaleAssistant.viewWidth, self.bounds.size.height);
     [super layout];
 }
 

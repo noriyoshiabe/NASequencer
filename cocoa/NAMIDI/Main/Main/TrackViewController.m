@@ -70,7 +70,7 @@
 
 - (void)layout
 {
-    CGFloat width = _scaleAssistant.pixelPerTick * _namidi.sequence.length + _scaleAssistant.measureOffset * 2;
+    CGFloat width = _scaleAssistant.viewWidth;
     CGFloat height = 0;
     
     for (int i = 0; i < 16; ++i) {

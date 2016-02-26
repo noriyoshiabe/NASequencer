@@ -7,11 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "NAMidiRepresentation.h"
 
 @interface MeasureScaleAssistant : NSObject
+@property (strong, nonatomic) NAMidiRepresentation *namidi;
 @property (assign, nonatomic) CGFloat scale;
 - (CGFloat)measureOffset;
 - (CGFloat)pixelPerTick;
 - (CGFloat)tickPerPixel;
 - (BOOL)scrollWheel:(NSEvent *)theEvent;
+- (CGFloat)viewWidth;
 @end

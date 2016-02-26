@@ -46,4 +46,9 @@
     }
 }
 
+- (CGFloat)viewWidth
+{
+    return self.pixelPerTick * _namidi.sequence.length + self.measureOffset * 2;
+}
+
 @end
