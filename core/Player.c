@@ -365,6 +365,9 @@ static void PlayerProcessEvent(Player *self, PlayerEvent event)
         PlayerStop(self);
         PlayerRewind(self);
         break;
+    case PlayerEventTempoChange:
+    case PlayerEventTimeSignChange:
+        break;
     }
 }
 
