@@ -86,7 +86,7 @@
                     <connections>
                         <binding destination="VaH-Gg-hj3" name="content" keyPath="arrangedObjects" id="uiL-wo-9dX"/>
                         <binding destination="VaH-Gg-hj3" name="contentValues" keyPath="arrangedObjects.name" previousBinding="uiL-wo-9dX" id="HZa-K8-lC2"/>
-                        <binding destination="-2" name="selectedObject" keyPath="midiSource" previousBinding="HZa-K8-lC2" id="Jsv-lX-n9U"/>
+                        <binding destination="-2" name="selectedObject" keyPath="midiSourceDescription" previousBinding="HZa-K8-lC2" id="XxY-C5-Gie"/>
                     </connections>
                 </popUpButton>
                 <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vt7-Dd-Dj2" userLabel="Preset">
@@ -104,8 +104,8 @@
                     </popUpButtonCell>
                     <connections>
                         <binding destination="uTa-GZ-OY4" name="content" keyPath="arrangedObjects" id="TUY-M6-Fmr"/>
-                        <binding destination="uTa-GZ-OY4" name="contentValues" keyPath="arrangedObjects.name" previousBinding="TUY-M6-Fmr" id="ggD-lZ-9cv"/>
-                        <binding destination="-2" name="selectedObject" keyPath="preset" previousBinding="ggD-lZ-9cv" id="SqO-F9-HQH"/>
+                        <binding destination="uTa-GZ-OY4" name="contentValues" keyPath="arrangedObjects.selectionLabel" previousBinding="TUY-M6-Fmr" id="nf7-rF-wjB"/>
+                        <binding destination="-2" name="selectedObject" keyPath="preset" previousBinding="nf7-rF-wjB" id="Y8n-tK-ApI"/>
                     </connections>
                 </popUpButton>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="O2Q-wV-lLf" userLabel="VolumeLabel">
@@ -206,7 +206,7 @@
         </customView>
         <arrayController id="VaH-Gg-hj3" userLabel="Synthesizers">
             <connections>
-                <binding destination="-2" name="contentArray" keyPath="midiSources" id="jxr-6y-z5Y"/>
+                <binding destination="-2" name="contentArray" keyPath="availableDescriptions" id="d25-4T-PEM"/>
             </connections>
         </arrayController>
         <arrayController id="uTa-GZ-OY4" userLabel="Presets">

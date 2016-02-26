@@ -43,13 +43,14 @@
 
 @interface MixerChannelRepresentation () {
     MixerChannel *_raw;
-    MidiSourceDescriptionRepresentation *_description;
+    MidiSourceDescriptionRepresentation *_midiSourceDescription;
     NSMutableArray<PresetRepresentation *> *_presets;
     PresetRepresentation *_preset;
 }
 
 - (instancetype)initWithMixerChannel:(MixerChannel *)channel;
-- (void)reload;
+- (void)loadMidiSourceDescription;
+- (void)loadPreset;
 @end
 
 @implementation MixerChannelRepresentation
@@ -59,34 +60,35 @@
     self = [super init];
     if (self) {
         _raw = channel;
-        _presets = [NSMutableArray array];
-        [self loadCache];
+        [self loadMidiSourceDescription];
+        [self loadPreset];
     }
     return self;
 }
 
-- (void)loadCache
+- (void)loadMidiSourceDescription
 {
-    _description = [[MidiSourceManagerRepresentation sharedInstance].availableDescriptions objectPassingTest:^BOOL(MidiSourceDescriptionRepresentation *obj, NSUInteger idx, BOOL *stop) {
-        return *stop = 0 == strcmp(obj.raw->name, MixerChannelGetMidiSourceDescription(_raw)->name);
+    MidiSourceDescription *description = MixerChannelGetMidiSourceDescription(_raw);
+    _midiSourceDescription = [[MidiSourceManagerRepresentation sharedInstance].availableDescriptions objectPassingTest:^BOOL(MidiSourceDescriptionRepresentation *obj, NSUInteger idx, BOOL *stop) {
+        return *stop = obj.raw == description;
     }];
     
-    PresetInfo *info = MixerChannelGetPresetInfo(_raw);
+    _presets = [NSMutableArray array];
+    
     int count = MixerChannelGetPresetCount(_raw);
     PresetInfo **infos = MixerChannelGetPresetInfos(_raw);
     for (int i = 0; i < count; ++i) {
         PresetRepresentation *preset = [[PresetRepresentation alloc] initWithPresetInfo:infos[i]];
         [_presets addObject:preset];
-        if (info == infos[i]) {
-            _preset = preset;
-        }
     }
 }
 
-- (void)reload
+- (void)loadPreset
 {
-    [_presets removeAllObjects];
-    [self loadCache];
+    PresetInfo *info = MixerChannelGetPresetInfo(_raw);
+    _preset = [_presets objectPassingTest:^BOOL(PresetRepresentation *obj, NSUInteger idx, BOOL *stop) {
+        return *stop = obj.raw == info;
+    }];
 }
 
 - (int)number
@@ -94,9 +96,9 @@
     return MixerChannelGetNumber(_raw);
 }
 
-- (MidiSourceDescriptionRepresentation *)description
+- (MidiSourceDescriptionRepresentation *)midiSourceDescription
 {
-    return _description;
+    return _midiSourceDescription;
 }
 
 - (PresetRepresentation *)preset
@@ -139,9 +141,9 @@
     return MixerChannelGetSolo(_raw);
 }
 
-- (void)setDescription:(MidiSourceDescriptionRepresentation *)description
+- (void)setMidiSourceDescription:(MidiSourceDescriptionRepresentation *)midiSourceDescription
 {
-    MixerChannelSetMidiSourceDescription(_raw, description.raw);
+    MixerChannelSetMidiSourceDescription(_raw, midiSourceDescription.raw);
 }
 
 - (void)setPreset:(PresetRepresentation *)preset
@@ -186,15 +188,15 @@
     NSHashTable *_observers;
     NSMutableArray<MixerChannelRepresentation *> *_channels;
 }
-- (void)onChannelStatusChange:(MixerChannel *)channel;
+- (void)onChannelStatusChange:(MixerChannel *)channel kind:(MixerChannelStatusKind)kind;
 - (void)onAvailableMidiSourceChange:(NAArray *)descriptions;
 - (void)onLevelUpdate;
 @end
 
-static void onChannelStatusChange(void *receiver, MixerChannel *channel)
+static void onChannelStatusChange(void *receiver, MixerChannel *channel, MixerChannelStatusKind kind)
 {
     MixerRepresentation *mixer = (__bridge MixerRepresentation *)receiver;
-    [mixer onChannelStatusChange:channel];
+    [mixer onChannelStatusChange:channel kind:kind];
 }
 
 static void onAvailableMidiSourceChange(void *receiver, NAArray *descriptions)
@@ -226,8 +228,16 @@ static MixerObserverCallbacks callbacks = {onChannelStatusChange, onAvailableMid
         while (iterator->hasNext(iterator)) {
             [_channels addObject:[[MixerChannelRepresentation alloc] initWithMixerChannel:iterator->next(iterator)]];
         }
+        
+        MixerAddObserver(_mixer, (__bridge void *)self, &callbacks);
     }
     return self;
+    
+}
+
+- (void)dealloc
+{
+    MixerRemoveObserver(_mixer, (__bridge void *)self);
 }
 
 - (void)addObserver:(id<MixerRepresentationObserver>)observer
@@ -245,14 +255,25 @@ static MixerObserverCallbacks callbacks = {onChannelStatusChange, onAvailableMid
     return MixerGetLevel(_mixer);
 }
 
-- (void)onChannelStatusChange:(MixerChannel *)channel
+- (void)onChannelStatusChange:(MixerChannel *)channel kind:(MixerChannelStatusKind)kind
 {
     MixerChannelRepresentation *__channel = _channels[MixerChannelGetNumber(channel) - 1];
     
+    switch (kind) {
+        case MixerChannelStatusKindMidiSourceDescription:
+            [__channel loadMidiSourceDescription];
+            break;
+        case MixerChannelStatusKindPreset:
+            [__channel loadPreset];
+            break;
+        default:
+            break;
+    }
+    
     [NSThread performBlockOnMainThread:^{
         for (id<MixerRepresentationObserver> observer in _observers) {
-            if ([observer respondsToSelector:@selector(mixer:onChannelStatusChange:)]) {
-                [observer mixer:self onChannelStatusChange:__channel];
+            if ([observer respondsToSelector:@selector(mixer:onChannelStatusChange:kind:)]) {
+                [observer mixer:self onChannelStatusChange:__channel kind:kind];
             }
         }
     }];

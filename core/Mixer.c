@@ -509,6 +509,7 @@ static void MixerMidiSourceManagerOnUnloadAvailableMidiSourceDescription(void *r
 
     MidiSourceManager *manager = MidiSourceManagerSharedInstance();
     NAArray *descriptions = MidiSourceManagerGetAvailableDescriptions(manager);
+    MixerNotifyAvailableMidiSourceChange(receiver, descriptions);
 
     MidiSource *sourceToUnload = NAMapRemove(self->sourceMap, description);
     if (sourceToUnload) {
@@ -535,8 +536,6 @@ static void MixerMidiSourceManagerOnUnloadAvailableMidiSourceDescription(void *r
 
         NAMessageQPost(self->msgQ, MixerMessageDetachSource, sourceToUnload);
     }
-
-    MixerNotifyAvailableMidiSourceChange(receiver, descriptions);
 }
 
 static MidiSourceManagerObserverCallbacks MixerMidiSourceManagerObserverCallbacks = {

@@ -10,7 +10,7 @@
 #import "LevelIndicator.h"
 #import "Color.h"
 
-@interface MixerChannelViewController () {
+@interface MixerChannelViewController () <MixerRepresentationObserver> {
     MixerChannelRepresentation *_mixerChannel;
 }
 
@@ -28,9 +28,9 @@
 @property (assign, nonatomic) int R;
 
 @property (readonly, nonatomic) NSArray<MidiSourceDescriptionRepresentation *> *availableDescriptions;
-@property (readonly, nonatomic) MidiSourceDescriptionRepresentation *description;
 @property (readonly, nonatomic) NSArray<PresetRepresentation *> *presets;
-@property (readonly, nonatomic) PresetRepresentation *preset;
+@property (readwrite, nonatomic) MidiSourceDescriptionRepresentation *midiSourceDescription;
+@property (readwrite, nonatomic) PresetRepresentation *preset;
 @end
 
 @implementation MixerChannelViewController
@@ -49,6 +49,13 @@
     
     [_indicatorL bind:@"intValue" toObject:self withKeyPath:@"L" options:nil];
     [_indicatorR bind:@"intValue" toObject:self withKeyPath:@"R" options:nil];
+    
+    [_mixer addObserver:self];
+}
+
+- (void)dealloc
+{
+    [_mixer removeObserver:self];
 }
 
 - (NSArray<MidiSourceDescriptionRepresentation *> *)availableDescriptions
@@ -56,9 +63,9 @@
     return [MidiSourceManagerRepresentation sharedInstance].availableDescriptions;
 }
 
-- (MidiSourceDescriptionRepresentation *)description
+- (MidiSourceDescriptionRepresentation *)midiSourceDescription
 {
-    return _mixerChannel.description;
+    return _mixerChannel.midiSourceDescription;
 }
 
 - (NSArray<PresetRepresentation *> *)presets
@@ -101,52 +108,113 @@
     return _mixerChannel.reverb;
 }
 
-- (void)setMute:(bool)mute
+- (void)setMidiSourceDescription:(MidiSourceDescriptionRepresentation *)midiSourceDescription
 {
-    NSLog(@"%s %d", __func__, mute);
-    _mute = mute;
-}
-
-- (void)setSolo:(bool)solo
-{
-    NSLog(@"%s %d", __func__, solo);
-    _solo = solo;
-}
-
-- (void)setVolume:(int)volume
-{
-    NSLog(@"%s %d", __func__, volume);
-    _volume = volume;
-}
-
-- (void)setPan:(int)pan
-{
-    NSLog(@"%s %d", __func__, pan);
-    _pan = pan;
-}
-
-- (void)setChorus:(int)chorus
-{
-    NSLog(@"%s %d", __func__, chorus);
-    _chorus = chorus;
-}
-
-- (void)setReverb:(int)reverb
-{
-    NSLog(@"%s %d", __func__, reverb);
-    _reverb = reverb;
-}
-
-- (void)setMidiSource:(MidiSourceRepresentation *)midiSource
-{
-    NSLog(@"%s %@", __func__, midiSource.name);
-    _midiSource = midiSource;
+    _mixerChannel.midiSourceDescription = midiSourceDescription;
 }
 
 - (void)setPreset:(PresetRepresentation *)preset
 {
-    NSLog(@"%s %@", __func__, preset.name);
-    _preset = preset;
+    _mixerChannel.preset = preset;
+}
+
+- (void)setMute:(bool)mute
+{
+    _mixerChannel.mute = mute;
+}
+
+- (void)setSolo:(bool)solo
+{
+    _mixerChannel.solo = solo;
+}
+
+- (void)setVolume:(int)volume
+{
+    _mixerChannel.volume = volume;
+}
+
+- (void)setPan:(int)pan
+{
+    _mixerChannel.pan = pan;
+}
+
+- (void)setChorus:(int)chorus
+{
+    _mixerChannel.chorus = chorus;
+}
+
+- (void)setReverb:(int)reverb
+{
+    _mixerChannel.reverb = reverb;
+}
+
+- (void)notifyValueChangeForKey:(NSString *)key
+{
+    [self willChangeValueForKey:key];
+    [self didChangeValueForKey:key];
+}
+
+#pragma mark MixerRepresentationObserver
+
+- (void)mixer:(MixerRepresentation *)mixer onChannelStatusChange:(MixerChannelRepresentation *)channel kind:(MixerChannelStatusKind)kind
+{
+    if (channel == _mixerChannel) {
+        switch (kind) {
+            case MixerChannelStatusKindMidiSourceDescription:
+                [self notifyValueChangeForKey:@"midiSourceDescription"];
+                [self notifyValueChangeForKey:@"presets"];
+                break;
+            case MixerChannelStatusKindPreset:
+                [self notifyValueChangeForKey:@"preset"];
+                break;
+            case MixerChannelStatusKindVolume:
+                [self notifyValueChangeForKey:@"volume"];
+                break;
+            case MixerChannelStatusKindPan:
+                [self notifyValueChangeForKey:@"pan"];
+                break;
+            case MixerChannelStatusKindChorusSend:
+                [self notifyValueChangeForKey:@"chorus"];
+                break;
+            case MixerChannelStatusKindReverbSend:
+                [self notifyValueChangeForKey:@"reverb"];
+                break;
+            case MixerChannelStatusKindExpressionSend:
+                break;
+            case MixerChannelStatusKindMute:
+                [self notifyValueChangeForKey:@"mute"];
+                break;
+            case MixerChannelStatusKindSolo:
+                [self notifyValueChangeForKey:@"solo"];
+                break;
+        }
+    }
+}
+
+- (void)mixer:(MixerRepresentation *)mixer onAvailableMidiSourceChange:(NSArray<MidiSourceDescriptionRepresentation *> *)descriptions
+{
+    [self notifyValueChangeForKey:@"availableDescriptions"];
+}
+
+- (void)mixerOnLevelUpdate:(MixerRepresentation *)mixer
+{
+    self.L = _mixerChannel.level.L;
+    self.R = _mixerChannel.level.R;
+}
+
+@end
+
+#pragma mark For Binding
+
+@interface PresetRepresentation (MixerChannelView)
+- (NSString *)selectionLabel;
+@end
+
+@implementation PresetRepresentation (MixerChannelView)
+
+- (NSString *)selectionLabel
+{
+    return [NSString stringWithFormat:@"%@ bank:%d prg:%d", self.name, self.bankNo, self.programNo];
 }
 
 @end
