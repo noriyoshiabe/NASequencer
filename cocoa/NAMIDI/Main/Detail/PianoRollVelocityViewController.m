@@ -23,7 +23,7 @@
 @property (strong, nonatomic) SequenceRepresentation *sequence;
 @end
 
-@interface PianoRollVelocityViewController ()
+@interface PianoRollVelocityViewController () <NAMidiRepresentationObserver>
 @property (strong) IBOutlet PianoRollVelocityView *velocityView;
 @end
 
@@ -35,16 +35,26 @@
     
     _velocityView.scaleAssistant = _scaleAssistant;
     _velocityView.trackSelection = _trackSelection;
+}
+
+- (void)viewDidAppear
+{
+    [super viewDidAppear];
+    
     _velocityView.sequence = _namidi.sequence;
     
     [_scaleAssistant addObserver:self forKeyPath:@"scale" options:0 context:NULL];
     [_trackSelection addObserver:self forKeyPath:@"selectionFlags" options:0 context:NULL];
+    [_namidi addObserver:self];
 }
 
-- (void)dealloc
+- (void)viewDidDisappear
 {
+    [super viewDidDisappear];
+    
     [_scaleAssistant removeObserver:self forKeyPath:@"scale"];
     [_trackSelection removeObserver:self forKeyPath:@"selectionFlags"];
+    [_namidi removeObserver:self];
 }
 
 - (void)scrollWheel:(NSEvent *)theEvent
@@ -62,6 +72,13 @@
     else if (object == _trackSelection) {
         _velocityView.needsDisplay = YES;
     }
+}
+
+#pragma mark NAMidiRepresentationObserver
+
+- (void)namidiDidParse:(NAMidiRepresentation *)namidi sequence:(SequenceRepresentation *)sequence parseInfo:(ParseInfoRepresentation *)parseInfo
+{
+    _velocityView.sequence = sequence;
 }
 
 @end
@@ -101,7 +118,9 @@
 - (void)setSequence:(SequenceRepresentation *)sequence
 {
     _sequence = sequence;
-    [self layout];
+    
+    self.needsLayout = YES;
+    self.needsDisplay = YES;
 }
 
 - (void)layout
@@ -114,9 +133,11 @@
 {
     [super drawRect:dirtyRect];
     
-    CGContextRef ctx = [NSGraphicsContext currentContext].graphicsPort;
-    [self drawGrid:dirtyRect context:ctx];
-    [self drawEvents:dirtyRect context:ctx];
+    if (_sequence) {
+        CGContextRef ctx = [NSGraphicsContext currentContext].graphicsPort;
+        [self drawGrid:dirtyRect context:ctx];
+        [self drawEvents:dirtyRect context:ctx];
+    }
 }
 
 - (void)drawGrid:(NSRect)dirtyRect context:(CGContextRef)ctx

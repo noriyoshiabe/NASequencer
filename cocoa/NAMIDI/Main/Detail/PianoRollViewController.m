@@ -18,8 +18,10 @@
 
 #define VELOCITY_VIEW_HEIGHT_MAX 160
 #define VELOCITY_VIEW_HEIGHT_MIN 40
+#define CONDUCTOR_HEIGHT 43
+#define CONDUCTOR_BOTTOM_LINE_HEIGHT 1.0
 
-@interface PianoRollViewController () <NSSplitViewDelegate>
+@interface PianoRollViewController () <NSSplitViewDelegate, NAMidiRepresentationObserver>
 @property (weak) IBOutlet NSSplitView *horizontalSplitView;
 @property (weak) IBOutlet NSView *emptyHeaderView;
 @property (weak) IBOutlet NSView *conductorLabelView;
@@ -34,6 +36,9 @@
 @property (weak) IBOutlet NSView *conductorBottomLineView;
 @property (weak) IBOutlet NSView *pianoRollVerticalLineView;
 @property (weak) IBOutlet NSView *verocityVerticalLineView;
+@property (weak) IBOutlet NSLayoutConstraint *conductorLabelHeightConstraint;
+@property (weak) IBOutlet NSLayoutConstraint *conductorHeightConstraint;
+@property (weak) IBOutlet NSLayoutConstraint *conductorBottomLineConstraint;
 
 @property (strong, nonatomic) MeasureViewController *measureVC;
 @property (strong, nonatomic) PlayLineViewController *playLineVC;
@@ -128,6 +133,36 @@
     [_horizontalSplitView setPosition:CGRectGetHeight(self.view.frame) - VELOCITY_VIEW_HEIGHT_MAX ofDividerAtIndex:0];
 }
 
+- (void)viewDidAppear
+{
+    [super viewDidAppear];
+    [self updateConductorVisibility];
+    [_trackSelection addObserver:self forKeyPath:@"selectionFlags" options:0 context:NULL];
+    [_namidi addObserver:self];
+}
+
+- (void)viewDidDisappear
+{
+    [super viewDidDisappear];
+    [_namidi removeObserver:self];
+    [_trackSelection removeObserver:self forKeyPath:@"selectionFlags"];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context
+{
+    if (object == _trackSelection) {
+        [self updateConductorVisibility];
+    }
+}
+
+- (void)updateConductorVisibility
+{
+    BOOL visible = [_trackSelection isTrackSelected:0];
+    _conductorLabelHeightConstraint.constant = visible ? CONDUCTOR_HEIGHT : 0.0;
+    _conductorHeightConstraint.constant = visible ? CONDUCTOR_HEIGHT : 0.0;
+    _conductorBottomLineConstraint.constant = visible ? CONDUCTOR_BOTTOM_LINE_HEIGHT : 0.0;
+}
+
 #pragma mark NSSplitViewDelegate
 
 - (CGFloat)splitView:(NSSplitView *)splitView constrainMinCoordinate:(CGFloat)proposedMinimumPosition ofSubviewAt:(NSInteger)dividerIndex
@@ -143,6 +178,13 @@
 - (BOOL)splitView:(NSSplitView *)splitView shouldAdjustSizeOfSubview:(NSView *)view
 {
     return splitView.subviews[0] == view;
+}
+
+#pragma mark NAMidiRepresentationObserver
+
+- (void)namidiDidParse:(NAMidiRepresentation *)namidi sequence:(SequenceRepresentation *)sequence parseInfo:(ParseInfoRepresentation *)parseInfo
+{
+    [self updateConductorVisibility];
 }
 
 @end

@@ -7,7 +7,10 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="PianoRollViewController">
             <connections>
+                <outlet property="conductorBottomLineConstraint" destination="g4h-wh-AGe" id="oVV-bk-ygA"/>
                 <outlet property="conductorBottomLineView" destination="Lon-in-61N" id="Kps-Ng-4zf"/>
+                <outlet property="conductorHeightConstraint" destination="LfT-7m-303" id="n5q-r7-WOT"/>
+                <outlet property="conductorLabelHeightConstraint" destination="9iH-AA-L6G" id="5PD-aU-XcQ"/>
                 <outlet property="conductorLabelView" destination="kha-dd-MvH" id="4Gc-KT-2kJ"/>
                 <outlet property="conductorView" destination="TXv-JK-Tih" id="mUO-Ie-vgG"/>
                 <outlet property="emptyHeaderView" destination="N1g-DM-1Wr" id="Pqm-J8-Ydp"/>

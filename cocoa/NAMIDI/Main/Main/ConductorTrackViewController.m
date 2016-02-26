@@ -115,10 +115,11 @@
 {
     [super drawRect:dirtyRect];
     
-    CGContextRef ctx = [NSGraphicsContext currentContext].graphicsPort;
-    
-    [self drawBackground:dirtyRect context:ctx];
-    [self drawEvent:dirtyRect context:ctx];
+    if (_sequence) {
+        CGContextRef ctx = [NSGraphicsContext currentContext].graphicsPort;
+        [self drawBackground:dirtyRect context:ctx];
+        [self drawEvent:dirtyRect context:ctx];
+    }
 }
 
 - (void)drawBackground:(NSRect)dirtyRect context:(CGContextRef)ctx

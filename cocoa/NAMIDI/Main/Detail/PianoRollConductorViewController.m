@@ -26,7 +26,7 @@
 @property (strong, nonatomic) SequenceRepresentation *sequence;
 @end
 
-@interface PianoRollConductorViewController ()
+@interface PianoRollConductorViewController () <NAMidiRepresentationObserver>
 @property (strong, nonatomic) IBOutlet PianoRollConductorView *conductorView;
 @end
 
@@ -38,14 +38,21 @@
     
     _conductorView.scaleAssistant = _scaleAssistant;
     _conductorView.trackSelection = _trackSelection;
-    _conductorView.sequence = _namidi.sequence;
-    
-    [_scaleAssistant addObserver:self forKeyPath:@"scale" options:0 context:NULL];
 }
 
-- (void)dealloc
+- (void)viewDidAppear
 {
+    [super viewDidAppear];
+    _conductorView.sequence = _namidi.sequence;
+    [_scaleAssistant addObserver:self forKeyPath:@"scale" options:0 context:NULL];
+    [_namidi addObserver:self];
+}
+
+- (void)viewDidDisappear
+{
+    [super viewDidDisappear];
     [_scaleAssistant removeObserver:self forKeyPath:@"scale"];
+    [_namidi removeObserver:self];
 }
 
 - (void)scrollWheel:(NSEvent *)theEvent
@@ -60,6 +67,13 @@
     if (object == _scaleAssistant) {
         [_conductorView layout];
     }
+}
+
+#pragma mark NAMidiRepresentationObserver
+
+- (void)namidiDidParse:(NAMidiRepresentation *)namidi sequence:(SequenceRepresentation *)sequence parseInfo:(ParseInfoRepresentation *)parseInfo
+{
+    _conductorView.sequence = sequence;
 }
 
 @end
@@ -93,7 +107,9 @@
 - (void)setSequence:(SequenceRepresentation *)sequence
 {
     _sequence = sequence;
-    [self layout];
+    
+    self.needsLayout = YES;
+    self.needsDisplay = YES;
 }
 
 - (void)layout
@@ -106,9 +122,11 @@
 {
     [super drawRect:dirtyRect];
     
-    CGContextRef ctx = [NSGraphicsContext currentContext].graphicsPort;
-    [self drawGrid:dirtyRect context:ctx];
-    [self drawEvents:dirtyRect context:ctx];
+    if (_sequence) {
+        CGContextRef ctx = [NSGraphicsContext currentContext].graphicsPort;
+        [self drawGrid:dirtyRect context:ctx];
+        [self drawEvents:dirtyRect context:ctx];
+    }
 }
 
 - (void)drawGrid:(NSRect)dirtyRect context:(CGContextRef)ctx

@@ -136,12 +136,14 @@
 {
     [super drawRect:dirtyRect];
     
-    CGContextRef ctx = [NSGraphicsContext currentContext].graphicsPort;
-
-    [self drawMeasure:dirtyRect context:ctx];
-    
-    if (_needBottomLine) {
-        [self drawBottomLine:dirtyRect context:ctx];
+    if (_sequence) {
+        CGContextRef ctx = [NSGraphicsContext currentContext].graphicsPort;
+        
+        [self drawMeasure:dirtyRect context:ctx];
+        
+        if (_needBottomLine) {
+            [self drawBottomLine:dirtyRect context:ctx];
+        }
     }
 }
 

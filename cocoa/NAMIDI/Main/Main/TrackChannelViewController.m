@@ -168,10 +168,12 @@
 {
     [super drawRect:dirtyRect];
     
-    CGContextRef ctx = [NSGraphicsContext currentContext].graphicsPort;
-    [self drawEdge:dirtyRect context:ctx];
-    [self drawBody:dirtyRect context:ctx];
-    [self drawNotes:dirtyRect context:ctx];
+    if (_sequence) {
+        CGContextRef ctx = [NSGraphicsContext currentContext].graphicsPort;
+        [self drawEdge:dirtyRect context:ctx];
+        [self drawBody:dirtyRect context:ctx];
+        [self drawNotes:dirtyRect context:ctx];
+    }
 }
 
 - (void)drawEdge:(NSRect)dirtyRect context:(CGContextRef)ctx
