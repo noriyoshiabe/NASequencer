@@ -57,6 +57,12 @@ typedef struct _Octave {
     [super viewDidLoad];
 }
 
+- (void)viewDidAppear
+{
+    [super viewDidAppear];
+    _keyboardView.needsLayout = YES;
+}
+
 - (void)mouseDown:(NSEvent *)theEvent
 {
     CGPoint point = [self.view convertPoint:theEvent.locationInWindow fromView:self.view.window.contentView];
@@ -165,6 +171,12 @@ HIT:
     _textHeight = [@"C" sizeWithAttributes:_labelAttrs].height;
     
     [self initializeKeys];
+}
+
+- (void)layout
+{
+    self.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
+    [super layout];
 }
 
 - (void)dealloc

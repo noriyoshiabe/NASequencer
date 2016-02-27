@@ -74,21 +74,18 @@
         if (info.x && info.y) {
             if (changedBoundsOrigin.x != offset.x || changedBoundsOrigin.y != offset.y) {
                 [self.contentView scrollToPoint:changedBoundsOrigin];
-                [self reflectScrolledClipView:self.contentView];
             }
         }
         else if (info.x) {
             if (changedBoundsOrigin.x != offset.x) {
                 changedBoundsOrigin.y = offset.y;
                 [self.contentView scrollToPoint:changedBoundsOrigin];
-                [self reflectScrolledClipView:self.contentView];
             }
         }
         else if (info.y) {
             if (changedBoundsOrigin.y != offset.y) {
                 changedBoundsOrigin.x = offset.x;
                 [self.contentView scrollToPoint:changedBoundsOrigin];
-                [self reflectScrolledClipView:self.contentView];
             }
         }
     }
