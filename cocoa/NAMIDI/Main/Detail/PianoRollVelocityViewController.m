@@ -21,9 +21,12 @@
 @property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
 @property (strong, nonatomic) TrackSelection *trackSelection;
 @property (strong, nonatomic) SequenceRepresentation *sequence;
+@property (strong, nonatomic) PlayerRepresentation *player;
+
+- (CGRect)noteRect:(NoteEvent *)note pixelPerTick:(CGFloat)pixelPerTick measureOffset:(CGFloat)measureOffset viewHeight:(CGFloat)viewHeight;
 @end
 
-@interface PianoRollVelocityViewController () <NAMidiRepresentationObserver>
+@interface PianoRollVelocityViewController () <NAMidiRepresentationObserver, PlayerRepresentationObserver>
 @property (strong) IBOutlet PianoRollVelocityView *velocityView;
 @end
 
@@ -35,6 +38,7 @@
     
     _velocityView.scaleAssistant = _scaleAssistant;
     _velocityView.trackSelection = _trackSelection;
+    _velocityView.player = _namidi.player;
 }
 
 - (void)viewWillAppear
@@ -46,6 +50,7 @@
     [_scaleAssistant addObserver:self forKeyPath:@"scale" options:0 context:NULL];
     [_trackSelection addObserver:self forKeyPath:@"selectionFlags" options:0 context:NULL];
     [_namidi addObserver:self];
+    [_namidi.player addObserver:self];
 }
 
 - (void)viewDidDisappear
@@ -55,6 +60,7 @@
     [_scaleAssistant removeObserver:self forKeyPath:@"scale"];
     [_trackSelection removeObserver:self forKeyPath:@"selectionFlags"];
     [_namidi removeObserver:self];
+    [_namidi.player removeObserver:self];
 }
 
 - (void)scrollWheel:(NSEvent *)theEvent
@@ -79,6 +85,20 @@
 - (void)namidiDidParse:(NAMidiRepresentation *)namidi sequence:(SequenceRepresentation *)sequence parseInfo:(ParseInfoRepresentation *)parseInfo
 {
     _velocityView.sequence = sequence;
+}
+
+#pragma mark PlayerRepresentationObserver
+
+- (void)player:(PlayerRepresentation *)player onSendNoteOn:(NoteEvent *)event
+{
+    CGRect rect = [_velocityView noteRect:event pixelPerTick:_scaleAssistant.pixelPerTick measureOffset:_scaleAssistant.measureOffset viewHeight:self.view.bounds.size.height];
+    [_velocityView setNeedsDisplayInRect:rect];
+}
+
+- (void)player:(PlayerRepresentation *)player onSendNoteOff:(NoteEvent *)event
+{
+    CGRect rect = [_velocityView noteRect:event pixelPerTick:_scaleAssistant.pixelPerTick measureOffset:_scaleAssistant.measureOffset viewHeight:self.view.bounds.size.height];
+    [_velocityView setNeedsDisplayInRect:rect];
 }
 
 @end
@@ -191,6 +211,8 @@
     CGFloat pixelPerTick = _scaleAssistant.pixelPerTick;
     CGFloat measureOffset = _scaleAssistant.measureOffset;
     CGFloat viewHeight = self.bounds.size.height;
+    BOOL isPlaying = _player.isPlaying;
+    CGFloat currentX = round(_player.tick * pixelPerTick) + measureOffset;
     
     CGContextSetLineWidth(ctx, 1.0);
     
@@ -208,12 +230,22 @@
             }
             
             NoteEvent *note = (NoteEvent *)raw;
-            CGFloat x = round(note->tick * pixelPerTick) + measureOffset;
-            CGFloat height = viewHeight * ((CGFloat)note->velocity / 127.0);
-            CGRect rect = CGRectMake(x + 0.5, 0, VELOCITY_BAR_WIDTH, height);
+            CGRect rect = [self velocityRect:note pixelPerTick:pixelPerTick measureOffset:measureOffset viewHeight:viewHeight];
             
             if (CGRectIntersectsRect(dirtyRect, rect)) {
-                CGContextSetFillColorWithColor(ctx, _eventFillColor[colorIndex]);
+                if (isPlaying) {
+                    CGRect rect = [self noteRect:note pixelPerTick:pixelPerTick measureOffset:measureOffset viewHeight:viewHeight];
+                    if (CGRectContainsPoint(rect, CGPointMake(currentX, CGRectGetMidY(rect)))) {
+                        CGContextSetFillColorWithColor(ctx, _eventBorderColor[colorIndex]);
+                    }
+                    else {
+                        CGContextSetFillColorWithColor(ctx, _eventFillColor[colorIndex]);
+                    }
+                }
+                else {
+                    CGContextSetFillColorWithColor(ctx, _eventFillColor[colorIndex]);
+                }
+                
                 CGContextSetStrokeColorWithColor(ctx, _eventBorderColor[colorIndex]);
                 CGContextAddRect(ctx, rect);
                 CGContextFillPath(ctx);
@@ -224,6 +256,20 @@
     }
     
     CGContextRestoreGState(ctx);
+}
+
+- (CGRect)velocityRect:(NoteEvent *)note pixelPerTick:(CGFloat)pixelPerTick measureOffset:(CGFloat)measureOffset viewHeight:(CGFloat)viewHeight
+{
+    CGFloat x = round(note->tick * pixelPerTick) + measureOffset;
+    CGFloat height = viewHeight * ((CGFloat)note->velocity / 127.0);
+    return CGRectMake(x + 0.5, 0, VELOCITY_BAR_WIDTH, height);
+}
+
+- (CGRect)noteRect:(NoteEvent *)note pixelPerTick:(CGFloat)pixelPerTick measureOffset:(CGFloat)measureOffset viewHeight:(CGFloat)viewHeight
+{
+    CGFloat x = round(note->tick * pixelPerTick) + measureOffset;
+    CGFloat width = round(note->gatetime * pixelPerTick);
+    return CGRectMake(x, 0, width, viewHeight);
 }
 
 @end
