@@ -233,6 +233,7 @@ static void PlayerProcessMessage(Player *self, PlayerMessage message, void *data
     switch (message) {
     case PlayerMessageSetSequence:
         if (self->sequence) {
+            PlayerSendAllNoteOff(self);
             SequenceRelease(self->sequence);
         }
 
