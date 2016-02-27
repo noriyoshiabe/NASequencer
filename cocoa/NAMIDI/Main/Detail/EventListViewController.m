@@ -9,6 +9,7 @@
 #import "EventListViewController.h"
 #import "EventListRowView.h"
 #import "Color.h"
+#import "NoteTable.h"
 
 @interface EventListViewController () <NSTableViewDataSource, NSTableViewDelegate, NAMidiRepresentationObserver> {
     NSMutableArray<MidiEventRepresentation *> *_events;
@@ -99,26 +100,118 @@
     EventListRowView *view = [tableView makeViewWithIdentifier:@"EventListRow" owner:nil];
     view.location = [NSString stringWithFormat:@"%03d:%02d:%03d", location.m, location.b, location.t];
     view.type = [NSString stringWithUTF8String:MidiEventType2String(raw->type)];
+    view.channel = nil;
+    view.note = nil;
+    view.gatetime = nil;
+    view.velocity = nil;
+    view.other = nil;
     
-    if (MidiEventTypeNote == raw->type) {
-        const char *labels[] = {
-            "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
-        };
-        
-        NoteEvent *note = (NoteEvent *)raw;
-        view.channel = [NSString stringWithFormat:@"%d", note->channel];
-        view.note = [NSString stringWithFormat:@"%s%d", labels[note->noteNo % 12], note->noteNo / 12 - 2];
-        view.gatetime = [NSString stringWithFormat:@"%d", note->gatetime];
-        view.velocity = [NSString stringWithFormat:@"%d", note->velocity];
-    }
-    else {
-        view.channel = nil;
-        view.note = nil;
-        view.gatetime = nil;
-        view.velocity = nil;
-        
-        // TODO
-        view.other = @"Copyright (c) 2016, Noriyoshi Abe. All right reserved.";
+    switch (raw->type) {
+        case MidiEventTypeNote:
+        {
+            const char *labels[] = {
+                "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
+            };
+            
+            NoteEvent *note = (NoteEvent *)raw;
+            view.channel = [NSString stringWithFormat:@"%d", note->channel];
+            view.note = [NSString stringWithFormat:@"%s%d", labels[note->noteNo % 12], note->noteNo / 12 - 2];
+            view.gatetime = [NSString stringWithFormat:@"%d", note->gatetime];
+            view.velocity = [NSString stringWithFormat:@"%d", note->velocity];
+        }
+            break;
+        case MidiEventTypeTempo:
+        {
+            TempoEvent *_event = (void *)raw;
+            view.other = [NSString stringWithFormat:@"%.2f", _event->tempo];
+        }
+            break;
+        case MidiEventTypeTime:
+        {
+            TimeEvent *_event = (void *)raw;
+            view.other = [NSString stringWithFormat:@"%d/%d", _event->numerator, _event->denominator];
+        }
+            break;
+        case MidiEventTypeKey:
+        {
+            KeyEvent *_event = (void *)raw;
+            view.other = [NSString stringWithFormat:@"sf:%d mi:%d %s", _event->sf, _event->mi, MidiKeySign2String((MidiKeySign){_event->sf, _event->mi})];
+        }
+            break;
+        case MidiEventTypeTitle:
+        {
+            TitleEvent *_event = (void *)raw;
+            view.other = [NSString stringWithFormat:@"%s", _event->text];
+        }
+            break;
+        case MidiEventTypeCopyright:
+        {
+            CopyrightEvent *_event = (void *)raw;
+            view.other = [NSString stringWithFormat:@"%s", _event->text];
+        }
+            break;
+        case MidiEventTypeMarker:
+        {
+            MarkerEvent *_event = (void *)raw;
+            view.other = [NSString stringWithFormat:@"%s", _event->text];
+        }
+            break;
+        case MidiEventTypeVoice:
+        {
+            VoiceEvent *_event = (void *)raw;
+            view.channel = [NSString stringWithFormat:@"%d", _event->channel];
+            view.other = [NSString stringWithFormat:@"MSB: %d  LSB: %d  Prg: %d", _event->msb, _event->lsb, _event->programNo];
+        }
+            break;
+        case MidiEventTypeVolume:
+        {
+            VolumeEvent *_event = (void *)raw;
+            view.channel = [NSString stringWithFormat:@"%d", _event->channel];
+            view.other = [NSString stringWithFormat:@"Volume: %d", _event->value];
+        }
+            break;
+        case MidiEventTypePan:
+        {
+            PanEvent *_event = (void *)raw;
+            view.channel = [NSString stringWithFormat:@"%d", _event->channel];
+            view.other = [NSString stringWithFormat:@"Pan: %d", _event->value];
+        }
+            break;
+        case MidiEventTypeChorus:
+        {
+            ChorusEvent *_event = (void *)raw;
+            view.channel = [NSString stringWithFormat:@"%d", _event->channel];
+            view.other = [NSString stringWithFormat:@"Chorus: %d", _event->value];
+        }
+            break;
+        case MidiEventTypeReverb:
+        {
+            ReverbEvent *_event = (void *)raw;
+            view.channel = [NSString stringWithFormat:@"%d", _event->channel];
+            view.other = [NSString stringWithFormat:@"Reverb: %d", _event->value];
+        }
+            break;
+        case MidiEventTypeExpression:
+        {
+            ExpressionEvent *_event = (void *)raw;
+            view.channel = [NSString stringWithFormat:@"%d", _event->channel];
+            view.other = [NSString stringWithFormat:@"Expression: %d", _event->value];
+        }
+            break;
+        case MidiEventTypeDetune:
+        {
+            DetuneEvent *_event = (void *)raw;
+            view.channel = [NSString stringWithFormat:@"%d", _event->channel];
+            view.other = [NSString stringWithFormat:@"Detune: %d", _event->value];
+        }
+            break;
+        case MidiEventTypeSynth:
+        {
+            SynthEvent *_event = (void *)raw;
+            view.channel = [NSString stringWithFormat:@"%d", _event->channel];
+            view.other = [NSString stringWithFormat:@"Synth: %s", _event->identifier];
+        }
+            break;
     }
     
     return view;
