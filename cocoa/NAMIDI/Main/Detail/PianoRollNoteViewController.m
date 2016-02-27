@@ -22,10 +22,13 @@
 @property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
 @property (strong, nonatomic) TrackSelection *trackSelection;
 @property (strong, nonatomic) SequenceRepresentation *sequence;
+@property (strong, nonatomic) PlayerRepresentation *player;
 @property (assign, nonatomic) NSColor *baseColor;
+
+- (CGRect)noteRect:(NoteEvent *)note pixelPerTick:(CGFloat)pixelPerTick measureOffset:(CGFloat)measureOffset;
 @end
 
-@interface PianoRollNoteViewController () <NAMidiRepresentationObserver>
+@interface PianoRollNoteViewController () <NAMidiRepresentationObserver, PlayerRepresentationObserver>
 @property (strong, nonatomic) IBOutlet PianoRollNoteView *noteView;
 @end
 
@@ -37,6 +40,7 @@
     
     _noteView.scaleAssistant = _scaleAssistant;
     _noteView.trackSelection = _trackSelection;
+    _noteView.player = _namidi.player;
 }
 
 - (void)viewWillAppear
@@ -48,6 +52,7 @@
     [_scaleAssistant addObserver:self forKeyPath:@"scale" options:0 context:NULL];
     [_trackSelection addObserver:self forKeyPath:@"selectionFlags" options:0 context:NULL];
     [_namidi addObserver:self];
+    [_namidi.player addObserver:self];
 }
 
 - (void)viewDidDisappear
@@ -57,6 +62,7 @@
     [_scaleAssistant removeObserver:self forKeyPath:@"scale"];
     [_trackSelection removeObserver:self forKeyPath:@"selectionFlags"];
     [_namidi removeObserver:self];
+    [_namidi.player removeObserver:self];
 }
 
 - (void)scrollWheel:(NSEvent *)theEvent
@@ -81,6 +87,20 @@
 - (void)namidiDidParse:(NAMidiRepresentation *)namidi sequence:(SequenceRepresentation *)sequence parseInfo:(ParseInfoRepresentation *)parseInfo
 {
     _noteView.sequence = sequence;
+}
+
+#pragma mark PlayerRepresentationObserver
+
+- (void)player:(PlayerRepresentation *)player onSendNoteOn:(NoteEvent *)event
+{
+    CGRect rect = [_noteView noteRect:event pixelPerTick:_scaleAssistant.pixelPerTick measureOffset:_scaleAssistant.measureOffset];
+    [_noteView setNeedsDisplayInRect:rect];
+}
+
+- (void)player:(PlayerRepresentation *)player onSendNoteOff:(NoteEvent *)event
+{
+    CGRect rect = [_noteView noteRect:event pixelPerTick:_scaleAssistant.pixelPerTick measureOffset:_scaleAssistant.measureOffset];
+    [_noteView setNeedsDisplayInRect:rect];
 }
 
 @end
@@ -209,6 +229,8 @@
     
     CGFloat pixelPerTick = _scaleAssistant.pixelPerTick;
     CGFloat measureOffset = _scaleAssistant.measureOffset;
+    BOOL isPlaying = _player.isPlaying;
+    CGFloat currentX = round(_player.tick * pixelPerTick) + measureOffset;
     
     CGContextSetLineWidth(ctx, 1.0);
     
@@ -226,19 +248,16 @@
             }
             
             NoteEvent *note = (NoteEvent *)raw;
-            
-            int octave = note->noteNo / 12;
-            int noteNoInOctave = note->noteNo % 12;
-            
-            CGFloat x = round(note->tick * pixelPerTick) + measureOffset;
-            CGFloat y = PianoRollLayoutNoteYInOctave[noteNoInOctave]
-                      + PianoRollLayoutOctaveHeight * octave
-                      + PianoRollLayoutNoteHeight + 0.5;
-            CGFloat width = round(note->gatetime * pixelPerTick);
-            CGRect rect = CGRectMake(x, y - EVENT_RADIUS, width, EVENT_RADIUS * 2);
+            CGRect rect = [self noteRect:note pixelPerTick:pixelPerTick measureOffset:measureOffset];
             
             if (CGRectIntersectsRect(dirtyRect, rect)) {
-                CGContextSetFillColorWithColor(ctx, _eventFillColor[colorIndex]);
+                if (isPlaying && CGRectContainsPoint(rect, CGPointMake(currentX, CGRectGetMidY(rect)))) {
+                    CGContextSetFillColorWithColor(ctx, _eventBorderColor[colorIndex]);
+                }
+                else {
+                    CGContextSetFillColorWithColor(ctx, _eventFillColor[colorIndex]);
+                }
+                
                 CGContextSetStrokeColorWithColor(ctx, _eventBorderColor[colorIndex]);
                 [self drawRoundedRect:rect constext:ctx rarius:EVENT_RADIUS fill:YES stroke:YES];
             }
@@ -246,6 +265,20 @@
     }
     
     CGContextRestoreGState(ctx);
+}
+
+- (CGRect)noteRect:(NoteEvent *)note pixelPerTick:(CGFloat)pixelPerTick measureOffset:(CGFloat)measureOffset
+{
+    int octave = note->noteNo / 12;
+    int noteNoInOctave = note->noteNo % 12;
+    
+    CGFloat x = round(note->tick * pixelPerTick) + measureOffset;
+    CGFloat y = PianoRollLayoutNoteYInOctave[noteNoInOctave]
+    + PianoRollLayoutOctaveHeight * octave
+    + PianoRollLayoutNoteHeight + 0.5;
+    CGFloat width = round(note->gatetime * pixelPerTick);
+    
+    return CGRectMake(x, y - EVENT_RADIUS, width, EVENT_RADIUS * 2);
 }
 
 @end
