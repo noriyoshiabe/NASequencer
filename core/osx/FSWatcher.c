@@ -1,5 +1,5 @@
 #include "FSWatcher.h"
-#include "NAMap.h"
+#include "NASet.h"
 #include "NAArray.h"
 #include "NACInteger.h"
 
@@ -23,7 +23,7 @@ struct _FSWatcher {
     void *receiver;
     pthread_t thread;
     bool exit;
-    NAMap *watchingPaths;
+    NASet *watchingPaths;
 };
 
 FSWatcher *FSWatcherCreate(FSWatcherCallbacks *callbacks, void *receiver)
@@ -32,7 +32,7 @@ FSWatcher *FSWatcherCreate(FSWatcherCallbacks *callbacks, void *receiver)
     self->callbacks = callbacks;
     self->receiver = receiver;
 
-    self->watchingPaths = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
+    self->watchingPaths = NASetCreate(NAHashCString, NADescriptionCString);
 
     return self;
 }
@@ -45,9 +45,8 @@ void FSWatcherDestroy(FSWatcher *self)
         pthread_join(self->thread, NULL);
     }
 
-    NAMapTraverseKey(self->watchingPaths, free);
-    NAMapTraverseValue(self->watchingPaths, free);
-    NAMapDestroy(self->watchingPaths);
+    NASetTraverse(self->watchingPaths, free);
+    NASetDestroy(self->watchingPaths);
 
     free(self);
 }
@@ -62,33 +61,35 @@ static void onError(FSWatcher *self)
     self->callbacks->onError(self->receiver, errno, strerror(errno));
 }
 
-static struct tm *getModifiedTime(const char *filepath)
-{
-    struct stat attrib;
-
-    if (0 != stat(filepath, &attrib)) {
-        return NULL;
-    }
-    else {
-        return gmtime(&(attrib.st_mtime));
-    }
-}
-
 void FSWatcherRegisterFilepath(FSWatcher *self, const char *filepath)
 {
-    struct tm *clock;
     char buf[PATH_MAX + 1];
     char *actualpath = realpath(filepath, buf);
-    if (!actualpath || !(clock = getModifiedTime(actualpath))) {
+    if (!actualpath) {
         onError(self);        
     }
     else {
-        if (!NAMapContainsKey(self->watchingPaths, actualpath)) {
-            struct tm *_clock = malloc(sizeof(struct tm));
-            memcpy(_clock, clock, sizeof(struct tm));
-            NAMapPut(self->watchingPaths, strdup(actualpath), _clock);
+        if (!NASetContains(self->watchingPaths, actualpath)) {
+            NASetAdd(self->watchingPaths, strdup(actualpath));
         }
     }
+}
+
+char *flagstring(int flags)
+{
+    static char ret[512];
+    char *or = "";
+ 
+    ret[0]='\0'; // clear the string.
+    if (flags & NOTE_DELETE) {strcat(ret,or);strcat(ret,"NOTE_DELETE");or="|";}
+    if (flags & NOTE_WRITE) {strcat(ret,or);strcat(ret,"NOTE_WRITE");or="|";}
+    if (flags & NOTE_EXTEND) {strcat(ret,or);strcat(ret,"NOTE_EXTEND");or="|";}
+    if (flags & NOTE_ATTRIB) {strcat(ret,or);strcat(ret,"NOTE_ATTRIB");or="|";}
+    if (flags & NOTE_LINK) {strcat(ret,or);strcat(ret,"NOTE_LINK");or="|";}
+    if (flags & NOTE_RENAME) {strcat(ret,or);strcat(ret,"NOTE_RENAME");or="|";}
+    if (flags & NOTE_REVOKE) {strcat(ret,or);strcat(ret,"NOTE_REVOKE");or="|";}
+ 
+    return ret;
 }
 
 static void *run(void *_self)
@@ -104,16 +105,15 @@ static void *run(void *_self)
         return NULL;
     }
 
-    int fileNum = NAMapCount(self->watchingPaths);
+    int fileNum = NASetCount(self->watchingPaths);
     struct kevent *changes = calloc(fileNum, sizeof(struct kevent));
     struct kevent *events = calloc(fileNum, sizeof(struct kevent));
     NAArray *fileDescriptors = NAArrayCreate(4, NADescriptionCInteger);
 
     int index = 0;
-    iterator = NAMapGetIterator(self->watchingPaths);
+    iterator = NASetGetIterator(self->watchingPaths);
     while (iterator->hasNext(iterator)) {
-        NAMapEntry *entry = iterator->next(iterator);
-        char *filepath = entry->key;
+        char *filepath = iterator->next(iterator);
         int fd = open(filepath, O_EVTONLY);
         if (0 > fd) {
             onError(self);        
@@ -123,7 +123,7 @@ static void *run(void *_self)
         EV_SET(&changes[index++], fd,
                 EVFILT_VNODE,
                 EV_ADD | EV_CLEAR,
-                NOTE_DELETE | NOTE_WRITE | NOTE_EXTEND | NOTE_ATTRIB | NOTE_LINK | NOTE_RENAME | NOTE_REVOKE,
+                NOTE_DELETE | NOTE_WRITE | NOTE_EXTEND | /*NOTE_ATTRIB |*/ NOTE_LINK | NOTE_RENAME | NOTE_REVOKE,
                 0,
                 filepath);
 
@@ -135,29 +135,12 @@ static void *run(void *_self)
         timeout.tv_nsec = 50 * 1000 * 1000;
 
         int count = kevent(kq, changes, fileNum, events, fileNum, &timeout);
-        for (int i = 0; i < count; ++i) {
-            if (EV_ERROR == events[i].flags) {
-                onError(self);
-            }
-            else {
-                struct tm *clock = getModifiedTime(events[i].udata);
-                if (!clock) {
-                    if (events[i].fflags & NOTE_RENAME) {
-                        ; // notified with normal saving
-                    }
-                    else {
-                        onError(self);
-                    }
-                }
-                else {
-                    struct tm *lastModifiedTime = NAMapGet(self->watchingPaths, events[i].udata);
-                    if (memcmp(clock, lastModifiedTime, offsetof(struct tm, tm_isdst))) {
-                        memcpy(lastModifiedTime, clock, sizeof(struct tm));
-                        onFileChanged(self, events[i].udata);
-                        break;
-                    }
-                }
-            }
+        if (0 > count || EV_ERROR == events[0].flags) {
+            onError(self);
+        }
+        else if (0 < count) {
+            onFileChanged(self, events[0].udata);
+            break;
         }
     }
 
