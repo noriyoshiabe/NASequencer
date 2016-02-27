@@ -98,6 +98,7 @@
     _playLineVC.namidi = _namidi;
     _conductorVC.namidi = _namidi;
     _noteVC.namidi = _namidi;
+    _keyboardVC.namidi = _namidi;
     _velocityVC.namidi = _namidi;
     
     _measureVC.scaleAssistant = _scaleAssistant;
@@ -108,6 +109,7 @@
     
     _conductorVC.trackSelection = _trackSelection;
     _noteVC.trackSelection = _trackSelection;
+    _keyboardVC.trackSelection = _trackSelection;
     _velocityVC.trackSelection = _trackSelection;
     
     _measureView.documentView = _measureVC.view;

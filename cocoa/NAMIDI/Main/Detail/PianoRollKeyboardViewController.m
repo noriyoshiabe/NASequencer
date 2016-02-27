@@ -60,6 +60,40 @@ typedef struct _Octave {
 - (void)mouseDown:(NSEvent *)theEvent
 {
     CGPoint point = [self.view convertPoint:theEvent.locationInWindow fromView:self.view.window.contentView];
+    [self playKeyInPoint:point];
+}
+
+- (void)mouseUp:(NSEvent *)theEvent
+{
+    if (_pressedKey) {
+        [self sendNoteOff:_pressedKey];
+        _pressedKey->isPressed = NO;
+        [_keyboardView setNeedsDisplayInRect:_pressedKey->rect];
+        _pressedKey = NULL;
+    }
+}
+
+- (void)mouseDragged:(NSEvent *)theEvent
+{
+    CGPoint point = [self.view convertPoint:theEvent.locationInWindow fromView:self.view.window.contentView];
+    
+    if (_pressedKey) {
+        if (!CGRectContainsPoint(_pressedKey->rect, point)) {
+            [self sendNoteOff:_pressedKey];
+            _pressedKey->isPressed = NO;
+            [_keyboardView setNeedsDisplayInRect:_pressedKey->rect];
+            _pressedKey = NULL;
+            
+            [self playKeyInPoint:point];
+        }
+    }
+    else {
+        [self playKeyInPoint:point];
+    }
+}
+
+- (void)playKeyInPoint:(CGPoint)point
+{
     int octaveIndex = MIN(10, MAX(0, floor(point.y / PianoRollLayoutOctaveHeight)));
     Octave *octave = &_keyboardView->_octaves[octaveIndex];
     
@@ -80,16 +114,33 @@ typedef struct _Octave {
     return;
     
 HIT:
+    [self sendNoteOn:_pressedKey];
     _pressedKey->isPressed = YES;
     [_keyboardView setNeedsDisplayInRect:_pressedKey->rect];
 }
 
-- (void)mouseUp:(NSEvent *)theEvent
+- (void)sendNoteOn:(Key *)key
 {
-    if (_pressedKey) {
-        _pressedKey->isPressed = NO;
-        [_keyboardView setNeedsDisplayInRect:_pressedKey->rect];
-        _pressedKey = NULL;
+    for (int i = 1; i <= 16; ++i) {
+        if ([_trackSelection isTrackSelected:i]) {
+            NoteEvent note;
+            note.channel = i;
+            note.noteNo = key->noteNo;
+            note.velocity = 100;
+            [_namidi.mixer sendNoteOn:&note];
+        }
+    }
+}
+
+- (void)sendNoteOff:(Key *)key
+{
+    for (int i = 1; i <= 16; ++i) {
+        if ([_trackSelection isTrackSelected:i]) {
+            NoteEvent note;
+            note.channel = i;
+            note.noteNo = _pressedKey->noteNo;
+            [_namidi.mixer sendNoteOff:&note];
+        }
     }
 }
 

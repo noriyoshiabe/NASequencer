@@ -258,6 +258,16 @@ static MixerObserverCallbacks callbacks = {onChannelStatusChange, onAvailableMid
     return MixerGetLevel(_mixer);
 }
 
+- (void)sendNoteOn:(NoteEvent *)event
+{
+    MixerSendNoteOn(_mixer, event);
+}
+
+- (void)sendNoteOff:(NoteEvent *)event
+{
+    MixerSendNoteOff(_mixer, event);
+}
+
 - (void)onChannelStatusChange:(MixerChannel *)channel kind:(MixerChannelStatusKind)kind
 {
     MixerChannelRepresentation *__channel = _channels[MixerChannelGetNumber(channel) - 1];

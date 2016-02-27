@@ -44,4 +44,6 @@
 - (instancetype)initWithMixer:(Mixer *)mixer;
 - (void)addObserver:(id<MixerRepresentationObserver>)observer;
 - (void)removeObserver:(id<MixerRepresentationObserver>)observer;
+- (void)sendNoteOn:(NoteEvent *)event;
+- (void)sendNoteOff:(NoteEvent *)event;
 @end
