@@ -10,6 +10,7 @@
 #undef NAArrayApplyAt
 #undef NAArrayGetIterator
 #undef NAArrayGetIteratorWithIndex
+#undef NAArrayGetReverseIterator
 
 struct _NAArray {
     int capacity;
@@ -232,6 +233,39 @@ NAIterator *NAArrayGetIteratorWithIndex(NAArray *self, void *buffer, int index)
 {
     NAArrayIterator *iterator = (NAArrayIterator *)NAArrayGetIterator(self, buffer);
     iterator->index = index;
+    return (NAIterator *)iterator;
+}
+
+static bool NAArrayReverseIteratorHasNext(NAIterator *_iterator)
+{
+    NAArrayIterator *iterator = (NAArrayIterator *)_iterator;
+    return 0 <= iterator->index;
+}
+
+static void *NAArrayReverseIteratorNext(NAIterator *_iterator)
+{
+    NAArrayIterator *iterator = (NAArrayIterator *)_iterator;
+    return (void *)iterator->array->values[iterator->index--];
+}
+
+static void NAArrayReverseIteratorRemove(NAIterator *_iterator)
+{
+    NAArrayIterator *iterator = (NAArrayIterator *)_iterator;
+    int targetIndex = iterator->index + 1;
+    if (0 <= targetIndex && targetIndex < iterator->array->count) {
+        NAArrayRemoveAt(iterator->array, targetIndex);
+    }
+}
+
+NAIterator *NAArrayGetReverseIterator(NAArray *self, void *buffer)
+{
+    NAArrayIterator *iterator = buffer;
+    iterator->super.hasNext = NAArrayReverseIteratorHasNext;
+    iterator->super.next = NAArrayReverseIteratorNext;
+    iterator->super.remove = NAArrayReverseIteratorRemove;
+    iterator->array = self;
+    iterator->index = self->count - 1;
+
     return (NAIterator *)iterator;
 }
 
