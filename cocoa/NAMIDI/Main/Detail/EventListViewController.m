@@ -47,9 +47,9 @@
     _tableView.delegate = self;
 }
 
-- (void)viewDidAppear
+- (void)viewWillAppear
 {
-    [super viewDidAppear];
+    [super viewWillAppear];
     [self buildEvents];
     [_trackSelection addObserver:self forKeyPath:@"selectionFlags" options:0 context:NULL];
     [_namidi addObserver:self];

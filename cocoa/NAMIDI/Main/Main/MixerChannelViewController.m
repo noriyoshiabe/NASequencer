@@ -57,9 +57,9 @@
     _underLine.layer.backgroundColor = [Color gray].CGColor;
 }
 
-- (void)viewDidAppear
+- (void)viewWillAppear
 {
-    [super viewDidAppear];
+    [super viewWillAppear];
     
     [_muteButton bind:@"value" toObject:self withKeyPath:@"mute" options:nil];
     [_soloButton bind:@"value" toObject:self withKeyPath:@"solo" options:nil];

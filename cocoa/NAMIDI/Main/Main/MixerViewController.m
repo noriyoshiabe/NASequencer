@@ -50,9 +50,9 @@
     [self.view addSubview:_masterChannelView];
 }
 
-- (void)viewDidAppear
+- (void)viewWillAppear
 {
-    [super viewDidAppear];
+    [super viewWillAppear];
     
     [_indicatorL bind:@"intValue" toObject:self withKeyPath:@"L" options:nil];
     [_indicatorR bind:@"intValue" toObject:self withKeyPath:@"R" options:nil];

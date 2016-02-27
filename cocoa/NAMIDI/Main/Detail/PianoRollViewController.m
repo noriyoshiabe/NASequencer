@@ -135,9 +135,9 @@
     [_horizontalSplitView setPosition:CGRectGetHeight(self.view.frame) - VELOCITY_VIEW_HEIGHT_MAX ofDividerAtIndex:0];
 }
 
-- (void)viewDidAppear
+- (void)viewWillAppear
 {
-    [super viewDidAppear];
+    [super viewWillAppear];
     [self updateConductorVisibility];
     [_trackSelection addObserver:self forKeyPath:@"selectionFlags" options:0 context:NULL];
     [_namidi addObserver:self];

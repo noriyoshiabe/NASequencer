@@ -39,9 +39,9 @@
     _noteView.trackSelection = _trackSelection;
 }
 
-- (void)viewDidAppear
+- (void)viewWillAppear
 {
-    [super viewDidAppear];
+    [super viewWillAppear];
     
     _noteView.sequence = _namidi.sequence;
     

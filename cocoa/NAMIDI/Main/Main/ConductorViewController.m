@@ -19,9 +19,9 @@
     [super viewDidLoad];
 }
 
-- (void)viewDidAppear
+- (void)viewWillAppear
 {
-    [super viewDidAppear];
+    [super viewWillAppear];
     
     [self updateTempo];
     [self updateTimeSign];

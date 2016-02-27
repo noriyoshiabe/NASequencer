@@ -40,9 +40,9 @@
     _conductorView.trackSelection = _trackSelection;
 }
 
-- (void)viewDidAppear
+- (void)viewWillAppear
 {
-    [super viewDidAppear];
+    [super viewWillAppear];
     _conductorView.sequence = _namidi.sequence;
     [_scaleAssistant addObserver:self forKeyPath:@"scale" options:0 context:NULL];
     [_namidi addObserver:self];

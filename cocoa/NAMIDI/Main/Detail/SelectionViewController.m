@@ -69,9 +69,9 @@
     self.view.layer.backgroundColor = [Color darkGray].CGColor;
 }
 
-- (void)viewDidAppear
+- (void)viewWillAppear
 {
-    [super viewDidAppear];
+    [super viewWillAppear];
     
     [self update];
     [_namidi addObserver:self];

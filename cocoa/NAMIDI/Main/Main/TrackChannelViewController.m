@@ -44,9 +44,9 @@
     _trackChannelView.trackSelection = _trackSelection;
 }
 
-- (void)viewDidAppear
+- (void)viewWillAppear
 {
-    [super viewDidAppear];
+    [super viewWillAppear];
     
     _trackChannelView.sequence = _namidi.sequence;
     
