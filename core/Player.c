@@ -235,7 +235,21 @@ static void PlayerProcessMessage(Player *self, PlayerMessage message, void *data
         if (self->sequence) {
             SequenceRelease(self->sequence);
         }
+
         self->sequence = data;
+
+        {
+            int32_t tick =  TimeTableLength(self->sequence->timeTable);
+
+            if (tick < self->tick) {
+                Location location = TimeTableTick2Location(self->sequence->timeTable, tick);
+                self->usec = TimeTableTick2MicroSec(self->sequence->timeTable, tick);
+                self->offset = self->usec;
+                self->start = currentMicroSec();
+                PlayerUpdateClock(self, tick, self->usec, location);
+                PlayerTriggerEvent(self, PlayerEventRewind);
+            }
+        }
         break;
     case PlayerMessageStop:
         if (self->sequence) {
