@@ -84,6 +84,8 @@
     CGPoint point = [self.view convertPoint:theEvent.locationInWindow fromView:self.view.window.contentView];
     
     int tick = (point.x - _scaleAssistant.measureOffset) * _scaleAssistant.tickPerPixel;
+    tick = MAX(0, MIN(tick, _namidi.sequence.length));
+    
     Location location = [_namidi.sequence locationByTick:tick];
     TimeSign timeSign = [_namidi.sequence timeSignByTick:tick];
     
