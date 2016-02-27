@@ -359,14 +359,16 @@ static void PlayerProcessEvent(Player *self, PlayerEvent event)
             int count = NAArrayCount(self->sequence->events);
             MidiEvent **events = NAArrayGetValues(self->sequence->events);
 
-            if (self->tick > events[self->index]->tick) {
+            int tickOfIndex = self->index < count ? events[self->index] : TimeTableLength(self->sequence->timeTable);
+
+            if (tickOfIndex < self->tick) {
                 for (; self->index < count; ++self->index) {
                     if (self->tick <= events[self->index]->tick) {
                         break;
                     }
                 }
             }
-            else if (self->tick < events[self->index]->tick) {
+            else if (self->tick < tickOfIndex) {
                 for (self->index = MAX(0, MIN(self->index - 1, count - 1)); 0 < self->index; --self->index) {
                     if (self->tick > events[self->index]->tick) {
                         break;
