@@ -38,7 +38,7 @@
 
 - (void)removeObserver:(id)observer
 {
-    int index = NAArrayFindFirstIndex(_array, (__bridge const void *)observer, NAArrayAddressComparator);
+    int index = NAArrayFindLastIndex(_array, (__bridge const void *)observer, NAArrayAddressComparator);
     NAArrayRemoveAt(_array, index);
 }
 
