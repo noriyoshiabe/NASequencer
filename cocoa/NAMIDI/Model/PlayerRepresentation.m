@@ -7,10 +7,11 @@
 //
 
 #import "PlayerRepresentation.h"
+#import "ObserverList.h"
 
 @interface PlayerRepresentation () {
     Player *_player;
-    NSHashTable *_observers;
+    ObserverList *_observers;
 }
 
 - (void)onNotifyClock:(int)tick usec:(int64_t)usec location:(Location)location;
@@ -51,7 +52,7 @@ static PlayerObserverCallbacks callbacks = {onNotifyClock, onNotifyEvent, onSend
 {
     self = [super init];
     if (self) {
-        _observers = [NSHashTable weakObjectsHashTable];
+        _observers = [[ObserverList alloc] init];
         
         _player = player;
         PlayerAddObserver(_player, (__bridge void *)self, &callbacks);
@@ -68,12 +69,12 @@ static PlayerObserverCallbacks callbacks = {onNotifyClock, onNotifyEvent, onSend
 
 - (void)addObserver:(id<PlayerRepresentationObserver>)observer
 {
-    [_observers addObject:observer];
+    [_observers addObserver:observer];
 }
 
 - (void)removeObserver:(id<PlayerRepresentationObserver>)observer
 {
-    [_observers removeObject:observer];
+    [_observers removeObserver:observer];
 }
 
 - (void)onNotifyClock:(int)tick usec:(int64_t)usec location:(Location)location

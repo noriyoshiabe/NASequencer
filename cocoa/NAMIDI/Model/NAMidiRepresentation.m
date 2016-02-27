@@ -8,6 +8,7 @@
 
 #import "NAMidiRepresentation.h"
 #import "NAMidi.h"
+#import "ObserverList.h"
 
 @interface PlayerRepresentation (Finalize)
 - (void)finalize;
@@ -19,7 +20,7 @@
 
 @interface NAMidiRepresentation () {
     NAMidi *_namidi;
-    NSHashTable *_observers;
+    ObserverList *_observers;
 }
 
 - (void)onBeforeParse:(BOOL)fileChanged;
@@ -46,7 +47,7 @@ static NAMidiObserverCallbacks callbacks = {onBeforeParse, onParseFinish};
 {
     self = [super init];
     if (self) {
-        _observers = [NSHashTable weakObjectsHashTable];
+        _observers = [[ObserverList alloc] init];
         
         _namidi = NAMidiCreate();
         NAMidiAddObserver(_namidi, (__bridge void *)self, &callbacks);
@@ -70,12 +71,12 @@ static NAMidiObserverCallbacks callbacks = {onBeforeParse, onParseFinish};
 
 - (void)addObserver:(id<NAMidiRepresentationObserver>)observer
 {
-    [_observers addObject:observer];
+    [_observers addObserver:observer];
 }
 
 - (void)removeObserver:(id<NAMidiRepresentationObserver>)observer
 {
-    [_observers removeObject:observer];
+    [_observers removeObserver:observer];
 }
 
 - (void)onBeforeParse:(BOOL)fileChanged

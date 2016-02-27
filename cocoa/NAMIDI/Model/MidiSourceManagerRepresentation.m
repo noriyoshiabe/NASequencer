@@ -7,6 +7,7 @@
 //
 
 #import "MidiSourceManagerRepresentation.h"
+#import "ObserverList.h"
 
 @interface MidiSourceDescriptionRepresentation ()
 - (instancetype)initWithMidiSourceDescription:(MidiSourceDescription *)description;
@@ -52,7 +53,7 @@
 
 @interface MidiSourceManagerRepresentation () {
     MidiSourceManager *_manager;
-    NSHashTable *_observers;
+    ObserverList *_observers;
     NSMutableArray *_descriptions;
     NSMutableArray *_availableDescriptions;
 }
@@ -108,7 +109,7 @@ static MidiSourceManagerRepresentation *_sharedInstance = nil;
 {
     self = [super init];
     if (self) {
-        _observers = [NSHashTable weakObjectsHashTable];
+        _observers = [[ObserverList alloc] init];
         _manager = MidiSourceManagerSharedInstance();
         _descriptions = [NSMutableArray array];
         _availableDescriptions = [NSMutableArray array];
@@ -120,12 +121,12 @@ static MidiSourceManagerRepresentation *_sharedInstance = nil;
 
 - (void)addObserver:(id<MidiSourceManagerRepresentationObserver>)observer
 {
-    [_observers addObject:observer];
+    [_observers addObserver:observer];
 }
 
 - (void)removeObserver:(id<MidiSourceManagerRepresentationObserver>)observer
 {
-    [_observers removeObject:observer];
+    [_observers removeObserver:observer];
 }
 
 - (void)loadMidiSourceDescriptionFromSoundFont:(NSString *)filepath

@@ -7,6 +7,7 @@
 //
 
 #import "MixerRepresentation.h"
+#import "ObserverList.h"
 
 @interface PresetRepresentation ()
 - (instancetype)initWithPresetInfo:(PresetInfo *)presetInfo;
@@ -185,7 +186,7 @@
 
 @interface MixerRepresentation () {
     Mixer *_mixer;
-    NSHashTable *_observers;
+    ObserverList *_observers;
     NSMutableArray<MixerChannelRepresentation *> *_channels;
 }
 - (void)onChannelStatusChange:(MixerChannel *)channel kind:(MixerChannelStatusKind)kind;
@@ -220,7 +221,7 @@ static MixerObserverCallbacks callbacks = {onChannelStatusChange, onAvailableMid
     self = [super init];
     if (self) {
         _mixer = mixer;
-        _observers = [NSHashTable weakObjectsHashTable];
+        _observers = [[ObserverList alloc] init];
         _channels = [NSMutableArray array];
         
         NAArray *channels = MixerGetChannels(_mixer);
@@ -244,12 +245,12 @@ static MixerObserverCallbacks callbacks = {onChannelStatusChange, onAvailableMid
 
 - (void)addObserver:(id<MixerRepresentationObserver>)observer
 {
-    [_observers addObject:observer];
+    [_observers addObserver:observer];
 }
 
 - (void)removeObserver:(id<MixerRepresentationObserver>)observer
 {
-    [_observers removeObject:observer];
+    [_observers removeObserver:observer];
 }
 
 - (Level)level
