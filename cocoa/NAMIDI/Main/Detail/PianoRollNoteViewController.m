@@ -26,6 +26,7 @@
 @property (assign, nonatomic) NSColor *baseColor;
 
 - (CGRect)noteRect:(NoteEvent *)note pixelPerTick:(CGFloat)pixelPerTick measureOffset:(CGFloat)measureOffset;
+- (CGFloat)noteY:(int)noteNo;
 @end
 
 @interface PianoRollNoteViewController () <NAMidiRepresentationObserver, PlayerRepresentationObserver>
@@ -55,6 +56,12 @@
     [_namidi.player addObserver:self];
 }
 
+- (void)viewDidAppear
+{
+    [super viewDidAppear];
+    [self adjustVerticalScrollPosition];
+}
+
 - (void)viewDidDisappear
 {
     [super viewDidDisappear];
@@ -80,6 +87,24 @@
     else if (object == _trackSelection) {
         _noteView.needsDisplay = YES;
     }
+}
+
+- (void)adjustVerticalScrollPosition
+{
+    int low = 127;
+    int high = 0;
+    
+    for (ChannelRepresentation *channel in _namidi.sequence.channels) {
+        if ([_trackSelection isTrackSelected:channel.number]) {
+            low = MIN(low, channel.noteRange.low);
+            high = MAX(high, channel.noteRange.high);
+        }
+    }
+    
+    CGFloat centerY = [_noteView noteY:(low + high) / 2];
+    NSClipView *clipView = (NSClipView *)self.view.superview;
+    CGFloat halfHeight = clipView.frame.size.height / 2.0;
+    [clipView scrollToPoint:CGPointMake(clipView.bounds.origin.x, roundf(centerY - halfHeight))];
 }
 
 #pragma mark NAMidiRepresentationObserver
@@ -269,16 +294,21 @@
 
 - (CGRect)noteRect:(NoteEvent *)note pixelPerTick:(CGFloat)pixelPerTick measureOffset:(CGFloat)measureOffset
 {
-    int octave = note->noteNo / 12;
-    int noteNoInOctave = note->noteNo % 12;
-    
     CGFloat x = round(note->tick * pixelPerTick) + measureOffset;
-    CGFloat y = PianoRollLayoutNoteYInOctave[noteNoInOctave]
-    + PianoRollLayoutOctaveHeight * octave
-    + PianoRollLayoutNoteHeight + 0.5;
+    CGFloat y = [self noteY:note->noteNo];
     CGFloat width = round(note->gatetime * pixelPerTick);
     
     return CGRectMake(x, y - EVENT_RADIUS, width, EVENT_RADIUS * 2);
+}
+
+- (CGFloat)noteY:(int)noteNo
+{
+    int octave = noteNo / 12;
+    int noteNoInOctave = noteNo % 12;
+    
+    return PianoRollLayoutNoteYInOctave[noteNoInOctave]
+         + PianoRollLayoutOctaveHeight * octave
+         + PianoRollLayoutNoteHeight + 0.5;
 }
 
 @end
