@@ -94,13 +94,13 @@
 - (void)player:(PlayerRepresentation *)player onSendNoteOn:(NoteEvent *)event
 {
     CGRect rect = [_noteView noteRect:event pixelPerTick:_scaleAssistant.pixelPerTick measureOffset:_scaleAssistant.measureOffset];
-    [_noteView setNeedsDisplayInRect:rect];
+    [_noteView setNeedsDisplayInRect:CGRectInset(rect, -20, 0)];
 }
 
 - (void)player:(PlayerRepresentation *)player onSendNoteOff:(NoteEvent *)event
 {
     CGRect rect = [_noteView noteRect:event pixelPerTick:_scaleAssistant.pixelPerTick measureOffset:_scaleAssistant.measureOffset];
-    [_noteView setNeedsDisplayInRect:rect];
+    [_noteView setNeedsDisplayInRect:CGRectInset(rect, -20, 0)];
 }
 
 @end

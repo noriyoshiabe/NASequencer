@@ -92,13 +92,13 @@
 - (void)player:(PlayerRepresentation *)player onSendNoteOn:(NoteEvent *)event
 {
     CGRect rect = [_velocityView noteRect:event pixelPerTick:_scaleAssistant.pixelPerTick measureOffset:_scaleAssistant.measureOffset viewHeight:self.view.bounds.size.height];
-    [_velocityView setNeedsDisplayInRect:rect];
+    [_velocityView setNeedsDisplayInRect:CGRectInset(rect, -20, 0)];
 }
 
 - (void)player:(PlayerRepresentation *)player onSendNoteOff:(NoteEvent *)event
 {
     CGRect rect = [_velocityView noteRect:event pixelPerTick:_scaleAssistant.pixelPerTick measureOffset:_scaleAssistant.measureOffset viewHeight:self.view.bounds.size.height];
-    [_velocityView setNeedsDisplayInRect:rect];
+    [_velocityView setNeedsDisplayInRect:CGRectInset(rect, -20, 0)];
 }
 
 @end
