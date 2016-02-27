@@ -85,11 +85,24 @@
     
     int tick = (point.x - _scaleAssistant.measureOffset) * _scaleAssistant.tickPerPixel;
     Location location = [_namidi.sequence locationByTick:tick];
-    location.t = 0;
-    location.b = 1;
-    tick = [_namidi.sequence tickByLocation:location];
+    TimeSign timeSign = [_namidi.sequence timeSignByTick:tick];
     
-    // TODO move measure
+    Location previpusBeatLocation = {location.m, location.b, 0};
+    Location nextBeatLocation = {location.m, location.b + 1, 0};
+    if (timeSign.numerator <= nextBeatLocation.b) {
+        location.m += 1;
+        location.b = 1;
+    }
+    
+    int previousBeatTick = [_namidi.sequence tickByLocation:previpusBeatLocation];
+    int nextBeatTick = [_namidi.sequence tickByLocation:nextBeatLocation];
+    
+    if (tick - previousBeatTick <= nextBeatTick - tick) {
+        [_namidi.player seek:previpusBeatLocation];
+    }
+    else {
+        [_namidi.player seek:nextBeatLocation];
+    }
 }
 
 #pragma mark NAMidiRepresentationObserver

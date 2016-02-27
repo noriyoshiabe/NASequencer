@@ -38,7 +38,7 @@ extern void PlayerPlayPause(Player *self);
 extern void PlayerRewind(Player *self);
 extern void PlayerForward(Player *self);
 extern void PlayerBackWard(Player *self);
-extern void PlayerSeek(Player *self, int measure);
+extern void PlayerSeek(Player *self, Location location);
 
 extern bool PlayerIsPlaying(Player *self);
 extern uint64_t PlayerGetUsec(Player *self);

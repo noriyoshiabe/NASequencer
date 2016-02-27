@@ -171,4 +171,9 @@ static PlayerObserverCallbacks callbacks = {onNotifyClock, onNotifyEvent, onSend
     PlayerBackWard(_player);
 }
 
+- (void)seek:(Location)location
+{
+    PlayerSeek(_player, location);
+}
+
 @end

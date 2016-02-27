@@ -102,7 +102,7 @@ static void SeekCommandExecute(Command *self, CLI *cli)
     }
 
     Player *player = NAMidiGetPlayer(CLIGetNAMidi(cli));
-    PlayerSeek(player, measure);
+    PlayerSeek(player, (Location){measure, 1, 0});
 }
 
 static bool ParseViewArgs(NAArray *argv, int *channel, int *from, int *length)

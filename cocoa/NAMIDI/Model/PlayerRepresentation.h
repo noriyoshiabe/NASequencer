@@ -32,4 +32,5 @@
 - (void)rewind;
 - (void)forward;
 - (void)backward;
+- (void)seek:(Location)location;
 @end

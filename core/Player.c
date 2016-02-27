@@ -141,11 +141,11 @@ void PlayerBackWard(Player *self)
     NAMessageQPost(self->msgQ, PlayerMessageBackward, NULL);
 }
 
-void PlayerSeek(Player *self, int measure)
+void PlayerSeek(Player *self, Location location)
 {
-    int *pmeasure = malloc(sizeof(int));
-    *pmeasure = measure;
-    NAMessageQPost(self->msgQ, PlayerMessageSeek, pmeasure);
+    Location *pLocation = malloc(sizeof(Location));
+    *pLocation = location;
+    NAMessageQPost(self->msgQ, PlayerMessageSeek, pLocation);
 }
 
 bool PlayerIsPlaying(Player *self)
@@ -319,18 +319,17 @@ static void PlayerProcessMessage(Player *self, PlayerMessage message, void *data
         break;
     case PlayerMessageSeek:
         if (self->sequence) {
-            int *measure = data;
-            int32_t tick = TimeTableTickByMeasure(self->sequence->timeTable, *measure);
-            Location location = TimeTableTick2Location(self->sequence->timeTable, tick);
-
-            free(measure);
+            Location *location = data;
+            int32_t tick = TimeTableTickByLocation(self->sequence->timeTable, *location);
 
             self->usec = TimeTableTick2MicroSec(self->sequence->timeTable, tick);
             self->offset = self->usec;
             self->start = currentMicroSec();
 
-            PlayerUpdateClock(self, tick, self->usec, location);
+            PlayerUpdateClock(self, tick, self->usec, *location);
             PlayerTriggerEvent(self, PlayerEventSeek);
+
+            free(location);
         }
         break;
     case PlayerMessageDestroy:
