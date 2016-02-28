@@ -86,11 +86,9 @@
         frame.origin.y = frame.origin.y + frame.size.height / 2 - CGRectGetHeight(_errorWC.window.frame) / 2;
         frame.size = _errorWC.window.frame.size;
         [_errorWC.window setFrame:frame display:YES];
-        
-        [self.window addChildWindow:_errorWC.window ordered:NSWindowAbove];
     }
     
-    [_errorWC showWindow:self];
+    [self.window addChildWindow:_errorWC.window ordered:NSWindowAbove];
 }
 
 - (void)showMainView
