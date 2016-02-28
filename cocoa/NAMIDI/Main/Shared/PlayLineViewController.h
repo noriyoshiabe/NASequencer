@@ -11,7 +11,7 @@
 #import "NAMidiRepresentation.h"
 
 @interface PlayLineViewController : NSViewController
-@property (weak, nonatomic) NSView *containerView;
+@property (weak, nonatomic) NSScrollView *containerView;
 @property (strong, nonatomic) NAMidiRepresentation *namidi;
 @property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
 @end

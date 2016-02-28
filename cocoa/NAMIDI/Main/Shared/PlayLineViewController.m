@@ -10,8 +10,10 @@
 
 @import QuartzCore;
 
-@interface PlayLineView : NSView <PlayerRepresentationObserver>
-@property (weak, nonatomic) NSView *containerView;
+@interface PlayLineView : NSView <PlayerRepresentationObserver> {
+    BOOL _scrolling;
+}
+@property (weak, nonatomic) NSScrollView *containerView;
 @property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
 @property (strong, nonatomic) SequenceRepresentation *sequence;
 @property (strong, nonatomic) PlayerRepresentation *player;
@@ -102,11 +104,34 @@
     [CATransaction commit];
 }
 
+- (void)scrollToCurrent
+{
+    if (_scrolling) {
+        return;
+    }
+    
+    CGFloat x = roundf(_player.tick * _scaleAssistant.pixelPerTick + _scaleAssistant.measureOffset);
+    
+    if (!CGRectIntersectsRect(_containerView.documentVisibleRect, CGRectMake(x, 0, 0, self.bounds.size.height))) {
+        _scrolling = YES;
+        
+        [NSAnimationContext runAnimationGroup:^(NSAnimationContext * _Nonnull context) {
+            context.duration = 0.5;
+            CGPoint point = CGPointMake(x - _scaleAssistant.measureOffset, _containerView.documentVisibleRect.origin.y);
+            [_containerView.contentView.animator setBoundsOrigin:point];
+        } completionHandler:^{
+            _scrolling = false;
+            [self scrollToCurrent];
+        }];
+    }
+}
+
 #pragma mark PlayerRepresentationObserver
 
 - (void)player:(PlayerRepresentation *)player onNotifyClock:(int)tick usec:(int64_t)usec location:(Location)location
 {
     [self update];
+    [self scrollToCurrent];
 }
 
 @end

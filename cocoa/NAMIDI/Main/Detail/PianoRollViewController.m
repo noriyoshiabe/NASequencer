@@ -125,9 +125,8 @@
     [_measureView observeScrollForScrollView:_conductorView x:YES y:NO];
     [_conductorView observeScrollForScrollView:_noteView x:YES y:NO];
     [_noteView observeScrollForScrollView:_velocityView x:YES y:NO];
-    [_velocityView observeScrollForScrollView:_measureView x:YES y:NO];
-    
-    [_playLineView observeScrollForScrollView:_noteView x:YES y:NO];
+    [_velocityView observeScrollForScrollView:_playLineView x:YES y:NO];
+    [_playLineView observeScrollForScrollView:_measureView x:YES y:NO];
     
     [_keyboardView observeScrollForScrollView:_noteView x:NO y:YES];
     [_noteView observeScrollForScrollView:_keyboardView x:NO y:YES];

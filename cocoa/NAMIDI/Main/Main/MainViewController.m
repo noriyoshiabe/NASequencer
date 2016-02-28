@@ -84,9 +84,8 @@
     
     [_measureView observeScrollForScrollView:_conductorTrackView x:YES y:NO];
     [_conductorTrackView observeScrollForScrollView:_trackView x:YES y:NO];
-    [_trackView observeScrollForScrollView:_measureView x:YES y:NO];
-    
-    [_playLineView observeScrollForScrollView:_trackView x:YES y:NO];
+    [_trackView observeScrollForScrollView:_playLineView x:YES y:NO];
+    [_playLineView observeScrollForScrollView:_measureView x:YES y:NO];
     
     [_mixerView observeScrollForScrollView:_trackView x:NO y:YES];
     [_trackView observeScrollForScrollView:_mixerView x:NO y:YES];
