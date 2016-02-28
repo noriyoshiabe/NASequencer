@@ -20,6 +20,8 @@
 
 @interface EditorViewController () <NSFilePresenter> {
     NSDate *_modificationDate;
+    NSInteger _changeCount;
+    NSInteger _savedCount;
 }
 @end
 
@@ -38,14 +40,19 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(selectedRangeDidChange:) name: NSTextViewDidChangeSelectionNotification object:_textView];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textDidChange:) name: NSTextDidChangeNotification object:_textView];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(undoManagerDidCloseUndoGroupNotification:) name:NSUndoManagerDidCloseUndoGroupNotification object:_textView.undoManager];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(undoManagerDidUndoChangeNotification:) name:NSUndoManagerDidUndoChangeNotification object:_textView.undoManager];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(undoManagerDidRedoChangeNotification:) name:NSUndoManagerDidRedoChangeNotification object:_textView.undoManager];
+    
     _textView.string = [NSString stringWithContentsOfURL:_file.url encoding:NSUTF8StringEncoding error:nil];
     _textView.selectedRange = NSMakeRange(0, 0);
     
     [NSFileCoordinator addFilePresenter:self];
 }
 
-- (void)viewDidAppear
+- (void)viewWillAppear
 {
+    [super viewWillAppear];
     [self.view.window makeFirstResponder:_textView];
 }
 
@@ -54,6 +61,20 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [NSFileCoordinator removeFilePresenter:self];
 }
+
+- (BOOL)isDocumentEdited
+{
+    return _savedCount != _changeCount;
+}
+
+- (void)saveDocument
+{
+    [_textView.string writeToURL:_file.url atomically:YES encoding:NSUTF8StringEncoding error:nil];
+    _modificationDate = [NSFileVersion currentVersionOfItemAtURL:_file.url].modificationDate;
+    _savedCount = _changeCount;
+}
+
+#pragma mark NSNotification
 
 - (void)selectedRangeDidChange:(NSNotification *)notification
 {
@@ -89,12 +110,30 @@
     [storage addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(0, [storage length])];
 }
 
+- (void)undoManagerDidCloseUndoGroupNotification:(NSNotification *)notification
+{
+    ++_changeCount;
+    [_delegate editorViewControllerDidDidUpdateChangeState:self];
+}
+
+- (void)undoManagerDidUndoChangeNotification:(NSNotification *)notification
+{
+    --_changeCount;
+    [_delegate editorViewControllerDidDidUpdateChangeState:self];
+}
+
+- (void)undoManagerDidRedoChangeNotification:(NSNotification *)notification
+{
+    ++_changeCount;
+    [_delegate editorViewControllerDidDidUpdateChangeState:self];
+}
+
 #pragma mark Menu Action
 
 - (IBAction)saveDocument:(id)sender
 {
-    [_textView.string writeToURL:_file.url atomically:YES encoding:NSUTF8StringEncoding error:nil];
-    _modificationDate = [NSFileVersion currentVersionOfItemAtURL:_file.url].modificationDate;
+    [self saveDocument];
+    [_delegate editorViewControllerDidDidUpdateChangeState:self];
 }
 
 - (IBAction)performClose:(id)sender

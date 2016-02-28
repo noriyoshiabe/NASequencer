@@ -76,20 +76,60 @@
 
 - (void)selectFile:(FileRepresentation *)file
 {
+    [_currentController.view removeFromSuperview];
+    
     EditorViewController *vc = _controllers[file.identifier];
     [_contentView addSubviewWithFitConstraints:vc.view];
+    _currentController = vc;
     
-    self.currentController = vc;
-    
-    self.window.titleWithRepresentedFilename = file.filename;
     self.window.representedURL = file.url;
+    
+    [self setWindowTitle];
+}
+
+- (void)setWindowTitle
+{
+    FileRepresentation *file = _currentController.file;
+    
+    if (_currentController.isDocumentEdited) {
+        self.window.documentEdited = YES;
+        self.window.title = [NSString stringWithFormat:@"%@ + (%@)", file.filename, file.directory];
+    }
+    else {
+        self.window.documentEdited = NO;
+        self.window.title = [NSString stringWithFormat:@"%@ (%@)", file.filename, file.directory];
+    }
+}
+
+- (void)closeFileWithConfirmation:(FileRepresentation *)file
+{
+    NSString *message = NSLocalizedString(@"Editor_CloseFileWithConfirmationMessage", @"Do you want to save the changes you made in the document \"%@/%@\" ?");
+    NSString *informative = NSLocalizedString(@"Editor_CloseFileWithConfirmationInformative", @"Your changes will be lost if you don't save them.");
+    
+    NSAlert *alert = [[NSAlert alloc] init];
+    alert.messageText = [NSString stringWithFormat:message, file.directory, file.filename];
+    alert.informativeText = informative;
+    [alert addButtonWithTitle:NSLocalizedString(@"DoNotSave", @"Don't Save")];
+    [alert addButtonWithTitle:NSLocalizedString(@"Cancel", @"Cancel")];
+    [alert addButtonWithTitle:NSLocalizedString(@"Save", @"Save")];
+    [alert beginSheetModalForWindow:self.window completionHandler:^(NSModalResponse returnCode) {
+        switch (returnCode) {
+            case NSAlertFirstButtonReturn:
+                [self closeFile:file];
+                break;
+            case NSAlertSecondButtonReturn:
+                break;
+            case NSAlertThirdButtonReturn:
+                [_currentController saveDocument];
+                [self closeFile:file];
+                break;
+        }
+    }];
 }
 
 - (void)closeFile:(FileRepresentation *)file
 {
-    // TODO when not save change
-    
-    self.currentController = nil;
+    _currentController = nil;
     [_controllers removeObjectForKey:file.identifier];
     [_files removeObject:file];
     
@@ -113,7 +153,7 @@
 
 - (void)statusViewController:(EditorStatusViewController *)controller didPressCloseButten:(FileRepresentation *)file
 {
-    [self closeFile:file];
+    [self closeFileWithConfirmation:file];
 }
 
 #pragma mark EditorViewControllerDelegate
@@ -125,7 +165,12 @@
 
 - (void)editorViewController:(EditorViewController *)controller didPerformCloseAction:(id)sender
 {
-    [self closeFile:controller.file];
+    [self closeFileWithConfirmation:controller.file];
+}
+
+- (void)editorViewControllerDidDidUpdateChangeState:(EditorViewController *)controller
+{
+    [self setWindowTitle];
 }
 
 #pragma mark Menu Action
