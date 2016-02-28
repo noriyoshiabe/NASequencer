@@ -109,18 +109,18 @@
     NSAlert *alert = [[NSAlert alloc] init];
     alert.messageText = [NSString stringWithFormat:message, file.directory, file.filename];
     alert.informativeText = informative;
-    [alert addButtonWithTitle:NSLocalizedString(@"DoNotSave", @"Don't Save")];
-    [alert addButtonWithTitle:NSLocalizedString(@"Cancel", @"Cancel")];
     [alert addButtonWithTitle:NSLocalizedString(@"Save", @"Save")];
+    [alert addButtonWithTitle:NSLocalizedString(@"Cancel", @"Cancel")];
+    [alert addButtonWithTitle:NSLocalizedString(@"DoNotSave", @"Don't Save")];
     [alert beginSheetModalForWindow:self.window completionHandler:^(NSModalResponse returnCode) {
         switch (returnCode) {
             case NSAlertFirstButtonReturn:
+                [_currentController saveDocument];
                 [self closeFile:file];
                 break;
             case NSAlertSecondButtonReturn:
                 break;
             case NSAlertThirdButtonReturn:
-                [_currentController saveDocument];
                 [self closeFile:file];
                 break;
         }
