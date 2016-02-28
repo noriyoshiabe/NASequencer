@@ -137,13 +137,6 @@
     }];
 }
 
-- (IBAction)saveDocument:(id)sender
-{
-    // TODO Track file changes
-    
-    [_currentController.textView.string writeToURL:_currentController.file.url atomically:YES encoding:NSUTF8StringEncoding error:nil];
-}
-
 - (IBAction)saveDocumentAs:(id)sender
 {
     [AppController saveDocumentForWindow:self.window completion:^(NSURL *url) {

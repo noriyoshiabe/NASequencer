@@ -18,7 +18,9 @@
 - (instancetype)initWithTextView:(NSTextView *)textView;
 @end
 
-@interface EditorViewController ()
+@interface EditorViewController () <NSFilePresenter> {
+    NSDate *_modificationDate;
+}
 @end
 
 @implementation EditorViewController
@@ -38,6 +40,8 @@
     
     _textView.string = [NSString stringWithContentsOfURL:_file.url encoding:NSUTF8StringEncoding error:nil];
     _textView.selectedRange = NSMakeRange(0, 0);
+    
+    [NSFileCoordinator addFilePresenter:self];
 }
 
 - (void)viewDidAppear
@@ -48,6 +52,7 @@
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [NSFileCoordinator removeFilePresenter:self];
 }
 
 - (void)selectedRangeDidChange:(NSNotification *)notification
@@ -86,9 +91,39 @@
 
 #pragma mark Menu Action
 
+- (IBAction)saveDocument:(id)sender
+{
+    [_textView.string writeToURL:_file.url atomically:YES encoding:NSUTF8StringEncoding error:nil];
+    _modificationDate = [NSFileVersion currentVersionOfItemAtURL:_file.url].modificationDate;
+}
+
 - (IBAction)performClose:(id)sender
 {
     [_delegate editorViewController:self didPerformCloseAction:sender];
+}
+
+#pragma mark NSFilePresenter
+
+- (NSURL *)presentedItemURL
+{
+    _modificationDate = [NSFileVersion currentVersionOfItemAtURL:_file.url].modificationDate;
+    return _file.url;
+}
+
+- (NSOperationQueue *)presentedItemOperationQueue
+{
+    return [NSOperationQueue mainQueue];
+}
+
+- (void)presentedItemDidChange
+{
+    NSDate *modificationDate = [NSFileVersion currentVersionOfItemAtURL:_file.url].modificationDate;
+    if (![modificationDate isEqual:_modificationDate]) {
+        NSRange range = _textView.selectedRange;
+        _textView.string = [NSString stringWithContentsOfURL:_file.url encoding:NSUTF8StringEncoding error:nil];
+        _textView.selectedRange = range;
+        _modificationDate = modificationDate;
+    }
 }
 
 @end
