@@ -18,10 +18,11 @@
 - (instancetype)initWithTextView:(NSTextView *)textView;
 @end
 
-@interface EditorViewController () <NSFilePresenter> {
+@interface EditorViewController () <NSFilePresenter, NSTextViewDelegate> {
     NSDate *_modificationDate;
     NSInteger _changeCount;
     NSInteger _savedCount;
+    NSUndoManager *_undoManager;
 }
 @end
 
@@ -31,18 +32,21 @@
 {
     [super viewDidLoad];
     
+    _undoManager = [[NSUndoManager alloc] init];
+    
     _textView.font = [NSFont fontWithName:@"Menlo" size:11];
     _textView.enclosingScrollView.verticalRulerView = [[LineNumberView alloc] initWithTextView:_textView];
     _textView.enclosingScrollView.hasVerticalRuler = YES;
     _textView.enclosingScrollView.rulersVisible = YES;
     _textView.automaticQuoteSubstitutionEnabled = NO;
+    _textView.delegate = self;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(selectedRangeDidChange:) name: NSTextViewDidChangeSelectionNotification object:_textView];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textDidChange:) name: NSTextDidChangeNotification object:_textView];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(undoManagerDidCloseUndoGroupNotification:) name:NSUndoManagerDidCloseUndoGroupNotification object:_textView.undoManager];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(undoManagerDidUndoChangeNotification:) name:NSUndoManagerDidUndoChangeNotification object:_textView.undoManager];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(undoManagerDidRedoChangeNotification:) name:NSUndoManagerDidRedoChangeNotification object:_textView.undoManager];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(undoManagerDidCloseUndoGroupNotification:) name:NSUndoManagerDidCloseUndoGroupNotification object:_undoManager];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(undoManagerDidUndoChangeNotification:) name:NSUndoManagerDidUndoChangeNotification object:_undoManager];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(undoManagerDidRedoChangeNotification:) name:NSUndoManagerDidRedoChangeNotification object:_undoManager];
     
     _textView.string = [NSString stringWithContentsOfURL:_file.url encoding:NSUTF8StringEncoding error:nil];
     _textView.selectedRange = NSMakeRange(0, 0);
@@ -72,6 +76,23 @@
     [_textView.string writeToURL:_file.url atomically:YES encoding:NSUTF8StringEncoding error:nil];
     _modificationDate = [NSFileVersion currentVersionOfItemAtURL:_file.url].modificationDate;
     _savedCount = _changeCount;
+}
+
+- (void)reloadFile
+{
+    _savedCount = _changeCount + 1;
+    
+    NSRange range = _textView.selectedRange;
+    [_textView insertText:[NSString stringWithContentsOfURL:_file.url encoding:NSUTF8StringEncoding error:nil] replacementRange:NSMakeRange(0, _textView.textStorage.length)];
+    _textView.selectedRange = range;
+    [_textView scrollRangeToVisible:range];
+}
+
+#pragma mark NSTextViewDelegate
+
+- (NSUndoManager *)undoManagerForTextView:(NSTextView *)view
+{
+    return _undoManager;
 }
 
 #pragma mark NSNotification
@@ -113,19 +134,19 @@
 - (void)undoManagerDidCloseUndoGroupNotification:(NSNotification *)notification
 {
     ++_changeCount;
-    [_delegate editorViewControllerDidDidUpdateChangeState:self];
+    [_delegate editorViewControllerDidUpdateChangeState:self];
 }
 
 - (void)undoManagerDidUndoChangeNotification:(NSNotification *)notification
 {
     --_changeCount;
-    [_delegate editorViewControllerDidDidUpdateChangeState:self];
+    [_delegate editorViewControllerDidUpdateChangeState:self];
 }
 
 - (void)undoManagerDidRedoChangeNotification:(NSNotification *)notification
 {
     ++_changeCount;
-    [_delegate editorViewControllerDidDidUpdateChangeState:self];
+    [_delegate editorViewControllerDidUpdateChangeState:self];
 }
 
 #pragma mark Menu Action
@@ -133,7 +154,7 @@
 - (IBAction)saveDocument:(id)sender
 {
     [self saveDocument];
-    [_delegate editorViewControllerDidDidUpdateChangeState:self];
+    [_delegate editorViewControllerDidUpdateChangeState:self];
 }
 
 - (IBAction)performClose:(id)sender
@@ -158,9 +179,11 @@
 {
     NSDate *modificationDate = [NSFileVersion currentVersionOfItemAtURL:_file.url].modificationDate;
     if (![modificationDate isEqual:_modificationDate]) {
-        NSRange range = _textView.selectedRange;
-        _textView.string = [NSString stringWithContentsOfURL:_file.url encoding:NSUTF8StringEncoding error:nil];
-        _textView.selectedRange = range;
+        if (_savedCount != _changeCount
+            || ![_textView.string isEqual:[NSString stringWithContentsOfURL:_file.url encoding:NSUTF8StringEncoding error:nil]]) {
+            _fileChangedOnDisk = YES;
+            [_delegate editorViewControllerDidPresentedItemDidChange:self];
+        }
         _modificationDate = modificationDate;
     }
 }

@@ -15,7 +15,7 @@
 @property (weak, nonatomic) EditorWindowController *controller;
 @end
 
-@interface EditorWindowController () <EditorStatusViewControllerDelegate, EditorViewControllerDelegate>
+@interface EditorWindowController () <EditorStatusViewControllerDelegate, EditorViewControllerDelegate, NSWindowDelegate>
 @property (weak) IBOutlet NSView *tabContainer;
 @property (weak) IBOutlet NSView *contentView;
 @property (strong, nonatomic) NSMutableArray *files;
@@ -144,6 +144,21 @@
     }
 }
 
+- (void)reloadFileWithWarning:(EditorViewController *)controller
+{
+    [controller reloadFile];
+    [self setWindowTitle];
+    
+    FileRepresentation *file = controller.file;
+    NSString *informative = NSLocalizedString(@"Editor_ReloadFileWithWarningInformative", @"Reloaded \"%@/%@\" since the file has changed on disk.");
+    
+    NSAlert *alert = [[NSAlert alloc] init];
+    alert.messageText = NSLocalizedString(@"Warning", @"Warning");
+    alert.informativeText = [NSString stringWithFormat:informative, file.directory, file.filename];
+    [alert addButtonWithTitle:NSLocalizedString(@"Continue", @"Continue")];;
+    [alert beginSheetModalForWindow:self.window completionHandler:nil];
+}
+
 #pragma mark EditorStatusViewControllerDelegate
 
 - (void)statusViewController:(EditorStatusViewController *)controller didSelectFile:(FileRepresentation *)file
@@ -168,9 +183,17 @@
     [self closeFileWithConfirmation:controller.file];
 }
 
-- (void)editorViewControllerDidDidUpdateChangeState:(EditorViewController *)controller
+- (void)editorViewControllerDidUpdateChangeState:(EditorViewController *)controller
 {
     [self setWindowTitle];
+}
+
+- (void)editorViewControllerDidPresentedItemDidChange:(EditorViewController *)controller
+{
+    if (self.window.isKeyWindow) {
+        [self reloadFileWithWarning:controller];
+        controller.fileChangedOnDisk = NO;
+    }
 }
 
 #pragma mark Menu Action
@@ -196,6 +219,19 @@
     [AppController createDocumentForWindow:self.window completion:^(NSURL *url) {
         [self addFileRepresentation:[[FileRepresentation alloc] initWithURL:url]];
     }];
+}
+
+#pragma NSWindowDelegate
+
+- (void)windowDidBecomeKey:(NSNotification *)notification
+{
+    for (NSString *key in _controllers) {
+        EditorViewController *controller = _controllers[key];
+        if (controller.isFileChangedOnDisk) {
+            [self reloadFileWithWarning:controller];
+            controller.fileChangedOnDisk = NO;
+        }
+    }
 }
 
 @end

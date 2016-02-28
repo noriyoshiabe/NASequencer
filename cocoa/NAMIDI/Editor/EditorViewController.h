@@ -14,7 +14,8 @@
 @protocol EditorViewControllerDelegate <NSObject>
 - (void)editorViewController:(EditorViewController *)controller didUpdateLine:(NSUInteger)line column:(NSUInteger)column;
 - (void)editorViewController:(EditorViewController *)controller didPerformCloseAction:(id)sender;
-- (void)editorViewControllerDidDidUpdateChangeState:(EditorViewController *)controller;
+- (void)editorViewControllerDidUpdateChangeState:(EditorViewController *)controller;
+- (void)editorViewControllerDidPresentedItemDidChange:(EditorViewController *)controller;
 @end
 
 @interface EditorViewController : NSViewController
@@ -22,5 +23,7 @@
 @property (weak, nonatomic) id<EditorViewControllerDelegate> delegate;
 @property (strong, nonatomic) FileRepresentation *file;
 @property (readonly, nonatomic) BOOL isDocumentEdited;
+@property (assign, nonatomic, getter=isFileChangedOnDisk) BOOL fileChangedOnDisk;
 - (void)saveDocument;
+- (void)reloadFile;
 @end
