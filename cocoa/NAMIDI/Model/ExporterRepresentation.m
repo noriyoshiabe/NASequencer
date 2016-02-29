@@ -44,7 +44,7 @@ static ExporterObserverCallbacks callbacks = {onParseFinish, onProgress};
 - (void)dealloc
 {
     if (_exporter) {
-        ExporterDestroy((__bridge void *)self);
+        ExporterDestroy(_exporter);
     }
 }
 

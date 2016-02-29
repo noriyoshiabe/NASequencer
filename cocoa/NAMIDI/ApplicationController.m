@@ -13,13 +13,17 @@
 #import "GettingStartedWindowController.h"
 #import "EditorWindowController.h"
 #import "MidiSourceManagerRepresentation.h"
+#import "ExportWindowController.h"
 
 #define kSelectedFileTypeForCreation @"Document.SelectedFileTypeForCreation"
 #define kSelectedFileTypeForExport @"Document.SelectedFileTypeForExport"
 
 ApplicationController *AppController;
 
-@interface ApplicationController () <NSMenuDelegate, NSOpenSavePanelDelegate>
+@interface ApplicationController () <NSMenuDelegate, NSOpenSavePanelDelegate, ExportWindowControllerDelegate> {
+    NSMutableArray *_exportControllers;
+}
+
 @property (strong) NSSavePanel *savePanel;
 @property (strong) IBOutlet NSView *savePanelAccessoryView;
 @property (weak) IBOutlet NSPopUpButton *savePanelFileTypePopupButton;
@@ -41,6 +45,7 @@ ApplicationController *AppController;
     self = [super init];
     if (self) {
         AppController = self;
+        _exportControllers = [NSMutableArray array];
     }
     return self;
 }
@@ -242,10 +247,30 @@ ApplicationController *AppController;
     
     [_exportPanel beginSheetModalForWindow:window completionHandler:^(NSInteger result) {
         if (NSFileHandlingPanelOKButton == result) {
-            NSLog(@"######## %@", _exportPanel.URL);
+            ExportWindowController *exportWC = [[ExportWindowController alloc] init];
+            exportWC.file = file;
+            exportWC.outputUrl = _exportPanel.URL;
+            exportWC.delegate = self;
+            
+            CGRect frame = window.frame;
+            frame.origin.x = frame.origin.x + frame.size.width - CGRectGetWidth(exportWC.window.frame) - 10;
+            frame.origin.y = frame.origin.y + frame.size.height - CGRectGetHeight(exportWC.window.frame) - 65;
+            frame.size = exportWC.window.frame.size;
+            [exportWC.window setFrame:frame display:YES];
+            [exportWC showWindow:self];
+            
+            [_exportControllers addObject:exportWC];
+            
             _exportPanel = nil;
         }
     }];
+}
+
+#pragma mark ExportWindowControllerDelegate
+
+-(void)exportControllerDidClose:(ExportWindowController *)controller
+{
+    [_exportControllers removeObject:controller];
 }
 
 #pragma mark NSMenuDelegate
