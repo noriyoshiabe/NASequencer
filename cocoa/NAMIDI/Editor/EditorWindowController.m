@@ -168,7 +168,12 @@
 
 - (void)statusViewController:(EditorStatusViewController *)controller didPressCloseButten:(FileRepresentation *)file
 {
-    [self closeFileWithConfirmation:file];
+    if (_currentController.isDocumentEdited) {
+        [self closeFileWithConfirmation:file];
+    }
+    else {
+        [self closeFile:file];
+    }
 }
 
 #pragma mark EditorViewControllerDelegate
@@ -180,7 +185,12 @@
 
 - (void)editorViewController:(EditorViewController *)controller didPerformCloseAction:(id)sender
 {
-    [self closeFileWithConfirmation:controller.file];
+    if (_currentController.isDocumentEdited) {
+        [self closeFileWithConfirmation:controller.file];
+    }
+    else {
+        [self closeFile:controller.file];
+    }
 }
 
 - (void)editorViewControllerDidUpdateChangeState:(EditorViewController *)controller
