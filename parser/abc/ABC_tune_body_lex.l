@@ -33,6 +33,12 @@
 %x x_DECORATION
 %x x_CHORD
 
+U             [\x80-\xbf]
+U2            [\xc2-\xdf]
+U3            [\xe0-\xef]
+U4            [\xf0-\xf4]
+UNICORD       {U2}{U}|{U3}{U}{U}|{U4}{U}{U}{U}
+
 INLINE_FIELD  \[[+[:alpha:]]:[^\]]*\]
 ANNOTATION    \"[^\"]*\"
 NOTE          (^^|^|=|_|__)?[a-gA-G](,|')*[[:digit:]]*(\/[[:digit:]]*)*
@@ -143,6 +149,7 @@ RESERVED      [#\*;\?@]
 
 \\              { BEGIN(x_ESCAPE); }
 [[:space:]]     { }
+{UNICORD}       { return 1; }
 .               { return 1; }
 
 <<EOF>>         {
@@ -167,6 +174,7 @@ RESERVED      [#\*;\?@]
 
 <x_ESCAPE>"%"         { BEGIN(x_ESCAPE_COMMENT); }
 <x_ESCAPE>[[:space:]] { }
+<x_ESCAPE>{UNICORD}   { BEGIN(INITIAL); return 1; }
 <x_ESCAPE>.           { BEGIN(INITIAL); return 1; }
 
 <x_COMMENT>.          { }
@@ -197,6 +205,7 @@ RESERVED      [#\*;\?@]
                               yylval->s = strdup(yytext + 1);
                               return CHORD_END;
                           }
+<x_CHORD>{UNICORD}        { return 1; }
 <x_CHORD>.                { return 1; }
 
 %%

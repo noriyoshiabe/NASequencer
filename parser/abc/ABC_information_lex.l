@@ -52,6 +52,12 @@
 %x x_VOICE
 %x x_VOICE_PARAM
 
+U                   [\x80-\xbf]
+U2                  [\xc2-\xdf]
+U3                  [\xe0-\xef]
+U4                  [\xf0-\xf4]
+UNICORD             {U2}{U}|{U3}{U}{U}|{U4}{U}{U}{U}
+
 NONZERO             [1-9]
 DIGIT               [[:digit:]]
 INTEGER             {NONZERO}{DIGIT}*|0
@@ -252,6 +258,7 @@ U:                                              { BEGIN(x_REDEFINABLE_SYMBOL); }
                         }
                     }
 <*>{WSPACE}         { }
+<*>{UNICORD}        { return 1; }
 <*>.                { return 1; }
 
 <<EOF>>             { return 0; }
