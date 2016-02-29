@@ -13,14 +13,16 @@
 			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>NMFIcon.icns</string>
-			<key>CFBundleTypeName</key>
-			<string>DocumentType</string>
-			<key>CFBundleTypeOSTypes</key>
+			<key>CFBundleTypeMIMETypes</key>
 			<array>
-				<string>????</string>
+				<string>text/plain</string>
 			</array>
+			<key>CFBundleTypeName</key>
+			<string>Note as MIDI</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>LSTypeIsPackage</key>
+			<integer>0</integer>
 			<key>NSDocumentClass</key>
 			<string>Document</string>
 		</dict>
@@ -31,14 +33,16 @@
 			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>ABCIcon.icns</string>
-			<key>CFBundleTypeName</key>
-			<string>DocumentType</string>
-			<key>CFBundleTypeOSTypes</key>
+			<key>CFBundleTypeMIMETypes</key>
 			<array>
-				<string>????</string>
+				<string>text/plain</string>
 			</array>
+			<key>CFBundleTypeName</key>
+			<string>ABC Notation</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>LSTypeIsPackage</key>
+			<integer>0</integer>
 			<key>NSDocumentClass</key>
 			<string>Document</string>
 		</dict>
@@ -49,20 +53,26 @@
 			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>MMLIcon.icns</string>
-			<key>CFBundleTypeName</key>
-			<string>DocumentType</string>
-			<key>CFBundleTypeOSTypes</key>
+			<key>CFBundleTypeMIMETypes</key>
 			<array>
-				<string>????</string>
+				<string>text/plain</string>
 			</array>
+			<key>CFBundleTypeName</key>
+			<string>Music Macro Language</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>LSTypeIsPackage</key>
+			<integer>0</integer>
 			<key>NSDocumentClass</key>
 			<string>Document</string>
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleHelpBookFolder</key>
+	<string>Resources/NAMIDI.help</string>
+	<key>CFBundleHelpBookName</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER).help</string>
 	<key>CFBundleIconFile</key>
 	<string>AppIcon.icns</string>
 	<key>CFBundleIdentifier</key>
@@ -87,9 +97,5 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>Application</string>
-	<key>CFBundleHelpBookFolder</key>
-	<string>Resources/NAMIDI.help</string>
-	<key>CFBundleHelpBookName</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER).help</string>
 </dict>
 </plist>
