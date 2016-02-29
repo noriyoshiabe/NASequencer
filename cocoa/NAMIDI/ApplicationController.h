@@ -26,6 +26,7 @@
 - (void)saveDocumentForWindow:(NSWindow *)window completion:(void (^)(NSURL *url))completionHandler;
 - (void)createDocument;
 - (void)createDocumentForWindow:(NSWindow *)window completion:(void (^)(NSURL *url))completionHandler;
+- (void)exportDocumentForWindow:(NSWindow *)window file:(FileRepresentation *)file;
 @end
 
 extern ApplicationController *AppController;

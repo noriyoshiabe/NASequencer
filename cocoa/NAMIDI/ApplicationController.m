@@ -15,6 +15,7 @@
 #import "MidiSourceManagerRepresentation.h"
 
 #define kSelectedFileTypeForCreation @"Document.SelectedFileTypeForCreation"
+#define kSelectedFileTypeForExport @"Document.SelectedFileTypeForExport"
 
 ApplicationController *AppController;
 
@@ -22,6 +23,9 @@ ApplicationController *AppController;
 @property (strong) NSSavePanel *savePanel;
 @property (strong) IBOutlet NSView *savePanelAccessoryView;
 @property (weak) IBOutlet NSPopUpButton *savePanelFileTypePopupButton;
+@property (strong) NSSavePanel *exportPanel;
+@property (strong) IBOutlet NSView *exportPanelAccessoryView;
+@property (weak) IBOutlet NSPopUpButton *exportPanelFileTypePopoupButton;
 @property (strong, nonatomic) WelcomeWindowController *welocomeWC;
 @property (strong, nonatomic) GettingStartedWindowController *gettingStartedWC;
 @property (strong, nonatomic) AboutWindowController *aboutWC;
@@ -44,12 +48,14 @@ ApplicationController *AppController;
 - (void)awakeFromNib
 {
     _savePanelFileTypePopupButton.menu.delegate = self;
+    _exportPanelFileTypePopoupButton.menu.delegate = self;
 }
 
 - (void)initialize
 {
     [[NSUserDefaults standardUserDefaults] registerDefaults:@{
                                                               kSelectedFileTypeForCreation: @"nmf",
+                                                              kSelectedFileTypeForExport: @"smf",
                                                               }];
     
     NSString *filepath = [[NSBundle mainBundle] pathForResource:@"GeneralUser GS Live-Audigy v1.44" ofType:@"sf2"];
@@ -176,7 +182,7 @@ ApplicationController *AppController;
 
 - (void)createDocumentForWindow:(NSWindow *)window completion:(void (^)(NSURL *url))completionHandler
 {
-    self.savePanel = [NSSavePanel savePanel];
+    _savePanel = [NSSavePanel savePanel];
     _savePanel.delegate = self;
     _savePanel.prompt = NSLocalizedString(@"Document_Create", @"Create");
     _savePanel.title = NSLocalizedString(@"Document_CreateNewDocument", @"Create New Document");
@@ -192,10 +198,10 @@ ApplicationController *AppController;
         [_savePanel beginSheetModalForWindow:window completionHandler:^(NSInteger result) {
             if (NSFileHandlingPanelOKButton == result) {
                 // Create empty file
-                [[NSData data] writeToURL:[_savePanel URL] atomically:YES];
+                [[NSData data] writeToURL:_savePanel.URL atomically:YES];
                 
-                completionHandler([_savePanel URL]);
-                self.savePanel = nil;
+                completionHandler(_savePanel.URL);
+                _savePanel = nil;
             }
         }];
     }
@@ -206,13 +212,40 @@ ApplicationController *AppController;
         
         if (NSFileHandlingPanelOKButton == [_savePanel runModal]) {
             // Create empty file
-            [[NSData data] writeToURL:[_savePanel URL] atomically:YES];
+            [[NSData data] writeToURL:_savePanel.URL atomically:YES];
             
-            completionHandler([_savePanel URL]);
+            completionHandler(_savePanel.URL);
         }
         
-        self.savePanel = nil;
+        _savePanel = nil;
     }
+}
+
+- (NSArray *)allowedExportFileTypes
+{
+    return @[@"smf", @"wav", @"aac"];
+}
+
+- (void)exportDocumentForWindow:(NSWindow *)window file:(FileRepresentation *)file
+{
+    _exportPanel = [NSSavePanel savePanel];
+    _exportPanel.delegate = self;
+    _exportPanel.prompt = NSLocalizedString(@"Document_Export", @"Export");
+    _exportPanel.title = NSLocalizedString(@"Document_ExportDocument", @"Export Document");
+    _exportPanel.nameFieldLabel = NSLocalizedString(@"Document_Filename", @"File Name:");
+    
+    NSString *ext = [[NSUserDefaults standardUserDefaults] stringForKey:kSelectedFileTypeForExport];
+    [_exportPanelFileTypePopoupButton selectItemAtIndex: [self.allowedExportFileTypes indexOfObject:ext]];
+    _exportPanel.accessoryView = _exportPanelAccessoryView;
+    _exportPanel.nameFieldStringValue = [_exportPanel.nameFieldStringValue stringByAppendingPathExtension:ext];
+    _exportPanel.allowedFileTypes = @[ext];
+    
+    [_exportPanel beginSheetModalForWindow:window completionHandler:^(NSInteger result) {
+        if (NSFileHandlingPanelOKButton == result) {
+            NSLog(@"######## %@", _exportPanel.URL);
+            _exportPanel = nil;
+        }
+    }];
 }
 
 #pragma mark NSMenuDelegate
@@ -220,18 +253,36 @@ ApplicationController *AppController;
 - (void)menuDidClose:(NSMenu *)menu
 {
     NSString *ext = menu.highlightedItem.representedObject;
-    _savePanel.nameFieldStringValue = [_savePanel.nameFieldStringValue.stringByDeletingPathExtension stringByAppendingPathExtension:ext];
-    _savePanel.allowedFileTypes = @[ext];
-    [[NSUserDefaults standardUserDefaults] setValue:ext forKey:kSelectedFileTypeForCreation];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    
+    if (_savePanel) {
+        _savePanel.nameFieldStringValue = [_savePanel.nameFieldStringValue.stringByDeletingPathExtension stringByAppendingPathExtension:ext];
+        _savePanel.allowedFileTypes = @[ext];
+        [[NSUserDefaults standardUserDefaults] setValue:ext forKey:kSelectedFileTypeForCreation];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+    else if (_exportPanel) {
+        _exportPanel.nameFieldStringValue = [_exportPanel.nameFieldStringValue.stringByDeletingPathExtension stringByAppendingPathExtension:ext];
+        _exportPanel.allowedFileTypes = @[ext];
+        [[NSUserDefaults standardUserDefaults] setValue:ext forKey:kSelectedFileTypeForExport];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
 }
 
 #pragma mark NSOpenSavePanelDelegate
 
 - (nullable NSString *)panel:(id)sender userEnteredFilename:(NSString *)filename confirmed:(BOOL)okFlag
 {
-    NSString *ext = [[NSUserDefaults standardUserDefaults] stringForKey:kSelectedFileTypeForCreation];
-    return [filename.stringByDeletingPathExtension stringByAppendingPathExtension:ext];
+    if (_savePanel) {
+        NSString *ext = [[NSUserDefaults standardUserDefaults] stringForKey:kSelectedFileTypeForCreation];
+        return [filename.stringByDeletingPathExtension stringByAppendingPathExtension:ext];
+    }
+    else if (_exportPanel) {
+        NSString *ext = [[NSUserDefaults standardUserDefaults] stringForKey:kSelectedFileTypeForExport];
+        return [filename.stringByDeletingPathExtension stringByAppendingPathExtension:ext];
+    }
+    else {
+        return nil;
+    }
 }
 
 @end

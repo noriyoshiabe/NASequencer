@@ -12,6 +12,7 @@
 #import "LocationView.h"
 #import "ErrorWindowController.h"
 #import "TrackSelection.h"
+#import "ApplicationController.h"
 
 @interface MainWindowController () <TrackSelectionDelegate, NAMidiRepresentationObserver, PlayerRepresentationObserver>
 @property (weak) IBOutlet NSView *contentView;
@@ -150,7 +151,7 @@
 
 - (IBAction)export:(id)sender
 {
-    NSLog(@"%s", __func__);
+    [AppController exportDocumentForWindow:self.window file:_namidi.file];
 }
 
 #pragma mark TrackSelectionDelegate

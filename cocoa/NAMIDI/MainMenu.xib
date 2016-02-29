@@ -16,6 +16,8 @@
         <customObject id="YLy-65-1bz" customClass="NSFontManager"/>
         <customObject id="rVQ-EZ-xEO" customClass="ApplicationController">
             <connections>
+                <outlet property="exportPanelAccessoryView" destination="H7K-cw-eMP" id="ejb-xm-pbf"/>
+                <outlet property="exportPanelFileTypePopoupButton" destination="mL0-Gc-Tow" id="qwB-v8-7WE"/>
                 <outlet property="savePanelAccessoryView" destination="VRr-0u-oDY" id="X20-td-K1a"/>
                 <outlet property="savePanelFileTypePopupButton" destination="XpB-3p-dfw" id="nDf-KO-AN8"/>
             </connections>
@@ -712,7 +714,48 @@
                     </textFieldCell>
                 </textField>
             </subviews>
-            <point key="canvasLocation" x="576" y="342"/>
+            <point key="canvasLocation" x="560" y="-23"/>
+        </customView>
+        <customView id="H7K-cw-eMP">
+            <rect key="frame" x="0.0" y="0.0" width="400" height="50"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mL0-Gc-Tow">
+                    <rect key="frame" x="117" y="12" width="245" height="26"/>
+                    <popUpButtonCell key="cell" type="push" title="AAC (Advanced Audio Conding)" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="NGw-wR-UJI" id="ZjH-hT-DHV">
+                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="menu"/>
+                        <menu key="menu" id="ZGk-Jw-m4D">
+                            <items>
+                                <menuItem title="SMF (Standard MIDI File)" id="qI5-BM-Qep">
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="representedObject" value="smf"/>
+                                    </userDefinedRuntimeAttributes>
+                                </menuItem>
+                                <menuItem title="WAV (Waveform Audio File)" id="bfP-Pq-oVs">
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="representedObject" value="wav"/>
+                                    </userDefinedRuntimeAttributes>
+                                </menuItem>
+                                <menuItem title="AAC (Advanced Audio Conding)" state="on" id="NGw-wR-UJI">
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="representedObject" value="aac"/>
+                                    </userDefinedRuntimeAttributes>
+                                </menuItem>
+                            </items>
+                        </menu>
+                    </popUpButtonCell>
+                </popUpButton>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Rqa-49-Jdn">
+                    <rect key="frame" x="51" y="17" width="62" height="17"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="File Type:" id="Smc-3k-9ML">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+            </subviews>
+            <point key="canvasLocation" x="560" y="102"/>
         </customView>
     </objects>
 </document>
