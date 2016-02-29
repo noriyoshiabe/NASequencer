@@ -141,19 +141,19 @@
         case MidiEventTypeTitle:
         {
             TitleEvent *_event = (void *)raw;
-            view.other = [NSString stringWithFormat:@"%s", _event->text];
+            view.other = [NSString stringWithUTF8String:_event->text];
         }
             break;
         case MidiEventTypeCopyright:
         {
             CopyrightEvent *_event = (void *)raw;
-            view.other = [NSString stringWithFormat:@"%s", _event->text];
+            view.other = [NSString stringWithUTF8String:_event->text];
         }
             break;
         case MidiEventTypeMarker:
         {
             MarkerEvent *_event = (void *)raw;
-            view.other = [NSString stringWithFormat:@"%s", _event->text];
+            view.other = [NSString stringWithUTF8String:_event->text];
         }
             break;
         case MidiEventTypeVoice:
