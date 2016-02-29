@@ -101,6 +101,23 @@
     }
 }
 
+- (void)closeFile:(FileRepresentation *)file
+{
+    _currentController = nil;
+    [_controllers removeObjectForKey:file.identifier];
+    [_files removeObject:file];
+    
+    if (0 == [_files count]) {
+        [self close];
+    }
+    else {
+        [self selectFile:_files.firstObject];
+        
+        _statusViewControlelr.files = _files;
+        [_statusViewControlelr selectFile:_files.firstObject];
+    }
+}
+
 - (void)closeFileWithConfirmation:(FileRepresentation *)file
 {
     NSString *message = NSLocalizedString(@"Editor_CloseFileWithConfirmationMessage", @"Do you want to save the changes you made in the document \"%@/%@\" ?");
@@ -127,21 +144,28 @@
     }];
 }
 
-- (void)closeFile:(FileRepresentation *)file
+- (void)revertFileWithConfirmation
 {
-    _currentController = nil;
-    [_controllers removeObjectForKey:file.identifier];
-    [_files removeObject:file];
+    FileRepresentation *file = _currentController.file;
     
-    if (0 == [_files count]) {
-        [self close];
-    }
-    else {
-        [self selectFile:_files.firstObject];
-        
-        _statusViewControlelr.files = _files;
-        [_statusViewControlelr selectFile:_files.firstObject];
-    }
+    NSString *message = NSLocalizedString(@"Editor_RevertFileWithConfirmationMessage", @"Do you want to revert to the most recently saved version of the document \"%@/%@\" ?");
+    NSString *informative = NSLocalizedString(@"Editor_RevertFileWithConfirmationInformative", @"Your current changes will be lost.");
+    
+    NSAlert *alert = [[NSAlert alloc] init];
+    alert.messageText = [NSString stringWithFormat:message, file.directory, file.filename];
+    alert.informativeText = informative;
+    [alert addButtonWithTitle:NSLocalizedString(@"Revert", @"Revert")];
+    [alert addButtonWithTitle:NSLocalizedString(@"Cancel", @"Cancel")];
+    [alert beginSheetModalForWindow:self.window completionHandler:^(NSModalResponse returnCode) {
+        switch (returnCode) {
+            case NSAlertFirstButtonReturn:
+                [_currentController revertDocument];
+                [self setWindowTitle];
+                break;
+            case NSAlertSecondButtonReturn:
+                break;
+        }
+    }];
 }
 
 - (void)reloadFileWithWarning:(EditorViewController *)controller
@@ -208,6 +232,16 @@
 
 #pragma mark Menu Action
 
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem
+{
+    if (@selector(revertDocumentToSaved:) == menuItem.action) {
+        return _currentController.isDocumentEdited;
+    }
+    else {
+        return YES;
+    }
+}
+
 - (IBAction)openDocument:(id)sender
 {
     [AppController openDocumentForWindow:self.window completion:^(NSURL *url) {
@@ -229,6 +263,11 @@
     [AppController createDocumentForWindow:self.window completion:^(NSURL *url) {
         [self addFileRepresentation:[[FileRepresentation alloc] initWithURL:url]];
     }];
+}
+
+- (IBAction)revertDocumentToSaved:(id)sender
+{
+    [self revertFileWithConfirmation];
 }
 
 #pragma NSWindowDelegate

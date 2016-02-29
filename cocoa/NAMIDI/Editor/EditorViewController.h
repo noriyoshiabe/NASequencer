@@ -25,5 +25,6 @@
 @property (readonly, nonatomic) BOOL isDocumentEdited;
 @property (assign, nonatomic, getter=isFileChangedOnDisk) BOOL fileChangedOnDisk;
 - (void)saveDocument;
+- (void)revertDocument;
 - (void)reloadFile;
 @end

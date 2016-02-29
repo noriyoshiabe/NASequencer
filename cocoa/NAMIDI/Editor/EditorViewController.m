@@ -78,6 +78,14 @@
     _savedCount = _changeCount;
 }
 
+- (void)revertDocument
+{
+    _textView.string = [NSString stringWithContentsOfURL:_file.url encoding:NSUTF8StringEncoding error:nil];
+    _modificationDate = [NSFileVersion currentVersionOfItemAtURL:_file.url].modificationDate;
+    [_undoManager removeAllActions];
+    _savedCount = _changeCount = 0;
+}
+
 - (void)reloadFile
 {
     _savedCount = _changeCount + 1;
