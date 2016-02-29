@@ -24,6 +24,7 @@
 		020CF87A1C6B0AB20025DF84 /* AboutWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 020CF8781C6B0AB20025DF84 /* AboutWindowController.m */; };
 		020CF87B1C6B0AB20025DF84 /* AboutWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 020CF8791C6B0AB20025DF84 /* AboutWindowController.xib */; };
 		020CF87E1C6B20C50025DF84 /* Application.m in Sources */ = {isa = PBXBuildFile; fileRef = 020CF87D1C6B20C50025DF84 /* Application.m */; };
+		021483631C84A66F00D653AE /* ExporterRepresentation.m in Sources */ = {isa = PBXBuildFile; fileRef = 021483621C84A66F00D653AE /* ExporterRepresentation.m */; };
 		0216EDF71C7AC431009A7B90 /* ConductorTrackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0216EDF51C7AC431009A7B90 /* ConductorTrackViewController.m */; };
 		0216EDF81C7AC431009A7B90 /* ConductorTrackViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0216EDF61C7AC431009A7B90 /* ConductorTrackViewController.xib */; };
 		0216EDFC1C7ADA09009A7B90 /* PianoRollViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0216EDFA1C7ADA09009A7B90 /* PianoRollViewController.m */; };
@@ -160,6 +161,8 @@
 		020CF8791C6B0AB20025DF84 /* AboutWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AboutWindowController.xib; sourceTree = "<group>"; };
 		020CF87C1C6B20C50025DF84 /* Application.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Application.h; sourceTree = "<group>"; };
 		020CF87D1C6B20C50025DF84 /* Application.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Application.m; sourceTree = "<group>"; };
+		021483611C84A66F00D653AE /* ExporterRepresentation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExporterRepresentation.h; sourceTree = "<group>"; };
+		021483621C84A66F00D653AE /* ExporterRepresentation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExporterRepresentation.m; sourceTree = "<group>"; };
 		0216EDF41C7AC431009A7B90 /* ConductorTrackViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConductorTrackViewController.h; sourceTree = "<group>"; };
 		0216EDF51C7AC431009A7B90 /* ConductorTrackViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConductorTrackViewController.m; sourceTree = "<group>"; };
 		0216EDF61C7AC431009A7B90 /* ConductorTrackViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ConductorTrackViewController.xib; sourceTree = "<group>"; };
@@ -612,6 +615,8 @@
 				025FAF981C7FAB1600E4C3B3 /* MidiSourceManagerRepresentation.m */,
 				025FAF9D1C8065C300E4C3B3 /* MixerRepresentation.h */,
 				025FAF9E1C8065C300E4C3B3 /* MixerRepresentation.m */,
+				021483611C84A66F00D653AE /* ExporterRepresentation.h */,
+				021483621C84A66F00D653AE /* ExporterRepresentation.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -809,6 +814,7 @@
 				028589551C71320A00A53B8C /* EditorStatusViewController.m in Sources */,
 				02A973C51C798B6100C21B8E /* NSColor+Support.m in Sources */,
 				025FAF931C7F182700E4C3B3 /* NSThread+Support.m in Sources */,
+				021483631C84A66F00D653AE /* ExporterRepresentation.m in Sources */,
 				024A5B2E1C69FFD90079D22C /* WelcomeWindowController.m in Sources */,
 				025FAF801C7E469A00E4C3B3 /* PlayerRepresentation.m in Sources */,
 				020CF86C1C6AF4D90025DF84 /* SynthesizerViewController.m in Sources */,
