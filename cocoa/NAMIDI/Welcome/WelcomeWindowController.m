@@ -26,7 +26,6 @@
 - (void)windowDidLoad
 {
     [super windowDidLoad];
-    self.windowFrameAutosaveName = @"WelcomeWindowFrame";
     
     self.window.titleVisibility = NSWindowTitleHidden;
     self.window.titlebarAppearsTransparent = YES;

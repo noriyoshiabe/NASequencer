@@ -17,20 +17,20 @@
         <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" animationBehavior="default" id="F0z-JX-Cv5">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="196" y="240" width="480" height="270"/>
+            <rect key="contentRect" x="100" y="100" width="640" height="500"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
             <view key="contentView" id="se5-gp-TjO" customClass="EditorView">
-                <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
+                <rect key="frame" x="0.0" y="0.0" width="640" height="500"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="zai-Et-OIj">
-                        <rect key="frame" x="0.0" y="248" width="480" height="22"/>
+                        <rect key="frame" x="0.0" y="478" width="640" height="22"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="22" id="9XF-Po-Pdd"/>
                         </constraints>
                     </customView>
                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="9bB-V9-SKr">
-                        <rect key="frame" x="0.0" y="0.0" width="480" height="248"/>
+                        <rect key="frame" x="0.0" y="0.0" width="640" height="478"/>
                     </customView>
                 </subviews>
                 <constraints>
