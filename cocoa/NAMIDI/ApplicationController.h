@@ -17,8 +17,6 @@
 - (void)showGettingStartedWindow;
 - (void)showAboutWindow;
 - (void)showPreferenceWindow;
-- (void)showEditorWindow;
-- (void)showEditorWindowWithFile:(FileRepresentation *)file;
 - (NSArray *)allowedFileTypes;
 - (void)openDocumentWithContentsOfURL:(NSURL *)url;
 - (void)openDocument;

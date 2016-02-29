@@ -11,7 +11,6 @@
 #import "PreferenceWindowController.h"
 #import "WelcomeWindowController.h"
 #import "GettingStartedWindowController.h"
-#import "EditorWindowController.h"
 #import "MidiSourceManagerRepresentation.h"
 #import "ExportWindowController.h"
 
@@ -34,7 +33,6 @@ ApplicationController *AppController;
 @property (strong, nonatomic) GettingStartedWindowController *gettingStartedWC;
 @property (strong, nonatomic) AboutWindowController *aboutWC;
 @property (strong, nonatomic) PreferenceWindowController *preferenceWC;
-@property (strong, nonatomic) EditorWindowController *editorWC;
 @end
 
 
@@ -100,24 +98,6 @@ ApplicationController *AppController;
     }
     
     [_preferenceWC showWindow:self];
-}
-
-- (void)showEditorWindow
-{
-    [self showEditorWindowWithFile:nil];
-}
-
-- (void)showEditorWindowWithFile:(FileRepresentation *)file
-{
-    if (!_editorWC) {
-        self.editorWC = [[EditorWindowController alloc] init];
-    }
-    
-    [_editorWC showWindow:self];
-    
-    if (file) {
-        [_editorWC addFileRepresentation:file];
-    }
 }
 
 - (NSArray *)allowedFileTypes

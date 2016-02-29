@@ -44,6 +44,7 @@
 - (void)windowDidLoad
 {
     [super windowDidLoad];
+    self.windowFrameAutosaveName = @"EditorWindowFrame";
     
     self.statusViewControlelr = [[EditorStatusViewController alloc] init];
     _statusViewControlelr.delegate = self;

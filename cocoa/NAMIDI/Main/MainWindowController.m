@@ -13,6 +13,7 @@
 #import "ErrorWindowController.h"
 #import "TrackSelection.h"
 #import "ApplicationController.h"
+#import "EditorWindowController.h"
 
 @interface MainWindowController () <TrackSelectionDelegate, NAMidiRepresentationObserver, PlayerRepresentationObserver>
 @property (weak) IBOutlet NSView *contentView;
@@ -22,6 +23,7 @@
 @property (strong, nonatomic) ErrorWindowController *errorWC;
 @property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
 @property (strong, nonatomic) TrackSelection *trackSelection;
+@property (strong, nonatomic) EditorWindowController *editorWC;
 @end
 
 @implementation MainWindowController
@@ -68,6 +70,8 @@
     if (_namidi.hasError) {
         [self showErrorWindow];
     }
+    
+    [self showEditorWindow];
 }
 
 - (void)dealloc
@@ -102,6 +106,16 @@
 {
     [_mainVC.view removeFromSuperview];
     [_contentView addSubviewWithFitConstraints:_detailVC.view];
+}
+
+- (void)showEditorWindow
+{
+    if (!_editorWC) {
+        self.editorWC = [[EditorWindowController alloc] init];
+    }
+
+    [_editorWC showWindow:self];
+    [_editorWC addFileRepresentation:_namidi.file];
 }
 
 - (void)updateToolBarItem

@@ -8,7 +8,6 @@
 
 #import "Document.h"
 #import "MainWindowController.h"
-#import "ApplicationController.h"
 #import "FileRepresentation.h"
 #import "NAMidiRepresentation.h"
 
@@ -42,8 +41,6 @@
     MainWindowController *mainWC = [[MainWindowController alloc] init];
     mainWC.namidi = _namidi;
     [self addWindowController: mainWC];
-    
-    [AppController showEditorWindowWithFile:self.file];
 }
 
 @end
