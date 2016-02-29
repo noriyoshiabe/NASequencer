@@ -19,7 +19,7 @@
 @end
 
 @interface ParseInfoRepresentation : NSObject
-@property (readonly, nonatomic) NSArray *filepaths;
-@property (readonly, nonatomic) NSArray *errors;
+@property (readonly, nonatomic) NSArray<NSString *> *filepaths;
+@property (readonly, nonatomic) NSArray<ParseErrorRepresentation *> *errors;
 - (instancetype)initWithParseInfo:(ParseInfo *)info;
 @end

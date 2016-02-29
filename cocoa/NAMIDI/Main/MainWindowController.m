@@ -180,7 +180,22 @@
 - (void)namidiDidParse:(NAMidiRepresentation *)namidi sequence:(SequenceRepresentation *)sequence parseInfo:(ParseInfoRepresentation *)parseInfo
 {
     if (namidi.hasError) {
-        [self showErrorWindow];
+        if (GeneralParseErrorFileNotFound == parseInfo.errors[0].code) {
+            [_errorWC close];
+            
+            NSString *informative = NSLocalizedString(@"Main_FileMissingInformative", @"\"%@/%@\" is missing.\nThis error is unrecoverable.");
+            
+            NSAlert *alert = [[NSAlert alloc] init];
+            alert.messageText = NSLocalizedString(@"FileMissing", @"File missing");
+            alert.informativeText = [NSString stringWithFormat:informative, _namidi.file.directory, _namidi.file.filename];
+            [alert addButtonWithTitle:NSLocalizedString(@"Close", @"Close")];;
+            [alert beginSheetModalForWindow:self.window completionHandler:^(NSModalResponse returnCode) {
+                [self close];
+            }];
+        }
+        else {
+            [self showErrorWindow];
+        }
     }
     else {
         [_errorWC close];

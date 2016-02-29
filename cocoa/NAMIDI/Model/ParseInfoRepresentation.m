@@ -22,7 +22,7 @@
     self = [super init];
     if (self) {
         _error = error;
-        _filepath = [NSString stringWithUTF8String:_error->location.filepath];
+        _filepath = _error->location.filepath ? [NSString stringWithUTF8String:_error->location.filepath] : nil;
         _infos = [NSMutableArray array];
         NAIterator *iterator = NAArrayGetIterator(_error->infos);
         while (iterator->hasNext(iterator)) {
