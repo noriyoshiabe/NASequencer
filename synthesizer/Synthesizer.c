@@ -133,7 +133,7 @@ static void unregisterCallback(void *_self, MidiSourceCallback function, void *r
 
             size_t moveLength = self->callbackListLength - 1 - i;
             if (0 < moveLength) {
-                memmove(&self->callbackList[i + 1], &self->callbackList[i], sizeof(Callback) * moveLength);
+                memmove(&self->callbackList[i], &self->callbackList[i + 1], sizeof(Callback) * moveLength);
             }
 
             --self->callbackListLength;
@@ -682,7 +682,7 @@ static void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer
 
 static void SynthesizerNotifyEvent(Synthesizer *self, MidiSourceEvent event, void *arg1, void *arg2)
 {
-    for (int i = 0; i < self->callbackListLength; ++i) {
+    for (int i = self->callbackListLength - 1; 0 <= i; --i) {
         self->callbackList[i].function(self->callbackList[i].receiver, (MidiSource *)self, event, arg1, arg2);
     }
 }

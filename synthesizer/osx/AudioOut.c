@@ -38,7 +38,7 @@ static OSStatus _RenderCallback(void *inRefCon, AudioUnitRenderActionFlags *ioAc
     size_t bufferSize = sizeof(AudioSample) * inNumberFrames;
     AudioSample *buffer = alloca(bufferSize);
 
-    for (int i = 0; i < self->callbackListLength; ++i) {
+    for (int i = self->callbackListLength - 1; 0 <= i; --i) {
         memset(buffer, 0, bufferSize);
         self->callbackList[i].function(self->callbackList[i].receiver, buffer, inNumberFrames);
 
@@ -130,7 +130,7 @@ static void AUAudioOutUnregisterCallback(AudioOut *_self, AudioCallback function
 
             size_t moveLength = self->callbackListLength - 1 - i;
             if (0 < moveLength) {
-                memmove(&self->callbackList[i + 1], &self->callbackList[i], sizeof(Callback) * moveLength);
+                memmove(&self->callbackList[i], &self->callbackList[i + 1], sizeof(Callback) * moveLength);
             }
 
             --self->callbackListLength;
