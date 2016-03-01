@@ -27,7 +27,7 @@
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
-    if (self.inLaunchOrReopenProcess && ![NSApplication sharedApplication].keyWindow) {
+    if (self.inLaunchOrReopenProcess && AppController.needShowWelcome) {
         [AppController showWelcomeWindow];
     }
     self.inLaunchOrReopenProcess = NO;

@@ -11,6 +11,7 @@
 #import "FileRepresentation.h"
 
 @interface ApplicationController : NSObject
+@property (readonly, nonatomic) BOOL needShowWelcome;
 - (void)initialize;
 - (void)showWelcomeWindow;
 - (void)closeWelcomeWindow;

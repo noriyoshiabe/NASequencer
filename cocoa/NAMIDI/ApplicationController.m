@@ -14,9 +14,7 @@
 #import "MidiSourceManagerRepresentation.h"
 #import "ExportWindowController.h"
 #import "MainWindowController.h"
-
-#define kSelectedFileTypeForCreation @"Document.SelectedFileTypeForCreation"
-#define kSelectedFileTypeForExport @"Document.SelectedFileTypeForExport"
+#import "Default.h"
 
 ApplicationController *AppController;
 
@@ -58,12 +56,18 @@ ApplicationController *AppController;
 - (void)initialize
 {
     [[NSUserDefaults standardUserDefaults] registerDefaults:@{
-                                                              kSelectedFileTypeForCreation: @"nmf",
-                                                              kSelectedFileTypeForExport: @"smf",
+                                                              kDefaultPreferenceShowWelcome: @YES,
+                                                              kDefaultSelectedFileTypeForCreation: @"nmf",
+                                                              kDefaultSelectedFileTypeForExport: @"smf",
                                                               }];
     
     NSString *filepath = [[NSBundle mainBundle] pathForResource:@"GeneralUser GS Live-Audigy v1.44" ofType:@"sf2"];
     [[MidiSourceManagerRepresentation sharedInstance] loadMidiSourceDescriptionFromSoundFont:filepath];
+}
+
+- (BOOL)needShowWelcome
+{
+    return ![NSApplication sharedApplication].keyWindow && ![NSDocumentController sharedDocumentController].currentDocument && [[NSUserDefaults standardUserDefaults] boolForKey:kDefaultPreferenceShowWelcome];
 }
 
 - (void)showWelcomeWindow
@@ -178,7 +182,7 @@ ApplicationController *AppController;
     _savePanel.title = NSLocalizedString(@"Document_CreateNewDocument", @"Create New Document");
     _savePanel.nameFieldLabel = NSLocalizedString(@"Document_Filename", @"File Name:");
     
-    NSString *ext = [[NSUserDefaults standardUserDefaults] stringForKey:kSelectedFileTypeForCreation];
+    NSString *ext = [[NSUserDefaults standardUserDefaults] stringForKey:kDefaultSelectedFileTypeForCreation];
     [_savePanelFileTypePopupButton selectItemAtIndex: [self.allowedFileTypes indexOfObject:ext]];
     _savePanel.accessoryView = _savePanelAccessoryView;
     _savePanel.nameFieldStringValue = [_savePanel.nameFieldStringValue stringByAppendingPathExtension:ext];
@@ -224,7 +228,7 @@ ApplicationController *AppController;
     _exportPanel.title = NSLocalizedString(@"Document_ExportDocument", @"Export Document");
     _exportPanel.nameFieldLabel = NSLocalizedString(@"Document_Filename", @"File Name:");
     
-    NSString *ext = [[NSUserDefaults standardUserDefaults] stringForKey:kSelectedFileTypeForExport];
+    NSString *ext = [[NSUserDefaults standardUserDefaults] stringForKey:kDefaultSelectedFileTypeForExport];
     [_exportPanelFileTypePopoupButton selectItemAtIndex: [self.allowedExportFileTypes indexOfObject:ext]];
     _exportPanel.accessoryView = _exportPanelAccessoryView;
     _exportPanel.nameFieldStringValue = [_exportPanel.nameFieldStringValue stringByAppendingPathExtension:ext];
@@ -267,13 +271,13 @@ ApplicationController *AppController;
     if (_savePanel) {
         _savePanel.nameFieldStringValue = [_savePanel.nameFieldStringValue.stringByDeletingPathExtension stringByAppendingPathExtension:ext];
         _savePanel.allowedFileTypes = @[ext];
-        [[NSUserDefaults standardUserDefaults] setValue:ext forKey:kSelectedFileTypeForCreation];
+        [[NSUserDefaults standardUserDefaults] setValue:ext forKey:kDefaultSelectedFileTypeForCreation];
         [[NSUserDefaults standardUserDefaults] synchronize];
     }
     else if (_exportPanel) {
         _exportPanel.nameFieldStringValue = [_exportPanel.nameFieldStringValue.stringByDeletingPathExtension stringByAppendingPathExtension:ext];
         _exportPanel.allowedFileTypes = @[ext];
-        [[NSUserDefaults standardUserDefaults] setValue:ext forKey:kSelectedFileTypeForExport];
+        [[NSUserDefaults standardUserDefaults] setValue:ext forKey:kDefaultSelectedFileTypeForExport];
         [[NSUserDefaults standardUserDefaults] synchronize];
     }
 }
@@ -283,11 +287,11 @@ ApplicationController *AppController;
 - (nullable NSString *)panel:(id)sender userEnteredFilename:(NSString *)filename confirmed:(BOOL)okFlag
 {
     if (_savePanel) {
-        NSString *ext = [[NSUserDefaults standardUserDefaults] stringForKey:kSelectedFileTypeForCreation];
+        NSString *ext = [[NSUserDefaults standardUserDefaults] stringForKey:kDefaultSelectedFileTypeForCreation];
         return [filename.stringByDeletingPathExtension stringByAppendingPathExtension:ext];
     }
     else if (_exportPanel) {
-        NSString *ext = [[NSUserDefaults standardUserDefaults] stringForKey:kSelectedFileTypeForExport];
+        NSString *ext = [[NSUserDefaults standardUserDefaults] stringForKey:kDefaultSelectedFileTypeForExport];
         return [filename.stringByDeletingPathExtension stringByAppendingPathExtension:ext];
     }
     else {

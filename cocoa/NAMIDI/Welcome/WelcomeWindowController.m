@@ -90,11 +90,6 @@
     [AppController openDocument];
 }
 
-- (IBAction)showWelcomeWhenStartsToggled:(NSButton *)sender
-{
-    NSLog(@"%s %s", NSOnState == sender.state ? "ON" : "OFF", __func__);
-}
-
 - (IBAction)recentTableViewSelectionChanged:(id)sender
 {
     FileRepresentation *recentFile = self.recentDocuments[_recentTableView.selectedRow];

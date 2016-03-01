@@ -199,7 +199,7 @@
                             <font key="font" metaFont="system"/>
                         </buttonCell>
                         <connections>
-                            <action selector="showWelcomeWhenStartsToggled:" target="-2" id="GXt-zr-qyh"/>
+                            <binding destination="hzK-Ba-f7f" name="value" keyPath="values.Preference.ShowWelcome" id="adL-ee-rkm"/>
                         </connections>
                     </button>
                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9JD-1h-6gQ">
@@ -226,6 +226,7 @@
                 <binding destination="-2" name="contentArray" keyPath="recentDocuments" id="keR-O5-JJ8"/>
             </connections>
         </arrayController>
+        <userDefaultsController representsSharedInstance="YES" id="hzK-Ba-f7f"/>
     </objects>
     <resources>
         <image name="NSAdvanced" width="32" height="32"/>

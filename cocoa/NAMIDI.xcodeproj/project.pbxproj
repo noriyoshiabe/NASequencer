@@ -168,6 +168,7 @@
 		021483671C84B2E700D653AE /* ExportWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExportWindowController.h; sourceTree = "<group>"; };
 		021483681C84B2E700D653AE /* ExportWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExportWindowController.m; sourceTree = "<group>"; };
 		021483691C84B2E700D653AE /* ExportWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ExportWindowController.xib; sourceTree = "<group>"; };
+		021483701C85C15D00D653AE /* Default.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Default.h; sourceTree = "<group>"; };
 		0216EDF41C7AC431009A7B90 /* ConductorTrackViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConductorTrackViewController.h; sourceTree = "<group>"; };
 		0216EDF51C7AC431009A7B90 /* ConductorTrackViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConductorTrackViewController.m; sourceTree = "<group>"; };
 		0216EDF61C7AC431009A7B90 /* ConductorTrackViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ConductorTrackViewController.xib; sourceTree = "<group>"; };
@@ -633,6 +634,7 @@
 				025FAF9E1C8065C300E4C3B3 /* MixerRepresentation.m */,
 				021483611C84A66F00D653AE /* ExporterRepresentation.h */,
 				021483621C84A66F00D653AE /* ExporterRepresentation.m */,
+				021483701C85C15D00D653AE /* Default.h */,
 			);
 			path = Model;
 			sourceTree = "<group>";
