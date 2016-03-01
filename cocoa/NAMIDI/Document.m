@@ -43,4 +43,18 @@
     [self addWindowController: mainWC];
 }
 
+#pragma mark Disable menu action
+
+- (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)anItem
+{
+    if (@selector(saveDocument:) == anItem.action
+        || @selector(saveDocumentAs:) == anItem.action
+        || @selector(revertDocumentToSaved:) == anItem.action) {
+        return NO;
+    }
+    else {
+        return YES;
+    }
+}
+
 @end

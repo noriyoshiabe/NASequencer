@@ -96,6 +96,19 @@
     [self.view.window makeFirstResponder:self.view];
 }
 
+#pragma mark Keyboad event
+
+- (void)keyDown:(NSEvent *)theEvent
+{
+    unichar key = [[theEvent charactersIgnoringModifiers] characterAtIndex:0];
+    if (NSCarriageReturnCharacter == key && _trackSelection.isAnyTrackSelected) {
+        [_delegate mainViewControllerDidEnterSelection:self];
+    }
+    else {
+        [super keyDown:theEvent];
+    }
+}
+
 #pragma mark Menu Action
 
 - (IBAction)selectAll:(id)sender

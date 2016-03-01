@@ -62,4 +62,9 @@
     [AppController createDocument];
 }
 
+- (IBAction)showWelcomeWindow:(id)sender
+{
+    [AppController showWelcomeWindow];
+}
+
 @end

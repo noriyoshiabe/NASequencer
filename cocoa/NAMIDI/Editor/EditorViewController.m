@@ -39,6 +39,8 @@
     _textView.enclosingScrollView.hasVerticalRuler = YES;
     _textView.enclosingScrollView.rulersVisible = YES;
     _textView.automaticQuoteSubstitutionEnabled = NO;
+    _textView.automaticDashSubstitutionEnabled = NO;
+    _textView.automaticTextReplacementEnabled = NO;
     _textView.delegate = self;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(selectedRangeDidChange:) name: NSTextViewDidChangeSelectionNotification object:_textView];

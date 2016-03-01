@@ -11,7 +11,13 @@
 #import "MeasureScaleAssistant.h"
 #import "TrackSelection.h"
 
+@class MainViewController;
+@protocol MainViewControllerDelegate <NSObject>
+- (void)mainViewControllerDidEnterSelection:(MainViewController *)controller;
+@end
+
 @interface MainViewController : NSViewController
+@property (weak, nonatomic) id<MainViewControllerDelegate> delegate;
 @property (strong, nonatomic) NAMidiRepresentation *namidi;
 @property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
 @property (strong, nonatomic) TrackSelection *trackSelection;

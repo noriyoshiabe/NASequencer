@@ -37,6 +37,11 @@
     return (_previousSelectionFlags & (1 << trackNo)) != (_selectionFlags & (1 << trackNo));
 }
 
+- (BOOL)isAnyTrackSelected
+{
+    return 0 != _selectionFlags;
+}
+
 - (void)setSelectionFlags:(unsigned int)selectionFlags
 {
     _previousSelectionFlags = _selectionFlags;

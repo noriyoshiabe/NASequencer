@@ -15,7 +15,7 @@
 #import "ApplicationController.h"
 #import "EditorWindowController.h"
 
-@interface MainWindowController () <TrackSelectionDelegate, NAMidiRepresentationObserver, PlayerRepresentationObserver>
+@interface MainWindowController () <TrackSelectionDelegate, NAMidiRepresentationObserver, PlayerRepresentationObserver, MainViewControllerDelegate, NSUserInterfaceValidations>
 @property (weak) IBOutlet NSView *contentView;
 @property (weak) IBOutlet LocationView *locationView;
 @property (strong, nonatomic) MainViewController *mainVC;
@@ -46,6 +46,8 @@
     
     _mainVC = [[MainViewController alloc] init];
     _detailVC = [[DetailViewController alloc] init];
+    
+    _mainVC.delegate = self;
     
     _mainVC.namidi = _namidi;
     _detailVC.namidi = _namidi;
@@ -126,16 +128,21 @@
     item.image = [NSImage imageNamed:_namidi.player.isPlaying ?  @"pause" : @"play"];
 }
 
-#pragma mark Toolbar Action
+#pragma mark Menu/Toolbar Action
 
-- (BOOL)validateToolbarItem:(NSToolbarItem *)theItem
+- (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)anItem
 {
-    if ([theItem.itemIdentifier isEqualToString:@"back"]) {
+    if (@selector(goBack:) == anItem.action) {
         return nil != _detailVC.view.superview;
     }
     else {
         return YES;
     }
+}
+
+- (IBAction)openDocumentInEditor:(id)sender
+{
+    [self showEditorWindow];
 }
 
 - (IBAction)goBack:(id)sender
@@ -166,6 +173,13 @@
 - (IBAction)export:(id)sender
 {
     [AppController exportDocumentForWindow:self.window file:_namidi.file];
+}
+
+#pragma mark MainViewControllerDelegate
+
+- (void)mainViewControllerDidEnterSelection:(MainViewController *)controller
+{
+    [self showDetailView];
 }
 
 #pragma mark TrackSelectionDelegate

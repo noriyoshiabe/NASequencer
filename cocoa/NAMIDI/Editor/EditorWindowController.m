@@ -238,12 +238,15 @@
     if (@selector(revertDocumentToSaved:) == menuItem.action) {
         return _currentController.isDocumentEdited;
     }
+    else if (@selector(selectNextTabViewItem:) == menuItem.action || @selector(selectPreviousTabViewItem:) == menuItem.action) {
+        return 1 < _files.count;
+    }
     else {
         return YES;
     }
 }
 
-- (IBAction)openDocument:(id)sender
+- (IBAction)openDocumentInEditor:(id)sender
 {
     [AppController openDocumentForWindow:self.window completion:^(NSURL *url) {
         [self addFileRepresentation:[[FileRepresentation alloc] initWithURL:url]];
@@ -269,6 +272,26 @@
 - (IBAction)revertDocumentToSaved:(id)sender
 {
     [self revertFileWithConfirmation];
+}
+
+- (IBAction)selectNextTabViewItem:(id)sender
+{
+    NSInteger index = [_files indexOfObject:_currentController.file];
+    ++index;
+    if (_files.count <= index) {
+        index = 0;
+    }
+    [_statusViewControlelr selectFile:[_files objectAtIndex:index]];
+}
+
+- (IBAction)selectPreviousTabViewItem:(id)sender
+{
+    NSInteger index = [_files indexOfObject:_currentController.file];
+    --index;
+    if (0 > index) {
+        index = _files.count - 1;
+    }
+    [_statusViewControlelr selectFile:[_files objectAtIndex:index]];
 }
 
 #pragma NSWindowDelegate
