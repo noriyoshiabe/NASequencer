@@ -111,7 +111,7 @@
 - (void)showEditorWindow
 {
     if (!_editorWC) {
-        self.editorWC = [[EditorWindowController alloc] init];
+        _editorWC = [[EditorWindowController alloc] init];
     }
 
     [_editorWC showWindow:self];

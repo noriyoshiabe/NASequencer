@@ -13,6 +13,7 @@
 #import "GettingStartedWindowController.h"
 #import "MidiSourceManagerRepresentation.h"
 #import "ExportWindowController.h"
+#import "MainWindowController.h"
 
 #define kSelectedFileTypeForCreation @"Document.SelectedFileTypeForCreation"
 #define kSelectedFileTypeForExport @"Document.SelectedFileTypeForExport"
@@ -110,6 +111,10 @@ ApplicationController *AppController;
     [AppController closeWelcomeWindow];
     
     [[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:url display:YES completionHandler:^(NSDocument * _Nullable document, BOOL documentWasAlreadyOpen, NSError * _Nullable error) {
+        
+        // Avoid editor window hidden
+        MainWindowController *mainVC = document.windowControllers[0];
+        [mainVC showEditorWindow];
     }];
 }
 

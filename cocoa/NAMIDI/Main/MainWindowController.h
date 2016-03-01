@@ -11,4 +11,5 @@
 
 @interface MainWindowController : NSWindowController
 @property (strong, nonatomic) NAMidiRepresentation *namidi;
+- (void)showEditorWindow;
 @end
