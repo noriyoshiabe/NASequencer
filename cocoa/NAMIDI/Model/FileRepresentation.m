@@ -45,7 +45,7 @@
 
 - (NSString *)directory
 {
-    return [_url.path.stringByDeletingLastPathComponent stringByReplacingOccurrencesOfString:[NSString stringWithCString:getpwuid(getuid())->pw_dir encoding:NSUTF8StringEncoding] withString:@"~"];
+    return [_url.path.stringByDeletingLastPathComponent stringByReplacingOccurrencesOfString:NSUserHomeDirectory() withString:@"~"];
 }
 
 @end

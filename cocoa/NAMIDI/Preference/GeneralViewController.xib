@@ -3,6 +3,7 @@
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9532"/>
+        <capability name="box content view" minToolsVersion="7.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="GeneralViewController">
@@ -13,11 +14,11 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView id="Hz6-mo-xeY">
-            <rect key="frame" x="0.0" y="0.0" width="280" height="164"/>
+            <rect key="frame" x="0.0" y="0.0" width="414" height="216"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="erb-2R-Ed6">
-                    <rect key="frame" x="18" y="128" width="244" height="18"/>
+                    <rect key="frame" x="18" y="180" width="244" height="18"/>
                     <buttonCell key="cell" type="check" title="Show Welcome when NAMIDI starts" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="JGx-jX-Shp">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="system" size="12"/>
@@ -27,7 +28,7 @@
                     </connections>
                 </button>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Bdn-la-BHj">
-                    <rect key="frame" x="18" y="97" width="244" height="18"/>
+                    <rect key="frame" x="18" y="149" width="244" height="18"/>
                     <buttonCell key="cell" type="check" title="Use External Editor" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="8XA-3j-b3K">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="system" size="12"/>
@@ -36,20 +37,8 @@
                         <binding destination="-2" name="value" keyPath="useExternalEditor" id="ZCs-0a-pQU"/>
                     </connections>
                 </button>
-                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NF7-EL-K9X">
-                    <rect key="frame" x="30" y="25" width="81" height="32"/>
-                    <buttonCell key="cell" type="push" title="Select" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="l3T-y4-Pi3">
-                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                        <font key="font" metaFont="system"/>
-                    </buttonCell>
-                    <connections>
-                        <action selector="editorSelectButtonPressed:" target="-2" id="UOw-x3-zWe"/>
-                        <binding destination="-2" name="enabled" keyPath="useExternalEditor" id="Mz9-4w-KUG"/>
-                        <binding destination="-2" name="title" keyPath="editorSelectButtonLabel" id="tKW-pm-pfk"/>
-                    </connections>
-                </button>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="t1L-30-3ip">
-                    <rect key="frame" x="36" y="59" width="229" height="32"/>
+                    <rect key="frame" x="36" y="111" width="358" height="32"/>
                     <buttonCell key="cell" type="square" title="Internal Editor" bezelStyle="shadowlessSquare" image="NSApplicationIcon" imagePosition="left" alignment="left" imageScaling="proportionallyUpOrDown" inset="2" id="2a7-Id-aPE">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="systemBold"/>
@@ -60,7 +49,52 @@
                         <binding destination="-2" name="title" keyPath="editorName" previousBinding="UgU-Ln-aOk" id="MfY-dL-56E"/>
                     </connections>
                 </button>
+                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NF7-EL-K9X">
+                    <rect key="frame" x="30" y="77" width="81" height="32"/>
+                    <buttonCell key="cell" type="push" title="Select" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="l3T-y4-Pi3">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="editorSelectButtonPressed:" target="-2" id="UOw-x3-zWe"/>
+                        <binding destination="-2" name="enabled" keyPath="useExternalEditor" id="Mz9-4w-KUG"/>
+                        <binding destination="-2" name="title" keyPath="editorSelectButtonLabel" id="tKW-pm-pfk"/>
+                    </connections>
+                </button>
+                <box autoresizesSubviews="NO" fixedFrame="YES" title="Include Search Path" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="hzD-Aj-IuD">
+                    <rect key="frame" x="15" y="14" width="384" height="53"/>
+                    <view key="contentView" id="SSX-hC-t5o">
+                        <rect key="frame" x="1" y="1" width="382" height="37"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zPZ-AU-JxJ">
+                                <rect key="frame" x="11" y="10" width="292" height="20"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="/Users/abechan/Music/NAMIDI/include" drawsBackground="YES" id="UYQ-jJ-7eb">
+                                    <font key="font" metaFont="system" size="11"/>
+                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                                <connections>
+                                    <binding destination="Y9P-EV-PAQ" name="value" keyPath="values.IncludeSearchPath" id="y90-vR-pm1"/>
+                                </connections>
+                            </textField>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="YsI-Jb-k6i">
+                                <rect key="frame" x="307" y="3" width="68" height="32"/>
+                                <buttonCell key="cell" type="push" title="Browse" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="foc-QO-256">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system" size="12"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="includeSearchPathBrowseButtonPressed:" target="-2" id="eA9-gi-Ijw"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                    </view>
+                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                </box>
             </subviews>
+            <point key="canvasLocation" x="370" y="431"/>
         </customView>
         <userDefaultsController representsSharedInstance="YES" id="Y9P-EV-PAQ"/>
     </objects>

@@ -104,6 +104,19 @@
     }];
 }
 
+- (IBAction)includeSearchPathBrowseButtonPressed:(id)sender
+{
+    NSOpenPanel *openPanel = [NSOpenPanel openPanel];
+    openPanel.canChooseFiles = NO;
+    openPanel.canChooseDirectories = YES;
+    
+    [openPanel beginSheetModalForWindow:self.view.window completionHandler:^(NSInteger result) {
+        if (NSFileHandlingPanelOKButton == result) {
+            [Preference sharedInstance].includeSearchPath = openPanel.URL.path;
+        }
+    }];
+}
+
 #pragma mark NSOpenSavePanelDelegate
 
 - (BOOL)panel:(id)sender shouldEnableURL:(NSURL *)url

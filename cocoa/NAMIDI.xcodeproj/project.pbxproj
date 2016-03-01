@@ -28,6 +28,7 @@
 		0214836A1C84B2E700D653AE /* ExportWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 021483681C84B2E700D653AE /* ExportWindowController.m */; };
 		0214836B1C84B2E700D653AE /* ExportWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 021483691C84B2E700D653AE /* ExportWindowController.xib */; };
 		021483771C86454500D653AE /* Preference.m in Sources */ = {isa = PBXBuildFile; fileRef = 021483761C86454500D653AE /* Preference.m */; };
+		0214837A1C86583E00D653AE /* NSPathUtilities+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 021483791C86583E00D653AE /* NSPathUtilities+Support.m */; };
 		0216EDF71C7AC431009A7B90 /* ConductorTrackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0216EDF51C7AC431009A7B90 /* ConductorTrackViewController.m */; };
 		0216EDF81C7AC431009A7B90 /* ConductorTrackViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0216EDF61C7AC431009A7B90 /* ConductorTrackViewController.xib */; };
 		0216EDFC1C7ADA09009A7B90 /* PianoRollViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0216EDFA1C7ADA09009A7B90 /* PianoRollViewController.m */; };
@@ -171,6 +172,8 @@
 		021483691C84B2E700D653AE /* ExportWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ExportWindowController.xib; sourceTree = "<group>"; };
 		021483751C86454500D653AE /* Preference.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Preference.h; sourceTree = "<group>"; };
 		021483761C86454500D653AE /* Preference.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Preference.m; sourceTree = "<group>"; };
+		021483781C86583E00D653AE /* NSPathUtilities+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSPathUtilities+Support.h"; sourceTree = "<group>"; };
+		021483791C86583E00D653AE /* NSPathUtilities+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSPathUtilities+Support.m"; sourceTree = "<group>"; };
 		0216EDF41C7AC431009A7B90 /* ConductorTrackViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConductorTrackViewController.h; sourceTree = "<group>"; };
 		0216EDF51C7AC431009A7B90 /* ConductorTrackViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConductorTrackViewController.m; sourceTree = "<group>"; };
 		0216EDF61C7AC431009A7B90 /* ConductorTrackViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ConductorTrackViewController.xib; sourceTree = "<group>"; };
@@ -442,6 +445,8 @@
 				025FAF921C7F182700E4C3B3 /* NSThread+Support.m */,
 				025FAFA01C81129C00E4C3B3 /* NSObject+Support.h */,
 				025FAFA11C81129C00E4C3B3 /* NSObject+Support.m */,
+				021483781C86583E00D653AE /* NSPathUtilities+Support.h */,
+				021483791C86583E00D653AE /* NSPathUtilities+Support.m */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -806,6 +811,7 @@
 				026D42D61C7ABC08000267AD /* DetailViewController.m in Sources */,
 				0201F7D71C688BB100A201F6 /* Document.m in Sources */,
 				026D42DA1C7ABC08000267AD /* SelectionViewController.m in Sources */,
+				0214837A1C86583E00D653AE /* NSPathUtilities+Support.m in Sources */,
 				025FAF9F1C8065C300E4C3B3 /* MixerRepresentation.m in Sources */,
 				0214836A1C84B2E700D653AE /* ExportWindowController.m in Sources */,
 				025FAFA21C81129C00E4C3B3 /* NSObject+Support.m in Sources */,

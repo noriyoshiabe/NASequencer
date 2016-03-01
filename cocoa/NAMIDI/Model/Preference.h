@@ -13,6 +13,7 @@
 @property (readwrite, nonatomic) NSString *selectedFileTypeForCreation;
 @property (readwrite, nonatomic) NSString *selectedFileTypeForExport;
 @property (readwrite, nonatomic) NSString *externalEditorName;
+@property (readwrite, nonatomic) NSString *includeSearchPath;
 + (Preference *)sharedInstance;
 - (void)initialize;
 @end

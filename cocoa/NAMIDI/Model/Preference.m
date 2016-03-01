@@ -10,6 +10,7 @@
 
 #define kShowWelcome @"ShowWelcome"
 #define kExternaEditorName @"ExternalEditorName"
+#define kIncludeSearchPath @"IncludeSearchPath"
 
 #define kSelectedFileTypeForCreation @"SelectedFileTypeForCreation"
 #define kSelectedFileTypeForExport @"SelectedFileTypeForExport"
@@ -51,6 +52,7 @@ static Preference *_sharedInstance = nil;
 {
     return @{
              kShowWelcome: @YES,
+             kIncludeSearchPath: [NSUserMusicDirectory() stringByAppendingPathComponent:@"NAMIDI/include"],
              kSelectedFileTypeForCreation: @"nmf",
              kSelectedFileTypeForExport: @"smf",
              };
@@ -105,6 +107,22 @@ static Preference *_sharedInstance = nil;
     }
     else {
         [_userDefaults removeObjectForKey:kExternaEditorName];
+    }
+    [_userDefaults synchronize];
+}
+
+- (NSString *)includeSearchPath
+{
+    return [_userDefaults stringForKey:kIncludeSearchPath];
+}
+
+- (void)setIncludeSearchPath:(NSString *)includeSearchPath
+{
+    if (includeSearchPath) {
+        [_userDefaults setValue:includeSearchPath forKey:kIncludeSearchPath];
+    }
+    else {
+        [_userDefaults removeObjectForKey:kIncludeSearchPath];
     }
     [_userDefaults synchronize];
 }
