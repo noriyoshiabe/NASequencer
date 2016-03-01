@@ -14,6 +14,7 @@
 #import "TrackSelection.h"
 #import "ApplicationController.h"
 #import "EditorWindowController.h"
+#import "Preference.h"
 
 @interface MainWindowController () <TrackSelectionDelegate, NAMidiRepresentationObserver, PlayerRepresentationObserver, MainViewControllerDelegate, NSUserInterfaceValidations>
 @property (weak) IBOutlet NSView *contentView;
@@ -73,7 +74,7 @@
         [self showErrorWindow];
     }
     
-    [self showEditorWindow];
+    [self showEditor];
 }
 
 - (void)dealloc
@@ -110,14 +111,33 @@
     [_contentView addSubviewWithFitConstraints:_detailVC.view];
 }
 
+- (void)showEditor
+{
+    if ([Preference sharedInstance].externalEditorName) {
+        [self showExternalEditor];
+    }
+    else {
+        [self showEditorWindow];
+    }
+}
+
 - (void)showEditorWindow
 {
+    if ([Preference sharedInstance].externalEditorName) {
+        return;
+    }
+    
     if (!_editorWC) {
         _editorWC = [[EditorWindowController alloc] init];
     }
 
     [_editorWC showWindow:self];
     [_editorWC addFileRepresentation:_namidi.file];
+}
+
+- (void)showExternalEditor
+{
+    [[NSWorkspace sharedWorkspace] openFile:_namidi.file.url.path withApplication:[Preference sharedInstance].externalEditorName];
 }
 
 - (void)updateToolBarItem
@@ -142,7 +162,7 @@
 
 - (IBAction)openDocumentInEditor:(id)sender
 {
-    [self showEditorWindow];
+    [self showEditor];
 }
 
 - (IBAction)goBack:(id)sender

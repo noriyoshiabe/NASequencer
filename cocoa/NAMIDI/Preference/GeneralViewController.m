@@ -79,7 +79,8 @@
 
 - (NSString *)editorName
 {
-    return _useExternalEditor && _externalEditorName ? _externalEditorName : @"Internal Editor";
+    NSString *name =  _useExternalEditor && _externalEditorName ? _externalEditorName : @"Internal Editor";
+    return [NSString stringWithFormat:@"  %@", name];
 }
 
 - (NSString *)editorSelectButtonLabel
