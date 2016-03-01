@@ -43,6 +43,7 @@
                         <font key="font" metaFont="system"/>
                     </buttonCell>
                     <connections>
+                        <action selector="editorSelectButtonPressed:" target="-2" id="UOw-x3-zWe"/>
                         <binding destination="-2" name="enabled" keyPath="useExternalEditor" id="Mz9-4w-KUG"/>
                         <binding destination="-2" name="title" keyPath="editorSelectButtonLabel" id="tKW-pm-pfk"/>
                     </connections>

@@ -7,8 +7,11 @@
 //
 
 #import "GeneralViewController.h"
+#import "Default.h"
 
-@interface GeneralViewController ()
+@interface GeneralViewController () <NSOpenSavePanelDelegate> {
+    NSString *_externalEditorName;
+}
 @property (assign, nonatomic) BOOL useExternalEditor;
 @property (readonly, nonatomic) NSImage *editorIconImage;
 @property (readonly, nonatomic) NSString *editorName;
@@ -35,16 +38,27 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Do view setup here.
+    
+    _externalEditorName = [[NSUserDefaults standardUserDefaults] stringForKey:kDefaultPreferenceExternaEditorAppName];
+    if (_externalEditorName) {
+        self.useExternalEditor = YES;
+    }
 }
 
 - (void)setUseExternalEditor:(BOOL)useExternalEditor
 {
     _useExternalEditor = useExternalEditor;
     if (!_useExternalEditor) {
-        
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kDefaultPreferenceExternaEditorAppName];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        _externalEditorName = nil;
     }
     
+    [self refreshEditorSettings];
+}
+
+- (void)refreshEditorSettings
+{
     [self willChangeValueForKey:@"editorName"];
     [self didChangeValueForKey:@"editorName"];
     [self willChangeValueForKey:@"editorIconImage"];
@@ -55,17 +69,53 @@
 
 - (NSImage *)editorIconImage
 {
-    return _useExternalEditor ? [NSImage imageNamed:@"NMFIcon"] : [NSApp applicationIconImage];
+    if (_useExternalEditor && _externalEditorName) {
+        NSString *appPath = [[NSWorkspace sharedWorkspace] fullPathForApplication:_externalEditorName];
+        return [[NSWorkspace sharedWorkspace] iconForFile:appPath];
+    }
+    else {
+        return [NSApp applicationIconImage];
+    }
 }
 
 - (NSString *)editorName
 {
-    return _useExternalEditor ? @"Internal Editor -" : @"Internal Editor";
+    return _useExternalEditor && _externalEditorName ? _externalEditorName : @"Internal Editor";
 }
 
 - (NSString *)editorSelectButtonLabel
 {
-    return _useExternalEditor ? @"Select -" : @"Select";
+    return _useExternalEditor && _externalEditorName ? @"Change" : @"Select";
+}
+
+- (IBAction)editorSelectButtonPressed:(id)sender
+{
+    NSOpenPanel *openPanel = [NSOpenPanel openPanel];
+    openPanel.directoryURL = [NSURL fileURLWithPath:@"/Applications" isDirectory:YES];
+    openPanel.delegate = self;
+    
+    [openPanel beginSheetModalForWindow:self.view.window completionHandler:^(NSInteger result) {
+        if (NSFileHandlingPanelOKButton == result) {
+            NSBundle *appBundle = [NSBundle bundleWithURL:openPanel.URL];
+            _externalEditorName = [appBundle objectForInfoDictionaryKey:@"CFBundleName"];
+            [[NSUserDefaults standardUserDefaults] setObject:_externalEditorName  forKey:kDefaultPreferenceExternaEditorAppName];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+            [self refreshEditorSettings];
+        }
+    }];
+}
+
+#pragma mark NSOpenSavePanelDelegate
+
+- (BOOL)panel:(id)sender shouldEnableURL:(NSURL *)url
+{
+    if ([url.pathExtension isEqualToString:@"app"]) {
+        return YES;
+    }
+    
+    BOOL ret;
+    [[NSFileManager defaultManager] fileExistsAtPath:url.path isDirectory:&ret];
+    return ret;
 }
 
 @end
