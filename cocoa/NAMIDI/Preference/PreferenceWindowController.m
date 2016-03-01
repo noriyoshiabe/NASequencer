@@ -11,6 +11,8 @@
 #import "SynthesizerViewController.h"
 #import "PurchaseViewController.h"
 
+@import QuartzCore.CAMediaTimingFunction;
+
 @interface PreferenceWindowController ()  <NSToolbarDelegate>
 @property (weak) IBOutlet NSToolbar *toolbar;
 @property (strong, nonatomic) NSMutableArray *viewControllers;
@@ -24,7 +26,7 @@
 {
     self = [super init];
     if (self) {
-        self.viewControllers = [NSMutableArray array];
+        _viewControllers = [NSMutableArray array];
         
         [self addViewController:[[GeneralViewController alloc] init]];
         [self addViewController:[[SynthesizerViewController alloc] init]];
@@ -49,26 +51,50 @@
     self.windowFrameAutosaveName = @"PreferenceWindowFrame";
     
     _toolbar.delegate = self;
-    self.selectedViewController = _viewControllers[0];
     
     NSArray *identifiers = self.toolbarItemIdentifiers;
     for (int i = 0; i < identifiers.count; ++i) {
         [_toolbar insertItemWithItemIdentifier:identifiers[i] atIndex: i];
     }
+    
+    [self setSelectedViewController:_viewControllers[0] animate:NO];
 }
 
 - (void)setSelectedViewController:(NSViewController<PreferenceViewController> *)controller
+{
+    [self setSelectedViewController:controller animate:YES];
+}
+
+- (void)setSelectedViewController:(NSViewController<PreferenceViewController> *)controller animate:(BOOL)animate
 {
     if (_selectedViewController == controller) {
         return;
     }
     
     [_selectedViewController commitEditing];
-    _selectedViewController = controller;
     
-    self.contentViewController = controller;
     self.window.title = controller.toolbarItemLabel;
     [_toolbar setSelectedItemIdentifier:controller.identifier];
+    
+    _selectedViewController = controller;
+    
+    CGRect newWindowFrame = [self.window frameRectForContentRect:controller.view.frame];
+    newWindowFrame.origin.x = NSMinX(self.window.frame);
+    newWindowFrame.origin.y = NSMinY(self.window.frame) + (NSHeight(self.window.frame) - NSHeight(newWindowFrame));
+    
+    CGRect newViewFrame = CGRectMake(0, 0, NSWidth(controller.view.frame), NSHeight(controller.view.frame));
+    
+    self.window.contentView = controller.view;
+    
+    controller.view.alphaValue = 0.0;
+    controller.view.frame = newViewFrame;
+    
+    [NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
+        context.duration = (animate ? 0.25 : 0);
+        context.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+        [self.window.animator setFrame:newWindowFrame display:YES];
+        controller.view.animator.alphaValue = 1.0;
+    } completionHandler:^{}];
 }
 
 - (NSArray *)toolbarItemIdentifiers
@@ -88,7 +114,7 @@
 
 - (void)toolbarItemDidClick:(NSToolbarItem *)sender
 {
-    [self.contentViewController commitEditing];
+    [_selectedViewController commitEditing];
     self.selectedViewController = [self controllerForIdentifier:sender.itemIdentifier];
 }
 
