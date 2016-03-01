@@ -27,6 +27,7 @@
 		021483631C84A66F00D653AE /* ExporterRepresentation.m in Sources */ = {isa = PBXBuildFile; fileRef = 021483621C84A66F00D653AE /* ExporterRepresentation.m */; };
 		0214836A1C84B2E700D653AE /* ExportWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 021483681C84B2E700D653AE /* ExportWindowController.m */; };
 		0214836B1C84B2E700D653AE /* ExportWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 021483691C84B2E700D653AE /* ExportWindowController.xib */; };
+		021483771C86454500D653AE /* Preference.m in Sources */ = {isa = PBXBuildFile; fileRef = 021483761C86454500D653AE /* Preference.m */; };
 		0216EDF71C7AC431009A7B90 /* ConductorTrackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0216EDF51C7AC431009A7B90 /* ConductorTrackViewController.m */; };
 		0216EDF81C7AC431009A7B90 /* ConductorTrackViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0216EDF61C7AC431009A7B90 /* ConductorTrackViewController.xib */; };
 		0216EDFC1C7ADA09009A7B90 /* PianoRollViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0216EDFA1C7ADA09009A7B90 /* PianoRollViewController.m */; };
@@ -168,7 +169,8 @@
 		021483671C84B2E700D653AE /* ExportWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExportWindowController.h; sourceTree = "<group>"; };
 		021483681C84B2E700D653AE /* ExportWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExportWindowController.m; sourceTree = "<group>"; };
 		021483691C84B2E700D653AE /* ExportWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ExportWindowController.xib; sourceTree = "<group>"; };
-		021483701C85C15D00D653AE /* Default.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Default.h; sourceTree = "<group>"; };
+		021483751C86454500D653AE /* Preference.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Preference.h; sourceTree = "<group>"; };
+		021483761C86454500D653AE /* Preference.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Preference.m; sourceTree = "<group>"; };
 		0216EDF41C7AC431009A7B90 /* ConductorTrackViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConductorTrackViewController.h; sourceTree = "<group>"; };
 		0216EDF51C7AC431009A7B90 /* ConductorTrackViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConductorTrackViewController.m; sourceTree = "<group>"; };
 		0216EDF61C7AC431009A7B90 /* ConductorTrackViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ConductorTrackViewController.xib; sourceTree = "<group>"; };
@@ -634,7 +636,8 @@
 				025FAF9E1C8065C300E4C3B3 /* MixerRepresentation.m */,
 				021483611C84A66F00D653AE /* ExporterRepresentation.h */,
 				021483621C84A66F00D653AE /* ExporterRepresentation.m */,
-				021483701C85C15D00D653AE /* Default.h */,
+				021483751C86454500D653AE /* Preference.h */,
+				021483761C86454500D653AE /* Preference.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -820,6 +823,7 @@
 				025FA9061C7D27BD00E4C3B3 /* PianoRollVelocityLabelView.m in Sources */,
 				026D42EB1C7ABC08000267AD /* PlayLineViewController.m in Sources */,
 				02CAF6C41C778C2200AD81B2 /* ErrorWindowController.m in Sources */,
+				021483771C86454500D653AE /* Preference.m in Sources */,
 				0216EE0F1C7C689F009A7B90 /* PianoRollLayout.m in Sources */,
 				026D42DE1C7ABC08000267AD /* MainViewController.m in Sources */,
 				026D42E01C7ABC08000267AD /* MeasureViewController.m in Sources */,

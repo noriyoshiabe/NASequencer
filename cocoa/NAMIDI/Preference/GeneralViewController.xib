@@ -23,7 +23,7 @@
                         <font key="font" metaFont="system" size="12"/>
                     </buttonCell>
                     <connections>
-                        <binding destination="Y9P-EV-PAQ" name="value" keyPath="values.Preference.ShowWelcome" id="Ugq-SX-s52"/>
+                        <binding destination="Y9P-EV-PAQ" name="value" keyPath="values.ShowWelcome" id="LNz-Az-sZw"/>
                     </connections>
                 </button>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Bdn-la-BHj">

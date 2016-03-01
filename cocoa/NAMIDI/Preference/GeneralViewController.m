@@ -7,7 +7,7 @@
 //
 
 #import "GeneralViewController.h"
-#import "Default.h"
+#import "Preference.h"
 
 @interface GeneralViewController () <NSOpenSavePanelDelegate> {
     NSString *_externalEditorName;
@@ -39,7 +39,7 @@
 {
     [super viewDidLoad];
     
-    _externalEditorName = [[NSUserDefaults standardUserDefaults] stringForKey:kDefaultPreferenceExternaEditorAppName];
+    _externalEditorName = [Preference sharedInstance].externalEditorName;
     if (_externalEditorName) {
         self.useExternalEditor = YES;
     }
@@ -49,8 +49,7 @@
 {
     _useExternalEditor = useExternalEditor;
     if (!_useExternalEditor) {
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kDefaultPreferenceExternaEditorAppName];
-        [[NSUserDefaults standardUserDefaults] synchronize];
+        [Preference sharedInstance].externalEditorName = nil;
         _externalEditorName = nil;
     }
     
@@ -98,8 +97,7 @@
         if (NSFileHandlingPanelOKButton == result) {
             NSBundle *appBundle = [NSBundle bundleWithURL:openPanel.URL];
             _externalEditorName = [appBundle objectForInfoDictionaryKey:@"CFBundleName"];
-            [[NSUserDefaults standardUserDefaults] setObject:_externalEditorName  forKey:kDefaultPreferenceExternaEditorAppName];
-            [[NSUserDefaults standardUserDefaults] synchronize];
+            [Preference sharedInstance].externalEditorName = _externalEditorName;
             [self refreshEditorSettings];
         }
     }];

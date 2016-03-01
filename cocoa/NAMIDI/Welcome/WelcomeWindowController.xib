@@ -199,7 +199,7 @@
                             <font key="font" metaFont="system"/>
                         </buttonCell>
                         <connections>
-                            <binding destination="hzK-Ba-f7f" name="value" keyPath="values.Preference.ShowWelcome" id="adL-ee-rkm"/>
+                            <binding destination="hzK-Ba-f7f" name="value" keyPath="values.ShowWelcome" id="nDd-iU-YKP"/>
                         </connections>
                     </button>
                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9JD-1h-6gQ">
