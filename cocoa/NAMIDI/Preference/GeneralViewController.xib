@@ -21,13 +21,49 @@
                     <buttonCell key="cell" type="check" title="Show Welcome when NAMIDI starts" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="JGx-jX-Shp">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="system" size="12"/>
-                        <connections>
-                            <binding destination="Y9P-EV-PAQ" name="value" keyPath="values.Preference.ShowWelcome" id="ISV-Ke-Iaw"/>
-                        </connections>
                     </buttonCell>
+                    <connections>
+                        <binding destination="Y9P-EV-PAQ" name="value" keyPath="values.Preference.ShowWelcome" id="Ugq-SX-s52"/>
+                    </connections>
+                </button>
+                <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Bdn-la-BHj">
+                    <rect key="frame" x="18" y="97" width="244" height="18"/>
+                    <buttonCell key="cell" type="check" title="Use External Editor" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="8XA-3j-b3K">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system" size="12"/>
+                    </buttonCell>
+                    <connections>
+                        <binding destination="-2" name="value" keyPath="useExternalEditor" id="ZCs-0a-pQU"/>
+                    </connections>
+                </button>
+                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NF7-EL-K9X">
+                    <rect key="frame" x="30" y="25" width="81" height="32"/>
+                    <buttonCell key="cell" type="push" title="Select" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="l3T-y4-Pi3">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <binding destination="-2" name="enabled" keyPath="useExternalEditor" id="Mz9-4w-KUG"/>
+                        <binding destination="-2" name="title" keyPath="editorSelectButtonLabel" id="tKW-pm-pfk"/>
+                    </connections>
+                </button>
+                <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="t1L-30-3ip">
+                    <rect key="frame" x="36" y="59" width="136" height="32"/>
+                    <buttonCell key="cell" type="square" title="Internal Editor" bezelStyle="shadowlessSquare" image="NSApplicationIcon" imagePosition="left" alignment="left" imageScaling="proportionallyUpOrDown" inset="2" id="2a7-Id-aPE">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="systemBold"/>
+                    </buttonCell>
+                    <connections>
+                        <binding destination="-2" name="enabled" keyPath="useExternalEditor" id="xFx-RE-V9S"/>
+                        <binding destination="-2" name="image" keyPath="editorIconImage" id="UgU-Ln-aOk"/>
+                        <binding destination="-2" name="title" keyPath="editorName" previousBinding="UgU-Ln-aOk" id="MfY-dL-56E"/>
+                    </connections>
                 </button>
             </subviews>
         </customView>
         <userDefaultsController representsSharedInstance="YES" id="Y9P-EV-PAQ"/>
     </objects>
+    <resources>
+        <image name="NSApplicationIcon" width="128" height="128"/>
+    </resources>
 </document>

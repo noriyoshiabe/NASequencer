@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 #define kDefaultPreferenceShowWelcome @"Preference.ShowWelcome"
+#define kDefaultPreferenceExternaEditorPath @"Preference.ExternalEditorPath"
 
 #define kDefaultSelectedFileTypeForCreation @"Document.SelectedFileTypeForCreation"
 #define kDefaultSelectedFileTypeForExport @"Document.SelectedFileTypeForExport"
