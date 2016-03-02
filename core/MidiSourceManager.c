@@ -288,10 +288,12 @@ void MidiSourceManagerSetGainForDescription(MidiSourceManager *self, MidiSourceD
     description->gain = gain;
 
     NAArray *midiSources = NAMapGet(self->midiSourceMap, description);
-    NAIterator *iterator = NAArrayGetIterator(midiSources);
-    while (iterator->hasNext(iterator)) {
-        MidiSource *midiSource = iterator->next(iterator);
-        midiSource->setGain(midiSource, description->gain);
+    if (midiSources) {
+        NAIterator *iterator = NAArrayGetIterator(midiSources);
+        while (iterator->hasNext(iterator)) {
+            MidiSource *midiSource = iterator->next(iterator);
+            midiSource->setGain(midiSource, description->gain);
+        }
     }
 }
 
