@@ -139,9 +139,24 @@ static MidiSourceManagerRepresentation *_sharedInstance = nil;
     [_observers removeObserver:observer];
 }
 
+- (NSString *)pathForDefaultMidiSource
+{
+    return [[NSBundle mainBundle] pathForResource:@"GeneralUser GS Live-Audigy v1.44" ofType:@"sf2"];
+}
+
+- (void)loadDefaultMidiSourceDescription
+{
+    [self loadMidiSourceDescriptionFromSoundFont:self.pathForDefaultMidiSource];
+}
+
 - (void)loadMidiSourceDescriptionFromSoundFont:(NSString *)filepath
 {
     MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(_manager, filepath.UTF8String);
+}
+
+- (void)unloadMidiSourceDescription:(MidiSourceDescriptionRepresentation *)description
+{
+    MidiSourceManagerUnloadMidiSourceDescription(_manager, description.raw);
 }
 
 - (void)setGainForDescription:(MidiSourceDescriptionRepresentation *)description gain:(int)gain

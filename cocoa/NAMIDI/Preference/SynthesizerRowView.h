@@ -9,7 +9,13 @@
 #import <Cocoa/Cocoa.h>
 #import "MidiSourceManagerRepresentation.h"
 
+@class SynthesizerRowView;
+@protocol SynthesizerRowViewDelegate <NSObject>
+- (void)synthesizerRowViewDidClickUnload:(SynthesizerRowView *)view;
+@end
+
 @interface SynthesizerRowView : NSTableRowView
+@property (weak, nonatomic) id<SynthesizerRowViewDelegate> delegate;
 @property (strong, nonatomic) MidiSourceDescriptionRepresentation *description;
 @property (readonly, nonatomic) NSString *synthesizerName;
 @property (readonly, nonatomic) BOOL canUnload;

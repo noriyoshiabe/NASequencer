@@ -31,10 +31,13 @@
 @interface MidiSourceManagerRepresentation : NSObject
 @property (readonly, nonatomic) NSArray<MidiSourceDescriptionRepresentation *> *descriptions;
 @property (readonly, nonatomic) NSArray<MidiSourceDescriptionRepresentation *> *availableDescriptions;
+@property (readonly, nonatomic) NSString *pathForDefaultMidiSource;
 + (MidiSourceManagerRepresentation *)sharedInstance;
 - (void)addObserver:(id<MidiSourceManagerRepresentationObserver>)observer;
 - (void)removeObserver:(id<MidiSourceManagerRepresentationObserver>)observer;
+- (void)loadDefaultMidiSourceDescription;
 - (void)loadMidiSourceDescriptionFromSoundFont:(NSString *)filepath;
+- (void)unloadMidiSourceDescription:(MidiSourceDescriptionRepresentation *)description;
 - (void)setGainForDescription:(MidiSourceDescriptionRepresentation *)description gain:(int)gain;
 - (void)setMasterVolumeForDescription:(MidiSourceDescriptionRepresentation *)description masterVolume:(int)masterVolume;
 @end

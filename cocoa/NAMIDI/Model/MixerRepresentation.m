@@ -275,6 +275,7 @@ static MixerObserverCallbacks callbacks = {onChannelStatusChange, onAvailableMid
     switch (kind) {
         case MixerChannelStatusKindMidiSourceDescription:
             [__channel loadMidiSourceDescription];
+            [__channel loadPreset];
             break;
         case MixerChannelStatusKindPreset:
             [__channel loadPreset];

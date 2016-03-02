@@ -18,14 +18,14 @@
             <rect key="frame" x="0.0" y="0.0" width="495" height="183"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="90" horizontalPageScroll="10" verticalLineScroll="90" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="lLZ-SI-vio">
+                <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="90" horizontalPageScroll="10" verticalLineScroll="90" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="lLZ-SI-vio">
                     <rect key="frame" x="12" y="82" width="471" height="91"/>
                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="MVe-ej-dkJ">
                         <rect key="frame" x="0.0" y="0.0" width="471" height="91"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="86" rowSizeStyle="automatic" viewBased="YES" id="u3N-RV-xhO">
-                                <rect key="frame" x="0.0" y="0.0" width="471" height="91"/>
+                                <rect key="frame" x="0.0" y="0.0" width="471" height="0.0"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <size key="intercellSpacing" width="0.0" height="4"/>
                                 <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="calibratedRGB"/>

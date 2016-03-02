@@ -44,6 +44,8 @@
 {
     [self willChangeValueForKey:@"synthesizerName"];
     [self didChangeValueForKey:@"synthesizerName"];
+    [self willChangeValueForKey:@"canUnload"];
+    [self didChangeValueForKey:@"canUnload"];
     [self willChangeValueForKey:@"gain"];
     [self didChangeValueForKey:@"gain"];
     [self willChangeValueForKey:@"masterVolume"];
@@ -53,6 +55,11 @@
 - (NSString *)synthesizerName
 {
     return _description.name;
+}
+
+- (BOOL)canUnload
+{
+    return ![_description.filepath isEqualToString:_manager.pathForDefaultMidiSource];
 }
 
 - (int)gain
@@ -77,7 +84,7 @@
 
 - (IBAction)unloadButtonPressed:(id)sender
 {
-    __Trace__
+    [_delegate synthesizerRowViewDidClickUnload:self];
 }
 
 - (IBAction)resetButtonPressed:(id)sender

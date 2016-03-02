@@ -64,8 +64,7 @@ ApplicationController *AppController;
         [bookmarkedURL startAccessingSecurityScopedResource];
     }
     
-    NSString *filepath = [[NSBundle mainBundle] pathForResource:@"GeneralUser GS Live-Audigy v1.44" ofType:@"sf2"];
-    [[MidiSourceManagerRepresentation sharedInstance] loadMidiSourceDescriptionFromSoundFont:filepath];
+    [[MidiSourceManagerRepresentation sharedInstance] loadDefaultMidiSourceDescription];
 }
 
 - (BOOL)needShowWelcome
