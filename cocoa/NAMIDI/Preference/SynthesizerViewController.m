@@ -8,6 +8,15 @@
 
 #import "SynthesizerViewController.h"
 
+@interface SynthesizerRowView : NSTableRowView
+
+@end
+
+@implementation SynthesizerRowView
+
+@end
+
+
 @interface SynthesizerViewController ()
 
 @end
