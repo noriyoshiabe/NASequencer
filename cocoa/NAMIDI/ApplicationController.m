@@ -57,6 +57,13 @@ ApplicationController *AppController;
 {
     [[Preference sharedInstance] initialize];
     
+    NSData *bookmark = [Preference sharedInstance].includeSearchPathBookmark;
+    if (bookmark) {
+        NSError *error = nil;
+        NSURL *bookmarkedURL = [NSURL URLByResolvingBookmarkData:bookmark options:NSURLBookmarkResolutionWithSecurityScope relativeToURL:nil bookmarkDataIsStale:nil error:&error];
+        [bookmarkedURL startAccessingSecurityScopedResource];
+    }
+    
     NSString *filepath = [[NSBundle mainBundle] pathForResource:@"GeneralUser GS Live-Audigy v1.44" ofType:@"sf2"];
     [[MidiSourceManagerRepresentation sharedInstance] loadMidiSourceDescriptionFromSoundFont:filepath];
 }

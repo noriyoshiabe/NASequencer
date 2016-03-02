@@ -109,10 +109,23 @@
     NSOpenPanel *openPanel = [NSOpenPanel openPanel];
     openPanel.canChooseFiles = NO;
     openPanel.canChooseDirectories = YES;
+    openPanel.canCreateDirectories = YES;
     
     [openPanel beginSheetModalForWindow:self.view.window completionHandler:^(NSInteger result) {
         if (NSFileHandlingPanelOKButton == result) {
             [Preference sharedInstance].includeSearchPath = openPanel.URL.path;
+            
+            NSError *error = nil;
+            NSData *bookmark = [openPanel.URL bookmarkDataWithOptions:NSURLBookmarkCreationWithSecurityScope
+                                       includingResourceValuesForKeys:nil
+                                                        relativeToURL:nil
+                                                                error:&error];
+            if (error) {
+                [NSApp presentError:error];
+            }
+            else {
+                [Preference sharedInstance].includeSearchPathBookmark = bookmark;
+            }
         }
     }];
 }

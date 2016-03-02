@@ -14,6 +14,7 @@
 @property (readwrite, nonatomic) NSString *selectedFileTypeForExport;
 @property (readwrite, nonatomic) NSString *externalEditorName;
 @property (readwrite, nonatomic) NSString *includeSearchPath;
+@property (readwrite, nonatomic) NSData *includeSearchPathBookmark;
 + (Preference *)sharedInstance;
 - (void)initialize;
 @end

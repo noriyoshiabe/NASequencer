@@ -11,6 +11,7 @@
 #define kShowWelcome @"ShowWelcome"
 #define kExternaEditorName @"ExternalEditorName"
 #define kIncludeSearchPath @"IncludeSearchPath"
+#define kIncludeSearchPathBookmark @"IncludeSearchPathBookmark"
 
 #define kSelectedFileTypeForCreation @"SelectedFileTypeForCreation"
 #define kSelectedFileTypeForExport @"SelectedFileTypeForExport"
@@ -123,6 +124,22 @@ static Preference *_sharedInstance = nil;
     }
     else {
         [_userDefaults removeObjectForKey:kIncludeSearchPath];
+    }
+    [_userDefaults synchronize];
+}
+
+- (NSData *)includeSearchPathBookmark
+{
+    return [_userDefaults dataForKey:kIncludeSearchPathBookmark];
+}
+
+- (void)setIncludeSearchPathBookmark:(NSData *)includeSearchPathBookmark
+{
+    if (includeSearchPathBookmark) {
+        [_userDefaults setValue:includeSearchPathBookmark forKey:kIncludeSearchPathBookmark];
+    }
+    else {
+        [_userDefaults removeObjectForKey:kIncludeSearchPathBookmark];
     }
     [_userDefaults synchronize];
 }
