@@ -35,6 +35,11 @@
     return NSLocalizedString(@"Preference_General", @"General");
 }
 
+- (void)layout
+{
+    self.view.frame = self.view.bounds;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];

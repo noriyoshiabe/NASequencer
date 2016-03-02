@@ -10,11 +10,16 @@
 #import "SynthesizerRowView.h"
 #import "MidiSourceManagerRepresentation.h"
 
+@import QuartzCore.CAMediaTimingFunction;
+
 @interface SynthesizerViewController () <NSTableViewDataSource, NSTableViewDelegate, MidiSourceManagerRepresentationObserver, SynthesizerRowViewDelegate> {
     MidiSourceManagerRepresentation *_manager;
+    CGRect _initialViewRect;
+    CGFloat _initilalTableViewHeight;
 }
 @property (weak) IBOutlet NSTableView *tableView;
 @property (weak) IBOutlet NSTextField *explanationLabel;
+@property (weak) IBOutlet NSLayoutConstraint *tableViewHeightConstraint;
 @end
 
 @implementation SynthesizerViewController
@@ -34,15 +39,48 @@
     return NSLocalizedString(@"Preference_Synthesizer", @"Synthesizer");
 }
 
+- (void)layout
+{
+    [self view];
+    self.view.frame = self.desiredViewFrame;
+    _tableViewHeightConstraint.constant = self.desiredTableViewHeight;
+}
+
+- (CGRect)desiredViewFrame
+{
+    CGFloat height = _initialViewRect.size.height + (_manager.descriptions.count - 1) * _initilalTableViewHeight - _explanationLabel.frame.size.height + self.desiredExplanationLabelHeight;
+    return CGRectMake(0, 0, self.view.frame.size.width, height);
+}
+
+- (CGFloat)desiredTableViewHeight
+{
+    return _initilalTableViewHeight * _manager.descriptions.count;
+}
+
+- (CGFloat)desiredExplanationLabelHeight
+{
+    return 1 < _manager.descriptions.count ? _explanationLabel.frame.size.height : 0;
+}
+
+- (BOOL)isExplanationLabelHidden
+{
+    return 2 > _manager.descriptions.count;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    _initialViewRect = self.view.frame;
+    _initilalTableViewHeight = _tableView.frame.size.height;
     
     _manager = [MidiSourceManagerRepresentation sharedInstance];
     [_manager addObserver:self];
     
     _tableView.dataSource = self;
     _tableView.delegate = self;
+    
+    _explanationLabel.hidden = self.isExplanationLabelHidden;
     
     [_tableView reloadData];
 }
@@ -70,6 +108,23 @@
 {
     [super mouseDown:theEvent];
     [self.view.window makeFirstResponder:self];
+}
+
+- (void)resizeWindowFrameAndReload
+{
+    CGRect newWindowFrame = [self.view.window frameRectForContentRect:self.desiredViewFrame];
+    newWindowFrame.origin.x = NSMinX(self.view.window.frame);
+    newWindowFrame.origin.y = NSMinY(self.view.window.frame) + (NSHeight(self.view.window.frame) - NSHeight(newWindowFrame));
+    
+    [NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
+        context.duration = 0.25;
+        context.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+        [self.view.window.animator setFrame:newWindowFrame display:YES];
+        _tableViewHeightConstraint.animator.constant = self.desiredTableViewHeight;
+        _explanationLabel.animator.hidden = self.isExplanationLabelHidden;
+    } completionHandler:^{
+        [_tableView reloadData];
+    }];
 }
 
 #pragma mark NSTableViewDataSource
@@ -103,12 +158,12 @@
 
 - (void)midiSourceManager:(MidiSourceManagerRepresentation *)manager onLoadMidiSourceDescription:(MidiSourceDescriptionRepresentation *)description
 {
-    [_tableView reloadData];
+    [self resizeWindowFrameAndReload];
 }
 
 - (void)midiSourceManager:(MidiSourceManagerRepresentation *)manager onUnloadMidiSourceDescription:(MidiSourceDescriptionRepresentation *)description
 {
-    [_tableView reloadData];
+    [self resizeWindowFrameAndReload];
 }
 
 @end

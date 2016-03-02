@@ -12,6 +12,7 @@
 @property (nonatomic, readonly) NSString *identifier;
 @property (nonatomic, readonly) NSImage *toolbarItemImage;
 @property (nonatomic, readonly) NSString *toolbarItemLabel;
+- (void)layout;
 @end
 
 @interface PreferenceWindowController : NSWindowController

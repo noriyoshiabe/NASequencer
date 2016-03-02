@@ -78,16 +78,15 @@
     
     _selectedViewController = controller;
     
+    [controller layout];
+    
     CGRect newWindowFrame = [self.window frameRectForContentRect:controller.view.frame];
     newWindowFrame.origin.x = NSMinX(self.window.frame);
     newWindowFrame.origin.y = NSMinY(self.window.frame) + (NSHeight(self.window.frame) - NSHeight(newWindowFrame));
     
-    CGRect newViewFrame = CGRectMake(0, 0, NSWidth(controller.view.frame), NSHeight(controller.view.frame));
-    
     self.window.contentView = controller.view;
     
     controller.view.alphaValue = 0.0;
-    controller.view.frame = newViewFrame;
     
     [NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
         context.duration = (animate ? 0.25 : 0);

@@ -29,6 +29,11 @@
     return NSLocalizedString(@"Preference_Purchase", @"Purchase");
 }
 
+- (void)layout
+{
+    self.view.frame = self.view.bounds;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
