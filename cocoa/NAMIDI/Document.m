@@ -35,7 +35,22 @@
     _namidi.file = _file;
     _namidi.includePath = [Preference sharedInstance].includeSearchPath;
     [_namidi parse];
+    
+    [[Preference sharedInstance] addObserver:self forKeyPath:@"includeSearchPath" options:0 context:NULL];
     return YES;
+}
+
+- (void)dealloc
+{
+    [[Preference sharedInstance] removeObserver:self forKeyPath:@"includeSearchPath"];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context
+{
+    if (object == [Preference sharedInstance]) {
+        _namidi.includePath = [Preference sharedInstance].includeSearchPath;
+        [_namidi parse];
+    }
 }
 
 - (void)makeWindowControllers
