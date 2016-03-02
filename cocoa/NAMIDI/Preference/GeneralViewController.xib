@@ -21,7 +21,7 @@
                     <rect key="frame" x="18" y="180" width="244" height="18"/>
                     <buttonCell key="cell" type="check" title="Show Welcome when NAMIDI starts" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="JGx-jX-Shp">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                        <font key="font" metaFont="system" size="12"/>
+                        <font key="font" metaFont="cellTitle"/>
                     </buttonCell>
                     <connections>
                         <binding destination="Y9P-EV-PAQ" name="value" keyPath="values.ShowWelcome" id="LNz-Az-sZw"/>
@@ -31,7 +31,7 @@
                     <rect key="frame" x="18" y="149" width="244" height="18"/>
                     <buttonCell key="cell" type="check" title="Use External Editor" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="8XA-3j-b3K">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                        <font key="font" metaFont="system" size="12"/>
+                        <font key="font" metaFont="cellTitle"/>
                     </buttonCell>
                     <connections>
                         <binding destination="-2" name="value" keyPath="useExternalEditor" id="ZCs-0a-pQU"/>
@@ -44,9 +44,9 @@
                         <font key="font" metaFont="systemBold"/>
                     </buttonCell>
                     <connections>
-                        <binding destination="-2" name="enabled" keyPath="useExternalEditor" id="xFx-RE-V9S"/>
                         <binding destination="-2" name="image" keyPath="editorIconImage" id="UgU-Ln-aOk"/>
                         <binding destination="-2" name="title" keyPath="editorName" previousBinding="UgU-Ln-aOk" id="MfY-dL-56E"/>
+                        <binding destination="-2" name="enabled" keyPath="useExternalEditor" id="xFx-RE-V9S"/>
                     </connections>
                 </button>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NF7-EL-K9X">
@@ -57,8 +57,8 @@
                     </buttonCell>
                     <connections>
                         <action selector="editorSelectButtonPressed:" target="-2" id="UOw-x3-zWe"/>
-                        <binding destination="-2" name="enabled" keyPath="useExternalEditor" id="Mz9-4w-KUG"/>
                         <binding destination="-2" name="title" keyPath="editorSelectButtonLabel" id="tKW-pm-pfk"/>
+                        <binding destination="-2" name="enabled" keyPath="useExternalEditor" id="Mz9-4w-KUG"/>
                     </connections>
                 </button>
                 <box autoresizesSubviews="NO" fixedFrame="YES" title="Include Search Path" borderType="line" translatesAutoresizingMaskIntoConstraints="NO" id="hzD-Aj-IuD">
@@ -70,7 +70,7 @@
                             <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zPZ-AU-JxJ">
                                 <rect key="frame" x="11" y="10" width="292" height="20"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="/Users/abechan/Music/NAMIDI/include" drawsBackground="YES" id="UYQ-jJ-7eb">
-                                    <font key="font" metaFont="system" size="11"/>
+                                    <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
@@ -82,7 +82,7 @@
                                 <rect key="frame" x="307" y="3" width="68" height="32"/>
                                 <buttonCell key="cell" type="push" title="Browse" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="foc-QO-256">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="system" size="12"/>
+                                    <font key="font" metaFont="cellTitle"/>
                                 </buttonCell>
                                 <connections>
                                     <action selector="includeSearchPathBrowseButtonPressed:" target="-2" id="eA9-gi-Ijw"/>
