@@ -7,18 +7,11 @@
 //
 
 #import "SynthesizerViewController.h"
+#import "SynthesizerRowView.h"
 
-@interface SynthesizerRowView : NSTableRowView
-
-@end
-
-@implementation SynthesizerRowView
-
-@end
-
-
-@interface SynthesizerViewController ()
-
+@interface SynthesizerViewController () <NSTableViewDataSource, NSTableViewDelegate>
+@property (weak) IBOutlet NSTableView *tableView;
+@property (weak) IBOutlet NSTextField *explanationLabel;
 @end
 
 @implementation SynthesizerViewController
@@ -41,7 +34,39 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Do view setup here.
+    _tableView.dataSource = self;
+    _tableView.delegate = self;
+    
+    [_tableView reloadData];
+}
+
+- (IBAction)addSynthesizerButtonPressed:(id)sender
+{
+    __Trace__
+}
+
+- (void)mouseDown:(NSEvent *)theEvent
+{
+    [super mouseDown:theEvent];
+    [self.view.window makeFirstResponder:self];
+}
+
+#pragma mark NSTableViewDataSource
+
+- (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView
+{
+    return 3;
+}
+
+- (NSTableRowView *)tableView:(NSTableView *)tableView rowViewForRow:(NSInteger)row
+{
+    SynthesizerRowView *view = [tableView makeViewWithIdentifier:@"SynthesizerRow" owner:nil];
+    return view;
+}
+
+- (BOOL)tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)row
+{
+    return NO;
 }
 
 @end

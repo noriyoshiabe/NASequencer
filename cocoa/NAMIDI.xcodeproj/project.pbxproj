@@ -117,6 +117,8 @@
 		02CAF6C01C77858000AD81B2 /* LocationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CAF6BF1C77858000AD81B2 /* LocationView.m */; };
 		02CAF6C41C778C2200AD81B2 /* ErrorWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CAF6C21C778C2200AD81B2 /* ErrorWindowController.m */; };
 		02CAF6C51C778C2200AD81B2 /* ErrorWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02CAF6C31C778C2200AD81B2 /* ErrorWindowController.xib */; };
+		02CD04221C871B3400BF6683 /* SynthesizerRowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CD04211C871B3400BF6683 /* SynthesizerRowView.m */; };
+		02CD04241C871B4500BF6683 /* SynthesizerRowView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02CD04231C871B4500BF6683 /* SynthesizerRowView.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -315,6 +317,9 @@
 		02CAF6C11C778C2200AD81B2 /* ErrorWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ErrorWindowController.h; sourceTree = "<group>"; };
 		02CAF6C21C778C2200AD81B2 /* ErrorWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ErrorWindowController.m; sourceTree = "<group>"; };
 		02CAF6C31C778C2200AD81B2 /* ErrorWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ErrorWindowController.xib; sourceTree = "<group>"; };
+		02CD04201C871B3400BF6683 /* SynthesizerRowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SynthesizerRowView.h; sourceTree = "<group>"; };
+		02CD04211C871B3400BF6683 /* SynthesizerRowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SynthesizerRowView.m; sourceTree = "<group>"; };
+		02CD04231C871B4500BF6683 /* SynthesizerRowView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SynthesizerRowView.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -408,6 +413,9 @@
 				020CF86E1C6AF53D0025DF84 /* PurchaseViewController.h */,
 				020CF86F1C6AF53D0025DF84 /* PurchaseViewController.m */,
 				020CF8701C6AF53D0025DF84 /* PurchaseViewController.xib */,
+				02CD04201C871B3400BF6683 /* SynthesizerRowView.h */,
+				02CD04211C871B3400BF6683 /* SynthesizerRowView.m */,
+				02CD04231C871B4500BF6683 /* SynthesizerRowView.xib */,
 			);
 			path = Preference;
 			sourceTree = "<group>";
@@ -769,6 +777,7 @@
 				028209231C70A3C0003EBCFB /* EditorTabItem.xib in Resources */,
 				024A5B1E1C69FFD40079D22C /* MainWindowController.xib in Resources */,
 				0216EDFD1C7ADA09009A7B90 /* PianoRollViewController.xib in Resources */,
+				02CD04241C871B4500BF6683 /* SynthesizerRowView.xib in Resources */,
 				0216EDF81C7AC431009A7B90 /* ConductorTrackViewController.xib in Resources */,
 				026D42D71C7ABC08000267AD /* DetailViewController.xib in Resources */,
 				028589561C71320A00A53B8C /* EditorStatusViewController.xib in Resources */,
@@ -836,6 +845,7 @@
 				02633EB81C74ED9300B9FF0E /* NSView+Support.m in Sources */,
 				026D42D81C7ABC08000267AD /* EventListViewController.m in Sources */,
 				0201F7D11C688BB100A201F6 /* AppDelegate.m in Sources */,
+				02CD04221C871B3400BF6683 /* SynthesizerRowView.m in Sources */,
 				0216EDF71C7AC431009A7B90 /* ConductorTrackViewController.m in Sources */,
 				024A19061C768AC800B0AC56 /* FlippedView.m in Sources */,
 				028209221C70A3C0003EBCFB /* EditorTabItem.m in Sources */,
