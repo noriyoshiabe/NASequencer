@@ -55,7 +55,7 @@ int main(int argc, char **argv)
     NAIterator *iterator;
 
     SequenceBuilder *builder = SequenceBuilderCreate();
-    Parser *parser = ParserCreate(builder);
+    Parser *parser = ParserCreate(builder, NULL);
     NAArray *events = ParserParseFile(parser, argv[optind], &info);
     ParserDestroy(parser);
 

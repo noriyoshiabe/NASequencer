@@ -185,7 +185,7 @@ Node *ABCParserParseIncludeFile(void *_self, FileLocation *location, const char 
         return NULL;
     }
 
-    char *directory = dirname(location->filepath);
+    const char *directory = self->context->includePath ? self->context->includePath : dirname(location->filepath);
     char *fullpath = NAIOBuildPathWithDirectory(directory, includeFile);
 
     if (NASetContains(self->readingFileSet, fullpath)) {

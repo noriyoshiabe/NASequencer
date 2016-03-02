@@ -88,10 +88,11 @@ static void *ParseContextBuildResult(ParseContext *self, ParseInfo **info)
     return self->builder->build(self->builder);
 }
 
-ParseContext *ParseContextCreate(SequenceBuilder *builder)
+ParseContext *ParseContextCreate(SequenceBuilder *builder, const char *includePath)
 {
     ParseContext *self = calloc(1, sizeof(ParseContext));
     self->builder = builder;
+    self->includePath = includePath;
     self->filepaths = NAArrayCreate(4, NADescriptionCString);
     self->errors = NAArrayCreate(4, NADescriptionAddress);
     self->_fileSet = NASetCreate(NAHashCString, NADescriptionCString);

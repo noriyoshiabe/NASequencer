@@ -141,7 +141,7 @@ void NAMidiPreprocessorIncludeFile(NAMidiPreprocessor *self, int line, int colum
         return;
     }
 
-    char *directory = dirname(location.filepath);
+    const char *directory = self->context->includePath ? self->context->includePath : dirname(location.filepath);
     char *fullpath = NAIOBuildPathWithDirectory(directory, includeFile);
 
     if (NASetContains(self->readingFileSet, fullpath)) {

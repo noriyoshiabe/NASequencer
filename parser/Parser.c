@@ -12,11 +12,11 @@ struct _Parser {
     ParseContext *context;
 };
 
-Parser *ParserCreate(SequenceBuilder *builder)
+Parser *ParserCreate(SequenceBuilder *builder, const char *includePath)
 {
     Parser *self = calloc(1, sizeof(Parser));
     self->builder = builder;
-    self->context = ParseContextCreate(builder);
+    self->context = ParseContextCreate(builder, includePath);
     return self;
 }
 

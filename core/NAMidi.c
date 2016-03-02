@@ -20,6 +20,7 @@ struct _NAMidi {
     FSWatcher *watcher;
     bool watchEnable;
     bool changed;
+    const char *includePath;
 
     Mixer *mixer;
     Player *player;
@@ -114,6 +115,11 @@ static void NAMidiStartFileWatch(NAMidi *self)
     FSWatcherStart(self->watcher);
 }
 
+void NAMidiSetIncludePath(NAMidi *self, const char *includePath)
+{
+    self->includePath = includePath;
+}
+
 void NAMidiParse(NAMidi *self, const char *filepath)
 {
     ParseInfo *info = NULL;
@@ -121,7 +127,7 @@ void NAMidiParse(NAMidi *self, const char *filepath)
     NAArrayTraverseWithContext(self->observers, self, NAMidiNotifyBeforeParse, self->changed);
 
     SequenceBuilder *builder = SequenceBuilderCreate();
-    Parser *parser = ParserCreate(builder);
+    Parser *parser = ParserCreate(builder, self->includePath);
     Sequence *sequence = ParserParseFile(parser, filepath, &info);
     ParserDestroy(parser);
     builder->destroy(builder);

@@ -26,6 +26,7 @@ struct _Exporter {
     NAArray *eventsToWrite;
     ExporterObserverCallbacks *callbacks;
     void *receiver;
+    const char *includePath;
 };
 
 typedef struct _ExporterAudioBuffer {
@@ -76,6 +77,11 @@ static bool HasSoundSource()
     return 0 < NAArrayCount(descriptions);
 }
 
+void ExporterSetIncludePath(Exporter *self, const char *includePath)
+{
+    self->includePath = includePath;
+}
+
 ExporterError ExporterExport(Exporter *self, const char *filepath, const char *output)
 {
     const struct {
@@ -112,7 +118,7 @@ ExporterError ExporterExport(Exporter *self, const char *filepath, const char *o
     ExporterError ret = ExporterErrorNoError;
 
     SequenceBuilder *builder = SequenceBuilderCreate();
-    Parser *parser = ParserCreate(builder);
+    Parser *parser = ParserCreate(builder, self->includePath);
 
     ParseInfo *info = NULL;
     Sequence *sequence = ParserParseFile(parser, filepath, &info);

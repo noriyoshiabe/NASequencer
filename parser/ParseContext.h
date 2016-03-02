@@ -7,6 +7,8 @@
 typedef struct _ParseContext ParseContext;
 struct _ParseContext {
     SequenceBuilder *builder;
+    const char *includePath;
+
     NAArray *filepaths;
     NAArray *errors;
 
@@ -18,5 +20,5 @@ struct _ParseContext {
     NASet *_errorSignatureSet;
 };
 
-extern ParseContext *ParseContextCreate(SequenceBuilder *builder);
+extern ParseContext *ParseContextCreate(SequenceBuilder *builder, const char *includePath);
 extern void ParseContextDestroy(ParseContext *self);

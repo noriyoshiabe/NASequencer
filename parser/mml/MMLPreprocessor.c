@@ -140,7 +140,7 @@ void MMLPreprocessorIncludeFile(MMLPreprocessor *self, int line, int column, con
         return;
     }
 
-    char *directory = dirname(location.filepath);
+    const char *directory = self->context->includePath ? self->context->includePath : dirname(location.filepath);
     char *fullpath = NAIOBuildPathWithDirectory(directory, includeFile);
 
     if (NASetContains(self->readingFileSet, fullpath)) {

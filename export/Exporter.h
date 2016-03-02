@@ -19,4 +19,5 @@ typedef struct _ExporterObserverCallbacks {
 
 extern Exporter *ExporterCreate(ExporterObserverCallbacks *callbacks, void *receiver);
 extern void ExporterDestroy(Exporter *self);
+extern void ExporterSetIncludePath(Exporter *self, const char *includePath);
 extern ExporterError ExporterExport(Exporter *self, const char *filepath, const char *output);
