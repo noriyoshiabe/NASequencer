@@ -39,6 +39,16 @@
     return _raw->available;
 }
 
+- (int)gain
+{
+    return _raw->gain;
+}
+
+- (int)masterVolume
+{
+    return _raw->masterVolume;
+}
+
 - (MidiSourceDescriptionError)error
 {
     return _raw->error;
@@ -132,6 +142,16 @@ static MidiSourceManagerRepresentation *_sharedInstance = nil;
 - (void)loadMidiSourceDescriptionFromSoundFont:(NSString *)filepath
 {
     MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(_manager, filepath.UTF8String);
+}
+
+- (void)setGainForDescription:(MidiSourceDescriptionRepresentation *)description gain:(int)gain
+{
+    MidiSourceManagerSetGainForDescription(_manager, description.raw, gain);
+}
+
+- (void)setMasterVolumeForDescription:(MidiSourceDescriptionRepresentation *)description masterVolume:(int)masterVolume
+{
+    MidiSourceManagerSetMasterVolumeForDescription(_manager, description.raw, masterVolume);
 }
 
 - (void)onLoadMidiSourceDescription:(MidiSourceDescription *)description

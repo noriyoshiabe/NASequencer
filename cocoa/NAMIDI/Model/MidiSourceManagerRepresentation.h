@@ -13,6 +13,8 @@
 @property (readonly, nonatomic) NSString *name;
 @property (readonly, nonatomic) NSString *filepath;
 @property (readonly, nonatomic) BOOL available;
+@property (readonly, nonatomic) int gain;
+@property (readonly, nonatomic) int masterVolume;
 @property (readonly, nonatomic) MidiSourceDescriptionError error;
 @property (readonly, nonatomic) MidiSourceDescription *raw;
 @end
@@ -33,4 +35,6 @@
 - (void)addObserver:(id<MidiSourceManagerRepresentationObserver>)observer;
 - (void)removeObserver:(id<MidiSourceManagerRepresentationObserver>)observer;
 - (void)loadMidiSourceDescriptionFromSoundFont:(NSString *)filepath;
+- (void)setGainForDescription:(MidiSourceDescriptionRepresentation *)description gain:(int)gain;
+- (void)setMasterVolumeForDescription:(MidiSourceDescriptionRepresentation *)description masterVolume:(int)masterVolume;
 @end

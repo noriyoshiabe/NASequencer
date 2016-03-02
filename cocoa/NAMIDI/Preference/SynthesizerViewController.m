@@ -8,8 +8,11 @@
 
 #import "SynthesizerViewController.h"
 #import "SynthesizerRowView.h"
+#import "MidiSourceManagerRepresentation.h"
 
-@interface SynthesizerViewController () <NSTableViewDataSource, NSTableViewDelegate>
+@interface SynthesizerViewController () <NSTableViewDataSource, NSTableViewDelegate> {
+    MidiSourceManagerRepresentation *_manager;
+}
 @property (weak) IBOutlet NSTableView *tableView;
 @property (weak) IBOutlet NSTextField *explanationLabel;
 @end
@@ -34,6 +37,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    _manager = [MidiSourceManagerRepresentation sharedInstance];
+    
     _tableView.dataSource = self;
     _tableView.delegate = self;
     
@@ -55,12 +61,13 @@
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView
 {
-    return 3;
+    return _manager.descriptions.count;
 }
 
 - (NSTableRowView *)tableView:(NSTableView *)tableView rowViewForRow:(NSInteger)row
 {
     SynthesizerRowView *view = [tableView makeViewWithIdentifier:@"SynthesizerRow" owner:nil];
+    view.description = _manager.descriptions[row];
     return view;
 }
 

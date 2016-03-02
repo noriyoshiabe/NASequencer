@@ -8,7 +8,10 @@
 
 #import "SynthesizerRowView.h"
 
-@interface SynthesizerRowView ()
+@interface SynthesizerRowView () {
+    MidiSourceManagerRepresentation *_manager;
+    MidiSourceDescriptionRepresentation *_description;
+}
 @property (strong) IBOutlet NSBox *contentBox;
 @end
 
@@ -22,23 +25,54 @@
         [[NSBundle mainBundle] loadNibNamed:@"SynthesizerRowView" owner:self topLevelObjects:nil];
         [self addSubview:_contentBox];
     }
+    
+    _manager = [MidiSourceManagerRepresentation sharedInstance];
+}
+
+- (MidiSourceDescriptionRepresentation *)description
+{
+    return _description;
+}
+
+- (void)setDescription:(MidiSourceDescriptionRepresentation *)description
+{
+    _description = description;
+    [self update];
+}
+
+- (void)update
+{
+    [self willChangeValueForKey:@"synthesizerName"];
+    [self didChangeValueForKey:@"synthesizerName"];
+    [self willChangeValueForKey:@"gain"];
+    [self didChangeValueForKey:@"gain"];
+    [self willChangeValueForKey:@"masterVolume"];
+    [self didChangeValueForKey:@"masterVolume"];
 }
 
 - (NSString *)synthesizerName
 {
-    return @"TEST GeneralUser GS Live/Audigy version 1.44";
+    return _description.name;
+}
+
+- (int)gain
+{
+    return _description.gain;
 }
 
 - (void)setGain:(int)gain
 {
-    _gain = gain;
-    __Trace__
+    [_manager setGainForDescription:_description gain:gain];
+}
+
+- (int)masterVolume
+{
+    return _description.masterVolume;
 }
 
 - (void)setMasterVolume:(int)masterVolume
 {
-    _masterVolume = masterVolume;
-    __Trace__
+    [_manager setMasterVolumeForDescription:_description masterVolume:masterVolume];
 }
 
 - (IBAction)unloadButtonPressed:(id)sender

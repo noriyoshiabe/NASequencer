@@ -7,8 +7,10 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "MidiSourceManagerRepresentation.h"
 
 @interface SynthesizerRowView : NSTableRowView
+@property (strong, nonatomic) MidiSourceDescriptionRepresentation *description;
 @property (readonly, nonatomic) NSString *synthesizerName;
 @property (readonly, nonatomic) BOOL canUnload;
 @property (assign, nonatomic) int gain;
