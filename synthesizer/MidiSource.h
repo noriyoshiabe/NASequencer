@@ -7,7 +7,7 @@
 #include <stddef.h>
 
 typedef enum {
-    MidiSourceEventChangeMasterGain,
+    MidiSourceEventChangeGain,
     MidiSourceEventChangeMasterVolume,
     MidiSourceEventChangeVolume,
     MidiSourceEventChangePan,
@@ -55,7 +55,7 @@ struct _MidiSource {
     Level (*getMasterLevel)(void *self);
     Level (*getChannelLevel)(void *self, uint8_t channel);
 
-    void (*setMasterGain)(void *self, int16_t cb);
+    void (*setGain)(void *self, int16_t cb);
     void (*setMasterVolume)(void *self, int16_t cb);
     void (*setVolume)(void *self, uint8_t channel, uint8_t value);
     void (*setPan)(void *self, uint8_t channel, uint8_t value);
@@ -63,7 +63,7 @@ struct _MidiSource {
     void (*setReverbSend)(void *self, uint8_t channel, uint8_t value);
     void (*setExpressionSend)(void *self, uint8_t channel, uint8_t value);
 
-    int16_t (*getMasterGain)(void *self);
+    int16_t (*getGain)(void *self);
     int16_t (*getMasterVolume)(void *self);
     uint8_t (*getVolume)(void *self, uint8_t channel);
     uint8_t (*getPan)(void *self, uint8_t channel);
@@ -76,7 +76,7 @@ static inline const char *MidiSourceEvent2String(MidiSourceEvent event)
 {
 #define CASE(event) case event: return &(#event[15]);
     switch (event) {
-    CASE(MidiSourceEventChangeMasterGain);
+    CASE(MidiSourceEventChangeGain);
     CASE(MidiSourceEventChangeMasterVolume);
     CASE(MidiSourceEventChangeVolume);
     CASE(MidiSourceEventChangePan);

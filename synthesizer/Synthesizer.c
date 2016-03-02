@@ -35,7 +35,7 @@ struct _Synthesizer {
     Voice *voiceLast;
 
     double sampleRate;
-    double masterGain;
+    double gain;
     double masterVolume;
 
     Chorus *chorus;
@@ -195,11 +195,11 @@ static void setPresetInfo(void *_self, uint8_t channel, PresetInfo *presetInfo)
     SynthesizerProgramChange(self, channel, presetInfo->programNo);
 }
 
-static void setMasterGain(void *_self, int16_t cb)
+static void setGain(void *_self, int16_t cb)
 {
     Synthesizer *self = _self;
-    self->masterGain = cB2Value(cb);
-    SynthesizerNotifyEvent(self, MidiSourceEventChangeMasterGain, &self->masterGain, NULL);
+    self->gain = cB2Value(cb);
+    SynthesizerNotifyEvent(self, MidiSourceEventChangeGain, &self->gain, NULL);
 }
 
 static void setMasterVolume(void *_self, int16_t cb)
@@ -234,9 +234,9 @@ static void setExpressionSend(void *self, uint8_t channel, uint8_t value)
     SynthesizerControlChange(self, channel, CC_Expression_MSB, value);
 }
 
-static int16_t getMasterGain(void *self)
+static int16_t getGain(void *self)
 {
-    return Value2cB(((Synthesizer *)self)->masterGain);
+    return Value2cB(((Synthesizer *)self)->gain);
 }
 
 static int16_t getMasterVolume(void *self)
@@ -293,14 +293,14 @@ Synthesizer *SynthesizerCreate(SoundFont *sf, double sampleRate)
     self->srcVtbl.setLevelEnable = setLevelEnable;
     self->srcVtbl.getMasterLevel = getMasterLevel;
     self->srcVtbl.getChannelLevel = getChannelLevel;
-    self->srcVtbl.setMasterGain = setMasterGain;
+    self->srcVtbl.setGain = setGain;
     self->srcVtbl.setMasterVolume = setMasterVolume;
     self->srcVtbl.setVolume = setVolume;
     self->srcVtbl.setPan = setPan;
     self->srcVtbl.setChorusSend = setChorusSend;
     self->srcVtbl.setReverbSend = setReverbSend;
     self->srcVtbl.setExpressionSend = setExpressionSend;
-    self->srcVtbl.getMasterGain = getMasterGain;
+    self->srcVtbl.getGain = getGain;
     self->srcVtbl.getMasterVolume = getMasterVolume;
     self->srcVtbl.getVolume = getVolume;
     self->srcVtbl.getPan = getPan;
@@ -322,7 +322,7 @@ Synthesizer *SynthesizerCreate(SoundFont *sf, double sampleRate)
 
     self->reverb = ReverbCreate(sampleRate, 1.0);
 
-    self->masterGain = cB2Value(-100);
+    self->gain = cB2Value(-100);
     self->masterVolume = cB2Value(0);
 
     ParsePresets(self->sf, &self->presets, &self->presetCount);
@@ -585,10 +585,10 @@ typedef struct _LevelMater {
     } buffer;
 } LevelMater;
 
-static void LevelMaterAddToChannel(LevelMater *self, uint8_t channel, AudioSample *sample, double gain)
+static void LevelMaterAddToChannel(LevelMater *self, uint8_t channel, AudioSample *sample)
 {
-    self->buffer.channels[channel].L += sample->L * gain;
-    self->buffer.channels[channel].R += sample->R * gain;
+    self->buffer.channels[channel].L += sample->L;
+    self->buffer.channels[channel].R += sample->R;
 }
 
 static void LevelMaterUpdate(LevelMater *self, AudioSample *master)
@@ -629,6 +629,16 @@ static void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer
             VoiceUpdate(voice);
 
             AudioSample sample = VoiceComputeSample(voice);
+            sample.L *= self->gain;
+            sample.R *= self->gain;
+
+            sample.L = Clip(sample.L, -1.0, 1.0);
+            sample.R = Clip(sample.R, -1.0, 1.0);
+
+            if (self->level.enable) {
+                LevelMaterAddToChannel(&levelMater, voice->channel->number, &sample);
+            }
+
             direct.L += sample.L;
             direct.R += sample.R;
 
@@ -639,10 +649,6 @@ static void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer
             double reverbSend = VoiceReverbEffectsSend(voice);
             reverb.L += sample.L * reverbSend;
             reverb.R += sample.R * reverbSend;
-
-            if (self->level.enable) {
-                LevelMaterAddToChannel(&levelMater, voice->channel->number, &sample, (1.0 + chorusSend + reverbSend) * self->masterGain);
-            }
 
             VoiceIncrementSample(voice);
 
@@ -661,8 +667,8 @@ static void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer
         reverb = ReverbComputeSample(self->reverb, reverb);
 
         AudioSample master;
-        master.L = (direct.L + chorus.L + reverb.L) * self->masterGain * self->masterVolume;
-        master.R = (direct.R + chorus.R + reverb.R) * self->masterGain * self->masterVolume;
+        master.L = (direct.L + chorus.L + reverb.L) * self->masterVolume;
+        master.R = (direct.R + chorus.R + reverb.R) * self->masterVolume;
 
         buffer[i].L += master.L;
         buffer[i].R += master.R;

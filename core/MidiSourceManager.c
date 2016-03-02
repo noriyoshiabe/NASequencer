@@ -229,7 +229,7 @@ MidiSource *MidiSourceManagerAllocMidiSource(MidiSourceManager *self, MidiSource
         }
 
         MidiSource *midiSource = (MidiSource *)SynthesizerCreate(description->sf, sampleRate);
-        midiSource->setMasterGain(midiSource, description->gain);
+        midiSource->setGain(midiSource, description->gain);
         midiSource->setMasterVolume(midiSource, description->masterVolume);
         NAArrayAppend(midiSources, midiSource);
         return midiSource;
@@ -291,7 +291,7 @@ void MidiSourceManagerSetGainForDescription(MidiSourceManager *self, MidiSourceD
     NAIterator *iterator = NAArrayGetIterator(midiSources);
     while (iterator->hasNext(iterator)) {
         MidiSource *midiSource = iterator->next(iterator);
-        midiSource->setMasterGain(midiSource, description->gain);
+        midiSource->setGain(midiSource, description->gain);
     }
 }
 
@@ -375,14 +375,14 @@ static void DefaultMidiSourceSetPresetInfo(void *self, uint8_t channel, PresetIn
 static void DefaultMidiSourceSetLevelEnable(void *self, bool enable) { }
 static Level DefaultMidiSourceGetMasterLevel(void *self) { return (Level){0, 0}; }
 static Level DefaultMidiSourceGetChannelLevel(void *self, uint8_t channel) { return (Level){0, 0}; }
-static void DefaultMidiSourceSetMasterGain(void *self, int16_t cb) { }
+static void DefaultMidiSourceSetGain(void *self, int16_t cb) { }
 static void DefaultMidiSourceSetMasterVolume(void *self, int16_t cb) { }
 static void DefaultMidiSourceSetVolume(void *self, uint8_t channel, uint8_t value) { }
 static void DefaultMidiSourceSetPan(void *self, uint8_t channel, uint8_t value) { }
 static void DefaultMidiSourceSetChorusSend(void *self, uint8_t channel, uint8_t value) { }
 static void DefaultMidiSourceSetReverbSend(void *self, uint8_t channel, uint8_t value) { }
 static void DefaultMidiSourceSetExpressionSend(void *self, uint8_t channel, uint8_t value) { }
-static int16_t DefaultMidiSourceGetMasterGain(void *self) { return 0; }
+static int16_t DefaultMidiSourceGetGain(void *self) { return 0; }
 static int16_t DefaultMidiSourceGetMasterVolume(void *self) { return 0; }
 static uint8_t DefaultMidiSourceGetVolume(void *self, uint8_t channel) { return 0; }
 static uint8_t DefaultMidiSourceGetPan(void *self, uint8_t channel) { return 0; }
@@ -405,14 +405,14 @@ static MidiSource DefaultMidiSource = {
     DefaultMidiSourceSetLevelEnable,
     DefaultMidiSourceGetMasterLevel,
     DefaultMidiSourceGetChannelLevel,
-    DefaultMidiSourceSetMasterGain,
+    DefaultMidiSourceSetGain,
     DefaultMidiSourceSetMasterVolume,
     DefaultMidiSourceSetVolume,
     DefaultMidiSourceSetPan,
     DefaultMidiSourceSetChorusSend,
     DefaultMidiSourceSetReverbSend,
     DefaultMidiSourceSetExpressionSend,
-    DefaultMidiSourceGetMasterGain,
+    DefaultMidiSourceGetGain,
     DefaultMidiSourceGetMasterVolume,
     DefaultMidiSourceGetVolume,
     DefaultMidiSourceGetPan,
