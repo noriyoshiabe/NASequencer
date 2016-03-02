@@ -115,7 +115,7 @@
 
 - (int)R
 {
-    return _mixer.level.L;
+    return _mixer.level.R;
 }
 
 #pragma mark NAMidiRepresentationObserver
