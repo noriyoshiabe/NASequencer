@@ -20,6 +20,8 @@ typedef struct _MidiSourceDescriptionImpl {
     char *name;
     char *filepath;
     bool available;
+    int gain;
+    int masterVolume;
     MidiSourceDescriptionError error;
     SoundFont *sf;
 } MidiSourceDescriptionImpl;
@@ -226,9 +228,11 @@ MidiSource *MidiSourceManagerAllocMidiSource(MidiSourceManager *self, MidiSource
             NAMapPut(self->midiSourceMap, description, midiSources);
         }
 
-        MidiSource *ret = (MidiSource *)SynthesizerCreate(description->sf, sampleRate);
-        NAArrayAppend(midiSources, ret);
-        return ret;
+        MidiSource *midiSource = (MidiSource *)SynthesizerCreate(description->sf, sampleRate);
+        midiSource->setMasterGain(midiSource, description->gain);
+        midiSource->setMasterVolume(midiSource, description->masterVolume);
+        NAArrayAppend(midiSources, midiSource);
+        return midiSource;
     }
 
     return NULL;
@@ -278,10 +282,38 @@ MidiSourceDescription *MidiSourceManagerGetDefaultDescription(MidiSourceManager 
         : (MidiSourceDescription *)&DefaultMidiSourceDescription;
 }
 
+void MidiSourceManagerSetGainForDescription(MidiSourceManager *self, MidiSourceDescription *_description, int gain)
+{
+    MidiSourceDescriptionImpl *description = (MidiSourceDescriptionImpl *)_description;
+    description->gain = gain;
+
+    NAArray *midiSources = NAMapGet(self->midiSourceMap, description);
+    NAIterator *iterator = NAArrayGetIterator(midiSources);
+    while (iterator->hasNext(iterator)) {
+        MidiSource *midiSource = iterator->next(iterator);
+        midiSource->setMasterGain(midiSource, description->gain);
+    }
+}
+
+void MidiSourceManagerSetMasterVolumeForDescription(MidiSourceManager *self, MidiSourceDescription *_description, int masterVolume)
+{
+    MidiSourceDescriptionImpl *description = (MidiSourceDescriptionImpl *)_description;
+    description->masterVolume = masterVolume;
+
+    NAArray *midiSources = NAMapGet(self->midiSourceMap, description);
+    NAIterator *iterator = NAArrayGetIterator(midiSources);
+    while (iterator->hasNext(iterator)) {
+        MidiSource *midiSource = iterator->next(iterator);
+        midiSource->setMasterVolume(midiSource, description->masterVolume);
+    }
+}
+
+
 static MidiSourceDescriptionImpl *MidiSourceDescriptionImplCreate()
 {
     MidiSourceDescriptionImpl *self = calloc(1, sizeof(MidiSourceDescriptionImpl));
     self->name = strdup("N/A");
+    self->gain = -100;
     return self;
 }
 
@@ -304,7 +336,7 @@ static void MidiSourceDescriptionImplDestroy(MidiSourceDescriptionImpl *self)
 
 
 static MidiSourceDescriptionImpl DefaultMidiSourceDescription = {
-    "N/A", "N/A", true, MidiSourceDescriptionErrorNoError, NULL
+    "N/A", "N/A", true, 0, 0, MidiSourceDescriptionErrorNoError, NULL
 };
 
 static PresetInfo DefaultMidiSourcePresetInfo = {

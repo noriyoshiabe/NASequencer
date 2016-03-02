@@ -14,6 +14,8 @@ typedef struct _MidiSourceDescription {
     const char *name;
     const char *filepath;
     const bool available;
+    const int gain;
+    const int masterVolume;
     const MidiSourceDescriptionError error;
 } MidiSourceDescription;
 
@@ -36,6 +38,8 @@ extern void MidiSourceManagerDeallocMidiSource(MidiSourceManager *self, MidiSour
 extern NAArray *MidiSourceManagerGetDescriptions(MidiSourceManager *self);
 extern NAArray *MidiSourceManagerGetAvailableDescriptions(MidiSourceManager *self);
 extern MidiSourceDescription *MidiSourceManagerGetDefaultDescription(MidiSourceManager *self);
+extern void MidiSourceManagerSetGainForDescription(MidiSourceManager *self, MidiSourceDescription *description, int gain);
+extern void MidiSourceManagerSetMasterVolumeForDescription(MidiSourceManager *self, MidiSourceDescription *description, int masterVolume);
 
 static inline const char *MidiSourceDescriptionError2String(MidiSourceDescriptionError error)
 {
