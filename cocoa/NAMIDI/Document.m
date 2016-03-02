@@ -10,6 +10,7 @@
 #import "MainWindowController.h"
 #import "FileRepresentation.h"
 #import "NAMidiRepresentation.h"
+#import "Preference.h"
 
 @interface Document ()
 @property (strong, nonatomic) FileRepresentation *file;
@@ -32,6 +33,7 @@
     _file = [[FileRepresentation alloc] initWithURL:url];
     _namidi = [[NAMidiRepresentation alloc] init];
     _namidi.file = _file;
+    _namidi.includePath = [Preference sharedInstance].includeSearchPath;
     [_namidi parse];
     return YES;
 }

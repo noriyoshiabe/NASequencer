@@ -27,6 +27,7 @@
 @property (readonly, nonatomic) ParseInfoRepresentation *parseInfo;
 @property (readonly, nonatomic) BOOL hasError;
 @property (retain, nonatomic) FileRepresentation *file;
+@property (retain, nonatomic) NSString *includePath;
 - (void)addObserver:(id<NAMidiRepresentationObserver>)observer;
 - (void)removeObserver:(id<NAMidiRepresentationObserver>)observer;
 - (void)parse;

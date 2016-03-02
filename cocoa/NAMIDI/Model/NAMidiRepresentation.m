@@ -108,7 +108,8 @@ static NAMidiObserverCallbacks callbacks = {onBeforeParse, onParseFinish};
 - (void)parse
 {
     NAMidiSetWatchEnable(_namidi, true);
-    NAMidiParse(_namidi, [_file.url.path UTF8String]);
+    NAMidiSetIncludePath(_namidi, _includePath ? _includePath.UTF8String : NULL);
+    NAMidiParse(_namidi, _file.url.path.UTF8String);
 }
 
 - (BOOL)hasError

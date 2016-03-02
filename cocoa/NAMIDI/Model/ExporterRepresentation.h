@@ -19,5 +19,6 @@
 
 @interface ExporterRepresentation : NSObject
 @property (assign, nonatomic) id<ExporterRepresentationDelegate> delegate;
+@property (retain, nonatomic) NSString *includePath;
 - (ExporterError)export:(NSString *)filepath output:(NSString *)output;
 @end

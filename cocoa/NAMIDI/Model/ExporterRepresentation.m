@@ -64,6 +64,7 @@ static ExporterObserverCallbacks callbacks = {onParseFinish, onProgress};
 
 - (ExporterError)export:(NSString *)filepath output:(NSString *)output
 {
+    ExporterSetIncludePath(_exporter, _includePath ? _includePath.UTF8String : NULL);
     return ExporterExport(_exporter, filepath.UTF8String, output.UTF8String);
 }
 

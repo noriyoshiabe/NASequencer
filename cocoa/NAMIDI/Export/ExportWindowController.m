@@ -9,6 +9,7 @@
 #import "ExportWindowController.h"
 #import "ExporterRepresentation.h"
 #import "Color.h"
+#import "Preference.h"
 
 @interface ExportWindowController () <ExporterRepresentationDelegate> {
     ExporterRepresentation *_exporter;
@@ -49,6 +50,7 @@
     
     _exporter = [[ExporterRepresentation alloc] init];
     _exporter.delegate = self;
+    _exporter.includePath = [Preference sharedInstance].includeSearchPath;
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         ExporterError error = [_exporter export:_file.url.path output:_outputUrl.path];
