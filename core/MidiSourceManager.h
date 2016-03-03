@@ -34,6 +34,7 @@ extern void MidiSourceManagerAddObserver(MidiSourceManager *self, void *receiver
 extern void MidiSourceManagerRemoveObserver(MidiSourceManager *self, void *receiver);
 extern bool MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(MidiSourceManager *self, const char *filepath);
 extern void MidiSourceManagerUnloadMidiSourceDescription(MidiSourceManager *self, MidiSourceDescription *description);
+extern bool MidiSourceManagerReloadMidiSourceDescription(MidiSourceManager *self, MidiSourceDescription *description);
 extern MidiSource *MidiSourceManagerAllocMidiSource(MidiSourceManager *self, MidiSourceDescription *description, double sampleRate);
 extern void MidiSourceManagerDeallocMidiSource(MidiSourceManager *self, MidiSource *souce);
 extern NAArray *MidiSourceManagerGetDescriptions(MidiSourceManager *self);

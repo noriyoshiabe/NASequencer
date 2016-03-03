@@ -48,7 +48,6 @@
 - (void)windowDidLoad
 {
     [super windowDidLoad];
-    self.windowFrameAutosaveName = @"PreferenceWindowFrame";
     
     _toolbar.delegate = self;
     

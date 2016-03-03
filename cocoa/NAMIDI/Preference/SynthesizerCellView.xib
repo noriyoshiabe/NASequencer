@@ -16,7 +16,7 @@
         <box borderType="line" titlePosition="noTitle" id="WoH-o5-YF3">
             <rect key="frame" x="0.0" y="0.0" width="471" height="86"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-            <view key="contentView" id="lOf-LZ-Slo">
+            <view key="contentView" wantsLayer="YES" id="lOf-LZ-Slo">
                 <rect key="frame" x="1" y="1" width="469" height="84"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
@@ -144,11 +144,51 @@
                             </binding>
                         </connections>
                     </button>
+                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="f5k-X6-9Rq" customClass="SynthesizerErrorBackgroundView">
+                        <rect key="frame" x="1" y="1" width="467" height="82"/>
+                        <subviews>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rgs-eJ-Km0">
+                                <rect key="frame" x="334" y="49" width="64" height="28"/>
+                                <buttonCell key="cell" type="push" title="Delete" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GON-ax-yDf">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="smallSystem"/>
+                                </buttonCell>
+                            </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PaT-tI-99m">
+                                <rect key="frame" x="396" y="49" width="64" height="28"/>
+                                <buttonCell key="cell" type="push" title="Reload" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Cbt-pr-sAJ">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="smallSystem"/>
+                                </buttonCell>
+                            </button>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LJ3-tm-A2k">
+                                <rect key="frame" x="18" y="46" width="84" height="16"/>
+                                <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Load Failed." id="fl7-UU-ZAr">
+                                    <font key="font" metaFont="systemBlack" size="12"/>
+                                    <color key="textColor" red="0.97254901959999995" green="0.10980392160000001" blue="0.10980392160000001" alpha="0.84999999999999998" colorSpace="calibratedRGB"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" preferredMaxLayoutWidth="435" translatesAutoresizingMaskIntoConstraints="NO" id="0X8-Cf-04V">
+                                <rect key="frame" x="18" y="7" width="439" height="36"/>
+                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="&quot;~/Documents/NAMIDI/sf/FluidR3 GM2-2.SF2&quot; does not exsit. " id="j83-ae-d7K">
+                                    <font key="font" metaFont="system" size="12"/>
+                                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                        <shadow key="shadow" blurRadius="4">
+                            <size key="offset" width="0.0" height="-2"/>
+                            <color key="color" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        </shadow>
+                    </customView>
                 </subviews>
                 <constraints>
                     <constraint firstItem="CHb-hq-G6z" firstAttribute="leading" secondItem="0Q3-I2-WbF" secondAttribute="trailing" constant="45" id="EFB-eN-EHT"/>
                     <constraint firstItem="7d1-9z-4gl" firstAttribute="leading" secondItem="0VF-S9-xap" secondAttribute="trailing" constant="8" id="FGJ-Eh-T2B"/>
                     <constraint firstItem="uV7-kD-xbH" firstAttribute="leading" secondItem="lOf-LZ-Slo" secondAttribute="leading" constant="20" id="Jna-Ql-C6C"/>
+                    <constraint firstItem="f5k-X6-9Rq" firstAttribute="top" secondItem="lOf-LZ-Slo" secondAttribute="top" constant="1" id="Jws-2Y-c5q"/>
                     <constraint firstItem="RZQ-qu-Ju5" firstAttribute="top" secondItem="lOf-LZ-Slo" secondAttribute="top" constant="10" id="LsB-ee-Dgo"/>
                     <constraint firstItem="TT7-Uw-dnA" firstAttribute="top" secondItem="CxH-dp-nLG" secondAttribute="bottom" constant="6" id="MH4-xa-VJD"/>
                     <constraint firstItem="HR5-EX-Eyh" firstAttribute="top" secondItem="CHb-hq-G6z" secondAttribute="bottom" constant="4" id="Pbn-hV-YDb"/>
@@ -160,14 +200,18 @@
                     <constraint firstItem="0VF-S9-xap" firstAttribute="top" secondItem="lOf-LZ-Slo" secondAttribute="top" constant="10" id="fBP-yM-gqY"/>
                     <constraint firstItem="CxH-dp-nLG" firstAttribute="leading" secondItem="CHb-hq-G6z" secondAttribute="trailing" constant="11" id="gx6-N3-EDc"/>
                     <constraint firstItem="CxH-dp-nLG" firstAttribute="top" secondItem="7d1-9z-4gl" secondAttribute="bottom" constant="9" id="hbx-W0-8iy"/>
+                    <constraint firstAttribute="trailing" secondItem="f5k-X6-9Rq" secondAttribute="trailing" constant="1" id="k0I-s3-vGW"/>
                     <constraint firstItem="7d1-9z-4gl" firstAttribute="top" secondItem="lOf-LZ-Slo" secondAttribute="top" constant="10" id="lwM-eX-kZz"/>
+                    <constraint firstAttribute="bottom" secondItem="f5k-X6-9Rq" secondAttribute="bottom" constant="1" id="ouL-3C-V6m"/>
                     <constraint firstItem="HR5-EX-Eyh" firstAttribute="leading" secondItem="uV7-kD-xbH" secondAttribute="trailing" constant="13" id="qDk-Fv-PcG"/>
+                    <constraint firstItem="f5k-X6-9Rq" firstAttribute="leading" secondItem="lOf-LZ-Slo" secondAttribute="leading" constant="1" id="rZY-Az-zOi"/>
                     <constraint firstItem="CHb-hq-G6z" firstAttribute="top" secondItem="0VF-S9-xap" secondAttribute="bottom" constant="8" id="ryi-ZP-hpI"/>
                     <constraint firstItem="uV7-kD-xbH" firstAttribute="top" secondItem="0Q3-I2-WbF" secondAttribute="bottom" constant="6" id="yGi-PM-3fX"/>
                 </constraints>
             </view>
             <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
             <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+            <point key="canvasLocation" x="139.5" y="388"/>
         </box>
     </objects>
 </document>

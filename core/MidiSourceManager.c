@@ -211,6 +211,13 @@ void MidiSourceManagerUnloadMidiSourceDescription(MidiSourceManager *self, MidiS
     index = NAArrayFindFirstIndex(self->descriptions, description, MidiSourceDescriptionFindComparator);
     if (-1 != index) {
         NAArrayRemoveAt(self->descriptions, index);
+
+        int count = NAArrayCount(self->descriptions);
+        for (int i = index; i < count; ++i) {
+            MidiSourceDescriptionImpl *_description = NAArrayGetValueAt(self->descriptions, i);
+            _description->sortIndex = i;
+        }
+
         MidiSourceManagerNotifyUnloadMidiSourceDescription(self, (MidiSourceDescriptionImpl *)description);
     }
 
@@ -223,6 +230,60 @@ void MidiSourceManagerUnloadMidiSourceDescription(MidiSourceManager *self, MidiS
     if (!NAMapContainsKey(self->midiSourceMap, description)) {
         MidiSourceDescriptionImplDestroy((MidiSourceDescriptionImpl *)description);
     }
+}
+
+bool MidiSourceManagerReloadMidiSourceDescription(MidiSourceManager *self, MidiSourceDescription *_description)
+{
+    MidiSourceDescriptionImpl *description = (MidiSourceDescriptionImpl *)_description;
+
+    SoundFontError error;
+    description->sf = SoundFontRead(description->filepath, &error);
+
+    if (!description->sf) {
+        switch (error) {
+        case SoundFontErrorFileNotFound:
+            description->error = MidiSourceDescriptionErrorFileNotFound;
+            break;
+        case SoundFontErrorUnsupportedVersion:
+            description->error = MidiSourceDescriptionErrorUnsupportedVersion;
+            break;
+        case SoundFontErrorInvalidFileFormat:
+            description->error = MidiSourceDescriptionErrorInvalidFileFormat;
+            break;
+        }
+    }
+
+    if (description->sf) {
+        free(description->name);
+        description->name = strdup(description->sf->INAM);
+        description->available = true;
+
+        int i;
+        int count = NAArrayCount(self->availableDescriptions);
+        for (i = 0; i <= count; ++i) {
+            if (count <= i) {
+                NAArrayAppend(self->availableDescriptions, description);
+                break;
+            }
+
+            MidiSourceDescriptionImpl *exsitance = NAArrayGetValueAt(self->availableDescriptions, i);
+            if (description->sortIndex < exsitance->sortIndex) {
+                NAArrayInsertAt(self->availableDescriptions, i, description);
+                break;
+            }
+        }
+
+        MidiSourceManagerNotifyLoadAvailableMidiSourceDescription(self, description);
+
+        if (i < count) {
+            MidiSourceManagerNotifyReorderMidiSourceDescriptions(self, self->descriptions, self->availableDescriptions);
+        }
+    }
+    else {
+        MidiSourceManagerNotifyLoadMidiSourceDescription(self, description);
+    }
+
+    return !!description->sf;
 }
 
 MidiSource *MidiSourceManagerAllocMidiSource(MidiSourceManager *self, MidiSourceDescription *_description, double sampleRate)

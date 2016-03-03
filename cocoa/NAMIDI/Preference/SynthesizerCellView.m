@@ -7,6 +7,7 @@
 //
 
 #import "SynthesizerCellView.h"
+#import "Color.h"
 
 @interface SynthesizerCellView () {
     MidiSourceManagerRepresentation *_manager;
@@ -117,3 +118,25 @@
 
 @end
 
+#pragma mark For Error
+
+@interface SynthesizerErrorBackgroundView : NSView
+@end
+
+@implementation SynthesizerErrorBackgroundView
+
+- (void)awakeFromNib
+{
+    [super awakeFromNib];
+    
+    self.wantsLayer = YES;
+    self.layer.backgroundColor = [Color statusBackground].CGColor;
+    self.layer.cornerRadius = 4.0;
+    self.layer.masksToBounds = YES;
+}
+
+- (void)mouseDown:(NSEvent *)theEvent
+{
+}
+
+@end
