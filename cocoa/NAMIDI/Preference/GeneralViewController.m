@@ -27,7 +27,7 @@
 
 - (NSImage *)toolbarItemImage
 {
-    return [NSImage imageNamed:NSImageNamePreferencesGeneral];
+    return [NSImage imageNamed:@"general"];
 }
 
 - (NSString *)toolbarItemLabel

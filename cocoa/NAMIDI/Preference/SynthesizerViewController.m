@@ -32,7 +32,7 @@
 
 - (NSImage *)toolbarItemImage
 {
-    return [NSImage imageNamed:NSImageNameApplicationIcon];
+    return [NSImage imageNamed:@"synthesizer"];
 }
 
 - (NSString *)toolbarItemLabel
