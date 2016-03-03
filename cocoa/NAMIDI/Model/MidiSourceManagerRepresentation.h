@@ -26,6 +26,7 @@
 - (void)midiSourceManager:(MidiSourceManagerRepresentation *)manager onLoadAvailableMidiSourceDescription:(MidiSourceDescriptionRepresentation *)description;
 - (void)midiSourceManager:(MidiSourceManagerRepresentation *)manager onUnloadMidiSourceDescription:(MidiSourceDescriptionRepresentation *)description;
 - (void)midiSourceManager:(MidiSourceManagerRepresentation *)manager onUnloadAvailableMidiSourceDescription:(MidiSourceDescriptionRepresentation *)description;
+- (void)midiSourceManager:(MidiSourceManagerRepresentation *)manager onReorderMidiSourceDescriptions:(NSArray<MidiSourceDescriptionRepresentation *> *)descriptions availableDescriptions:(NSArray<MidiSourceDescriptionRepresentation *> *)availableDescriptions;
 @end
 
 @interface MidiSourceManagerRepresentation : NSObject
@@ -40,4 +41,5 @@
 - (void)unloadMidiSourceDescription:(MidiSourceDescriptionRepresentation *)description;
 - (void)setGainForDescription:(MidiSourceDescriptionRepresentation *)description gain:(int)gain;
 - (void)setMasterVolumeForDescription:(MidiSourceDescriptionRepresentation *)description masterVolume:(int)masterVolume;
+- (void)setReorderdDescriptions:(NSArray *)descriptions;
 @end

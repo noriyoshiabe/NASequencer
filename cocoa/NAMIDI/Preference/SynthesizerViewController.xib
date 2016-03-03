@@ -45,7 +45,7 @@
                                         </textFieldCell>
                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                         <prototypeCellViews>
-                                            <customView identifier="SynthesizerRow" id="Pfx-LU-B0I" customClass="SynthesizerRowView">
+                                            <customView identifier="SynthesizerCell" id="Pfx-LU-B0I" customClass="SynthesizerCellView">
                                                 <rect key="frame" x="0.0" y="2" width="471" height="86"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             </customView>

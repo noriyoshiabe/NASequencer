@@ -1,28 +1,28 @@
 //
-//  SynthesizerRowView.m
+//  SynthesizerCellView.m
 //  NAMIDI
 //
 //  Created by abechan on 3/2/16.
 //  Copyright © 2016 Noriyoshi Abe. All rights reserved.
 //
 
-#import "SynthesizerRowView.h"
+#import "SynthesizerCellView.h"
 
-@interface SynthesizerRowView () {
+@interface SynthesizerCellView () {
     MidiSourceManagerRepresentation *_manager;
     MidiSourceDescriptionRepresentation *_description;
 }
 @property (strong) IBOutlet NSBox *contentBox;
 @end
 
-@implementation SynthesizerRowView
+@implementation SynthesizerCellView
 
 - (void)awakeFromNib
 {
     [super awakeFromNib];
     
     if (!_contentBox) {
-        [[NSBundle mainBundle] loadNibNamed:@"SynthesizerRowView" owner:self topLevelObjects:nil];
+        [[NSBundle mainBundle] loadNibNamed:@"SynthesizerCellView" owner:self topLevelObjects:nil];
         [self addSubview:_contentBox];
     }
     
@@ -84,7 +84,7 @@
 
 - (IBAction)unloadButtonPressed:(id)sender
 {
-    [_delegate synthesizerRowViewDidClickUnload:self];
+    [_delegate synthesizerCellViewDidClickUnload:self];
 }
 
 - (IBAction)resetButtonPressed:(id)sender

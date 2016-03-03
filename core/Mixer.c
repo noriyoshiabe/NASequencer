@@ -553,11 +553,30 @@ static void MixerMidiSourceManagerOnUnloadAvailableMidiSourceDescription(void *r
     }
 }
 
+static void MixerMidiSourceManagerOnReorderMidiSourceDescriptions(void *receiver, NAArray *descriptions, NAArray *availableDescriptions)
+{
+    if (NAArrayIsEmpty(availableDescriptions)) {
+        return;
+    }
+
+    Mixer *self = receiver;
+
+    MixerNotifyAvailableMidiSourceChange(receiver, availableDescriptions);
+
+    MidiSourceDescription *description = NAArrayGetValueAt(availableDescriptions, 0);
+    NAIterator *iterator = NAArrayGetIterator(self->channels);
+    while (iterator->hasNext(iterator)) {
+        MixerChannel *channel = iterator->next(iterator);
+        MixerChannelSetMidiSourceDescription(channel, description);
+    }
+}
+
 static MidiSourceManagerObserverCallbacks MixerMidiSourceManagerObserverCallbacks = {
     MixerMidiSourceManagerOnLoadMidiSourceDescription,
     MixerMidiSourceManagerOnLoadAvailableMidiSourceDescription,
     MixerMidiSourceManagerOnUnloadMidiSourceDescription,
-    MixerMidiSourceManagerOnUnloadAvailableMidiSourceDescription
+    MixerMidiSourceManagerOnUnloadAvailableMidiSourceDescription,
+    MixerMidiSourceManagerOnReorderMidiSourceDescriptions
 };
 
 
@@ -628,6 +647,7 @@ bool MixerChannelGetSolo(MixerChannel *self)
 
 void MixerChannelSetMidiSourceDescription(MixerChannel *self, MidiSourceDescription *description)
 {
+    self->description = description;
     self->source = NAMapGet(self->mixer->sourceMap, description);
 
     if (!self->source) {

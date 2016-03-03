@@ -72,6 +72,7 @@
 - (void)onLoadAvailableMidiSourceDescription:(MidiSourceDescription *)description;
 - (void)onUnloadMidiSourceDescription:(MidiSourceDescription *)description;
 - (void)onUnloadAvailableMidiSourceDescription:(MidiSourceDescription *)description;
+- (void)onReorderMidiSourceDescriptions:(NAArray *)descriptions availableDescriptions:(NAArray *)availableDescriptions;
 @end
 
 static void onLoadMidiSourceDescription(void *receiver, MidiSourceDescription *description)
@@ -98,8 +99,14 @@ static void onUnloadAvailableMidiSourceDescription(void *receiver, MidiSourceDes
     [manager onUnloadAvailableMidiSourceDescription:description];
 }
 
+static void onReorderMidiSourceDescriptions(void *receiver, NAArray *descriptions, NAArray *availableDescriptions)
+{
+    MidiSourceManagerRepresentation *manager = (__bridge MidiSourceManagerRepresentation *)receiver;
+    [manager onReorderMidiSourceDescriptions:descriptions availableDescriptions:availableDescriptions];
+}
+
 static MidiSourceManagerObserverCallbacks callbacks = {
-    onLoadMidiSourceDescription, onLoadAvailableMidiSourceDescription, onUnloadMidiSourceDescription, onUnloadAvailableMidiSourceDescription
+    onLoadMidiSourceDescription, onLoadAvailableMidiSourceDescription, onUnloadMidiSourceDescription, onUnloadAvailableMidiSourceDescription, onReorderMidiSourceDescriptions
 };
 
 @implementation MidiSourceManagerRepresentation
@@ -169,6 +176,16 @@ static MidiSourceManagerRepresentation *_sharedInstance = nil;
     MidiSourceManagerSetMasterVolumeForDescription(_manager, description.raw, masterVolume);
 }
 
+- (void)setReorderdDescriptions:(NSArray *)descriptions
+{
+    NAArray *__descriptions = NAArrayCreate(4, NADescriptionAddress);
+    for (MidiSourceDescriptionRepresentation *description in descriptions) {
+        NAArrayAppend(__descriptions, description.raw);
+    }
+    MidiSourceManagerSetReorderedDescriptions(_manager, __descriptions);
+    NAArrayDestroy(__descriptions);
+}
+
 - (void)onLoadMidiSourceDescription:(MidiSourceDescription *)description
 {
     MidiSourceDescriptionRepresentation *_description = [[MidiSourceDescriptionRepresentation alloc] initWithMidiSourceDescription:description];
@@ -220,6 +237,25 @@ static MidiSourceManagerRepresentation *_sharedInstance = nil;
         for (id<MidiSourceManagerRepresentationObserver> observer in _observers) {
             if ([observer respondsToSelector:@selector(midiSourceManager:onUnloadAvailableMidiSourceDescription:)]) {
                 [observer midiSourceManager:self onUnloadAvailableMidiSourceDescription:_description];
+            }
+        }
+    }];
+}
+
+- (void)onReorderMidiSourceDescriptions:(NAArray *)descriptions availableDescriptions:(NAArray *)availableDescriptions
+{
+    [_descriptions sortUsingComparator:^NSComparisonResult(MidiSourceDescriptionRepresentation *obj1, MidiSourceDescriptionRepresentation *obj2) {
+        return NAArrayFindFirstIndex(descriptions, obj1.raw, NAArrayAddressComparator) - NAArrayFindFirstIndex(descriptions, obj2.raw, NAArrayAddressComparator);
+    }];
+    
+    [_availableDescriptions sortUsingComparator:^NSComparisonResult(MidiSourceDescriptionRepresentation *obj1, MidiSourceDescriptionRepresentation *obj2) {
+        return NAArrayFindFirstIndex(availableDescriptions, obj1.raw, NAArrayAddressComparator) - NAArrayFindFirstIndex(availableDescriptions, obj2.raw, NAArrayAddressComparator);
+    }];
+    
+    [NSThread performBlockOnMainThread:^{
+        for (id<MidiSourceManagerRepresentationObserver> observer in _observers) {
+            if ([observer respondsToSelector:@selector(midiSourceManager:onUnloadAvailableMidiSourceDescription:)]) {
+                [observer midiSourceManager:self onReorderMidiSourceDescriptions:_descriptions availableDescriptions:_availableDescriptions];
             }
         }
     }];

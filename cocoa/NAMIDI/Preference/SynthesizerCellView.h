@@ -1,5 +1,5 @@
 //
-//  SynthesizerRowView.h
+//  SynthesizerCellView.h
 //  NAMIDI
 //
 //  Created by abechan on 3/2/16.
@@ -9,13 +9,13 @@
 #import <Cocoa/Cocoa.h>
 #import "MidiSourceManagerRepresentation.h"
 
-@class SynthesizerRowView;
-@protocol SynthesizerRowViewDelegate <NSObject>
-- (void)synthesizerRowViewDidClickUnload:(SynthesizerRowView *)view;
+@class SynthesizerCellView;
+@protocol SynthesizerCellViewDelegate <NSObject>
+- (void)synthesizerCellViewDidClickUnload:(SynthesizerCellView *)view;
 @end
 
-@interface SynthesizerRowView : NSTableRowView
-@property (weak, nonatomic) id<SynthesizerRowViewDelegate> delegate;
+@interface SynthesizerCellView : NSTableCellView
+@property (weak, nonatomic) id<SynthesizerCellViewDelegate> delegate;
 @property (strong, nonatomic) MidiSourceDescriptionRepresentation *description;
 @property (readonly, nonatomic) NSString *synthesizerName;
 @property (readonly, nonatomic) BOOL canUnload;

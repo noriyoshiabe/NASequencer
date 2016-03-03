@@ -24,6 +24,7 @@ typedef struct _MidiSourceManagerObserverCallbacks {
     void (*onLoadAvailableMidiSourceDescription)(void *receiver, MidiSourceDescription *description);
     void (*onUnloadMidiSourceDescription)(void *receiver, MidiSourceDescription *description);
     void (*onUnloadAvailableMidiSourceDescription)(void *receiver, MidiSourceDescription *description);
+    void (*onReorderMidiSourceDescriptions)(void *receiver, NAArray *descriptions, NAArray *availableDescriptions);
 } MidiSourceManagerObserverCallbacks;
 
 typedef struct _MidiSourceManager MidiSourceManager;
@@ -40,6 +41,7 @@ extern NAArray *MidiSourceManagerGetAvailableDescriptions(MidiSourceManager *sel
 extern MidiSourceDescription *MidiSourceManagerGetDefaultDescription(MidiSourceManager *self);
 extern void MidiSourceManagerSetGainForDescription(MidiSourceManager *self, MidiSourceDescription *description, int gain);
 extern void MidiSourceManagerSetMasterVolumeForDescription(MidiSourceManager *self, MidiSourceDescription *description, int masterVolume);
+extern void MidiSourceManagerSetReorderedDescriptions(MidiSourceManager *self, NAArray *descriptions);
 
 static inline const char *MidiSourceDescriptionError2String(MidiSourceDescriptionError error)
 {

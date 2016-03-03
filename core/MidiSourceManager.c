@@ -24,6 +24,7 @@ typedef struct _MidiSourceDescriptionImpl {
     int masterVolume;
     MidiSourceDescriptionError error;
     SoundFont *sf;
+    int sortIndex;
 } MidiSourceDescriptionImpl;
 
 typedef struct Observer {
@@ -134,6 +135,16 @@ static void MidiSourceManagerNotifyUnloadAvailableMidiSourceDescription(MidiSour
     NAArrayTraverseWithContext(self->observers, self, _MidiSourceManagerNotifyUnloadAvailableMidiSourceDescription, description);
 }
 
+static void _MidiSourceManagerNotifyReorderMidiSourceDescriptions(MidiSourceManager *self, Observer *observer, va_list argList)
+{
+    observer->callbacks->onReorderMidiSourceDescriptions(observer->receiver, va_arg(argList, NAArray *), va_arg(argList, NAArray *));
+}
+
+static void MidiSourceManagerNotifyReorderMidiSourceDescriptions(MidiSourceManager *self, NAArray *descriptions, NAArray *availableDescriptions)
+{
+    NAArrayTraverseWithContext(self->observers, self, _MidiSourceManagerNotifyReorderMidiSourceDescriptions, descriptions, availableDescriptions);
+}
+
 bool MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(MidiSourceManager *self, const char *filepath)
 {
     MidiSourceDescriptionImpl *description = NAMapGet(self->descriptionMap, (char *)filepath);
@@ -143,6 +154,7 @@ bool MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(MidiSourceManager *
     if (!description) {
         description = MidiSourceDescriptionImplCreate();
         description->filepath = strdup(filepath);
+        description->sortIndex = NAArrayCount(self->descriptions);
         created = true;
     }
         
@@ -308,6 +320,27 @@ void MidiSourceManagerSetMasterVolumeForDescription(MidiSourceManager *self, Mid
         MidiSource *midiSource = iterator->next(iterator);
         midiSource->setMasterVolume(midiSource, description->masterVolume);
     }
+}
+
+static int MidiSourceDescriptionSortComparator(const void *description1, const void *description2)
+{
+    MidiSourceDescriptionImpl **desc1 = (MidiSourceDescriptionImpl **)description1;
+    MidiSourceDescriptionImpl **desc2 = (MidiSourceDescriptionImpl **)description2;
+    return (*desc1)->sortIndex - (*desc2)->sortIndex;
+}
+
+void MidiSourceManagerSetReorderedDescriptions(MidiSourceManager *self, NAArray *descriptions)
+{
+    int count = NAArrayCount(descriptions);
+    for (int i = 0; i < count; ++i) {
+        MidiSourceDescriptionImpl *description = NAArrayGetValueAt(descriptions, i);
+        description->sortIndex = i;
+    }
+
+    NAArraySort(self->descriptions, MidiSourceDescriptionSortComparator);
+    NAArraySort(self->availableDescriptions, MidiSourceDescriptionSortComparator);
+
+    MidiSourceManagerNotifyReorderMidiSourceDescriptions(self, self->descriptions, self->availableDescriptions);
 }
 
 

@@ -349,11 +349,16 @@ static void CLIMidiSourceManagerOnUnloadAvailableMidiSourceDescription(void *rec
 {
 }
 
+static void CLIMidiSourceManagerOnReorderMidiSourceDescriptions(void *receiver, NAArray *descriptions, NAArray *availableDescriptions)
+{
+}
+
 static MidiSourceManagerObserverCallbacks CLIMidiSourceManagerObserverCallbacks = {
     CLIMidiSourceManagerOnLoadMidiSourceDescription,
     CLIMidiSourceManagerOnLoadAvailableMidiSourceDescription,
     CLIMidiSourceManagerOnUnloadMidiSourceDescription,
     CLIMidiSourceManagerOnUnloadAvailableMidiSourceDescription,
+    CLIMidiSourceManagerOnReorderMidiSourceDescriptions,
 };
 
 static void CLIExporterOnParseFinish(void *self, ParseInfo *info)

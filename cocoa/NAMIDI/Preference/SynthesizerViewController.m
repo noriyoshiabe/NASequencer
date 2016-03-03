@@ -7,15 +7,16 @@
 //
 
 #import "SynthesizerViewController.h"
-#import "SynthesizerRowView.h"
+#import "SynthesizerCellView.h"
 #import "MidiSourceManagerRepresentation.h"
 
 @import QuartzCore.CAMediaTimingFunction;
 
-@interface SynthesizerViewController () <NSTableViewDataSource, NSTableViewDelegate, MidiSourceManagerRepresentationObserver, SynthesizerRowViewDelegate> {
+@interface SynthesizerViewController () <NSTableViewDataSource, NSTableViewDelegate, MidiSourceManagerRepresentationObserver, SynthesizerCellViewDelegate> {
     MidiSourceManagerRepresentation *_manager;
     CGRect _initialViewRect;
     CGFloat _initilalTableViewHeight;
+    NSUInteger _draggedIndex;
 }
 @property (weak) IBOutlet NSTableView *tableView;
 @property (weak) IBOutlet NSTextField *explanationLabel;
@@ -70,6 +71,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    [_tableView registerForDraggedTypes:@[NSStringPboardType]];
     
     _initialViewRect = self.view.frame;
     _initilalTableViewHeight = _tableView.frame.size.height;
@@ -127,6 +130,16 @@
     }];
 }
 
+- (void)changeMidiSourceOrder:(NSUInteger)fromIndex toIndex:(NSUInteger)toIndex
+{
+    NSMutableArray *descriptions = _manager.descriptions.mutableCopy;
+    MidiSourceDescriptionRepresentation *description = _manager.descriptions[fromIndex];
+    [descriptions removeObject:description];
+    [descriptions insertObject:description atIndex:toIndex];
+    [_manager setReorderdDescriptions:descriptions];
+    [_tableView.animator moveRowAtIndex:fromIndex toIndex:toIndex];
+}
+
 #pragma mark NSTableViewDataSource
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView
@@ -134,9 +147,11 @@
     return _manager.descriptions.count;
 }
 
-- (NSTableRowView *)tableView:(NSTableView *)tableView rowViewForRow:(NSInteger)row
+#pragma mark NSTableViewDelegate
+
+- (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
 {
-    SynthesizerRowView *view = [tableView makeViewWithIdentifier:@"SynthesizerRow" owner:nil];
+    SynthesizerCellView *view = [tableView makeViewWithIdentifier:@"SynthesizerCell" owner:nil];
     view.delegate = self;
     view.description = _manager.descriptions[row];
     return view;
@@ -147,9 +162,73 @@
     return NO;
 }
 
+- (void)tableViewSelectionDidChange:(NSNotification *)notification
+{
+    NSInteger selectedRow = [_tableView selectedRow];
+    NSTableRowView *myRowView = [_tableView rowViewAtRow:selectedRow makeIfNecessary:NO];
+    [myRowView setEmphasized:NO];
+}
+
+- (id<NSPasteboardWriting>)tableView:(NSTableView *)tableView pasteboardWriterForRow:(NSInteger)row
+{
+    return _manager.descriptions[row].filepath;
+}
+
+- (void)tableView:(NSTableView *)tableView draggingSession:(NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forRowIndexes:(NSIndexSet *)rowIndexes
+{
+    _draggedIndex = rowIndexes.firstIndex;
+    
+    SynthesizerCellView *view = [_tableView viewAtColumn:0 row:rowIndexes.firstIndex makeIfNecessary:NO];
+    
+    if (view) {
+        [session enumerateDraggingItemsWithOptions:NSDraggingItemEnumerationConcurrent
+                                           forView:tableView
+                                           classes:[NSArray arrayWithObject:[NSPasteboardItem class]]
+                                     searchOptions:@{}
+                                        usingBlock:^(NSDraggingItem *draggingItem, NSInteger index, BOOL *stop)
+         {
+             draggingItem.imageComponentsProvider = ^NSArray*(void) {
+                 return view.draggingImageComponents;
+             };
+         }];
+    }
+}
+
+- (void)tableView:(NSTableView *)tableView draggingSession:(NSDraggingSession *)session endedAtPoint:(NSPoint)screenPoint operation:(NSDragOperation)operation
+{
+}
+
+- (NSDragOperation)tableView:(NSTableView *)tableView validateDrop:(id<NSDraggingInfo>)info proposedRow:(NSInteger)row proposedDropOperation:(NSTableViewDropOperation)dropOperation
+{
+    if (NSTableViewDropAbove == dropOperation) {
+        if (_draggedIndex < row) {
+            --row;
+        }
+        return _draggedIndex != row ? NSDragOperationMove : NSDragOperationNone;
+    }
+    else {
+        return NSDragOperationNone;
+    }
+}
+
+- (BOOL)tableView:(NSTableView *)tableView acceptDrop:(id<NSDraggingInfo>)info row:(NSInteger)row dropOperation:(NSTableViewDropOperation)dropOperation
+{
+    if (_draggedIndex < row) {
+        --row;
+    }
+    
+    if (_draggedIndex != row) {
+        [self changeMidiSourceOrder:_draggedIndex toIndex:row];
+        return YES;
+    }
+    else {
+        return NO;
+    }
+}
+
 #pragma mark SynthesizerRowViewDelegate
 
-- (void)synthesizerRowViewDidClickUnload:(SynthesizerRowView *)view
+- (void)synthesizerCellViewDidClickUnload:(SynthesizerCellView *)view
 {
     [_manager unloadMidiSourceDescription:view.description];
 }
