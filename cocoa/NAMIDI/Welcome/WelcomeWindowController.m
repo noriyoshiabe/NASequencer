@@ -16,6 +16,15 @@
 @property (weak) IBOutlet NSTableView *recentTableView;
 @property (readonly) NSArray *recentDocuments;
 @property (readonly) BOOL noRecentDocumentsHidden;
+@property (weak) IBOutlet NSButton *gettingStartedButton;
+@property (weak) IBOutlet NSButton *listenToExampleButton;
+@property (weak) IBOutlet NSButton *createNewDocumentButton;
+@property (weak) IBOutlet NSButton *welcomeSettingButton;
+@property (weak) IBOutlet NSButton *openOtherDocumentButton;
+@property (weak) IBOutlet NSView *separator1;
+@property (weak) IBOutlet NSView *separator2;
+@property (weak) IBOutlet NSView *separator3;
+@property (weak) IBOutlet NSView *separator4;
 @end
 
 @implementation WelcomeWindowController
@@ -41,7 +50,6 @@
     
     self.window.contentView.wantsLayer = YES;
     self.window.contentView.layer.backgroundColor = [Color darkGray].CGColor;
-    self.window.contentView.layer.cornerRadius = 10.0;
     self.window.contentView.layer.masksToBounds = YES;
     
     _rightBackgroundView.wantsLayer = YES;
@@ -50,18 +58,49 @@
     if (0 < self.countOfRecentDocuments) {
         [_recentTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
     }
+    
+    _gettingStartedButton.attributedTitle = [[NSAttributedString alloc] initWithString:_gettingStartedButton.title attributes:self.menuTextAttiributes];
+    _listenToExampleButton.attributedTitle = [[NSAttributedString alloc] initWithString:_listenToExampleButton.title attributes:self.menuTextAttiributes];
+    _createNewDocumentButton.attributedTitle = [[NSAttributedString alloc] initWithString:_createNewDocumentButton.title attributes:self.menuTextAttiributes];
+    
+    _welcomeSettingButton.attributedTitle = [[NSAttributedString alloc] initWithString:_welcomeSettingButton.title attributes:self.welcomeSettingTextAttiributes];
+    _openOtherDocumentButton.attributedTitle = [[NSAttributedString alloc] initWithString:_openOtherDocumentButton.title attributes:self._openOtherDocumentButton];
+    
+    _separator1.backgroundColor = [Color gray];
+    _separator2.backgroundColor = [Color gray];
+    _separator3.backgroundColor = [Color gray];
+    _separator4.backgroundColor = [Color gray];
+}
+
+- (NSDictionary *)menuTextAttiributes
+{
+    return @{NSForegroundColorAttributeName:[NSColor whiteColor],
+              NSFontAttributeName:[NSFont systemFontOfSize:22.0 weight:-0.7],
+              NSKernAttributeName:@(1.0)};
+}
+
+- (NSDictionary *)welcomeSettingTextAttiributes
+{
+    return @{NSForegroundColorAttributeName:[Color ultraLightGray],
+             NSFontAttributeName:[NSFont systemFontOfSize:13.0 weight:-0.7]};
+}
+
+- (NSDictionary *)_openOtherDocumentButton
+{
+    return @{NSForegroundColorAttributeName:[Color darkGray],
+             NSFontAttributeName:[NSFont systemFontOfSize:15.0 weight:-0.7]};
 }
 
 - (NSUInteger)countOfRecentDocuments
 {
-    return [NSDocumentController sharedDocumentController].recentDocumentURLs.count;
+    return MIN(6, [NSDocumentController sharedDocumentController].recentDocumentURLs.count);
 }
 
 - (NSArray *)recentDocuments
 {
-    return [[NSDocumentController sharedDocumentController].recentDocumentURLs mapObjectsUsingBlock:^id(id obj) {
+    return [[[NSDocumentController sharedDocumentController].recentDocumentURLs mapObjectsUsingBlock:^id(id obj) {
         return [[FileRepresentation alloc] initWithURL:obj];
-    }];
+    }] subarrayWithRange:NSMakeRange(0, self.countOfRecentDocuments)];;
 }
 
 - (BOOL)noRecentDocumentsHidden

@@ -68,4 +68,10 @@
     }
 }
 
+- (void)setBackgroundColor:(NSColor *)color
+{
+    self.wantsLayer = YES;
+    self.layer.backgroundColor = color.CGColor;
+}
+
 @end
