@@ -7,6 +7,7 @@
 //
 
 #import "SynthesizerCellView.h"
+#import "Preference.h"
 #import "Color.h"
 
 @interface SynthesizerCellView () {
@@ -45,17 +46,34 @@
 {
     [self willChangeValueForKey:@"synthesizerName"];
     [self didChangeValueForKey:@"synthesizerName"];
+    [self willChangeValueForKey:@"available"];
+    [self didChangeValueForKey:@"available"];
     [self willChangeValueForKey:@"canUnload"];
     [self didChangeValueForKey:@"canUnload"];
     [self willChangeValueForKey:@"gain"];
     [self didChangeValueForKey:@"gain"];
     [self willChangeValueForKey:@"masterVolume"];
     [self didChangeValueForKey:@"masterVolume"];
+    [self willChangeValueForKey:@"errorMessage"];
+    [self didChangeValueForKey:@"errorMessage"];
 }
 
 - (NSString *)synthesizerName
 {
-    return _description.name;
+    if (_description.available) {
+        return _description.name;
+    }
+    else if (_description.settings) {
+        return _description.settings[kMidiSourceName];
+    }
+    else {
+        return NSLocalizedString(@"Preference_UnknownSynthesizer", @"Unknown Synthesizer");
+    }
+}
+
+- (BOOL)available
+{
+    return _description.available;
 }
 
 - (BOOL)canUnload
@@ -85,6 +103,27 @@
     [_manager saveMidiSourcePreference];
 }
 
+- (NSString *)errorMessage
+{
+    NSString *messageFormat = nil;
+    
+    switch (_description.error) {
+        case MidiSourceDescriptionErrorNoError:
+            break;
+        case MidiSourceDescriptionErrorFileNotFound:
+            messageFormat = NSLocalizedString(@"Preference_MidiSourceFileNotFound", @"\"%@\" does not exist.");
+            break;
+        case MidiSourceDescriptionErrorUnsupportedVersion:
+            messageFormat = NSLocalizedString(@"Preference_MidiSourceFileUnsupportedVersion", @"Unsupported File Format Version \"%@\".");
+            break;
+        case MidiSourceDescriptionErrorInvalidFileFormat:
+            messageFormat = NSLocalizedString(@"Preference_MidiSourceFileUnsupportedVersion", @"Invlalid File Format \"%@\".");
+            break;
+    }
+    
+    return messageFormat ? [NSString stringWithFormat:messageFormat, _description.filepath] : nil;
+}
+
 - (IBAction)unloadButtonPressed:(id)sender
 {
     [_delegate synthesizerCellViewDidClickUnload:self];
@@ -94,6 +133,16 @@
 {
     self.gain = -100;
     self.masterVolume = 0;
+}
+
+- (IBAction)deleteButtonPressed:(id)sender
+{
+    [_delegate synthesizerCellViewDidClickDelete:self];
+}
+
+- (IBAction)reloadButtonPressed:(id)sender
+{
+    [_delegate synthesizerCellViewDidClickReload:self];
 }
 
 @end
@@ -125,18 +174,12 @@
 
 @implementation SynthesizerErrorBackgroundView
 
-- (void)awakeFromNib
+- (void)drawRect:(NSRect)dirtyRect
 {
-    [super awakeFromNib];
+    [super drawRect:dirtyRect];
     
-    self.wantsLayer = YES;
-    self.layer.backgroundColor = [Color statusBackground].CGColor;
-    self.layer.cornerRadius = 4.0;
-    self.layer.masksToBounds = YES;
-}
-
-- (void)mouseDown:(NSEvent *)theEvent
-{
+    [[Color statusBackground] set];
+    [[NSBezierPath bezierPathWithRoundedRect:self.bounds xRadius:4.0 yRadius:4.0] fill];
 }
 
 @end

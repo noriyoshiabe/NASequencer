@@ -233,6 +233,22 @@
     [_manager unloadMidiSourceDescription:view.description];
 }
 
+- (void)synthesizerCellViewDidClickDelete:(SynthesizerCellView *)view
+{
+    [_manager unloadMidiSourceDescription:view.description];
+}
+
+- (void)synthesizerCellViewDidClickReload:(SynthesizerCellView *)view
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        bool success = [_manager reloadMidiSourceDescription:view.description];
+        
+        if (!success) {
+            NSBeep();
+        }
+    });
+}
+
 #pragma mark MidiSourceManagerRepresentationObserver
 
 - (void)midiSourceManager:(MidiSourceManagerRepresentation *)manager onLoadMidiSourceDescription:(MidiSourceDescriptionRepresentation *)description
@@ -249,6 +265,7 @@
 
 - (void)midiSourceManager:(MidiSourceManagerRepresentation *)manager onReorderMidiSourceDescriptions:(NSArray<MidiSourceDescriptionRepresentation *> *)descriptions availableDescriptions:(NSArray<MidiSourceDescriptionRepresentation *> *)availableDescriptions
 {
+    [_tableView reloadData];
     [_manager saveMidiSourcePreference];
 }
 

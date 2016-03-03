@@ -14,6 +14,7 @@
 #define kIncludeSearchPathBookmark @"IncludeSearchPathBookmark"
 #define kMidiSourceSettings @"MidiSourceSettings"
 #define kMidiSourceFilePath @"MidiSourceFilePath"
+#define kMidiSourceName @"MidiSourceName"
 #define kMidiSourceGain @"MidiSourceGain"
 #define kMidiSourceMasterVolume @"MidiSourceMasterVolume"
 #define kMidiSourceBookmark @"MidiSourceBookmark"

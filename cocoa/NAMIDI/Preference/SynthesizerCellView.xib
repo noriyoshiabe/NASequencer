@@ -16,7 +16,7 @@
         <box borderType="line" titlePosition="noTitle" id="WoH-o5-YF3">
             <rect key="frame" x="0.0" y="0.0" width="471" height="86"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-            <view key="contentView" wantsLayer="YES" id="lOf-LZ-Slo">
+            <view key="contentView" id="lOf-LZ-Slo">
                 <rect key="frame" x="1" y="1" width="469" height="84"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
@@ -47,6 +47,7 @@
                         </buttonCell>
                         <connections>
                             <action selector="resetButtonPressed:" target="-2" id="3h9-eJ-YEK"/>
+                            <binding destination="-2" name="enabled" keyPath="available" id="zKI-bk-LOJ"/>
                         </connections>
                     </button>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0Q3-I2-WbF">
@@ -81,6 +82,7 @@
                         </constraints>
                         <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="-1440" maxValue="1440" tickMarkPosition="above" sliderType="linear" id="9f3-iE-QhO"/>
                         <connections>
+                            <binding destination="-2" name="enabled" keyPath="available" id="BdE-nm-jOb"/>
                             <binding destination="-2" name="value" keyPath="gain" id="Pm0-Nv-oOf"/>
                         </connections>
                     </slider>
@@ -92,6 +94,7 @@
                         </constraints>
                         <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="-1440" maxValue="1440" tickMarkPosition="above" sliderType="linear" id="7Ea-yc-cr5"/>
                         <connections>
+                            <binding destination="-2" name="enabled" keyPath="available" id="egC-DW-dkd"/>
                             <binding destination="-2" name="value" keyPath="masterVolume" id="nB1-ch-PYP"/>
                         </connections>
                     </slider>
@@ -137,7 +140,8 @@
                         </buttonCell>
                         <connections>
                             <action selector="unloadButtonPressed:" target="-2" id="iaJ-GB-chJ"/>
-                            <binding destination="-2" name="hidden" keyPath="canUnload" id="a29-E1-lab">
+                            <binding destination="-2" name="enabled" keyPath="available" id="v3s-5C-WsC"/>
+                            <binding destination="-2" name="hidden" keyPath="canUnload" previousBinding="v3s-5C-WsC" id="M5H-5P-ZrW">
                                 <dictionary key="options">
                                     <string key="NSValueTransformerName">NSNegateBoolean</string>
                                 </dictionary>
@@ -153,6 +157,9 @@
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="smallSystem"/>
                                 </buttonCell>
+                                <connections>
+                                    <action selector="deleteButtonPressed:" target="-2" id="wuT-1E-w0f"/>
+                                </connections>
                             </button>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PaT-tI-99m">
                                 <rect key="frame" x="396" y="49" width="64" height="28"/>
@@ -160,28 +167,33 @@
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="smallSystem"/>
                                 </buttonCell>
+                                <connections>
+                                    <action selector="reloadButtonPressed:" target="-2" id="9Uw-t0-asK"/>
+                                </connections>
                             </button>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LJ3-tm-A2k">
-                                <rect key="frame" x="18" y="46" width="84" height="16"/>
+                                <rect key="frame" x="18" y="51" width="84" height="16"/>
                                 <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Load Failed." id="fl7-UU-ZAr">
                                     <font key="font" metaFont="systemBlack" size="12"/>
-                                    <color key="textColor" red="0.97254901959999995" green="0.10980392160000001" blue="0.10980392160000001" alpha="0.84999999999999998" colorSpace="calibratedRGB"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="textColor" red="1" green="0.22853336238947364" blue="0.23038369133684211" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                 </textFieldCell>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" preferredMaxLayoutWidth="435" translatesAutoresizingMaskIntoConstraints="NO" id="0X8-Cf-04V">
                                 <rect key="frame" x="18" y="7" width="439" height="36"/>
                                 <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="&quot;~/Documents/NAMIDI/sf/FluidR3 GM2-2.SF2&quot; does not exsit. " id="j83-ae-d7K">
-                                    <font key="font" metaFont="system" size="12"/>
+                                    <font key="font" metaFont="cellTitle"/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
+                                <connections>
+                                    <binding destination="-2" name="value" keyPath="errorMessage" id="a4r-lO-D8f"/>
+                                </connections>
                             </textField>
                         </subviews>
-                        <shadow key="shadow" blurRadius="4">
-                            <size key="offset" width="0.0" height="-2"/>
-                            <color key="color" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                        </shadow>
+                        <connections>
+                            <binding destination="-2" name="hidden" keyPath="available" id="EVg-kT-5re"/>
+                        </connections>
                     </customView>
                 </subviews>
                 <constraints>

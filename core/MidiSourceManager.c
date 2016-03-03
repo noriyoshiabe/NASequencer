@@ -252,6 +252,9 @@ bool MidiSourceManagerReloadMidiSourceDescription(MidiSourceManager *self, MidiS
             break;
         }
     }
+    else {
+        description->error = MidiSourceDescriptionErrorNoError;
+    }
 
     if (description->sf) {
         free(description->name);
@@ -278,9 +281,6 @@ bool MidiSourceManagerReloadMidiSourceDescription(MidiSourceManager *self, MidiS
         if (i < count) {
             MidiSourceManagerNotifyReorderMidiSourceDescriptions(self, self->descriptions, self->availableDescriptions);
         }
-    }
-    else {
-        MidiSourceManagerNotifyLoadMidiSourceDescription(self, description);
     }
 
     return !!description->sf;

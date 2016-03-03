@@ -169,6 +169,7 @@ static MidiSourceManagerRepresentation *_sharedInstance = nil;
             }
             
             MidiSourceDescriptionRepresentation *description = _descriptions.lastObject;
+            description.settings = settings;
             
             NSNumber *gain = settings[kMidiSourceGain];
             [self setGainForDescription:description gain:gain.intValue];
@@ -187,31 +188,49 @@ static MidiSourceManagerRepresentation *_sharedInstance = nil;
 {
     NSMutableArray *settings = [NSMutableArray array];
     for (MidiSourceDescriptionRepresentation *description in _descriptions) {
-        BOOL isDefault = [description.filepath isEqualToString:self.pathForDefaultMidiSource];
-        
-        NSError *error = nil;
-        NSData *bookmark = [[NSURL fileURLWithPath:description.filepath] bookmarkDataWithOptions:NSURLBookmarkCreationWithSecurityScope includingResourceValuesForKeys:nil relativeToURL:nil error:&error];
-        
-        [settings addObject:@{
-                              kMidiSourceFilePath: description.filepath,
-                              kMidiSourceGain: [NSNumber numberWithInt:description.gain],
-                              kMidiSourceMasterVolume: [NSNumber numberWithInt:description.masterVolume],
-                              kMidiSourceBookmark: bookmark ? bookmark : [NSData data],
-                              kMidiSourceIsDefault: [NSNumber numberWithBool:isDefault]
-                              }];
+        if (description.available) {
+            BOOL isDefault = [description.filepath isEqualToString:self.pathForDefaultMidiSource];
+            
+            NSError *error = nil;
+            NSData *bookmark = [[NSURL fileURLWithPath:description.filepath] bookmarkDataWithOptions:NSURLBookmarkCreationWithSecurityScope includingResourceValuesForKeys:nil relativeToURL:nil error:&error];
+            
+            [settings addObject:@{
+                                  kMidiSourceFilePath: description.filepath,
+                                  kMidiSourceName: description.name,
+                                  kMidiSourceGain: [NSNumber numberWithInt:description.gain],
+                                  kMidiSourceMasterVolume: [NSNumber numberWithInt:description.masterVolume],
+                                  kMidiSourceBookmark: bookmark ? bookmark : [NSData data],
+                                  kMidiSourceIsDefault: [NSNumber numberWithBool:isDefault]
+                                  }];
+        }
+        else if (description.settings) {
+            [settings addObject:description.settings];
+        }
     }
     
     [Preference sharedInstance].midiSourceSettings = settings;
 }
 
-- (void)loadMidiSourceDescriptionFromSoundFont:(NSString *)filepath
+- (bool)loadMidiSourceDescriptionFromSoundFont:(NSString *)filepath
 {
-    MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(_manager, filepath.UTF8String);
+    return MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(_manager, filepath.UTF8String);
 }
 
 - (void)unloadMidiSourceDescription:(MidiSourceDescriptionRepresentation *)description
 {
     MidiSourceManagerUnloadMidiSourceDescription(_manager, description.raw);
+}
+
+- (bool)reloadMidiSourceDescription:(MidiSourceDescriptionRepresentation *)description
+{
+    NSData *bookmark = description.settings[kMidiSourceBookmark];
+    if (bookmark) {
+        NSError *error = nil;
+        NSURL *bookmarkedURL = [NSURL URLByResolvingBookmarkData:bookmark options:NSURLBookmarkResolutionWithSecurityScope relativeToURL:nil bookmarkDataIsStale:nil error:&error];
+        [bookmarkedURL startAccessingSecurityScopedResource];
+    }
+    
+    return MidiSourceManagerReloadMidiSourceDescription(_manager, description.raw);
 }
 
 - (void)setGainForDescription:(MidiSourceDescriptionRepresentation *)description gain:(int)gain
@@ -302,7 +321,7 @@ static MidiSourceManagerRepresentation *_sharedInstance = nil;
     
     [NSThread performBlockOnMainThread:^{
         for (id<MidiSourceManagerRepresentationObserver> observer in _observers) {
-            if ([observer respondsToSelector:@selector(midiSourceManager:onUnloadAvailableMidiSourceDescription:)]) {
+            if ([observer respondsToSelector:@selector(midiSourceManager:onReorderMidiSourceDescriptions:availableDescriptions:)]) {
                 [observer midiSourceManager:self onReorderMidiSourceDescriptions:_descriptions availableDescriptions:_availableDescriptions];
             }
         }
