@@ -46,7 +46,7 @@
                     <rect key="frame" x="122" y="129" width="50" height="18"/>
                     <buttonCell key="cell" type="bevel" title="Mute" bezelStyle="rounded" alignment="center" lineBreakMode="truncatingTail" inset="2" id="xF9-VN-3Oh">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
-                        <font key="font" metaFont="system" size="12"/>
+                        <font key="font" metaFont="cellTitle"/>
                     </buttonCell>
                     <userDefinedRuntimeAttributes>
                         <userDefinedRuntimeAttribute type="color" keyPath="activeBorderColor">
@@ -184,7 +184,7 @@
                     <rect key="frame" x="184" y="129" width="50" height="18"/>
                     <buttonCell key="cell" type="bevel" title="Solo" bezelStyle="rounded" alignment="center" lineBreakMode="truncatingTail" inset="2" id="ubT-2K-Bit">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
-                        <font key="font" metaFont="system" size="12"/>
+                        <font key="font" metaFont="cellTitle"/>
                     </buttonCell>
                     <userDefinedRuntimeAttributes>
                         <userDefinedRuntimeAttribute type="color" keyPath="activeBorderColor">

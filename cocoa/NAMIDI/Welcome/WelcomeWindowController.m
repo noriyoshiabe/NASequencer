@@ -9,8 +9,10 @@
 #import "WelcomeWindowController.h"
 #import "ApplicationController.h"
 #import "FileRepresentation.h"
+#import "Color.h"
 
-@interface WelcomeWindowController () <NSTableViewDataSource>
+@interface WelcomeWindowController () <NSTableViewDataSource, NSWindowDelegate>
+@property (weak) IBOutlet NSView *rightBackgroundView;
 @property (weak) IBOutlet NSTableView *recentTableView;
 @property (readonly) NSArray *recentDocuments;
 @property (readonly) BOOL noRecentDocumentsHidden;
@@ -29,8 +31,21 @@
     
     self.window.titleVisibility = NSWindowTitleHidden;
     self.window.titlebarAppearsTransparent = YES;
-    self.window.movableByWindowBackground = YES;
     [self.window standardWindowButton:NSWindowCloseButton].superview.hidden = YES;
+    
+    self.window.movableByWindowBackground = YES;
+    [self.window setFrameTopLeftPoint:CGPointZero];
+    
+    self.window.opaque = NO;
+    self.window.backgroundColor = [NSColor clearColor];
+    
+    self.window.contentView.wantsLayer = YES;
+    self.window.contentView.layer.backgroundColor = [Color darkGray].CGColor;
+    self.window.contentView.layer.cornerRadius = 10.0;
+    self.window.contentView.layer.masksToBounds = YES;
+    
+    _rightBackgroundView.wantsLayer = YES;
+    _rightBackgroundView.layer.backgroundColor = [Color ultraLightGray].CGColor;
     
     if (0 < self.countOfRecentDocuments) {
         [_recentTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
