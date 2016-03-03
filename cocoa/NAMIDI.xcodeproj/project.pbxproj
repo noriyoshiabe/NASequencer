@@ -119,6 +119,10 @@
 		02CAF6C51C778C2200AD81B2 /* ErrorWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02CAF6C31C778C2200AD81B2 /* ErrorWindowController.xib */; };
 		02CD04221C871B3400BF6683 /* SynthesizerCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CD04211C871B3400BF6683 /* SynthesizerCellView.m */; };
 		02CD04241C871B4500BF6683 /* SynthesizerCellView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02CD04231C871B4500BF6683 /* SynthesizerCellView.xib */; };
+		02CD042A1C888A8C00BF6683 /* TipsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CD04281C888A8C00BF6683 /* TipsViewController.m */; };
+		02CD042B1C888A8C00BF6683 /* TipsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02CD04291C888A8C00BF6683 /* TipsViewController.xib */; };
+		02CD042E1C88905D00BF6683 /* NSTextField+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CD042D1C88905D00BF6683 /* NSTextField+Support.m */; };
+		02CD04311C88930700BF6683 /* TextLink.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CD04301C88930700BF6683 /* TextLink.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -320,6 +324,13 @@
 		02CD04201C871B3400BF6683 /* SynthesizerCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SynthesizerCellView.h; sourceTree = "<group>"; };
 		02CD04211C871B3400BF6683 /* SynthesizerCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SynthesizerCellView.m; sourceTree = "<group>"; };
 		02CD04231C871B4500BF6683 /* SynthesizerCellView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SynthesizerCellView.xib; sourceTree = "<group>"; };
+		02CD04271C888A8C00BF6683 /* TipsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TipsViewController.h; sourceTree = "<group>"; };
+		02CD04281C888A8C00BF6683 /* TipsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TipsViewController.m; sourceTree = "<group>"; };
+		02CD04291C888A8C00BF6683 /* TipsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TipsViewController.xib; sourceTree = "<group>"; };
+		02CD042C1C88905D00BF6683 /* NSTextField+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSTextField+Support.h"; sourceTree = "<group>"; };
+		02CD042D1C88905D00BF6683 /* NSTextField+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSTextField+Support.m"; sourceTree = "<group>"; };
+		02CD042F1C88930700BF6683 /* TextLink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextLink.h; sourceTree = "<group>"; };
+		02CD04301C88930700BF6683 /* TextLink.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextLink.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -455,6 +466,8 @@
 				025FAFA11C81129C00E4C3B3 /* NSObject+Support.m */,
 				021483781C86583E00D653AE /* NSPathUtilities+Support.h */,
 				021483791C86583E00D653AE /* NSPathUtilities+Support.m */,
+				02CD042C1C88905D00BF6683 /* NSTextField+Support.h */,
+				02CD042D1C88905D00BF6683 /* NSTextField+Support.m */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -536,6 +549,8 @@
 				02CAF6A81C771F6E00AD81B2 /* SynchronizedScrollView.m */,
 				025FAFA91C81382000E4C3B3 /* ObserverList.h */,
 				025FAFAA1C81382000E4C3B3 /* ObserverList.m */,
+				02CD042F1C88930700BF6683 /* TextLink.h */,
+				02CD04301C88930700BF6683 /* TextLink.m */,
 			);
 			path = Component;
 			sourceTree = "<group>";
@@ -605,6 +620,9 @@
 				026D42CD1C7ABC08000267AD /* TrackViewController.h */,
 				026D42CE1C7ABC08000267AD /* TrackViewController.m */,
 				026D42CF1C7ABC08000267AD /* TrackViewController.xib */,
+				02CD04271C888A8C00BF6683 /* TipsViewController.h */,
+				02CD04281C888A8C00BF6683 /* TipsViewController.m */,
+				02CD04291C888A8C00BF6683 /* TipsViewController.xib */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -772,6 +790,7 @@
 				020CF8301C6A04830025DF84 /* getting-started in Resources */,
 				024A5B2F1C69FFD90079D22C /* WelcomeWindowController.xib in Resources */,
 				020CF8721C6AF53D0025DF84 /* PurchaseViewController.xib in Resources */,
+				02CD042B1C888A8C00BF6683 /* TipsViewController.xib in Resources */,
 				0254235F1C6F2EB6007D53CC /* EditorWindowController.xib in Resources */,
 				0214836B1C84B2E700D653AE /* ExportWindowController.xib in Resources */,
 				028209231C70A3C0003EBCFB /* EditorTabItem.xib in Resources */,
@@ -846,6 +865,7 @@
 				026D42D81C7ABC08000267AD /* EventListViewController.m in Sources */,
 				0201F7D11C688BB100A201F6 /* AppDelegate.m in Sources */,
 				02CD04221C871B3400BF6683 /* SynthesizerCellView.m in Sources */,
+				02CD04311C88930700BF6683 /* TextLink.m in Sources */,
 				0216EDF71C7AC431009A7B90 /* ConductorTrackViewController.m in Sources */,
 				024A19061C768AC800B0AC56 /* FlippedView.m in Sources */,
 				028209221C70A3C0003EBCFB /* EditorTabItem.m in Sources */,
@@ -857,6 +877,7 @@
 				021483631C84A66F00D653AE /* ExporterRepresentation.m in Sources */,
 				024A5B2E1C69FFD90079D22C /* WelcomeWindowController.m in Sources */,
 				025FAF801C7E469A00E4C3B3 /* PlayerRepresentation.m in Sources */,
+				02CD042E1C88905D00BF6683 /* NSTextField+Support.m in Sources */,
 				020CF86C1C6AF4D90025DF84 /* SynthesizerViewController.m in Sources */,
 				0216EDFC1C7ADA09009A7B90 /* PianoRollViewController.m in Sources */,
 				0216EE061C7C3C76009A7B90 /* PianoRollConductorViewController.m in Sources */,
@@ -864,6 +885,7 @@
 				020CF8711C6AF53D0025DF84 /* PurchaseViewController.m in Sources */,
 				02633EBC1C75062300B9FF0E /* LevelIndicator.m in Sources */,
 				025FAF8D1C7E653500E4C3B3 /* ParseInfoRepresentation.m in Sources */,
+				02CD042A1C888A8C00BF6683 /* TipsViewController.m in Sources */,
 				020CF8561C6AD4D80025DF84 /* PreferenceWindowController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

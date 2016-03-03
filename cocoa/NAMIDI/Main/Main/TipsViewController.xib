@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9532"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="TipsViewController">
+            <connections>
+                <outlet property="operationManual" destination="3WY-hR-Kef" id="0bW-9U-BpU"/>
+                <outlet property="syntaxReference" destination="v3A-3n-3TO" id="xLZ-KA-1Eq"/>
+                <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customView id="Hz6-mo-xeY">
+            <rect key="frame" x="0.0" y="0.0" width="350" height="344"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="U1p-Zy-OfI">
+                    <rect key="frame" x="90" y="190" width="171" height="44"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Any Help?" id="KrG-RA-pXX">
+                        <font key="font" metaFont="system" size="36"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="3WY-hR-Kef" customClass="TextLink">
+                    <rect key="frame" x="107" y="149" width="137" height="19"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Operation Manual" id="aSS-1e-rYv">
+                        <font key="font" metaFont="system" size="16"/>
+                        <color key="textColor" red="0.20392156862745098" green="0.36862745098039218" blue="0.94901960784313721" alpha="0.84999999999999998" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <action selector="operationManualPressed:" target="-2" id="XBA-eJ-tai"/>
+                    </connections>
+                </textField>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="v3A-3n-3TO" customClass="TextLink">
+                    <rect key="frame" x="107" y="118" width="136" height="19"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Syntax Reference" id="9bQ-Xj-zrG">
+                        <font key="font" metaFont="system" size="16"/>
+                        <color key="textColor" red="0.20392156862745098" green="0.36862745098039218" blue="0.94901960784313721" alpha="0.84999999999999998" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <action selector="syntaxReferencePressed:" target="-2" id="Hdq-h1-Z8f"/>
+                    </connections>
+                </textField>
+            </subviews>
+            <constraints>
+                <constraint firstItem="v3A-3n-3TO" firstAttribute="top" secondItem="3WY-hR-Kef" secondAttribute="bottom" constant="12" id="2X4-qe-djr"/>
+                <constraint firstItem="U1p-Zy-OfI" firstAttribute="centerX" secondItem="Hz6-mo-xeY" secondAttribute="centerX" id="CUN-G5-Pg7"/>
+                <constraint firstItem="3WY-hR-Kef" firstAttribute="top" secondItem="U1p-Zy-OfI" secondAttribute="bottom" constant="22" id="Vm8-Fs-DGA"/>
+                <constraint firstItem="U1p-Zy-OfI" firstAttribute="centerY" secondItem="Hz6-mo-xeY" secondAttribute="centerY" constant="-40" id="n4I-Qg-mgl"/>
+                <constraint firstItem="v3A-3n-3TO" firstAttribute="centerX" secondItem="Hz6-mo-xeY" secondAttribute="centerX" id="qTP-sy-ynK"/>
+                <constraint firstItem="3WY-hR-Kef" firstAttribute="centerX" secondItem="Hz6-mo-xeY" secondAttribute="centerX" id="wtq-Rl-mp8"/>
+            </constraints>
+        </customView>
+    </objects>
+</document>

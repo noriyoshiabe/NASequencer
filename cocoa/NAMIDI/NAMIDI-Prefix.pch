@@ -21,6 +21,7 @@
 #import "NSColor+Support.h"
 #import "NSThread+Support.h"
 #import "NSPathUtilities+Support.h"
+#import "NSTextField+Support.h"
 
 #ifdef DEBUG
 #define __Trace__ NSLog(@"%s - %d", __func__, __LINE__);

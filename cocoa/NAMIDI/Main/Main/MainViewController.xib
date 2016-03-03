@@ -13,6 +13,7 @@
                 <outlet property="measureView" destination="qO1-kw-qV6" id="Wa4-8j-ezz"/>
                 <outlet property="mixerView" destination="ltP-sB-C6c" id="koO-Q0-rqM"/>
                 <outlet property="playLineView" destination="JFw-Ha-HOa" id="tME-Wr-zGE"/>
+                <outlet property="tipsView" destination="IR5-WE-33Y" id="vCm-Vi-kv2"/>
                 <outlet property="trackView" destination="cdL-nW-Cez" id="Mva-CR-PW0"/>
                 <outlet property="verticalLine" destination="0bT-Jz-t0M" id="UrU-MB-doa"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
@@ -156,6 +157,9 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
                 </scrollView>
+                <customView translatesAutoresizingMaskIntoConstraints="NO" id="IR5-WE-33Y">
+                    <rect key="frame" x="250" y="0.0" width="350" height="344"/>
+                </customView>
             </subviews>
             <constraints>
                 <constraint firstItem="ltP-sB-C6c" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="1nQ-FM-ZWe"/>
@@ -165,15 +169,19 @@
                 <constraint firstItem="9mB-kI-Jlu" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="6yN-d2-SgI"/>
                 <constraint firstItem="JFw-Ha-HOa" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" id="8sg-8L-JDK"/>
                 <constraint firstAttribute="trailing" secondItem="9Lt-Q0-dto" secondAttribute="trailing" id="9aM-ae-KbJ"/>
+                <constraint firstAttribute="bottom" secondItem="IR5-WE-33Y" secondAttribute="bottom" id="FBK-JF-6kF"/>
                 <constraint firstItem="JFw-Ha-HOa" firstAttribute="leading" secondItem="0bT-Jz-t0M" secondAttribute="trailing" id="GUY-9k-oXh"/>
                 <constraint firstAttribute="trailing" secondItem="k9j-SC-SQW" secondAttribute="trailing" id="H2c-8m-Fiy"/>
                 <constraint firstAttribute="bottom" secondItem="cdL-nW-Cez" secondAttribute="bottom" id="ObF-H9-USu"/>
                 <constraint firstItem="cdL-nW-Cez" firstAttribute="leading" secondItem="0bT-Jz-t0M" secondAttribute="trailing" id="RoZ-fS-ddV"/>
+                <constraint firstAttribute="trailing" secondItem="IR5-WE-33Y" secondAttribute="trailing" id="U62-Ho-HGE"/>
                 <constraint firstItem="9Lt-Q0-dto" firstAttribute="top" secondItem="qO1-kw-qV6" secondAttribute="bottom" id="Ur6-pM-TSg"/>
                 <constraint firstItem="cdL-nW-Cez" firstAttribute="top" secondItem="k9j-SC-SQW" secondAttribute="bottom" id="Vpj-Qf-Ucj"/>
                 <constraint firstItem="ltP-sB-C6c" firstAttribute="top" secondItem="9mB-kI-Jlu" secondAttribute="bottom" constant="1" id="WBx-ti-UzQ"/>
+                <constraint firstItem="IR5-WE-33Y" firstAttribute="leading" secondItem="ltP-sB-C6c" secondAttribute="trailing" id="Xkn-oL-BBp"/>
                 <constraint firstItem="0bT-Jz-t0M" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" id="aFd-a5-4TV"/>
                 <constraint firstAttribute="trailing" secondItem="qO1-kw-qV6" secondAttribute="trailing" id="bBy-0k-ju2"/>
+                <constraint firstItem="IR5-WE-33Y" firstAttribute="top" secondItem="9Lt-Q0-dto" secondAttribute="bottom" id="bbP-g8-YwL"/>
                 <constraint firstAttribute="trailing" secondItem="cdL-nW-Cez" secondAttribute="trailing" id="bou-pM-fJg"/>
                 <constraint firstItem="cdL-nW-Cez" firstAttribute="leading" secondItem="ltP-sB-C6c" secondAttribute="trailing" constant="1" id="cE9-ak-J1C"/>
                 <constraint firstItem="9mB-kI-Jlu" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" id="hUZ-Mv-aN4"/>

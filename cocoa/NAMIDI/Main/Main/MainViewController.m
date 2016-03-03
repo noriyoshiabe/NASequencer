@@ -13,23 +13,26 @@
 #import "MixerViewController.h"
 #import "TrackViewController.h"
 #import "PlayLineViewController.h"
+#import "TipsViewController.h"
 #import "MeasureScaleAssistant.h"
 #import "SynchronizedScrollView.h"
 #import "Color.h"
 
-@interface MainViewController ()
+@interface MainViewController () <NAMidiRepresentationObserver>
 @property (weak) IBOutlet NSView *conductorView;
 @property (weak) IBOutlet SynchronizedScrollView *mixerView;
 @property (weak) IBOutlet SynchronizedScrollView *measureView;
 @property (weak) IBOutlet SynchronizedScrollView *conductorTrackView;
 @property (weak) IBOutlet SynchronizedScrollView *trackView;
 @property (weak) IBOutlet SynchronizedScrollView *playLineView;
+@property (weak) IBOutlet NSView *tipsView;
 @property (strong, nonatomic) ConductorViewController *conductorVC;
 @property (strong, nonatomic) MeasureViewController *measureVC;
 @property (strong, nonatomic) ConductorTrackViewController *conductorTrackVC;
 @property (strong, nonatomic) MixerViewController *mixerVC;
 @property (strong, nonatomic) TrackViewController *trackVC;
 @property (strong, nonatomic) PlayLineViewController *playLineVC;
+@property (strong, nonatomic) TipsViewController *tipsVC;
 @property (weak) IBOutlet NSView *horizontalLine;
 @property (weak) IBOutlet NSView *verticalLine;
 @end
@@ -55,6 +58,7 @@
     _trackVC = [[TrackViewController alloc] init];
     _playLineVC = [[PlayLineViewController alloc] init];
     _playLineVC.containerView = _playLineView;
+    _tipsVC = [[TipsViewController alloc] init];
     
     _conductorVC.namidi = _namidi;
     _measureVC.namidi = _namidi;
@@ -62,6 +66,7 @@
     _mixerVC.namidi = _namidi;
     _trackVC.namidi = _namidi;
     _playLineVC.namidi = _namidi;
+    _tipsVC.namidi =_namidi;
     
     _measureVC.scaleAssistant = _scaleAssistant;
     _conductorTrackVC.scaleAssistant = _scaleAssistant;
@@ -80,6 +85,8 @@
     _trackView.documentView = _trackVC.view;
     _playLineView.documentView = _playLineVC.view;
     
+    [_tipsView addSubviewWithFitConstraints:_tipsVC.view];
+    
     _playLineView.userInteractionEnabled = NO;
     
     [_measureView observeScrollForScrollView:_conductorTrackView x:YES y:NO];
@@ -91,10 +98,28 @@
     [_trackView observeScrollForScrollView:_mixerView x:NO y:YES];
 }
 
+- (void)viewWillAppear
+{
+    [super viewWillAppear];
+    [self updateTipsVisibility];
+    [_namidi addObserver:self];
+}
+
 - (void)viewDidAppear
 {
     [self.view.window makeMainWindow];
     [self.view.window makeFirstResponder:self.view];
+}
+
+- (void)viewDidDisappear
+{
+    [super viewDidDisappear];
+    [_namidi removeObserver:self];
+}
+
+- (void)updateTipsVisibility
+{
+    _tipsView.hidden = 0 < _namidi.sequence.events.count;
 }
 
 #pragma mark Keyboad event
@@ -120,6 +145,13 @@
 - (void)cancelOperation:(id)sender
 {
     [_trackSelection deselectAll];
+}
+
+#pragma mark NAMidiRepresentationObserver
+
+- (void)namidiDidParse:(NAMidiRepresentation *)namidi sequence:(SequenceRepresentation *)sequence parseInfo:(ParseInfoRepresentation *)parseInfo
+{
+    [self updateTipsVisibility];
 }
 
 @end

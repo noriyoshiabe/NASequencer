@@ -49,7 +49,7 @@
                             <binding destination="-2" name="value" keyPath="copyright" id="C9l-JJ-Avo"/>
                         </connections>
                     </textField>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mdJ-yE-gCn" customClass="AboutWindowTextLink">
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mdJ-yE-gCn" customClass="TextLink">
                         <rect key="frame" x="96" y="63" width="109" height="13"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Third-Party Licenses" id="3dr-fH-a8E">
                             <font key="font" metaFont="systemMedium" size="10"/>
@@ -60,7 +60,7 @@
                             <action selector="licensePressed:" target="-2" id="57r-qO-WL0"/>
                         </connections>
                     </textField>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fyN-vI-NMY" customClass="AboutWindowTextLink">
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fyN-vI-NMY" customClass="TextLink">
                         <rect key="frame" x="154" y="36" width="83" height="13"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="https://namidi.io" id="Fsz-BM-lqa">
                             <font key="font" metaFont="systemMedium" size="10"/>
@@ -71,7 +71,7 @@
                             <action selector="officialSitePressed:" target="-2" id="53L-ti-YXC"/>
                         </connections>
                     </textField>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0Bg-h3-Fct" customClass="AboutWindowTextLink">
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0Bg-h3-Fct" customClass="TextLink">
                         <rect key="frame" x="154" y="20" width="100" height="13"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="support@namidi.io" id="PuE-wm-S7H">
                             <font key="font" metaFont="systemMedium" size="10"/>

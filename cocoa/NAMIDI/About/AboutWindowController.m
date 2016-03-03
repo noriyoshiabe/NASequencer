@@ -28,9 +28,9 @@
 {
     [super windowDidLoad];
     
-    [self underLineToTextField:_license];
-    [self underLineToTextField:_officialSite];
-    [self underLineToTextField:_supportMail];
+    [_license underLine];
+    [_officialSite underLine];
+    [_supportMail underLine];
 }
 
 - (NSString *)appName
@@ -48,13 +48,6 @@
     NSString *shortVersionString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
     NSString *bundleVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
     return [NSString stringWithFormat:@"Version %@ (%@)", shortVersionString, bundleVersion];
-}
-
-- (void)underLineToTextField:(NSTextField *)textField
-{
-    NSMutableAttributedString *string = [[textField attributedStringValue] mutableCopy];
-    [string addAttribute:NSUnderlineStyleAttributeName value:[NSNumber numberWithInt:NSUnderlineStyleSingle] range:NSMakeRange(0, string.length)];
-    [textField setAttributedStringValue:string];
 }
 
 - (IBAction)licensePressed:(id)sender
@@ -79,18 +72,4 @@
     [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:[mailtoAddress stringByReplacingOccurrencesOfString:@" " withString:@"%20"]]];
 }
 
-@end
-
-
-#pragma mark InterfaceBuilder
-
-@interface AboutWindowTextLink : NSTextField
-
-@end
-
-@implementation AboutWindowTextLink
-- (void)mouseUp:(NSEvent *)theEvent
-{
-    [self sendAction:[self action] to:[self target]];
-}
 @end
