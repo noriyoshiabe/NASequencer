@@ -40,6 +40,7 @@
 		0216EE0C1C7C5D15009A7B90 /* PianoRollNoteViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0216EE0A1C7C5D15009A7B90 /* PianoRollNoteViewController.xib */; };
 		0216EE0F1C7C689F009A7B90 /* PianoRollLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 0216EE0E1C7C689F009A7B90 /* PianoRollLayout.m */; };
 		0232CB101C88C88700542D34 /* NSWindow+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 0232CB0F1C88C88700542D34 /* NSWindow+Support.m */; };
+		0232CB161C88FA9700542D34 /* AlphaHilightButtonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0232CB151C88FA9700542D34 /* AlphaHilightButtonCell.m */; };
 		023BB20F1C6EF17B0030487C /* NSArray+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 023BB20E1C6EF17B0030487C /* NSArray+Support.m */; };
 		0240A2481C6C30F2002D6F72 /* ApplicationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0240A2471C6C30F2002D6F72 /* ApplicationController.m */; };
 		024A19061C768AC800B0AC56 /* FlippedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A19051C768AC800B0AC56 /* FlippedView.m */; };
@@ -200,6 +201,8 @@
 		0216EE0E1C7C689F009A7B90 /* PianoRollLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PianoRollLayout.m; sourceTree = "<group>"; };
 		0232CB0E1C88C88700542D34 /* NSWindow+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSWindow+Support.h"; sourceTree = "<group>"; };
 		0232CB0F1C88C88700542D34 /* NSWindow+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSWindow+Support.m"; sourceTree = "<group>"; };
+		0232CB141C88FA9700542D34 /* AlphaHilightButtonCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlphaHilightButtonCell.h; sourceTree = "<group>"; };
+		0232CB151C88FA9700542D34 /* AlphaHilightButtonCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlphaHilightButtonCell.m; sourceTree = "<group>"; };
 		023BB20D1C6EF17B0030487C /* NSArray+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+Support.h"; sourceTree = "<group>"; };
 		023BB20E1C6EF17B0030487C /* NSArray+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Support.m"; sourceTree = "<group>"; };
 		0240A2461C6C30F2002D6F72 /* ApplicationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationController.h; sourceTree = "<group>"; };
@@ -561,6 +564,8 @@
 				02CD04301C88930700BF6683 /* TextLink.m */,
 				02CD04321C889AC400BF6683 /* ColorButton.h */,
 				02CD04331C889AC400BF6683 /* ColorButton.m */,
+				0232CB141C88FA9700542D34 /* AlphaHilightButtonCell.h */,
+				0232CB151C88FA9700542D34 /* AlphaHilightButtonCell.m */,
 			);
 			path = Component;
 			sourceTree = "<group>";
@@ -866,6 +871,7 @@
 				025FAF771C7E32B500E4C3B3 /* MidiEventRepresentation.m in Sources */,
 				025FA90F1C7D2CE700E4C3B3 /* PianoRollVelocityViewController.m in Sources */,
 				025FA9061C7D27BD00E4C3B3 /* PianoRollVelocityLabelView.m in Sources */,
+				0232CB161C88FA9700542D34 /* AlphaHilightButtonCell.m in Sources */,
 				02CD04341C889AC400BF6683 /* ColorButton.m in Sources */,
 				026D42EB1C7ABC08000267AD /* PlayLineViewController.m in Sources */,
 				02CAF6C41C778C2200AD81B2 /* ErrorWindowController.m in Sources */,

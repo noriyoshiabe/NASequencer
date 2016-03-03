@@ -156,7 +156,7 @@
                             </button>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vVh-rD-oP8">
                                 <rect key="frame" x="18" y="16" width="201" height="16"/>
-                                <buttonCell key="cell" type="square" title="Open other Document…" bezelStyle="shadowlessSquare" alignment="left" imageScaling="proportionallyDown" inset="2" id="H6w-Hy-qX3">
+                                <buttonCell key="cell" type="square" title="Open other Document…" bezelStyle="shadowlessSquare" alignment="left" imageScaling="proportionallyDown" inset="2" id="H6w-Hy-qX3" customClass="AlphaHilightButtonCell">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -201,7 +201,7 @@
                     </textField>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5Ha-7V-Z91">
                         <rect key="frame" x="100" y="166" width="290" height="29"/>
-                        <buttonCell key="cell" type="square" title="   Getting Started" bezelStyle="shadowlessSquare" image="start" imagePosition="left" alignment="left" imageScaling="proportionallyDown" inset="2" id="JQd-Ro-qqc">
+                        <buttonCell key="cell" type="square" title="   Getting Started" bezelStyle="shadowlessSquare" image="start" imagePosition="left" alignment="left" imageScaling="proportionallyDown" inset="2" id="JQd-Ro-qqc" customClass="AlphaHilightButtonCell">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system" size="24"/>
                         </buttonCell>
@@ -211,7 +211,7 @@
                     </button>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bwF-gg-JyA">
                         <rect key="frame" x="100" y="118" width="290" height="29"/>
-                        <buttonCell key="cell" type="square" title="   Listen to Example" bezelStyle="shadowlessSquare" image="listen" imagePosition="left" alignment="left" imageScaling="proportionallyDown" inset="2" id="EYr-N5-hNx">
+                        <buttonCell key="cell" type="square" title="   Listen to Example" bezelStyle="shadowlessSquare" image="listen" imagePosition="left" alignment="left" imageScaling="proportionallyDown" inset="2" id="EYr-N5-hNx" customClass="AlphaHilightButtonCell">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system" size="24"/>
                         </buttonCell>
@@ -221,7 +221,7 @@
                     </button>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2jV-Ze-Z2l">
                         <rect key="frame" x="100" y="70" width="290" height="29"/>
-                        <buttonCell key="cell" type="square" title="   Create New Document" bezelStyle="shadowlessSquare" image="create" imagePosition="left" alignment="left" imageScaling="proportionallyDown" inset="2" id="2Lz-bs-h5x">
+                        <buttonCell key="cell" type="square" title="   Create New Document" bezelStyle="shadowlessSquare" image="create" imagePosition="left" alignment="left" imageScaling="proportionallyDown" inset="2" id="2Lz-bs-h5x" customClass="AlphaHilightButtonCell">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system" size="24"/>
                         </buttonCell>
