@@ -123,6 +123,7 @@
 		02CD042B1C888A8C00BF6683 /* TipsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02CD04291C888A8C00BF6683 /* TipsViewController.xib */; };
 		02CD042E1C88905D00BF6683 /* NSTextField+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CD042D1C88905D00BF6683 /* NSTextField+Support.m */; };
 		02CD04311C88930700BF6683 /* TextLink.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CD04301C88930700BF6683 /* TextLink.m */; };
+		02CD04341C889AC400BF6683 /* ColorButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CD04331C889AC400BF6683 /* ColorButton.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -331,6 +332,8 @@
 		02CD042D1C88905D00BF6683 /* NSTextField+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSTextField+Support.m"; sourceTree = "<group>"; };
 		02CD042F1C88930700BF6683 /* TextLink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextLink.h; sourceTree = "<group>"; };
 		02CD04301C88930700BF6683 /* TextLink.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextLink.m; sourceTree = "<group>"; };
+		02CD04321C889AC400BF6683 /* ColorButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorButton.h; sourceTree = "<group>"; };
+		02CD04331C889AC400BF6683 /* ColorButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ColorButton.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -551,6 +554,8 @@
 				025FAFAA1C81382000E4C3B3 /* ObserverList.m */,
 				02CD042F1C88930700BF6683 /* TextLink.h */,
 				02CD04301C88930700BF6683 /* TextLink.m */,
+				02CD04321C889AC400BF6683 /* ColorButton.h */,
+				02CD04331C889AC400BF6683 /* ColorButton.m */,
 			);
 			path = Component;
 			sourceTree = "<group>";
@@ -855,6 +860,7 @@
 				025FAF771C7E32B500E4C3B3 /* MidiEventRepresentation.m in Sources */,
 				025FA90F1C7D2CE700E4C3B3 /* PianoRollVelocityViewController.m in Sources */,
 				025FA9061C7D27BD00E4C3B3 /* PianoRollVelocityLabelView.m in Sources */,
+				02CD04341C889AC400BF6683 /* ColorButton.m in Sources */,
 				026D42EB1C7ABC08000267AD /* PlayLineViewController.m in Sources */,
 				02CAF6C41C778C2200AD81B2 /* ErrorWindowController.m in Sources */,
 				021483771C86454500D653AE /* Preference.m in Sources */,
