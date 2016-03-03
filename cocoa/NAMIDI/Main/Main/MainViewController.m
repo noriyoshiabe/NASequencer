@@ -93,6 +93,7 @@
 
 - (void)viewDidAppear
 {
+    [self.view.window makeMainWindow];
     [self.view.window makeFirstResponder:self.view];
 }
 
