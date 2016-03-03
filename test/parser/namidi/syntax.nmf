@@ -11,7 +11,7 @@ TITLE 'Syntax of NAMIDI'
 ========================
 COPYRIGHT  'Copyright (c) 2016, Noriyoshi Abe. All Rights Reserved.'
 RESOLUTION 480
-TEMPO      120.0
+TEMPO      120.0 66%
 TIME       4/4
 
 MARKER 'Start'
