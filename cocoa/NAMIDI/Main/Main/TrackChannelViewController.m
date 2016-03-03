@@ -27,6 +27,7 @@
 @property (strong, nonatomic) TrackSelection *trackSelection;
 @property (assign, nonatomic) NSColor *baseColor;
 @property (strong, nonatomic) SequenceRepresentation *sequence;
+@property (readonly, nonatomic) CGRect bodyRect;
 @end
 
 @interface TrackChannelViewController ()  <NAMidiRepresentationObserver>
@@ -69,6 +70,13 @@
             _trackChannelView.needsDisplay = YES;
         }
     }
+}
+
+- (CGRect)bodyFrame
+{
+    CGRect bodyBounds = _trackChannelView.bodyRect;
+    return CGRectMake(CGRectGetMinX(self.view.frame), CGRectGetMinY(self.view.frame),
+                      CGRectGetWidth(bodyBounds), CGRectGetHeight(bodyBounds));
 }
 
 #pragma mark NAMidiRepresentationObserver
@@ -191,11 +199,11 @@
     CGContextSetLineWidth(ctx, 1.0);
     
     CGContextSetStrokeColorWithColor(ctx, [_trackSelection isTrackSelected:_channel] ? _outsideEdgeInverseColor :_outsideEdgeColor);
-    CGContextAddRect(ctx, CGRectInset(self.bounds, 0.5, 0.5));
+    CGContextAddRect(ctx, CGRectInset(self.bodyRect, 0.5, 0.5));
     CGContextStrokePath(ctx);
     
     CGContextSetStrokeColorWithColor(ctx, _insideEdgeColor);
-    CGContextAddRect(ctx, CGRectInset(self.bounds, 1.5, 1.5));
+    CGContextAddRect(ctx, CGRectInset(self.bodyRect, 1.5, 1.5));
     CGContextStrokePath(ctx);
     
     CGContextClipToRect(ctx, dirtyRect);
@@ -207,7 +215,7 @@
 {
     CGContextSaveGState(ctx);
     
-    CGContextAddRect(ctx, CGRectInset(self.bounds, 2, 2));
+    CGContextAddRect(ctx, CGRectInset(self.bodyRect, 2, 2));
     CGContextClip(ctx);
     
     CGContextDrawLinearGradient(ctx,
@@ -217,6 +225,13 @@
                                 kCGGradientDrawsAfterEndLocation);
     
     CGContextRestoreGState(ctx);
+}
+
+- (CGRect)bodyRect
+{
+    CGFloat pixelPerTick = _scaleAssistant.pixelPerTick;
+    CGFloat measureOffset = _scaleAssistant.measureOffset;
+    return CGRectMake(0, 0, round(_sequence.length * pixelPerTick) + measureOffset, self.bounds.size.height);
 }
 
 - (void)drawNotes:(NSRect)dirtyRect context:(CGContextRef)ctx

@@ -17,4 +17,5 @@
 - (CGFloat)tickPerPixel;
 - (BOOL)scrollWheel:(NSEvent *)theEvent;
 - (CGFloat)viewWidth;
+- (CGFloat)length;
 @end

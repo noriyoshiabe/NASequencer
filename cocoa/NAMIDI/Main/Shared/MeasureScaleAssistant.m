@@ -26,7 +26,7 @@
 
 - (CGFloat)pixelPerTick
 {
-    return 20.0 / 480.0 * _scale;
+    return 40.0 / _namidi.sequence.resolution * _scale;
 }
 
 - (CGFloat)tickPerPixel
@@ -48,7 +48,12 @@
 
 - (CGFloat)viewWidth
 {
-    return self.pixelPerTick * _namidi.sequence.length + self.measureOffset * 2;
+    return self.pixelPerTick * self.length + self.measureOffset * 2;
+}
+
+- (CGFloat)length
+{
+    return MAX(_namidi.sequence.length, _namidi.sequence.resolution * 4 * 8);
 }
 
 @end

@@ -223,7 +223,9 @@
     tick = [_sequence tickByLocation:location];
     TimeSign timeSign = [_sequence timeSignByTick:tick];
     
-    while (tick <= tickTo && tick <= _sequence.length) {
+    int length = _scaleAssistant.length;
+    
+    while (tick <= tickTo && tick <= length) {
         bool isMeasure = 1 == location.b;
         
         CGFloat x = round(tick * pixelPerTick) + measureOffset;

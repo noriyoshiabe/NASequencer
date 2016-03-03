@@ -25,6 +25,7 @@ typedef struct _NoteRange {
 @interface SequenceRepresentation : NSObject
 @property (readonly, nonatomic) NSString *title;
 @property (readonly, nonatomic) int32_t length;
+@property (readonly, nonatomic) int32_t resolution;
 @property (readonly, nonatomic) NSArray<MidiEventRepresentation *> *events;
 @property (readonly, nonatomic) NSArray<MidiEventRepresentation *> *eventsOfConductorTrack;
 @property (readonly, nonatomic) NSArray<ChannelRepresentation *> *channels;

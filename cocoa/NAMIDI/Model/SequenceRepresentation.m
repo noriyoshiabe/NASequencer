@@ -118,6 +118,11 @@
     return TimeTableLength(_sequence->timeTable);
 }
 
+- (int32_t)resolution
+{
+    return TimeTableResolution(_sequence->timeTable);
+}
+
 - (TimeSign)timeSignByTick:(int)tick
 {
     return TimeTableTimeSignOnTick(_sequence->timeTable, tick);

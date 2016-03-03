@@ -16,4 +16,5 @@
 @property (strong, nonatomic) NAMidiRepresentation *namidi;
 @property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
 @property (strong, nonatomic) TrackSelection *trackSelection;
+@property (readonly, nonatomic) CGRect bodyFrame;
 @end
