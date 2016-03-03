@@ -70,6 +70,7 @@
 - (void)setGain:(int)gain
 {
     [_manager setGainForDescription:_description gain:gain];
+    [_manager saveMidiSourcePreference];
 }
 
 - (int)masterVolume
@@ -80,6 +81,7 @@
 - (void)setMasterVolume:(int)masterVolume
 {
     [_manager setMasterVolumeForDescription:_description masterVolume:masterVolume];
+    [_manager saveMidiSourcePreference];
 }
 
 - (IBAction)unloadButtonPressed:(id)sender

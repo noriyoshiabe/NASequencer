@@ -34,9 +34,10 @@
 @property (readonly, nonatomic) NSArray<MidiSourceDescriptionRepresentation *> *availableDescriptions;
 @property (readonly, nonatomic) NSString *pathForDefaultMidiSource;
 + (MidiSourceManagerRepresentation *)sharedInstance;
+- (void)initialize;
+- (void)saveMidiSourcePreference;
 - (void)addObserver:(id<MidiSourceManagerRepresentationObserver>)observer;
 - (void)removeObserver:(id<MidiSourceManagerRepresentationObserver>)observer;
-- (void)loadDefaultMidiSourceDescription;
 - (void)loadMidiSourceDescriptionFromSoundFont:(NSString *)filepath;
 - (void)unloadMidiSourceDescription:(MidiSourceDescriptionRepresentation *)description;
 - (void)setGainForDescription:(MidiSourceDescriptionRepresentation *)description gain:(int)gain;

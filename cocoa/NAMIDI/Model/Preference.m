@@ -8,14 +8,6 @@
 
 #import "Preference.h"
 
-#define kShowWelcome @"ShowWelcome"
-#define kExternaEditorName @"ExternalEditorName"
-#define kIncludeSearchPath @"IncludeSearchPath"
-#define kIncludeSearchPathBookmark @"IncludeSearchPathBookmark"
-
-#define kSelectedFileTypeForCreation @"SelectedFileTypeForCreation"
-#define kSelectedFileTypeForExport @"SelectedFileTypeForExport"
-
 @interface Preference () {
     NSUserDefaults *_userDefaults;
 }
@@ -56,6 +48,10 @@ static Preference *_sharedInstance = nil;
              kIncludeSearchPath: [NSUserMusicDirectory() stringByAppendingPathComponent:@"NAMIDI/include"],
              kSelectedFileTypeForCreation: @"nmf",
              kSelectedFileTypeForExport: @"smf",
+             kMidiSourceSettings: @[@{kMidiSourceIsDefault: @YES,
+                                      kMidiSourceGain: [NSNumber numberWithInt:-100],
+                                      kMidiSourceMasterVolume: [NSNumber numberWithInt:0]
+                                      }]
              };
 }
 
@@ -140,6 +136,22 @@ static Preference *_sharedInstance = nil;
     }
     else {
         [_userDefaults removeObjectForKey:kIncludeSearchPathBookmark];
+    }
+    [_userDefaults synchronize];
+}
+
+- (NSArray *)midiSourceSettings
+{
+    return [_userDefaults arrayForKey:kMidiSourceSettings];
+}
+
+- (void)setMidiSourceSettings:(NSArray *)midiSourceSettings
+{
+    if (midiSourceSettings) {
+        [_userDefaults setValue:midiSourceSettings forKey:kMidiSourceSettings];
+    }
+    else {
+        [_userDefaults removeObjectForKey:kMidiSourceSettings];
     }
     [_userDefaults synchronize];
 }

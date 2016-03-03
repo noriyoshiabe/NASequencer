@@ -8,6 +8,7 @@
 
 #import "MidiSourceManagerRepresentation.h"
 #import "ObserverList.h"
+#import "Preference.h"
 
 @interface MidiSourceDescriptionRepresentation ()
 - (instancetype)initWithMidiSourceDescription:(MidiSourceDescription *)description;
@@ -146,14 +147,61 @@ static MidiSourceManagerRepresentation *_sharedInstance = nil;
     [_observers removeObserver:observer];
 }
 
+- (void)initialize
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        for (NSDictionary *settings in [Preference sharedInstance].midiSourceSettings) {
+            NSNumber *isDefault = settings[kMidiSourceIsDefault];
+            
+            if (isDefault.boolValue) {
+                [self loadMidiSourceDescriptionFromSoundFont:self.pathForDefaultMidiSource];
+            }
+            else {
+                NSData *bookmark = settings[kMidiSourceBookmark];
+                if (bookmark) {
+                    NSError *error = nil;
+                    NSURL *bookmarkedURL = [NSURL URLByResolvingBookmarkData:bookmark options:NSURLBookmarkResolutionWithSecurityScope relativeToURL:nil bookmarkDataIsStale:nil error:&error];
+                    [bookmarkedURL startAccessingSecurityScopedResource];
+                }
+                
+                NSString *filepath = settings[kMidiSourceFilePath];
+                [self loadMidiSourceDescriptionFromSoundFont:filepath];
+            }
+            
+            MidiSourceDescriptionRepresentation *description = _descriptions.lastObject;
+            
+            NSNumber *gain = settings[kMidiSourceGain];
+            [self setGainForDescription:description gain:gain.intValue];
+            NSNumber *masterVolume = settings[kMidiSourceMasterVolume];
+            [self setMasterVolumeForDescription:description masterVolume:masterVolume.intValue];
+        }
+    });
+}
+
 - (NSString *)pathForDefaultMidiSource
 {
     return [[NSBundle mainBundle] pathForResource:@"GeneralUser GS Live-Audigy v1.44" ofType:@"sf2"];
 }
 
-- (void)loadDefaultMidiSourceDescription
+- (void)saveMidiSourcePreference
 {
-    [self loadMidiSourceDescriptionFromSoundFont:self.pathForDefaultMidiSource];
+    NSMutableArray *settings = [NSMutableArray array];
+    for (MidiSourceDescriptionRepresentation *description in _descriptions) {
+        BOOL isDefault = [description.filepath isEqualToString:self.pathForDefaultMidiSource];
+        
+        NSError *error = nil;
+        NSData *bookmark = [[NSURL fileURLWithPath:description.filepath] bookmarkDataWithOptions:NSURLBookmarkCreationWithSecurityScope includingResourceValuesForKeys:nil relativeToURL:nil error:&error];
+        
+        [settings addObject:@{
+                              kMidiSourceFilePath: description.filepath,
+                              kMidiSourceGain: [NSNumber numberWithInt:description.gain],
+                              kMidiSourceMasterVolume: [NSNumber numberWithInt:description.masterVolume],
+                              kMidiSourceBookmark: bookmark ? bookmark : [NSData data],
+                              kMidiSourceIsDefault: [NSNumber numberWithBool:isDefault]
+                              }];
+    }
+    
+    [Preference sharedInstance].midiSourceSettings = settings;
 }
 
 - (void)loadMidiSourceDescriptionFromSoundFont:(NSString *)filepath

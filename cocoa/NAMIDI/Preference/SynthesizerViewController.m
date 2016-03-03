@@ -238,11 +238,18 @@
 - (void)midiSourceManager:(MidiSourceManagerRepresentation *)manager onLoadMidiSourceDescription:(MidiSourceDescriptionRepresentation *)description
 {
     [self resizeWindowFrameAndReload];
+    [_manager saveMidiSourcePreference];
 }
 
 - (void)midiSourceManager:(MidiSourceManagerRepresentation *)manager onUnloadMidiSourceDescription:(MidiSourceDescriptionRepresentation *)description
 {
     [self resizeWindowFrameAndReload];
+    [_manager saveMidiSourcePreference];
+}
+
+- (void)midiSourceManager:(MidiSourceManagerRepresentation *)manager onReorderMidiSourceDescriptions:(NSArray<MidiSourceDescriptionRepresentation *> *)descriptions availableDescriptions:(NSArray<MidiSourceDescriptionRepresentation *> *)availableDescriptions
+{
+    [_manager saveMidiSourcePreference];
 }
 
 @end

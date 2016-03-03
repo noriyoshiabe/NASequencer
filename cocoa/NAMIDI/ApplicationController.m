@@ -64,7 +64,7 @@ ApplicationController *AppController;
         [bookmarkedURL startAccessingSecurityScopedResource];
     }
     
-    [[MidiSourceManagerRepresentation sharedInstance] loadDefaultMidiSourceDescription];
+    [[MidiSourceManagerRepresentation sharedInstance] initialize];
 }
 
 - (BOOL)needShowWelcome

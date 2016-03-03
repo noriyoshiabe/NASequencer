@@ -315,10 +315,12 @@ void MidiSourceManagerSetMasterVolumeForDescription(MidiSourceManager *self, Mid
     description->masterVolume = masterVolume;
 
     NAArray *midiSources = NAMapGet(self->midiSourceMap, description);
-    NAIterator *iterator = NAArrayGetIterator(midiSources);
-    while (iterator->hasNext(iterator)) {
-        MidiSource *midiSource = iterator->next(iterator);
-        midiSource->setMasterVolume(midiSource, description->masterVolume);
+    if (midiSources) {
+        NAIterator *iterator = NAArrayGetIterator(midiSources);
+        while (iterator->hasNext(iterator)) {
+            MidiSource *midiSource = iterator->next(iterator);
+            midiSource->setMasterVolume(midiSource, description->masterVolume);
+        }
     }
 }
 
