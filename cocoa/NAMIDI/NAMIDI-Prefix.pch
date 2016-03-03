@@ -17,6 +17,7 @@
 
 #import "NSObject+Support.h"
 #import "NSArray+Support.h"
+#import "NSWindow+Support.h"
 #import "NSView+Support.h"
 #import "NSColor+Support.h"
 #import "NSThread+Support.h"

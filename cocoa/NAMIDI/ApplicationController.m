@@ -74,8 +74,9 @@ ApplicationController *AppController;
 
 - (void)showWelcomeWindow
 {
-    self.welocomeWC = [[WelcomeWindowController alloc] init];
+    _welocomeWC = [[WelcomeWindowController alloc] init];
     [_welocomeWC showWindow:self];
+    [_welocomeWC.window center];
 }
 
 - (void)closeWelcomeWindow
@@ -85,26 +86,29 @@ ApplicationController *AppController;
 
 - (void)showGettingStartedWindow
 {
-    self.gettingStartedWC = [[GettingStartedWindowController alloc] init];
+    _gettingStartedWC = [[GettingStartedWindowController alloc] init];
     [_gettingStartedWC showWindow:self];
+    [_gettingStartedWC.window center];
 }
 
 - (void)showAboutWindow
 {
     if (!_aboutWC) {
-        self.aboutWC = [[AboutWindowController alloc] init];
+        _aboutWC = [[AboutWindowController alloc] init];
     }
     
     [_aboutWC showWindow:self];
+    [_aboutWC.window setFlippedFrameTopLeftPoint:CGPointMake(100, 100)];
 }
 
 - (void)showPreferenceWindow
 {
     if (!_preferenceWC) {
-        self.preferenceWC = [[PreferenceWindowController alloc] init];
+        _preferenceWC = [[PreferenceWindowController alloc] init];
     }
     
     [_preferenceWC showWindow:self];
+    [_preferenceWC.window setFlippedFrameTopLeftPoint:CGPointMake(200, 200)];
 }
 
 - (NSArray *)allowedFileTypes
