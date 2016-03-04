@@ -10,6 +10,7 @@
 
 #import "EditorViewController.h"
 #import "Color.h"
+#import "NMFHighlightProcessor.h"
 
 @interface LineNumberView : NSRulerView {
     CGFontRef cgFont;
@@ -19,15 +20,23 @@
 - (instancetype)initWithTextView:(NSTextView *)textView;
 @end
 
-@interface EditorViewController () <NSFilePresenter, NSTextViewDelegate> {
+@interface EditorViewController () <NSFilePresenter, NSTextViewDelegate, NSTextStorageDelegate> {
     NSDate *_modificationDate;
     NSInteger _changeCount;
     NSInteger _savedCount;
     NSUndoManager *_undoManager;
+    id<HighlightProcessor> _highlighter;
 }
 @end
 
+static id<HighlightProcessor> _NMFHighlightProcessor;
+
 @implementation EditorViewController
+
++ (void)initialize
+{
+    _NMFHighlightProcessor = [[NMFHighlightProcessor alloc] init];
+}
 
 - (void)viewDidLoad
 {
@@ -43,6 +52,12 @@
     _textView.automaticDashSubstitutionEnabled = NO;
     _textView.automaticTextReplacementEnabled = NO;
     _textView.delegate = self;
+    _textView.textStorage.delegate = self;
+    
+    NSString *ext = _file.filename.pathExtension.lowercaseString;
+    _highlighter = @{
+                     @"nmf": _NMFHighlightProcessor
+                     }[ext];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(selectedRangeDidChange:) name: NSTextViewDidChangeSelectionNotification object:_textView];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textDidChange:) name: NSTextDidChangeNotification object:_textView];
@@ -104,6 +119,16 @@
 - (NSUndoManager *)undoManagerForTextView:(NSTextView *)view
 {
     return _undoManager;
+}
+
+#pragma mark NSTextStorageDelegate
+
+- (void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta
+{
+    
+    if (NSTextStorageEditedCharacters & editedMask) {
+        [_highlighter processTextStorage:textStorage];
+    }
 }
 
 #pragma mark NSNotification

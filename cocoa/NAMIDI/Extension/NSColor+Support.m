@@ -15,6 +15,11 @@
     return [NSColor colorWithRed:red / 255.0 green:green / 255.0 blue:blue / 255.0 alpha:alpha / 255.0];
 }
 
++ (NSColor *)colorWithHexRGBA:(uint32_t)hex
+{
+    return [NSColor colorWith8bitRed:(hex >> 24) & 0xFF green:(hex >> 16) & 0xFF blue:(hex >> 8) & 0xFF alpha:(hex) & 0xFF];
+}
+
 + (CGGradientRef)createVerticalGradientWithTopColor:(NSColor *)topColor bottomColor:(NSColor *)bottomColor
 {
     CGColorSpaceRef colorSpaceRef = CGColorSpaceCreateDeviceRGB();

@@ -10,6 +10,7 @@
 
 @interface NSColor (Support)
 + (NSColor *)colorWith8bitRed:(uint8_t)red green:(uint8_t)green blue:(uint8_t)blue alpha:(uint8_t)alpha;
++ (NSColor *)colorWithHexRGBA:(uint32_t)hex;
 + (CGGradientRef)createVerticalGradientWithTopColor:(NSColor *)topColor bottomColor:(NSColor *)bottomColor;
 - (NSColor *)inverseColor;
 @end

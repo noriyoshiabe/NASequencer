@@ -85,6 +85,8 @@
 		025FAF9F1C8065C300E4C3B3 /* MixerRepresentation.m in Sources */ = {isa = PBXBuildFile; fileRef = 025FAF9E1C8065C300E4C3B3 /* MixerRepresentation.m */; };
 		025FAFA21C81129C00E4C3B3 /* NSObject+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 025FAFA11C81129C00E4C3B3 /* NSObject+Support.m */; };
 		025FAFAB1C81382000E4C3B3 /* ObserverList.m in Sources */ = {isa = PBXBuildFile; fileRef = 025FAFAA1C81382000E4C3B3 /* ObserverList.m */; };
+		0262BAEC1C89E5CF00BEB76A /* NMFHighlightProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = 0262BAEB1C89E5CF00BEB76A /* NMFHighlightProcessor.m */; };
+		0262BAEF1C89EF7300BEB76A /* HighlightProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = 0262BAEE1C89EF7300BEB76A /* HighlightProcessor.m */; };
 		02633E981C74AC9F00B9FF0E /* Color.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633E971C74AC9F00B9FF0E /* Color.m */; };
 		02633EB81C74ED9300B9FF0E /* NSView+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EB71C74ED9200B9FF0E /* NSView+Support.m */; };
 		02633EBC1C75062300B9FF0E /* LevelIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EBB1C75062300B9FF0E /* LevelIndicator.m */; };
@@ -283,6 +285,10 @@
 		025FAFA91C81382000E4C3B3 /* ObserverList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObserverList.h; sourceTree = "<group>"; };
 		025FAFAA1C81382000E4C3B3 /* ObserverList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ObserverList.m; sourceTree = "<group>"; };
 		026160B51C689E18001E99A9 /* NAMIDI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = NAMIDI.entitlements; sourceTree = "<group>"; };
+		0262BAEA1C89E5CF00BEB76A /* NMFHighlightProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NMFHighlightProcessor.h; sourceTree = "<group>"; };
+		0262BAEB1C89E5CF00BEB76A /* NMFHighlightProcessor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NMFHighlightProcessor.m; sourceTree = "<group>"; };
+		0262BAED1C89E5F500BEB76A /* HighlightProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HighlightProcessor.h; sourceTree = "<group>"; };
+		0262BAEE1C89EF7300BEB76A /* HighlightProcessor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HighlightProcessor.m; sourceTree = "<group>"; };
 		02633E961C74AC9F00B9FF0E /* Color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Color.h; sourceTree = "<group>"; };
 		02633E971C74AC9F00B9FF0E /* Color.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Color.m; sourceTree = "<group>"; };
 		02633EB61C74ED9200B9FF0E /* NSView+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSView+Support.h"; sourceTree = "<group>"; };
@@ -577,6 +583,10 @@
 				028589521C71320A00A53B8C /* EditorStatusViewController.h */,
 				028589531C71320A00A53B8C /* EditorStatusViewController.m */,
 				028589541C71320A00A53B8C /* EditorStatusViewController.xib */,
+				0262BAEA1C89E5CF00BEB76A /* NMFHighlightProcessor.h */,
+				0262BAEB1C89E5CF00BEB76A /* NMFHighlightProcessor.m */,
+				0262BAED1C89E5F500BEB76A /* HighlightProcessor.h */,
+				0262BAEE1C89EF7300BEB76A /* HighlightProcessor.m */,
 			);
 			path = Editor;
 			sourceTree = "<group>";
@@ -896,6 +906,8 @@
 				028209271C70A5D8003EBCFB /* FileRepresentation.m in Sources */,
 				0216EE0B1C7C5D15009A7B90 /* PianoRollNoteViewController.m in Sources */,
 				02A973CD1C79F02200C21B8E /* SelectionButton.m in Sources */,
+				0262BAEC1C89E5CF00BEB76A /* NMFHighlightProcessor.m in Sources */,
+				0262BAEF1C89EF7300BEB76A /* HighlightProcessor.m in Sources */,
 				024A5B1D1C69FFD40079D22C /* MainWindowController.m in Sources */,
 				020CF8621C6AEA5F0025DF84 /* GeneralViewController.m in Sources */,
 				023BB20F1C6EF17B0030487C /* NSArray+Support.m in Sources */,
