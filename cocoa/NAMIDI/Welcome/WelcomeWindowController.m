@@ -9,8 +9,9 @@
 #import "WelcomeWindowController.h"
 #import "ApplicationController.h"
 #import "FileRepresentation.h"
-#import "Color.h"
 #import "WelcomeRecentRowView.h"
+#import "ListenToExampleWindowController.h"
+#import "Color.h"
 
 @interface WelcomeWindowController () <NSTableViewDataSource, NSTableViewDelegate>
 @property (weak) IBOutlet NSView *rightBackgroundView;
@@ -26,6 +27,7 @@
 @property (weak) IBOutlet NSView *separator2;
 @property (weak) IBOutlet NSView *separator3;
 @property (weak) IBOutlet NSView *separator4;
+@property (strong, nonatomic) ListenToExampleWindowController *listenToExampleWC;
 @end
 
 @implementation WelcomeWindowController
@@ -126,7 +128,9 @@
 
 - (IBAction)listenToExampleButtonTapped:(id)sender
 {
-    NSLog(@"%s", __func__);
+    _listenToExampleWC = [[ListenToExampleWindowController alloc] init];
+    [_listenToExampleWC.window setFrame:self.window.frame display:YES];
+    [self.window addChildWindow:_listenToExampleWC.window ordered:NSWindowAbove];
 }
 
 - (IBAction)createNewDocumentButtonTapped:(id)sender

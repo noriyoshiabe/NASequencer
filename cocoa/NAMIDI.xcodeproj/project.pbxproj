@@ -43,6 +43,10 @@
 		0232CB161C88FA9700542D34 /* AlphaHilightButtonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0232CB151C88FA9700542D34 /* AlphaHilightButtonCell.m */; };
 		0232CB191C89058200542D34 /* WelcomeRecentRowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0232CB181C89058200542D34 /* WelcomeRecentRowView.m */; };
 		0232CB1B1C8905A300542D34 /* WelcomeRecentRowView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0232CB1A1C8905A300542D34 /* WelcomeRecentRowView.xib */; };
+		0232CB201C891AD400542D34 /* ListenToExampleWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0232CB1E1C891AD400542D34 /* ListenToExampleWindowController.m */; };
+		0232CB211C891AD400542D34 /* ListenToExampleWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0232CB1F1C891AD400542D34 /* ListenToExampleWindowController.xib */; };
+		0232CB241C891EF700542D34 /* ListenToExampleRowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0232CB231C891EF700542D34 /* ListenToExampleRowView.m */; };
+		0232CB261C891F0F00542D34 /* ListenToExampleRowView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0232CB251C891F0F00542D34 /* ListenToExampleRowView.xib */; };
 		023BB20F1C6EF17B0030487C /* NSArray+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 023BB20E1C6EF17B0030487C /* NSArray+Support.m */; };
 		0240A2481C6C30F2002D6F72 /* ApplicationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0240A2471C6C30F2002D6F72 /* ApplicationController.m */; };
 		024A19061C768AC800B0AC56 /* FlippedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A19051C768AC800B0AC56 /* FlippedView.m */; };
@@ -208,6 +212,12 @@
 		0232CB171C89058200542D34 /* WelcomeRecentRowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WelcomeRecentRowView.h; sourceTree = "<group>"; };
 		0232CB181C89058200542D34 /* WelcomeRecentRowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WelcomeRecentRowView.m; sourceTree = "<group>"; };
 		0232CB1A1C8905A300542D34 /* WelcomeRecentRowView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = WelcomeRecentRowView.xib; sourceTree = "<group>"; };
+		0232CB1D1C891AD400542D34 /* ListenToExampleWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ListenToExampleWindowController.h; sourceTree = "<group>"; };
+		0232CB1E1C891AD400542D34 /* ListenToExampleWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ListenToExampleWindowController.m; sourceTree = "<group>"; };
+		0232CB1F1C891AD400542D34 /* ListenToExampleWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ListenToExampleWindowController.xib; sourceTree = "<group>"; };
+		0232CB221C891EF700542D34 /* ListenToExampleRowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ListenToExampleRowView.h; sourceTree = "<group>"; };
+		0232CB231C891EF700542D34 /* ListenToExampleRowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ListenToExampleRowView.m; sourceTree = "<group>"; };
+		0232CB251C891F0F00542D34 /* ListenToExampleRowView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ListenToExampleRowView.xib; sourceTree = "<group>"; };
 		023BB20D1C6EF17B0030487C /* NSArray+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+Support.h"; sourceTree = "<group>"; };
 		023BB20E1C6EF17B0030487C /* NSArray+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Support.m"; sourceTree = "<group>"; };
 		0240A2461C6C30F2002D6F72 /* ApplicationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationController.h; sourceTree = "<group>"; };
@@ -515,6 +525,12 @@
 				0232CB171C89058200542D34 /* WelcomeRecentRowView.h */,
 				0232CB181C89058200542D34 /* WelcomeRecentRowView.m */,
 				0232CB1A1C8905A300542D34 /* WelcomeRecentRowView.xib */,
+				0232CB1D1C891AD400542D34 /* ListenToExampleWindowController.h */,
+				0232CB1E1C891AD400542D34 /* ListenToExampleWindowController.m */,
+				0232CB1F1C891AD400542D34 /* ListenToExampleWindowController.xib */,
+				0232CB221C891EF700542D34 /* ListenToExampleRowView.h */,
+				0232CB231C891EF700542D34 /* ListenToExampleRowView.m */,
+				0232CB251C891F0F00542D34 /* ListenToExampleRowView.xib */,
 			);
 			path = Welcome;
 			sourceTree = "<group>";
@@ -799,6 +815,7 @@
 				0216EE071C7C3C76009A7B90 /* PianoRollConductorViewController.xib in Resources */,
 				025423641C6F31DF007D53CC /* EditorViewController.xib in Resources */,
 				026D42EC1C7ABC08000267AD /* PlayLineViewController.xib in Resources */,
+				0232CB211C891AD400542D34 /* ListenToExampleWindowController.xib in Resources */,
 				02CAF6C51C778C2200AD81B2 /* ErrorWindowController.xib in Resources */,
 				02A674041C6B3A5C00914C8B /* NMFIcon.iconset in Resources */,
 				025FA9031C7D1BE900E4C3B3 /* PianoRollKeyboardViewController.xib in Resources */,
@@ -814,6 +831,7 @@
 				024A5B2F1C69FFD90079D22C /* WelcomeWindowController.xib in Resources */,
 				020CF8721C6AF53D0025DF84 /* PurchaseViewController.xib in Resources */,
 				0232CB1B1C8905A300542D34 /* WelcomeRecentRowView.xib in Resources */,
+				0232CB261C891F0F00542D34 /* ListenToExampleRowView.xib in Resources */,
 				02CD042B1C888A8C00BF6683 /* TipsViewController.xib in Resources */,
 				0254235F1C6F2EB6007D53CC /* EditorWindowController.xib in Resources */,
 				0214836B1C84B2E700D653AE /* ExportWindowController.xib in Resources */,
@@ -843,6 +861,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				026D42DC1C7ABC08000267AD /* ConductorViewController.m in Sources */,
+				0232CB241C891EF700542D34 /* ListenToExampleRowView.m in Sources */,
 				025FAFAB1C81382000E4C3B3 /* ObserverList.m in Sources */,
 				025FA8FE1C7CFC9800E4C3B3 /* EventListRowView.m in Sources */,
 				026D42E21C7ABC08000267AD /* MixerChannelViewController.m in Sources */,
@@ -860,6 +879,7 @@
 				024A5B1D1C69FFD40079D22C /* MainWindowController.m in Sources */,
 				020CF8621C6AEA5F0025DF84 /* GeneralViewController.m in Sources */,
 				023BB20F1C6EF17B0030487C /* NSArray+Support.m in Sources */,
+				0232CB201C891AD400542D34 /* ListenToExampleWindowController.m in Sources */,
 				026D42D61C7ABC08000267AD /* DetailViewController.m in Sources */,
 				0232CB101C88C88700542D34 /* NSWindow+Support.m in Sources */,
 				0201F7D71C688BB100A201F6 /* Document.m in Sources */,
