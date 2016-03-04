@@ -47,6 +47,9 @@
 		0232CB211C891AD400542D34 /* ListenToExampleWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0232CB1F1C891AD400542D34 /* ListenToExampleWindowController.xib */; };
 		0232CB241C891EF700542D34 /* ListenToExampleRowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0232CB231C891EF700542D34 /* ListenToExampleRowView.m */; };
 		0232CB261C891F0F00542D34 /* ListenToExampleRowView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0232CB251C891F0F00542D34 /* ListenToExampleRowView.xib */; };
+		0232CB2B1C8931D000542D34 /* example.abc in Resources */ = {isa = PBXBuildFile; fileRef = 0232CB281C8931D000542D34 /* example.abc */; };
+		0232CB2C1C8931D000542D34 /* example.mml in Resources */ = {isa = PBXBuildFile; fileRef = 0232CB291C8931D000542D34 /* example.mml */; };
+		0232CB2D1C8931D000542D34 /* example.nmf in Resources */ = {isa = PBXBuildFile; fileRef = 0232CB2A1C8931D000542D34 /* example.nmf */; };
 		023BB20F1C6EF17B0030487C /* NSArray+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 023BB20E1C6EF17B0030487C /* NSArray+Support.m */; };
 		0240A2481C6C30F2002D6F72 /* ApplicationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0240A2471C6C30F2002D6F72 /* ApplicationController.m */; };
 		024A19061C768AC800B0AC56 /* FlippedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A19051C768AC800B0AC56 /* FlippedView.m */; };
@@ -218,6 +221,9 @@
 		0232CB221C891EF700542D34 /* ListenToExampleRowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ListenToExampleRowView.h; sourceTree = "<group>"; };
 		0232CB231C891EF700542D34 /* ListenToExampleRowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ListenToExampleRowView.m; sourceTree = "<group>"; };
 		0232CB251C891F0F00542D34 /* ListenToExampleRowView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ListenToExampleRowView.xib; sourceTree = "<group>"; };
+		0232CB281C8931D000542D34 /* example.abc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = example.abc; sourceTree = "<group>"; };
+		0232CB291C8931D000542D34 /* example.mml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = example.mml; sourceTree = "<group>"; };
+		0232CB2A1C8931D000542D34 /* example.nmf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = example.nmf; sourceTree = "<group>"; };
 		023BB20D1C6EF17B0030487C /* NSArray+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+Support.h"; sourceTree = "<group>"; };
 		023BB20E1C6EF17B0030487C /* NSArray+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Support.m"; sourceTree = "<group>"; };
 		0240A2461C6C30F2002D6F72 /* ApplicationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationController.h; sourceTree = "<group>"; };
@@ -475,6 +481,16 @@
 			path = Export;
 			sourceTree = "<group>";
 		};
+		0232CB271C8931D000542D34 /* Example */ = {
+			isa = PBXGroup;
+			children = (
+				0232CB281C8931D000542D34 /* example.abc */,
+				0232CB291C8931D000542D34 /* example.mml */,
+				0232CB2A1C8931D000542D34 /* example.nmf */,
+			);
+			path = Example;
+			sourceTree = "<group>";
+		};
 		023BB20C1C6EF0CB0030487C /* Extension */ = {
 			isa = PBXGroup;
 			children = (
@@ -715,6 +731,7 @@
 		02A673E81C6B3A5C00914C8B /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				0232CB271C8931D000542D34 /* Example */,
 				025FAF9A1C7FAD7200E4C3B3 /* GeneralUser GS Live-Audigy v1.44.sf2 */,
 				02A673EB1C6B3A5C00914C8B /* Assets.xcassets */,
 				02A674051C6B3A7600914C8B /* NAMIDI.help */,
@@ -811,11 +828,14 @@
 				026D42E11C7ABC08000267AD /* MeasureViewController.xib in Resources */,
 				02A674061C6B3A7600914C8B /* NAMIDI.help in Resources */,
 				026D42DD1C7ABC08000267AD /* ConductorViewController.xib in Resources */,
+				0232CB2D1C8931D000542D34 /* example.nmf in Resources */,
 				020CF87B1C6B0AB20025DF84 /* AboutWindowController.xib in Resources */,
 				0216EE071C7C3C76009A7B90 /* PianoRollConductorViewController.xib in Resources */,
 				025423641C6F31DF007D53CC /* EditorViewController.xib in Resources */,
 				026D42EC1C7ABC08000267AD /* PlayLineViewController.xib in Resources */,
+				0232CB2C1C8931D000542D34 /* example.mml in Resources */,
 				0232CB211C891AD400542D34 /* ListenToExampleWindowController.xib in Resources */,
+				0232CB2B1C8931D000542D34 /* example.abc in Resources */,
 				02CAF6C51C778C2200AD81B2 /* ErrorWindowController.xib in Resources */,
 				02A674041C6B3A5C00914C8B /* NMFIcon.iconset in Resources */,
 				025FA9031C7D1BE900E4C3B3 /* PianoRollKeyboardViewController.xib in Resources */,

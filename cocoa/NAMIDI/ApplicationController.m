@@ -15,11 +15,13 @@
 #import "ExportWindowController.h"
 #import "MainWindowController.h"
 #import "Preference.h"
+#import "Document.h"
 
 ApplicationController *AppController;
 
 @interface ApplicationController () <NSMenuDelegate, NSOpenSavePanelDelegate, ExportWindowControllerDelegate> {
     NSMutableArray *_exportControllers;
+    NSMutableArray *_exampleDocuments;
 }
 
 @property (strong) NSSavePanel *savePanel;
@@ -43,6 +45,7 @@ ApplicationController *AppController;
     if (self) {
         AppController = self;
         _exportControllers = [NSMutableArray array];
+        _exampleDocuments = [NSMutableArray array];
     }
     return self;
 }
@@ -219,6 +222,48 @@ ApplicationController *AppController;
         
         _savePanel = nil;
     }
+}
+
+- (void)openExampleDocument:(NSString *)fileType
+{
+    NSString *filename = [NSString stringWithFormat:@"example.%@", fileType];
+    NSString *src = [[NSBundle mainBundle] pathForResource:@"example" ofType:fileType];
+    NSString *dst = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES)[0] stringByAppendingPathComponent:filename];
+    
+    [[NSFileManager defaultManager] removeItemAtPath:dst error:nil];
+    [[NSFileManager defaultManager] copyItemAtPath:src toPath:dst error:nil];
+    
+    Document *document = [[Document alloc] init];
+    document.fileURL = [NSURL fileURLWithPath:dst];
+    [document readFromURL:document.fileURL ofType:fileType error:nil];
+    [document makeWindowControllers];
+    [document showWindows];
+    
+    MainWindowController *mainVC = document.windowControllers[0];
+    mainVC.window.representedURL = document.fileURL;
+    mainVC.window.title = filename;
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(documentWindowWillClose:) name:NSWindowWillCloseNotification object:mainVC.window];
+    
+    [_exampleDocuments addObject:document];
+
+    [self closeWelcomeWindow];
+    
+    // Avoid editor window hidden
+    [mainVC showEditorWindow];
+}
+
+- (void)documentWindowWillClose:(NSNotification *)notification
+{
+    NSWindow *window = notification.object;
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowWillCloseNotification object:window];
+    
+    Document *document = window.windowController.document;
+    
+    // Need dealloc controllers before document deallocated
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_exampleDocuments removeObject:document];
+    });
 }
 
 - (NSArray *)allowedExportFileTypes

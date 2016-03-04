@@ -8,6 +8,7 @@
 
 #import "ListenToExampleWindowController.h"
 #import "ListenToExampleRowView.h"
+#import "ApplicationController.h"
 
 @interface ListenToExampleWindowController () <NSTableViewDataSource, NSTableViewDelegate>
 @property (readonly, nonatomic) NSArray *examples;
@@ -42,9 +43,9 @@
 - (NSArray *)examples
 {
     return @[
-             @{@"icon": [NSImage imageNamed:@"NMFIcon"], @"label": @"Note as MIDI"},
-             @{@"icon": [NSImage imageNamed:@"ABCIcon"], @"label": @"ABC Notation"},
-             @{@"icon": [NSImage imageNamed:@"MMLIcon"], @"label": @"Music Macro Language"},
+             @{@"fileType": @"nmf", @"icon": [NSImage imageNamed:@"NMFIcon"], @"label": @"Note as MIDI"},
+             @{@"fileType": @"abc", @"icon": [NSImage imageNamed:@"ABCIcon"], @"label": @"ABC Notation"},
+             @{@"fileType": @"mml", @"icon": [NSImage imageNamed:@"MMLIcon"], @"label": @"Music Macro Language"},
              ];
 }
 
@@ -55,8 +56,7 @@
 
 - (IBAction)tableViewSelectionChanged:(id)sender
 {
-    NSLog(@"## %ld", _tableView.selectedRow);
-    [self close];
+    [AppController openExampleDocument:self.examples[_tableView.selectedRow][@"fileType"]];
 }
 
 #pragma mark NSTableViewDataSource
