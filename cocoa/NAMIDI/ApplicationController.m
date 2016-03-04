@@ -82,6 +82,18 @@ ApplicationController *AppController;
     }
 }
 
+- (NSString *)exampleDirectoryPath
+{
+    return [NSUserMusicDirectory() stringByAppendingPathComponent:@"NAMIDI/example"];
+}
+
+- (void)createExampleDirectory
+{
+    if (![[NSFileManager defaultManager] fileExistsAtPath:self.exampleDirectoryPath isDirectory:NULL]) {
+        [[NSFileManager defaultManager] createDirectoryAtPath:self.exampleDirectoryPath withIntermediateDirectories:YES attributes:nil error:nil];
+    }
+}
+
 - (BOOL)needShowWelcome
 {
     return ![NSApplication sharedApplication].keyWindow && ![NSDocumentController sharedDocumentController].currentDocument &&  [Preference sharedInstance].showWelcome;
@@ -238,9 +250,11 @@ ApplicationController *AppController;
 
 - (void)openExampleDocument:(NSString *)fileType
 {
+    [self createExampleDirectory];
+    
     NSString *filename = [NSString stringWithFormat:@"example.%@", fileType];
     NSString *src = [[NSBundle mainBundle] pathForResource:@"example" ofType:fileType];
-    NSString *dst = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES)[0] stringByAppendingPathComponent:filename];
+    NSString *dst = [self.exampleDirectoryPath stringByAppendingPathComponent:filename];
     
     [[NSFileManager defaultManager] removeItemAtPath:dst error:nil];
     [[NSFileManager defaultManager] copyItemAtPath:src toPath:dst error:nil];
