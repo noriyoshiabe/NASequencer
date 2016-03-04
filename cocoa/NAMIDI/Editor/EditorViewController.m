@@ -27,6 +27,7 @@
     NSInteger _savedCount;
     NSUndoManager *_undoManager;
     HighlightSpec *_highlightSpec;
+    NSMutableParagraphStyle *_paragraphStyle;
 }
 @end
 
@@ -37,6 +38,9 @@
     [super viewDidLoad];
     
     _undoManager = [[NSUndoManager alloc] init];
+    
+    _paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+    [_paragraphStyle setLineBreakMode:NSLineBreakByCharWrapping];
     
     _textView.font = [NSFont fontWithName:@"Menlo" size:11];
     _textView.enclosingScrollView.verticalRulerView = [[LineNumberView alloc] initWithTextView:_textView];
@@ -54,7 +58,6 @@
                      }[ext];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(selectedRangeDidChange:) name: NSTextViewDidChangeSelectionNotification object:_textView];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textDidChange:) name: NSTextDidChangeNotification object:_textView];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(undoManagerDidCloseUndoGroupNotification:) name:NSUndoManagerDidCloseUndoGroupNotification object:_undoManager];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(undoManagerDidUndoChangeNotification:) name:NSUndoManagerDidUndoChangeNotification object:_undoManager];
@@ -122,6 +125,10 @@
     if (NSTextStorageEditedCharacters & editedMask) {
         [HighlightProcessor processTextStorage:textStorage spec:_highlightSpec];
     }
+    
+    if (0 < delta) {
+        [textStorage addAttribute:NSParagraphStyleAttributeName value:_paragraphStyle range:editedRange];
+    }
 }
 
 #pragma mark NSNotification
@@ -150,14 +157,6 @@
     }
     
     [_delegate editorViewController:self didUpdateLine:line column:column];
-}
-
-- (void)textDidChange:(NSNotification *)notification
-{
-    NSTextStorage *storage = [_textView textStorage];
-    NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-    [style setLineBreakMode:NSLineBreakByCharWrapping];
-    [storage addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(0, [storage length])];
 }
 
 - (void)undoManagerDidCloseUndoGroupNotification:(NSNotification *)notification
