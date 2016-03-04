@@ -41,11 +41,16 @@ static Preference *_sharedInstance = nil;
     [_userDefaults registerDefaults:self.defaults];
 }
 
+- (NSString *)defaultIncludeSearchPath
+{
+    return [NSUserMusicDirectory() stringByAppendingPathComponent:@"NAMIDI/include"];
+}
+
 - (NSDictionary *)defaults
 {
     return @{
              kShowWelcome: @YES,
-             kIncludeSearchPath: [NSUserMusicDirectory() stringByAppendingPathComponent:@"NAMIDI/include"],
+             kIncludeSearchPath: self.defaultIncludeSearchPath,
              kSelectedFileTypeForCreation: @"nmf",
              kSelectedFileTypeForExport: @"smf",
              kMidiSourceSettings: @[@{kMidiSourceIsDefault: @YES,

@@ -60,6 +60,8 @@ ApplicationController *AppController;
 {
     [[Preference sharedInstance] initialize];
     
+    [self createDefaultIncludeDirectory];
+    
     NSData *bookmark = [Preference sharedInstance].includeSearchPathBookmark;
     if (bookmark) {
         NSError *error = nil;
@@ -68,6 +70,16 @@ ApplicationController *AppController;
     }
     
     [[MidiSourceManagerRepresentation sharedInstance] initialize];
+}
+
+- (void)createDefaultIncludeDirectory
+{
+    NSString *includeSearchPath = [Preference sharedInstance].includeSearchPath;
+    if ([includeSearchPath isEqualToString:[Preference sharedInstance].defaultIncludeSearchPath]) {
+        if (![[NSFileManager defaultManager] fileExistsAtPath:includeSearchPath isDirectory:NULL]) {
+            [[NSFileManager defaultManager] createDirectoryAtPath:includeSearchPath withIntermediateDirectories:YES attributes:nil error:nil];
+        }
+    }
 }
 
 - (BOOL)needShowWelcome

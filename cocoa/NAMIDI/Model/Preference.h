@@ -33,4 +33,5 @@
 @property (readwrite, nonatomic) NSArray *midiSourceSettings;
 + (Preference *)sharedInstance;
 - (void)initialize;
+- (NSString *)defaultIncludeSearchPath;
 @end
