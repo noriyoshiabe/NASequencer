@@ -53,6 +53,8 @@
     self.window.contentView.wantsLayer = YES;
     self.window.contentView.layer.masksToBounds = YES;
     
+    [self.window addTitlebarAccessoryViewController:_statusViewControlelr];
+    
     ((EditorView *)self.window.contentView).controller = self;
 }
 

@@ -23,24 +23,15 @@
                 <rect key="frame" x="0.0" y="0.0" width="640" height="500"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="zai-Et-OIj">
-                        <rect key="frame" x="0.0" y="478" width="640" height="22"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="22" id="9XF-Po-Pdd"/>
-                        </constraints>
-                    </customView>
                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="9bB-V9-SKr">
-                        <rect key="frame" x="0.0" y="0.0" width="640" height="478"/>
+                        <rect key="frame" x="0.0" y="0.0" width="640" height="500"/>
                     </customView>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="zai-Et-OIj" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" id="5ZZ-1S-wPw"/>
-                    <constraint firstItem="zai-Et-OIj" firstAttribute="top" secondItem="se5-gp-TjO" secondAttribute="top" id="8wA-y1-fbY"/>
-                    <constraint firstItem="9bB-V9-SKr" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" id="YCQ-u6-NqD"/>
-                    <constraint firstAttribute="trailing" secondItem="9bB-V9-SKr" secondAttribute="trailing" id="cdG-rv-0cK"/>
-                    <constraint firstAttribute="trailing" secondItem="zai-Et-OIj" secondAttribute="trailing" id="gPj-QP-dGG"/>
-                    <constraint firstAttribute="bottom" secondItem="9bB-V9-SKr" secondAttribute="bottom" id="now-Xl-9ce"/>
-                    <constraint firstItem="9bB-V9-SKr" firstAttribute="top" secondItem="zai-Et-OIj" secondAttribute="bottom" id="uyH-tn-3xB"/>
+                    <constraint firstItem="9bB-V9-SKr" firstAttribute="top" secondItem="se5-gp-TjO" secondAttribute="top" id="7Pw-Ow-8Lx"/>
+                    <constraint firstAttribute="trailing" secondItem="9bB-V9-SKr" secondAttribute="trailing" id="cR7-eO-KaQ"/>
+                    <constraint firstItem="9bB-V9-SKr" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" id="eec-x5-Ogy"/>
+                    <constraint firstAttribute="bottom" secondItem="9bB-V9-SKr" secondAttribute="bottom" id="wtA-xT-MPS"/>
                 </constraints>
             </view>
             <connections>
@@ -48,5 +39,11 @@
             </connections>
             <point key="canvasLocation" x="148" y="390"/>
         </window>
+        <customView translatesAutoresizingMaskIntoConstraints="NO" id="zai-Et-OIj">
+            <rect key="frame" x="0.0" y="0.0" width="640" height="22"/>
+            <constraints>
+                <constraint firstAttribute="height" constant="22" id="9XF-Po-Pdd"/>
+            </constraints>
+        </customView>
     </objects>
 </document>

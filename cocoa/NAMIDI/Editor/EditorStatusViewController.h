@@ -16,7 +16,7 @@
 - (void)statusViewController:(EditorStatusViewController *)controller didPressCloseButten:(FileRepresentation *)file;
 @end
 
-@interface EditorStatusViewController : NSViewController
+@interface EditorStatusViewController : NSTitlebarAccessoryViewController
 @property (weak) IBOutlet NSTextField *positionField;
 @property (weak, nonatomic) id<EditorStatusViewControllerDelegate> delegate;
 @property (strong, nonatomic) NSMutableArray *files;
