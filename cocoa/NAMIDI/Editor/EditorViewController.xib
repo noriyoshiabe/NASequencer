@@ -23,7 +23,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="480" height="272"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textView importsGraphics="NO" richText="NO" findStyle="panel" allowsUndo="YES" usesRuler="YES" verticallyResizable="YES" allowsNonContiguousLayout="YES" id="7Ft-0J-HbF" customClass="EditorTextView">
+                            <textView importsGraphics="NO" richText="NO" findStyle="panel" allowsUndo="YES" usesRuler="YES" verticallyResizable="YES" id="7Ft-0J-HbF" customClass="EditorTextView">
                                 <rect key="frame" x="0.0" y="0.0" width="480" height="272"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
