@@ -41,6 +41,8 @@
 		0216EE0F1C7C689F009A7B90 /* PianoRollLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 0216EE0E1C7C689F009A7B90 /* PianoRollLayout.m */; };
 		0232CB101C88C88700542D34 /* NSWindow+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 0232CB0F1C88C88700542D34 /* NSWindow+Support.m */; };
 		0232CB161C88FA9700542D34 /* AlphaHilightButtonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0232CB151C88FA9700542D34 /* AlphaHilightButtonCell.m */; };
+		0232CB191C89058200542D34 /* WelcomeRecentRowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0232CB181C89058200542D34 /* WelcomeRecentRowView.m */; };
+		0232CB1B1C8905A300542D34 /* WelcomeRecentRowView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0232CB1A1C8905A300542D34 /* WelcomeRecentRowView.xib */; };
 		023BB20F1C6EF17B0030487C /* NSArray+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 023BB20E1C6EF17B0030487C /* NSArray+Support.m */; };
 		0240A2481C6C30F2002D6F72 /* ApplicationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0240A2471C6C30F2002D6F72 /* ApplicationController.m */; };
 		024A19061C768AC800B0AC56 /* FlippedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A19051C768AC800B0AC56 /* FlippedView.m */; };
@@ -203,6 +205,9 @@
 		0232CB0F1C88C88700542D34 /* NSWindow+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSWindow+Support.m"; sourceTree = "<group>"; };
 		0232CB141C88FA9700542D34 /* AlphaHilightButtonCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlphaHilightButtonCell.h; sourceTree = "<group>"; };
 		0232CB151C88FA9700542D34 /* AlphaHilightButtonCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlphaHilightButtonCell.m; sourceTree = "<group>"; };
+		0232CB171C89058200542D34 /* WelcomeRecentRowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WelcomeRecentRowView.h; sourceTree = "<group>"; };
+		0232CB181C89058200542D34 /* WelcomeRecentRowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WelcomeRecentRowView.m; sourceTree = "<group>"; };
+		0232CB1A1C8905A300542D34 /* WelcomeRecentRowView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = WelcomeRecentRowView.xib; sourceTree = "<group>"; };
 		023BB20D1C6EF17B0030487C /* NSArray+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+Support.h"; sourceTree = "<group>"; };
 		023BB20E1C6EF17B0030487C /* NSArray+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Support.m"; sourceTree = "<group>"; };
 		0240A2461C6C30F2002D6F72 /* ApplicationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationController.h; sourceTree = "<group>"; };
@@ -507,6 +512,9 @@
 				024A5B271C69FFD90079D22C /* WelcomeWindowController.h */,
 				024A5B281C69FFD90079D22C /* WelcomeWindowController.m */,
 				024A5B291C69FFD90079D22C /* WelcomeWindowController.xib */,
+				0232CB171C89058200542D34 /* WelcomeRecentRowView.h */,
+				0232CB181C89058200542D34 /* WelcomeRecentRowView.m */,
+				0232CB1A1C8905A300542D34 /* WelcomeRecentRowView.xib */,
 			);
 			path = Welcome;
 			sourceTree = "<group>";
@@ -805,6 +813,7 @@
 				020CF8301C6A04830025DF84 /* getting-started in Resources */,
 				024A5B2F1C69FFD90079D22C /* WelcomeWindowController.xib in Resources */,
 				020CF8721C6AF53D0025DF84 /* PurchaseViewController.xib in Resources */,
+				0232CB1B1C8905A300542D34 /* WelcomeRecentRowView.xib in Resources */,
 				02CD042B1C888A8C00BF6683 /* TipsViewController.xib in Resources */,
 				0254235F1C6F2EB6007D53CC /* EditorWindowController.xib in Resources */,
 				0214836B1C84B2E700D653AE /* ExportWindowController.xib in Resources */,
@@ -857,6 +866,7 @@
 				026D42DA1C7ABC08000267AD /* SelectionViewController.m in Sources */,
 				0214837A1C86583E00D653AE /* NSPathUtilities+Support.m in Sources */,
 				025FAF9F1C8065C300E4C3B3 /* MixerRepresentation.m in Sources */,
+				0232CB191C89058200542D34 /* WelcomeRecentRowView.m in Sources */,
 				0214836A1C84B2E700D653AE /* ExportWindowController.m in Sources */,
 				025FAFA21C81129C00E4C3B3 /* NSObject+Support.m in Sources */,
 				02CAF6A91C771F6E00AD81B2 /* SynchronizedScrollView.m in Sources */,

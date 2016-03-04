@@ -45,18 +45,18 @@
                         <rect key="frame" x="491" y="0.0" width="318" height="469"/>
                         <subviews>
                             <scrollView fixedFrame="YES" borderType="none" horizontalLineScroll="64" horizontalPageScroll="10" verticalLineScroll="64" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="7YY-aS-6an">
-                                <rect key="frame" x="0.0" y="53" width="316" height="416"/>
+                                <rect key="frame" x="0.0" y="53" width="318" height="416"/>
                                 <clipView key="contentView" ambiguous="YES" drawsBackground="NO" copiesOnScroll="NO" id="Lfs-0H-2F0">
-                                    <rect key="frame" x="0.0" y="0.0" width="316" height="416"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="318" height="416"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="64" viewBased="YES" id="opY-3D-nc8">
-                                            <rect key="frame" x="0.0" y="0.0" width="316" height="416"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="318" height="416"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <color key="backgroundColor" white="1" alpha="0.0" colorSpace="deviceWhite"/>
                                             <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                             <tableColumns>
-                                                <tableColumn width="313" minWidth="40" maxWidth="1000" id="sYf-Ii-kGj">
+                                                <tableColumn width="318" minWidth="40" maxWidth="1000" id="sYf-Ii-kGj">
                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border">
                                                         <font key="font" metaFont="smallSystem"/>
                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -69,56 +69,15 @@
                                                     </textFieldCell>
                                                     <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                     <prototypeCellViews>
-                                                        <tableCellView id="jsp-Yq-eDL">
-                                                            <rect key="frame" x="0.0" y="0.0" width="313" height="64"/>
-                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                            <subviews>
-                                                                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="QrZ-CA-yhv">
-                                                                    <rect key="frame" x="7" y="8" width="48" height="48"/>
-                                                                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="axesIndependently" image="NMFIcon" id="FNW-64-ShD"/>
-                                                                    <connections>
-                                                                        <binding destination="jsp-Yq-eDL" name="value" keyPath="objectValue.fileTypeIcon" id="mu7-db-7EU"/>
-                                                                    </connections>
-                                                                </imageView>
-                                                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Zem-AO-qhX">
-                                                                    <rect key="frame" x="61" y="15" width="251" height="17"/>
-                                                                    <textFieldCell key="cell" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" title="~/Documents/NAMIDI/" id="RRa-2j-aFj">
-                                                                        <font key="font" metaFont="system" size="12"/>
-                                                                        <color key="textColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
-                                                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                                                    </textFieldCell>
-                                                                    <connections>
-                                                                        <binding destination="jsp-Yq-eDL" name="value" keyPath="objectValue.directory" id="yK7-Rj-aJU"/>
-                                                                    </connections>
-                                                                </textField>
-                                                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aFW-tx-rFJ">
-                                                                    <rect key="frame" x="61" y="32" width="251" height="17"/>
-                                                                    <textFieldCell key="cell" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" title="example.nmf" placeholderString="" id="xFH-SM-QT8">
-                                                                        <font key="font" metaFont="systemMedium" size="16"/>
-                                                                        <color key="textColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                                                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                                                    </textFieldCell>
-                                                                    <connections>
-                                                                        <binding destination="jsp-Yq-eDL" name="value" keyPath="objectValue.filename" id="cTB-qb-IQE">
-                                                                            <dictionary key="options">
-                                                                                <bool key="NSContinuouslyUpdatesValue" value="YES"/>
-                                                                                <bool key="NSValidatesImmediately" value="YES"/>
-                                                                            </dictionary>
-                                                                        </binding>
-                                                                    </connections>
-                                                                </textField>
-                                                            </subviews>
-                                                            <connections>
-                                                                <outlet property="imageView" destination="QrZ-CA-yhv" id="DK2-zw-zry"/>
-                                                                <outlet property="textField" destination="aFW-tx-rFJ" id="svW-FW-aFf"/>
-                                                            </connections>
-                                                        </tableCellView>
+                                                        <customView identifier="RecentRow" id="jgH-2l-xkN" customClass="WelcomeRecentRowView">
+                                                            <rect key="frame" x="0.0" y="0.0" width="318" height="64"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                        </customView>
                                                     </prototypeCellViews>
                                                 </tableColumn>
                                             </tableColumns>
                                             <connections>
                                                 <action selector="recentTableViewSelectionChanged:" target="-2" id="j0y-jF-dAc"/>
-                                                <binding destination="BMM-hA-CYs" name="content" keyPath="arrangedObjects" id="rdq-Xy-HLv"/>
                                             </connections>
                                         </tableView>
                                     </subviews>
@@ -246,17 +205,11 @@
             <connections>
                 <outlet property="delegate" destination="-2" id="0bl-1N-AYu"/>
             </connections>
-            <point key="canvasLocation" x="369.5" y="457.5"/>
+            <point key="canvasLocation" x="371.5" y="456.5"/>
         </window>
-        <arrayController objectClassName="" id="BMM-hA-CYs">
-            <connections>
-                <binding destination="-2" name="contentArray" keyPath="recentDocuments" id="keR-O5-JJ8"/>
-            </connections>
-        </arrayController>
         <userDefaultsController representsSharedInstance="YES" id="hzK-Ba-f7f"/>
     </objects>
     <resources>
-        <image name="NMFIcon" width="512" height="512"/>
         <image name="NSApplicationIcon" width="128" height="128"/>
         <image name="close_l" width="16" height="14"/>
         <image name="create" width="24" height="24"/>

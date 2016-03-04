@@ -10,8 +10,9 @@
 #import "ApplicationController.h"
 #import "FileRepresentation.h"
 #import "Color.h"
+#import "WelcomeRecentRowView.h"
 
-@interface WelcomeWindowController () <NSTableViewDataSource, NSWindowDelegate>
+@interface WelcomeWindowController () <NSTableViewDataSource, NSTableViewDelegate>
 @property (weak) IBOutlet NSView *rightBackgroundView;
 @property (weak) IBOutlet NSTableView *recentTableView;
 @property (readonly) NSArray *recentDocuments;
@@ -55,10 +56,6 @@
     _rightBackgroundView.wantsLayer = YES;
     _rightBackgroundView.layer.backgroundColor = [Color ultraLightGray].CGColor;
     
-    if (0 < self.countOfRecentDocuments) {
-        [_recentTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
-    }
-    
     _gettingStartedButton.attributedTitle = [[NSAttributedString alloc] initWithString:_gettingStartedButton.title attributes:self.menuTextAttiributes];
     _listenToExampleButton.attributedTitle = [[NSAttributedString alloc] initWithString:_listenToExampleButton.title attributes:self.menuTextAttiributes];
     _createNewDocumentButton.attributedTitle = [[NSAttributedString alloc] initWithString:_createNewDocumentButton.title attributes:self.menuTextAttiributes];
@@ -70,6 +67,15 @@
     _separator2.backgroundColor = [Color gray];
     _separator3.backgroundColor = [Color gray];
     _separator4.backgroundColor = [Color gray];
+    
+    _recentTableView.dataSource = self;
+    _recentTableView.delegate = self;
+    
+    [_recentTableView reloadData];
+    
+    if (0 < self.countOfRecentDocuments) {
+        [_recentTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
+    }
 }
 
 - (NSDictionary *)menuTextAttiributes
@@ -159,6 +165,22 @@
     else {
         [super keyDown:theEvent];
     }
+}
+
+#pragma mark NSTableViewDataSource
+
+- (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView
+{
+    return self.countOfRecentDocuments;
+}
+
+#pragma mark NSTableViewDelegate
+
+- (NSTableRowView *)tableView:(NSTableView *)tableView rowViewForRow:(NSInteger)row
+{
+    WelcomeRecentRowView *view = [tableView makeViewWithIdentifier:@"RecentRow" owner:nil];
+    view.file = self.recentDocuments[row];
+    return view;
 }
 
 @end

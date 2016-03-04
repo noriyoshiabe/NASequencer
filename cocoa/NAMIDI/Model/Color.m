@@ -23,6 +23,7 @@ static NSColor *ChannelColor[16];
 static NSColor *StatusBackground;
 static NSColor *Grid;
 static NSColor *GridWeak;
+static NSColor *Pink;
 
 @implementation Color
 
@@ -41,6 +42,8 @@ static NSColor *GridWeak;
     StatusBackground = [NSColor colorWithWhite:0 alpha:0.5];
     Grid = RGBA(200.0, 200.0, 250.0, 255.0);
     GridWeak = RGBA(240.0, 240.0, 250.0, 255.0);
+    
+    Pink = RGBA(255.0, 66.0, 97.0, 255.0);
 }
 
 + (NSColor *)darkGray
@@ -86,6 +89,11 @@ static NSColor *GridWeak;
 + (NSColor *)gridWeak
 {
     return GridWeak;
+}
+
++ (NSColor *)pink
+{
+    return Pink;
 }
 
 @end

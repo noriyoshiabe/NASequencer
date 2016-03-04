@@ -18,4 +18,5 @@
 + (NSColor *)statusBackground;
 + (NSColor *)grid;
 + (NSColor *)gridWeak;
++ (NSColor *)pink;
 @end
