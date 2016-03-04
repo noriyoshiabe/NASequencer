@@ -8,11 +8,20 @@
 
 #import <Cocoa/Cocoa.h>
 
-@protocol HighlightProcessor <NSObject>
-- (void)processTextStorage:(NSTextStorage *)textStorage;
+@interface HighlightSpec : NSObject
+@property (strong, nonatomic) NSRegularExpression *regex;
+@property (strong, nonatomic) NSColor *color;
+@property (strong, nonatomic) HighlightSpec *next;
+@end
+
+@interface HighlightProcessor : NSObject
++ (void)processTextStorage:(NSTextStorage *)textStorage spec:(HighlightSpec *)spec;
 @end
 
 @interface HighlightColor : NSObject
 + (NSColor *)comment;
++ (NSColor *)directive;
++ (NSColor *)string;
++ (NSColor *)keyword;
++ (NSColor *)extra1;
 @end
-

@@ -1,5 +1,5 @@
 //
-//  NMFHighlightProcessor.h
+//  NMFHighlightSpec.h
 //  NAMIDI
 //
 //  Created by abechan on 3/5/16.
@@ -9,5 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "HighlightProcessor.h"
 
-@interface NMFHighlightProcessor : NSObject <HighlightProcessor>
+@interface NMFHighlightSpec : NSObject
++ (HighlightSpec *)spec;
 @end

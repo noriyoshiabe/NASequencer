@@ -10,7 +10,8 @@
 
 #import "EditorViewController.h"
 #import "Color.h"
-#import "NMFHighlightProcessor.h"
+#import "HighlightProcessor.h"
+#import "NMFHighlightSpec.h"
 
 @interface LineNumberView : NSRulerView {
     CGFontRef cgFont;
@@ -25,18 +26,11 @@
     NSInteger _changeCount;
     NSInteger _savedCount;
     NSUndoManager *_undoManager;
-    id<HighlightProcessor> _highlighter;
+    HighlightSpec *_highlightSpec;
 }
 @end
 
-static id<HighlightProcessor> _NMFHighlightProcessor;
-
 @implementation EditorViewController
-
-+ (void)initialize
-{
-    _NMFHighlightProcessor = [[NMFHighlightProcessor alloc] init];
-}
 
 - (void)viewDidLoad
 {
@@ -55,8 +49,8 @@ static id<HighlightProcessor> _NMFHighlightProcessor;
     _textView.textStorage.delegate = self;
     
     NSString *ext = _file.filename.pathExtension.lowercaseString;
-    _highlighter = @{
-                     @"nmf": _NMFHighlightProcessor
+    _highlightSpec = @{
+                     @"nmf": [NMFHighlightSpec spec]
                      }[ext];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(selectedRangeDidChange:) name: NSTextViewDidChangeSelectionNotification object:_textView];
@@ -125,9 +119,8 @@ static id<HighlightProcessor> _NMFHighlightProcessor;
 
 - (void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta
 {
-    
     if (NSTextStorageEditedCharacters & editedMask) {
-        [_highlighter processTextStorage:textStorage];
+        [HighlightProcessor processTextStorage:textStorage spec:_highlightSpec];
     }
 }
 
