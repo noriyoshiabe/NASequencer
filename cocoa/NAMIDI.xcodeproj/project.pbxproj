@@ -88,6 +88,7 @@
 		0262BAEC1C89E5CF00BEB76A /* NMFHighlightSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 0262BAEB1C89E5CF00BEB76A /* NMFHighlightSpec.m */; };
 		0262BAEF1C89EF7300BEB76A /* HighlightProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = 0262BAEE1C89EF7300BEB76A /* HighlightProcessor.m */; };
 		0262BAF21C8A30F400BEB76A /* ABCHighlightSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 0262BAF11C8A30F400BEB76A /* ABCHighlightSpec.m */; };
+		0262BAF51C8A458700BEB76A /* MMLHighlightSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 0262BAF41C8A458700BEB76A /* MMLHighlightSpec.m */; };
 		02633E981C74AC9F00B9FF0E /* Color.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633E971C74AC9F00B9FF0E /* Color.m */; };
 		02633EB81C74ED9300B9FF0E /* NSView+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EB71C74ED9200B9FF0E /* NSView+Support.m */; };
 		02633EBC1C75062300B9FF0E /* LevelIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 02633EBB1C75062300B9FF0E /* LevelIndicator.m */; };
@@ -292,6 +293,8 @@
 		0262BAEE1C89EF7300BEB76A /* HighlightProcessor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HighlightProcessor.m; sourceTree = "<group>"; };
 		0262BAF01C8A30F400BEB76A /* ABCHighlightSpec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ABCHighlightSpec.h; sourceTree = "<group>"; };
 		0262BAF11C8A30F400BEB76A /* ABCHighlightSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ABCHighlightSpec.m; sourceTree = "<group>"; };
+		0262BAF31C8A458700BEB76A /* MMLHighlightSpec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMLHighlightSpec.h; sourceTree = "<group>"; };
+		0262BAF41C8A458700BEB76A /* MMLHighlightSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMLHighlightSpec.m; sourceTree = "<group>"; };
 		02633E961C74AC9F00B9FF0E /* Color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Color.h; sourceTree = "<group>"; };
 		02633E971C74AC9F00B9FF0E /* Color.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Color.m; sourceTree = "<group>"; };
 		02633EB61C74ED9200B9FF0E /* NSView+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSView+Support.h"; sourceTree = "<group>"; };
@@ -592,6 +595,8 @@
 				0262BAEB1C89E5CF00BEB76A /* NMFHighlightSpec.m */,
 				0262BAF01C8A30F400BEB76A /* ABCHighlightSpec.h */,
 				0262BAF11C8A30F400BEB76A /* ABCHighlightSpec.m */,
+				0262BAF31C8A458700BEB76A /* MMLHighlightSpec.h */,
+				0262BAF41C8A458700BEB76A /* MMLHighlightSpec.m */,
 			);
 			path = Editor;
 			sourceTree = "<group>";
@@ -903,6 +908,7 @@
 				025FAF991C7FAB1600E4C3B3 /* MidiSourceManagerRepresentation.m in Sources */,
 				0240A2481C6C30F2002D6F72 /* ApplicationController.m in Sources */,
 				020CF87E1C6B20C50025DF84 /* Application.m in Sources */,
+				0262BAF51C8A458700BEB76A /* MMLHighlightSpec.m in Sources */,
 				02633E981C74AC9F00B9FF0E /* Color.m in Sources */,
 				026D42E41C7ABC08000267AD /* MixerViewController.m in Sources */,
 				0262BAF21C8A30F400BEB76A /* ABCHighlightSpec.m in Sources */,

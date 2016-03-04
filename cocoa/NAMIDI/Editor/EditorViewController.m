@@ -13,6 +13,7 @@
 #import "HighlightProcessor.h"
 #import "NMFHighlightSpec.h"
 #import "ABCHighlightSpec.h"
+#import "MMLHighlightSpec.h"
 
 @interface LineNumberView : NSRulerView {
     CGFontRef cgFont;
@@ -56,7 +57,8 @@
     NSString *ext = _file.filename.pathExtension.lowercaseString;
     _highlightSpec = @{
                      @"nmf": [NMFHighlightSpec spec],
-                     @"abc": [ABCHighlightSpec spec]
+                     @"abc": [ABCHighlightSpec spec],
+                     @"mml": [MMLHighlightSpec spec]
                      }[ext];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(selectedRangeDidChange:) name: NSTextViewDidChangeSelectionNotification object:_textView];
