@@ -12,6 +12,7 @@
 @property (strong, nonatomic) NSRegularExpression *regex;
 @property (strong, nonatomic) NSColor *color;
 @property (strong, nonatomic) HighlightSpec *next;
+@property (strong, nonatomic) HighlightSpec *orverride;
 @end
 
 @interface HighlightProcessor : NSObject
@@ -23,5 +24,11 @@
 + (NSColor *)directive;
 + (NSColor *)string;
 + (NSColor *)keyword;
-+ (NSColor *)extra1;
+
++ (NSColor *)step;
+
++ (NSColor *)freeText;
++ (NSColor *)tuneHeader;
++ (NSColor *)tuneBody;
++ (NSColor *)note;
 @end

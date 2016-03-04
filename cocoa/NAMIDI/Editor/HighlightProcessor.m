@@ -17,6 +17,7 @@
     [string appendFormat:@"\tregex=%@", _regex.pattern];
     [string appendFormat:@"\tcolor=%@", _color];
     [string appendFormat:@"\tnext=%@ >", _next];
+    [string appendFormat:@"\torverride=%@ >", _orverride];
     return string;
 }
 
@@ -39,6 +40,10 @@
         
         NSRange matchedRange = [result rangeAtIndex:0];
         [textStorage addAttribute:NSForegroundColorAttributeName value:spec.color range:matchedRange];
+        
+        if (spec.orverride) {
+            [self processTextStorage:textStorage spec:spec.orverride range:matchedRange];
+        }
         
         if (spec.next && prevLocation < matchedRange.location) {
             [self processTextStorage:textStorage spec:spec.next range:NSMakeRange(prevLocation, matchedRange.location - prevLocation)];
@@ -63,7 +68,13 @@ static NSColor *CommentColor;
 static NSColor *DirectiveColor;
 static NSColor *StringColor;
 static NSColor *KeywordColor;
-static NSColor *Extra1Color;
+
+static NSColor *StepColor;
+
+static NSColor *FreeTextColor;
+static NSColor *TuneHeaderColor;
+static NSColor *TuneBodyColor;
+static NSColor *NoteColor;
 
 @implementation HighlightColor
 
@@ -73,7 +84,13 @@ static NSColor *Extra1Color;
     DirectiveColor = [NSColor colorWithHexRGBA:0x151B88FF];
     StringColor = [NSColor colorWithHexRGBA:0xDB2023FF];
     KeywordColor = [NSColor colorWithHexRGBA:0x376FB1FF];
-    Extra1Color = [NSColor colorWithHexRGBA:0x5C5C5CFF];
+    
+    StepColor = [NSColor colorWithHexRGBA:0x5C5C5CFF];
+    
+    FreeTextColor = StepColor;
+    TuneHeaderColor = KeywordColor;
+    TuneBodyColor = [NSColor blackColor];
+    NoteColor = StringColor;
 }
 
 + (NSColor *)comment
@@ -96,9 +113,29 @@ static NSColor *Extra1Color;
     return KeywordColor;
 }
 
-+ (NSColor *)extra1
++ (NSColor *)step
 {
-    return Extra1Color;
+    return StepColor;
+}
+
++ (NSColor *)freeText
+{
+    return FreeTextColor;
+}
+
++ (NSColor *)tuneHeader
+{
+    return TuneHeaderColor;
+}
+
++ (NSColor *)tuneBody
+{
+    return TuneBodyColor;
+}
+
++ (NSColor *)note
+{
+    return NoteColor;
 }
 
 @end

@@ -61,7 +61,7 @@ static HighlightSpec *_spec;
     
     HighlightSpec *step = [[HighlightSpec alloc] init];
     step.regex = [NSRegularExpression regularExpressionWithPattern:@"[0-9]+\\s*:" options:0 error:nil];
-    step.color = [HighlightColor extra1];
+    step.color = [HighlightColor step];
     
     multiLineComment.next = lineComment;
     lineComment.next = directive;
