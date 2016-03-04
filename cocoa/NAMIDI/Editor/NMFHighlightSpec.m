@@ -50,6 +50,7 @@ static HighlightSpec *_spec;
                      KEYWORD(@"TRANSPOSE") @"|"
                      KEYWORD(@"PAN") @"|"
                      KEYWORD(@"GATETIME") @"|"
+                     KEYWORD(@"STEP") @"|"
                      KEYWORD(@"PATTERN") @"|"
                      KEYWORD(@"END") @"|"
                      KEYWORD(@"EXPAND") @"|"
