@@ -9,6 +9,7 @@
 @import CoreText;
 
 #import "EditorViewController.h"
+#import "Color.h"
 
 @interface LineNumberView : NSRulerView {
     CGFontRef cgFont;
@@ -239,7 +240,7 @@
 
 - (void)drawHashMarksAndLabelsInRect:(NSRect)rect
 {
-    [[NSColor darkGrayColor] setFill];
+    [[Color darkGray] setFill];
     NSRectFill(rect);
     
     NSTextView *textView = (NSTextView *)self.clientView;
@@ -247,7 +248,7 @@
     NSString *string = textView.string;
     CGFloat width = self.ruleThickness;
     CGFloat padding = 5.0;
-    CGColorRef textColor = [NSColor grayColor].CGColor;
+    CGColorRef textColor = [Color pink].CGColor;
     CGFloat fontSize = _font.pointSize;
     
     CGContextRef context = [NSGraphicsContext currentContext].CGContext;
@@ -339,7 +340,7 @@
     
     CGContextRestoreGState(context);
     
-    NSUInteger length = MAX(log10(lineNum) + 1.0, 3);
+    NSUInteger length = MAX(log10(lineNum) + 1.0, 4);
     CGFloat requiredWidth = MAX(length * charWidth + 2.0 * padding, width);
     self.ruleThickness = requiredWidth;
 }

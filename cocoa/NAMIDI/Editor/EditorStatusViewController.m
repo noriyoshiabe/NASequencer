@@ -8,6 +8,7 @@
 
 #import "EditorStatusViewController.h"
 #import "EditorTabItem.h"
+#import "Color.h"
 
 @interface EditorStatusViewController () <NSCollectionViewDelegate, NSCollectionViewDataSource, EditorTabItemDelegate>
 @property (weak) IBOutlet NSCollectionView *collectionView;
@@ -22,7 +23,7 @@
     [super viewDidLoad];
     
     _underLine.wantsLayer = YES;
-    _underLine.layer.backgroundColor = [NSColor darkGrayColor].CGColor;
+    _underLine.layer.backgroundColor = [Color darkGray].CGColor;
     
     _collectionView.delegate = self;
     _collectionView.dataSource = self;
