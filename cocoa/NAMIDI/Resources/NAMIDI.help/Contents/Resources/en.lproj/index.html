@@ -49,8 +49,8 @@
     </nav>
 
 		<main>
+      <a name="top"></a>
       <div class="top">
-        <a name="top"></a>
         <img src="../shared/AppIcon.png" alt="" height="190" width="190" />
         <h1>NAMIDI Help</h1>
         <ul>
@@ -63,69 +63,664 @@
         </ul>
       </div>
 
+      <a name="overview"></a>
       <div class="overview">
-        <a name="overview"></a>
         <h2>NAMIDI Overview</h2>
         <p>TODO</p>
       </div>
 
+      <a name="getting_started"></a>
       <div class="getting_started">
-        <a name="getting_started"></a>
         <h2>Getting Started</h2>
         <p>TODO</p>
       </div>
 
+      <a name="operation_manual"></a>
+      <a name="general"></a>
+      <a name="preference"></a>
       <div class="operation_manual">
-        <a name="operation_manual"></a>
         <h2>Operation Manual</h2>
 
         <div class="general">
-          <a name="general"></a>
           <h3 >General</h3>
           <p>TODO</p>
         </div>
 
         <div class="preference">
-          <a name="preference"></a>
           <h3>Preferences</h3>
           <p>TODO</p>
         </div>
       </div>
 
-
+      <a name="syntax_reference"></a>
+      <a name="namidi"></a>
+      <a name="abc"></a>
+      <a name="mml"></a>
       <div class="syntax_reference">
-        <a name="syntax_reference"></a>
         <h2>Syntax Reference</h2>
 
         <div class="namidi">
-          <a name="namidi"></a>
           <h3 >Note as MIDI</h3>
-          <p>TODO</p>
+          <p>Version 0.3.0 Draft, 2016</p>
+<a name="namidi__基本的な構造"></a><h4>基本的な構造</h4><a name="namidi__ファイルフォーマット"></a><h5>ファイルフォーマット</h5><ul>
+<li>読み込み可能な拡張子は<code>.nmf</code>です</li>
+<li>演奏データはプレーンテキストで記述します</li>
+<li>大文字小文字は区別されません</li>
+<li>文字列やコメントを除いて、ASCIIコードで記述します</li>
+<li>文字コードはASCIIとUTF-8のみサポートします</li>
+</ul>
+<a name="namidi__ステップの考え方"></a><h5>ステップの考え方</h5><p>音符の入力には必ずステップの指定を伴います。<br/>分解能を480とした場合、4分音符のドレミファの入力は以下の様になります。</p>
+<pre><code>480: C  // `480:` がステップ  `C` がド
+480: D
+480: E
+480: F
+</code></pre><p>休符を入れる場合は音名を入れずにステップのみ入力します。<br/>ド・レ・4分休符・ミを入力する場合は以下の様になります。</p>
+<pre><code>480: C
+480: D
+480:
+480: E
+</code></pre><p>一回のステップ指定で複数の音名を指定できます。<br/>4分音符の長さでCコードの和音を入力する場合は以下の様になります。</p>
+<pre><code>480: C E G
+</code></pre><p>ステップを入力するたびに、音符入力の開始地点となる現在位置が進んでいきます。<br/>現在位置が後ろに戻ることはありません。</p>
+<a name="namidi__ステップとチャネルの考え方"></a><h5>ステップとチャネルの考え方</h5><p>ステップ入力による現在位置はチャネルごとに独立しています。<br/>違うチャネルに切り替えると、現在位置はゼロの状態になりますが、再びもとのチャネルに戻った場合はチャネルを切り替える前の位置に戻ります。</p>
+<pre><code>480: C
+CHANNEL 2
+480: C
+CHANNEL 1
+480: D
+480: E
+480: F
+</code></pre><p>上記の結果は以下のようになります。</p>
+<pre><code>            | 1
+==============================
+Ch1 |060:C3 | .
+    |059:B  | .
+    |058:A# | .
+    |057:A  | .
+    |056:G# | .
+    |055:G  | .
+    |054:F# | .
+    |053:F  | .           x---
+    |052:E  | .       x---
+    |051:D# | .
+    |050:D  | .   x---
+    |049:C# | .
+    |048:C2 | x---
+------------------------------
+Ch2 |060:C3 | .
+    |059:B  | .
+    |058:A# | .
+    |057:A  | .
+    |056:G# | .
+    |055:G  | .
+    |054:F# | .
+    |053:F  | .
+    |052:E  | .
+    |051:D# | .
+    |050:D  | .
+    |049:C# | .
+    |048:C2 | x---
+</code></pre><p>チャネルの初期値は1です。</p>
+<a name="namidi__コメント"></a><h5>コメント</h5><p><code>//</code>、<code>==</code>、<code>--</code>、から改行まではコメントとして処理されます。<br/>ただし、<code>hoge---hoge</code> の様な記述は識別子として処理されます。<br/>複数行のコメントは<code>/*</code>から <code>*/</code> までがコメントとして処理されます。</p>
+<a name="namidi__文字列"></a><h5>文字列</h5><p><code>&#39; &#39;</code> もしくは <code>&quot; &quot;</code> で囲まれた部分は文字列として処理されます。</p>
+<pre><code>&#39;これは 文字列です&#39;
+&quot;これも 文字列です&quot;
+</code></pre><p>文字列は<a class="js-transit" href="#namidi__TITLE">TITLE</a> や <a class="js-transit" href="#namidi__COPYRIGHT">COPYRIGHT</a> 文で使用します。</p>
+<a name="namidi__マクロ"></a><h5>マクロ</h5><p>マクロにより、事前に定義された内容と置き換えができます。<br/>リズムトラックの音名に別名をつけるなどの目的で使用します。</p>
+<pre><code>#define SNARE E1
+
+480: SNARE // これは E1として展開されます。
+</code></pre><p>関数型マクロも使用できますが、あまり使うことは無いでしょう。</p>
+<pre><code>#define CHORD_WITH_ROOT_ACCENT(a,b,c) a 127 b c
+
+480: CHORD_WITH_ROOT_ACCENT(C,E,G) // これは C 127 E G として展開されます
+480: CHORD_WITH_ROOT_ACCENT(D,F,Z) // これは D 127 F Z として展開されます
+</code></pre><p><code>C 127</code> の<code>127</code>はベロシティの指定です。<br/>詳細は<a class="js-transit" href="#namidi__NOTE">NOTE</a>を参照して下さい。</p>
+<a name="namidi__インクルード"></a><h5>インクルード</h5><p>インクルードにより、他のファイルの定義などを読み込むことが出来ます。</p>
+<pre><code>#include &#39;drums.nmf&#39;
+</code></pre><p>他のファイルに、リズムトラックのマクロを定義したり、よく使うパターンを定義して使用出来ます。<br/>パターンの定義については<a class="js-transit" href="#namidi__PATTERN">PATTERN</a>を参照して下さい。</p>
+<a name="namidi__改行とセミコロン"></a><h5>改行とセミコロン</h5><p>改行は一つの構文の区切りとして作用します。<br/>例えば以下の様にチャネルの指定に改行を挟んだ場合はエラーになります。</p>
+<pre><code>CHANNEL // 数値の指定が無いまま改行が現れたためエラー
+1
+</code></pre><p>一行で複数のステップを入力する際にエラーになる場合はセミコロンで区切りを付けます。</p>
+<pre><code>480: C  480: D  // この場合、２回目の480がベロシティの指定として扱われるためエラー
+480: C; 480: D  // セミコロンで区切るとベロシティの指定を省略したことになる
+</code></pre><a name="namidi__リファレンス"></a><h4>リファレンス</h4><a name="namidi__STEP"></a><h5>STEP</h5><p>数値 + コロン(:) で指定します。<br/>数値とコロンの間にはスペースを入れることが出来ます。</p>
+<pre><code>   0:
+ 480:
+1920:
+
+0   :
+480 :
+1920:
+</code></pre><a name="namidi__NOTE"></a><h5>NOTE</h5><a name="namidi__音階"></a><h6>音階</h6><p>音階の入力は 音名(CDEFGAB) + 臨時記号(#/b/n) + オクターブ(-2 ~ 8) で行います。<br/>臨時記号とオクターブは省略できます。</p>
+<p>オクターブを省略した場合、直前に入力した音階のオクターブになります。<br/>オクターブの初期値は2です。<br/>#/bはそれぞれダブルシャープ(##)・ダブルフラット(bb)の指定も可能です。<br/>ナチュラル(n)は<a class="js-transit" href="#namidi__KEY">KEY</a>文でキーを指定した場合に作用します。</p>
+<pre><code>480: C     // オクターブを省略しているので初期値のオクターブが反映されて C2
+480: C4    // オクターブを指定しているので C4
+480: C#    // オクターブを初略しているので直前のオクターブが反映されて C#4
+480: Cb2   // C♭2  (B1と同じ)
+480: C##2  // C##2 (D2と同じ)
+480: Cbb2  // C♭♭2 (A#1と同じ)
+
+KEY CMin   // Cマイナーキーを指定
+
+480: E2    // CメジャーキーのE♭2 として扱われる
+480: En2   // CメジャーキーのE2 として扱われる
+</code></pre><a name="namidi__ベロシティ"></a><h6>ベロシティ</h6><p>音階に続けて0~127の数値を記述すると音の強さを指定できます。<br/>ベロシティを省略した場合、<a class="js-transit" href="#namidi__VELOCITY">VELOCITY</a>文で指定したデフォルトの値として扱われます。</p>
+<pre><code>VELOCITY 100  // デフォルトベロシティの指定
+
+480: C        // ベロシティ=100
+480: C 127    // ベロシティ=127
+</code></pre><a name="namidi__ゲートタイム"></a><h6>ゲートタイム</h6><p>音階、ベロシティに続けて0~65535の数値を記述すると音の長さを指定できます。<br/>ベロシティを省略し、ゲートタイムを指定する場合は、以下のようにハイフン(-)を使用します。</p>
+<pre><code>480: C - 240  // ベロシティ省略、ゲートタイム240
+</code></pre><p>ゲートタイムを省略した場合、<a class="js-transit" href="#namidi__GATETIME">GATETIME</a>文の指定により長さが決まります。<br/>ゲートタイムの指定方法は２つあり、デフォルトでは省略するとステップと同じ長さとして扱われます。<br/>詳細は<a class="js-transit" href="#namidi__GATETIME">GATETIME</a>文を参照して下さい。</p>
+<a name="namidi__TITLE"></a><h5>TITLE</h5><p>演奏データのタイトルを設定します。<br/>一つの演奏データにつき、１回だけ指定できます。<br/>SMFファイルに出力した際、第一トラックにシーケンス名(FF 03h)として出力されます。</p>
+<pre><code>TITLE &#39;Syntax Reference&#39;
+</code></pre><a name="namidi__COPYRIGHT"></a><h5>COPYRIGHT</h5><p>演奏データの著作件情報を設定します。<br/>一つの演奏データにつき、１回だけ指定できます。<br/>SMFファイルに出力した際、第一トラックに著作権表示(FF 02h)として出力されます。</p>
+<pre><code>COPYRIGHT &#39;Copyright (c) 2016, Noriyoshi Abe. All Rights Reserved.&#39;
+</code></pre><a name="namidi__RESOLUTION"></a><h5>RESOLUTION</h5><p>4分音符の分解能を指定します。<br/>デフォルトは480です。<br/>一つの演奏データにつき、１回だけ指定できます。<br/>SMFファイルに出力した際、ヘッダチャンクの時間単位の値になります。</p>
+<pre><code>RESOLUTION 960
+</code></pre><a name="namidi__TEMPO"></a><h5>TEMPO</h5><p>Beat per Minutes(1分間の４分音符の数)の単位でテンポを指定します。<br/>デフォルトは120.0です。<br/>小数点第2位まで指定できます。<br/>演奏データの途中から変更可能です。<br/>SMFファイルに出力した際、第一トラックにテンポチェンジイベント(FF 51h 03h)として出力されます。</p>
+<pre><code>TEMPO 128.99
+</code></pre><a name="namidi__TIME"></a><h5>TIME</h5><p>拍子を指定します。<br/>演奏データの途中から変更可能です。<br/>SMFファイルに出力した際、第一トラックに拍子イベント(FF 58h 04h)として出力されます。</p>
+<pre><code>TIME 3/4
+</code></pre><a name="namidi__KEY"></a><h5>KEY</h5><p>調号を指定します。<br/>音階名 + major or minor で指定します。<br/>major/minorはmaj/minとして省略出来ます。</p>
+<p>※ チャネル単位ではなく演奏データ全体(リズム用チャネルなど)に影響することに注意して下さい。</p>
+<p>指定可能な調号は以下になります。</p>
+<table>
+<thead>
+<tr>
+<th>メジャー</th>
+<th>マイナー</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C Major</td>
+<td>A Minor</td>
+</tr>
+<tr>
+<td>G Major</td>
+<td>E Minor</td>
+</tr>
+<tr>
+<td>D Major</td>
+<td>B Minor</td>
+</tr>
+<tr>
+<td>A Major</td>
+<td>F# Minor</td>
+</tr>
+<tr>
+<td>E Major</td>
+<td>C# Minor</td>
+</tr>
+<tr>
+<td>B Major</td>
+<td>G# Minor</td>
+</tr>
+<tr>
+<td>F# Major</td>
+<td>D# Minor</td>
+</tr>
+<tr>
+<td>C# Major</td>
+<td>A# Minor</td>
+</tr>
+<tr>
+<td>F Major</td>
+<td>D Minor</td>
+</tr>
+<tr>
+<td>Bb Major</td>
+<td>G Minor</td>
+</tr>
+<tr>
+<td>Eb Major</td>
+<td>C Minor</td>
+</tr>
+<tr>
+<td>Ab Major</td>
+<td>F Minor</td>
+</tr>
+<tr>
+<td>Db Major</td>
+<td>Bb Minor</td>
+</tr>
+<tr>
+<td>Gb Major</td>
+<td>Eb Minor</td>
+</tr>
+<tr>
+<td>Cb Major</td>
+<td>Ab Minor</td>
+</tr>
+</tbody>
+</table>
+<p>SMFファイルに出力した際、第一トラックに調号イベント(FF 59h 02h)として出力されます。</p>
+<a name="namidi__VELOCITY"></a><h5>VELOCITY</h5><p><a class="js-transit" href="#namidi__NOTE">NOTE</a>入力時のデフォルトベロシティを設定します。<br/>指定可能な値は0~127です。<br/>デフォルトは100です。</p>
+<pre><code>VELOCITY 80
+</code></pre><a name="namidi__GATETIME"></a><h5>GATETIME</h5><p><a class="js-transit" href="#namidi__NOTE">NOTE</a>入力時の音の長さを指定します。</p>
+<a name="namidi__絶対値指定"></a><h6>絶対値指定</h6><p>NOTE入力時にゲートタイムを省略した場合、絶対値指定で指定されたゲートタイムになります。</p>
+<pre><code>GATETIME 120
+
+480: C // ゲートタイムは120
+</code></pre><a name="namidi__STEP指定"></a><h6>STEP指定</h6><p>NOTE入力時にゲートタイムを省略した場合、ゲートタイムはNOTE入力時のSTEPと同じ長さになります。</p>
+<pre><code>GATETIME STEP
+
+480: C // ゲートタイムは480
+</code></pre><a name="namidi__STEP + 相対値指定"></a><h6>STEP + 相対値指定</h6><p>NOTE入力時にゲートタイムを省略した場合、ゲートタイムはNOTE入力時のSTEPから指定した値を増減させた長さになります。</p>
+<pre><code>GATETIME STEP -10
+480: C // ゲートタイムは470
+GATETIME STEP +120
+480: C // ゲートタイムは600
+</code></pre><a name="namidi__MARKER"></a><h5>MARKER</h5><p>マーカーを挿入します。<br/>SMFファイルに出力した際、第一トラックにマーカーイベント(FF 06h)として出力されます。</p>
+<pre><code>MARKER &#39;Intro&#39;
+</code></pre><a name="namidi__CHANNEL"></a><h5>CHANNEL</h5><p>チャネルを切り替えます。<br/>使用可能なチャネルは1~16です。</p>
+<pre><code>CHANNEL 10
+</code></pre><a name="namidi__SYNTH"></a><h5>SYNTH</h5><p>チャネルのサウンドフォントを切り替えます。<br/>予め指定するサウンドフォントが読み込まれている必要があります。</p>
+<pre><code>SYNTH &#39;SGM-V2.01&#39;
+</code></pre><a name="namidi__VOICE"></a><h5>VOICE</h5><p>チャネルの音色を変更します。<br/><code>VOICE &lt;バンクNo MSB&gt; &lt;バンクNo LSB&gt; &lt;プログラムNo&gt;</code> の形式で指定します。<br/>設定値はサウンドフォントに依存します。</p>
+<p>SMFファイルに出力した際、</p>
+<ul>
+<li>コントロールチェンジ:バンクセレクトMSB(Bn 00h)</li>
+<li>コントロールチェンジ:バンクセレクトLSB(Bn 20h)</li>
+<li>プログラムチェンジ(Cn)</li>
+</ul>
+<p>として出力されます。</p>
+<pre><code>SYNTH &#39;GeneralUser GS Live-Audigy v1.44&#39;
+VOICE 0 120 0 // GeneralUser GS の Standard Drums
+
+SYNTH &#39;SGM-V2.01&#39;
+VOICE 0 127 0 // SGM-V2.01 の Standard Drums
+</code></pre><p>よく使う定義はマクロにしておいても良いかもしれません。</p>
+<a name="namidi__VOLUME"></a><h5>VOLUME</h5><p>チャネルのボリュームを指定します。<br/>指定可能な値は0~127です。<br/>デフォルトは100です。<br/>SMFファイルに出力した際、コントロールチェンジ(Cn 07h) チャネルボリューム として出力されます。</p>
+<pre><code>VOLUME 100
+</code></pre><a name="namidi__CHORUS"></a><h5>CHORUS</h5><p>チャネルのコーラスエフェクトのかかり具合を変更します。<br/>指定可能な値は0~127です。<br/>デフォルトは0です。</p>
+<p>SMFファイルに出力した際、コントロールチェンジ(Cn 5Dh) エフェクト3デプス（コーラスセンドレベル）として出力されます。</p>
+<pre><code>CHORUS 100
+</code></pre><p>※ サウンドフォントによっては(GeneralUser GSなど)、意図的にコーラスが掛からないように設定されているものもあります</p>
+<a name="namidi__REVERB"></a><h5>REVERB</h5><p>チャネルのリバーブエフェクトのかかり具合を変更します。<br/>指定可能な値は0~127です。<br/>デフォルトは0です。<br/>SMFファイルに出力した際、コントロールチェンジ(Cn 5Bh) エフェクト1デプス（リバーブセンドレベル）として出力されます。</p>
+<pre><code>REVERB 100
+</code></pre><p>※ サウンドフォントによっては(GeneralUser GSなど)、意図的にリバーブが掛からないように設定されているものもあります</p>
+<a name="namidi__EXPRESSION"></a><h5>EXPRESSION</h5><p>チャネルのエクスプレッションを指定します。<br/>指定可能な値は0~127です。<br/>デフォルトは127です。<br/>SMFファイルに出力した際、コントロールチェンジ(Cn 0Bh) エクスプレッション として出力されます。</p>
+<pre><code>EXPRESSION 100
+</code></pre><a name="namidi__PAN"></a><h5>PAN</h5><p>チャネルのパン(左右の定位)を指定します。<br/>指定可能な値は-64 ~ +64です。<br/>マイナスに行くほど左に振れ、プラスに行くほど右に振れます。<br/>デフォルトは0(中央)です。</p>
+<pre><code>PAN -40
+</code></pre><p>SMFファイルに出力した際、コントロールチェンジ(Cn 0Ah) パンとして、値を0~127に変換して出力されます。</p>
+<a name="namidi__TRANSPOSE"></a><h5>TRANSPOSE</h5><p><a class="js-transit" href="#namidi__NOTE">NOTE</a>入力時の音階を半音単位で上下させます。<br/>1音上げの場合<code>+2</code>です。<br/>指定可能な値は-24 ~ +24です。<br/>デフォルトは0です。</p>
+<pre><code>TRANSPOSE +2
+</code></pre><a name="namidi__DETUNE"></a><h5>DETUNE</h5><p>シンセサイザのピッチをセント単位で調整します。<br/>指定可能な値は上下2オクターブ(-2400 ~ +2400)です。<br/><a class="js-transit" href="#namidi__TRANSPOSE">TRANSPOSE</a>が音階を変更するのに対し、DETUNEでは音階は変えずにシンセサイザのピッチを変更します。</p>
+<pre><code>DETUNE -50
+</code></pre><p>SMFファイルに出力した際、</p>
+<ul>
+<li>コントロールチェンジ:RPN（MSB）(Bn 65h 0) チャネル・ファイン・チューン</li>
+<li>コントロールチェンジ:RPN（LSB）(Bn 64h 1) チャネル・ファイン・チューン</li>
+<li>コントロールチェンジ:データエントリー(MSB) (Bn 06h)</li>
+<li>コントロールチェンジ:データエントリー(LSB) (Bn 26h)</li>
+<li>コントロールチェンジ:RPN（MSB）(Bn 65h 0) チャネル・コース・チューン</li>
+<li>コントロールチェンジ:RPN（LSB）(Bn 64h 2) チャネル・コース・チューン</li>
+<li>コントロールチェンジ:データエントリー(MSB) (Bn 06h) </li>
+<li>コントロールチェンジ:RPN（MSB）(Bn 65h 7Fh) RPNヌル</li>
+<li>コントロールチェンジ:RPN（LSB）(Bn 64h 7Fh) RPNヌル</li>
+</ul>
+<p>として出力されます。</p>
+<a name="namidi__PATTERN"></a><h5>PATTERN</h5><p>繰り返し現れるフレーズなどをパターンとして定義できます。<br/>パターンは以下の構文で定義します。</p>
+<pre><code>PATTERN &lt;識別子&gt;
+  ... // 任意の文
+END
+</code></pre><p>識別子は以下の条件を満たしている必要があります。</p>
+<ul>
+<li>数字、アルファベット、アンダースコア(_) のいずれかから始まる</li>
+<li>ー文字以上</li>
+<li>二文字以降は数字、アルファベット、アンダースコア(_)、ハイフン(-)のいずれか</li>
+<li>他の構文で使う単語と衝突しない</li>
+</ul>
+<p>定義したパターンは<a class="js-transit" href="#namidi__EXPAND">EXPAND</a>文で展開します。</p>
+<p>入れ子のパターンを定義することが出来ます。<br/>親パターンの外と中で展開時の識別子の指定方法が異なります。</p>
+<pre><code>PATTERN parent
+  PATTERN child-A
+    ...
+  END
+
+  PATTERN child-B
+    ...
+  END
+
+  EXPAND child-A // 同じパターン内で定義したパターンはそのまま識別子を指定して展開
+END
+
+EXPAND parent:child-B // パターンの外から入れ子になっているパターンを展開する場合は、
+                      // &lt;親パターン名&gt;:&lt;子パターン名&gt; の様に識別子を指定する
+</code></pre><p>パターンの展開はパターンの定義より先に書くことが出来ます。</p>
+<pre><code>EXPAND Intro
+
+PATTERN Intro
+  ...
+END
+</code></pre><a name="namidi__EXPAND"></a><h5>EXPAND</h5><p>定義済みパターンを展開します。<br/>入れ子のパターンはコロン(:)を付けて展開できます。</p>
+<p>詳細は<a class="js-transit" href="#namidi__PATTERN">PATTERN</a>を参照して下さい。</p>
+
         </div>
 
         <div class="abc">
-          <a name="abc"></a>
           <h3>ABC Notation</h3>
-          <p>TODO</p>
+          <p>NAMIDIで扱うABC NotationはABC Notation standard 2.1の仕様に準じます。<br/>詳細なリファレンスは本家サイトを参照して下さい。<br/><a href="http://abcnotation.com/wiki/abc:standard:v2.1" target="_blank">http://abcnotation.com/wiki/abc:standard:v2.1</a></p>
+<p>また、NAMIDIでは以下の制限事項があります。</p>
+<ul>
+<li>文字コードはASCIIとUTF-8のみサポートします</li>
+<li>MIDI再生に影響しない楽譜記述用の構文は無視されます</li>
+<li>2.0以下の廃止となった記法はサポートしません</li>
+</ul>
+
         </div>
 
         <div class="mml">
-          <a name="mml"></a>
           <h3>Music Macro Language</h3>
-          <p>TODO</p>
+          <p>Version 0.3.0 Draft, 2016</p>
+<a name="mml__MMLについて"></a><h4>MMLについて</h4><p>Music Macro Language (MML) は、コンピュータ・ミュージックの黎明期にテキスト記述による音楽演奏のために作られた言語です。<br/>歴史的な経緯のためか様々な実装があり、標準仕様が存在しません。<br/>NAMIDIでは、日本でよく使われているFlash用ライブラリの<a href="https://flmml.codeplex.com" target="_blank">FIMML</a>の記法をベースにしています。<br/>ですが、MIDIに特化させているため、音源モジュール関連の互換性はありません。<br/>また、MIDIに関連する記法として<a href="http://hpc.jp/~mml2mid/mml2mid.txt" target="_blank">mml2mid</a>の仕様を一部取り入れています。<br/>その他、NAMIDI独自の記法を追加しています。</p>
+<a name="mml__基本的な構造"></a><h4>基本的な構造</h4><a name="mml__ファイルフォーマット"></a><h5>ファイルフォーマット</h5><ul>
+<li>読み込み可能な拡張子は<code>.mml</code>です</li>
+<li>演奏データはプレーンテキストで記述します</li>
+<li>大文字小文字は区別されません</li>
+<li>文字列やコメントを除いて、ASCIIコードで記述します</li>
+<li>文字コードはASCIIとUTF-8のみサポートします</li>
+</ul>
+<a name="mml__トラック区切り"></a><h5>トラック区切り</h5><p>セミコロン(;)はトラックの区切りとして作用し、トラックを切り替えます。<br/>トラックを切り替えると音符入力の開始地点となる現在位置がゼロに戻ります。</p>
+<a name="mml__トラックとチャネル"></a><h6>トラックとチャネル</h6><p>MIDIのチャネルとトラックは連動していません。<br/>チャネルを切り替える場合は<a class="js-transit" href="#mml__@ch">@ch</a>コマンドで切り替えます。</p>
+<a name="mml__トラックとチャネルの例"></a><h6>トラックとチャネルの例</h6><pre><code>cccc;
+eeee;
+
+@CH2
+cdef;
+</code></pre><p>上記の結果は以下の様になります。</p>
+<pre><code>            | 1
+==============================
+Ch1 |060:C3 | .
+    |059:B  | .
+    |058:A# | .
+    |057:A  | .
+    |056:G# | .
+    |055:G  | .
+    |054:F# | .
+    |053:F  | .
+    |052:E  | x---x---x---x---
+    |051:D# | .
+    |050:D  | .
+    |049:C# | .
+    |048:C2 | x---x---x---x---
+------------------------------
+Ch2 |060:C3 | .
+    |059:B  | .
+    |058:A# | .
+    |057:A  | .
+    |056:G# | .
+    |055:G  | .
+    |054:F# | .
+    |053:F  | .           x---
+    |052:E  | .       x---
+    |051:D# | .
+    |050:D  | .   x---
+    |049:C# | .
+    |048:C2 | x---
+</code></pre><p>チャネルの初期値は1です。</p>
+<a name="mml__コメント"></a><h5>コメント</h5><p><code>//</code>から改行まではコメントとして処理されます。<br/>複数行のコメントは<code>/*</code>から <code>*/</code> までがコメントとして処理されます。</p>
+<a name="mml__文字列"></a><h5>文字列</h5><p><code>&#39; &#39;</code> もしくは <code>&quot; &quot;</code> で囲まれた部分は文字列として処理されます。</p>
+<pre><code>&#39;これは 文字列です&#39;
+&quot;これも 文字列です&quot;
+</code></pre><p>文字列は<a class="js-transit" href="#mml__#title">#title</a> や <a class="js-transit" href="#mml__#copyright">#copyright</a> 文で使用します。</p>
+<a name="mml__マクロ"></a><h5>マクロ</h5><p>マクロにより、事前に定義された内容と置き換えができます。<br/>マクロの定義は<code>$定義名 = 置き換える内容;</code>で定義します。<br/><code>$定義名</code> とすることでマクロの展開が行われます。<br/>セミコロンの前には改行を入れることが出来るので、複数行のマクロ定義も可能です。</p>
+<pre><code>$MACRO = abcd
+
+$MACRO // これは abcd に展開される
+</code></pre><a name="mml__引数付きマクロ"></a><h6>引数付きマクロ</h6><p>引数付きマクロは<code>$定義名{引数1, 引数2} = 置き換える内容;</code>で定義します。<br/>置き換える内容に<code>%引数名</code> とすることで、マクロ呼び出し時の引数を展開できます。</p>
+<pre><code>$m{vol, note} = @V%vol %note;
+
+$m{100, CDE} // これは @V100 CDE と展開される
+</code></pre><p>_<a href="https://flmml.codeplex.com/wikipage?title=Reference&amp;referringTitle=Documentation#fl_macro" target="_blank">FIMML マクロ機能詳細</a>より_</p>
+<p>※ マクロ機能はFIMMLの仕様に準じます</p>
+<a name="mml__インクルード"></a><h5>インクルード</h5><p>インクルードにより、他のファイルの定義などを読み込むことが出来ます。</p>
+<pre><code>#include &#39;drums.mml&#39;
+</code></pre><p>他のファイルに、リズムトラックのマクロを定義したりして使用出来ます。</p>
+<a name="mml__リファレンス"></a><h4>リファレンス</h4><a name="mml__音符"></a><h5>音符</h5><a name="mml__音階"></a><h6>音階</h6><p>音階の入力は 音名(CDEFGAB) + 臨時記号(+/#/-)で行います。<br/>臨時記号は省略できます。<br/>臨時記号はダブルシャープ(##/++)、ダブルフラット(--)の指定も可能です。</p>
+<pre><code>C    // C
+C+   // C#
+C++  // C## (Dと同じ)
+C#   // C#
+C##  // C## (Dと同じ)
+D-   // D♭
+D--  // D♭♭ (Cと同じ)
+</code></pre><a name="mml__音長"></a><h6>音長</h6><p>音階の後ろに数字をつけると音長を指定できます。<br/>数字はN分音符を意味します。</p>
+<pre><code>C4 // 4分音符のド
+</code></pre><p>付点をつけると付点N分音符になります。</p>
+<pre><code>C4. // 付点4分音符のド
+</code></pre><p>複付点音符は2つまで可能です。</p>
+<pre><code>C4.. // 4分音符の7/4の長さ
+</code></pre><p>%を使うと分解能の単位で絶対値入力が出来ます。</p>
+<pre><code>C%480 // 分解能480の場合、4分音符の長さ
+</code></pre><a name="mml__休符"></a><h5>休符</h5><p>Rで休符を入力できます。<br/>休符の後ろには音符同様に音長を指定できます。</p>
+<pre><code>R4 // 4分休符
+</code></pre><a name="mml__オクターブ"></a><h5>オクターブ</h5><a name="mml__オクターブ指定"></a><h6>オクターブ指定</h6><p>音符入力時のオクターブを指定します。<br/>-2 ~ +8の範囲で指定できます。<br/>デフォルトは+2です。</p>
+<pre><code>@o4  // オクターブ4
+</code></pre><a name="mml__オクターブシフト"></a><h6>オクターブシフト</h6><a name="mml__&lt;"></a><h7>&lt;</h7><p>オクターブを相対的に1だけ上げます。</p>
+<a name="mml__&gt;"></a><h7>&gt;</h7><p>オクターブを相対的に1だけ下げます。</p>
+<p><a class="js-transit" href="#mml__#octave reverse">#octave reverse</a>により反転できます。</p>
+<a name="mml__#timebase"></a><h5>#timebase</h5><p>4分音符の分解能を指定します。<br/>デフォルトは480です。<br/>一つの演奏データにつき、１回だけ指定できます。<br/>SMFファイルに出力した際、ヘッダチャンクの時間単位の値になります。</p>
+<pre><code>#timebase 960
+</code></pre><a name="mml__ノートシフト"></a><h5>ノートシフト</h5><a name="mml__絶対ノートシフト"></a><h6>絶対ノートシフト</h6><p>音符入力時の音階を半音単位で上下させます。</p>
+<pre><code>NS2  // 1音上げ
+C    // Dの音になる
+NS-2 // 1音下げ
+C    // A#の音になる
+</code></pre><a name="mml__相対ノートシフト"></a><h6>相対ノートシフト</h6><p>音符入力時の音階を半音単位で上下させます。<br/>絶対ノートシフトとの違いは直前のノートシフトの値から相対的に上下することです。</p>
+<pre><code>@NS2  // 1音上げ
+C     // Dの音になる
+@NS-2 // 1音上げから1音下げ
+C     // Cの音に戻る
+</code></pre><a name="mml__デフォルト音長"></a><h5>デフォルト音長</h5><p>音符入力時の音長指定を省略した場合の音長を指定できます。<br/>指定できる範囲は1~384です。<br/>デフォルトは4です。<br/>384より大きい数字や、384分音符の整数倍の音長にならない数字を指定した場合、NAMIDIではエラーにします。<br/>指定可能な値は以下になります。</p>
+<pre><code>L384 L192 L128 L96 L64 L48 L32 L24 L16 L12 L8 L6 L4 L3 L2 L1
+</code></pre><a name="mml__ゲートタイム"></a><h5>ゲートタイム</h5><a name="mml__ゲートタイムの割合指定"></a><h6>ゲートタイムの割合指定</h6><p>ゲートタイムの割合を指定します。<br/>範囲は0～16です。<br/>入力された音符のゲートタイムが&lt;割合&gt;/16になります。<br/>デフォルトは15です。</p>
+<pre><code>Q14
+C4 // ゲートタイムは4分音符の14/16の長さになる
+</code></pre><a name="mml__ゲートタイムのマイナス割合の指定"></a><h6>ゲートタイムのマイナス割合の指定</h6><p>ゲートタイムの割合指定で指定されたゲートタイムから全音符の&lt;マイナス割合&gt;/192の長さを引きます。</p>
+<pre><code>Q16
+@Q 2
+C4 // ゲートタイムは4分音符の190/192の長さになる
+</code></pre><a name="mml__ベロシティ"></a><h5>ベロシティ</h5><a name="mml__ベロシティの大まかな指定"></a><h6>ベロシティの大まかな指定</h6><p>ベロシティの大まかな指定をします。<br/>範囲は0～15です。<br/>ベロシティの値を(指定値× 8 + 7)で設定します。</p>
+<pre><code>V10  // @V87と同じ
+</code></pre><a name="mml__ベロシティの細かい指定"></a><h6>ベロシティの細かい指定</h6><p>ベロシティの細かい指定をします。<br/>範囲は0～127です。<br/>デフォルトは100です。</p>
+<pre><code>@V120  // ベロシティ 120
+</code></pre><a name="mml__ベロシティシフト"></a><h6>ベロシティシフト</h6><a name="mml__("></a><h7>(</h7><p>ベロシティを相対的に1段階上げます。</p>
+<a name="mml__)"></a><h7>)</h7><p>オクターブを相対的に1段階下げます。</p>
+<p>直前に使ったベロシティコマンドが<code>V</code>か<code>@V</code>かによって変化量が変わります。<br/>数字を添えた場合、数字の数分、段階を上げ下げします。</p>
+<pre><code>V10
+(2  // 2段階(8x2=16)上げる 
+@V100
+)5  // 5段階(1x5=5)下げる
+</code></pre><p><a class="js-transit" href="#mml__#velocity reverse">#velocity reverse</a>により反転できます。</p>
+<a name="mml__連符"></a><h5>連符</h5><p><code>{}</code>で囲まれた音符は連符として作用します。<br/><code>{}</code>の後ろには音長を指定できます。<br/>音長を省略した場合は<a class="js-transit" href="#mml__デフォルト音長">デフォルト音長</a>で指定した長さになります。<br/>一つ一つの連符の長さはトータルの長さが音長で指定された長さになるように均等に配分されます。</p>
+<pre><code>{CDE}4    // 3連符の例
+          // この場合、L12 CDE と同じ
+{CDEFGA}4 // 6連符の例
+          // この場合、L24 CDEFGA と同じ
+</code></pre><a name="mml__和音"></a><h5>和音</h5><p><code>[]</code>で囲まれた音符は和音として作用します。</p>
+<pre><code>L4
+[CEG] // Cコードで4分音符の長さになる
+</code></pre><p>Rコマンドによって、和音の発音タイミングをずらすことが出来ます。</p>
+<pre><code>L8 [C4.RERG]D. C2
+</code></pre><p>上記の結果は以下の様になります。</p>
+<pre><code>            | 1               2
+===============================
+Ch1 |060:C3 | .               .
+    |059:B  | .               .
+    |058:A# | .               .
+    |057:A  | .               .
+    |056:G# | .               .
+    |055:G  | .   x-          .
+    |054:F# | .               .
+    |053:F  | .               .
+    |052:E  | . x-            .
+    |051:D# | .               .
+    |050:D  | .     x--       .
+    |049:C# | .               .
+    |048:C2 | x-----   x-------
+</code></pre><p>_<a href="https://flmml.codeplex.com/wikipage?title=Reference&amp;referringTitle=Documentation#fl_poly" target="_blank">FIMML 発音数関連 和音記法より</a>より_</p>
+<a name="mml__タイ"></a><h5>タイ</h5><p>&amp; 記号で直前の音符と同じ音程の音符をつなぐとタイとして作用します。</p>
+<pre><code>C4 &amp; C8 // この場合、付点4分音符と同じ長さになります
+</code></pre><p>和音についてもタイでつなぐことが出来ます。</p>
+<pre><code>L4
+[CEG] &amp; [CEG] // Cコードで2分音符分の長さになる
+</code></pre><p>タイでつながれる音符が異なる音階の場合は何も行いません。<br/>※ スラーはサポートしません</p>
+<a name="mml__リピート"></a><h5>リピート</h5><p>繰り返しの指定を行います。<br/>繰り返しの指定は<code>/:&lt;繰り返し回数&gt; ... / ... :/</code>の構文行います。<br/>&lt;繰り返し回数&gt;を省略した場合、繰り返し回数は2になります。<br/>最終ループのとき、<code>/</code>があればループを抜けます。<br/><code>/</code>は省略可能です。</p>
+<pre><code>/:3 cde / fg :/  // これは cde fg cde fg cde と同じになる
+</code></pre><a name="mml__#title"></a><h5>#title</h5><p>演奏データのタイトルを設定します。<br/>一つの演奏データにつき、１回だけ指定できます。<br/>SMFファイルに出力した際、第一トラックにシーケンス名(FF 03h)として出力されます。</p>
+<pre><code>#title &#39;Syntax Reference&#39;
+</code></pre><a name="mml__#copyright"></a><h5>#copyright</h5><p>演奏データの著作件情報を設定します。<br/>一つの演奏データにつき、１回だけ指定できます。<br/>SMFファイルに出力した際、第一トラックに著作権表示(FF 02h)として出力されます。</p>
+<pre><code>#copyright &#39;Copyright (c) 2016, Noriyoshi Abe. All Rights Reserved.&#39;
+</code></pre><a name="mml__#marker"></a><h5>#marker</h5><p>マーカーを挿入します。<br/>SMFファイルに出力した際、第一トラックにマーカーイベント(FF 06h)として出力されます。</p>
+<pre><code>#marker &#39;Intro&#39;
+</code></pre><a name="mml__#velocity reverse"></a><h5>#velocity reverse</h5><p>相対ベロシティ変更記号の機能を反転します。</p>
+<pre><code>#velocity reverse
+</code></pre><p>デフォルトは以下になります。</p>
+<table>
+<thead>
+<tr>
+<th>機能</th>
+<th>記号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ベロシティアップ</td>
+<td><code>(</code></td>
+</tr>
+<tr>
+<td>ベロシティダウン</td>
+<td><code>)</code></td>
+</tr>
+</tbody>
+</table>
+<a name="mml__#octave reverse"></a><h5>#octave reverse</h5><p>相対オクターブ変更記号の機能を反転します。</p>
+<pre><code>#octave reverse
+</code></pre><p>デフォルトは以下になります。</p>
+<table>
+<thead>
+<tr>
+<th>機能</th>
+<th>記号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>オクターブアップ</td>
+<td><code>&lt;</code></td>
+</tr>
+<tr>
+<td>オクターブダウン</td>
+<td><code>&gt;</code></td>
+</tr>
+</tbody>
+</table>
+<a name="mml__t"></a><h5>t</h5><p>Beat per Minutes(1分間の４分音符の数)の単位でテンポを指定します。<br/>デフォルトは120.0です。<br/>小数点第2位まで指定できます。<br/>演奏データの途中から変更可能です。<br/>SMFファイルに出力した際、第一トラックにテンポチェンジイベント(FF 51h 03h)として出力されます。</p>
+<pre><code>t 128.99
+</code></pre><a name="mml__@ch"></a><h5>@ch</h5><p>チャネルを切り替えます。<br/>使用可能なチャネルは1~16です。</p>
+<pre><code>@ch10
+</code></pre><a name="mml__@sy"></a><h5>@sy</h5><p>チャネルのサウンドフォントを切り替えます。<br/>予め指定するサウンドフォントが読み込まれている必要があります。</p>
+<pre><code>@sy &#39;SGM-V2.01&#39;
+</code></pre><a name="mml__@bs"></a><h5>@bs</h5><p>チャネルの音色変更で使用します。<br/>MIDIメッセージのバンクセレクトMSB+LSBに相当します。<br/>MSBとLSBをカンマ区切りで指定します。</p>
+<pre><code>@bs 0, 120 // MSB=0, LSB=120
+</code></pre><p>SMFファイルに出力した際、</p>
+<ul>
+<li>コントロールチェンジ:バンクセレクトMSB(Bn 00h)</li>
+<li>コントロールチェンジ:バンクセレクトLSB(Bn 20h)</li>
+</ul>
+<p>として出力されます。</p>
+<p><a class="js-transit" href="#mml__@pc">@pc</a>も参照して下さい。</p>
+<a name="mml__@pc"></a><h5>@pc</h5><p>チャネルの音色変更で使用します。<br/>MIDIメッセージのプログラムチェンジに相当します。</p>
+<pre><code>// GeneralUser GS の Standard Drums
+@bs 0, 120 // MSB=0, LSB=120
+@pc 0      // ProgramNo=0
+
+// SGM-V2.01 の Standard Drums
+@bs 0, 127 // MSB=0, LSB=127
+@pc 0      // ProgramNo=0
+</code></pre><p>SMFファイルに出力した際、プログラムチェンジ(Cn) として出力されます。</p>
+<p>※ 音色が切り替わるのは@pcコマンドが再生された時になる事に注意して下さい</p>
+<a name="mml__@vl"></a><h5>@vl</h5><p>チャネルのボリュームを指定します。<br/>指定可能な値は0~127です。<br/>デフォルトは100です。<br/>SMFファイルに出力した際、コントロールチェンジ(Cn 07h) チャネルボリューム として出力されます。</p>
+<pre><code>@vl100
+</code></pre><a name="mml__@cs"></a><h5>@cs</h5><p>チャネルのコーラスエフェクトのかかり具合を変更します。<br/>指定可能な値は0~127です。<br/>デフォルトは0です。</p>
+<p>SMFファイルに出力した際、コントロールチェンジ(Cn 5Dh) エフェクト3デプス（コーラスセンドレベル）として出力されます。</p>
+<pre><code>@cs100
+</code></pre><p>※ サウンドフォントによっては(GeneralUser GSなど)、意図的にコーラスが掛からないように設定されているものもあります</p>
+<a name="mml__@rv"></a><h5>@rv</h5><p>チャネルのリバーブエフェクトのかかり具合を変更します。<br/>指定可能な値は0~127です。<br/>デフォルトは0です。<br/>SMFファイルに出力した際、コントロールチェンジ(Cn 5Bh) エフェクト1デプス（リバーブセンドレベル）として出力されます。</p>
+<pre><code>@rv100
+</code></pre><p>※ サウンドフォントによっては(GeneralUser GSなど)、意図的にリバーブが掛からないように設定されているものもあります</p>
+<a name="mml__@x"></a><h5>@x</h5><p>チャネルのエクスプレッションを指定します。<br/>指定可能な値は0~127です。<br/>デフォルトは127です。<br/>SMFファイルに出力した際、コントロールチェンジ(Cn 0Bh) エクスプレッション として出力されます。</p>
+<pre><code>@x100
+</code></pre><a name="mml__@p"></a><h5>@p</h5><p>チャネルのパン(左右の定位)を指定します。<br/>指定可能な値は0 ~ 127です。<br/>0に近づくほど左に振れ、127に近づくほど右に振れます。<br/>デフォルトは64(中央)です。</p>
+<pre><code>@p30
+</code></pre><p>SMFファイルに出力した際、コントロールチェンジ(Cn 0Ah) パンとして出力されます。</p>
+<a name="mml__@d"></a><h5>@d</h5><p>シンセサイザのピッチをセント単位で調整します。<br/>指定可能な値は上下2オクターブ(-2400 ~ +2400)です。<br/><a class="js-transit" href="#mml__ノートシフト">ノートシフト</a>が音階を変更するのに対し、@dコマンドでは音階は変えずにシンセサイザのピッチを変更します。</p>
+<pre><code>@d-50
+</code></pre><p>SMFファイルに出力した際、</p>
+<ul>
+<li>コントロールチェンジ:RPN（MSB）(Bn 65h 0) チャネル・ファイン・チューン</li>
+<li>コントロールチェンジ:RPN（LSB）(Bn 64h 1) チャネル・ファイン・チューン</li>
+<li>コントロールチェンジ:データエントリー(MSB) (Bn 06h)</li>
+<li>コントロールチェンジ:データエントリー(LSB) (Bn 26h)</li>
+<li>コントロールチェンジ:RPN（MSB）(Bn 65h 0) チャネル・コース・チューン</li>
+<li>コントロールチェンジ:RPN（LSB）(Bn 64h 2) チャネル・コース・チューン</li>
+<li>コントロールチェンジ:データエントリー(MSB) (Bn 06h) </li>
+<li>コントロールチェンジ:RPN（MSB）(Bn 65h 7Fh) RPNヌル</li>
+<li>コントロールチェンジ:RPN（LSB）(Bn 64h 7Fh) RPNヌル</li>
+</ul>
+<p>として出力されます。</p>
+
         </div>
       </div>
 
+      <a name="support"></a>
       <div class="support">
-        <a name="support"></a>
         <h2>Customer Support</h2>
         <p>TODO</p>
       </div>
 
+      <a name="license"></a>
       <div class="license">
-        <a name="license"></a>
         <h2>Third-Party Licences</h2>
-        <p>TODO</p>
+        <a name="license__Bison Parser"></a><h4>Bison Parser</h4><p>A Bison parser, made by GNU Bison 2.3.</p>
+<p>Skeleton implementation for Bison&#39;s Yacc-like parsers in C</p>
+<p>Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006<br/>Free Software Foundation, Inc.</p>
+<p>This program is free software; you can redistribute it and/or modify<br/>it under the terms of the GNU General Public License as published by<br/>the Free Software Foundation; either version 2, or (at your option)<br/>any later version.</p>
+<p>This program is distributed in the hope that it will be useful,<br/>but WITHOUT ANY WARRANTY; without even the implied warranty of<br/>MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br/>GNU General Public License for more details.</p>
+<p>You should have received a copy of the GNU General Public License<br/>along with this program; if not, write to the Free Software<br/>Foundation, Inc., 51 Franklin Street, Fifth Floor,<br/>Boston, MA 02110-1301, USA.</p>
+<p>As a special exception, you may create a larger work that contains<br/>part or all of the Bison parser skeleton and distribute that work<br/>under terms of your choice, so long as that work isn&#39;t itself a<br/>parser generator using the skeleton or a modified version thereof<br/>as a parser skeleton.  Alternatively, if you modify or redistribute<br/>the parser skeleton itself, you may (at your option) remove this<br/>special exception, which will cause the skeleton and the resulting<br/>Bison output files to be licensed under the GNU General Public<br/>License without this special exception.</p>
+<p>This special exception was added by the Free Software Foundation in<br/>version 2.2 of Bison.</p>
+<a name="license__Flex"></a><h4>Flex</h4><p>Flex carries the copyright used for BSD software, slightly modified<br/>because it originated at the Lawrence Berkeley (not Livermore!) Laboratory,<br/>which operates under a contract with the Department of Energy:</p>
+<p>Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006, 2007 The Flex Project.</p>
+<p>Copyright (c) 1990, 1997 The Regents of the University of California.<br/>All rights reserved.</p>
+<p>This code is derived from software contributed to Berkeley by<br/>Vern Paxson.</p>
+<p>The United States Government has rights in this work pursuant<br/>to contract no. DE-AC03-76SF00098 between the United States<br/>Department of Energy and the University of California.</p>
+<p>Redistribution and use in source and binary forms, with or without<br/>modification, are permitted provided that the following conditions<br/>are met:</p>
+<ol>
+<li>Redistributions of source code must retain the above copyright<br/>notice, this list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright<br/>notice, this list of conditions and the following disclaimer in the<br/>documentation and/or other materials provided with the distribution.</li>
+</ol>
+<p>Neither the name of the University nor the names of its contributors<br/>may be used to endorse or promote products derived from this software<br/>without specific prior written permission.</p>
+<p>THIS SOFTWARE IS PROVIDED ``AS IS&#39;&#39; AND WITHOUT ANY EXPRESS OR<br/>IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED<br/>WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR<br/>PURPOSE.</p>
+<p>This basically says &quot;do whatever you please with this software except<br/>remove this notice or take advantage of the University&#39;s (or the flex<br/>authors&#39;) name&quot;.</p>
+<p>Note that the &quot;flex.skl&quot; scanner skeleton carries no copyright notice.<br/>You are free to do whatever you please with scanners generated using flex;<br/>for them, you are not even bound by the above copyright.</p>
+<a name="license__GeneralUser GS"></a><h4>GeneralUser GS</h4><p><strong><em> GeneralUser GS v1.44 </em></strong><br/><strong><em>     License v2.0    </em></strong></p>
+<p><strong> License of the complete work </strong><br/>You may use GeneralUser GS without restriction for your own music creation, private or commercial.  This SoundFont bank is provided to the community free of charge.  Please feel free to use it in your software projects, and to modify the SoundFont bank or its packaging to suit your needs.</p>
+<p><strong> License of contained samples </strong><br/>GeneralUser GS inherits the usage rights of the samples contained within, all of which allow full use in music production, including the ability to make profit from musical recordings created with GeneralUser GS.</p>
+<p>Many of the samples are original, but some were taken from other banks freely (and legally) available on the Internet from various SoundFont websites.  Because GeneralUser GS originated as a personal project with no intention for publication, I cannot be 100% sure where all of the samples originated, although I do know that none of them came from commercially published SoundFont packages or sample CDs.  Regardless, many &quot;free&quot; SoundFonts available on the web may indeed contain samples of questionable origin.  My understanding of the copyrights of all samples is only as good as the information provided by the original sources. If you become aware of any restricted samples being used in GeneralUser GS, please let me know so I can replace them.</p>
+<p>This uncertainty may concern you if you intend to use GeneralUser GS in a commercial software product.  That being said, I have never received any complaint regarding sample ownership since I published the original GeneralUser GS back in 2000, and as far as I am aware, neither have any of the companies creating commercial software products using GeneralUser GS.</p>
+<p><strong> More info </strong><br/>If you plan to feature GeneralUser GS on your own website, please do not link directly to my download files.  Either link to my website, or provide your own local copy instead.</p>
+<p>I hope you enjoy GeneralUser GS!  This SoundFont bank is the product of many years of hard work.</p>
+<p>You can find updates to GeneralUser GS and more of my SoundFonts at:<br/><a href="http://www.schristiancollins.com" target="_blank">http://www.schristiancollins.com</a></p>
+<p>I can be reached at: s_chriscollins@hotmail.com.</p>
+<p>Thank you!<br/>-~Chris</p>
+
       </div>
     </main>
   </body>

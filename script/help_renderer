@@ -15,6 +15,11 @@ var contents = {
 
 var renderer = new marked.Renderer();
 
+// For Help Indexer
+renderer.br = function () {
+  return '<br/>';
+}
+
 function main(argv, callback) {
   var template = fs.readFileSync('../doc/template/help.ejs', 'utf-8');
   var dest = '../cocoa/NAMIDI/Resources/NAMIDI.help/Contents/Resources/en.lproj/index.html';
