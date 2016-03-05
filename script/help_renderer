@@ -1,0 +1,58 @@
+#!/usr/bin/env node
+
+var fs = require('fs')
+  , util = require('util')
+  , ejs = require('ejs')
+  , marked = require('marked');
+
+
+var contents = {
+  namidi: '../doc/ja/namidi.md',
+  abc: '../doc/ja/abc.md',
+  mml: '../doc/ja/mml.md',
+  license: '../doc/shared/license.md',
+}
+
+var renderer = new marked.Renderer();
+
+function main(argv, callback) {
+  var template = fs.readFileSync('../doc/template/help.ejs', 'utf-8');
+  var dest = '../cocoa/NAMIDI/Resources/NAMIDI.help/Contents/Resources/en.lproj/index.html';
+
+  var renderAttrs = {};
+
+  for (var key in contents) {
+    var md = fs.readFileSync(contents[key], 'utf8');
+
+    renderer.heading = function (text, level) {
+      if (1 == level) {
+        return '';
+      }
+      level += 3;
+      return '<a name="'+key+'__'+text+'"></a><h'+level+'>'+text+'</h'+level+'>';
+    }
+
+    renderer.link = function (href, title, text) {
+      if (href.startsWith('http')) {
+        return '<a href="'+href+'" target="_blank">'+text+'</a>';
+      }
+      else {
+        return '<a class="js-transit" href="#'+key+'__'+href.substring(1)+'">'+text+'</a>';
+      }
+    }
+
+    renderAttrs[key] = marked(md, {breaks: true, renderer: renderer});
+  }
+
+  var html = ejs.render(template, renderAttrs);
+  fs.writeFileSync(dest, html);
+}
+
+if (!module.parent) {
+  main(process.argv.slice(), function(err, code) {
+    if (err) throw err;
+    return process.exit(code || 0);
+  });
+} else {
+  module.exports = main;
+}

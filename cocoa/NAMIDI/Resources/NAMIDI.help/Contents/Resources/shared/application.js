@@ -14,7 +14,7 @@ document.onreadystatechange = function () {
     for (var i = 0; i < transits.length; ++i) {
       transits[i].addEventListener('click', function () {
         var isMenuOpen = body.classList.contains('is-menu-open');
-        body.className = this.getAttribute('href').substring(1);
+        body.className = this.getAttribute('href').substring(1).split('__')[0];
         if (isMenuOpen) {
           body.classList.add('is-menu-open');
         }
@@ -25,11 +25,11 @@ document.onreadystatechange = function () {
     if (!location.hash) {
       location.hash = '#top';
     }
-    body.className = location.hash.substring(1)
+    body.className = location.hash.substring(1).split('__')[0];
 
     window.addEventListener('popstate', function () {
         var isMenuOpen = body.classList.contains('is-menu-open');
-        body.className = location.hash.substring(1);
+        body.className = location.hash.substring(1).split('__')[0];
         if (isMenuOpen) {
           body.classList.add('is-menu-open');
         }
