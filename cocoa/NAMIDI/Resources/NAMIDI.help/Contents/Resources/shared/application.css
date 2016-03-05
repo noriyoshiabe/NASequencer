@@ -23,3 +23,52 @@ main {
 .is-menu-open main {
   left: 200px;
 }
+
+.top              { display: none; }
+.overview         { display: none; }
+.getting_started  { display: none; }
+.operation_manual { display: none; }
+.general          { display: none; }
+.preference       { display: none; }
+.syntax_reference { display: none; }
+.namidi           { display: none; }
+.abc              { display: none; }
+.mml              { display: none; }
+.support          { display: none; }
+.license          { display: none; }
+
+body.top              { display: block; }
+body.overview         { display: block; }
+body.getting_started  { display: block; }
+body.operation_manual { display: block; }
+body.general          { display: block; }
+body.preference       { display: block; }
+body.syntax_reference { display: block; }
+body.namidi           { display: block; }
+body.abc              { display: block; }
+body.mml              { display: block; }
+body.support          { display: block; }
+body.license          { display: block; }
+
+body.top              .top              { display: block; }
+body.overview         .overview         { display: block; }
+body.getting_started  .getting_started  { display: block; }
+body.operation_manual .operation_manual { display: block; }
+body.operation_manual .general          { display: block; }
+body.operation_manual .preference       { display: block; }
+body.general          .operation_manual { display: block; }
+body.preference       .operation_manual { display: block; }
+body.general          .general          { display: block; }
+body.preference       .preference       { display: block; }
+body.syntax_reference .syntax_reference { display: block; }
+body.syntax_reference .namidi           { display: block; }
+body.syntax_reference .abc              { display: block; }
+body.syntax_reference .mml              { display: block; }
+body.namidi           .syntax_reference { display: block; }
+body.abc              .syntax_reference { display: block; }
+body.mml              .syntax_reference { display: block; }
+body.namidi           .namidi           { display: block; }
+body.abc              .abc              { display: block; }
+body.mml              .mml              { display: block; }
+body.support          .support          { display: block; }
+body.license          .license          { display: block; }

@@ -1,12 +1,40 @@
-function toggleMenu() {
+function toggleMenu(e) {
   document.querySelector('body').classList.toggle('is-menu-open');
+  e.preventDefault();
 }
 
 document.onreadystatechange = function () {
   switch (document.readyState) {
   case 'interactive':
+    var body = document.querySelector('body');
     var topic = document.querySelector('a#topic');
     topic.addEventListener('click', toggleMenu);
+
+    var transits = document.querySelectorAll('.js-transit');
+    for (var i = 0; i < transits.length; ++i) {
+      transits[i].addEventListener('click', function () {
+        var isMenuOpen = body.classList.contains('is-menu-open');
+        body.className = this.getAttribute('href').substring(1);
+        if (isMenuOpen) {
+          body.classList.add('is-menu-open');
+        }
+        history.pushState({}, document.title, this.getAttribute('href'));
+      });
+    }
+
+    if (!location.hash) {
+      location.hash = '#top';
+    }
+    body.className = location.hash.substring(1)
+
+    window.addEventListener('popstate', function () {
+        var isMenuOpen = body.classList.contains('is-menu-open');
+        body.className = location.hash.substring(1);
+        if (isMenuOpen) {
+          body.classList.add('is-menu-open');
+        }
+    });
+
     break;
   case 'complete':
     break;
