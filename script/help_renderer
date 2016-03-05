@@ -28,7 +28,7 @@ function main(argv, callback) {
       if (1 == level) {
         return '';
       }
-      level += 3;
+      level += 2;
       return '<a name="'+key+'__'+text+'"></a><h'+level+'>'+text+'</h'+level+'>';
     }
 
