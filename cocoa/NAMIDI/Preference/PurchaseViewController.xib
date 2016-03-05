@@ -35,7 +35,7 @@
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="opc-2a-1eP">
                     <rect key="frame" x="18" y="290" width="493" height="42"/>
                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" id="FeJ-Dn-CvZ">
-                        <font key="font" metaFont="system" size="12"/>
+                        <font key="font" metaFont="cellTitle"/>
                         <string key="title">Thank you for downloading NAMIDI and trying out its features. However, you haven't purchased full version. In the full version, additional features as follows are available.</string>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -44,7 +44,7 @@
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4tP-w2-SaV">
                     <rect key="frame" x="18" y="248" width="428" height="16"/>
                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Loading additional synthesizer with SoundFont file. (.sf2 format)" id="oow-N3-dN0">
-                        <font key="font" metaFont="system" size="12"/>
+                        <font key="font" metaFont="cellTitle"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
@@ -68,7 +68,7 @@
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="okV-mx-wuN">
                     <rect key="frame" x="18" y="200" width="428" height="16"/>
                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Exporting your sequence data to" id="MtF-Qg-Kmx">
-                        <font key="font" metaFont="system" size="12"/>
+                        <font key="font" metaFont="cellTitle"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
@@ -76,7 +76,7 @@
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0m9-mh-EzU">
                     <rect key="frame" x="18" y="144" width="428" height="48"/>
                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" id="3FX-fU-28Y">
-                        <font key="font" metaFont="system" size="12"/>
+                        <font key="font" metaFont="cellTitle"/>
                         <string key="title"> • Standard MIDI File (Format 1)
  • Waveform Audio File Format (WAV 44.1kHz Linear PCM 16bit stereo)
  • Advanced Audio Coding (AAC 44.1kHz 192kbps stereo)</string>
@@ -90,6 +90,9 @@
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
+                    <connections>
+                        <action selector="purchasePressed:" target="-2" id="nja-43-feJ"/>
+                    </connections>
                 </button>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oLw-g9-G4w">
                     <rect key="frame" x="14" y="13" width="147" height="32"/>
@@ -97,6 +100,9 @@
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
+                    <connections>
+                        <action selector="restorePurchasePressed:" target="-2" id="Sa7-v0-FPT"/>
+                    </connections>
                 </button>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rLU-hc-L90">
                     <rect key="frame" x="18" y="49" width="143" height="18"/>
@@ -109,7 +115,7 @@
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="in9-TN-BXO">
                     <rect key="frame" x="18" y="120" width="428" height="16"/>
                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Your purchase will help NAMIDI’s development." id="Yw2-aB-Thp">
-                        <font key="font" metaFont="system" size="12"/>
+                        <font key="font" metaFont="cellTitle"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>

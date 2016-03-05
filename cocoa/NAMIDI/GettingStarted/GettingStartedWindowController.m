@@ -25,7 +25,7 @@
 {
     [super windowDidLoad];
     
-    NSString* filePath = [[NSBundle mainBundle] pathForResource:@"index" ofType:@"html" inDirectory:@"getting-started"];
+    NSString* filePath = [[NSBundle mainBundle] pathForResource:@"index" ofType:@"html" inDirectory:@"GettingStarted"];
     NSURL* fileURL = [NSURL fileURLWithPath:filePath];
     NSURLRequest* request = [NSURLRequest requestWithURL:fileURL];
     [[_webView mainFrame] loadRequest:request];

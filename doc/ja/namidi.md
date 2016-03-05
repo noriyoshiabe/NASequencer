@@ -1,6 +1,8 @@
 NAMIDI Syntax
 =============
-Version 0.3.0 Draft, 2016
+Version 0.4.0 Draft, 2016
+
+**This document will be localized on Version 0.5.0. 😵**
 
 基本的な構造
 ------------

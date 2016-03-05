@@ -1,6 +1,8 @@
 ABC Syntax
 ==========
 
+**This document will be localized on Version 0.5.0. 😵**
+
 NAMIDIで扱うABC NotationはABC Notation standard 2.1の仕様に準じます。
 詳細なリファレンスは本家サイトを参照して下さい。
 http://abcnotation.com/wiki/abc:standard:v2.1

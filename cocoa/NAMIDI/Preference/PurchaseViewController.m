@@ -40,4 +40,20 @@
     // Do view setup here.
 }
 
+- (IBAction)purchasePressed:(id)sender
+{
+    NSAlert *alert = [[NSAlert alloc] init];
+    alert.messageText = @"Sorry, this function will be implemented on Version 0.5.0. 😀";
+    [alert addButtonWithTitle:NSLocalizedString(@"OK", @"OK")];;
+    [alert runModal];
+}
+
+- (IBAction)restorePurchasePressed:(id)sender
+{
+    NSAlert *alert = [[NSAlert alloc] init];
+    alert.messageText = @"Sorry, this function will be implemented on Version 0.5.0. 😀";
+    [alert addButtonWithTitle:NSLocalizedString(@"OK", @"OK")];;
+    [alert runModal];
+}
+
 @end
