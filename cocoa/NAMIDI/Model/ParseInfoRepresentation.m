@@ -48,6 +48,14 @@
     return _error->code;
 }
 
+- (NSString *)formattedString
+{
+    char *cstring = ParseErrorFormattedString(_error);
+    NSString *ret = [NSString stringWithUTF8String:cstring];
+    free(cstring);
+    return ret;
+}
+
 @end
 
 @interface ParseInfoRepresentation () {

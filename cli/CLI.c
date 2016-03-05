@@ -11,8 +11,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
 #include <limits.h>
 #include <signal.h>
 #include <setjmp.h>
@@ -40,7 +38,6 @@ static MidiSourceManagerObserverCallbacks CLIMidiSourceManagerObserverCallbacks;
 static ExporterObserverCallbacks CLIExporterObserverCallbacks;
 
 static char **CLICompletion(const char *text, int start, int end);
-static char *CLIFormatParseError(CLI *self, const ParseError *error);
 
 CLI *CLICreate(const char *filepath, const char **soundSources)
 {
@@ -279,8 +276,8 @@ static void CLINAMidiOnParseFinish(void *receiver, Sequence *sequence, ParseInfo
     NAIterator *iterator = NAArrayGetIterator(info->errors);
     while (iterator->hasNext(iterator)) {
         ParseError *error = iterator->next(iterator);
-        char *formatted = CLIFormatParseError(receiver, error);
-        fputs(formatted, stderr);
+        char *formatted = ParseErrorFormattedString(error);
+        puts(formatted);
         free(formatted);
     }
 
@@ -366,8 +363,8 @@ static void CLIExporterOnParseFinish(void *self, ParseInfo *info)
     NAIterator *iterator = NAArrayGetIterator(info->errors);
     while (iterator->hasNext(iterator)) {
         ParseError *error = iterator->next(iterator);
-        char *formatted = CLIFormatParseError(self, error);
-        fputs(formatted, stderr);
+        char *formatted = ParseErrorFormattedString(error);
+        puts(formatted);
         free(formatted);
     }
 }
@@ -384,57 +381,3 @@ static ExporterObserverCallbacks CLIExporterObserverCallbacks = {
     CLIExporterOnParseFinish,
     CLIExporterOnProgress,
 };
-
-static char *CLIFormatParseError(CLI *self, const ParseError *error)
-{
-    NAStringBuffer *buffer = NAStringBufferCreate(1024);
-
-    NAStringBufferAppendFormat(buffer, "[ERROR:%d] ", error->code);
-
-    const char *errorString = ParseErrorCode2String(error->code);
-    const char *search = "ParseError";
-    char *camel = strstr(errorString, search) + strlen(search);
-    char *pc = camel;
-    char *prev = NULL;
-
-    while (*pc) {
-        if (isupper(*pc)) {
-            if (pc == camel) {
-                NAStringBufferAppendChar(buffer, *pc);
-            }
-            else {
-                if (islower(*prev)) {
-                    NAStringBufferAppendChar(buffer, ' ');
-                }
-
-                if (islower(*(pc + 1))) {
-                    NAStringBufferAppendChar(buffer, tolower(*pc));
-                }
-                else {
-                    NAStringBufferAppendChar(buffer, *pc);
-                }
-            }
-        }
-        else {
-            NAStringBufferAppendChar(buffer, *pc);
-        }
-
-        prev = pc;
-        ++pc;
-    }
-
-    NAStringBufferAppendString(buffer, ". ");
-
-    bool needseparator = false;
-    NAIterator *iterator = NAArrayGetIterator(error->infos);
-    while (iterator->hasNext(iterator)) {
-        NAStringBufferAppendFormat(buffer, "%s\"%s\"", needseparator ? "," : "", iterator->next(iterator));
-        needseparator = true;
-    }
-
-    NAStringBufferAppendFormat(buffer, " - %s:%d:%d\n", error->location.filepath, error->location.line, error->location.column);
-
-    char *ret = NAStringBufferRetriveCString(buffer);
-    NAStringBufferDestroy(buffer);
-    return ret;
-}

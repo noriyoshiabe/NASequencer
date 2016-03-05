@@ -56,3 +56,66 @@ void ParseInfoRelease(ParseInfo *_self)
         free(self);
     }
 }
+
+#include "ParseErrorCode.h"
+#include "NAMidiParser.h"
+#include "ABCParser.h"
+#include "MMLParser.h"
+#include "NAStringBuffer.h"
+
+#include <string.h>
+#include <ctype.h>
+
+char *ParseErrorFormattedString(const ParseError *error)
+{
+    NAStringBuffer *buffer = NAStringBufferCreate(1024);
+
+    NAStringBufferAppendFormat(buffer, "[ERROR:%d] ", error->code);
+
+    const char *errorString = ParseErrorCode2String(error->code);
+    const char *search = "ParseError";
+    char *camel = strstr(errorString, search) + strlen(search);
+    char *pc = camel;
+    char *prev = NULL;
+
+    while (*pc) {
+        if (isupper(*pc)) {
+            if (pc == camel) {
+                NAStringBufferAppendChar(buffer, *pc);
+            }
+            else {
+                if (islower(*prev)) {
+                    NAStringBufferAppendChar(buffer, ' ');
+                }
+
+                if (islower(*(pc + 1))) {
+                    NAStringBufferAppendChar(buffer, tolower(*pc));
+                }
+                else {
+                    NAStringBufferAppendChar(buffer, *pc);
+                }
+            }
+        }
+        else {
+            NAStringBufferAppendChar(buffer, *pc);
+        }
+
+        prev = pc;
+        ++pc;
+    }
+
+    NAStringBufferAppendString(buffer, ". ");
+
+    bool needseparator = false;
+    NAIterator *iterator = NAArrayGetIterator(error->infos);
+    while (iterator->hasNext(iterator)) {
+        NAStringBufferAppendFormat(buffer, "%s\"%s\"", needseparator ? "," : "", iterator->next(iterator));
+        needseparator = true;
+    }
+
+    NAStringBufferAppendFormat(buffer, " - %s:%d:%d", error->location.filepath, error->location.line, error->location.column);
+
+    char *ret = NAStringBufferRetriveCString(buffer);
+    NAStringBufferDestroy(buffer);
+    return ret;
+}

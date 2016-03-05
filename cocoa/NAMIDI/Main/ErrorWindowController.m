@@ -73,9 +73,9 @@
 {
     // TODO Actual formatting and localization
     
-    return [NSString stringWithFormat:@"[ERROR:%d] %s %@ - %@:%d:%d",
-            error.code, ParseErrorCode2String(error.code), [error.infos componentsJoinedByString:@", "],
-            error.filepath.lastPathComponent, error.line, error.column];
+    NSString *message = [error.formattedString stringByReplacingOccurrencesOfString:NSUserHomeDirectory() withString:@"~"];
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^\\[ERROR:[0-9]*\\] " options:0 error:nil];
+    return [regex stringByReplacingMatchesInString:message options:0 range:NSMakeRange(0, message.length) withTemplate:@""];
 }
 
 - (IBAction)closeButtonPressed:(id)sender

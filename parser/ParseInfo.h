@@ -29,6 +29,7 @@ typedef struct _ParseInfo {
 
 extern ParseError *ParseErrorCreate();
 extern void ParseErrorDestroy(ParseError *self);
+extern char *ParseErrorFormattedString(const ParseError *error);
 
 extern ParseInfo *ParseInfoCreate();
 extern ParseInfo *ParseInfoRetain(ParseInfo *self);

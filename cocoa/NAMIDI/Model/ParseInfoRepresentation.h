@@ -16,6 +16,7 @@
 @property (readonly, nonatomic) int code;
 @property (readonly, nonatomic) NSArray *infos;
 - (instancetype)initWithParseError:(ParseError *)error;
+- (NSString *)formattedString;
 @end
 
 @interface ParseInfoRepresentation : NSObject
