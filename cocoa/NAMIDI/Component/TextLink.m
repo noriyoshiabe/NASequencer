@@ -10,8 +10,14 @@
 
 @implementation TextLink
 
+- (void)mouseDown:(NSEvent *)theEvent
+{
+    self.alphaValue = 0.5;
+}
+
 - (void)mouseUp:(NSEvent *)theEvent
 {
+    self.alphaValue = 1.0;
     [self sendAction:[self action] to:[self target]];
 }
 
