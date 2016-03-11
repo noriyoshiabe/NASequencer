@@ -46,8 +46,7 @@ void LowPassFilterCalcLPFCoefficient(LowPassFilter *self, double sampleRate, dou
     double frequency = 440.0 * pow(2.0, (frequency_cent - 6900.0) / 1200.0);
 
     // Convert centibel Q to linear Q
-    double q_dB = (double)q_cB / 10.0f;
-    double q = pow(10.0f, q_dB / 20.0f);
+    double q = pow(10.0f, (q_cB / 10.0) / 20.0);
 
     _LowPassFilterCalcLPFCoefficient(self, sampleRate, frequency, q);
 

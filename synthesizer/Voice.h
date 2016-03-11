@@ -66,13 +66,14 @@ typedef struct _Voice {
     int16_t chorusEffectsSend;
     int16_t reverbEffectsSend;
 
+    double gain;
+
     struct {
         double chorusEffectsSend;
         double reverbEffectsSend;
         double leftAmplifier;
         double rightAmplifier;
         double q_cB;
-        double initialAttenuationValue;
     } computed;
 
     struct _Voice *next;
@@ -86,7 +87,7 @@ typedef struct _VoicePool {
 
 extern void VoiceInitialize(Voice *self, Channel *channel, uint8_t noteNo, uint8_t velocity,
         Zone *presetGlobalZone, Zone *presetZone, Zone *instrumentGlobalZone, Zone *instrumentZone,
-        SoundFont *sf, double sampleRate);
+        SoundFont *sf, double sampleRate, double gain);
 
 extern void VoiceUpdate(Voice *self);
 extern AudioSample VoiceComputeSample(Voice *self);

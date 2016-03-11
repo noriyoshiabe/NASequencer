@@ -423,7 +423,7 @@ static int SynthesizerNoteOn(Synthesizer *self, uint8_t channel, uint8_t noteNo,
 
             VoiceInitialize(voice, &self->channels[channel], noteNo, velocity,
                     preset->globalZone, presetZone, instrument->globalZone, instrumentZone,
-                    self->sf, self->sampleRate);
+                    self->sf, self->sampleRate, self->gain);
 
             SynthesizerReleaseExclusiveClass(self, voice);
 
@@ -629,11 +629,6 @@ static void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer
             VoiceUpdate(voice);
 
             AudioSample sample = VoiceComputeSample(voice);
-            sample.L *= self->gain;
-            sample.R *= self->gain;
-
-            sample.L = Clip(sample.L, -1.0, 1.0);
-            sample.R = Clip(sample.R, -1.0, 1.0);
 
             if (self->level.enable) {
                 LevelMaterAddToChannel(&levelMater, voice->channel->number, &sample);

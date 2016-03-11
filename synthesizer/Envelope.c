@@ -196,7 +196,8 @@ void EnvelopeUpdate(Envelope *self, double time)
         switch (self->type) {
         case EnvelopeTypeModulation:
             // The degree of modulation is specified in cents for the full-scale attack peak.
-            self->value = MAX(0.0, (1.0 - f) * self->releasedValue);
+            self->value = (1.0 - f) * self->releasedValue;
+            self->value = MAX(0.0, self->value);
             break;
         case EnvelopeTypeVolume:
             // The volume envelope operates in dB,

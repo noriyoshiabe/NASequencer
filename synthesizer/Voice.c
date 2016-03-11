@@ -20,7 +20,7 @@ static int16_t VoiceNRPNValue(Voice *self, SFGeneratorType generatorType);
 
 extern void VoiceInitialize(Voice *self, Channel *channel, uint8_t noteNo, uint8_t velocity,
         Zone *presetGlobalZone, Zone *presetZone, Zone *instrumentGlobalZone, Zone *instrumentZone,
-        SoundFont *sf, double sampleRate)
+        SoundFont *sf, double sampleRate, double gain)
 {
     self->channel = channel;
     self->preset = channel->preset;
@@ -42,6 +42,8 @@ extern void VoiceInitialize(Voice *self, Channel *channel, uint8_t noteNo, uint8
 
     self->sampleModes = VoiceGeneratorValue(self, SFGeneratorType_sampleModes);
     self->exclusiveClass = VoiceGeneratorValue(self, SFGeneratorType_exclusiveClass);
+
+    self->gain = gain;
 
     EnvelopeInit(&self->modEnv, EnvelopeTypeModulation);
     EnvelopeInit(&self->volEnv, EnvelopeTypeVolume);
@@ -161,8 +163,8 @@ void VoiceUpdateRuntimeParams(Voice* self)
 
     int16_t pan = Clip(self->pan, -500, 500);
     double coef = M_PI / 2.0 / 1000.0;
-    self->computed.leftAmplifier = sin(coef * (-pan + 500));
-    self->computed.rightAmplifier = sin(coef * (pan + 500));
+    self->computed.leftAmplifier = sin(coef * (-pan + 500)) * self->gain / (double)0x7FFFFF;
+    self->computed.rightAmplifier = sin(coef * (pan + 500)) * self->gain / (double)0x7FFFFF;
     self->computed.q_cB = Clip(self->initialFilterQ, 0, 960);
 
     // Excerpt from fluid_synth
@@ -171,7 +173,10 @@ void VoiceUpdateRuntimeParams(Voice* self)
     // This is not doucmented on SF2.4 specification but probably many major soundfont is tunend with EMU10K1's specs.
     const double AlternateAttenuationScale = 0.4;
     double attenuation = self->initialAttenuation * AlternateAttenuationScale;
-    self->computed.initialAttenuationValue = cBAttn2Value(attenuation);
+    double initialAttenuationValue = cBAttn2Value(attenuation);
+
+    self->computed.leftAmplifier *= initialAttenuationValue;
+    self->computed.rightAmplifier *= initialAttenuationValue;
 
     EnvelopeUpdateRuntimeParams(&self->modEnv,
             VoiceGeneratorValue(self, SFGeneratorType_delayModEnv),
@@ -254,11 +259,11 @@ AudioSample VoiceComputeSample(Voice *self)
     int32_t indexSample = (self->sf->smpl[index] << 8) + (self->sf->sm24 ? self->sf->sm24[index] : 0);
     int32_t nextSample = (self->sf->smpl[index + 1] << 8) + (self->sf->sm24 ? self->sf->sm24[index + 1] : 0);
 
-    double normalized = ((double)indexSample * (1.0 - over) + (double)nextSample * over) / (double)0x7FFFFF;
+    double sample24 = ((double)indexSample * (1.0 - over) + (double)nextSample * over);
 
     AudioSample sample;
-    sample.L = normalized * self->computed.leftAmplifier;
-    sample.R = normalized * self->computed.rightAmplifier;
+    sample.L = sample24 * self->computed.leftAmplifier;
+    sample.R = sample24 * self->computed.rightAmplifier;
 
     double frequency_cent = self->initialFilterFc;
     frequency_cent += self->modLfoToFilterFc * LFOValue(&self->modLfo);
@@ -268,13 +273,12 @@ AudioSample VoiceComputeSample(Voice *self)
     LowPassFilterCalcLPFCoefficient(&self->LPF, self->sampleRate, frequency_cent, self->computed.q_cB);
     sample = LowPassFilterApply(&self->LPF, sample);
   
-    double volume = self->computed.initialAttenuationValue
-        * cB2Value(self->modLfoToVolume * LFOValue(&self->modLfo))
-        * EnvelopeValue(&self->volEnv);
-    volume = Clip(volume, 0.0, 1.0);
+    double modLfoToVolume = cB2Value(self->modLfoToVolume * LFOValue(&self->modLfo)) * EnvelopeValue(&self->volEnv);
+    sample.L *= modLfoToVolume;
+    sample.R *= modLfoToVolume;
 
-    sample.L *= volume;
-    sample.R *= volume;
+    sample.L = Clip(sample.L, -1.0, 1.0);
+    sample.R = Clip(sample.R, -1.0, 1.0);
 
     return sample;
 }
