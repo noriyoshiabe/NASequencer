@@ -58,6 +58,7 @@ static int PresetComparator(const void *preset1, const void *preset2);
 static int SynthesizerNoteOn(Synthesizer *self, uint8_t channel, uint8_t noteNo, uint8_t velocity);
 static void SynthesizerNoteOff(Synthesizer *self, uint8_t channel, uint8_t noteNo);
 static void SynthesizerReleaseExclusiveClass(Synthesizer *self, Voice *newVoice);
+static void SynthesizerReleaseIdenticalVoice(Synthesizer *self, Voice *newVoice);
 static void SynthesizerProgramChange(Synthesizer *self, uint8_t channel, uint8_t programNo);
 static void SynthesizerControlChange(Synthesizer *self, uint8_t channel, uint8_t ccNumber, uint8_t value);
 static void SynthesizerAddVoice(Synthesizer *self, Voice *voice);
@@ -426,6 +427,7 @@ static int SynthesizerNoteOn(Synthesizer *self, uint8_t channel, uint8_t noteNo,
                     self->sf, self->sampleRate, self->gain);
 
             SynthesizerReleaseExclusiveClass(self, voice);
+            SynthesizerReleaseIdenticalVoice(self, voice);
 
             SynthesizerAddVoice(self, voice);
 
@@ -471,6 +473,16 @@ static void SynthesizerReleaseExclusiveClass(Synthesizer *self, Voice *newVoice)
         if (voice->channel == newVoice->channel
                 && voice->preset == newVoice->preset
                 && voice->exclusiveClass == newVoice->exclusiveClass) {
+            VoiceTerminate(voice);
+        }
+    }
+}
+
+static void SynthesizerReleaseIdenticalVoice(Synthesizer *self, Voice *newVoice)
+{
+    for (Voice *voice = self->voiceFirst; NULL != voice; voice = voice->next) {
+        if (voice->channel == newVoice->channel && voice->key == newVoice->key
+                && voice->instrumentZone->sample == newVoice->instrumentZone->sample) {
             VoiceTerminate(voice);
         }
     }
