@@ -4,12 +4,12 @@
 #include <sys/param.h>
 
 #define Clip(v, min, max) (MIN(MAX(v, min), max))
-#define Timecent2Sec(tc) (pow(2.0, (double)tc / 1200.0))
-#define cB2Value(cb) (pow(10.0, ((double)cb / 10.0) / 20.0))
-#define cBAttn2Value(cb) (pow(10.0, ((double)-cb / 10.0) / 20.0))
+#define Timecent2Sec(tc) (pow(2.0, (double)tc * 0.000833333 /* tc / 1200.0 */))
+#define cB2Value(cb) (pow(10.0, (double)cb * 0.005) /* cb / 10.0) / 20.0 */ )
+#define cBAttn2Value(cb) (pow(10.0, (double)cb * -0.005)  /* -cb / 10.0) / 20.0 */)
 #define Value2cB(v) (0.0000000630957 > v ? -1440.0 : (200.0 * log10(v)))
-#define AbsCent2Hz(c) (8.176 * pow(2.0, (double)c / 1200.0))
-#define Cent2FreqRatio(c) (pow(2.0, c / 1200.0))
+#define AbsCent2Hz(c) (8.176 * pow(2.0, (double)c * 0.000833333 /* c / 1200.0 */))
+#define Cent2FreqRatio(c) (pow(2.0, (double)c * 0.000833333 /* c / 1200.0 */))
 #define ConcavePositiveUnipolar(x) (1.0 - sqrt(1.0 - pow((double)x, 2.0)))
 #define ConcaveNegativeUnipolar(x) (1.0 - sqrt(1.0 - pow((double)x - 1.0, 2.0)))
 #define ConcavePositiveBipolar(x) ((0.0 <= x ? 1.0 : -1.0) * ConcavePositiveUnipolar(x))

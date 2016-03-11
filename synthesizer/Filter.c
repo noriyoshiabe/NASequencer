@@ -1,4 +1,5 @@
 #include "Filter.h"
+#include "Define.h"
 
 #include <stdlib.h>
 #include <math.h>
@@ -43,10 +44,10 @@ void LowPassFilterCalcLPFCoefficient(LowPassFilter *self, double sampleRate, dou
     }
 
     // Convert cent to Hz
-    double frequency = 440.0 * pow(2.0, (frequency_cent - 6900.0) / 1200.0);
+    double frequency = AbsCent2Hz(frequency_cent);
 
     // Convert centibel Q to linear Q
-    double q = pow(10.0f, (q_cB / 10.0) / 20.0);
+    double q = cB2Value(q_cB);
 
     _LowPassFilterCalcLPFCoefficient(self, sampleRate, frequency, q);
 
