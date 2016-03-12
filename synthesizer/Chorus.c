@@ -60,7 +60,7 @@ extern AudioSample ChorusComputeSample(Chorus *self, AudioSample input)
         }
 
         ret.L += self->history[index].L * delay->level.L;
-        ret.L += self->history[index].R * delay->level.R;
+        ret.R += self->history[index].R * delay->level.R;
 
         delay->phase += delay->lfoCoef;
     }
