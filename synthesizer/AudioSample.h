@@ -1,6 +1,6 @@
 #pragma once
 
 typedef struct _AudioSample {
-    float L;
-    float R;
+    double L;
+    double R;
 } AudioSample;

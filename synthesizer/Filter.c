@@ -80,23 +80,16 @@ static void _LowPassFilterCalcLPFCoefficient(LowPassFilter *self, double sampleR
     self->coef.a2 = (1.0 - alpha) / a0_inverter;
 }
 
-AudioSample LowPassFilterApply(LowPassFilter *self, AudioSample input)
+double LowPassFilterApply(LowPassFilter *self, double input)
 {
-    AudioSample output;
+    double output;
 
-    output.L =
-          self->coef.b02 * input.L
-        + self->coef.b1  * self->history[0].input.L
-        + self->coef.b02 * self->history[1].input.L
-        - self->coef.a1  * self->history[0].output.L
-        - self->coef.a2  * self->history[1].output.L;
-
-    output.R =
-          self->coef.b02 * input.R
-        + self->coef.b1  * self->history[0].input.R
-        + self->coef.b02 * self->history[1].input.R
-        - self->coef.a1  * self->history[0].output.R
-        - self->coef.a2  * self->history[1].output.R;
+    output =
+          self->coef.b02 * input
+        + self->coef.b1  * self->history[0].input
+        + self->coef.b02 * self->history[1].input
+        - self->coef.a1  * self->history[0].output
+        - self->coef.a2  * self->history[1].output;
 
     self->history[1].input = self->history[0].input;
     self->history[1].output = self->history[0].output;
@@ -108,7 +101,7 @@ AudioSample LowPassFilterApply(LowPassFilter *self, AudioSample input)
 }
 
 struct _CombFilter {
-    AudioSample *history;
+    double *history;
     int historyLength;
     double g;
     int index;
@@ -119,7 +112,7 @@ CombFilter *CombFilterCreate(double sampleRate, double delay, double g)
     CombFilter *self = calloc(1, sizeof(CombFilter));
 
     int delayInSample = round(delay * sampleRate);
-    self->history = calloc(delayInSample, sizeof(AudioSample));
+    self->history = calloc(delayInSample, sizeof(double));
     self->historyLength = delayInSample;
     self->g = g;
     self->index = 0;
@@ -133,12 +126,11 @@ void CombFilterDestroy(CombFilter *self)
     free(self);
 }
 
-AudioSample CombFilterApply(CombFilter *self, AudioSample input)
+double CombFilterApply(CombFilter *self, double input)
 {
-    AudioSample output = self->history[self->index];
+    double output = self->history[self->index];
     
-    self->history[self->index].L = input.L + output.L * self->g;
-    self->history[self->index].R = input.R + output.R * self->g;
+    self->history[self->index] = input + output * self->g;
     
     if (self->historyLength <= ++self->index) {
         self->index = 0;
@@ -148,7 +140,7 @@ AudioSample CombFilterApply(CombFilter *self, AudioSample input)
 }
 
 struct _AllPassFilter {
-    AudioSample *history;
+    double *history;
     int historyLength;
     double g;
     int index;
@@ -159,7 +151,7 @@ AllPassFilter *AllPassFilterCreate(double sampleRate, double delay, double g)
     AllPassFilter *self = calloc(1, sizeof(AllPassFilter));
 
     int delayInSample = round(delay * sampleRate);
-    self->history = calloc(delayInSample, sizeof(AudioSample));
+    self->history = calloc(delayInSample, sizeof(double));
     self->historyLength = delayInSample;
     self->g = g;
     self->index = 0;
@@ -173,15 +165,13 @@ void AllPassFilterDestroy(AllPassFilter *self)
     free(self);
 }
 
-AudioSample AllPassFilterApply(AllPassFilter *self, AudioSample input)
+double AllPassFilterApply(AllPassFilter *self, double input)
 {
-    AudioSample output = self->history[self->index];
+    double output = self->history[self->index];
 
-    output.L -= input.L * self->g;
-    output.R -= input.R * self->g;
+    output -= input * self->g;
     
-    self->history[self->index].L = input.L + output.L * self->g;
-    self->history[self->index].R = input.R + output.R * self->g;
+    self->history[self->index] = input + output * self->g;
 
     if (self->historyLength <= ++self->index) {
         self->index = 0;

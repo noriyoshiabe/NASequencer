@@ -619,12 +619,12 @@ static void LevelMaterUpdate(LevelMater *self, AudioSample *master)
 
 static void LevelMaterNormalize(LevelMater *self, Level *master, Level *channels)
 {
-    master->L = Value2cB(self->master.L);
-    master->R = Value2cB(self->master.R);
+    master->L = Value2cB(self->master.L / (double)0x7FFFFF);
+    master->R = Value2cB(self->master.R / (double)0x7FFFFF);
 
     for (int i = 0; i < CHANNEL_COUNT; ++i) {
-        channels[i].L = Value2cB(self->channels[i].L);
-        channels[i].R = Value2cB(self->channels[i].R);
+        channels[i].L = Value2cB(self->channels[i].L / (double)0x7FFFFF);
+        channels[i].R = Value2cB(self->channels[i].R / (double)0x7FFFFF);
     }
 }
 
@@ -634,13 +634,17 @@ static void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer
 
     for (int i = 0; i < count; ++i) {
         AudioSample direct = { .L = 0.0, .R = 0.0 };
-        AudioSample chorus = { .L = 0.0, .R = 0.0 };
-        AudioSample reverb = { .L = 0.0, .R = 0.0 };
+        double chorusSend = 0.0;
+        double reverbSend = 0.0;
 
         for (Voice *voice = self->voiceFirst; NULL != voice;) {
             VoiceUpdate(voice);
 
-            AudioSample sample = VoiceComputeSample(voice);
+            double computed = VoiceComputeSample(voice);
+            
+            AudioSample sample;
+            sample.L = computed * voice->computed.leftAmplifier;
+            sample.R = computed * voice->computed.rightAmplifier;
 
             if (self->level.enable) {
                 LevelMaterAddToChannel(&levelMater, voice->channel->number, &sample);
@@ -649,13 +653,8 @@ static void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer
             direct.L += sample.L;
             direct.R += sample.R;
 
-            double chorusSend = VoiceChorusEffectsSend(voice);
-            chorus.L += sample.L * chorusSend;
-            chorus.R += sample.R * chorusSend;
-
-            double reverbSend = VoiceReverbEffectsSend(voice);
-            reverb.L += sample.L * reverbSend;
-            reverb.R += sample.R * reverbSend;
+            chorusSend += computed * voice->computed.chorusEffectsSend;
+            reverbSend += computed * voice->computed.reverbEffectsSend;
 
             VoiceIncrementSample(voice);
 
@@ -670,15 +669,15 @@ static void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer
             voice = voice->next;
         }
 
-        chorus = ChorusComputeSample(self->chorus, chorus);
-        reverb = ReverbComputeSample(self->reverb, reverb);
+        AudioSample chorus = ChorusComputeSample(self->chorus, chorusSend);
+        AudioSample reverb = ReverbComputeSample(self->reverb, reverbSend);
 
         AudioSample master;
         master.L = (direct.L + chorus.L + reverb.L) * self->masterVolume;
         master.R = (direct.R + chorus.R + reverb.R) * self->masterVolume;
 
-        buffer[i].L += master.L;
-        buffer[i].R += master.R;
+        buffer[i].L += master.L / (double)0x7FFFFF;
+        buffer[i].R += master.R / (double)0x7FFFFF;
 
         if (self->level.enable) {
             LevelMaterUpdate(&levelMater, &master);

@@ -14,7 +14,7 @@ typedef struct _ChorusDelay {
 } ChorusDelay;
 
 typedef struct _Chorus {
-    AudioSample *history;
+    double *history;
     int historyLength;
     int historyPointer;
     ChorusDelay **delays;
@@ -25,4 +25,4 @@ typedef struct _Chorus {
 extern Chorus *ChorusCreate(double sampleRate);
 extern void ChorusDestroy(Chorus *self);
 extern void ChorusAddDelay(Chorus *self, double delay, double frequency, double depth, double L, double R);
-extern AudioSample ChorusComputeSample(Chorus *self, AudioSample input);
+extern AudioSample ChorusComputeSample(Chorus *self, double input);

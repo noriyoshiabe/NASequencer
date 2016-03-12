@@ -158,15 +158,6 @@ void VoiceUpdateRuntimeParams(Voice* self)
     self->chorusEffectsSend = VoiceGeneratorValue(self, SFGeneratorType_chorusEffectsSend);
     self->reverbEffectsSend = VoiceGeneratorValue(self, SFGeneratorType_reverbEffectsSend);
 
-    self->computed.chorusEffectsSend = (double)self->chorusEffectsSend * 0.001;
-    self->computed.reverbEffectsSend = (double)self->reverbEffectsSend * 0.001;
-
-    int16_t pan = Clip(self->pan, -500, 500);
-    double coef = M_PI / 2.0 / 1000.0;
-    self->computed.leftAmplifier = sin(coef * (-pan + 500)) * self->gain / (double)0x7FFFFF;
-    self->computed.rightAmplifier = sin(coef * (pan + 500)) * self->gain / (double)0x7FFFFF;
-    self->computed.q_cB = Clip(self->initialFilterQ, 0, 960);
-
     // Excerpt from fluid_synth
     //   `Alternate attenuation scale used by EMU10K1 cards when setting the attenuation at the preset or instrument level within the SoundFont bank.`
     // And TiMidity++ comments it out!! that implementation for initialAttenuation.
@@ -175,8 +166,14 @@ void VoiceUpdateRuntimeParams(Voice* self)
     double attenuation = self->initialAttenuation * AlternateAttenuationScale;
     double initialAttenuationValue = cBAttn2Value(attenuation);
 
-    self->computed.leftAmplifier *= initialAttenuationValue;
-    self->computed.rightAmplifier *= initialAttenuationValue;
+    int16_t pan = Clip(self->pan, -500, 500);
+    double coef = M_PI / 2.0 / 1000.0;
+
+    self->computed.leftAmplifier = sin(coef * (-pan + 500)) * self->gain * initialAttenuationValue;
+    self->computed.rightAmplifier = sin(coef * (pan + 500)) * self->gain * initialAttenuationValue;
+    self->computed.chorusEffectsSend = (double)self->chorusEffectsSend * 0.001 * self->gain * initialAttenuationValue;
+    self->computed.reverbEffectsSend = (double)self->reverbEffectsSend * 0.001 * self->gain * initialAttenuationValue;
+    self->computed.q_cB = Clip(self->initialFilterQ, 0, 960);
 
     EnvelopeUpdateRuntimeParams(&self->modEnv,
             VoiceGeneratorValue(self, SFGeneratorType_delayModEnv),
@@ -252,18 +249,14 @@ void VoiceUpdate(Voice *self)
     ++self->tick;
 }
 
-AudioSample VoiceComputeSample(Voice *self)
+double VoiceComputeSample(Voice *self)
 {
     int index = floor(self->sampleIndex);
     double over = self->sampleIndex - (double)index;
     int32_t indexSample = (self->sf->smpl[index] << 8) + (self->sf->sm24 ? self->sf->sm24[index] : 0);
     int32_t nextSample = (self->sf->smpl[index + 1] << 8) + (self->sf->sm24 ? self->sf->sm24[index + 1] : 0);
 
-    double sample24 = ((double)indexSample * (1.0 - over) + (double)nextSample * over);
-
-    AudioSample sample;
-    sample.L = sample24 * self->computed.leftAmplifier;
-    sample.R = sample24 * self->computed.rightAmplifier;
+    double sample = ((double)indexSample * (1.0 - over) + (double)nextSample * over);
 
     double frequency_cent = self->initialFilterFc;
 
@@ -284,13 +277,7 @@ AudioSample VoiceComputeSample(Voice *self)
         volume *= cB2Value(self->modLfoToVolume * LFOValue(&self->modLfo));
     }
 
-    sample.L *= volume;
-    sample.R *= volume;
-
-    sample.L = Clip(sample.L, -1.0, 1.0);
-    sample.R = Clip(sample.R, -1.0, 1.0);
-
-    return sample;
+    return sample * volume;
 }
 
 void VoiceIncrementSample(Voice *self)
@@ -321,16 +308,6 @@ void VoiceIncrementSample(Voice *self)
             }
         }
     }
-}
-
-double VoiceChorusEffectsSend(Voice *self)
-{
-    return self->computed.chorusEffectsSend;
-}
-
-double VoiceReverbEffectsSend(Voice *self)
-{
-    return self->computed.reverbEffectsSend;
 }
 
 void VoiceRelease(Voice *self)

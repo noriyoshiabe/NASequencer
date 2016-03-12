@@ -2,7 +2,6 @@
 
 #include "SoundFont.h"
 #include "Preset.h"
-#include "AudioSample.h"
 #include "Filter.h"
 #include "Envelope.h"
 #include "LFO.h"
@@ -90,7 +89,7 @@ extern void VoiceInitialize(Voice *self, Channel *channel, uint8_t noteNo, uint8
         SoundFont *sf, double sampleRate, double gain);
 
 extern void VoiceUpdate(Voice *self);
-extern AudioSample VoiceComputeSample(Voice *self);
+extern double VoiceComputeSample(Voice *self);
 extern void VoiceIncrementSample(Voice *self);
 extern void VoiceUpdateRuntimeParams(Voice* self);
 extern double VoiceChorusEffectsSend(Voice *self);

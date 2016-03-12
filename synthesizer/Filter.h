@@ -1,7 +1,5 @@
 #pragma once
 
-#include "AudioSample.h"
-
 typedef struct _LowPassFilter {
     struct {
         float a1;
@@ -11,8 +9,8 @@ typedef struct _LowPassFilter {
     } coef;
 
     struct {
-        AudioSample input;
-        AudioSample output;
+        double input;
+        double output;
     } history[2];
 
     double last_frequency_cent;
@@ -21,16 +19,16 @@ typedef struct _LowPassFilter {
 extern LowPassFilter *LowPassFilterCreate(double sampleRate, double frequency, double q);
 extern void LowPassFilterDestroy(LowPassFilter *self);
 extern void LowPassFilterCalcLPFCoefficient(LowPassFilter *self, double sampleRate, double frequency_cent, double q_cB);
-extern AudioSample LowPassFilterApply(LowPassFilter *self, AudioSample input);
+extern double LowPassFilterApply(LowPassFilter *self, double input);
 
 typedef struct _CombFilter CombFilter;
 
 extern CombFilter *CombFilterCreate(double sampleRate, double delay, double g);
 extern void CombFilterDestroy(CombFilter *self);
-extern AudioSample CombFilterApply(CombFilter *self, AudioSample input);
+extern double CombFilterApply(CombFilter *self, double input);
 
 typedef struct _AllPassFilter AllPassFilter;
 
 extern AllPassFilter *AllPassFilterCreate(double sampleRate, double delay, double g);
 extern void AllPassFilterDestroy(AllPassFilter *self);
-extern AudioSample AllPassFilterApply(AllPassFilter *self, AudioSample input);
+extern double AllPassFilterApply(AllPassFilter *self, double input);

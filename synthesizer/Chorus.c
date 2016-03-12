@@ -7,7 +7,7 @@ Chorus *ChorusCreate(double sampleRate)
 {
     Chorus *self = calloc(1, sizeof(Chorus));
     self->sampleRate = sampleRate;
-    self->history = calloc((int)sampleRate, sizeof(AudioSample));
+    self->history = calloc((int)sampleRate, sizeof(double));
     self->historyLength = (int)sampleRate;
     return self;
 }
@@ -42,7 +42,7 @@ void ChorusAddDelay(Chorus *self, double delay, double frequency, double depth, 
     self->delays[index]->level.R = R;
 }
 
-extern AudioSample ChorusComputeSample(Chorus *self, AudioSample input)
+extern AudioSample ChorusComputeSample(Chorus *self, double input)
 {
     AudioSample ret = { .L = 0.0, .R = 0.0 };
 
@@ -59,8 +59,8 @@ extern AudioSample ChorusComputeSample(Chorus *self, AudioSample input)
             index %= self->historyLength;
         }
 
-        ret.L += self->history[index].L * delay->level.L;
-        ret.R += self->history[index].R * delay->level.R;
+        ret.L += self->history[index] * delay->level.L;
+        ret.R += self->history[index] * delay->level.R;
 
         delay->phase += delay->lfoCoef;
     }
