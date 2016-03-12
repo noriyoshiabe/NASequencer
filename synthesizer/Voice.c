@@ -266,16 +266,26 @@ AudioSample VoiceComputeSample(Voice *self)
     sample.R = sample24 * self->computed.rightAmplifier;
 
     double frequency_cent = self->initialFilterFc;
-    frequency_cent += self->modLfoToFilterFc * LFOValue(&self->modLfo);
-    frequency_cent += self->modEnvToFilterFc * EnvelopeValue(&self->modEnv);
+
+    if (self->modLfoToFilterFc) {
+        frequency_cent += self->modLfoToFilterFc * LFOValue(&self->modLfo);
+    }
+    if (self->modEnvToFilterFc) {
+        frequency_cent += self->modEnvToFilterFc * EnvelopeValue(&self->modEnv);
+    }
     frequency_cent = Clip(frequency_cent, 1500.0, 13500.0);
 
     LowPassFilterCalcLPFCoefficient(&self->LPF, self->sampleRate, frequency_cent, self->computed.q_cB);
     sample = LowPassFilterApply(&self->LPF, sample);
-  
-    double modLfoToVolume = cB2Value(self->modLfoToVolume * LFOValue(&self->modLfo)) * EnvelopeValue(&self->volEnv);
-    sample.L *= modLfoToVolume;
-    sample.R *= modLfoToVolume;
+
+    double volume = EnvelopeValue(&self->volEnv);
+
+    if (self->modLfoToVolume) {
+        volume *= cB2Value(self->modLfoToVolume * LFOValue(&self->modLfo));
+    }
+
+    sample.L *= volume;
+    sample.R *= volume;
 
     sample.L = Clip(sample.L, -1.0, 1.0);
     sample.R = Clip(sample.R, -1.0, 1.0);
@@ -285,12 +295,19 @@ AudioSample VoiceComputeSample(Voice *self)
 
 void VoiceIncrementSample(Voice *self)
 {
-    double sampleIncrement = self->sampleIncrement;
+    double toPitch = 1.0;
+    
+    if (self->modEnvToPitch) {
+        toPitch *= Cent2FreqRatio((double)self->modEnvToPitch * EnvelopeValue(&self->modEnv));
+    }
+    if (self->vibLfoToPitch) {
+        toPitch *= Cent2FreqRatio((double)self->vibLfoToPitch * LFOValue(&self->vibLfo));
+    }
+    if (self->modLfoToPitch) {
+        toPitch *= Cent2FreqRatio((double)self->modLfoToPitch * LFOValue(&self->modLfo));
+    }
 
-    sampleIncrement *= Cent2FreqRatio((double)self->modEnvToPitch * EnvelopeValue(&self->modEnv));
-    sampleIncrement *= Cent2FreqRatio((double)self->vibLfoToPitch * LFOValue(&self->vibLfo));
-    sampleIncrement *= Cent2FreqRatio((double)self->modLfoToPitch * LFOValue(&self->modLfo));
-
+    double sampleIncrement = self->sampleIncrement * toPitch;
     self->sampleIndex += sampleIncrement;
 
     if (self->sampleModes & 0x01) {
