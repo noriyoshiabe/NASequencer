@@ -55,6 +55,23 @@ void EnvelopeUpdateRuntimeParams(Envelope *self,
     // values above 1000 are to be interpreted as 1000.
     self->sustain = Clip(sustain, 0.0, 1000.0);
 
+    switch (self->type) {
+    case EnvelopeTypeModulation:
+        // 8.1.1 Kinds of Generator Enumerators
+        // This is the decrease in level, expressed in 0.1% units,
+        // to which the Modulation Envelope value ramps during the decay phase.
+        // For the Modulation Envelope, the sustain level is properly expressed
+        // in percent of full scale. 
+        self->computed.sustain = 1.0 - 0.001 * self->sustain;
+        break;
+    case EnvelopeTypeVolume:
+        // 9.1.7 Envelope Generators
+        // The volume envelope operates in dB, with the attack peak providing a full scale output,
+        // appropriately scaled by the initial volume.
+        self->computed.sustain = cBAttn2Value(self->sustain);
+        break;
+    }
+
     // 32 keynumToModEnvDecay / 40 keynumToVolEnvDecay
     // This is the degree, in timecents per KeyNumber units,
     // to which the hold time of the Volume Envelope is decreased by increasing MIDI key number.
@@ -119,6 +136,21 @@ static void EnvelopeUpdatePhase(Envelope *self, double time)
             else {
                 self->startPhaseTime = time;
             }
+
+            switch (self->phase) {
+            case EnvelopePhaseHold:
+                // 9.1.7 Envelope Generators
+                // When a value of one is reached, the envelope enters a hold phase during which it remains at one.
+                self->value = 1.0;
+                break;
+            case EnvelopePhaseSustain:
+                // 9.1.7 Envelope Generators
+                // When the sustain level is reached, the envelope enters sustain phase, during which the envelope stays at the sustain level.
+                self->value = self->computed.sustain;
+                break;
+            default:
+                break;
+            }
         }
         break;
     case EnvelopePhaseSustain:
@@ -142,7 +174,8 @@ void EnvelopeUpdate(Envelope *self, double time)
 
     switch (self->phase) {
     case EnvelopePhaseDelay:
-        self->value = 0.0;
+        // 9.1.7 Envelope Generators
+        // When key-on occurs, a delay period begins during which the envelope value is zero.
         break;
     case EnvelopePhaseAttack:
         // 9.1.7 Envelope Generators
@@ -150,7 +183,8 @@ void EnvelopeUpdate(Envelope *self, double time)
         self->value = ConvexPositiveUnipolar((time - self->startPhaseTime) / self->attack);
         break;
     case EnvelopePhaseHold:
-        self->value = 1.0;
+        // 9.1.7 Envelope Generators
+        // When a value of one is reached, the envelope enters a hold phase during which it remains at one.
         break;
     case EnvelopePhaseDecay:
         // 9.1.7 Envelope Generators
@@ -160,7 +194,7 @@ void EnvelopeUpdate(Envelope *self, double time)
         switch (self->type) {
         case EnvelopeTypeModulation:
             // The degree of modulation is specified in cents for the full-scale attack peak.
-            self->value = 1.0 * (1.0 - f) + f * (1.0 - 0.001 * self->sustain);
+            self->value = 1.0 * (1.0 - f) + f * self->computed.sustain;
             break;
         case EnvelopeTypeVolume:
             // The volume envelope operates in dB,
@@ -169,22 +203,8 @@ void EnvelopeUpdate(Envelope *self, double time)
         }
         break;
     case EnvelopePhaseSustain:
-        switch (self->type) {
-        case EnvelopeTypeModulation:
-            // 8.1.1 Kinds of Generator Enumerators
-            // This is the decrease in level, expressed in 0.1% units,
-            // to which the Modulation Envelope value ramps during the decay phase.
-            // For the Modulation Envelope, the sustain level is properly expressed
-            // in percent of full scale. 
-            self->value = 1.0 - 0.001 * self->sustain;
-            break;
-        case EnvelopeTypeVolume:
-            // 9.1.7 Envelope Generators
-            // The volume envelope operates in dB, with the attack peak providing a full scale output,
-            // appropriately scaled by the initial volume.
-            self->value = cBAttn2Value(self->sustain);
-            break;
-        }
+        // 9.1.7 Envelope Generators
+        // When the sustain level is reached, the envelope enters sustain phase, during which the envelope stays at the sustain level.
         break;
     case EnvelopePhaseRelease:
         // 9.1.7 Envelope Generators

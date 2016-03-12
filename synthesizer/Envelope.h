@@ -43,6 +43,10 @@ typedef struct _Envelope {
     double startPhaseTime;
     double releasedValue;
     bool pendingRelease;
+
+    struct {
+        double sustain;
+    } computed;
 } Envelope;
 
 extern void EnvelopeInit(Envelope *self, EnvelopeType type);
