@@ -251,12 +251,11 @@ void VoiceUpdate(Voice *self)
 
 double VoiceComputeSample(Voice *self)
 {
-    int index = floor(self->sampleIndex);
-    double over = self->sampleIndex - (double)index;
-    int32_t indexSample = (self->sf->smpl[index] << 8) + (self->sf->sm24 ? self->sf->sm24[index] : 0);
-    int32_t nextSample = (self->sf->smpl[index + 1] << 8) + (self->sf->sm24 ? self->sf->sm24[index + 1] : 0);
-
-    double sample = ((double)indexSample * (1.0 - over) + (double)nextSample * over);
+    int index = (int)self->sampleIndex;
+    double sample = (double)(self->sf->smpl[index] << 8);
+    if (self->sf->sm24) {
+        sample += (double)self->sf->sm24[index];
+    }
 
     double frequency_cent = self->initialFilterFc;
 
