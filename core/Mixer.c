@@ -637,15 +637,17 @@ bool MixerChannelGetSolo(MixerChannel *self)
 
 void MixerChannelSetMidiSourceDescription(MixerChannel *self, MidiSourceDescription *description)
 {
-    self->description = description;
-    self->source = NAMapGet(self->mixer->sourceMap, description);
+    MidiSource *source = NAMapGet(self->mixer->sourceMap, description);
 
-    if (!self->source) {
+    if (!source) {
         MidiSourceManager *manager = MidiSourceManagerSharedInstance();
         AudioOut *audioOut = self->mixer->audioOut;
-        self->source = MidiSourceManagerAllocMidiSource(manager, description, audioOut->getSampleRate(audioOut));
-        NAMapPut(self->mixer->sourceMap, description, self->source);
+        source = MidiSourceManagerAllocMidiSource(manager, description, audioOut->getSampleRate(audioOut));
+        NAMapPut(self->mixer->sourceMap, description, source);
     }
+
+    self->description = description;
+    self->source = source;
 
     NAMessageQPost(self->mixer->msgQ, MixerMessageAttachSource, self->source);
 
