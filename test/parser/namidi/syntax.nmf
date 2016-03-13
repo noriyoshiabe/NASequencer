@@ -55,7 +55,7 @@ PATTERN rhythm---pattern
 
   PATTERN last
     ------------------------
-    120: C1      C#2 127
+    120: C1      C#2 V=127
     120:          
     120: C1      F#1 
     120:          
@@ -111,16 +111,16 @@ PATTERN piano-chord
   KEY Cmin
   VELOCITY  60
 
-  480: C2 - 960 E2 G2 B2
+  480: C2 GT=960 E2 G2 B2
                   
-  120:    E2 G2 B2 100
-  120:    E2 G2 B2 100
+  120:    E2 G2 B2 V=100
+  120:    E2 G2 B2 V=100
   240: 
-  240: C2 E2 G2 B2 127
-  240:    E2 G2 B2 127 C3 127
-  240: C2 E2 G2 B2 127
-  240: C2 E2 G2 B2 127
-  240: C2 E2 G2 B2 127
+  240: C2 E2 G2 B2 V=127
+  240:    E2 G2 B2 V=127 C3 V=127
+  240: C2 E2 G2 B2 V=127
+  240: C2 E2 G2 B2 V=127
+  240: C2 E2 G2 B2 V=127
 END
 
 EXPAND piano-chord

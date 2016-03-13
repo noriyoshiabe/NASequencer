@@ -125,8 +125,14 @@ typedef struct _ASTExpand {
     char *identifier;
 } ASTExpand;
 
+typedef enum {
+    NoteParamTypeVelocity,
+    NoteParamTypeGatetime,
+} ASTNoteParamType;
+
 typedef struct _ASTNoteParam {
     Node node;
+    ASTNoteParamType type;
     int value;
 } ASTNoteParam;
 
@@ -183,3 +189,13 @@ extern ASTNote *NAMidiASTNoteCreate(FileLocation *location);
 extern ASTPattern *NAMidiASTPatternCreate(FileLocation *location);
 extern ASTExpand *NAMidiASTExpandCreate(FileLocation *location);
 extern ASTNoteParam *NAMidiASTNoteParamCreate(FileLocation *location);
+
+static inline const char *ASTNoteParamType2String(ASTNoteParamType type)
+{
+#define CASE(type) case type: return &#type[13];
+    switch (type) {
+    CASE(NoteParamTypeVelocity);
+    CASE(NoteParamTypeGatetime);
+    }
+#undef CASE
+}

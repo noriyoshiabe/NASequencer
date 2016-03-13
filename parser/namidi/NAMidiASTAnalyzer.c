@@ -371,17 +371,22 @@ static void visitNote(void *_self, ASTNote *ast)
         ASTNoteParam *np = NAArrayGetValueAt(ast->node.children, i);
         switch (i) {
         case 0:
-            velocity = np->value;
-            if (!isValidRange(velocity, -1, 127)) {
-                appendError(self, ast, NAMidiParseErrorInvalidVelocity, NACStringFromInteger(velocity), NULL);
-                return;
-            }
-            break;
         case 1:
-            gatetime = np->value;
-            if (!isValidRange(gatetime, -1, 65535)) {
-                appendError(self, ast, NAMidiParseErrorInvalidGatetime, NACStringFromInteger(gatetime), NULL);
-                return;
+            switch (np->type) {
+            case NoteParamTypeVelocity:
+                velocity = np->value;
+                if (!isValidRange(velocity, -1, 127)) {
+                    appendError(self, ast, NAMidiParseErrorInvalidVelocity, NACStringFromInteger(velocity), NULL);
+                    return;
+                }
+                break;
+            case NoteParamTypeGatetime:
+                gatetime = np->value;
+                if (!isValidRange(gatetime, -1, 65535)) {
+                    appendError(self, ast, NAMidiParseErrorInvalidGatetime, NACStringFromInteger(gatetime), NULL);
+                    return;
+                }
+                break;
             }
             break;
         default:

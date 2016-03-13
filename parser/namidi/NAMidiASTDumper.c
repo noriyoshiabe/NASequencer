@@ -220,7 +220,7 @@ static void visitExpand(void *_self, ASTExpand *ast)
 
 static void visitNoteParam(void *self, ASTNoteParam *ast)
 {
-    dump(self, ast, INTEGER(ast, value), NULL);
+    dump(self, ast, "type", ASTNoteParamType2String(ast->type), INTEGER(ast, value), NULL);
 }
 
 Analyzer *NAMidiASTDumperCreate(ParseContext *context)

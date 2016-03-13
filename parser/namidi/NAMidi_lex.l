@@ -71,6 +71,8 @@ KEY            key
 
 KEY_SIGN       [cdefgab](#|b)?[[:blank:]]*(maj(or)?|min(or)?)
 NOTE           [cdefgab](#|##|b|bb|n)?(\-?[[:digit:]]{1,2})?
+NOTE_PARAM_V   v
+NOTE_PARAM_GT  gt
 ID_STRING      [_[:alnum:]][_[:alnum:]\-]*
 IDENTIFIER     {ID_STRING}(:{ID_STRING})*
 
@@ -111,9 +113,12 @@ LOCATION       ^##.+:[[:digit:]]+:[[:digit:]]+\n
 {TRANSPOSE}      { return TRANSPOSE; }
 
 {NOTE}           { yylval->s = strdup(yytext); return NOTE; }
+{NOTE_PARAM_V}   { return NOTE_PARAM_V; }
+{NOTE_PARAM_GT}  { return NOTE_PARAM_GT; }
 {KEY_SIGN}       { yylval->s = strdup(yytext); return KEY_SIGN; }
 {IDENTIFIER}     { yylval->s = strdup(yytext); return IDENTIFIER; }
 
+"="              { return '='; }
 "+"              { return '+'; }
 "-"              { return '-'; }
 "/"              { return '/'; }

@@ -41,7 +41,7 @@ extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, void **node, const ch
 
 %token RESOLUTION TITLE COPYRIGHT TEMPO TIME KEY MARKER PATTERN EXPAND
        END CHANNEL VELOCITY GATETIME STEP VOICE SYNTH VOLUME PAN CHORUS
-       REVERB EXPRESSION DETUNE TRANSPOSE
+       REVERB EXPRESSION DETUNE TRANSPOSE NOTE_PARAM_V NOTE_PARAM_GT
 %token END_OF_FILE 0
 
 %token <s>NOTE KEY_SIGN IDENTIFIER
@@ -394,16 +394,18 @@ note_param_list
     ;
 
 note_param
-    : '-'
+    : NOTE_PARAM_V '=' INTEGER
         {
             ASTNoteParam *n = node(NoteParam, @$);
-            n->value = -1;
+            n->type = NoteParamTypeVelocity;
+            n->value = $3;
             $$ = n;
         }
-    | INTEGER
+    | NOTE_PARAM_GT '=' INTEGER
         {
             ASTNoteParam *n = node(NoteParam, @$);
-            n->value = $1;
+            n->type = NoteParamTypeGatetime;
+            n->value = $3;
             $$ = n;
         }
     ;
