@@ -20,11 +20,7 @@ static OSStatus _RenderCallback(void *inRefCon, AudioUnitRenderActionFlags *ioAc
 {
     AUAudioOut *self = inRefCon;
 
-    float *outL = ioData->mBuffers[0].mData;
-    float *outR = ioData->mBuffers[1].mData;
-
-    size_t bufferSize = sizeof(AudioSample) * inNumberFrames;
-    AudioSample *buffer = alloca(bufferSize);
+    AudioSample *buffer = ioData->mBuffers[0].mData;
 
     for (int i = 0; i < inNumberFrames; ++i) {
         buffer[i] = AudioSampleZero;
@@ -32,11 +28,6 @@ static OSStatus _RenderCallback(void *inRefCon, AudioUnitRenderActionFlags *ioAc
 
     if (self->callback) {
         self->callback(self->receiver, buffer, inNumberFrames);
-    }
-
-    for (int i = 0; i < inNumberFrames; ++i) {
-        outL[i] = buffer[i].L;
-        outR[i] = buffer[i].R;
     }
 
     return noErr;
@@ -52,7 +43,7 @@ AudioOut *AudioOutCreate()
 
     AudioComponentDescription cd;
 	cd.componentType = kAudioUnitType_Output;
-	cd.componentSubType = kAudioUnitSubType_DefaultOutput;
+	cd.componentSubType = kAudioUnitSubType_HALOutput;
 	cd.componentManufacturer = kAudioUnitManufacturer_Apple;
 	cd.componentFlags = 0;
 	cd.componentFlagsMask = 0;
@@ -60,14 +51,27 @@ AudioOut *AudioOutCreate()
 	AudioComponent comp = AudioComponentFindNext(NULL, &cd);
 	AudioComponentInstanceNew(comp, &self->defaultOutputUnit);
 
-    UInt32 size = sizeof(Float64);
-    AudioUnitGetProperty(self->defaultOutputUnit, kAudioUnitProperty_SampleRate, kAudioUnitScope_Output, 0, &self->sampleRate, &size);
-
     AURenderCallbackStruct input;
 	input.inputProc = _RenderCallback;
 	input.inputProcRefCon = self;
 
 	AudioUnitSetProperty(self->defaultOutputUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, 0, &input, sizeof(input));
+
+    AudioStreamBasicDescription format;
+    format.mSampleRate = 44100.0;
+    format.mFormatID = kAudioFormatLinearPCM;
+    format.mFormatFlags = kLinearPCMFormatFlagIsFloat;
+    format.mBytesPerPacket = 2 * sizeof(float);
+    format.mFramesPerPacket = 1;
+    format.mBytesPerFrame = 2 * sizeof(float);
+    format.mChannelsPerFrame = 2;
+    format.mBitsPerChannel = 8 * sizeof(float);
+
+    AudioUnitSetProperty(self->defaultOutputUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, &format, sizeof(AudioStreamBasicDescription));
+    
+    UInt32 bufferSize = 4096;
+    AudioUnitSetProperty(self->defaultOutputUnit, kAudioUnitProperty_MaximumFramesPerSlice, kAudioUnitScope_Input, 0, &bufferSize, sizeof(UInt32));
+
 	AudioUnitInitialize(self->defaultOutputUnit);
     AudioOutputUnitStart(self->defaultOutputUnit);
 
@@ -91,8 +95,7 @@ void AudioOutDestroy(AudioOut *_self)
 
 static double AUAudioOutGetSampleRate(AudioOut *_self)
 {
-    AUAudioOut *self = (AUAudioOut *)_self;
-    return (float)self->sampleRate;
+    return 44100.0;
 }
 
 static void AUAudioOutRegisterCallback(AudioOut *_self, AudioCallback function, void *receiver)
