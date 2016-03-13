@@ -18,6 +18,7 @@ set(SOURCES
   Reverb.c
   Modulator.c
   Channel.c
+  AudioSample.c
 )
 
 if (APPLE)

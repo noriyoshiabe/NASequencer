@@ -366,7 +366,10 @@ static void ExporterBuildAudioSample(Exporter *self, ExporterAudioBuffer *audioB
             }
         }
 
-        memset(audioBuffer->buffer, 0, sizeof(audioBuffer->buffer));
+        for (int i = 0; i < AUDIO_BUFFER_SIZE; ++i) {
+            audioBuffer->buffer[i] = AudioSampleZero;
+        }
+
         audioBuffer->callback(audioBuffer->receiver, audioBuffer->buffer, AUDIO_BUFFER_SIZE);
 
         for (int i = 0; i < AUDIO_BUFFER_SIZE; ++i) {

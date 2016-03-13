@@ -3,24 +3,17 @@
 #include <audiounit/AudioUnit.h>
 #include <alloca.h>
 
-typedef struct _Callback {
-    void *receiver;
-    AudioCallback function;
-} Callback;
-
 typedef struct _AUAudioOut {
     AudioOut audioOut;
     AudioUnit defaultOutputUnit;
-    Callback *callbackList;
-    int32_t callbackListLength;
+    void *receiver;
+    AudioCallback callback;
     Float64 sampleRate;
 } AUAudioOut;
 
 static double AUAudioOutGetSampleRate(AudioOut *self);
 static void AUAudioOutRegisterCallback(AudioOut *self, AudioCallback function, void *receiver);
 static void AUAudioOutUnregisterCallback(AudioOut *self, AudioCallback function, void *receiver);
-
-static AUAudioOut *_sharedInstance = NULL;
 
 static OSStatus _RenderCallback(void *inRefCon, AudioUnitRenderActionFlags *ioActionFlags, const AudioTimeStamp *inTimeStamp,
         UInt32 inBusNumber, UInt32 inNumberFrames, AudioBufferList *ioData)
@@ -30,28 +23,26 @@ static OSStatus _RenderCallback(void *inRefCon, AudioUnitRenderActionFlags *ioAc
     float *outL = ioData->mBuffers[0].mData;
     float *outR = ioData->mBuffers[1].mData;
 
-    for (int i = 0 ; i < inNumberFrames; ++i) {
-        outL[i] = 0.0f;
-        outR[i] = 0.0f;
-    }
-
     size_t bufferSize = sizeof(AudioSample) * inNumberFrames;
     AudioSample *buffer = alloca(bufferSize);
 
-    for (int i = self->callbackListLength - 1; 0 <= i; --i) {
-        memset(buffer, 0, bufferSize);
-        self->callbackList[i].function(self->callbackList[i].receiver, buffer, inNumberFrames);
+    for (int i = 0; i < inNumberFrames; ++i) {
+        buffer[i] = AudioSampleZero;
+    }
 
-        for (int j = 0; j < inNumberFrames; ++j) {
-            outL[j] += buffer[j].L;
-            outR[j] += buffer[j].R;
-        }
+    if (self->callback) {
+        self->callback(self->receiver, buffer, inNumberFrames);
+    }
+
+    for (int i = 0; i < inNumberFrames; ++i) {
+        outL[i] = buffer[i].L;
+        outR[i] = buffer[i].R;
     }
 
     return noErr;
 }
 
-static AUAudioOut *AUAudioOutCreate()
+AudioOut *AudioOutCreate()
 {
     AUAudioOut *self = calloc(1, sizeof(AUAudioOut));
 
@@ -80,28 +71,22 @@ static AUAudioOut *AUAudioOutCreate()
 	AudioUnitInitialize(self->defaultOutputUnit);
     AudioOutputUnitStart(self->defaultOutputUnit);
 
-    return self;
+    return (AudioOut *)self;
 }
 
-static void AudioOutDestory()
+void AudioOutDestroy(AudioOut *_self)
 {
-    AUAudioOut *self = _sharedInstance;
+    AUAudioOut *self = (AUAudioOut *)_self;
 
     AudioOutputUnitStop(self->defaultOutputUnit);
     AudioUnitUninitialize(self->defaultOutputUnit);
     AudioComponentInstanceDispose(self->defaultOutputUnit);
 
-    free(self->callbackList);
-    free(self);
-}
-
-AudioOut *AudioOutSharedInstance()
-{
-    if (!_sharedInstance) {
-        _sharedInstance = AUAudioOutCreate();
-        atexit(AudioOutDestory);
+    if (self->callback) {
+        self->callback(self->receiver, NULL, 0);
     }
-    return (AudioOut *)_sharedInstance;
+
+    free(self);
 }
 
 static double AUAudioOutGetSampleRate(AudioOut *_self)
@@ -114,28 +99,14 @@ static void AUAudioOutRegisterCallback(AudioOut *_self, AudioCallback function, 
 {
     AUAudioOut *self = (AUAudioOut *)_self;
 
-    self->callbackList = realloc(self->callbackList, sizeof(Callback) * (self->callbackListLength + 1));
-    self->callbackList[self->callbackListLength].function = function; 
-    self->callbackList[self->callbackListLength].receiver = receiver; 
-    ++self->callbackListLength;
+    self->callback = function; 
+    self->receiver = receiver; 
 }
 
 static void AUAudioOutUnregisterCallback(AudioOut *_self, AudioCallback function, void *receiver)
 {
     AUAudioOut *self = (AUAudioOut *)_self;
 
-    for (int i = 0; i < self->callbackListLength; ++i) {
-        if (self->callbackList[i].function == function
-                && self->callbackList[i].receiver == receiver) {
-
-            size_t moveLength = self->callbackListLength - 1 - i;
-            if (0 < moveLength) {
-                memmove(&self->callbackList[i], &self->callbackList[i + 1], sizeof(Callback) * moveLength);
-            }
-
-            --self->callbackListLength;
-            self->callbackList = realloc(self->callbackList, sizeof(Callback) * self->callbackListLength);
-            break;
-        }
-    }
+    self->callback = NULL;
+    self->receiver = NULL;
 }

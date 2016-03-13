@@ -190,6 +190,7 @@
 		025FAF441C7DD1A300E4C3B3 /* Synthesizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 025FAE7F1C7DD1A300E4C3B3 /* Synthesizer.h */; };
 		025FAF451C7DD1A300E4C3B3 /* Voice.c in Sources */ = {isa = PBXBuildFile; fileRef = 025FAE801C7DD1A300E4C3B3 /* Voice.c */; };
 		025FAF461C7DD1A300E4C3B3 /* Voice.h in Headers */ = {isa = PBXBuildFile; fileRef = 025FAE811C7DD1A300E4C3B3 /* Voice.h */; };
+		028483701C94EA5300921F3D /* AudioSample.c in Sources */ = {isa = PBXBuildFile; fileRef = 0284836F1C94EA5300921F3D /* AudioSample.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -400,6 +401,7 @@
 		025FAE7F1C7DD1A300E4C3B3 /* Synthesizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Synthesizer.h; sourceTree = "<group>"; };
 		025FAE801C7DD1A300E4C3B3 /* Voice.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = Voice.c; sourceTree = "<group>"; };
 		025FAE811C7DD1A300E4C3B3 /* Voice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Voice.h; sourceTree = "<group>"; };
+		0284836F1C94EA5300921F3D /* AudioSample.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = AudioSample.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -704,6 +706,7 @@
 			isa = PBXGroup;
 			children = (
 				025FAE651C7DD1A300E4C3B3 /* AudioOut.h */,
+				0284836F1C94EA5300921F3D /* AudioSample.c */,
 				025FAE661C7DD1A300E4C3B3 /* AudioSample.h */,
 				025FAE671C7DD1A300E4C3B3 /* Channel.c */,
 				025FAE681C7DD1A300E4C3B3 /* Channel.h */,
@@ -925,6 +928,7 @@
 			files = (
 				025FAEB51C7DD1A300E4C3B3 /* NAIO.c in Sources */,
 				025FAF331C7DD1A300E4C3B3 /* Envelope.c in Sources */,
+				028483701C94EA5300921F3D /* AudioSample.c in Sources */,
 				025FAF3A1C7DD1A300E4C3B3 /* Modulator.c in Sources */,
 				025FAF0C1C7DD1A300E4C3B3 /* NAMidiASTDumper.c in Sources */,
 				025FAE981C7DD1A300E4C3B3 /* NAArray.c in Sources */,

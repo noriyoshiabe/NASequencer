@@ -362,27 +362,17 @@ static void MixerAudioCallback(void *receiver, AudioSample *buffer, uint32_t cou
     Mixer *self = receiver;
 
     if (self->levelEnable) {
-        AudioSample samples[count];
-        AudioSample *p = samples;
-
-        for (int i = 0; i < count; ++i) {
-            *p++ = (AudioSample){0, 0};
-        }
-
         NAIterator *iterator = NAArrayGetIterator(self->activeSources);
         while (iterator->hasNext(iterator)) {
             MidiSource *source = iterator->next(iterator);
-            source->computeAudioSample(source, samples, count);
+            source->computeAudioSample(source, buffer, count);
         }
 
         AudioSample valueLevel = {0, 0};
 
         for (int i = 0; i < count; ++i) {
-            buffer[i].L += samples[i].L;
-            buffer[i].R += samples[i].R;
-
-            valueLevel.L = MAX(valueLevel.L, fabs(samples[i].L));
-            valueLevel.R = MAX(valueLevel.R, fabs(samples[i].R));
+            valueLevel.L = MAX(valueLevel.L, fabs(buffer[i].L));
+            valueLevel.R = MAX(valueLevel.R, fabs(buffer[i].R));
         }
 
         self->level.L = Value2cB(valueLevel.L);

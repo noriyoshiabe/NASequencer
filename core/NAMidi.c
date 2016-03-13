@@ -22,6 +22,7 @@ struct _NAMidi {
     bool changed;
     const char *includePath;
 
+    AudioOut *audioOut;
     Mixer *mixer;
     Player *player;
 };
@@ -34,7 +35,8 @@ NAMidi *NAMidiCreate()
 {
     NAMidi *self = calloc(1, sizeof(NAMidi));
     self->observers = NAArrayCreate(4, NULL);
-    self->mixer = MixerCreate(AudioOutSharedInstance());
+    self->audioOut = AudioOutCreate();
+    self->mixer = MixerCreate(self->audioOut);
     self->player = PlayerCreate(self->mixer);
     return self;
 }
@@ -43,6 +45,7 @@ void NAMidiDestroy(NAMidi *self)
 {
     PlayerDestroy(self->player);
     MixerDestroy(self->mixer);
+    AudioOutDestroy(self->audioOut);
 
     NAMidiStopFileWatch(self);
     NAArrayTraverse(self->observers, free);

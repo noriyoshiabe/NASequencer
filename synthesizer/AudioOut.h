@@ -12,4 +12,5 @@ struct _AudioOut {
     void (*unregisterCallback)(AudioOut *self, AudioCallback function, void *receiver);
 };
 
-extern AudioOut *AudioOutSharedInstance();
+extern AudioOut *AudioOutCreate();
+extern void AudioOutDestroy(AudioOut *self);

@@ -1,6 +1,8 @@
 #pragma once
 
 typedef struct _AudioSample {
-    double L;
-    double R;
+    float L;
+    float R;
 } AudioSample;
+
+extern const AudioSample AudioSampleZero;
