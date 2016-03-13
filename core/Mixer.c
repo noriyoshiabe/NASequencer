@@ -1,5 +1,9 @@
 #include "Mixer.h"
 #include "Define.h"
+#include "Chorus.h"
+#include "Reverb.h"
+#include "Voice.h"
+#include "Define.h"
 #include "NAMap.h"
 #include "NAMessageQ.h"
 
@@ -23,6 +27,10 @@ struct _Mixer {
 
     NAMessageQ *msgQ;
     NAArray *activeSources;
+
+    double sampleRate;
+    Chorus *chorus;
+    Reverb *reverb;
 };
 
 struct _MixerChannel {
@@ -53,12 +61,14 @@ Mixer *MixerCreate(AudioOut *audioOut)
 
     self->audioOut = audioOut;
     self->observers = NAArrayCreate(4, NULL);
+    
+    self->sampleRate = self->audioOut->getSampleRate(self->audioOut);
 
     MidiSourceManager *manager = MidiSourceManagerSharedInstance();
     MidiSourceManagerAddObserver(manager, self, &MixerMidiSourceManagerObserverCallbacks);
 
     MidiSourceDescription *description = MidiSourceManagerGetDefaultDescription(manager);
-    MidiSource *source = MidiSourceManagerAllocMidiSource(manager, description, self->audioOut->getSampleRate(self->audioOut));
+    MidiSource *source = MidiSourceManagerAllocMidiSource(manager, description, self->sampleRate);
 
     self->sourceMap = NAMapCreate(NAHashAddress, NULL, NULL);
     NAMapPut(self->sourceMap, description, source);
@@ -78,6 +88,14 @@ Mixer *MixerCreate(AudioOut *audioOut)
         channel->mixer = self;
         NAArrayAppend(self->channels, channel);
     }
+
+    self->chorus = ChorusCreate(self->sampleRate);
+
+    ChorusAddDelay(self->chorus, 0.020, 1.00, 0.001, 0.7, 0.7);
+    ChorusAddDelay(self->chorus, 0.020, 0.50, 0.001, 1.0, 0.0);
+    ChorusAddDelay(self->chorus, 0.020, 0.25, 0.001, 0.0, 1.0);
+
+    self->reverb = ReverbCreate(self->sampleRate, 1.0);
 
     self->audioOut->registerCallback(self->audioOut, MixerAudioCallback, self);
 
@@ -121,6 +139,10 @@ static void _MixerDestroy(Mixer *self)
     NAArrayDestroy(self->observers);
     NAArrayTraverse(self->channels, free);
     NAArrayDestroy(self->channels);
+
+    ChorusDestroy(self->chorus);
+    ReverbDestroy(self->reverb);
+    
     free(self);
 }
 
@@ -361,29 +383,35 @@ static void MixerAudioCallback(void *receiver, AudioSample *buffer, uint32_t cou
 {
     Mixer *self = receiver;
 
-    if (self->levelEnable) {
-        NAIterator *iterator = NAArrayGetIterator(self->activeSources);
-        while (iterator->hasNext(iterator)) {
-            MidiSource *source = iterator->next(iterator);
-            source->computeAudioSample(source, buffer, count);
-        }
+    double chorusSend[count];
+    double reverbSend[count];
 
+    for (int i = 0; i < count; ++i) {
+        chorusSend[i] = 0.0;
+        reverbSend[i] = 0.0;
+    }
+
+    NAIterator *iterator = NAArrayGetIterator(self->activeSources);
+    while (iterator->hasNext(iterator)) {
+        MidiSource *source = iterator->next(iterator);
+        source->computeAudioSample(source, buffer, chorusSend, reverbSend, count);
+    }
+
+    for (int i = 0; i < count; ++i) {
+        ChorusComputeSample(self->chorus, chorusSend[i], &buffer[i]);
+        ReverbComputeSample(self->reverb, reverbSend[i], &buffer[i]);
+    }
+
+    if (self->levelEnable) {
         AudioSample valueLevel = {0, 0};
 
-        for (int i = 0; i < count; ++i) {
+        for (int i = 0; i < count; i += UPDATE_THRESHOLD) {
             valueLevel.L = MAX(valueLevel.L, fabs(buffer[i].L));
             valueLevel.R = MAX(valueLevel.R, fabs(buffer[i].R));
         }
 
         self->level.L = Value2cB(valueLevel.L);
         self->level.R = Value2cB(valueLevel.R);
-    }
-    else {
-        NAIterator *iterator = NAArrayGetIterator(self->activeSources);
-        while (iterator->hasNext(iterator)) {
-            MidiSource *source = iterator->next(iterator);
-            source->computeAudioSample(source, buffer, count);
-        }
     }
 
     MixerProcessMessage(self);
@@ -526,7 +554,7 @@ static void MixerMidiSourceManagerOnUnloadAvailableMidiSourceDescription(void *r
             if (channel->source == sourceToUnload) {
                 MidiSource *source = NAMapGet(self->sourceMap, defaultDescription); 
                 if (!source) {
-                    source = MidiSourceManagerAllocMidiSource(manager, defaultDescription, self->audioOut->getSampleRate(self->audioOut));
+                    source = MidiSourceManagerAllocMidiSource(manager, defaultDescription, self->sampleRate);
                     NAMapPut(self->sourceMap, defaultDescription, source);
                 }
 
@@ -641,8 +669,7 @@ void MixerChannelSetMidiSourceDescription(MixerChannel *self, MidiSourceDescript
 
     if (!source) {
         MidiSourceManager *manager = MidiSourceManagerSharedInstance();
-        AudioOut *audioOut = self->mixer->audioOut;
-        source = MidiSourceManagerAllocMidiSource(manager, description, audioOut->getSampleRate(audioOut));
+        source = MidiSourceManagerAllocMidiSource(manager, description, self->mixer->sampleRate);
         NAMapPut(self->mixer->sourceMap, description, source);
     }
 

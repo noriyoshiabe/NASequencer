@@ -52,7 +52,7 @@ void ReverbDestroy(Reverb *self)
     free(self);
 }
 
-AudioSample ReverbComputeSample(Reverb *self, double input)
+void ReverbComputeSample(Reverb *self, double input, AudioSample *output)
 {
     double combResults[4];
 
@@ -66,5 +66,6 @@ AudioSample ReverbComputeSample(Reverb *self, double input)
     result = AllPassFilterApply(self->allPassFilters[0], result);
     result = AllPassFilterApply(self->allPassFilters[1], result);
 
-    return (AudioSample){ .L = result, .R = result };
+    output->L += result;
+    output->R += result;
 }

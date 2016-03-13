@@ -42,10 +42,8 @@ void ChorusAddDelay(Chorus *self, double delay, double frequency, double depth, 
     self->delays[index]->level.R = R;
 }
 
-extern AudioSample ChorusComputeSample(Chorus *self, double input)
+void ChorusComputeSample(Chorus *self, double input, AudioSample *output)
 {
-    AudioSample ret = { .L = 0.0, .R = 0.0 };
-
     for (int i = 0; i < self->delayCount; ++i) {
         ChorusDelay *delay = self->delays[i];
 
@@ -59,8 +57,8 @@ extern AudioSample ChorusComputeSample(Chorus *self, double input)
             index %= self->historyLength;
         }
 
-        ret.L += self->history[index] * delay->level.L;
-        ret.R += self->history[index] * delay->level.R;
+        output->L += self->history[index] * delay->level.L;
+        output->R += self->history[index] * delay->level.R;
 
         delay->phase += delay->lfoCoef;
     }
@@ -71,6 +69,4 @@ extern AudioSample ChorusComputeSample(Chorus *self, double input)
     }
 
     self->history[self->historyPointer] = input;
-
-    return ret;
 }

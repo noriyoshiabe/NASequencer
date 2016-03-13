@@ -20,7 +20,7 @@ static int16_t VoiceNRPNValue(Voice *self, SFGeneratorType generatorType);
 
 extern void VoiceInitialize(Voice *self, Channel *channel, uint8_t noteNo, uint8_t velocity,
         Zone *presetGlobalZone, Zone *presetZone, Zone *instrumentGlobalZone, Zone *instrumentZone,
-        SoundFont *sf, double sampleRate, double gain)
+        SoundFont *sf, double sampleRate, double gain, double masterVolume)
 {
     self->channel = channel;
     self->preset = channel->preset;
@@ -44,6 +44,7 @@ extern void VoiceInitialize(Voice *self, Channel *channel, uint8_t noteNo, uint8
     self->exclusiveClass = VoiceGeneratorValue(self, SFGeneratorType_exclusiveClass);
 
     self->gain = gain;
+    self->masterVolume = masterVolume;
 
     EnvelopeInit(&self->modEnv, EnvelopeTypeModulation);
     EnvelopeInit(&self->volEnv, EnvelopeTypeVolume);
@@ -169,11 +170,12 @@ void VoiceUpdateRuntimeParams(Voice* self)
     int16_t pan = Clip(self->pan, -500, 500);
     double coef = M_PI / 2.0 / 1000.0;
 
-    self->computed.leftAmplifier = sin(coef * (-pan + 500)) * self->gain * initialAttenuationValue;
-    self->computed.rightAmplifier = sin(coef * (pan + 500)) * self->gain * initialAttenuationValue;
-    self->computed.chorusEffectsSend = (double)self->chorusEffectsSend * 0.001 * self->gain * initialAttenuationValue;
-    self->computed.reverbEffectsSend = (double)self->reverbEffectsSend * 0.001 * self->gain * initialAttenuationValue;
+    self->computed.leftAmplifier = sin(coef * (-pan + 500)) * self->masterVolume;
+    self->computed.rightAmplifier = sin(coef * (pan + 500)) * self->masterVolume;
+    self->computed.chorusEffectsSend = (double)self->chorusEffectsSend * 0.001 * self->masterVolume;
+    self->computed.reverbEffectsSend = (double)self->reverbEffectsSend * 0.001 * self->masterVolume;
     self->computed.q_cB = Clip(self->initialFilterQ, 0, 960);
+    self->computed.initialAttenuationValue = initialAttenuationValue;
 
     EnvelopeUpdateRuntimeParams(&self->modEnv,
             VoiceGeneratorValue(self, SFGeneratorType_delayModEnv),
@@ -264,7 +266,7 @@ void VoiceUpdate(Voice *self)
 
     LowPassFilterCalcLPFCoefficient(&self->LPF, self->sampleRate, frequency_cent, self->computed.q_cB);
 
-    self->computed.volume = EnvelopeValue(&self->volEnv);
+    self->computed.volume = self->computed.initialAttenuationValue * EnvelopeValue(&self->volEnv) * self->gain;
 
     if (self->modLfoToVolume) {
         self->computed.volume *= cB2Value(self->modLfoToVolume * LFOValue(&self->modLfo));
@@ -290,8 +292,8 @@ double VoiceComputeSample(Voice *self)
         sample += (double)self->sf->sm24[index];
     }
 
-    sample = LowPassFilterApply(&self->LPF, sample);
-    return sample * self->computed.volume;
+    sample = LowPassFilterApply(&self->LPF, sample) * self->computed.volume;
+    return Clip(sample, (double)-0xFFFFFF, (double)0x7FFFFF);
 }
 
 void VoiceIncrementSample(Voice *self)

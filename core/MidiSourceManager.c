@@ -451,7 +451,7 @@ static void DefaultMidiSourceSend(void *self, uint8_t *bytes, size_t length)
 }
 
 static bool DefaultMidiSourceIsAvailable(void *self) { return false; }
-static void DefaultMidiSourceComputeAudioSample(void *self, AudioSample *buffer, uint32_t count) { }
+static void DefaultMidiSourceComputeAudioSample(void *self, AudioSample *buffer, double *chorusSend, double *reverbSend, uint32_t count) { }
 static void DefaultMidiSourceRegisterCallback(void *self, MidiSourceCallback function, void *receiver) { }
 static void DefaultMidiSourceUnregisterCallback(void *self, MidiSourceCallback function, void *receiver) { }
 static void DefaultMidiSourceDestroy(void *self) { }

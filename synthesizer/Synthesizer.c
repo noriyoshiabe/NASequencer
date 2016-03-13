@@ -3,8 +3,6 @@
 #include "AudioSample.h"
 #include "Preset.h"
 #include "Voice.h"
-#include "Chorus.h"
-#include "Reverb.h"
 #include "Channel.h"
 #include "Define.h"
 
@@ -38,9 +36,6 @@ struct _Synthesizer {
     double gain;
     double masterVolume;
 
-    Chorus *chorus;
-    Reverb *reverb;
-
     Channel channels[CHANNEL_COUNT];
 
     Callback *callbackList;
@@ -63,7 +58,7 @@ static void SynthesizerProgramChange(Synthesizer *self, uint8_t channel, uint8_t
 static void SynthesizerControlChange(Synthesizer *self, uint8_t channel, uint8_t ccNumber, uint8_t value);
 static void SynthesizerAddVoice(Synthesizer *self, Voice *voice);
 static void SynthesizerRemoveVoice(Synthesizer *self, Voice *voice);
-static void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer, uint32_t count);
+static void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer, double *chorusSend, double *reverbSend, uint32_t count);
 static void SynthesizerNotifyEvent(Synthesizer *self, MidiSourceEvent event, void *arg1, void *arg2);
 
 static void send(void *_self, uint8_t *bytes, size_t length)
@@ -270,9 +265,9 @@ static uint8_t getExpressionSend(void *self, uint8_t channel)
     return ((Synthesizer *)self)->channels[channel].cc[CC_Expression_MSB];
 }
 
-static void computeAudioSample(void *self, AudioSample *buffer, uint32_t count)
+static void computeAudioSample(void *self, AudioSample *buffer, double *chorusSend, double *reverbSend, uint32_t count)
 {
-    SynthesizerComputeAudioSample((Synthesizer *)self, buffer, count);
+    SynthesizerComputeAudioSample((Synthesizer *)self, buffer, chorusSend, reverbSend, count);
 }
 
 
@@ -314,14 +309,6 @@ Synthesizer *SynthesizerCreate(SoundFont *sf, double sampleRate)
     self->sampleRate = sampleRate;
 
     self->voicePool = VoicePoolCreate();
-
-    self->chorus = ChorusCreate(sampleRate);
-
-    ChorusAddDelay(self->chorus, 0.020, 1.00, 0.001, 0.7, 0.7);
-    ChorusAddDelay(self->chorus, 0.020, 0.50, 0.001, 1.0, 0.0);
-    ChorusAddDelay(self->chorus, 0.020, 0.25, 0.001, 0.0, 1.0);
-
-    self->reverb = ReverbCreate(sampleRate, 1.0);
 
     self->gain = cB2Value(-100);
     self->masterVolume = cB2Value(0);
@@ -367,9 +354,6 @@ void SynthesizerDestroy(Synthesizer *self)
     if (self->callbackList) {
         free(self->callbackList);
     }
-
-    ChorusDestroy(self->chorus);
-    ReverbDestroy(self->reverb);
 
     VoicePoolDestroy(self->voicePool);
 
@@ -424,7 +408,7 @@ static int SynthesizerNoteOn(Synthesizer *self, uint8_t channel, uint8_t noteNo,
 
             VoiceInitialize(voice, &self->channels[channel], noteNo, velocity,
                     preset->globalZone, presetZone, instrument->globalZone, instrumentZone,
-                    self->sf, self->sampleRate, self->gain);
+                    self->sf, self->sampleRate, self->gain, self->masterVolume);
 
             SynthesizerReleaseExclusiveClass(self, voice);
             SynthesizerReleaseIdenticalVoice(self, voice);
@@ -628,14 +612,14 @@ static void LevelMaterNormalize(LevelMater *self, Level *master, Level *channels
     }
 }
 
-static void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer, uint32_t count)
+static void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer, double *chorusSend, double *reverbSend, uint32_t count)
 {
     LevelMater levelMater = {};
 
     for (int i = 0; i < count; ++i) {
         AudioSample direct = { .L = 0.0, .R = 0.0 };
-        double chorusSend = 0.0;
-        double reverbSend = 0.0;
+        double chorus = 0.0;
+        double reverb = 0.0;
 
         bool needUpdate = 0 == i % UPDATE_THRESHOLD;
 
@@ -667,27 +651,23 @@ static void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer
             direct.L += sample.L;
             direct.R += sample.R;
 
-            chorusSend += computed * voice->computed.chorusEffectsSend;
-            reverbSend += computed * voice->computed.reverbEffectsSend;
+            chorus += computed * voice->computed.chorusEffectsSend;
+            reverb += computed * voice->computed.reverbEffectsSend;
 
             VoiceIncrementSample(voice);
 
             voice = voice->next;
         }
 
-        AudioSample chorus = ChorusComputeSample(self->chorus, chorusSend);
-        AudioSample reverb = ReverbComputeSample(self->reverb, reverbSend);
-
-        AudioSample master;
-        master.L = (direct.L + chorus.L + reverb.L) * self->masterVolume;
-        master.R = (direct.R + chorus.R + reverb.R) * self->masterVolume;
-
-        buffer[i].L += master.L / (double)0x7FFFFF;
-        buffer[i].R += master.R / (double)0x7FFFFF;
-
         if (needUpdate && self->level.enable) {
-            LevelMaterUpdate(&levelMater, &master);
+            LevelMaterUpdate(&levelMater, &direct);
         }
+
+        buffer[i].L += direct.L / (double)0x7FFFFF;
+        buffer[i].R += direct.R / (double)0x7FFFFF;
+
+        chorusSend[i] += chorus / (double)0x7FFFFF;
+        reverbSend[i] += reverb / (double)0x7FFFFF;
     }
 
     if (self->level.enable) {

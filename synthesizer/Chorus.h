@@ -25,4 +25,4 @@ typedef struct _Chorus {
 extern Chorus *ChorusCreate(double sampleRate);
 extern void ChorusDestroy(Chorus *self);
 extern void ChorusAddDelay(Chorus *self, double delay, double frequency, double depth, double L, double R);
-extern AudioSample ChorusComputeSample(Chorus *self, double input);
+extern void ChorusComputeSample(Chorus *self, double input, AudioSample *output);

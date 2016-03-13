@@ -37,7 +37,7 @@ struct _MidiSource {
     void (*send)(void *self, uint8_t *bytes, size_t length);
     bool (*isAvailable)(void *self);
 
-    void (*computeAudioSample)(void *self, AudioSample *buffer, uint32_t count);
+    void (*computeAudioSample)(void *self, AudioSample *buffer, double *chorusSend, double *reverbSend, uint32_t count);
 
     void (*registerCallback)(void *self, MidiSourceCallback function, void *receiver);
     void (*unregisterCallback)(void *self, MidiSourceCallback function, void *receiver);

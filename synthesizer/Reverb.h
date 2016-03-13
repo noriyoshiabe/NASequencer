@@ -6,4 +6,4 @@ typedef struct _Reverb Reverb;
 
 extern Reverb *ReverbCreate(double sampleRate, double reverbTime);
 extern void ReverbDestroy(Reverb *self);
-extern AudioSample ReverbComputeSample(Reverb *self, double input);
+extern void ReverbComputeSample(Reverb *self, double input, AudioSample *output);
