@@ -59,7 +59,7 @@ MACRO_REF      {MACRO_SYMBOL}([[:blank:]]*\([^\(\)]*\))?
 
 {DEFINE}          { yymore(); BEGIN(MACRO); }
 <MACRO>{MACRO_DEFINE} { NAMidiPreprocessorAppendMacro(yyextra, yylineno, yycolumn, yytext); }
-<MACRO>\n             { BEGIN(INITIAL);  }
+<MACRO>\n             { fputc('\n', stream); BEGIN(INITIAL);  }
 <MACRO>.              { }
 
 {MACRO_REF}       {
