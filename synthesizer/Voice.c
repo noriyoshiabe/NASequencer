@@ -238,13 +238,10 @@ static inline double VoiceCurrentTime(Voice *self)
     return (double)self->tick / self->sampleRate;
 }
 
-void VoiceSupplyClock(Voice *self)
-{
-    ++self->tick;
-}
-
 void VoiceUpdate(Voice *self)
 {
+    self->tick += UPDATE_THRESHOLD;
+
     double currentTime = VoiceCurrentTime(self);
 
     EnvelopeUpdate(&self->modEnv, currentTime);
@@ -266,22 +263,27 @@ void VoiceUpdate(Voice *self)
 
     LowPassFilterCalcLPFCoefficient(&self->LPF, self->sampleRate, frequency_cent, self->computed.q_cB);
 
-    self->computed.volume = self->computed.initialAttenuationValue * EnvelopeValue(&self->volEnv) * self->gain;
+    self->computed.volumeAndNormalize = self->computed.initialAttenuationValue * EnvelopeValue(&self->volEnv) * self->gain;
 
     if (self->modLfoToVolume) {
-        self->computed.volume *= cB2Value(self->modLfoToVolume * LFOValue(&self->modLfo));
+        self->computed.volumeAndNormalize *= cB2Value(self->modLfoToVolume * LFOValue(&self->modLfo));
     }
 
-    self->computed.pitchModulation = 1.0;
+    self->computed.volumeAndNormalize /= (double)0x7FFFFF;
+
+    double pitchModulation = 1.0;
+
     if (self->modEnvToPitch) {
-        self->computed.pitchModulation *= Cent2FreqRatio((double)self->modEnvToPitch * EnvelopeValue(&self->modEnv));
+        pitchModulation *= Cent2FreqRatio((double)self->modEnvToPitch * EnvelopeValue(&self->modEnv));
     }
     if (self->vibLfoToPitch) {
-        self->computed.pitchModulation *= Cent2FreqRatio((double)self->vibLfoToPitch * LFOValue(&self->vibLfo));
+        pitchModulation *= Cent2FreqRatio((double)self->vibLfoToPitch * LFOValue(&self->vibLfo));
     }
     if (self->modLfoToPitch) {
-        self->computed.pitchModulation *= Cent2FreqRatio((double)self->modLfoToPitch * LFOValue(&self->modLfo));
+        pitchModulation *= Cent2FreqRatio((double)self->modLfoToPitch * LFOValue(&self->modLfo));
     }
+
+    self->computed.sampleIncrement = self->sampleIncrement * pitchModulation;
 }
 
 double VoiceComputeSample(Voice *self)
@@ -292,14 +294,13 @@ double VoiceComputeSample(Voice *self)
         sample += (double)self->sf->sm24[index];
     }
 
-    sample = LowPassFilterApply(&self->LPF, sample) * self->computed.volume;
-    return Clip(sample, (double)-0xFFFFFF, (double)0x7FFFFF);
+    sample = LowPassFilterApply(&self->LPF, sample) * self->computed.volumeAndNormalize;
+    return Clip(sample, -1.0, 1.0);
 }
 
 void VoiceIncrementSample(Voice *self)
 {
-    double sampleIncrement = self->sampleIncrement * self->computed.pitchModulation;
-    self->sampleIndex += sampleIncrement;
+    self->sampleIndex += self->computed.sampleIncrement;
 
     if (self->sampleModes & 0x01) {
         if (self->sampleModes & 0x02 && EnvelopeIsReleased(&self->volEnv)) {

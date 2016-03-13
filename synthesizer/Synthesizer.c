@@ -603,12 +603,12 @@ static void LevelMaterUpdate(LevelMater *self, AudioSample *master)
 
 static void LevelMaterNormalize(LevelMater *self, Level *master, Level *channels)
 {
-    master->L = Value2cB(self->master.L / (double)0x7FFFFF);
-    master->R = Value2cB(self->master.R / (double)0x7FFFFF);
+    master->L = Value2cB(self->master.L);
+    master->R = Value2cB(self->master.R);
 
     for (int i = 0; i < CHANNEL_COUNT; ++i) {
-        channels[i].L = Value2cB(self->channels[i].L / (double)0x7FFFFF);
-        channels[i].R = Value2cB(self->channels[i].R / (double)0x7FFFFF);
+        channels[i].L = Value2cB(self->channels[i].L);
+        channels[i].R = Value2cB(self->channels[i].R);
     }
 }
 
@@ -624,8 +624,6 @@ static void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer
         bool needUpdate = 0 == i % UPDATE_THRESHOLD;
 
         for (Voice *voice = self->voiceFirst; NULL != voice;) {
-            VoiceSupplyClock(voice);
-
             if (needUpdate) {
                 VoiceUpdate(voice);
 
@@ -663,11 +661,11 @@ static void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer
             LevelMaterUpdate(&levelMater, &direct);
         }
 
-        buffer[i].L += direct.L / (double)0x7FFFFF;
-        buffer[i].R += direct.R / (double)0x7FFFFF;
+        buffer[i].L += direct.L;
+        buffer[i].R += direct.R;
 
-        chorusSend[i] += chorus / (double)0x7FFFFF;
-        reverbSend[i] += reverb / (double)0x7FFFFF;
+        chorusSend[i] += chorus;
+        reverbSend[i] += reverb;
     }
 
     if (self->level.enable) {

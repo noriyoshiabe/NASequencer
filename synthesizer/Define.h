@@ -3,7 +3,7 @@
 #include <math.h>
 #include <sys/param.h>
 
-#define Clip(v, min, max) (MIN(MAX(v, min), max))
+#define Clip(v, min, max) (min > v ? min : max < v ? max : v)
 #define Timecent2Sec(tc) (pow(2.0, (double)tc * 0.000833333 /* tc / 1200.0 */))
 #define cB2Value(cb) (pow(10.0, (double)cb * 0.005) /* cb / 10.0) / 20.0 */ )
 #define cBAttn2Value(cb) (pow(10.0, (double)cb * -0.005)  /* -cb / 10.0) / 20.0 */)

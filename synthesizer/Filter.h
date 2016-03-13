@@ -2,10 +2,10 @@
 
 typedef struct _LowPassFilter {
     struct {
-        float a1;
-        float a2;
-        float b1;
-        float b02;
+        double a1;
+        double a2;
+        double b1;
+        double b02;
     } coef;
 
     struct {

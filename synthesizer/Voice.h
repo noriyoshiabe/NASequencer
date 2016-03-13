@@ -75,9 +75,9 @@ typedef struct _Voice {
         double leftAmplifier;
         double rightAmplifier;
         double q_cB;
-        double pitchModulation;
+        double sampleIncrement;
         double initialAttenuationValue;
-        double volume;
+        double volumeAndNormalize;
     } computed;
 
     struct _Voice *next;
@@ -93,13 +93,10 @@ extern void VoiceInitialize(Voice *self, Channel *channel, uint8_t noteNo, uint8
         Zone *presetGlobalZone, Zone *presetZone, Zone *instrumentGlobalZone, Zone *instrumentZone,
         SoundFont *sf, double sampleRate, double gain, double masterVolume);
 
-extern void VoiceSupplyClock(Voice *self);
 extern void VoiceUpdate(Voice *self);
 extern double VoiceComputeSample(Voice *self);
 extern void VoiceIncrementSample(Voice *self);
 extern void VoiceUpdateRuntimeParams(Voice* self);
-extern double VoiceChorusEffectsSend(Voice *self);
-extern double VoiceReverbEffectsSend(Voice *self);
 extern void VoiceRelease(Voice *self);
 extern void VoiceTerminate(Voice *self);
 extern bool VoiceIsReleased(Voice *self);
