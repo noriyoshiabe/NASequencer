@@ -9,6 +9,6 @@ typedef struct _LFO {
 } LFO;
 
 extern void LFOInit(LFO *self);
-extern void LFOUpdateRuntimeParams(LFO *self, int16_t delay, int16_t frequency, double sampleRate);
+extern void LFOUpdateRuntimeParams(LFO *self, int16_t delay, int16_t frequency, double sampleRate, int updateThreshold);
 extern void LFOUpdate(LFO *self, double time);
 extern double LFOValue(LFO *self);

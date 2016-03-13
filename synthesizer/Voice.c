@@ -200,12 +200,12 @@ void VoiceUpdateRuntimeParams(Voice* self)
     LFOUpdateRuntimeParams(&self->modLfo,
             VoiceGeneratorValue(self, SFGeneratorType_delayModLFO),
             VoiceGeneratorValue(self, SFGeneratorType_freqModLFO),
-            self->sampleRate);
+            self->sampleRate, UPDATE_THRESHOLD);
 
     LFOUpdateRuntimeParams(&self->vibLfo,
             VoiceGeneratorValue(self, SFGeneratorType_delayVibLFO),
             VoiceGeneratorValue(self, SFGeneratorType_freqVibLFO),
-            self->sampleRate);
+            self->sampleRate, UPDATE_THRESHOLD);
 
     VoiceUpdateSampleIncrement(self);
 }
@@ -236,6 +236,11 @@ static inline double VoiceCurrentTime(Voice *self)
     return (double)self->tick / self->sampleRate;
 }
 
+void VoiceSupplyClock(Voice *self)
+{
+    ++self->tick;
+}
+
 void VoiceUpdate(Voice *self)
 {
     double currentTime = VoiceCurrentTime(self);
@@ -246,7 +251,35 @@ void VoiceUpdate(Voice *self)
     LFOUpdate(&self->modLfo, currentTime);
     LFOUpdate(&self->vibLfo, currentTime);
 
-    ++self->tick;
+    double frequency_cent = self->initialFilterFc;
+
+    if (self->modLfoToFilterFc) {
+        frequency_cent += self->modLfoToFilterFc * LFOValue(&self->modLfo);
+    }
+    if (self->modEnvToFilterFc) {
+        frequency_cent += self->modEnvToFilterFc * EnvelopeValue(&self->modEnv);
+    }
+
+    frequency_cent = Clip(frequency_cent, 1500.0, 13500.0);
+
+    LowPassFilterCalcLPFCoefficient(&self->LPF, self->sampleRate, frequency_cent, self->computed.q_cB);
+
+    self->computed.volume = EnvelopeValue(&self->volEnv);
+
+    if (self->modLfoToVolume) {
+        self->computed.volume *= cB2Value(self->modLfoToVolume * LFOValue(&self->modLfo));
+    }
+
+    self->computed.pitchModulation = 1.0;
+    if (self->modEnvToPitch) {
+        self->computed.pitchModulation *= Cent2FreqRatio((double)self->modEnvToPitch * EnvelopeValue(&self->modEnv));
+    }
+    if (self->vibLfoToPitch) {
+        self->computed.pitchModulation *= Cent2FreqRatio((double)self->vibLfoToPitch * LFOValue(&self->vibLfo));
+    }
+    if (self->modLfoToPitch) {
+        self->computed.pitchModulation *= Cent2FreqRatio((double)self->modLfoToPitch * LFOValue(&self->modLfo));
+    }
 }
 
 double VoiceComputeSample(Voice *self)
@@ -257,43 +290,13 @@ double VoiceComputeSample(Voice *self)
         sample += (double)self->sf->sm24[index];
     }
 
-    double frequency_cent = self->initialFilterFc;
-
-    if (self->modLfoToFilterFc) {
-        frequency_cent += self->modLfoToFilterFc * LFOValue(&self->modLfo);
-    }
-    if (self->modEnvToFilterFc) {
-        frequency_cent += self->modEnvToFilterFc * EnvelopeValue(&self->modEnv);
-    }
-    frequency_cent = Clip(frequency_cent, 1500.0, 13500.0);
-
-    LowPassFilterCalcLPFCoefficient(&self->LPF, self->sampleRate, frequency_cent, self->computed.q_cB);
     sample = LowPassFilterApply(&self->LPF, sample);
-
-    double volume = EnvelopeValue(&self->volEnv);
-
-    if (self->modLfoToVolume) {
-        volume *= cB2Value(self->modLfoToVolume * LFOValue(&self->modLfo));
-    }
-
-    return sample * volume;
+    return sample * self->computed.volume;
 }
 
 void VoiceIncrementSample(Voice *self)
 {
-    double toPitch = 1.0;
-    
-    if (self->modEnvToPitch) {
-        toPitch *= Cent2FreqRatio((double)self->modEnvToPitch * EnvelopeValue(&self->modEnv));
-    }
-    if (self->vibLfoToPitch) {
-        toPitch *= Cent2FreqRatio((double)self->vibLfoToPitch * LFOValue(&self->vibLfo));
-    }
-    if (self->modLfoToPitch) {
-        toPitch *= Cent2FreqRatio((double)self->modLfoToPitch * LFOValue(&self->modLfo));
-    }
-
-    double sampleIncrement = self->sampleIncrement * toPitch;
+    double sampleIncrement = self->sampleIncrement * self->computed.pitchModulation;
     self->sampleIndex += sampleIncrement;
 
     if (self->sampleModes & 0x01) {

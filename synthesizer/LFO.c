@@ -5,7 +5,7 @@ void LFOInit(LFO *self)
     self->value = 0.0;
 }
 
-void LFOUpdateRuntimeParams(LFO *self, int16_t delay, int16_t frequency, double sampleRate)
+void LFOUpdateRuntimeParams(LFO *self, int16_t delay, int16_t frequency, double sampleRate, int updateThreshold)
 {
     // 8.1.1 Kinds of Generator Enumerators
     // 21 delayModLFO / 23 delayVibLFO
@@ -18,7 +18,7 @@ void LFOUpdateRuntimeParams(LFO *self, int16_t delay, int16_t frequency, double 
     }
 
     double samplePerCycle = sampleRate / AbsCent2Hz(Clip(frequency, -16000, 4500));
-    self->increment = 1.0 / (samplePerCycle / 4.0);
+    self->increment = 1.0 / (samplePerCycle / 4.0) * updateThreshold;
 }
 
 void LFOUpdate(LFO *self, double time)

@@ -7,8 +7,9 @@
 #include "LFO.h"
 #include "Channel.h"
 
-#define MAX_POLYPHONY 64
+#define MAX_POLYPHONY 256
 #define MAX_MODULATOR 64
+#define UPDATE_THRESHOLD 64
 
 typedef struct _Voice {
     Channel *channel;
@@ -73,6 +74,8 @@ typedef struct _Voice {
         double leftAmplifier;
         double rightAmplifier;
         double q_cB;
+        double pitchModulation;
+        double volume;
     } computed;
 
     struct _Voice *next;
@@ -88,6 +91,7 @@ extern void VoiceInitialize(Voice *self, Channel *channel, uint8_t noteNo, uint8
         Zone *presetGlobalZone, Zone *presetZone, Zone *instrumentGlobalZone, Zone *instrumentZone,
         SoundFont *sf, double sampleRate, double gain);
 
+extern void VoiceSupplyClock(Voice *self);
 extern void VoiceUpdate(Voice *self);
 extern double VoiceComputeSample(Voice *self);
 extern void VoiceIncrementSample(Voice *self);

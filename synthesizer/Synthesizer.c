@@ -637,8 +637,22 @@ static void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer
         double chorusSend = 0.0;
         double reverbSend = 0.0;
 
+        bool needUpdate = 0 == i % UPDATE_THRESHOLD;
+
         for (Voice *voice = self->voiceFirst; NULL != voice;) {
-            VoiceUpdate(voice);
+            VoiceSupplyClock(voice);
+
+            if (needUpdate) {
+                VoiceUpdate(voice);
+
+                if (VoiceIsReleased(voice)) {
+                    Voice *toFree = voice;
+                    voice = voice->next;
+                    SynthesizerRemoveVoice(self, toFree);
+                    VoicePoolDeallocVoice(self->voicePool, toFree);
+                    continue;
+                }
+            }
 
             double computed = VoiceComputeSample(voice);
             
@@ -646,7 +660,7 @@ static void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer
             sample.L = computed * voice->computed.leftAmplifier;
             sample.R = computed * voice->computed.rightAmplifier;
 
-            if (self->level.enable) {
+            if (needUpdate && self->level.enable) {
                 LevelMaterAddToChannel(&levelMater, voice->channel->number, &sample);
             }
 
@@ -657,14 +671,6 @@ static void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer
             reverbSend += computed * voice->computed.reverbEffectsSend;
 
             VoiceIncrementSample(voice);
-
-            if (VoiceIsReleased(voice)) {
-                Voice *toFree = voice;
-                voice = voice->next;
-                SynthesizerRemoveVoice(self, toFree);
-                VoicePoolDeallocVoice(self->voicePool, toFree);
-                continue;
-            }
 
             voice = voice->next;
         }
@@ -679,7 +685,7 @@ static void SynthesizerComputeAudioSample(Synthesizer *self, AudioSample *buffer
         buffer[i].L += master.L / (double)0x7FFFFF;
         buffer[i].R += master.R / (double)0x7FFFFF;
 
-        if (self->level.enable) {
+        if (needUpdate && self->level.enable) {
             LevelMaterUpdate(&levelMater, &master);
         }
     }
