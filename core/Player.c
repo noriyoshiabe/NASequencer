@@ -55,6 +55,10 @@ static void PlayerSendNoteOn(Player *self, NoteEvent *event);
 static void PlayerScanNoteOff(Player *self, int prevTick, int tick);
 static void PlayerSendAllNoteOff(Player *self);
 
+static void PlayerRegiseter(Player *player);
+static void PlayerUnregiseter(Player *player);
+static void PlayerBroadcastMessage(Player *player, PlayerMessage message, void *data);
+
 Player *PlayerCreate(Mixer *mixer)
 {
     Player *self = calloc(1, sizeof(Player));
@@ -64,11 +68,16 @@ Player *PlayerCreate(Mixer *mixer)
     self->playingNoteEvents = NASetCreate(NULL, NULL);
     self->location = LocationZero;
     pthread_create(&self->thread, NULL, PlayerRun, self);
+
+    PlayerRegiseter(self);
+
     return self;
 }
 
 void PlayerDestroy(Player *self)
 {
+    PlayerUnregiseter(self);
+
     self->playing = false;
     self->exit = true;
     NAMessageQPost(self->msgQ, PlayerMessageDestroy, NULL);
@@ -345,6 +354,7 @@ static void PlayerProcessEvent(Player *self, PlayerEvent event)
         PlayerSendAllNoteOff(self);
         break;
     case PlayerEventPlay:
+        PlayerBroadcastMessage(self, PlayerMessageStop, NULL);
         break;
     case PlayerEventRewind:
         PlayerSendAllNoteOff(self);
@@ -509,4 +519,51 @@ static int64_t currentMicroSec()
     struct timeval tv;
     gettimeofday(&tv, NULL);
     return tv.tv_sec * 1000 * 1000 + tv.tv_usec;
+}
+
+
+static pthread_mutex_t _mutex;
+static NASet *_playerSet;
+
+static void PlayerFinalize()
+{
+    pthread_mutex_destroy(&_mutex);
+    NASetDestroy(_playerSet);
+}
+
+__attribute__((constructor))
+static void PlayerInitialize()
+{
+    pthread_mutex_init(&_mutex, NULL);
+    _playerSet = NASetCreate(NULL, NULL);
+    atexit(PlayerFinalize);
+}
+
+static void PlayerRegiseter(Player *player)
+{
+    pthread_mutex_lock(&_mutex);
+    NASetAdd(_playerSet, player);
+    pthread_mutex_unlock(&_mutex);
+}
+
+static void PlayerUnregiseter(Player *player)
+{
+    pthread_mutex_lock(&_mutex);
+    NASetRemove(_playerSet, player);
+    pthread_mutex_unlock(&_mutex);
+}
+
+static void PlayerBroadcastMessage(Player *player, PlayerMessage message, void *data)
+{
+    pthread_mutex_lock(&_mutex);
+
+    NAIterator *iterator = NASetGetIterator(_playerSet);
+    while (iterator->hasNext(iterator)) {
+        Player *_player = iterator->next(iterator);
+        if (_player != player) {
+            NAMessageQPost(_player->msgQ, message, data);
+        }
+    }
+
+    pthread_mutex_unlock(&_mutex);
 }
