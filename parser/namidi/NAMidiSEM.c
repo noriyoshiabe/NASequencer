@@ -174,18 +174,32 @@ SEMGatetime *NAMidiSEMGatetimeCreate(FileLocation *location)
     return NodeCreate(SEMGatetime, location);
 }
 
-static void SEMVoiceAccept(void *self, void *visitor)
+static void SEMBankAccept(void *self, void *visitor)
 {
-    ((SEMVisitor *)visitor)->visitVoice(visitor, self);
+    ((SEMVisitor *)visitor)->visitBank(visitor, self);
 }
 
-static void SEMVoiceDestroy(void *_self)
+static void SEMBankDestroy(void *_self)
 {
 }
 
-SEMVoice *NAMidiSEMVoiceCreate(FileLocation *location)
+SEMBank *NAMidiSEMBankCreate(FileLocation *location)
 {
-    return NodeCreate(SEMVoice, location);
+    return NodeCreate(SEMBank, location);
+}
+
+static void SEMProgramAccept(void *self, void *visitor)
+{
+    ((SEMVisitor *)visitor)->visitProgram(visitor, self);
+}
+
+static void SEMProgramDestroy(void *_self)
+{
+}
+
+SEMProgram *NAMidiSEMProgramCreate(FileLocation *location)
+{
+    return NodeCreate(SEMProgram, location);
 }
 
 static void SEMSynthAccept(void *self, void *visitor)

@@ -29,8 +29,11 @@ void *MidiEventAlloc(MidiEventType type, int id, int tick, int extraSize)
     case MidiEventTypeMarker:
         size = sizeof(MarkerEvent) + extraSize;
         break;
-    case MidiEventTypeVoice:
-        size = sizeof(VoiceEvent);
+    case MidiEventTypeBank:
+        size = sizeof(BankEvent);
+        break;
+    case MidiEventTypeProgram:
+        size = sizeof(ProgramEvent);
         break;
     case MidiEventTypeVolume:
         size = sizeof(VolumeEvent);
@@ -117,11 +120,18 @@ void MidiEventDump(MidiEvent *self, int indent)
                     self->id, self->tick, self->text);
         }
         break;
-    case MidiEventTypeVoice:
+    case MidiEventTypeBank:
         {
-            VoiceEvent *self = _self;
-            printf("Voice: id=%d tick=%d channel=%d bankNo=%d programNo=%d\n",
-                    self->id, self->tick, self->channel, self->bankNo, self->programNo);
+            BankEvent *self = _self;
+            printf("Bank: id=%d tick=%d channel=%d bankNo=%d\n",
+                    self->id, self->tick, self->channel, self->bankNo);
+        }
+        break;
+    case MidiEventTypeProgram:
+        {
+            ProgramEvent *self = _self;
+            printf("Program: id=%d tick=%d channel=%d programNo=%d\n",
+                    self->id, self->tick, self->channel, self->programNo);
         }
         break;
     case MidiEventTypeVolume:
@@ -180,7 +190,8 @@ int MidiEventGetChannel(const MidiEvent *event)
 {
     switch (event->type) {
     case MidiEventTypeNote:
-    case MidiEventTypeVoice:
+    case MidiEventTypeBank:
+    case MidiEventTypeProgram:
     case MidiEventTypeVolume:
     case MidiEventTypePan:
     case MidiEventTypeChorus:

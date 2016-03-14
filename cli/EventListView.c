@@ -182,11 +182,18 @@ void EventListViewRender(EventListView *self)
                 sprintf(texts[6], "%s", _event->text);
             }
             break;
-        case MidiEventTypeVoice:
+        case MidiEventTypeBank:
             {
-                VoiceEvent *_event = (void *)event;
+                BankEvent *_event = (void *)event;
                 sprintf(texts[2], "%d", _event->channel);
-                sprintf(texts[6], "Bank: %d  Prg: %d", _event->bankNo, _event->programNo);
+                sprintf(texts[6], "Bank: %d", _event->bankNo);
+            }
+            break;
+        case MidiEventTypeProgram:
+            {
+                ProgramEvent *_event = (void *)event;
+                sprintf(texts[2], "%d", _event->channel);
+                sprintf(texts[6], "Program: %d", _event->programNo);
             }
             break;
         case MidiEventTypeVolume:

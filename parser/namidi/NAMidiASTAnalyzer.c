@@ -221,18 +221,30 @@ static void visitGatetime(void *_self, ASTGatetime *ast)
     append(self->state->list, sem);
 }
 
-static void visitVoice(void *_self, ASTVoice *ast)
+static void visitBank(void *_self, ASTBank *ast)
 {
     NAMidiASTAnalyzer *self = _self;
 
-    if (!isValidRange(ast->bankNo, 0, 16383) || !isValidRange(ast->programNo, 1, 128)) {
-        appendError(self, ast, NAMidiParseErrorInvalidVoice,
-                NACStringFromInteger(ast->bankNo), NACStringFromInteger(ast->programNo), NULL);
+    if (!isValidRange(ast->bankNo, 0, 16383)) {
+        appendError(self, ast, NAMidiParseErrorInvalidBankNumber, NACStringFromInteger(ast->bankNo), NULL);
         return;
     }
 
-    SEMVoice *sem = node(Voice, ast);
+    SEMBank *sem = node(Bank, ast);
     sem->bankNo = ast->bankNo;
+    append(self->state->list, sem);
+}
+
+static void visitProgram(void *_self, ASTProgram *ast)
+{
+    NAMidiASTAnalyzer *self = _self;
+
+    if (!isValidRange(ast->programNo, 1, 128)) {
+        appendError(self, ast, NAMidiParseErrorInvalidProgramNumber, NACStringFromInteger(ast->programNo), NULL);
+        return;
+    }
+
+    SEMProgram *sem = node(Program, ast);
     sem->programNo = ast->programNo;
     append(self->state->list, sem);
 }
@@ -495,7 +507,8 @@ Analyzer *NAMidiASTAnalyzerCreate(ParseContext *context)
     self->visitor.visitChannel = visitChannel;
     self->visitor.visitVelocity = visitVelocity;
     self->visitor.visitGatetime = visitGatetime;
-    self->visitor.visitVoice = visitVoice;
+    self->visitor.visitBank = visitBank;
+    self->visitor.visitProgram = visitProgram;
     self->visitor.visitSynth = visitSynth;
     self->visitor.visitVolume = visitVolume;
     self->visitor.visitPan = visitPan;

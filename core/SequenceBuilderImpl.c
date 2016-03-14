@@ -109,17 +109,25 @@ static void SequenceBuilderAppendMarker(void *_self, int tick, const char *marke
     NAArrayAppend(sequence->events, event);
 }
 
-static void SequenceBuilderAppendVoice(void *_self, int tick, int channel, int bankNo, int programNo)
+static void SequenceBuilderAppendBank(void *_self, int tick, int channel, int bankNo)
 {
     SequenceBuilderImpl *self = _self;
     Sequence *sequence = self->sequence;
 
-    VoiceEvent *event = MidiEventAlloc(MidiEventTypeVoice, ++self->id, tick, sizeof(VoiceEvent) - sizeof(MidiEvent));
+    BankEvent *event = MidiEventAlloc(MidiEventTypeBank, ++self->id, tick, sizeof(BankEvent) - sizeof(MidiEvent));
     event->channel = channel;
     event->bankNo = bankNo;
+    NAArrayAppend(sequence->events, event);
+}
+
+static void SequenceBuilderAppendProgram(void *_self, int tick, int channel, int programNo)
+{
+    SequenceBuilderImpl *self = _self;
+    Sequence *sequence = self->sequence;
+
+    ProgramEvent *event = MidiEventAlloc(MidiEventTypeProgram, ++self->id, tick, sizeof(ProgramEvent) - sizeof(MidiEvent));
+    event->channel = channel;
     event->programNo = programNo;
-    event->bankSelect.msb = 0x7F & (bankNo >> 7);
-    event->bankSelect.lsb = 0x7F & bankNo;
     NAArrayAppend(sequence->events, event);
 }
 
@@ -239,7 +247,8 @@ SequenceBuilder *SequenceBuilderCreate()
     self->interface.appendKey = SequenceBuilderAppendKey;
     self->interface.appendNote = SequenceBuilderAppendNote;
     self->interface.appendMarker = SequenceBuilderAppendMarker;
-    self->interface.appendVoice = SequenceBuilderAppendVoice;
+    self->interface.appendBank = SequenceBuilderAppendBank;
+    self->interface.appendProgram = SequenceBuilderAppendProgram;
     self->interface.appendSynth = SequenceBuilderAppendSynth;
     self->interface.appendVolume = SequenceBuilderAppendVolume;
     self->interface.appendPan = SequenceBuilderAppendPan;

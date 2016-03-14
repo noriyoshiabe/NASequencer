@@ -156,11 +156,18 @@
             view.other = [NSString stringWithUTF8String:_event->text];
         }
             break;
-        case MidiEventTypeVoice:
+        case MidiEventTypeBank:
         {
-            VoiceEvent *_event = (void *)raw;
+            BankEvent *_event = (void *)raw;
             view.channel = [NSString stringWithFormat:@"%d", _event->channel];
-            view.other = [NSString stringWithFormat:@"BANK: %d  Prg: %d", _event->bankNo, _event->programNo];
+            view.other = [NSString stringWithFormat:@"Bank: %d", _event->bankNo];
+        }
+            break;
+        case MidiEventTypeProgram:
+        {
+            ProgramEvent *_event = (void *)raw;
+            view.channel = [NSString stringWithFormat:@"%d", _event->channel];
+            view.other = [NSString stringWithFormat:@"Program: %d", _event->programNo];
         }
             break;
         case MidiEventTypeVolume:

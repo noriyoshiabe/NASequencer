@@ -26,7 +26,8 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(NAMidiParseErrorInvalidTempo);
     CASE(NAMidiParseErrorInvalidTimeSign);
     CASE(NAMidiParseErrorInvalidChannel);
-    CASE(NAMidiParseErrorInvalidVoice);
+    CASE(NAMidiParseErrorInvalidBankNumber);
+    CASE(NAMidiParseErrorInvalidProgramNumber);
     CASE(NAMidiParseErrorInvalidVolume);
     CASE(NAMidiParseErrorInvalidPan);
     CASE(NAMidiParseErrorInvalidChorus);

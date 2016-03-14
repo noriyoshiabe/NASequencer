@@ -429,8 +429,11 @@ static void PlayerScanEvents(Player *self, int32_t prevTick, int32_t tick)
                 case MidiEventTypeNote:
                     PlayerSendNoteOn(self, (NoteEvent *)event);
                     break;
-                case MidiEventTypeVoice:
-                    MixerSendVoice(self->mixer, (VoiceEvent *)event);
+                case MidiEventTypeBank:
+                    MixerSendBank(self->mixer, (BankEvent *)event);
+                    break;
+                case MidiEventTypeProgram:
+                    MixerSendProgram(self->mixer, (ProgramEvent *)event);
                     break;
                 case MidiEventTypeVolume:
                     MixerSendVolume(self->mixer, (VolumeEvent *)event);

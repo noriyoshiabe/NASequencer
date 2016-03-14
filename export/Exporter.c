@@ -232,12 +232,17 @@ bool ExporterWriteToSMF(Exporter *self, const char *filepath)
                 SMFWriterAppendMarker(writer, marker->tick, marker->text);
             }
             break;
-        case MidiEventTypeVoice:
+        case MidiEventTypeBank:
             {
-                VoiceEvent *voice = (VoiceEvent *)events[i];
-                SMFWriterAppendControlChange(writer, voice->tick, voice->channel, 0x00, voice->bankSelect.msb);
-                SMFWriterAppendControlChange(writer, voice->tick, voice->channel, 0x20, voice->bankSelect.lsb);
-                SMFWriterAppendProgramChange(writer, voice->tick, voice->channel, voice->programNo);
+                BankEvent *bank = (BankEvent *)events[i];
+                SMFWriterAppendControlChange(writer, bank->tick, bank->channel, 0x00, 0x7F & (bank->bankNo >> 7));
+                SMFWriterAppendControlChange(writer, bank->tick, bank->channel, 0x20, 0x7F & bank->bankNo);
+            }
+            break;
+        case MidiEventTypeProgram:
+            {
+                ProgramEvent *program = (ProgramEvent *)events[i];
+                SMFWriterAppendProgramChange(writer, program->tick, program->channel, program->programNo);
             }
             break;
         case MidiEventTypeVolume:
@@ -339,8 +344,11 @@ static void ExporterBuildAudioSample(Exporter *self, ExporterAudioBuffer *audioB
                         MixerSendNoteOn(mixer, (NoteEvent *)event);
                     }
                     break;
-                case MidiEventTypeVoice:
-                    MixerSendVoice(mixer, (VoiceEvent *)event);
+                case MidiEventTypeBank:
+                    MixerSendBank(mixer, (BankEvent *)event);
+                    break;
+                case MidiEventTypeProgram:
+                    MixerSendProgram(mixer, (ProgramEvent *)event);
                     break;
                 case MidiEventTypeVolume:
                     MixerSendVolume(mixer, (VolumeEvent *)event);

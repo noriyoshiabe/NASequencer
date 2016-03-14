@@ -58,7 +58,7 @@ CHANNEL        channel
 VELOCITY       velocity
 GATETIME       gatetime
 STEP           step
-VOICE          voice
+PROGRAM        program
 BANK           bank
 SYNTH          synth
 VOLUME         volume
@@ -103,7 +103,7 @@ LOCATION       ^##.+:[[:digit:]]+:[[:digit:]]+\n
 {VELOCITY}       { return VELOCITY; }
 {GATETIME}       { return GATETIME; }
 {STEP}           { return STEP; }
-{VOICE}          { return VOICE; }
+{PROGRAM}        { return PROGRAM; }
 {BANK}           { return BANK; }
 {SYNTH}          { return SYNTH; }
 {VOLUME}         { return VOLUME; }

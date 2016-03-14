@@ -164,18 +164,32 @@ ASTGatetime *NAMidiASTGatetimeCreate(FileLocation *location)
     return NodeCreate(ASTGatetime, location);
 }
 
-static void ASTVoiceAccept(void *self, void *visitor)
+static void ASTBankAccept(void *self, void *visitor)
 {
-    ((ASTVisitor *)visitor)->visitVoice(visitor, self);
+    ((ASTVisitor *)visitor)->visitBank(visitor, self);
 }
 
-static void ASTVoiceDestroy(void *_self)
+static void ASTBankDestroy(void *_self)
 {
 }
 
-ASTVoice *NAMidiASTVoiceCreate(FileLocation *location)
+ASTBank *NAMidiASTBankCreate(FileLocation *location)
 {
-    return NodeCreate(ASTVoice, location);
+    return NodeCreate(ASTBank, location);
+}
+
+static void ASTProgramAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitProgram(visitor, self);
+}
+
+static void ASTProgramDestroy(void *_self)
+{
+}
+
+ASTProgram *NAMidiASTProgramCreate(FileLocation *location)
+{
+    return NodeCreate(ASTProgram, location);
 }
 
 static void ASTSynthAccept(void *self, void *visitor)

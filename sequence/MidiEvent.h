@@ -10,14 +10,15 @@ typedef enum {
     MidiEventTypeTitle,
     MidiEventTypeCopyright,
     MidiEventTypeMarker,
-    MidiEventTypeVoice,
+    MidiEventTypeBank,
+    MidiEventTypeProgram,
     MidiEventTypeVolume,
     MidiEventTypePan,
     MidiEventTypeChorus,
     MidiEventTypeReverb,
     MidiEventTypeExpression,
-    MidiEventTypeDetune,
 
+    MidiEventTypeDetune,
     MidiEventTypeSynth,
 } MidiEventType;
 
@@ -88,18 +89,21 @@ typedef struct _CopyrightEvent {
     char text[];
 } CopyrightEvent;
 
-typedef struct _VoiceEvent {
+typedef struct _BankEvent {
     MidiEventType type;
     int id;
     int tick;
     int channel;
     int bankNo;
+} BankEvent;
+
+typedef struct _ProgramEvent {
+    MidiEventType type;
+    int id;
+    int tick;
+    int channel;
     int programNo;
-    struct {
-        uint8_t msb;
-        uint8_t lsb;
-    } bankSelect;
-} VoiceEvent;
+} ProgramEvent;
 
 typedef struct _VolumeEvent {
     MidiEventType type;
@@ -181,7 +185,8 @@ static inline char *MidiEventType2String(MidiEventType type)
     CASE(MidiEventTypeTitle);
     CASE(MidiEventTypeCopyright);
     CASE(MidiEventTypeMarker);
-    CASE(MidiEventTypeVoice);
+    CASE(MidiEventTypeBank);
+    CASE(MidiEventTypeProgram);
     CASE(MidiEventTypeVolume);
     CASE(MidiEventTypePan);
     CASE(MidiEventTypeChorus);

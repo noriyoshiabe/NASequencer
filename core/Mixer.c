@@ -201,7 +201,7 @@ void MixerSendAllSoundOff(Mixer *self, int midiChannelNumber)
     channel->source->send(channel->source, bytes, 3);
 }
 
-void MixerSendVoice(Mixer *self, VoiceEvent *event)
+void MixerSendBank(Mixer *self, BankEvent *event)
 {
     MixerChannel *channel = NAArrayGetValueAt(self->channels, event->channel - 1);
     if (channel->active) {
@@ -209,12 +209,20 @@ void MixerSendVoice(Mixer *self, VoiceEvent *event)
 
         bytes[0] = 0xB0 | (0x0F & channel->midiNumber);
         bytes[1] = 0x00;
-        bytes[2] = event->bankSelect.msb;
+        bytes[2] = 0x7F & (event->bankNo >> 7);
         channel->source->send(channel->source, bytes, 3);
 
         bytes[1] = 0x20;
-        bytes[2] = event->bankSelect.lsb;
+        bytes[2] = 0x7F & event->bankNo;
         channel->source->send(channel->source, bytes, 3);
+    }
+}
+
+void MixerSendProgram(Mixer *self, ProgramEvent *event)
+{
+    MixerChannel *channel = NAArrayGetValueAt(self->channels, event->channel - 1);
+    if (channel->active) {
+        uint8_t bytes[3];
 
         bytes[0] = 0xC0 | (0x0F & channel->midiNumber);
         bytes[1] = event->programNo - 1;

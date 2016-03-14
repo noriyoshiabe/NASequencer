@@ -204,11 +204,18 @@ static void visitGatetime(void *_self, SEMGatetime *sem)
     GATETIME(self->state).value = sem->value;
 }
 
-static void visitVoice(void *_self, SEMVoice *sem)
+static void visitBank(void *_self, SEMBank *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
     FLUSH(self->state);
-    self->builder->appendVoice(self->builder, TICK(self->state), self->state->channel, sem->bankNo, sem->programNo);
+    self->builder->appendBank(self->builder, TICK(self->state), self->state->channel, sem->bankNo);
+}
+
+static void visitProgram(void *_self, SEMProgram *sem)
+{
+    NAMidiSEMAnalyzer *self = _self;
+    FLUSH(self->state);
+    self->builder->appendProgram(self->builder, TICK(self->state), self->state->channel, sem->programNo);
 }
 
 static void visitSynth(void *_self, SEMSynth *sem)
@@ -366,7 +373,8 @@ Analyzer *NAMidiSEMAnalyzerCreate(ParseContext *context)
     self->visitor.visitChannel = visitChannel;
     self->visitor.visitVelocity = visitVelocity;
     self->visitor.visitGatetime = visitGatetime;
-    self->visitor.visitVoice = visitVoice;
+    self->visitor.visitBank = visitBank;
+    self->visitor.visitProgram = visitProgram;
     self->visitor.visitSynth = visitSynth;
     self->visitor.visitVolume = visitVolume;
     self->visitor.visitPan = visitPan;

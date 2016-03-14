@@ -120,9 +120,14 @@ static void visitGatetime(void *self, ASTGatetime *ast)
     dump(self, ast, BOOL(ast, absolute), INTEGER(ast, value), NULL);
 }
 
-static void visitVoice(void *self, ASTVoice *ast)
+static void visitBank(void *self, ASTBank *ast)
 {
-    dump(self, ast, INTEGER(ast, bankNo), INTEGER(ast, programNo), NULL);
+    dump(self, ast, INTEGER(ast, bankNo), NULL);
+}
+
+static void visitProgram(void *self, ASTProgram *ast)
+{
+    dump(self, ast, INTEGER(ast, programNo), NULL);
 }
 
 static void visitSynth(void *self, ASTSynth *ast)
@@ -238,7 +243,8 @@ Analyzer *NAMidiASTDumperCreate(ParseContext *context)
     self->visitor.visitChannel = visitChannel;
     self->visitor.visitVelocity = visitVelocity;
     self->visitor.visitGatetime = visitGatetime;
-    self->visitor.visitVoice = visitVoice;
+    self->visitor.visitBank = visitBank;
+    self->visitor.visitProgram = visitProgram;
     self->visitor.visitSynth = visitSynth;
     self->visitor.visitVolume = visitVolume;
     self->visitor.visitPan = visitPan;

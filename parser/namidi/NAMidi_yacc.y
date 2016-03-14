@@ -40,13 +40,13 @@ extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, void **node, const ch
 %token <s>STRING
 
 %token RESOLUTION TITLE COPYRIGHT TEMPO TIME KEY MARKER PATTERN EXPAND
-       END CHANNEL VELOCITY GATETIME STEP VOICE BANK SYNTH VOLUME PAN
+       END CHANNEL VELOCITY GATETIME STEP BANK PROGRAM SYNTH VOLUME PAN
        CHORUS REVERB EXPRESSION DETUNE TRANSPOSE NOTE_PARAM_V NOTE_PARAM_GT
 %token END_OF_FILE 0
 
 %token <s>NOTE KEY_SIGN IDENTIFIER
 
-%type <node> resolution title copyright tempo time key marker channel velocity gatetime voice
+%type <node> resolution title copyright tempo time key marker channel velocity gatetime bank program
              synth volume pan chorus reverb expression detune transpose step note expand
 
 %type <node> pattern
@@ -103,7 +103,8 @@ statement
     | channel
     | velocity
     | gatetime
-    | voice
+    | bank
+    | program
     | synth
     | volume
     | pan
@@ -239,26 +240,20 @@ gatetime
         }
     ;
 
-voice
-    : VOICE INTEGER
+bank
+    : BANK INTEGER
         {
-            ASTVoice *n = node(Voice, @$);
-            n->bankNo = 0;
-            n->programNo = $2;
+            ASTBank *n = node(Bank, @$);
+            n->bankNo = $2;
             $$ = n;
         }
-    | VOICE INTEGER BANK '=' INTEGER
+    ;
+
+program
+    : PROGRAM INTEGER
         {
-            ASTVoice *n = node(Voice, @$);
-            n->bankNo = $5;
+            ASTProgram *n = node(Program, @$);
             n->programNo = $2;
-            $$ = n;
-        }
-    | VOICE BANK '=' INTEGER INTEGER
-        {
-            ASTVoice *n = node(Voice, @$);
-            n->bankNo = $4;
-            n->programNo = $5;
             $$ = n;
         }
     ;

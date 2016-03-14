@@ -58,11 +58,15 @@ typedef struct _ASTGatetime {
     int value;
 } ASTGatetime;
 
-typedef struct _ASTVoice {
+typedef struct _ASTBank {
     Node node;
     int bankNo;
+} ASTBank;
+
+typedef struct _ASTProgram {
+    Node node;
     int programNo;
-} ASTVoice;
+} ASTProgram;
 
 typedef struct _ASTSynth {
     Node node;
@@ -147,7 +151,8 @@ typedef struct _ASTVisitor {
     void (*visitChannel)(void *self, ASTChannel *ast);
     void (*visitVelocity)(void *self, ASTVelocity *ast);
     void (*visitGatetime)(void *self, ASTGatetime *ast);
-    void (*visitVoice)(void *self, ASTVoice *ast);
+    void (*visitBank)(void *self, ASTBank *ast);
+    void (*visitProgram)(void *self, ASTProgram *ast);
     void (*visitSynth)(void *self, ASTSynth *ast);
     void (*visitVolume)(void *self, ASTVolume *ast);
     void (*visitPan)(void *self, ASTPan *ast);
@@ -174,7 +179,8 @@ extern ASTMarker *NAMidiASTMarkerCreate(FileLocation *location);
 extern ASTChannel *NAMidiASTChannelCreate(FileLocation *location);
 extern ASTVelocity *NAMidiASTVelocityCreate(FileLocation *location);
 extern ASTGatetime *NAMidiASTGatetimeCreate(FileLocation *location);
-extern ASTVoice *NAMidiASTVoiceCreate(FileLocation *location);
+extern ASTBank *NAMidiASTBankCreate(FileLocation *location);
+extern ASTProgram *NAMidiASTProgramCreate(FileLocation *location);
 extern ASTSynth *NAMidiASTSynthCreate(FileLocation *location);
 extern ASTVolume *NAMidiASTVolumeCreate(FileLocation *location);
 extern ASTPan *NAMidiASTPanCreate(FileLocation *location);

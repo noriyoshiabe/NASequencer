@@ -43,7 +43,6 @@ typedef struct _MMLSEMAnalyzer {
     bool octaveReverse;
     int tick;
     int channel;
-    int bankNo;
     int octave;
     int transpose;
     bool tie;
@@ -194,13 +193,13 @@ static void visitSynth(void *_self, SEMSynth *sem)
 static void visitBankSelect(void *_self, SEMBankSelect *sem)
 {
     MMLSEMAnalyzer *self = _self;
-    self->bankNo = sem->bankNo;
+    self->builder->appendBank(self->builder, self->tick, self->channel, sem->bankNo);
 }
 
 static void visitProgramChange(void *_self, SEMProgramChange *sem)
 {
     MMLSEMAnalyzer *self = _self;
-    self->builder->appendVoice(self->builder, self->tick, self->channel, self->bankNo, sem->programNo);
+    self->builder->appendProgram(self->builder, self->tick, self->channel, sem->programNo);
 }
 
 static void visitVolume(void *_self, SEMVolume *sem)
