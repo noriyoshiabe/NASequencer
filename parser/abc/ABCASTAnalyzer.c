@@ -1113,7 +1113,12 @@ static void visitMidiParam(void *_self, ASTMidiParam *ast)
         }
         break;
     case MidiBank:
-        self->midiVoice->bank = ast->intValue;
+        if (!isValidRange(ast->intValue, 0, 16383)) {
+            appendError(self, ast, ABCParseErrorInvalidMidiBank, NACStringFromInteger(ast->intValue), NULL);
+        }
+        else {
+            self->midiVoice->bank = ast->intValue;
+        }
         break;
     case MidiMute:
         self->midiVoice->mute = true;

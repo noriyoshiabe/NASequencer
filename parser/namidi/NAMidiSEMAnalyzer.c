@@ -208,7 +208,7 @@ static void visitVoice(void *_self, SEMVoice *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
     FLUSH(self->state);
-    self->builder->appendVoice(self->builder, TICK(self->state), self->state->channel, sem->msb, sem->lsb, sem->programNo);
+    self->builder->appendVoice(self->builder, TICK(self->state), self->state->channel, sem->bankNo, sem->programNo);
 }
 
 static void visitSynth(void *_self, SEMSynth *sem)

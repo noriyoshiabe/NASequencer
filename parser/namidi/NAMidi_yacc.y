@@ -240,12 +240,11 @@ gatetime
     ;
 
 voice
-    : VOICE INTEGER INTEGER INTEGER
+    : VOICE INTEGER INTEGER
         {
             ASTVoice *n = node(Voice, @$);
-            n->msb = $2;
-            n->lsb = $3;
-            n->programNo = $4;
+            n->bankNo = $2;
+            n->programNo = $3;
             $$ = n;
         }
     ;

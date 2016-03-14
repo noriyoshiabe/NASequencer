@@ -120,7 +120,6 @@ LOCATION       ^##.+:[[:digit:]]+:[[:digit:]]+\n
 {REPEAT_END}      { return REPEAT_END; }
 {REPEAT_BREAK}    { return REPEAT_BREAK; }
                          
-","               { return ','; }
 "-"               { return '-'; }
 "+"               { return '+'; }
 "<"               { return '<'; }

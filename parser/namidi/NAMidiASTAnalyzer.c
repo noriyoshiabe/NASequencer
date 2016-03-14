@@ -225,15 +225,14 @@ static void visitVoice(void *_self, ASTVoice *ast)
 {
     NAMidiASTAnalyzer *self = _self;
 
-    if (!isValidRange(ast->msb, 0, 127) || !isValidRange(ast->lsb, 0, 127) || !isValidRange(ast->programNo, 0, 127)) {
+    if (!isValidRange(ast->bankNo, 0, 16383) || !isValidRange(ast->programNo, 1, 128)) {
         appendError(self, ast, NAMidiParseErrorInvalidVoice,
-                NACStringFromInteger(ast->msb), NACStringFromInteger(ast->lsb), NACStringFromInteger(ast->programNo), NULL);
+                NACStringFromInteger(ast->bankNo), NACStringFromInteger(ast->programNo), NULL);
         return;
     }
 
     SEMVoice *sem = node(Voice, ast);
-    sem->msb = ast->msb;
-    sem->lsb = ast->lsb;
+    sem->bankNo = ast->bankNo;
     sem->programNo = ast->programNo;
     append(self->state->list, sem);
 }

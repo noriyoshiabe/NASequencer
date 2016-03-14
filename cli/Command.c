@@ -297,8 +297,7 @@ static void PresetCommandExecute(Command *self, CLI *cli)
         int width;
     } table[] = {
         {"Name", 20},
-        {"MSB", 3},
-        {"LSB", 3},
+        {"Bank", 5},
         {"Prg", 3},
     };
 
@@ -329,12 +328,9 @@ static void PresetCommandExecute(Command *self, CLI *cli)
                 snprintf(text, limit, "%-*s", width, info->name);
                 break;
             case 1:
-                snprintf(text, limit, "%*d", width, (info->bankNo >> 7) & 0x7F);
+                snprintf(text, limit, "%*d", width, info->bankNo);
                 break;
             case 2:
-                snprintf(text, limit, "%*d", width, info->bankNo & 0x7F);
-                break;
-            case 3:
                 snprintf(text, limit, "%*d", width, info->programNo);
                 break;
             }

@@ -122,7 +122,7 @@ static void visitGatetime(void *self, ASTGatetime *ast)
 
 static void visitVoice(void *self, ASTVoice *ast)
 {
-    dump(self, ast, INTEGER(ast, msb), INTEGER(ast, lsb), INTEGER(ast, programNo), NULL);
+    dump(self, ast, INTEGER(ast, bankNo), INTEGER(ast, programNo), NULL);
 }
 
 static void visitSynth(void *self, ASTSynth *ast)

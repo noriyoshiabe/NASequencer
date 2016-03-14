@@ -60,8 +60,7 @@ typedef struct _ASTGatetime {
 
 typedef struct _ASTVoice {
     Node node;
-    int msb;
-    int lsb;
+    int bankNo;
     int programNo;
 } ASTVoice;
 

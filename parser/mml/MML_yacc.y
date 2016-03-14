@@ -204,11 +204,10 @@ synthesizer
     ;
 
 bank_select
-    : BANK_SELECT INTEGER ',' INTEGER
+    : BANK_SELECT INTEGER
         {
             ASTBankSelect *n = node(BankSelect, @$);
-            n->msb = $2;
-            n->lsb = $4;
+            n->bankNo = $2;
             $$ = n;
         }
     ;

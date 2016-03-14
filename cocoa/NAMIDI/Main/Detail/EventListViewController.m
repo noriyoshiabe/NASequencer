@@ -160,7 +160,7 @@
         {
             VoiceEvent *_event = (void *)raw;
             view.channel = [NSString stringWithFormat:@"%d", _event->channel];
-            view.other = [NSString stringWithFormat:@"MSB: %d  LSB: %d  Prg: %d", _event->msb, _event->lsb, _event->programNo];
+            view.other = [NSString stringWithFormat:@"BANK: %d  Prg: %d", _event->bankNo, _event->programNo];
         }
             break;
         case MidiEventTypeVolume:

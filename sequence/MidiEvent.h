@@ -93,9 +93,12 @@ typedef struct _VoiceEvent {
     int id;
     int tick;
     int channel;
-    int msb;
-    int lsb;
+    int bankNo;
     int programNo;
+    struct {
+        uint8_t msb;
+        uint8_t lsb;
+    } bankSelect;
 } VoiceEvent;
 
 typedef struct _VolumeEvent {

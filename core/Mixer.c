@@ -209,15 +209,15 @@ void MixerSendVoice(Mixer *self, VoiceEvent *event)
 
         bytes[0] = 0xB0 | (0x0F & channel->midiNumber);
         bytes[1] = 0x00;
-        bytes[2] = event->msb;
+        bytes[2] = event->bankSelect.msb;
         channel->source->send(channel->source, bytes, 3);
 
         bytes[1] = 0x20;
-        bytes[2] = event->lsb;
+        bytes[2] = event->bankSelect.lsb;
         channel->source->send(channel->source, bytes, 3);
 
         bytes[0] = 0xC0 | (0x0F & channel->midiNumber);
-        bytes[1] = event->programNo;
+        bytes[1] = event->programNo - 1;
         channel->source->send(channel->source, bytes, 2);
     }
 }

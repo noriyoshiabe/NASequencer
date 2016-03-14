@@ -831,11 +831,7 @@ static void visitMidiVoice(void *_self, SEMMidiVoice *sem)
     int channel = self->voice->channel;
     
     if (-1 != sem->instrument) {
-        int msb = 0x7F & ((sem->bank - 1) >> 7);
-        int lsb = 0x7F & ((sem->bank - 1) >> 0);
-        int programNo = sem->instrument - 1;
-
-        self->builder->appendVoice(self->builder, self->voice->tick, channel, msb, lsb, programNo);
+        self->builder->appendVoice(self->builder, self->voice->tick, channel, sem->bank, sem->instrument);
     }
 
     self->builder->appendVolume(self->builder, self->voice->tick, channel, sem->mute ? 0 : 100);

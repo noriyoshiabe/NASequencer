@@ -46,8 +46,7 @@ typedef struct _ASTSynth {
 
 typedef struct _ASTBankSelect {
     Node node;
-    int msb;
-    int lsb;
+    int bankNo;
 } ASTBankSelect;
 
 typedef struct _ASTProgramChange {

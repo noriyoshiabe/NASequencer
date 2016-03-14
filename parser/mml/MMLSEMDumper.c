@@ -113,7 +113,7 @@ static void visitSynth(void *self, SEMSynth *sem)
 
 static void visitBankSelect(void *self, SEMBankSelect *sem)
 {
-    dump(self, sem, INTEGER(sem, msb), INTEGER(sem, lsb), NULL);
+    dump(self, sem, INTEGER(sem, bankNo), NULL);
 }
 
 static void visitProgramChange(void *self, SEMProgramChange *sem)

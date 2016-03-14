@@ -191,14 +191,13 @@ static void visitBankSelect(void *_self, ASTBankSelect *ast)
 {
     MMLASTAnalyzer *self = _self;
 
-    if (!isValidRange(ast->msb, 0, 127) || !isValidRange(ast->lsb, 0, 127)) {
-        appendError(self, ast, MMLParseErrorInvalidBankSelect, NACStringFromInteger(ast->msb), NACStringFromInteger(ast->lsb), NULL);
+    if (!isValidRange(ast->bankNo, 0, 16383)) {
+        appendError(self, ast, MMLParseErrorInvalidBankSelect, NACStringFromInteger(ast->bankNo), NULL);
         return;
     }
 
     SEMBankSelect *sem = node(BankSelect, ast);
-    sem->msb = ast->msb;
-    sem->lsb = ast->lsb;
+    sem->bankNo = ast->bankNo;
     append(self->state, sem);
 }
 
@@ -206,7 +205,7 @@ static void visitProgramChange(void *_self, ASTProgramChange *ast)
 {
     MMLASTAnalyzer *self = _self;
 
-    if (!isValidRange(ast->programNo, 0, 127)) {
+    if (!isValidRange(ast->programNo, 1, 128)) {
         appendError(self, ast, MMLParseErrorInvalidProgramChange, NACStringFromInteger(ast->programNo), NULL);
         return;
     }

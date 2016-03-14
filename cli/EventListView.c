@@ -186,7 +186,7 @@ void EventListViewRender(EventListView *self)
             {
                 VoiceEvent *_event = (void *)event;
                 sprintf(texts[2], "%d", _event->channel);
-                sprintf(texts[6], "MSB: %d  LSB: %d  Prg: %d", _event->msb, _event->lsb, _event->programNo);
+                sprintf(texts[6], "Bank: %d  Prg: %d", _event->bankNo, _event->programNo);
             }
             break;
         case MidiEventTypeVolume:

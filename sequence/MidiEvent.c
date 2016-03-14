@@ -120,8 +120,8 @@ void MidiEventDump(MidiEvent *self, int indent)
     case MidiEventTypeVoice:
         {
             VoiceEvent *self = _self;
-            printf("Voice: id=%d tick=%d channel=%d msb=%d lsb=%d programNo=%d\n",
-                    self->id, self->tick, self->channel, self->msb, self->lsb, self->programNo);
+            printf("Voice: id=%d tick=%d channel=%d bankNo=%d programNo=%d\n",
+                    self->id, self->tick, self->channel, self->bankNo, self->programNo);
         }
         break;
     case MidiEventTypeVolume:

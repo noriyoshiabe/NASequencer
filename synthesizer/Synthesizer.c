@@ -188,7 +188,7 @@ static void setPresetInfo(void *_self, uint8_t channel, PresetInfo *presetInfo)
     Synthesizer *self = _self;
     SynthesizerControlChange(self, channel, CC_BankSelect_MSB, 0x007F & (presetInfo->bankNo >> 7));
     SynthesizerControlChange(self, channel, CC_BankSelect_LSB, 0x007F & presetInfo->bankNo);
-    SynthesizerProgramChange(self, channel, presetInfo->programNo);
+    SynthesizerProgramChange(self, channel, presetInfo->programNo - 1);
 }
 
 static void setGain(void *_self, int16_t cb)
@@ -322,7 +322,7 @@ Synthesizer *SynthesizerCreate(SoundFont *sf, double sampleRate)
         self->presetInfos[i] = calloc(1, sizeof(PresetInfo));
         self->presetInfos[i]->name = self->presets[i]->name;
         self->presetInfos[i]->bankNo = self->presets[i]->bankNo;
-        self->presetInfos[i]->programNo = self->presets[i]->midiPresetNo;
+        self->presetInfos[i]->programNo = self->presets[i]->midiPresetNo + 1;
     }
 
     if (0 < self->presetCount) {

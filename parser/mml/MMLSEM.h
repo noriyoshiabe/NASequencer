@@ -47,8 +47,7 @@ typedef struct _SEMSynth {
 
 typedef struct _SEMBankSelect {
     Node node;
-    int msb;
-    int lsb;
+    int bankNo;
 } SEMBankSelect;
 
 typedef struct _SEMProgramChange {

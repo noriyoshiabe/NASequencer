@@ -67,8 +67,7 @@ typedef struct _SEMGatitime {
 
 typedef struct _SEMVoice {
     Node node;
-    int msb;
-    int lsb;
+    int bankNo;
     int programNo;
 } SEMVoice;
 

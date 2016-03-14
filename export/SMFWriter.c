@@ -216,7 +216,7 @@ void SMFWriterAppendControlChange(SMFWriter *self, int32_t tick, uint8_t channel
 
 void SMFWriterAppendProgramChange(SMFWriter *self, int32_t tick, uint8_t channel, uint8_t programNo)
 {
-    uint8_t bytes[2] = {0xC0 | (channel - 1), programNo};
+    uint8_t bytes[2] = {0xC0 | (channel - 1), programNo - 1};
 
     writeDeltaTime(self, channel, tick);
     writeToTrack(self, channel, bytes, sizeof(bytes));

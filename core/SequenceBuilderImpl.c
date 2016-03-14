@@ -109,16 +109,17 @@ static void SequenceBuilderAppendMarker(void *_self, int tick, const char *marke
     NAArrayAppend(sequence->events, event);
 }
 
-static void SequenceBuilderAppendVoice(void *_self, int tick, int channel, int msb, int lsb, int programNo)
+static void SequenceBuilderAppendVoice(void *_self, int tick, int channel, int bankNo, int programNo)
 {
     SequenceBuilderImpl *self = _self;
     Sequence *sequence = self->sequence;
 
     VoiceEvent *event = MidiEventAlloc(MidiEventTypeVoice, ++self->id, tick, sizeof(VoiceEvent) - sizeof(MidiEvent));
     event->channel = channel;
-    event->msb = msb;
-    event->lsb = lsb;
+    event->bankNo = bankNo;
     event->programNo = programNo;
+    event->bankSelect.msb = 0x7F & (bankNo >> 7);
+    event->bankSelect.lsb = 0x7F & bankNo;
     NAArrayAppend(sequence->events, event);
 }
 

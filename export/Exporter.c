@@ -235,8 +235,8 @@ bool ExporterWriteToSMF(Exporter *self, const char *filepath)
         case MidiEventTypeVoice:
             {
                 VoiceEvent *voice = (VoiceEvent *)events[i];
-                SMFWriterAppendControlChange(writer, voice->tick, voice->channel, 0x00, voice->msb);
-                SMFWriterAppendControlChange(writer, voice->tick, voice->channel, 0x20, voice->lsb);
+                SMFWriterAppendControlChange(writer, voice->tick, voice->channel, 0x00, voice->bankSelect.msb);
+                SMFWriterAppendControlChange(writer, voice->tick, voice->channel, 0x20, voice->bankSelect.lsb);
                 SMFWriterAppendProgramChange(writer, voice->tick, voice->channel, voice->programNo);
             }
             break;

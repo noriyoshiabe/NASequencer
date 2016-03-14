@@ -113,7 +113,7 @@ static void visitSynth(void *self, ASTSynth *ast)
 
 static void visitBankSelect(void *self, ASTBankSelect *ast)
 {
-    dump(self, ast, INTEGER(ast, msb), INTEGER(ast, lsb), NULL);
+    dump(self, ast, INTEGER(ast, bankNo), NULL);
 }
 
 static void visitProgramChange(void *self, ASTProgramChange *ast)

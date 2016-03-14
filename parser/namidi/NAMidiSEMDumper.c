@@ -134,7 +134,7 @@ static void visitGatetime(void *self, SEMGatetime *sem)
 
 static void visitVoice(void *self, SEMVoice *sem)
 {
-    dump(self, sem, INTEGER(sem, msb), INTEGER(sem, lsb), INTEGER(sem, programNo), NULL);
+    dump(self, sem, INTEGER(sem, bankNo), INTEGER(sem, programNo), NULL);
 }
 
 static void visitSynth(void *self, SEMSynth *sem)
