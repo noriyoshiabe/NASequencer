@@ -324,14 +324,14 @@
             <subviews>
                 <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XpB-3p-dfw">
                     <rect key="frame" x="117" y="12" width="245" height="26"/>
-                    <popUpButtonCell key="cell" type="push" title="NMF (Note as MIDI File)" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="mcR-nH-SXn" id="GyR-2C-Cbr">
+                    <popUpButtonCell key="cell" type="push" title="NAS (Note as Sequence)" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="mcR-nH-SXn" id="GyR-2C-Cbr">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="menu"/>
                         <menu key="menu" id="av0-6l-KzY">
                             <items>
-                                <menuItem title="NMF (Note as MIDI File)" state="on" id="mcR-nH-SXn">
+                                <menuItem title="NAS (Note as Sequence)" state="on" id="mcR-nH-SXn">
                                     <userDefinedRuntimeAttributes>
-                                        <userDefinedRuntimeAttribute type="string" keyPath="representedObject" value="nmf"/>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="representedObject" value="nas"/>
                                     </userDefinedRuntimeAttributes>
                                 </menuItem>
                                 <menuItem title="ABC (ABC Notation)" id="oDr-1d-KDp">

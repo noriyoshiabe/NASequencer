@@ -32,7 +32,7 @@
 - (IBAction)syntaxReferencePressed:(id)sender
 {
     NSString *ext = _namidi.file.filename.pathExtension.lowercaseString;
-    if ([ext isEqualToString:@"nmf"]) {
+    if ([ext isEqualToString:@"nas"]) {
         ext = @"namidi";
     }
     

@@ -1,4 +1,4 @@
-#include 'eof-inc.nmf'
+#include 'eof-inc.nas'
 
 240: C
 

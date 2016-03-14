@@ -29,7 +29,7 @@
                 </textField>
                 <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bPA-x1-09f">
                     <rect key="frame" x="9" y="1" width="24" height="24"/>
-                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NMFIcon" id="OI3-Tl-tyN"/>
+                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NASIcon" id="OI3-Tl-tyN"/>
                     <connections>
                         <binding destination="-2" name="value" keyPath="info.icon" id="r2g-1q-oat"/>
                     </connections>
@@ -38,6 +38,6 @@
         </customView>
     </objects>
     <resources>
-        <image name="NMFIcon" width="512" height="512"/>
+        <image name="NASIcon" width="512" height="512"/>
     </resources>
 </document>

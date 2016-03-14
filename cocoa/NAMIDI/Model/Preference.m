@@ -51,7 +51,7 @@ static Preference *_sharedInstance = nil;
     return @{
              kShowWelcome: @YES,
              kIncludeSearchPath: self.defaultIncludeSearchPath,
-             kSelectedFileTypeForCreation: @"nmf",
+             kSelectedFileTypeForCreation: @"nas",
              kSelectedFileTypeForExport: @"smf",
              kMidiSourceSettings: @[@{kMidiSourceIsDefault: @YES,
                                       kMidiSourceGain: [NSNumber numberWithInt:-100],

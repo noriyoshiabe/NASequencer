@@ -1,16 +1,16 @@
 //
-//  NMFHighlightSpec.m
+//  NASHighlightSpec.m
 //  NAMIDI
 //
 //  Created by abechan on 3/5/16.
 //  Copyright © 2016 Noriyoshi Abe. All rights reserved.
 //
 
-#import "NMFHighlightSpec.h"
+#import "NASHighlightSpec.h"
 
 static HighlightSpec *_spec;
 
-@implementation NMFHighlightSpec
+@implementation NASHighlightSpec
 
 + (void)initialize
 {

@@ -9,16 +9,16 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>nmf</string>
+				<string>nas</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string>NMFIcon.icns</string>
+			<string>NASIcon.icns</string>
 			<key>CFBundleTypeMIMETypes</key>
 			<array>
 				<string>text/plain</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>Note as MIDI</string>
+			<string>Note as Sequence</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>LSTypeIsPackage</key>

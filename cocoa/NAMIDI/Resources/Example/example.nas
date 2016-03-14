@@ -5,9 +5,9 @@
 #define HO A#1
 #define CS C#2
 
-// #include 'drums.nmf'
+// #include 'drums.nas'
 
-TITLE 'Syntax of NAMIDI'
+TITLE 'Syntax of Note as Sequence'
 ========================
 COPYRIGHT  'Copyright (c) 2016, Noriyoshi Abe. All Rights Reserved.'
 RESOLUTION 480

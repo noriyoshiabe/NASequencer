@@ -43,7 +43,7 @@
 - (NSArray *)examples
 {
     return @[
-             @{@"fileType": @"nmf", @"icon": [NSImage imageNamed:@"NMFIcon"], @"label": @"Note as Sequence"},
+             @{@"fileType": @"nas", @"icon": [NSImage imageNamed:@"NASIcon"], @"label": @"Note as Sequence"},
              @{@"fileType": @"abc", @"icon": [NSImage imageNamed:@"ABCIcon"], @"label": @"ABC Notation"},
              @{@"fileType": @"mml", @"icon": [NSImage imageNamed:@"MMLIcon"], @"label": @"Music Macro Language"},
              ];

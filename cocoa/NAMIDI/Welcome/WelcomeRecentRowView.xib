@@ -18,14 +18,14 @@
             <subviews>
                 <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="O2c-NL-FhL">
                     <rect key="frame" x="7" y="8" width="48" height="48"/>
-                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="axesIndependently" image="NMFIcon" id="YV6-wZ-A8o"/>
+                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="axesIndependently" image="NASIcon" id="YV6-wZ-A8o"/>
                     <connections>
                         <binding destination="-2" name="value" keyPath="file.fileTypeIcon" id="FII-NY-1Pt"/>
                     </connections>
                 </imageView>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3iN-eR-fXp">
                     <rect key="frame" x="61" y="33" width="251" height="17"/>
-                    <textFieldCell key="cell" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" title="example.nmf" placeholderString="" id="JuL-is-QDM">
+                    <textFieldCell key="cell" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" title="example.nas" placeholderString="" id="JuL-is-QDM">
                         <font key="font" metaFont="systemMedium" size="16"/>
                         <color key="textColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -49,6 +49,6 @@
         </customView>
     </objects>
     <resources>
-        <image name="NMFIcon" width="512" height="512"/>
+        <image name="NASIcon" width="512" height="512"/>
     </resources>
 </document>

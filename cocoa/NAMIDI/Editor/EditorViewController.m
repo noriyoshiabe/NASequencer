@@ -11,7 +11,7 @@
 #import "EditorViewController.h"
 #import "Color.h"
 #import "HighlightProcessor.h"
-#import "NMFHighlightSpec.h"
+#import "NASHighlightSpec.h"
 #import "ABCHighlightSpec.h"
 #import "MMLHighlightSpec.h"
 
@@ -56,7 +56,7 @@
     
     NSString *ext = _file.filename.pathExtension.lowercaseString;
     _highlightSpec = @{
-                     @"nmf": [NMFHighlightSpec spec],
+                     @"nas": [NASHighlightSpec spec],
                      @"abc": [ABCHighlightSpec spec],
                      @"mml": [MMLHighlightSpec spec]
                      }[ext];

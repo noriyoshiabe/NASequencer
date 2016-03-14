@@ -17,7 +17,7 @@ mkdir -p release/namidi-cli-$1/syntax
 mkdir -p release/namidi-cli-$1/example
 
 cp doc/dest/* release/namidi-cli-$1/syntax/
-cp test/parser/*/*.nmf release/namidi-cli-$1/example/
+cp test/parser/*/*.nas release/namidi-cli-$1/example/
 cp test/parser/*/*.abc release/namidi-cli-$1/example/
 cp test/parser/*/*.mml release/namidi-cli-$1/example/
 

@@ -5,7 +5,7 @@
 #define HO A#1
 #define CS C#2
 
-// #include 'drums.nmf'
+// #include 'drums.nas'
 
 TITLE 'Syntax of NAMIDI'
 ========================
@@ -33,14 +33,14 @@ GATETIME   64
 PATTERN rhythm---pattern
   PATTERN default
     ------------------------
-    120: C1      C#2 
-    120:          
-    120: C1      F#1 
-    120:          
-    120:     E1  F#1 
-    120:          
-    120: C1      F#1 
-    120:     E1         
+    120: C1      C#2  C2      C#3
+    120:                       
+    120: C1      F#1  C2      F#2
+    120:                       
+    120:     E1  F#1      E2  F#2
+    120:                       
+    120: C1      F#1  C2      F#2
+    120:     E1           E2     
     ------------------------
     120: BD      HC
     120:     SD         
@@ -103,14 +103,14 @@ PATTERN piano-chord
   KEY Cmaj
   VELOCITY  100
 
-  480: C2 E2 G2 B2
-
-  120: C2 E2 G2 B2
-  120: C2 E2 G2 B2
-  240: 
-  240: C2 E2 G2 B2
-  240: C2 E2 G2 B2
-  240: C2 E2 G2 B2
+  480: C2 E2 G2 B2 C3 E3 G3 B3 C4 E4 G4 B4 C5 E5 G5 B5  C6 E G B
+                                                                
+  120: C2 E2 G2 B2 C3 E3 G3 B3 C4 E4 G4 B4 C5 E5 G5 B5  C6 E G B
+  120: C2 E2 G2 B2 C3 E3 G3 B3 C4 E4 G4 B4 C5 E5 G5 B5  C6 E G B
+  240:                                                          
+  240: C2 E2 G2 B2 C3 E3 G3 B3 C4 E4 G4 B4 C5 E5 G5 B5  C6 E G B
+  240: C2 E2 G2 B2 C3 E3 G3 B3 C4 E4 G4 B4 C5 E5 G5 B5  C6 E G B
+  240: C2 E2 G2 B2 C3 E3 G3 B3 C4 E4 G4 B4 C5 E5 G5 B5  C6 E G B
 
   KEY Cmin
   VELOCITY  60
@@ -165,8 +165,7 @@ EXPAND piano-chord
 CHANNEL   4
 ------------------------
 SYNTH     'Fluid R3 GM'
-SYNTH      'GeneralUser GS Live-Audigy v1.44'
-VOICE      0 120 0
+VOICE      1 0 0
 CHORUS     20
 REVERB     20
 VOLUME     100
@@ -200,3 +199,69 @@ EXPAND piano-chord
 EXPAND piano-chord
 EXPAND piano-chord
 
+CHANNEL   6
+------------------------
+SYNTH     'Fluid R3 GM'
+VOICE     0 0 2
+CHORUS    20
+REVERB    20
+DETUNE    +10
+GATETIME  STEP - 10
+TRANSPOSE +14
+
+EXPAND piano-chord
+EXPAND piano-chord
+EXPAND piano-chord
+EXPAND piano-chord
+
+CHANNEL   7
+------------------------
+SYNTH     'Fluid R3 GM'
+VOICE     0 0 30
+CHORUS    20
+REVERB    20
+DETUNE    +10
+GATETIME  STEP - 10
+TRANSPOSE +12
+
+EXPAND piano-chord
+EXPAND piano-chord
+EXPAND piano-chord
+EXPAND piano-chord
+
+CHANNEL   9
+------------------------
+SYNTH     'Fluid R3 GM'
+VOICE     0 0 2
+CHORUS    20
+REVERB    20
+DETUNE    +10
+GATETIME  STEP - 10
+TRANSPOSE +3
+
+EXPAND piano-chord
+EXPAND piano-chord
+EXPAND piano-chord
+EXPAND piano-chord
+
+CHANNEL   11
+------------------------
+SYNTH      'GeneralUser GS Live-Audigy v1.44'
+VOICE      0 120 0
+CHORUS     20
+REVERB     20
+VOLUME     100
+VELOCITY   127
+EXPRESSION 127
+TRANSPOSE  +2
+PAN        0
+GATETIME   64
+
+EXPAND rhythm---pattern
+EXPAND rhythm---pattern
+EXPAND rhythm---pattern
+EXPAND rhythm---pattern:last
+EXPAND rhythm---pattern
+EXPAND rhythm---pattern
+EXPAND rhythm---pattern
+EXPAND rhythm---pattern:last

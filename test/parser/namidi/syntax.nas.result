@@ -1,8 +1,8 @@
 ---- filenames ----
-syntax.nmf
+syntax.nas
 
 ---- events ----
-Title: tick=0 text=Syntax of NAMIDI
+Title: tick=0 text=Syntax of Note as Sequence
 Copyright: tick=0 text=Copyright (c) 2016, Noriyoshi Abe. All Rights Reserved.
 Tempo: tick=0 tempo=120.000000
 Time: tick=0 time=4/4

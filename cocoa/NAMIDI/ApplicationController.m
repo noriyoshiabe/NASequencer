@@ -140,7 +140,7 @@ ApplicationController *AppController;
 
 - (NSArray *)allowedFileTypes
 {
-    return @[@"nmf", @"abc", @"mml"];
+    return @[@"nas", @"abc", @"mml"];
 }
 
 - (void)openDocumentWithContentsOfURL:(NSURL *)url

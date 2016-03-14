@@ -136,7 +136,7 @@ void NAMidiPreprocessorIncludeFile(NAMidiPreprocessor *self, int line, int colum
     FileLocation location = {self->currentBuffer->filepath, line, column};
 
     const char *ext = NAIOGetFileExtenssion(includeFile);
-    if (0 != strcasecmp("nmf", ext)) {
+    if (0 != strcasecmp("nas", ext)) {
         self->context->appendError(self->context, &location, NAMidiParseErrorUnsupportedFileTypeInclude, ext, includeFile, NULL);
         return;
     }
