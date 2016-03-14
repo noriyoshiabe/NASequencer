@@ -189,13 +189,20 @@ static void SequenceBuilderAppendMarker(void *_self, int tick, const char *marke
     NAArrayAppend(self->events, event);
 }
 
-static void SequenceBuilderAppendVoice(void *_self, int tick, int channel, int msb, int lsb, int programNo)
+static void SequenceBuilderAppendBank(void *_self, int tick, int channel, int bankNo)
 {
     SequenceBuilderImpl *self = _self;
-    VoiceEvent *event = MidiEventAlloc(MidiEventTypeVoice, ++self->id, tick, sizeof(VoiceEvent) - sizeof(MidiEvent));
+    BankEvent *event = MidiEventAlloc(MidiEventTypeBank, ++self->id, tick, sizeof(BankEvent) - sizeof(MidiEvent));
     event->channel = channel;
-    event->msb = msb;
-    event->lsb = lsb;
+    event->bankNo = bankNo;
+    NAArrayAppend(self->events, event);
+}
+
+static void SequenceBuilderAppendProgram(void *_self, int tick, int channel, int programNo)
+{
+    SequenceBuilderImpl *self = _self;
+    ProgramEvent *event = MidiEventAlloc(MidiEventTypeProgram, ++self->id, tick, sizeof(ProgramEvent) - sizeof(MidiEvent));
+    event->channel = channel;
     event->programNo = programNo;
     NAArrayAppend(self->events, event);
 }
@@ -309,7 +316,8 @@ SequenceBuilder *SequenceBuilderCreate()
     self->interface.appendKey = SequenceBuilderAppendKey;
     self->interface.appendNote = SequenceBuilderAppendNote;
     self->interface.appendMarker = SequenceBuilderAppendMarker;
-    self->interface.appendVoice = SequenceBuilderAppendVoice;
+    self->interface.appendBank = SequenceBuilderAppendBank;
+    self->interface.appendProgram = SequenceBuilderAppendProgram;
     self->interface.appendSynth = SequenceBuilderAppendSynth;
     self->interface.appendVolume = SequenceBuilderAppendVolume;
     self->interface.appendPan = SequenceBuilderAppendPan;
@@ -373,10 +381,16 @@ static void __MidiEventDump(MidiEvent *self)
             printf("Marker: tick=%d text=%s\n", self->tick, self->text);
         }
         break;
-    case MidiEventTypeVoice:
+    case MidiEventTypeBank:
         {
-            VoiceEvent *self = _self;
-            printf("Voice: tick=%d channel=%d msb=%d lsb=%d programNo=%d\n", self->tick, self->channel, self->msb, self->lsb, self->programNo);
+            BankEvent *self = _self;
+            printf("Bank: tick=%d channel=%d bankNo=%d\n", self->tick, self->channel, self->bankNo);
+        }
+        break;
+    case MidiEventTypeProgram:
+        {
+            ProgramEvent *self = _self;
+            printf("Program: tick=%d channel=%d programNo=%d\n", self->tick, self->channel, self->programNo);
         }
         break;
     case MidiEventTypeVolume:

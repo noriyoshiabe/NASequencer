@@ -19,7 +19,7 @@ MARKER 'Start'
 
 CHANNEL   10
 ------------------------
-SYNTH      'GeneralUser GS Live-Audigy v1.44'
+SYNTH      'GeneralUser GS Live/Audigy version 1.44'
 BANK       128
 PROGRAM    1
 CHORUS     20
@@ -89,7 +89,7 @@ EXPAND rhythm---pattern:last
 
 CHANNEL   1
 ------------------------
-SYNTH     'GeneralUser GS Live-Audigy v1.44'
+SYNTH     'GeneralUser GS Live/Audigy version 1.44'
 BANK      0
 PROGRAM   1
 CHORUS    20
