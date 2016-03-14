@@ -45,9 +45,7 @@
 
 - (NSString *)version
 {
-    NSString *shortVersionString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-    NSString *bundleVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
-    return [NSString stringWithFormat:@"Version %@ (%@)", shortVersionString, bundleVersion];
+    return [NSBundle versionString];
 }
 
 - (IBAction)licensePressed:(id)sender

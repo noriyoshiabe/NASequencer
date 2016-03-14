@@ -16,8 +16,10 @@
 @interface WelcomeWindowController () <NSTableViewDataSource, NSTableViewDelegate>
 @property (weak) IBOutlet NSView *rightBackgroundView;
 @property (weak) IBOutlet NSTableView *recentTableView;
+@property (readonly) NSString *version;
 @property (readonly) NSArray *recentDocuments;
 @property (readonly) BOOL noRecentDocumentsHidden;
+@property (weak) IBOutlet NSTextField *welcomeTextLabel;
 @property (weak) IBOutlet NSButton *gettingStartedButton;
 @property (weak) IBOutlet NSButton *listenToExampleButton;
 @property (weak) IBOutlet NSButton *createNewDocumentButton;
@@ -58,6 +60,8 @@
     _rightBackgroundView.wantsLayer = YES;
     _rightBackgroundView.layer.backgroundColor = [Color ultraLightGray].CGColor;
     
+    _welcomeTextLabel.attributedStringValue = [[NSAttributedString alloc] initWithString:_welcomeTextLabel.stringValue attributes:self.welcomeTextAttiributes];
+    
     _gettingStartedButton.attributedTitle = [[NSAttributedString alloc] initWithString:_gettingStartedButton.title attributes:self.menuTextAttiributes];
     _listenToExampleButton.attributedTitle = [[NSAttributedString alloc] initWithString:_listenToExampleButton.title attributes:self.menuTextAttiributes];
     _createNewDocumentButton.attributedTitle = [[NSAttributedString alloc] initWithString:_createNewDocumentButton.title attributes:self.menuTextAttiributes];
@@ -80,9 +84,22 @@
     }
 }
 
+- (NSString *)version
+{
+    return [NSBundle versionString];
+}
+
+
+- (NSDictionary *)welcomeTextAttiributes
+{
+    return @{NSForegroundColorAttributeName:[NSColor colorWithHexRGBA:0xFF5672FF],
+             NSFontAttributeName:_welcomeTextLabel.font,
+             NSKernAttributeName:@(-1.0)};
+}
+
 - (NSDictionary *)menuTextAttiributes
 {
-    return @{NSForegroundColorAttributeName:[NSColor whiteColor],
+    return @{NSForegroundColorAttributeName:[Color ultraLightGray],
               NSFontAttributeName:[NSFont systemFontOfSize:22.0 weight:-0.7],
               NSKernAttributeName:@(1.0)};
 }
