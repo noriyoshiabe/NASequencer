@@ -29,12 +29,12 @@
 
 %x x_TUNE
 
-FILE_IDENTIFICATION ^%abc(-[[:digit:]]\.[[:digit:]])?[[:blank:]]*$
-REFERNCE_NUMBER     ^X:.*$
-INFORMATION         ^[+[:alpha:]]:.*$
-DIRECTIVE           ^%%.*$
+FILE_IDENTIFICATION ^%abc(-[[:digit:]]\.[[:digit:]])?[[:blank:]]*
+REFERNCE_NUMBER     ^X:.*
+INFORMATION         ^[+[:alpha:]]:.*
+DIRECTIVE           ^%%.*
 EMPTY_LINE          ^[[:blank:]]*\n
-TUNE_BODY           ^[[:print:]]*$
+TUNE_BODY           ^[[:print:]]*
 
 %%
 
