@@ -42,6 +42,7 @@ static HighlightSpec *_spec;
                      KEYWORD(@"CHANNEL") @"|"
                      KEYWORD(@"SYNTH") @"|"
                      KEYWORD(@"VOICE") @"|"
+                     KEYWORD(@"BANK") @"|"
                      KEYWORD(@"CHORUS") @"|"
                      KEYWORD(@"REVERB") @"|"
                      KEYWORD(@"VOLUME") @"|"
@@ -65,7 +66,7 @@ static HighlightSpec *_spec;
     step.color = [HighlightColor step];
     
     HighlightSpec *noteParam = [[HighlightSpec alloc] init];
-    noteParam.regex = [NSRegularExpression regularExpressionWithPattern:@"(v|gt)\\s*=\\s*[0-9]+" options:NSRegularExpressionCaseInsensitive error:nil];
+    noteParam.regex = [NSRegularExpression regularExpressionWithPattern:@"(V|GT)\\s*=\\s*[0-9]+" options:NSRegularExpressionCaseInsensitive error:nil];
     noteParam.color = [HighlightColor noteParam];
     
     multiLineComment.next = lineComment;

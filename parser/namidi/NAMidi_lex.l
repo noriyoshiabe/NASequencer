@@ -59,6 +59,7 @@ VELOCITY       velocity
 GATETIME       gatetime
 STEP           step
 VOICE          voice
+BANK           bank
 SYNTH          synth
 VOLUME         volume
 PAN            pan
@@ -103,6 +104,7 @@ LOCATION       ^##.+:[[:digit:]]+:[[:digit:]]+\n
 {GATETIME}       { return GATETIME; }
 {STEP}           { return STEP; }
 {VOICE}          { return VOICE; }
+{BANK}           { return BANK; }
 {SYNTH}          { return SYNTH; }
 {VOLUME}         { return VOLUME; }
 {PAN}            { return PAN; }
