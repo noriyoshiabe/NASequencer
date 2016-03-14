@@ -12,11 +12,7 @@
 				<string>nas</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string>NASIcon.icns</string>
-			<key>CFBundleTypeMIMETypes</key>
-			<array>
-				<string>text/plain</string>
-			</array>
+			<string>NASIcon</string>
 			<key>CFBundleTypeName</key>
 			<string>Note as Sequence</string>
 			<key>CFBundleTypeRole</key>
@@ -32,11 +28,7 @@
 				<string>abc</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string>ABCIcon.icns</string>
-			<key>CFBundleTypeMIMETypes</key>
-			<array>
-				<string>text/plain</string>
-			</array>
+			<string>ABCIcon</string>
 			<key>CFBundleTypeName</key>
 			<string>ABC Notation</string>
 			<key>CFBundleTypeRole</key>
@@ -52,11 +44,7 @@
 				<string>mml</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string>MMLIcon.icns</string>
-			<key>CFBundleTypeMIMETypes</key>
-			<array>
-				<string>text/plain</string>
-			</array>
+			<string>MMLIcon</string>
 			<key>CFBundleTypeName</key>
 			<string>Music Macro Language</string>
 			<key>CFBundleTypeRole</key>
