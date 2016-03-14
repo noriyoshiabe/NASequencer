@@ -20,7 +20,7 @@ struct _NAMidi {
     FSWatcher *watcher;
     bool watchEnable;
     bool changed;
-    const char *includePath;
+    char *includePath;
 
     AudioOut *audioOut;
     Mixer *mixer;
@@ -57,6 +57,10 @@ void NAMidiDestroy(NAMidi *self)
 
     if (self->info) {
         ParseInfoRelease(self->info);
+    }
+
+    if (self->includePath) {
+        free(self->includePath);
     }
 
     free(self);
@@ -120,7 +124,10 @@ static void NAMidiStartFileWatch(NAMidi *self)
 
 void NAMidiSetIncludePath(NAMidi *self, const char *includePath)
 {
-    self->includePath = includePath;
+    if (self->includePath) {
+        free(self->includePath);
+    }
+    self->includePath = strdup(includePath);
 }
 
 void NAMidiParse(NAMidi *self, const char *filepath)
