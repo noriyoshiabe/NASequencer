@@ -84,7 +84,7 @@ ApplicationController *AppController;
 
 - (NSString *)exampleDirectoryPath
 {
-    return [NSUserMusicDirectory() stringByAppendingPathComponent:@"NAMIDI/example"];
+    return [NSApplicationHomeInMusicDirectory() stringByAppendingPathComponent:@"example"];
 }
 
 - (void)createExampleDirectory

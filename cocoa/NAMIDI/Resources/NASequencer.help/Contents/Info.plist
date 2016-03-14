@@ -5,11 +5,11 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleIdentifier</key>
-	<string>io.namidi.NAMIDI.help</string>
+	<string>com.nasequencer.NASequencer.help</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>NAMIDI</string>
+	<string>NASequencer</string>
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
 	<key>CFBundleShortVersionString</key>
@@ -25,9 +25,9 @@
 	<key>HPDBookIndexPath</key>
 	<string>search.helpindex</string>
 	<key>HPDBookKBProduct</key>
-	<string>namidi1</string>
+	<string>nasequencer1</string>
 	<key>HPDBookTitle</key>
-	<string>NAMIDI Help</string>
+	<string>NASequencer Help</string>
 	<key>HPDBookType</key>
 	<string>3</string>
 </dict>

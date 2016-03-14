@@ -63,7 +63,7 @@
 
 - (IBAction)supportMailPressed:(NSTextField *)sender
 {
-    NSString *subject = NSLocalizedString(@"About_MailSubject", @"Inquiry about NAMIDI");
+    NSString *subject = NSLocalizedString(@"About_MailSubject", @"Inquiry about NASequencer");
     
     NSOperatingSystemVersion version = [[NSProcessInfo processInfo] operatingSystemVersion];
     NSString *osVersion = [NSString stringWithFormat:@"OS Version: %ld.%ld.%ld", version.majorVersion, version.minorVersion, version.patchVersion];

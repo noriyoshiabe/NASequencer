@@ -23,7 +23,7 @@
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
-        <window title="Welcome to NAMIDI" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" animationBehavior="default" id="F0z-JX-Cv5" customClass="NSPanel">
+        <window title="Welcome to NASequencer" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" animationBehavior="default" id="F0z-JX-Cv5" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" fullSizeContentView="YES"/>
             <rect key="contentRect" x="0.0" y="0.0" width="807" height="469"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
@@ -146,20 +146,24 @@
                             <binding destination="hzK-Ba-f7f" name="value" keyPath="values.ShowWelcome" id="nDd-iU-YKP"/>
                         </connections>
                     </button>
-                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9JD-1h-6gQ">
-                        <rect key="frame" x="181" y="293" width="124" height="124"/>
-                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSApplicationIcon" id="Gqr-r8-lUF"/>
-                    </imageView>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Y3L-6c-pKk">
-                        <rect key="frame" x="29" y="219" width="429" height="62"/>
-                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Welcome to NAMIDI" id="cXy-dP-AIw">
+                        <rect key="frame" x="23" y="353" width="172" height="40"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Welcome to" id="cXy-dP-AIw">
+                            <font key="font" metaFont="systemThin" size="33"/>
+                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xzE-nB-s3e">
+                        <rect key="frame" x="23" y="299" width="278" height="55"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="NASequencer" id="OQG-Gy-AOn">
                             <font key="font" metaFont="systemThin" size="46"/>
                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5Ha-7V-Z91">
-                        <rect key="frame" x="100" y="166" width="290" height="29"/>
+                        <rect key="frame" x="100" y="185" width="290" height="29"/>
                         <buttonCell key="cell" type="square" title="   Getting Started" bezelStyle="shadowlessSquare" image="start" imagePosition="left" alignment="left" imageScaling="proportionallyDown" inset="2" id="JQd-Ro-qqc" customClass="AlphaHilightButtonCell">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system" size="24"/>
@@ -169,7 +173,7 @@
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bwF-gg-JyA">
-                        <rect key="frame" x="100" y="118" width="290" height="29"/>
+                        <rect key="frame" x="100" y="137" width="290" height="29"/>
                         <buttonCell key="cell" type="square" title="   Listen to Example" bezelStyle="shadowlessSquare" image="listen" imagePosition="left" alignment="left" imageScaling="proportionallyDown" inset="2" id="EYr-N5-hNx" customClass="AlphaHilightButtonCell">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system" size="24"/>
@@ -179,7 +183,7 @@
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2jV-Ze-Z2l">
-                        <rect key="frame" x="100" y="70" width="290" height="29"/>
+                        <rect key="frame" x="100" y="89" width="290" height="29"/>
                         <buttonCell key="cell" type="square" title="   Create New Document" bezelStyle="shadowlessSquare" image="create" imagePosition="left" alignment="left" imageScaling="proportionallyDown" inset="2" id="2Lz-bs-h5x" customClass="AlphaHilightButtonCell">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system" size="24"/>
@@ -189,17 +193,29 @@
                         </connections>
                     </button>
                     <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sn0-6g-8fm">
-                        <rect key="frame" x="89" y="203" width="310" height="1"/>
+                        <rect key="frame" x="89" y="222" width="310" height="1"/>
                     </customView>
                     <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Xvq-g0-SbQ">
-                        <rect key="frame" x="89" y="155" width="310" height="1"/>
+                        <rect key="frame" x="89" y="174" width="310" height="1"/>
                     </customView>
                     <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="r5n-fc-fLh">
-                        <rect key="frame" x="89" y="107" width="310" height="1"/>
+                        <rect key="frame" x="89" y="126" width="310" height="1"/>
                     </customView>
                     <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="W5X-Rl-1mW">
-                        <rect key="frame" x="89" y="59" width="310" height="1"/>
+                        <rect key="frame" x="89" y="78" width="310" height="1"/>
                     </customView>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fL1-qo-AY6">
+                        <rect key="frame" x="28" y="272" width="120" height="19"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Version 0.5.0 (1)" id="krf-Fm-dex">
+                            <font key="font" metaFont="systemLight" size="13"/>
+                            <color key="textColor" red="0.96470588239999999" green="0.96470588239999999" blue="0.96470588239999999" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9JD-1h-6gQ">
+                        <rect key="frame" x="325" y="272" width="124" height="124"/>
+                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSApplicationIcon" id="Gqr-r8-lUF"/>
+                    </imageView>
                 </subviews>
             </view>
             <connections>

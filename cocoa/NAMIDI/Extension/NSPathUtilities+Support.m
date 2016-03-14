@@ -19,3 +19,8 @@ NSString *NSUserMusicDirectory(void)
 {
     return [NSUserHomeDirectory() stringByAppendingPathComponent:@"Music"];
 }
+
+NSString *NSApplicationHomeInMusicDirectory(void)
+{
+    return [NSUserMusicDirectory() stringByAppendingPathComponent:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"]];
+}

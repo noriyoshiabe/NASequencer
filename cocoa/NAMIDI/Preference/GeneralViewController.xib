@@ -18,8 +18,8 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="erb-2R-Ed6">
-                    <rect key="frame" x="18" y="180" width="244" height="18"/>
-                    <buttonCell key="cell" type="check" title="Show Welcome when NAMIDI starts" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="JGx-jX-Shp">
+                    <rect key="frame" x="18" y="180" width="272" height="18"/>
+                    <buttonCell key="cell" type="check" title="Show Welcome when NASequencer starts" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="JGx-jX-Shp">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="cellTitle"/>
                     </buttonCell>
@@ -69,7 +69,7 @@
                         <subviews>
                             <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zPZ-AU-JxJ">
                                 <rect key="frame" x="11" y="10" width="292" height="20"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="/Users/abechan/Music/NAMIDI/include" drawsBackground="YES" id="UYQ-jJ-7eb">
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="/Users/abechan/Music/NASequencer/include" drawsBackground="YES" id="UYQ-jJ-7eb">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>

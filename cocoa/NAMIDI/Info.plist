@@ -70,7 +70,7 @@
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleHelpBookFolder</key>
-	<string>NAMIDI.help</string>
+	<string>NASequencer.help</string>
 	<key>CFBundleHelpBookName</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER).help</string>
 	<key>CFBundleIconFile</key>

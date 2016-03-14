@@ -8,3 +8,4 @@
 
 FOUNDATION_EXPORT NSString *NSUserHomeDirectory(void);
 FOUNDATION_EXPORT NSString *NSUserMusicDirectory(void);
+FOUNDATION_EXPORT NSString *NSApplicationHomeInMusicDirectory(void);

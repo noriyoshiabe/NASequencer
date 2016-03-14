@@ -181,7 +181,7 @@
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" preferredMaxLayoutWidth="435" translatesAutoresizingMaskIntoConstraints="NO" id="0X8-Cf-04V">
                                 <rect key="frame" x="18" y="7" width="439" height="36"/>
-                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="&quot;~/Documents/NAMIDI/sf/FluidR3 GM2-2.SF2&quot; does not exsit. " id="j83-ae-d7K">
+                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="&quot;~/Documents/NASequencer/sf/FluidR3 GM2-2.SF2&quot; does not exsit. " id="j83-ae-d7K">
                                     <font key="font" metaFont="cellTitle"/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>

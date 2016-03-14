@@ -125,7 +125,7 @@
 		02A673FC1C6B3A5C00914C8B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 02A673EB1C6B3A5C00914C8B /* Assets.xcassets */; };
 		02A673FD1C6B3A5C00914C8B /* MMLIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 02A673EC1C6B3A5C00914C8B /* MMLIcon.iconset */; };
 		02A674041C6B3A5C00914C8B /* NMFIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 02A673F91C6B3A5C00914C8B /* NMFIcon.iconset */; };
-		02A674061C6B3A7600914C8B /* NAMIDI.help in Resources */ = {isa = PBXBuildFile; fileRef = 02A674051C6B3A7600914C8B /* NAMIDI.help */; };
+		02A674061C6B3A7600914C8B /* NASequencer.help in Resources */ = {isa = PBXBuildFile; fileRef = 02A674051C6B3A7600914C8B /* NASequencer.help */; };
 		02A973C51C798B6100C21B8E /* NSColor+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 02A973C41C798B6100C21B8E /* NSColor+Support.m */; };
 		02A973CD1C79F02200C21B8E /* SelectionButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 02A973CC1C79F02200C21B8E /* SelectionButton.m */; };
 		02CAF6A91C771F6E00AD81B2 /* SynchronizedScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CAF6A81C771F6E00AD81B2 /* SynchronizedScrollView.m */; };
@@ -349,7 +349,7 @@
 		02A673EB1C6B3A5C00914C8B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		02A673EC1C6B3A5C00914C8B /* MMLIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = MMLIcon.iconset; sourceTree = "<group>"; };
 		02A673F91C6B3A5C00914C8B /* NMFIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = NMFIcon.iconset; sourceTree = "<group>"; };
-		02A674051C6B3A7600914C8B /* NAMIDI.help */ = {isa = PBXFileReference; lastKnownFileType = folder; path = NAMIDI.help; sourceTree = "<group>"; };
+		02A674051C6B3A7600914C8B /* NASequencer.help */ = {isa = PBXFileReference; lastKnownFileType = folder; path = NASequencer.help; sourceTree = "<group>"; };
 		02A973C31C798B6100C21B8E /* NSColor+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSColor+Support.h"; sourceTree = "<group>"; };
 		02A973C41C798B6100C21B8E /* NSColor+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSColor+Support.m"; sourceTree = "<group>"; };
 		02A973CB1C79F02200C21B8E /* SelectionButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SelectionButton.h; path = ../../Component/SelectionButton.h; sourceTree = "<group>"; };
@@ -754,7 +754,7 @@
 				0232CB271C8931D000542D34 /* Example */,
 				025FAF9A1C7FAD7200E4C3B3 /* GeneralUser GS Live-Audigy v1.44.sf2 */,
 				02A673EB1C6B3A5C00914C8B /* Assets.xcassets */,
-				02A674051C6B3A7600914C8B /* NAMIDI.help */,
+				02A674051C6B3A7600914C8B /* NASequencer.help */,
 				02A673EA1C6B3A5C00914C8B /* AppIcon.iconset */,
 				02A673F91C6B3A5C00914C8B /* NMFIcon.iconset */,
 				02A673E91C6B3A5C00914C8B /* ABCIcon.iconset */,
@@ -846,7 +846,7 @@
 				020CF86D1C6AF4D90025DF84 /* SynthesizerViewController.xib in Resources */,
 				026D42DF1C7ABC08000267AD /* MainViewController.xib in Resources */,
 				026D42E11C7ABC08000267AD /* MeasureViewController.xib in Resources */,
-				02A674061C6B3A7600914C8B /* NAMIDI.help in Resources */,
+				02A674061C6B3A7600914C8B /* NASequencer.help in Resources */,
 				026D42DD1C7ABC08000267AD /* ConductorViewController.xib in Resources */,
 				0232CB2D1C8931D000542D34 /* example.nmf in Resources */,
 				0262BAFE1C8A78AC00BEB76A /* GettingStarted in Resources */,

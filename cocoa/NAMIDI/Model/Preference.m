@@ -43,7 +43,7 @@ static Preference *_sharedInstance = nil;
 
 - (NSString *)defaultIncludeSearchPath
 {
-    return [NSUserMusicDirectory() stringByAppendingPathComponent:@"NAMIDI/include"];
+    return [NSApplicationHomeInMusicDirectory() stringByAppendingPathComponent:@"include"];
 }
 
 - (NSDictionary *)defaults

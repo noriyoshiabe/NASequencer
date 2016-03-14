@@ -36,8 +36,8 @@
                 </textField>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="QCK-m1-A6d">
                     <rect key="frame" x="61" y="15" width="251" height="17"/>
-                    <textFieldCell key="cell" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" title="~/Documents/NAMIDI/" id="K7s-TV-Hk1">
-                        <font key="font" metaFont="system" size="12"/>
+                    <textFieldCell key="cell" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" title="~/Documents/NASequencer/" id="K7s-TV-Hk1">
+                        <font key="font" metaFont="cellTitle"/>
                         <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
