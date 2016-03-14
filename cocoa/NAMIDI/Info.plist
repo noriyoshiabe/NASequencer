@@ -17,6 +17,10 @@
 			<string>Note as Sequence</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.nasequencer.nas</string>
+			</array>
 			<key>LSTypeIsPackage</key>
 			<integer>0</integer>
 			<key>NSDocumentClass</key>
@@ -33,6 +37,10 @@
 			<string>ABC Notation</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.nasequencer.abc</string>
+			</array>
 			<key>LSTypeIsPackage</key>
 			<integer>0</integer>
 			<key>NSDocumentClass</key>
@@ -49,6 +57,10 @@
 			<string>Music Macro Language</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.nasequencer.mml</string>
+			</array>
 			<key>LSTypeIsPackage</key>
 			<integer>0</integer>
 			<key>NSDocumentClass</key>
@@ -85,5 +97,65 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>Application</string>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.plain-text</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Note as Sequence</string>
+			<key>UTTypeIconFile</key>
+			<string>NASIcon</string>
+			<key>UTTypeIdentifier</key>
+			<string>com.nasequencer.nas</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>nas</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.plain-text</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>ABC Notation</string>
+			<key>UTTypeIconFile</key>
+			<string>ABCIcon</string>
+			<key>UTTypeIdentifier</key>
+			<string>com.nasequencer.abc</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>abc</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.plain-text</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Music Macro Language</string>
+			<key>UTTypeIconFile</key>
+			<string>MMLIcon</string>
+			<key>UTTypeIdentifier</key>
+			<string>com.nasequencer.mml</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>mml</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
 </dict>
 </plist>
