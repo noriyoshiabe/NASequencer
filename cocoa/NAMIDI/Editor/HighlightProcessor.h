@@ -26,6 +26,7 @@
 + (NSColor *)keyword;
 
 + (NSColor *)step;
++ (NSColor *)noteParam;
 
 + (NSColor *)freeText;
 + (NSColor *)tuneHeader;

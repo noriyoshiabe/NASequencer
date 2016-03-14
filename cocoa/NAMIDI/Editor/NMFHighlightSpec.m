@@ -64,11 +64,16 @@ static HighlightSpec *_spec;
     step.regex = [NSRegularExpression regularExpressionWithPattern:@"[0-9]+\\s*:" options:0 error:nil];
     step.color = [HighlightColor step];
     
+    HighlightSpec *noteParam = [[HighlightSpec alloc] init];
+    noteParam.regex = [NSRegularExpression regularExpressionWithPattern:@"(v|gt)\\s*=\\s*[0-9]+" options:NSRegularExpressionCaseInsensitive error:nil];
+    noteParam.color = [HighlightColor noteParam];
+    
     multiLineComment.next = lineComment;
     lineComment.next = directive;
     directive.next = string;
     string.next = keyword;
     keyword.next = step;
+    step.next = noteParam;
     
     _spec = multiLineComment;
 }

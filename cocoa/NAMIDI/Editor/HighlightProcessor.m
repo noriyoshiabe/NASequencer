@@ -70,6 +70,7 @@ static NSColor *StringColor;
 static NSColor *KeywordColor;
 
 static NSColor *StepColor;
+static NSColor *NoteParamColor;
 
 static NSColor *FreeTextColor;
 static NSColor *TuneHeaderColor;
@@ -85,7 +86,8 @@ static NSColor *NoteColor;
     StringColor = [NSColor colorWithHexRGBA:0xDB2023FF];
     KeywordColor = [NSColor colorWithHexRGBA:0x376FB1FF];
     
-    StepColor = [NSColor colorWithHexRGBA:0x5C5C5CFF];
+    StepColor = [NSColor grayColor];
+    NoteParamColor = StepColor;
     
     FreeTextColor = StepColor;
     TuneHeaderColor = KeywordColor;
@@ -116,6 +118,11 @@ static NSColor *NoteColor;
 + (NSColor *)step
 {
     return StepColor;
+}
+
++ (NSColor *)noteParam
+{
+    return NoteParamColor;
 }
 
 + (NSColor *)freeText
