@@ -19,6 +19,7 @@
 - (void)showAboutWindow;
 - (void)showPreferenceWindow;
 - (NSArray *)allowedFileTypes;
+- (NSArray *)allowedFileTypesInEditor;
 - (void)openDocumentWithContentsOfURL:(NSURL *)url;
 - (void)openDocument;
 - (void)openDocumentInEditorWindow:(NSWindow *)window completion:(void (^)(NSURL *url))completionHandler;

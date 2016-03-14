@@ -324,7 +324,7 @@
 {
     NSArray *files = [[sender draggingPasteboard] propertyListForType:NSFilenamesPboardType];
     for (NSString *filename in files) {
-        if (![AppController.allowedFileTypes containsObject:filename.pathExtension.lowercaseString]) {
+        if (![AppController.allowedFileTypesInEditor containsObject:filename.pathExtension.lowercaseString]) {
             return NSDragOperationNone;
         }
     }
