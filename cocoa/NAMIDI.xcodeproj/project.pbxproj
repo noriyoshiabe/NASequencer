@@ -126,6 +126,7 @@
 		02A674061C6B3A7600914C8B /* NASequencer.help in Resources */ = {isa = PBXBuildFile; fileRef = 02A674051C6B3A7600914C8B /* NASequencer.help */; };
 		02A973C51C798B6100C21B8E /* NSColor+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 02A973C41C798B6100C21B8E /* NSColor+Support.m */; };
 		02A973CD1C79F02200C21B8E /* SelectionButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 02A973CC1C79F02200C21B8E /* SelectionButton.m */; };
+		02AE740D1C96D8C50036B8B1 /* ABHIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 02AE740C1C96D8C50036B8B1 /* ABHIcon.iconset */; };
 		02B160811C9685FF009A2823 /* NSBundle+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 02B160801C9685FF009A2823 /* NSBundle+Support.m */; };
 		02B160831C96924B009A2823 /* NASIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 02B160821C96924B009A2823 /* NASIcon.iconset */; };
 		02B160851C96988D009A2823 /* example.nas in Resources */ = {isa = PBXBuildFile; fileRef = 02B160841C96988D009A2823 /* example.nas */; };
@@ -353,6 +354,7 @@
 		02A973C41C798B6100C21B8E /* NSColor+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSColor+Support.m"; sourceTree = "<group>"; };
 		02A973CB1C79F02200C21B8E /* SelectionButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SelectionButton.h; path = ../../Component/SelectionButton.h; sourceTree = "<group>"; };
 		02A973CC1C79F02200C21B8E /* SelectionButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SelectionButton.m; path = ../../Component/SelectionButton.m; sourceTree = "<group>"; };
+		02AE740C1C96D8C50036B8B1 /* ABHIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = ABHIcon.iconset; sourceTree = "<group>"; };
 		02B1607F1C9685FF009A2823 /* NSBundle+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSBundle+Support.h"; sourceTree = "<group>"; };
 		02B160801C9685FF009A2823 /* NSBundle+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSBundle+Support.m"; sourceTree = "<group>"; };
 		02B160821C96924B009A2823 /* NASIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = NASIcon.iconset; sourceTree = "<group>"; };
@@ -762,6 +764,7 @@
 				02A674051C6B3A7600914C8B /* NASequencer.help */,
 				02A673EA1C6B3A5C00914C8B /* AppIcon.iconset */,
 				02A673E91C6B3A5C00914C8B /* ABCIcon.iconset */,
+				02AE740C1C96D8C50036B8B1 /* ABHIcon.iconset */,
 				02A673EC1C6B3A5C00914C8B /* MMLIcon.iconset */,
 				02B160821C96924B009A2823 /* NASIcon.iconset */,
 			);
@@ -880,6 +883,7 @@
 				0254235F1C6F2EB6007D53CC /* EditorWindowController.xib in Resources */,
 				0214836B1C84B2E700D653AE /* ExportWindowController.xib in Resources */,
 				028209231C70A3C0003EBCFB /* EditorTabItem.xib in Resources */,
+				02AE740D1C96D8C50036B8B1 /* ABHIcon.iconset in Resources */,
 				024A5B1E1C69FFD40079D22C /* MainWindowController.xib in Resources */,
 				0216EDFD1C7ADA09009A7B90 /* PianoRollViewController.xib in Resources */,
 				02CD04241C871B4500BF6683 /* SynthesizerCellView.xib in Resources */,

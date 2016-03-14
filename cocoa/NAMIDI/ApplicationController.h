@@ -21,8 +21,8 @@
 - (NSArray *)allowedFileTypes;
 - (void)openDocumentWithContentsOfURL:(NSURL *)url;
 - (void)openDocument;
-- (void)openDocumentForWindow:(NSWindow *)window completion:(void (^)(NSURL *url))completionHandler;
-- (void)saveDocumentForWindow:(NSWindow *)window completion:(void (^)(NSURL *url))completionHandler;
+- (void)openDocumentInEditorWindow:(NSWindow *)window completion:(void (^)(NSURL *url))completionHandler;
+- (void)saveDocumentInEditorWindow:(NSWindow *)window filename:(NSString *)filename completion:(void (^)(NSURL *url))completionHandler;
 - (void)createDocument;
 - (void)createDocumentForWindow:(NSWindow *)window completion:(void (^)(NSURL *url))completionHandler;
 - (void)openExampleDocument:(NSString *)fileType;

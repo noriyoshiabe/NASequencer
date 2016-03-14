@@ -143,6 +143,11 @@ ApplicationController *AppController;
     return @[@"nas", @"abc", @"mml"];
 }
 
+- (NSArray *)allowedFileTypesInEditor
+{
+    return @[@"nas", @"abc", @"abh", @"mml"];
+}
+
 - (void)openDocumentWithContentsOfURL:(NSURL *)url
 {
     [AppController closeWelcomeWindow];
@@ -157,47 +162,37 @@ ApplicationController *AppController;
 
 - (void)openDocument
 {
-    [self openDocumentForWindow:nil completion:^(NSURL *url) {
-        [self openDocumentWithContentsOfURL:url];
-    }];
-}
-
-- (void)openDocumentForWindow:(NSWindow *)window completion:(void (^)(NSURL *url))completionHandler
-{
     NSOpenPanel *openPanel = [NSOpenPanel openPanel];
     openPanel.allowedFileTypes = self.allowedFileTypes;
     
-    if (window) {
-        [openPanel beginSheetModalForWindow:window completionHandler:^(NSInteger result) {
-            if (NSFileHandlingPanelOKButton == result) {
-                completionHandler([openPanel URL]);
-            }
-        }];
-    }
-    else {
-        if (NSFileHandlingPanelOKButton == [openPanel runModal]) {
-            completionHandler([openPanel URL]);
-        }
+    if (NSFileHandlingPanelOKButton == [openPanel runModal]) {
+        [self openDocumentWithContentsOfURL:openPanel.URL];
     }
 }
 
-- (void)saveDocumentForWindow:(NSWindow *)window completion:(void (^)(NSURL *url))completionHandler
+- (void)openDocumentInEditorWindow:(NSWindow *)window completion:(void (^)(NSURL *url))completionHandler
+{
+    NSOpenPanel *openPanel = [NSOpenPanel openPanel];
+    openPanel.allowedFileTypes = self.allowedFileTypesInEditor;
+    
+    [openPanel beginSheetModalForWindow:window completionHandler:^(NSInteger result) {
+        if (NSFileHandlingPanelOKButton == result) {
+            completionHandler(openPanel.URL);
+        }
+    }];
+}
+
+- (void)saveDocumentInEditorWindow:(NSWindow *)window filename:(NSString *)filename completion:(void (^)(NSURL *url))completionHandler
 {
     NSSavePanel *savePanel = [NSSavePanel savePanel];
-    savePanel.allowedFileTypes = self.allowedFileTypes;
+    savePanel.nameFieldStringValue = filename;
+    savePanel.allowedFileTypes = @[filename.pathExtension];
     
-    if (window) {
-        [savePanel beginSheetModalForWindow:window completionHandler:^(NSInteger result) {
-            if (NSFileHandlingPanelOKButton == result) {
-                completionHandler([savePanel URL]);
-            }
-        }];
-    }
-    else {
-        if (NSFileHandlingPanelOKButton == [savePanel runModal]) {
-            completionHandler([savePanel URL]);
+    [savePanel beginSheetModalForWindow:window completionHandler:^(NSInteger result) {
+        if (NSFileHandlingPanelOKButton == result) {
+            completionHandler(savePanel.URL);
         }
-    }
+    }];
 }
 
 - (void)createDocument

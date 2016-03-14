@@ -158,6 +158,25 @@
 				</array>
 			</dict>
 		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.plain-text</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>ABC Header</string>
+			<key>UTTypeIconFile</key>
+			<string>ABHIcon</string>
+			<key>UTTypeIdentifier</key>
+			<string>com.nasequencer.abh</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>abh</string>
+				</array>
+			</dict>
+		</dict>
 	</array>
 </dict>
 </plist>

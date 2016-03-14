@@ -58,6 +58,7 @@
     _highlightSpec = @{
                      @"nas": [NASHighlightSpec spec],
                      @"abc": [ABCHighlightSpec spec],
+                     @"abh": [ABCHighlightSpec spec],
                      @"mml": [MMLHighlightSpec spec]
                      }[ext];
     

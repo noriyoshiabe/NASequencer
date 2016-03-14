@@ -250,14 +250,14 @@
 
 - (IBAction)openDocumentInEditor:(id)sender
 {
-    [AppController openDocumentForWindow:self.window completion:^(NSURL *url) {
+    [AppController openDocumentInEditorWindow:self.window completion:^(NSURL *url) {
         [self addFileRepresentation:[[FileRepresentation alloc] initWithURL:url]];
     }];
 }
 
 - (IBAction)saveDocumentAs:(id)sender
 {
-    [AppController saveDocumentForWindow:self.window completion:^(NSURL *url) {
+    [AppController saveDocumentInEditorWindow:self.window filename:_currentController.file.filename completion:^(NSURL *url) {
         if ([_currentController.textView.string writeToURL:url atomically:YES encoding:NSUTF8StringEncoding error:nil]) {
             [self addFileRepresentation:[[FileRepresentation alloc] initWithURL:url]];
         }
