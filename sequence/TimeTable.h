@@ -3,6 +3,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "NAArray.h"
+
 typedef struct _Location {
     int32_t m;
     int16_t b;
@@ -13,6 +15,11 @@ typedef struct _TimeSign {
     int16_t numerator;
     int16_t denominator;
 } TimeSign;
+
+typedef struct _RepeatSection {
+    int32_t tickStart;
+    int32_t tickEnd;
+} RepeatSection;
 
 typedef struct _TimeTable TimeTable;
 
@@ -25,6 +32,8 @@ extern float TimeTableTempoOnTick(TimeTable *self, int32_t tick);
 extern Location TimeTableTick2Location(TimeTable *self, int32_t tick);
 extern int64_t TimeTableTick2MicroSec(TimeTable *self, int32_t tick);
 extern int32_t TimeTableMicroSec2Tick(TimeTable *self, int64_t usec);
+extern RepeatSection TimeTableRepeatSectionOnTick(TimeTable *self, int32_t tick);
+extern NAArray *TimeTableGetRepeatSections(TimeTable *self);
 
 extern const Location LocationZero;
 
@@ -34,5 +43,6 @@ extern void TimeTableSetResolution(TimeTable *self, int32_t resolution);
 extern void TimeTableSetLength(TimeTable *self, int32_t length);
 extern bool TimeTableAddTimeSign(TimeTable *self, int32_t tick, TimeSign timeSign);
 extern bool TimeTableAddTempo(TimeTable *self, int32_t tick, float tempo);
+extern bool TimeTableAddRepeatPoint(TimeTable *self, int32_t tick);
 
 extern void TimeTableDump(TimeTable *self, int indent);

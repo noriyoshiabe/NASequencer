@@ -1,5 +1,4 @@
 #include "TimeTable.h"
-#include "NAArray.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -28,12 +27,14 @@ struct _TimeTable {
     int32_t length;
     NAArray *timeSignRecords;
     NAArray *tempoRecords;
+    NAArray *repeatSections;
 };
 
 static int TimeSignRecordFindByTickComparator(const void *_tick, const void *_record);
 static int TimeSignRecordFindByMeasureComparator(const void *_measure, const void *_record);
 static int TempoRecordFindByTickComparator(const void *_tick, const void *_record);
 static int TempoRecordFindByUsecComparator(const void *_usec, const void *_record);
+static int RepeatSectionFindByTickComparator(const void *_tick, const void *_section);
 
 static void TimeTableRefreshMeasureFrom(TimeTable *self, int index);
 static void TimeTableRefreshUsecFrom(TimeTable *self, int index);
@@ -46,12 +47,20 @@ TimeTable *TimeTableCreate()
     self->resolution = 480;
     self->timeSignRecords = NAArrayCreate(4, NULL);
     self->tempoRecords = NAArrayCreate(4, NULL);
+    self->repeatSections = NAArrayCreate(4, NULL);
+
     TimeSignRecord *timeSign = malloc(sizeof(TimeSignRecord));
-    memcpy(timeSign, &((TimeSignRecord){0, INT32_MAX, {4, 4}, 1, INT32_MAX, 480 * 4}), sizeof(TimeSignRecord));
+    *timeSign = (TimeSignRecord){0, INT32_MAX, {4, 4}, 1, INT32_MAX, 480 * 4};
     NAArrayAppend(self->timeSignRecords, timeSign);
+
     TempoRecord *tempo = malloc(sizeof(TempoRecord));
-    memcpy(tempo, &((TempoRecord){0, INT32_MAX, 120.0, 0, INT64_MAX}), sizeof(TempoRecord));
+    *tempo = (TempoRecord){0, INT32_MAX, 120.0, 0, INT64_MAX};
     NAArrayAppend(self->tempoRecords, tempo);
+
+    RepeatSection *section = malloc(sizeof(RepeatSection));
+    *section = (RepeatSection){0, INT32_MAX};
+    NAArrayAppend(self->repeatSections, section);
+
     return self;
 }
 
@@ -59,8 +68,10 @@ void TimeTableDestroy(TimeTable *self)
 {
     NAArrayTraverse(self->timeSignRecords, free);
     NAArrayTraverse(self->tempoRecords, free);
+    NAArrayTraverse(self->repeatSections, free);
     NAArrayDestroy(self->timeSignRecords);
     NAArrayDestroy(self->tempoRecords);
+    NAArrayDestroy(self->repeatSections);
     free(self);
 }
 
@@ -92,17 +103,12 @@ bool TimeTableAddTimeSign(TimeTable *self, int32_t tick, TimeSign timeSign)
     }
 
     TimeSignRecord *insert = malloc(sizeof(TimeSignRecord));
-    memcpy(insert, records[i], sizeof(TimeSignRecord));
+    *insert = *records[i];
     records[i]->tickEnd = tick;
     insert->tickStart = tick;
     insert->timeSign = timeSign;
 
-    if (i + 1 < count) {
-        NAArrayInsertAt(self->timeSignRecords, i + 1, insert);
-    }
-    else {
-        NAArrayAppend(self->timeSignRecords, insert);
-    }
+    NAArrayInsertAt(self->timeSignRecords, i + 1, insert);
 
 REFRESH:
     TimeTableRefreshMeasureFrom(self, i);
@@ -132,20 +138,34 @@ bool TimeTableAddTempo(TimeTable *self, int32_t tick, float tempo)
     }
 
     TempoRecord *insert = malloc(sizeof(TempoRecord));
-    memcpy(insert, records[i], sizeof(TempoRecord));
+    *insert = *records[i];
     records[i]->tickEnd = tick;
     insert->tickStart = tick;
     insert->tempo = tempo;
 
-    if (i + 1 < count) {
-        NAArrayInsertAt(self->tempoRecords, i + 1, insert);
-    }
-    else {
-        NAArrayAppend(self->tempoRecords, insert);
-    }
+    NAArrayInsertAt(self->tempoRecords, i + 1, insert);
 
 REFRESH:
     TimeTableRefreshUsecFrom(self, i);
+    return true;
+}
+
+extern bool TimeTableAddRepeatPoint(TimeTable *self, int32_t tick)
+{
+    RepeatSection **sections = NAArrayGetValues(self->repeatSections);
+
+    int i = NAArrayBSearchIndex(self->repeatSections, &tick, RepeatSectionFindByTickComparator);
+    if (sections[i]->tickStart == tick) {
+        return true;
+    }
+
+    RepeatSection *insert = malloc(sizeof(TempoRecord));
+    *insert = *sections[i];
+    insert->tickEnd = sections[i]->tickEnd;
+    sections[i]->tickEnd = tick;
+    insert->tickStart = tick;
+
+    NAArrayInsertAt(self->repeatSections, i + 1, insert);
     return true;
 }
 
@@ -158,6 +178,9 @@ void TimeTableSetResolution(TimeTable *self, int32_t resolution)
 void TimeTableSetLength(TimeTable *self, int32_t length)
 {
     self->length = length;
+
+    RepeatSection *section = NAArrayGetValueAt(self->repeatSections, NAArrayCount(self->repeatSections) - 1);
+    section->tickEnd = length;
 }
 
 
@@ -236,6 +259,18 @@ int32_t TimeTableMicroSec2Tick(TimeTable *self, int64_t usec)
 
     double usecPerTick = 60 * 1000 * 1000 / records[i]->tempo / self->resolution;
     return round(records[i]->tickStart + (usec - records[i]->usecStart) / usecPerTick);
+}
+
+RepeatSection TimeTableRepeatSectionOnTick(TimeTable *self, int32_t tick)
+{
+    RepeatSection **sections = NAArrayGetValues(self->repeatSections);
+    int i = NAArrayBSearchIndex(self->repeatSections, &tick, RepeatSectionFindByTickComparator);
+    return *sections[i];
+}
+
+NAArray *TimeTableGetRepeatSections(TimeTable *self)
+{
+    return self->repeatSections;
 }
 
 static void TimeTableRefreshMeasureFrom(TimeTable *self, int index)
@@ -318,6 +353,19 @@ static int TempoRecordFindByUsecComparator(const void *_usec, const void *_recor
     }
 }
 
+static int RepeatSectionFindByTickComparator(const void *_tick, const void *_section)
+{
+    const int32_t *tick = _tick;
+    const RepeatSection *section = *((const RepeatSection **)_section);
+
+    if (section->tickStart <= *tick && *tick < section->tickEnd) {
+        return 0;
+    }
+    else {
+        return *tick - section->tickStart;
+    }
+}
+
 void TimeSignRecordDump(TimeSignRecord *self, int indent)
 {
     printf("%*s", indent, "");
@@ -330,6 +378,12 @@ void TempoRecordDump(TempoRecord *self, int indent)
     printf("%*s", indent, "");
     printf("tickStart=%d tickEnd=%d tempo=%f usecStart=%lld usecEnd=%lld\n",
             self->tickStart, self->tickEnd, self->tempo, self->usecStart, self->usecEnd);
+}
+
+void RepeatSectionDump(RepeatSection *self, int indent)
+{
+    printf("%*s", indent, "");
+    printf("tickStart=%d tickEnd=%d\n", self->tickStart, self->tickEnd);
 }
 
 void TimeTableDump(TimeTable *self, int indent)
@@ -358,5 +412,14 @@ void TimeTableDump(TimeTable *self, int indent)
     iterator = NAArrayGetIterator(self->tempoRecords);
     while (iterator->hasNext(iterator)) {
         TempoRecordDump(iterator->next(iterator), indent);
+    }
+    printf("\n");
+    printf("%*s", indent, "");
+    printf("RepeatSection:\n");
+    printf("%*s", indent, "");
+    printf("-------------------------\n");
+    iterator = NAArrayGetIterator(self->repeatSections);
+    while (iterator->hasNext(iterator)) {
+        RepeatSectionDump(iterator->next(iterator), indent);
     }
 }
