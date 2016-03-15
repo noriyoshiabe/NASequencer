@@ -381,4 +381,9 @@
     return nil;
 }
 
+- (void)insertTab:(id)sender
+{
+    [self insertText:@"  " replacementRange:self.selectedRange];
+}
+
 @end
