@@ -257,7 +257,7 @@ static void PlayerProcessMessage(Player *self, PlayerMessage message, void *data
                 self->offset = self->usec;
                 self->start = currentMicroSec();
                 PlayerUpdateClock(self, tick, self->usec, location);
-                PlayerTriggerEvent(self, PlayerEventRewind);
+                PlayerTriggerEvent(self, PlayerEventBackward);
             }
         }
         break;
