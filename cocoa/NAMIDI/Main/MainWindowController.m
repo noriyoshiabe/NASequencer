@@ -251,3 +251,38 @@
 }
 
 @end
+
+#pragma mark Drag and Drop
+
+@interface MainWindow : NSWindow
+@end
+
+@implementation MainWindow
+
+- (void)awakeFromNib
+{
+    [self registerForDraggedTypes:@[NSFilenamesPboardType]];
+}
+
+- (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender
+{
+    NSArray *files = [[sender draggingPasteboard] propertyListForType:NSFilenamesPboardType];
+    for (NSString *filename in files) {
+        if (![AppController.allowedFileTypes containsObject:filename.pathExtension.lowercaseString]) {
+            return NSDragOperationNone;
+        }
+    }
+    
+    return NSDragOperationCopy;
+}
+
+- (BOOL)performDragOperation:(id<NSDraggingInfo>)sender
+{
+    NSArray *files = [[sender draggingPasteboard] propertyListForType:NSFilenamesPboardType];
+    for (NSString *filename in files) {
+        [AppController openDocumentWithContentsOfURL:[NSURL fileURLWithPath:filename]];
+    }
+    return YES;
+}
+
+@end

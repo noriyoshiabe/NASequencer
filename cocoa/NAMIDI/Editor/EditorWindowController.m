@@ -11,10 +11,6 @@
 #import "EditorStatusViewController.h"
 #import "ApplicationController.h"
 
-@interface EditorView : NSView
-@property (weak, nonatomic) EditorWindowController *controller;
-@end
-
 @interface EditorWindowController () <EditorStatusViewControllerDelegate, EditorViewControllerDelegate, NSWindowDelegate>
 @property (weak) IBOutlet NSView *tabContainer;
 @property (weak) IBOutlet NSView *contentView;
@@ -54,8 +50,6 @@
     self.window.contentView.layer.masksToBounds = YES;
     
     [self.window addTitlebarAccessoryViewController:_statusViewControlelr];
-    
-    ((EditorView *)self.window.contentView).controller = self;
 }
 
 - (void)addFileRepresentation:(FileRepresentation *)file
@@ -313,7 +307,10 @@
 
 #pragma mark Drag and Drop
 
-@implementation EditorView
+@interface EditorWindow : NSPanel
+@end
+
+@implementation EditorWindow
 
 - (void)awakeFromNib
 {
@@ -337,7 +334,7 @@
     NSArray *files = [[sender draggingPasteboard] propertyListForType:NSFilenamesPboardType];
     for (NSString *filename in files) {
         NSURL *url = [NSURL fileURLWithPath:filename];
-        [_controller addFileRepresentation:[[FileRepresentation alloc] initWithURL:url]];
+        [self.windowController addFileRepresentation:[[FileRepresentation alloc] initWithURL:url]];
     }
     return YES;
 }
