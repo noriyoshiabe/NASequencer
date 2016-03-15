@@ -156,6 +156,11 @@ static PlayerObserverCallbacks callbacks = {onNotifyClock, onNotifyEvent, onSend
     PlayerPlayPause(_player);
 }
 
+- (void)stop
+{
+    PlayerStop(_player);
+}
+
 - (void)rewind
 {
     PlayerRewind(_player);

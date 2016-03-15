@@ -16,7 +16,7 @@
 #import "EditorWindowController.h"
 #import "Preference.h"
 
-@interface MainWindowController () <TrackSelectionDelegate, NAMidiRepresentationObserver, PlayerRepresentationObserver, MainViewControllerDelegate, NSUserInterfaceValidations>
+@interface MainWindowController () <TrackSelectionDelegate, NAMidiRepresentationObserver, PlayerRepresentationObserver, MainViewControllerDelegate, NSUserInterfaceValidations, NSWindowDelegate>
 @property (weak) IBOutlet NSView *contentView;
 @property (weak) IBOutlet LocationView *locationView;
 @property (strong, nonatomic) MainViewController *mainVC;
@@ -193,6 +193,14 @@
 - (IBAction)export:(id)sender
 {
     [AppController exportDocumentForWindow:self.window file:_namidi.file];
+}
+
+#pragma mark NSWindowDelegate
+
+- (BOOL)windowShouldClose:(id)sender
+{
+    [_namidi.player stop];
+    return YES;
 }
 
 #pragma mark MainViewControllerDelegate

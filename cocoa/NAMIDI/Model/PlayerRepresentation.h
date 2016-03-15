@@ -29,6 +29,7 @@
 - (void)addObserver:(id<PlayerRepresentationObserver>)observer;
 - (void)removeObserver:(id<PlayerRepresentationObserver>)observer;
 - (void)playPause;
+- (void)stop;
 - (void)rewind;
 - (void)forward;
 - (void)backward;
