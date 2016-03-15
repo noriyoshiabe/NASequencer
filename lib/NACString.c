@@ -72,6 +72,44 @@ char *NACStringJoin(const char *delimiter, const char **strings, int count)
     return ret;
 }
 
+extern char *NACStringCamel2Readable(const char *string)
+{
+    NAStringBuffer *buffer = NAStringBufferCreate(128);
+
+    const char *pc = string;
+    const char *prev = NULL;
+
+    while (*pc) {
+        if (isupper(*pc)) {
+            if (pc == string) {
+                NAStringBufferAppendChar(buffer, *pc);
+            }
+            else {
+                if (islower(*prev)) {
+                    NAStringBufferAppendChar(buffer, ' ');
+                }
+
+                if (islower(*(pc + 1))) {
+                    NAStringBufferAppendChar(buffer, tolower(*pc));
+                }
+                else {
+                    NAStringBufferAppendChar(buffer, *pc);
+                }
+            }
+        }
+        else {
+            NAStringBufferAppendChar(buffer, *pc);
+        }
+
+        prev = pc;
+        ++pc;
+    }
+    
+    char *ret = NAStringBufferRetriveCString(buffer);
+    NAStringBufferDestroy(buffer);
+    return ret;
+}
+
 char *NACStringToLowerCase(char *string)
 {
     char *c = string;

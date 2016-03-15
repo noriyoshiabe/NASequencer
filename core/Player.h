@@ -19,7 +19,7 @@ typedef enum {
 } PlayerEvent;
 
 typedef enum {
-    PlayerRepeatStateOff,
+    PlayerRepeatStateRepeatOff,
     PlayerRepeatStateRepeatAll,
     PlayerRepeatStateRepeatSection,
 } PlayerRepeatState;
@@ -72,5 +72,17 @@ static inline const char *PlayerEvent2String(PlayerEvent event)
     CASE(PlayerEventRepeatStateChange);
     }
     return "Unknown player event";
+#undef CASE
+}
+
+static inline const char *PlayerRepeatState2String(PlayerRepeatState state)
+{
+#define CASE(state) case state: return &(#state[17])
+    switch (state) {
+    CASE(PlayerRepeatStateRepeatOff);
+    CASE(PlayerRepeatStateRepeatAll);
+    CASE(PlayerRepeatStateRepeatSection);
+    }
+    return "Unknown repeat state";
 #undef CASE
 }

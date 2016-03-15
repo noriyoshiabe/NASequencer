@@ -301,6 +301,16 @@ static void CLIPlayerOnNotifyEvent(void *receiver, PlayerEvent event)
 #if 0
     printf("%s\n", PlayerEvent2String(event));
 #endif
+
+    CLI *self = receiver;
+
+    if (PlayerEventRepeatStateChange == event) {
+        Player *player = NAMidiGetPlayer(self->namidi);
+        PlayerRepeatState state = PlayerGetRepeatState(player);
+        char *_state = NACStringCamel2Readable(PlayerRepeatState2String(state));
+        printf("%s\n", _state);
+        free(_state);
+    }
 }
 
 static void CLIPlayerOnSendNoteOn(void *receiver, NoteEvent *event)

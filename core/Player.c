@@ -294,7 +294,6 @@ static void PlayerProcessMessage(Player *self, PlayerMessage message, void *data
     case PlayerMessageRewind:
         if (self->sequence) {
             PlayerProcessRewind(self);
-            PlayerUpdateClock(self, 0, 0, LocationZero);
         }
         break;
     case PlayerMessageForward:
@@ -309,7 +308,6 @@ static void PlayerProcessMessage(Player *self, PlayerMessage message, void *data
             tick = MIN(tick, TimeTableLength(self->sequence->timeTable));
 
             PlayerSeekToTick(self, tick);
-            PlayerUpdateClock(self, tick, self->usec, location);
             PlayerTriggerEvent(self, PlayerEventForward);
         }
         break;
@@ -324,7 +322,6 @@ static void PlayerProcessMessage(Player *self, PlayerMessage message, void *data
 
             tick = TimeTableTickByMeasure(self->sequence->timeTable, location.m);
             PlayerSeekToTick(self, tick);
-            PlayerUpdateClock(self, tick, self->usec, location);
             PlayerTriggerEvent(self, PlayerEventBackward);
         }
         break;
@@ -334,7 +331,6 @@ static void PlayerProcessMessage(Player *self, PlayerMessage message, void *data
             int32_t tick = TimeTableTickByLocation(self->sequence->timeTable, *location);
 
             PlayerSeekToTick(self, tick);
-            PlayerUpdateClock(self, tick, self->usec, *location);
             PlayerTriggerEvent(self, PlayerEventSeek);
 
             free(location);
@@ -342,14 +338,14 @@ static void PlayerProcessMessage(Player *self, PlayerMessage message, void *data
         break;
     case PlayerMessageToggleRepeat:
         switch (self->repeatState) {
-        case PlayerRepeatStateOff:
+        case PlayerRepeatStateRepeatOff:
             self->repeatState = PlayerRepeatStateRepeatAll;
             break;
         case PlayerRepeatStateRepeatAll:
             self->repeatState = PlayerRepeatStateRepeatSection;
             break;
         case PlayerRepeatStateRepeatSection:
-            self->repeatState = PlayerRepeatStateOff;
+            self->repeatState = PlayerRepeatStateRepeatOff;
             break;
         }
         PlayerTriggerEvent(self, PlayerEventRepeatStateChange);
@@ -379,6 +375,8 @@ static void PlayerProcessRewind(Player *self)
 
     self->index = 0;
 
+    PlayerUpdateClock(self, 0, 0, LocationZero);
+
     PlayerTriggerEvent(self, PlayerEventRewind);
 }
 
@@ -389,6 +387,9 @@ static void PlayerSeekToTick(Player *self, int32_t tick)
     self->usec = TimeTableTick2MicroSec(self->sequence->timeTable, tick);
     self->offset = self->usec;
     self->start = currentMicroSec();
+
+    Location location = TimeTableTick2Location(self->sequence->timeTable, tick);
+    PlayerUpdateClock(self, tick, self->usec, location);
 
     int count = NAArrayCount(self->sequence->events);
     MidiEvent **events = NAArrayGetValues(self->sequence->events);
@@ -425,19 +426,17 @@ static void PlayerSupplyClock(Player *self)
     PlayerUpdateClock(self, tick, self->usec, location);
 
     switch (self->repeatState) {
-    case PlayerRepeatStateOff:
+    case PlayerRepeatStateRepeatOff:
         if (TimeTableLength(self->sequence->timeTable) <= tick) {
             PlayerTriggerEvent(self, PlayerEventReachEnd);
             PlayerProcessStop(self);
             PlayerProcessRewind(self);
-            PlayerUpdateClock(self, 0, 0, LocationZero);
         }
         break;
     case PlayerRepeatStateRepeatAll:
         if (TimeTableLength(self->sequence->timeTable) <= tick) {
             PlayerTriggerEvent(self, PlayerEventReachEnd);
             PlayerProcessRewind(self);
-            PlayerUpdateClock(self, 0, 0, LocationZero);
         }
         break;
     case PlayerRepeatStateRepeatSection:
@@ -445,8 +444,6 @@ static void PlayerSupplyClock(Player *self)
             RepeatSection repeatSection = TimeTableRepeatSectionOnTick(self->sequence->timeTable, prevTick);
             if (repeatSection.tickEnd <= tick) {
                 PlayerSeekToTick(self, repeatSection.tickStart);
-                Location location = TimeTableTick2Location(self->sequence->timeTable, repeatSection.tickStart);
-                PlayerUpdateClock(self, tick, self->usec, location);
                 PlayerTriggerEvent(self, PlayerEventBackward);
             }
         }

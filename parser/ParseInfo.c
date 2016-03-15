@@ -62,6 +62,7 @@ void ParseInfoRelease(ParseInfo *_self)
 #include "ABCParser.h"
 #include "MMLParser.h"
 #include "NAStringBuffer.h"
+#include "NACString.h"
 
 #include <string.h>
 #include <ctype.h>
@@ -74,35 +75,11 @@ char *ParseErrorFormattedString(const ParseError *error)
 
     const char *errorString = ParseErrorCode2String(error->code);
     const char *search = "ParseError";
-    char *camel = strstr(errorString, search) + strlen(search);
-    char *pc = camel;
-    char *prev = NULL;
+    const char *camel = strstr(errorString, search) + strlen(search);
 
-    while (*pc) {
-        if (isupper(*pc)) {
-            if (pc == camel) {
-                NAStringBufferAppendChar(buffer, *pc);
-            }
-            else {
-                if (islower(*prev)) {
-                    NAStringBufferAppendChar(buffer, ' ');
-                }
-
-                if (islower(*(pc + 1))) {
-                    NAStringBufferAppendChar(buffer, tolower(*pc));
-                }
-                else {
-                    NAStringBufferAppendChar(buffer, *pc);
-                }
-            }
-        }
-        else {
-            NAStringBufferAppendChar(buffer, *pc);
-        }
-
-        prev = pc;
-        ++pc;
-    }
+    char *message = NACStringCamel2Readable(camel);
+    NAStringBufferAppendString(buffer, message);
+    free(message);
 
     NAStringBufferAppendString(buffer, ". ");
 

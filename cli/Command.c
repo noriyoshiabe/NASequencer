@@ -105,6 +105,12 @@ static void SeekCommandExecute(Command *self, CLI *cli)
     PlayerSeek(player, (Location){measure, 1, 0});
 }
 
+static void RepeatCommandExecute(Command *self, CLI *cli)
+{
+    Player *player = NAMidiGetPlayer(CLIGetNAMidi(cli));
+    PlayerToggleRepeat(player);
+}
+
 static bool ParseViewArgs(NAArray *argv, int *channel, int *from, int *length)
 {
     char *err, *text;
@@ -738,6 +744,7 @@ static CommandTable commandTable[] = {
     {"forward", ForwardCommandExecute, "forward", "forward playing position to next measure."},
     {"backward", BackwardCommandExecute, "backward", "forward playing position to previous measure or head of current measue."},
     {"seek", SeekCommandExecute, "seek <measure number>", "seek playing position to measure number."},
+    {"repeat", RepeatCommandExecute, "repeat", "toggle repeat mode."},
     {"show", ShowCommandExecute, "show [from [length]]", "show piano roll.\nstart with the measure if 'from' is specifid.\nlimit displaying measures if 'length' is specifid."},
     {"step", StepCommandExecute, "step <step per column>", "adjust length of console column for piano roll."},
     {"list", ListCommandExecute, "list [from [length]]", "show event list.\nstart with the measure if 'from' is specifid.\nlimit displaying measures if 'length' is specifid."},

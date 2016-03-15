@@ -7,6 +7,7 @@
 extern char *NACStringFormat(const char *format, ...);
 extern char *NACStringReplaceAll(const char *src, const char *search, const char *replacement);
 extern char *NACStringJoin(const char *delimiter, const char **strings, int count);
+extern char *NACStringCamel2Readable(const char *strring);
 
 extern char *NACStringToLowerCase(char *string);
 extern char *NACStringToUpperCase(char *string);
