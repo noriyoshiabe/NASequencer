@@ -151,6 +151,11 @@ static PlayerObserverCallbacks callbacks = {onNotifyClock, onNotifyEvent, onSend
     return PlayerIsPlaying(_player);
 }
 
+- (PlayerRepeatState)repeatState
+{
+    return PlayerGetRepeatState(_player);
+}
+
 - (void)playPause
 {
     PlayerPlayPause(_player);
@@ -179,6 +184,11 @@ static PlayerObserverCallbacks callbacks = {onNotifyClock, onNotifyEvent, onSend
 - (void)seek:(Location)location
 {
     PlayerSeek(_player, location);
+}
+
+- (void)toggleRepeat
+{
+    PlayerToggleRepeat(_player);
 }
 
 @end

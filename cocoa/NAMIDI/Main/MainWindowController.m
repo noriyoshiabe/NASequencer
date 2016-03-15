@@ -142,10 +142,26 @@
 
 - (void)updateToolBarItem
 {
-    NSToolbarItem *item = [self.window.toolbar.items objectPassingTest:^BOOL(__kindof NSToolbarItem *obj, NSUInteger idx, BOOL *stop) {
+    NSToolbarItem *playPause = [self.window.toolbar.items objectPassingTest:^BOOL(__kindof NSToolbarItem *obj, NSUInteger idx, BOOL *stop) {
         return *stop = [obj.itemIdentifier isEqualToString:@"PlayPause"];
     }];
-    item.image = [NSImage imageNamed:_namidi.player.isPlaying ?  @"pause" : @"play"];
+    playPause.image = [NSImage imageNamed:_namidi.player.isPlaying ?  @"pause" : @"play"];
+    
+    NSToolbarItem *repeat = [self.window.toolbar.items objectPassingTest:^BOOL(__kindof NSToolbarItem *obj, NSUInteger idx, BOOL *stop) {
+        return *stop = [obj.itemIdentifier isEqualToString:@"Repeat"];
+    }];
+    
+    switch (_namidi.player.repeatState) {
+        case PlayerRepeatStateRepeatOff:
+            repeat.image = [NSImage imageNamed:@"repeat_off"];
+            break;
+        case PlayerRepeatStateRepeatAll:
+            repeat.image = [NSImage imageNamed:@"repeat_all"];
+            break;
+        case PlayerRepeatStateRepeatSection:
+            repeat.image = [NSImage imageNamed:@"repeat_marker"];
+            break;
+    }
 }
 
 #pragma mark Menu/Toolbar Action
@@ -188,6 +204,11 @@
 - (IBAction)forward:(id)sender
 {
     [_namidi.player forward];
+}
+
+- (IBAction)toggleRepeat:(id)sender
+{
+    [_namidi.player toggleRepeat];
 }
 
 - (IBAction)export:(id)sender
@@ -251,6 +272,7 @@
     switch (event) {
         case PlayerEventPlay:
         case PlayerEventStop:
+        case PlayerEventRepeatStateChange:
             [self updateToolBarItem];
             break;
         default:

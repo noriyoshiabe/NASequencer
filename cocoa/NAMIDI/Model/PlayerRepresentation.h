@@ -25,6 +25,7 @@
 @property (readonly, nonatomic) float tempo;
 @property (readonly, nonatomic) TimeSign timeSign;
 @property (readonly, nonatomic) bool isPlaying;
+@property (readonly, nonatomic) PlayerRepeatState repeatState;
 - (instancetype)initWithPlayer:(Player *)player;
 - (void)addObserver:(id<PlayerRepresentationObserver>)observer;
 - (void)removeObserver:(id<PlayerRepresentationObserver>)observer;
@@ -34,4 +35,5 @@
 - (void)forward;
 - (void)backward;
 - (void)seek:(Location)location;
+- (void)toggleRepeat;
 @end

@@ -243,6 +243,13 @@
                                     <action selector="backward:" target="-1" id="S1h-oe-mmn"/>
                                 </connections>
                             </menuItem>
+                            <menuItem isSeparatorItem="YES" id="0wo-Ro-HIi"/>
+                            <menuItem title="Toggle Repeat" keyEquivalent="R" id="h3n-ff-WM1">
+                                <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                <connections>
+                                    <action selector="toggleRepeat:" target="-1" id="VUz-pP-4Ez"/>
+                                </connections>
+                            </menuItem>
                         </items>
                     </menu>
                 </menuItem>
@@ -324,12 +331,12 @@
             <subviews>
                 <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XpB-3p-dfw">
                     <rect key="frame" x="117" y="12" width="245" height="26"/>
-                    <popUpButtonCell key="cell" type="push" title="NAS (Note as Sequence)" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="mcR-nH-SXn" id="GyR-2C-Cbr">
+                    <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="GyR-2C-Cbr">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="menu"/>
                         <menu key="menu" id="av0-6l-KzY">
                             <items>
-                                <menuItem title="NAS (Note as Sequence)" state="on" id="mcR-nH-SXn">
+                                <menuItem title="NAS (Note as Sequence)" id="mcR-nH-SXn">
                                     <userDefinedRuntimeAttributes>
                                         <userDefinedRuntimeAttribute type="string" keyPath="representedObject" value="nas"/>
                                     </userDefinedRuntimeAttributes>

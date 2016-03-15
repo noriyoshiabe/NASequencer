@@ -69,12 +69,12 @@
                 <allowedToolbarItems>
                     <toolbarItem implicitItemIdentifier="NSToolbarSpaceItem" id="RYG-zr-Tvh"/>
                     <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="lm7-Jm-Vyk"/>
-                    <toolbarItem implicitItemIdentifier="774FB5B2-74CA-47D4-B46E-1512CC1C68DE" explicitItemIdentifier="back" label="Back" paletteLabel="Back" tag="-1" image="back" id="BN2-JS-ffX">
+                    <toolbarItem implicitItemIdentifier="774FB5B2-74CA-47D4-B46E-1512CC1C68DE" explicitItemIdentifier="Back" label="Back" paletteLabel="Back" tag="-1" image="back" id="BN2-JS-ffX">
                         <connections>
                             <action selector="goBack:" target="-1" id="RQ8-pb-Pco"/>
                         </connections>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="FFE9B390-33DA-489A-A9B3-B8F16992640B" label="Rewind" paletteLabel="Rewind" tag="-1" image="rewind" id="Oxv-we-Y8q">
+                    <toolbarItem implicitItemIdentifier="FFE9B390-33DA-489A-A9B3-B8F16992640B" explicitItemIdentifier="Rewind" label="Rewind" paletteLabel="Rewind" tag="-1" image="rewind" id="Oxv-we-Y8q">
                         <connections>
                             <action selector="rewind:" target="-1" id="VvW-8j-nvN"/>
                         </connections>
@@ -84,14 +84,19 @@
                             <action selector="playPause:" target="-1" id="fSV-tn-nP6"/>
                         </connections>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="C2E39991-876C-45F0-B9D6-F1F6C87A3A18" label="Backward" paletteLabel="Backward" tag="-1" image="backward" id="sEP-7w-sfO">
+                    <toolbarItem implicitItemIdentifier="C2E39991-876C-45F0-B9D6-F1F6C87A3A18" explicitItemIdentifier="Backward" label="Backward" paletteLabel="Backward" tag="-1" image="backward" id="sEP-7w-sfO">
                         <connections>
                             <action selector="backward:" target="-1" id="XSH-Hs-RPR"/>
                         </connections>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="C9BC6574-C250-4286-8607-3DB43B3AD189" label="Forward" paletteLabel="Forward" tag="-1" image="forward" id="te0-bl-VQh">
+                    <toolbarItem implicitItemIdentifier="C9BC6574-C250-4286-8607-3DB43B3AD189" explicitItemIdentifier="Forward" label="Forward" paletteLabel="Forward" tag="-1" image="forward" id="te0-bl-VQh">
                         <connections>
                             <action selector="forward:" target="-1" id="pqK-53-bTV"/>
+                        </connections>
+                    </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="C09A71FA-4DCB-4B24-B13E-868A27B3D30C" explicitItemIdentifier="Repeat" label="Repeat" paletteLabel="Repeat" tag="-1" image="repeat_off" id="5Cn-B4-1t4">
+                        <connections>
+                            <action selector="toggleRepeat:" target="-1" id="u5c-VJ-94a"/>
                         </connections>
                     </toolbarItem>
                     <toolbarItem implicitItemIdentifier="116150C3-7CAC-409E-AD39-7A2C83CE3742" label="Export" paletteLabel="Export" tag="-1" image="export" id="YUF-3s-pU0">
@@ -108,6 +113,8 @@
                     <toolbarItem reference="RYG-zr-Tvh"/>
                     <toolbarItem reference="sEP-7w-sfO"/>
                     <toolbarItem reference="te0-bl-VQh"/>
+                    <toolbarItem reference="RYG-zr-Tvh"/>
+                    <toolbarItem reference="5Cn-B4-1t4"/>
                     <toolbarItem reference="lm7-Jm-Vyk"/>
                     <toolbarItem reference="YUF-3s-pU0"/>
                 </defaultToolbarItems>
@@ -123,6 +130,7 @@
         <image name="export" width="24" height="24"/>
         <image name="forward" width="24" height="24"/>
         <image name="play" width="24" height="24"/>
+        <image name="repeat_off" width="24" height="24"/>
         <image name="rewind" width="24" height="24"/>
     </resources>
 </document>
