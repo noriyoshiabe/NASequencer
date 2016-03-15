@@ -248,43 +248,12 @@ ApplicationController *AppController;
     [self createExampleDirectory];
     
     NSString *filename = [NSString stringWithFormat:@"example.%@", fileType];
-    NSString *src = [[NSBundle mainBundle] pathForResource:@"example" ofType:fileType];
-    NSString *dst = [self.exampleDirectoryPath stringByAppendingPathComponent:filename];
+    NSURL *srcUrl = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"example" ofType:fileType]];
+    NSURL *dstUrl = [NSURL fileURLWithPath:[self.exampleDirectoryPath stringByAppendingPathComponent:filename]];
     
-    [[NSFileManager defaultManager] removeItemAtPath:dst error:nil];
-    [[NSFileManager defaultManager] copyItemAtPath:src toPath:dst error:nil];
+    [[NSString stringWithContentsOfURL:srcUrl encoding:NSUTF8StringEncoding error:nil] writeToURL:dstUrl atomically:YES encoding:NSUTF8StringEncoding error:nil];
     
-    Document *document = [[Document alloc] init];
-    document.fileURL = [NSURL fileURLWithPath:dst];
-    [document readFromURL:document.fileURL ofType:fileType error:nil];
-    [document makeWindowControllers];
-    [document showWindows];
-    
-    MainWindowController *mainVC = document.windowControllers[0];
-    mainVC.window.representedURL = document.fileURL;
-    mainVC.window.title = filename;
-
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(documentWindowWillClose:) name:NSWindowWillCloseNotification object:mainVC.window];
-    
-    [_exampleDocuments addObject:document];
-
-    [self closeWelcomeWindow];
-    
-    // Avoid editor window hidden
-    [mainVC showEditorWindow];
-}
-
-- (void)documentWindowWillClose:(NSNotification *)notification
-{
-    NSWindow *window = notification.object;
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowWillCloseNotification object:window];
-    
-    Document *document = window.windowController.document;
-    
-    // Need dealloc controllers before document deallocated
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [_exampleDocuments removeObject:document];
-    });
+    [self openDocumentWithContentsOfURL:dstUrl];
 }
 
 - (NSArray *)allowedExportFileTypes
