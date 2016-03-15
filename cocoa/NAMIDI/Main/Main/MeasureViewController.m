@@ -13,6 +13,7 @@
 #define BEAT_LINE_HEIGHT 10.0
 #define MEASURE_NO_Y 20.0
 #define BOTTOM_LINE_Y 36.5
+#define REPEAT_SECTION_LENGTH 9.0
 
 @interface MeasureView : NSView {
     NSDictionary *_measureNumberAttrs;
@@ -20,13 +21,14 @@
 
 @property (assign, nonatomic) MeasureScaleAssistant *scaleAssistant;
 @property (strong, nonatomic) SequenceRepresentation *sequence;
+@property (strong, nonatomic) PlayerRepresentation *player;
 @property (assign, nonatomic) CGFloat measureNoY;
 @property (assign, nonatomic) BOOL needBottomLine;
 @property (strong, nonatomic) NSColor *lineColor;
 @property (strong, nonatomic) NSColor *measureNoColor;
 @end
 
-@interface MeasureViewController () <NAMidiRepresentationObserver>
+@interface MeasureViewController () <NAMidiRepresentationObserver, PlayerRepresentationObserver>
 @property (strong, nonatomic) IBOutlet MeasureView *measureView;
 @end
 
@@ -49,6 +51,7 @@
     [super viewDidLoad];
     _measureView.scaleAssistant = _scaleAssistant;
     _measureView.sequence = _namidi.sequence;
+    _measureView.player = _namidi.player;
     
     _measureView.measureNoY = _measureNoY;
     _measureView.needBottomLine = _needBottomLine;
@@ -57,12 +60,14 @@
     
     [_scaleAssistant addObserver:self forKeyPath:@"scale" options:0 context:NULL];
     [_namidi addObserver:self];
+    [_namidi.player addObserver:self];
 }
 
 - (void)dealloc
 {
     [_scaleAssistant removeObserver:self forKeyPath:@"scale"];
     [_namidi removeObserver:self];
+    [_namidi.player removeObserver:self];
 }
 
 - (void)scrollWheel:(NSEvent *)theEvent
@@ -114,6 +119,15 @@
     _measureView.sequence = sequence;
 }
 
+#pragma mark PlayerRepresentationObserver
+
+- (void)player:(PlayerRepresentation *)player onNotifyEvent:(PlayerEvent)event
+{
+    if (PlayerEventRepeatStateChange == event) {
+        _measureView.needsDisplay = YES;
+    }
+}
+
 @end
 
 @implementation MeasureView
@@ -155,6 +169,7 @@
         CGContextRef ctx = [NSGraphicsContext currentContext].graphicsPort;
         
         [self drawMeasure:dirtyRect context:ctx];
+        [self drawRepeatSection:dirtyRect context:ctx];
         
         if (_needBottomLine) {
             [self drawBottomLine:dirtyRect context:ctx];
@@ -211,6 +226,59 @@
     }
     
     CGContextRestoreGState(ctx);
+}
+
+- (void)drawRepeatSection:(NSRect)dirtyRect context:(CGContextRef)ctx
+{
+    CGContextSaveGState(ctx);
+    
+    CGContextSetFillColorWithColor(ctx, _lineColor.CGColor);
+    CGContextSetStrokeColorWithColor(ctx, _lineColor.CGColor);
+    
+    CGFloat pixelPerTick = _scaleAssistant.pixelPerTick;
+    CGFloat measureOffset = _scaleAssistant.measureOffset;
+    
+    switch (_player.repeatState) {
+        case PlayerRepeatStateRepeatOff:
+            break;
+        case PlayerRepeatStateRepeatAll:
+            [self drawRepeatSectionTriangle:measureOffset xEnd:round(_sequence.length * pixelPerTick) + measureOffset context:ctx];
+            break;
+        case PlayerRepeatStateRepeatSection:
+            for (RepeatSectionRepresentation *repeatSection in _sequence.repeatSections) {
+                CGFloat xStart = round(repeatSection.tickStart * pixelPerTick) + measureOffset;
+                CGFloat xEnd = round(repeatSection.tickEnd * pixelPerTick) + measureOffset;
+                [self drawRepeatSectionTriangle:xStart xEnd:xEnd context:ctx];
+            }
+            break;
+    }
+    
+    CGContextClipToRect(ctx, dirtyRect);
+    
+    CGContextRestoreGState(ctx);
+}
+
+- (void)drawRepeatSectionTriangle:(CGFloat)xStart xEnd:(CGFloat)xEnd context:(CGContextRef)ctx
+{
+    CGContextMoveToPoint(ctx, xStart, 0);
+    CGContextAddLineToPoint(ctx, xStart, REPEAT_SECTION_LENGTH);
+    CGContextAddLineToPoint(ctx, xStart + REPEAT_SECTION_LENGTH, 0);
+    CGContextFillPath(ctx);
+    
+    CGContextMoveToPoint(ctx, xStart, 0);
+    CGContextAddLineToPoint(ctx, xStart, REPEAT_SECTION_LENGTH);
+    CGContextAddLineToPoint(ctx, xStart + REPEAT_SECTION_LENGTH, 0);
+    CGContextStrokePath(ctx);
+    
+    CGContextMoveToPoint(ctx, xEnd, 0);
+    CGContextAddLineToPoint(ctx, xEnd, REPEAT_SECTION_LENGTH);
+    CGContextAddLineToPoint(ctx, xEnd - REPEAT_SECTION_LENGTH, 0);
+    CGContextFillPath(ctx);
+    
+    CGContextMoveToPoint(ctx, xEnd, 0);
+    CGContextAddLineToPoint(ctx, xEnd, REPEAT_SECTION_LENGTH);
+    CGContextAddLineToPoint(ctx, xEnd - REPEAT_SECTION_LENGTH, 0);
+    CGContextStrokePath(ctx);
 }
 
 - (void)drawBottomLine:(NSRect)dirtyRect context:(CGContextRef)ctx

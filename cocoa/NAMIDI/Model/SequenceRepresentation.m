@@ -54,11 +54,40 @@
 
 @end
 
+@interface RepeatSectionRepresentation () {
+    RepeatSection *_raw;
+}
+@end
+
+@implementation RepeatSectionRepresentation
+
+- (instancetype)initWithRepeatSection:(RepeatSection *)repeatSection
+{
+    self = [super init];
+    if (self) {
+        _raw = repeatSection;
+    }
+    return self;
+}
+
+- (int32_t)tickStart
+{
+    return _raw->tickStart;
+}
+
+- (int32_t)tickEnd
+{
+    return _raw->tickEnd;
+}
+
+@end
+
 @interface SequenceRepresentation () {
     Sequence *_sequence;
     NSMutableArray *_events;
     NSMutableArray *_eventsOfConductorTrack;
     NSMutableArray *_channels;
+    NSMutableArray *_repeatSections;
 }
 
 @end
@@ -73,6 +102,7 @@
         _events = [NSMutableArray array];
         _eventsOfConductorTrack = [NSMutableArray array];
         _channels = [NSMutableArray array];
+        _repeatSections = [NSMutableArray array];
         
         for (int i = 1; i <= 16; ++i) {
             ChannelRepresentation *channel = [[ChannelRepresentation alloc] init];
@@ -80,7 +110,9 @@
             [_channels addObject:channel];
         }
         
-        NAIterator *iterator = NAArrayGetIterator(sequence->events);
+        NAIterator *iterator;
+        
+        iterator = NAArrayGetIterator(sequence->events);
         while (iterator->hasNext(iterator)) {
             MidiEvent *raw = iterator->next(iterator);
             MidiEventRepresentation *event = [[MidiEventRepresentation alloc] initWithMidiEvent:raw];
@@ -94,6 +126,13 @@
             }
             
             [_events addObject:event];
+        }
+        
+        iterator = NAArrayGetIterator(TimeTableGetRepeatSections(sequence->timeTable));
+        while (iterator->hasNext(iterator)) {
+            RepeatSection *raw = iterator->next(iterator);
+            RepeatSectionRepresentation *repeatSection = [[RepeatSectionRepresentation alloc] initWithRepeatSection:raw];
+            [_repeatSections addObject:repeatSection];
         }
         
         SequenceRetain(_sequence);
