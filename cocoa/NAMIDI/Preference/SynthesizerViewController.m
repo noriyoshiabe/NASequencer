@@ -73,6 +73,7 @@
     [super viewDidLoad];
     
     [_tableView registerForDraggedTypes:@[NSStringPboardType]];
+    _tableView.selectionHighlightStyle = NSTableViewSelectionHighlightStyleNone;
     
     _initialViewRect = self.view.frame;
     _initilalTableViewHeight = _tableView.frame.size.height;
@@ -149,6 +150,12 @@
 
 #pragma mark NSTableViewDelegate
 
+
+- (NSTableRowView *)tableView:(NSTableView *)tableView rowViewForRow:(NSInteger)row
+{
+    return [tableView makeViewWithIdentifier:@"SynthesizerRow" owner:nil];
+}
+
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
 {
     SynthesizerCellView *view = [tableView makeViewWithIdentifier:@"SynthesizerCell" owner:nil];
@@ -200,10 +207,7 @@
 
 - (NSDragOperation)tableView:(NSTableView *)tableView validateDrop:(id<NSDraggingInfo>)info proposedRow:(NSInteger)row proposedDropOperation:(NSTableViewDropOperation)dropOperation
 {
-    if (NSTableViewDropAbove == dropOperation) {
-        if (_draggedIndex < row) {
-            --row;
-        }
+    if (NSTableViewDropOn == dropOperation) {
         return _draggedIndex != row ? NSDragOperationMove : NSDragOperationNone;
     }
     else {
@@ -213,10 +217,6 @@
 
 - (BOOL)tableView:(NSTableView *)tableView acceptDrop:(id<NSDraggingInfo>)info row:(NSInteger)row dropOperation:(NSTableViewDropOperation)dropOperation
 {
-    if (_draggedIndex < row) {
-        --row;
-    }
-    
     if (_draggedIndex != row) {
         [self changeMidiSourceOrder:_draggedIndex toIndex:row];
         return YES;
@@ -267,6 +267,27 @@
 {
     [_tableView reloadData];
     [_manager saveMidiSourcePreference];
+}
+
+@end
+
+#pragma mark Custom selection background
+
+@interface SynthesizerRowView : NSTableRowView
+@end
+
+@implementation SynthesizerRowView
+
+- (void)awakeFromNib
+{
+    [super awakeFromNib];
+    self.draggingDestinationFeedbackStyle = NSTableViewDraggingDestinationFeedbackStyleNone;
+}
+
+- (void)drawDraggingDestinationFeedbackInRect:(NSRect)dirtyRect
+{
+    [[NSColor selectedControlColor] set];
+    [[NSBezierPath bezierPathWithRoundedRect:self.bounds xRadius:4.0 yRadius:4.0] fill];
 }
 
 @end

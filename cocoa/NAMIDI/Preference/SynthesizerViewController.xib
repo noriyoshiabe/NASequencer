@@ -26,7 +26,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="86" viewBased="YES" id="u3N-RV-xhO">
-                                <rect key="frame" x="0.0" y="0.0" width="471" height="90"/>
+                                <rect key="frame" x="0.0" y="0.0" width="471" height="0.0"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <size key="intercellSpacing" width="0.0" height="4"/>
                                 <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="calibratedRGB"/>
@@ -47,6 +47,10 @@
                                         <prototypeCellViews>
                                             <customView identifier="SynthesizerCell" id="Pfx-LU-B0I" customClass="SynthesizerCellView">
                                                 <rect key="frame" x="0.0" y="2" width="471" height="86"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            </customView>
+                                            <customView identifier="SynthesizerRow" id="gL9-VV-9Km" customClass="SynthesizerRowView">
+                                                <rect key="frame" x="0.0" y="92" width="471" height="86"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             </customView>
                                         </prototypeCellViews>
