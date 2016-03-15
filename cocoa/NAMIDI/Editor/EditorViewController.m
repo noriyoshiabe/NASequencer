@@ -386,4 +386,19 @@
     [self insertText:@"  " replacementRange:self.selectedRange];
 }
 
+- (void)insertNewline:(id)sender
+{
+    NSString *previousLine = [self.string substringWithRange:[self.string lineRangeForRange:self.selectedRange]];
+    
+    [super insertNewline:sender];
+    
+    NSRegularExpression *pattern = [[NSRegularExpression alloc] initWithPattern:@"^(\\t| )+" options:0 error:nil];
+    NSTextCheckingResult *match = [pattern firstMatchInString:previousLine options:0 range:NSMakeRange(0, previousLine.length)];
+    
+    if (match) {
+        NSString *indent = [previousLine substringWithRange:match.range];
+        [self insertText:indent replacementRange:self.selectedRange];
+    }
+}
+
 @end
