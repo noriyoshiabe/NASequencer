@@ -15,7 +15,14 @@ typedef enum {
     PlayerEventReachEnd,
     PlayerEventTempoChange,
     PlayerEventTimeSignChange,
+    PlayerEventRepeatStateChange,
 } PlayerEvent;
+
+typedef enum {
+    PlayerRepeatStateOff,
+    PlayerRepeatStateRepeatAll,
+    PlayerRepeatStateRepeatSection,
+} PlayerRepeatState;
 
 typedef struct _Player Player;
 
@@ -39,6 +46,7 @@ extern void PlayerRewind(Player *self);
 extern void PlayerForward(Player *self);
 extern void PlayerBackWard(Player *self);
 extern void PlayerSeek(Player *self, Location location);
+extern void PlayerToggleRepeat(Player *self);
 
 extern bool PlayerIsPlaying(Player *self);
 extern uint64_t PlayerGetUsec(Player *self);
@@ -46,6 +54,7 @@ extern int PlayerGetTick(Player *self);
 extern Location PlayerGetLocation(Player *self);
 extern float PlayerGetTempo(Player *self);
 extern TimeSign PlayerGetTimeSign(Player *self);
+extern PlayerRepeatState PlayerGetRepeatState(Player *self);
 
 static inline const char *PlayerEvent2String(PlayerEvent event)
 {
@@ -60,6 +69,7 @@ static inline const char *PlayerEvent2String(PlayerEvent event)
     CASE(PlayerEventReachEnd);
     CASE(PlayerEventTempoChange);
     CASE(PlayerEventTimeSignChange);
+    CASE(PlayerEventRepeatStateChange);
     }
     return "Unknown player event";
 #undef CASE

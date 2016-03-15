@@ -17,6 +17,7 @@ typedef enum _PlayerMessage {
     PlayerMessageForward,
     PlayerMessageBackward,
     PlayerMessageSeek,
+    PlayerMessageToggleRepeat,
     PlayerMessageDestroy,
 } PlayerMessage;
 
@@ -43,12 +44,16 @@ struct _Player {
     int64_t usec;
     int64_t start;
     int64_t offset;
+
+    PlayerRepeatState repeatState;
 };
 
 static int64_t currentMicroSec();
 static void *PlayerRun(void *self);
 static void PlayerProcessMessage(Player *self, PlayerMessage message, void *data);
-static void PlayerProcessEvent(Player *self, PlayerEvent event);
+static void PlayerProcessStop(Player *self);
+static void PlayerProcessRewind(Player *self);
+static void PlayerSeekToTick(Player *self, int32_t tick);
 static void PlayerSupplyClock(Player *self);
 static void PlayerScanEvents(Player *self, int32_t prevTick, int32_t tick);
 static void PlayerSendNoteOn(Player *self, NoteEvent *event);
@@ -157,6 +162,11 @@ void PlayerSeek(Player *self, Location location)
     NAMessageQPost(self->msgQ, PlayerMessageSeek, pLocation);
 }
 
+void PlayerToggleRepeat(Player *self)
+{
+    NAMessageQPost(self->msgQ, PlayerMessageToggleRepeat, NULL);
+}
+
 bool PlayerIsPlaying(Player *self)
 {
     return self->playing;
@@ -187,6 +197,11 @@ TimeSign PlayerGetTimeSign(Player *self)
     return TimeTableTimeSignOnTick(self->sequence->timeTable, self->tick);
 }
 
+PlayerRepeatState PlayerGetRepeatState(Player *self)
+{
+    return self->repeatState;
+}
+
 static void *PlayerRun(void *_self)
 {
     Player *self = _self;
@@ -215,7 +230,6 @@ static void PlayerNotifyEvent(Player *self, Observer *observer, va_list argList)
 
 static void PlayerTriggerEvent(Player *self, PlayerEvent event)
 {
-    PlayerProcessEvent(self, event);
     NAArrayTraverseWithContext(self->observers, self, PlayerNotifyEvent, &event);
 }
 
@@ -263,10 +277,7 @@ static void PlayerProcessMessage(Player *self, PlayerMessage message, void *data
         break;
     case PlayerMessageStop:
         if (self->sequence) {
-            if (self->playing) {
-                self->playing = false;
-                PlayerTriggerEvent(self, PlayerEventStop);
-            }
+            PlayerProcessStop(self);
         }
         break;
     case PlayerMessagePlay:
@@ -276,16 +287,14 @@ static void PlayerProcessMessage(Player *self, PlayerMessage message, void *data
                 self->offset = self->usec;
                 self->playing = true;
                 PlayerTriggerEvent(self, PlayerEventPlay);
+                PlayerBroadcastMessage(self, PlayerMessageStop, NULL);
             }
         }
         break;
     case PlayerMessageRewind:
         if (self->sequence) {
-            self->offset = 0;
-            self->usec = 0;
-            self->start = currentMicroSec();
+            PlayerProcessRewind(self);
             PlayerUpdateClock(self, 0, 0, LocationZero);
-            PlayerTriggerEvent(self, PlayerEventRewind);
         }
         break;
     case PlayerMessageForward:
@@ -299,10 +308,7 @@ static void PlayerProcessMessage(Player *self, PlayerMessage message, void *data
             tick = TimeTableTickByMeasure(self->sequence->timeTable, location.m);
             tick = MIN(tick, TimeTableLength(self->sequence->timeTable));
 
-            self->usec = TimeTableTick2MicroSec(self->sequence->timeTable, tick);
-            self->offset = self->usec;
-            self->start = currentMicroSec();
-
+            PlayerSeekToTick(self, tick);
             PlayerUpdateClock(self, tick, self->usec, location);
             PlayerTriggerEvent(self, PlayerEventForward);
         }
@@ -317,11 +323,7 @@ static void PlayerProcessMessage(Player *self, PlayerMessage message, void *data
             location.t = 0;
 
             tick = TimeTableTickByMeasure(self->sequence->timeTable, location.m);
-
-            self->usec = TimeTableTick2MicroSec(self->sequence->timeTable, tick);
-            self->offset = self->usec;
-            self->start = currentMicroSec();
-
+            PlayerSeekToTick(self, tick);
             PlayerUpdateClock(self, tick, self->usec, location);
             PlayerTriggerEvent(self, PlayerEventBackward);
         }
@@ -331,15 +333,26 @@ static void PlayerProcessMessage(Player *self, PlayerMessage message, void *data
             Location *location = data;
             int32_t tick = TimeTableTickByLocation(self->sequence->timeTable, *location);
 
-            self->usec = TimeTableTick2MicroSec(self->sequence->timeTable, tick);
-            self->offset = self->usec;
-            self->start = currentMicroSec();
-
+            PlayerSeekToTick(self, tick);
             PlayerUpdateClock(self, tick, self->usec, *location);
             PlayerTriggerEvent(self, PlayerEventSeek);
 
             free(location);
         }
+        break;
+    case PlayerMessageToggleRepeat:
+        switch (self->repeatState) {
+        case PlayerRepeatStateOff:
+            self->repeatState = PlayerRepeatStateRepeatAll;
+            break;
+        case PlayerRepeatStateRepeatAll:
+            self->repeatState = PlayerRepeatStateRepeatSection;
+            break;
+        case PlayerRepeatStateRepeatSection:
+            self->repeatState = PlayerRepeatStateOff;
+            break;
+        }
+        PlayerTriggerEvent(self, PlayerEventRepeatStateChange);
         break;
     case PlayerMessageDestroy:
         // NOP
@@ -347,53 +360,54 @@ static void PlayerProcessMessage(Player *self, PlayerMessage message, void *data
     }
 }
 
-static void PlayerProcessEvent(Player *self, PlayerEvent event)
+static void PlayerProcessStop(Player *self)
 {
-    switch (event) {
-    case PlayerEventStop:
+    if (self->playing) {
+        self->playing = false;
         PlayerSendAllNoteOff(self);
-        break;
-    case PlayerEventPlay:
-        PlayerBroadcastMessage(self, PlayerMessageStop, NULL);
-        break;
-    case PlayerEventRewind:
-        PlayerSendAllNoteOff(self);
-        self->index = 0;
-        break;
-    case PlayerEventForward:
-    case PlayerEventBackward:
-    case PlayerEventSeek:
-        {
-            PlayerSendAllNoteOff(self);
+        PlayerTriggerEvent(self, PlayerEventStop);
+    }
+}
 
-            int count = NAArrayCount(self->sequence->events);
-            MidiEvent **events = NAArrayGetValues(self->sequence->events);
+static void PlayerProcessRewind(Player *self)
+{
+    PlayerSendAllNoteOff(self);
 
-            int tickOfIndex = self->index < count ? events[self->index]->tick : TimeTableLength(self->sequence->timeTable);
+    self->offset = 0;
+    self->usec = 0;
+    self->start = currentMicroSec();
 
-            if (tickOfIndex < self->tick) {
-                for (; self->index < count; ++self->index) {
-                    if (self->tick <= events[self->index]->tick) {
-                        break;
-                    }
-                }
-            }
-            else if (self->tick < tickOfIndex) {
-                for (self->index = MAX(0, MIN(self->index - 1, count - 1)); 0 < self->index; --self->index) {
-                    if (self->tick > events[self->index]->tick) {
-                        break;
-                    }
-                }
+    self->index = 0;
+
+    PlayerTriggerEvent(self, PlayerEventRewind);
+}
+
+static void PlayerSeekToTick(Player *self, int32_t tick)
+{
+    PlayerSendAllNoteOff(self);
+
+    self->usec = TimeTableTick2MicroSec(self->sequence->timeTable, tick);
+    self->offset = self->usec;
+    self->start = currentMicroSec();
+
+    int count = NAArrayCount(self->sequence->events);
+    MidiEvent **events = NAArrayGetValues(self->sequence->events);
+
+    int tickOfIndex = self->index < count ? events[self->index]->tick : TimeTableLength(self->sequence->timeTable);
+
+    if (tickOfIndex < self->tick) {
+        for (; self->index < count; ++self->index) {
+            if (self->tick <= events[self->index]->tick) {
+                break;
             }
         }
-        break;
-    case PlayerEventReachEnd:
-        PlayerStop(self);
-        PlayerRewind(self);
-        break;
-    case PlayerEventTempoChange:
-    case PlayerEventTimeSignChange:
-        break;
+    }
+    else if (self->tick < tickOfIndex) {
+        for (self->index = MAX(0, MIN(self->index - 1, count - 1)); 0 < self->index; --self->index) {
+            if (self->tick > events[self->index]->tick) {
+                break;
+            }
+        }
     }
 }
 
@@ -410,8 +424,33 @@ static void PlayerSupplyClock(Player *self)
     PlayerScanEvents(self, prevTick, tick);
     PlayerUpdateClock(self, tick, self->usec, location);
 
-    if (TimeTableLength(self->sequence->timeTable) <= tick) {
-        PlayerTriggerEvent(self, PlayerEventReachEnd);
+    switch (self->repeatState) {
+    case PlayerRepeatStateOff:
+        if (TimeTableLength(self->sequence->timeTable) <= tick) {
+            PlayerTriggerEvent(self, PlayerEventReachEnd);
+            PlayerProcessStop(self);
+            PlayerProcessRewind(self);
+            PlayerUpdateClock(self, 0, 0, LocationZero);
+        }
+        break;
+    case PlayerRepeatStateRepeatAll:
+        if (TimeTableLength(self->sequence->timeTable) <= tick) {
+            PlayerTriggerEvent(self, PlayerEventReachEnd);
+            PlayerProcessRewind(self);
+            PlayerUpdateClock(self, 0, 0, LocationZero);
+        }
+        break;
+    case PlayerRepeatStateRepeatSection:
+        {
+            RepeatSection repeatSection = TimeTableRepeatSectionOnTick(self->sequence->timeTable, prevTick);
+            if (repeatSection.tickEnd <= tick) {
+                PlayerSeekToTick(self, repeatSection.tickStart);
+                Location location = TimeTableTick2Location(self->sequence->timeTable, repeatSection.tickStart);
+                PlayerUpdateClock(self, tick, self->usec, location);
+                PlayerTriggerEvent(self, PlayerEventBackward);
+            }
+        }
+        break;
     }
 }
 

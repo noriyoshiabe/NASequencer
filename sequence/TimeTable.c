@@ -265,7 +265,12 @@ RepeatSection TimeTableRepeatSectionOnTick(TimeTable *self, int32_t tick)
 {
     RepeatSection **sections = NAArrayGetValues(self->repeatSections);
     int i = NAArrayBSearchIndex(self->repeatSections, &tick, RepeatSectionFindByTickComparator);
-    return *sections[i];
+    if (-1 == i) {
+        return *sections[NAArrayCount(self->repeatSections) - 1];
+    }
+    else {
+        return *sections[i];
+    }
 }
 
 NAArray *TimeTableGetRepeatSections(TimeTable *self)
