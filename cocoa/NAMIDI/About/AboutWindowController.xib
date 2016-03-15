@@ -99,7 +99,7 @@
                         </textFieldCell>
                     </textField>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="i2z-et-Wbv">
-                        <rect key="frame" x="110" y="127" width="81" height="19"/>
+                        <rect key="frame" x="75" y="127" width="150" height="19"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="AppName" id="79N-67-USf">
                             <font key="font" metaFont="systemHeavy" size="15"/>
                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
