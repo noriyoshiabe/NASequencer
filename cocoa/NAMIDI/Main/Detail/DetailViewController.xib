@@ -7,10 +7,9 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="DetailViewController">
             <connections>
-                <outlet property="eventListView" destination="t3y-Yw-Duj" id="5Dm-kr-A5P"/>
+                <outlet property="eventListView" destination="04C-xb-Cyf" id="Emp-DB-RF1"/>
                 <outlet property="pianoRollView" destination="SbB-iv-dtU" id="kWh-hN-xKv"/>
                 <outlet property="selectionView" destination="ouw-RD-alU" id="cpH-gR-krO"/>
-                <outlet property="selectionViewHeightConstraint" destination="gOe-yX-NnZ" id="bgs-A6-qnb"/>
                 <outlet property="verticalSplitView" destination="otb-Lv-gLa" id="ohT-4v-1eD"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
@@ -22,34 +21,14 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <splitView dividerStyle="thin" vertical="YES" translatesAutoresizingMaskIntoConstraints="NO" id="otb-Lv-gLa">
-                    <rect key="frame" x="0.0" y="0.0" width="480" height="272"/>
+                    <rect key="frame" x="42" y="0.0" width="438" height="272"/>
                     <subviews>
-                        <customView id="04C-xb-Cyf">
-                            <rect key="frame" x="0.0" y="0.0" width="242" height="272"/>
+                        <customView fixedFrame="YES" id="04C-xb-Cyf">
+                            <rect key="frame" x="0.0" y="0.0" width="221" height="272"/>
                             <autoresizingMask key="autoresizingMask"/>
-                            <subviews>
-                                <customView translatesAutoresizingMaskIntoConstraints="NO" id="ouw-RD-alU">
-                                    <rect key="frame" x="0.0" y="247" width="242" height="25"/>
-                                    <constraints>
-                                        <constraint firstAttribute="height" constant="25" id="gOe-yX-NnZ"/>
-                                    </constraints>
-                                </customView>
-                                <customView translatesAutoresizingMaskIntoConstraints="NO" id="t3y-Yw-Duj">
-                                    <rect key="frame" x="0.0" y="0.0" width="242" height="247"/>
-                                </customView>
-                            </subviews>
-                            <constraints>
-                                <constraint firstAttribute="bottom" secondItem="t3y-Yw-Duj" secondAttribute="bottom" id="0TH-Oo-zVn"/>
-                                <constraint firstItem="t3y-Yw-Duj" firstAttribute="leading" secondItem="04C-xb-Cyf" secondAttribute="leading" id="6y7-JO-tln"/>
-                                <constraint firstItem="ouw-RD-alU" firstAttribute="top" secondItem="04C-xb-Cyf" secondAttribute="top" id="7Dm-Wf-LAS"/>
-                                <constraint firstAttribute="trailing" secondItem="ouw-RD-alU" secondAttribute="trailing" id="QKg-q3-H2Q"/>
-                                <constraint firstItem="ouw-RD-alU" firstAttribute="leading" secondItem="04C-xb-Cyf" secondAttribute="leading" id="ma6-Mg-Y60"/>
-                                <constraint firstItem="t3y-Yw-Duj" firstAttribute="top" secondItem="ouw-RD-alU" secondAttribute="bottom" id="ntp-Ou-VVC"/>
-                                <constraint firstAttribute="trailing" secondItem="t3y-Yw-Duj" secondAttribute="trailing" id="utc-fU-pkX"/>
-                            </constraints>
                         </customView>
                         <customView fixedFrame="YES" id="SbB-iv-dtU">
-                            <rect key="frame" x="243" y="0.0" width="237" height="272"/>
+                            <rect key="frame" x="222" y="0.0" width="216" height="272"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </customView>
                     </subviews>
@@ -58,11 +37,20 @@
                         <real value="250"/>
                     </holdingPriorities>
                 </splitView>
+                <customView translatesAutoresizingMaskIntoConstraints="NO" id="ouw-RD-alU">
+                    <rect key="frame" x="0.0" y="0.0" width="42" height="272"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="42" id="gY3-ir-bSl"/>
+                    </constraints>
+                </customView>
             </subviews>
             <constraints>
-                <constraint firstItem="otb-Lv-gLa" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="Yja-3D-L64"/>
+                <constraint firstItem="ouw-RD-alU" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="2Pl-Ox-4g1"/>
+                <constraint firstItem="otb-Lv-gLa" firstAttribute="leading" secondItem="ouw-RD-alU" secondAttribute="trailing" id="2p6-Mt-Fxe"/>
+                <constraint firstAttribute="bottom" secondItem="ouw-RD-alU" secondAttribute="bottom" id="ITl-M6-N45"/>
                 <constraint firstItem="otb-Lv-gLa" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" id="cgR-Be-oQ5"/>
                 <constraint firstAttribute="trailing" secondItem="otb-Lv-gLa" secondAttribute="trailing" id="dPd-UO-hby"/>
+                <constraint firstItem="ouw-RD-alU" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" id="n9q-by-vks"/>
                 <constraint firstAttribute="bottom" secondItem="otb-Lv-gLa" secondAttribute="bottom" id="uKo-hZ-Gbd"/>
             </constraints>
         </customView>

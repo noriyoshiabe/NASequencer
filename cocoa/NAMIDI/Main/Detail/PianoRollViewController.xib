@@ -274,12 +274,12 @@
                 </scrollView>
             </subviews>
             <constraints>
-                <constraint firstAttribute="trailing" secondItem="SqX-ur-3Ac" secondAttribute="trailing" id="9VM-00-US4"/>
                 <constraint firstAttribute="trailing" secondItem="OAz-5W-sI4" secondAttribute="trailing" id="KcH-DN-seh"/>
-                <constraint firstItem="SqX-ur-3Ac" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" id="OIN-4A-MPe"/>
-                <constraint firstItem="SqX-ur-3Ac" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="61" id="UXj-eS-q92"/>
                 <constraint firstAttribute="bottom" secondItem="OAz-5W-sI4" secondAttribute="bottom" id="XAs-rS-EAm"/>
-                <constraint firstAttribute="bottom" secondItem="SqX-ur-3Ac" secondAttribute="bottom" id="Zk5-11-mRM"/>
+                <constraint firstItem="SqX-ur-3Ac" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" id="XYY-to-Tzm"/>
+                <constraint firstItem="SqX-ur-3Ac" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" priority="800" constant="61" id="Z4c-r6-IJq"/>
+                <constraint firstAttribute="bottom" secondItem="SqX-ur-3Ac" secondAttribute="bottom" id="drQ-EV-gCI"/>
+                <constraint firstAttribute="trailing" secondItem="SqX-ur-3Ac" secondAttribute="trailing" id="gVQ-hm-Nfx"/>
                 <constraint firstItem="OAz-5W-sI4" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" id="qZ9-yN-rUx"/>
                 <constraint firstItem="OAz-5W-sI4" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="yqH-NX-iPN"/>
             </constraints>
