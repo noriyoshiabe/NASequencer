@@ -30,6 +30,7 @@
 @property (weak) IBOutlet NSButton *channel14;
 @property (weak) IBOutlet NSButton *channel15;
 @property (weak) IBOutlet NSButton *channel16;
+@property (weak) IBOutlet NSButton *listOpener;
 @end
 
 @implementation SelectionViewController
@@ -107,6 +108,17 @@
     else {
         [_trackSelection deselect:trackNo];
     }
+}
+
+- (IBAction)toggleListOpened:(NSButton *)sender
+{
+    _listOpener.image = [NSImage imageNamed:NSOnState == _listOpener.state ? @"list_opened" : @"list_closed"];
+    [_delegate selectionViewControllerDidToggleListOpened:self];
+}
+
+- (BOOL)listOpened
+{
+    return NSOnState == _listOpener.state;
 }
 
 #pragma mark NAMidiRepresentationObserver

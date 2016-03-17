@@ -25,7 +25,7 @@
 
 - (void)awakeFromNib
 {
-    CGFloat fontSize;
+    CGFloat fontSize = 14.0;
     
     if (0 < self.tag) {
         NSColor *baseColor = [Color channelColor:(int)self.tag];
@@ -37,7 +37,6 @@
                                                     saturation:baseColor.saturationComponent * 0.6
                                                     brightness:baseColor.brightnessComponent * 0.8
                                                          alpha:baseColor.alphaComponent];
-        fontSize = 9.0;
     }
     else {
         _activeBorderColor = [NSColor colorWith8bitRed:204 green:205 blue:212 alpha:255];
@@ -45,7 +44,6 @@
                                                     saturation:_activeBorderColor.saturationComponent
                                                     brightness:_activeBorderColor.brightnessComponent * 0.8
                                                          alpha:_activeBorderColor.alphaComponent];
-        fontSize = 8.0;
     }
     
     _disableBorderColor = [Color gray];
@@ -70,7 +68,7 @@
     [border fill];
     
     [backgroundColor setFill];
-    NSBezierPath *background = [NSBezierPath bezierPathWithRoundedRect:CGRectInset(self.bounds, 1.0, 1.0) xRadius:4.0 yRadius:4.0];
+    NSBezierPath *background = [NSBezierPath bezierPathWithRoundedRect:CGRectInset(self.bounds, 2.0, 2.0) xRadius:3.0 yRadius:3.0];
     [background fill];
     
     NSString *string = self.title;
