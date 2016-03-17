@@ -11,18 +11,14 @@
 #import "EventListViewController.h"
 #import "PianoRollViewController.h"
 
-#define VERTICAL_SPLIT_LEFT_MAX 400
-#define VERTICAL_SPLIT_LEFT_MIN 232
+@interface DetailViewController () <NSSplitViewDelegate, SelectionViewControllerDelegate> {
+    CGFloat _lastDividerPosition;
+}
 
-#define SELECTION_VIEW_HEIGHT_NARROW 25
-#define SELECTION_VIEW_HEIGHT_WIDE 46
-
-@interface DetailViewController () <NSSplitViewDelegate>
 @property (weak) IBOutlet NSSplitView *verticalSplitView;
 @property (weak) IBOutlet NSView *selectionView;
 @property (weak) IBOutlet NSView *eventListView;
 @property (weak) IBOutlet NSView *pianoRollView;
-@property (weak) IBOutlet NSLayoutConstraint *selectionViewHeightConstraint;
 @property (strong, nonatomic) SelectionViewController *selectionVC;
 @property (strong, nonatomic) EventListViewController *eventListVC;
 @property (strong, nonatomic) PianoRollViewController *pianoRollVC;
@@ -40,6 +36,8 @@
     _eventListVC = [[EventListViewController alloc] init];
     _pianoRollVC = [[PianoRollViewController alloc] init];
     
+    _selectionVC.delegate = self;
+    
     _selectionVC.namidi = _namidi;
     _eventListVC.namidi = _namidi;
     _pianoRollVC.namidi = _namidi;
@@ -51,22 +49,21 @@
     _pianoRollVC.trackSelection = _trackSelection;
     
     [_selectionView addSubviewWithFitConstraints:_selectionVC.view];
-    [_eventListView addSubviewWithFitConstraints:_eventListVC.view];
     [_pianoRollView addSubviewWithFitConstraints:_pianoRollVC.view];
     
-    [_verticalSplitView setPosition:VERTICAL_SPLIT_LEFT_MAX ofDividerAtIndex:0];
+    [_verticalSplitView setPosition:0 ofDividerAtIndex:0];
 }
 
 #pragma mark NSSplitViewDelegate
 
 - (CGFloat)splitView:(NSSplitView *)splitView constrainMinCoordinate:(CGFloat)proposedMinimumPosition ofSubviewAt:(NSInteger)dividerIndex
 {
-    return VERTICAL_SPLIT_LEFT_MIN;
+    return _selectionVC.listOpened ? CGRectGetWidth(_verticalSplitView.bounds) / 4.0 * 1.0 : 0.0;
 }
 
 - (CGFloat)splitView:(NSSplitView *)splitView constrainMaxCoordinate:(CGFloat)proposedMaximumPosition ofSubviewAt:(NSInteger)dividerIndex
 {
-    return VERTICAL_SPLIT_LEFT_MAX;
+    return _selectionVC.listOpened ? CGRectGetWidth(_verticalSplitView.bounds) / 4.0 * 3.0 : 0.0;
 }
 
 - (BOOL)splitView:(NSSplitView *)splitView shouldAdjustSizeOfSubview:(NSView *)view
@@ -74,13 +71,34 @@
     return splitView.subviews[1] == view;
 }
 
+- (BOOL)splitView:(NSSplitView *)splitView shouldHideDividerAtIndex:(NSInteger)dividerIndex
+{
+    return _selectionVC.listOpened ? NO : YES;
+}
+
 - (void)splitViewDidResizeSubviews:(NSNotification *)notification
 {
-    if (VERTICAL_SPLIT_LEFT_MAX > CGRectGetWidth(_verticalSplitView.subviews[0].frame)) {
-        _selectionViewHeightConstraint.constant = SELECTION_VIEW_HEIGHT_WIDE;
+    if (_selectionVC.listOpened) {
+        _lastDividerPosition = CGRectGetWidth(_verticalSplitView.subviews[0].frame);
+    }
+}
+
+#pragma mark SelectionViewControllerDelegate
+
+- (void)selectionViewControllerDidToggleListOpened:(SelectionViewController *)controller
+{
+    if (_selectionVC.listOpened) {
+        CGFloat position = 0.0 < _lastDividerPosition ? _lastDividerPosition : CGRectGetWidth(_verticalSplitView.bounds) / 2.0;
+        [_verticalSplitView setPosition:position ofDividerAtIndex:0];
+        
+        CGRect frame = _eventListVC.view.frame;
+        frame.size.width = position;
+        _eventListVC.view.frame = frame;
+        [_eventListView addSubviewWithFitConstraints:_eventListVC.view];
     }
     else {
-        _selectionViewHeightConstraint.constant = SELECTION_VIEW_HEIGHT_NARROW;
+        [_eventListVC.view removeFromSuperview];
+        [_verticalSplitView setPosition:0 ofDividerAtIndex:0];
     }
 }
 
