@@ -9,11 +9,5 @@
 #import <Cocoa/Cocoa.h>
 
 @interface EventListRowView : NSTableRowView
-@property (strong, nonatomic) NSString *location;
-@property (strong, nonatomic) NSString *type;
-@property (strong, nonatomic) NSString *channel;
-@property (strong, nonatomic) NSString *note;
-@property (strong, nonatomic) NSString *gatetime;
-@property (strong, nonatomic) NSString *velocity;
-@property (strong, nonatomic) NSString *other;
+@property (weak, nonatomic) NSString *content;
 @end
