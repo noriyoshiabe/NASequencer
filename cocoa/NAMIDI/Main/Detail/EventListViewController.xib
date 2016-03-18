@@ -44,8 +44,11 @@
                             </constraints>
                             <buttonCell key="cell" type="bevel" title="Note" bezelStyle="regularSquare" alignment="center" imageScaling="proportionallyDown" inset="2" id="TGS-4F-gDl">
                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
-                                <font key="font" metaFont="systemBold" size="11"/>
+                                <font key="font" metaFont="systemBold" size="10"/>
                             </buttonCell>
+                            <connections>
+                                <action selector="filterButtonPressed:" target="-2" id="A3g-nz-ChF"/>
+                            </connections>
                         </button>
                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="I2O-8F-HqY" customClass="ColorButton">
                             <rect key="frame" x="393" y="7" width="49" height="18"/>
@@ -55,8 +58,11 @@
                             </constraints>
                             <buttonCell key="cell" type="bevel" title="Control" bezelStyle="regularSquare" alignment="center" imageScaling="proportionallyDown" inset="2" id="ekF-61-cxs">
                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
-                                <font key="font" metaFont="systemBold" size="11"/>
+                                <font key="font" metaFont="systemBold" size="10"/>
                             </buttonCell>
+                            <connections>
+                                <action selector="filterButtonPressed:" target="-2" id="kkU-pD-JLS"/>
+                            </connections>
                         </button>
                     </subviews>
                     <constraints>

@@ -61,6 +61,9 @@
     _controlButton.inactiveTextColor = [Color gray];
     _controlButton.inactiveBackgroundColor = [Color darkGray];
     
+    _noteButton.state = NSOnState;
+    _controlButton.state = NSOnState;
+    
     _tableView.dataSource = self;
     _tableView.delegate = self;
 }
@@ -93,11 +96,25 @@
     
     for (MidiEventRepresentation *event in _namidi.sequence.events) {
         if ([_trackSelection isTrackSelected:event.channel]) {
-            [_events addObject:event];
+            if (MidiEventTypeNote == event.type) {
+                if (NSOnState == _noteButton.state) {
+                    [_events addObject:event];
+                }
+            }
+            else {
+                if (NSOnState == _controlButton.state) {
+                    [_events addObject:event];
+                }
+            }
         }
     }
     
     [_tableView reloadData];
+}
+
+- (IBAction)filterButtonPressed:(id)sender
+{
+    [self buildEvents];
 }
 
 #pragma mark NSTableViewDataSource
