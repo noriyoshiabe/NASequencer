@@ -19,4 +19,5 @@
 @property (strong, nonatomic) NAMidiRepresentation *namidi;
 @property (strong, nonatomic) TrackSelection *trackSelection;
 @property (assign, nonatomic) BOOL listOpened;
+- (IBAction)showEventList:(id)sender;
 @end

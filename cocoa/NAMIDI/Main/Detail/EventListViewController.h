@@ -13,4 +13,6 @@
 @interface EventListViewController : NSViewController
 @property (strong, nonatomic) NAMidiRepresentation *namidi;
 @property (strong, nonatomic) TrackSelection *trackSelection;
+- (IBAction)filterNoteEvent:(id)sender;
+- (IBAction)filterControlEvent:(id)sender;
 @end

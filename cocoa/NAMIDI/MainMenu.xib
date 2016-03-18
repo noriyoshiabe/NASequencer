@@ -263,6 +263,26 @@
                                     <action selector="toggleToolbarShown:" target="-1" id="BXY-wc-z0C"/>
                                 </connections>
                             </menuItem>
+                            <menuItem isSeparatorItem="YES" id="2Zq-lv-Bfl"/>
+                            <menuItem title="Show Event List" keyEquivalent="L" id="eTc-NC-7Bo">
+                                <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                <connections>
+                                    <action selector="showEventList:" target="-1" id="f0P-ks-Vlv"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Filter Note Event" keyEquivalent="N" id="c2K-so-vwT">
+                                <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                <connections>
+                                    <action selector="filterNoteEvent:" target="-1" id="6cS-jv-99P"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Fiiter Control Event" keyEquivalent="C" id="HFe-BV-cpX">
+                                <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                <connections>
+                                    <action selector="filterControlEvent:" target="-1" id="dZf-kj-BVc"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="42O-te-jVV"/>
                         </items>
                     </menu>
                 </menuItem>

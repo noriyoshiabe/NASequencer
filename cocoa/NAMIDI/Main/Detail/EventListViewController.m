@@ -117,6 +117,42 @@
     [self buildEvents];
 }
 
+#pragma mark Menu Action
+
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem
+{
+    if (@selector(filterNoteEvent:) == menuItem.action) {
+        if (NSOnState == _noteButton.state) {
+            menuItem.title = NSLocalizedString(@"MainMenu_FilterNoteEvent", @"Filter Note Event");
+        }
+        else {
+            menuItem.title = NSLocalizedString(@"MainMenu_UnfilterNoteEvent", @"Unfilter Note Event");
+        }
+    }
+    else if (@selector(filterControlEvent:) == menuItem.action) {
+        if (NSOnState == _controlButton.state) {
+            menuItem.title = NSLocalizedString(@"MainMenu_FilterControlEvent", @"Filter Control Event");
+        }
+        else {
+            menuItem.title = NSLocalizedString(@"MainMenu_UnfilterControlEvent", @"Unfilter Control Event");
+        }
+    }
+    
+    return YES;
+}
+
+- (IBAction)filterNoteEvent:(id)sender
+{
+    _noteButton.state = NSOnState == _noteButton.state ? NSOffState : NSOnState;
+    [self buildEvents];
+}
+
+- (IBAction)filterControlEvent:(id)sender
+{
+    _controlButton.state = NSOnState == _controlButton.state ? NSOffState : NSOnState;
+    [self buildEvents];
+}
+
 #pragma mark NSTableViewDataSource
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView

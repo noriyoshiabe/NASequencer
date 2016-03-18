@@ -57,6 +57,45 @@
     [_verticalSplitView setPosition:0 ofDividerAtIndex:0];
 }
 
+- (void)viewDidAppear
+{
+    [super viewDidAppear];
+    [self.view.window makeFirstResponder:self.view];
+}
+
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem
+{
+    if (@selector(showEventList:) == menuItem.action) {
+        return [_selectionVC validateMenuItem:menuItem];
+    }
+    else if (@selector(filterNoteEvent:) == menuItem.action
+             || @selector(filterControlEvent:) == menuItem.action) {
+        if (_selectionVC.listOpened) {
+            return [_eventListVC validateMenuItem:menuItem];
+        }
+        else {
+            return NO;
+        }
+    }
+    
+    return YES;
+}
+
+- (IBAction)showEventList:(id)sender
+{
+    [_selectionVC showEventList:sender];
+}
+
+- (IBAction)filterNoteEvent:(id)sender
+{
+    [_eventListVC filterNoteEvent:sender];
+}
+
+- (IBAction)filterControlEvent:(id)sender
+{
+    [_eventListVC filterControlEvent:sender];
+}
+
 #pragma mark NSSplitViewDelegate
 
 - (CGFloat)splitView:(NSSplitView *)splitView constrainMinCoordinate:(CGFloat)proposedMinimumPosition ofSubviewAt:(NSInteger)dividerIndex

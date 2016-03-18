@@ -110,15 +110,35 @@
     }
 }
 
-- (IBAction)toggleListOpened:(NSButton *)sender
+- (BOOL)listOpened
+{
+    return NSOnState == _listOpener.state;
+}
+
+- (IBAction)toggleListOpened:(id)sender
 {
     _listOpener.image = [NSImage imageNamed:NSOnState == _listOpener.state ? @"list_opened" : @"list_closed"];
     [_delegate selectionViewControllerDidToggleListOpened:self];
 }
 
-- (BOOL)listOpened
+#pragma mark Menu Action
+
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem
 {
-    return NSOnState == _listOpener.state;
+    if (self.listOpened) {
+        menuItem.title = NSLocalizedString(@"MainMenu_HideEventList", @"Hide Event List");
+    }
+    else {
+        menuItem.title = NSLocalizedString(@"MainMenu_ShowEventList", @"Show Event List");
+    }
+    
+    return YES;
+}
+
+- (IBAction)showEventList:(id)sender
+{
+    _listOpener.state = NSOnState == _listOpener.state ? NSOffState : NSOnState;
+    [self toggleListOpened:self];
 }
 
 #pragma mark NAMidiRepresentationObserver
