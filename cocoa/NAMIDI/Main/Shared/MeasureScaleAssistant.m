@@ -8,6 +8,8 @@
 
 #import "MeasureScaleAssistant.h"
 
+#define MINIMUM_MEASURE 128
+
 @implementation MeasureScaleAssistant
 
 - (instancetype)init
@@ -53,7 +55,7 @@
 
 - (CGFloat)length
 {
-    return MAX(_namidi.sequence.length, _namidi.sequence.resolution * 4 * 8);
+    return MAX(_namidi.sequence.length, _namidi.sequence.resolution * 4 * MINIMUM_MEASURE);
 }
 
 @end
