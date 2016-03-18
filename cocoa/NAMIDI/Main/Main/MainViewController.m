@@ -18,7 +18,7 @@
 #import "SynchronizedScrollView.h"
 #import "Color.h"
 
-@interface MainViewController () <NAMidiRepresentationObserver>
+@interface MainViewController () <NAMidiRepresentationObserver, SynchronizedScrollViewDelegate>
 @property (weak) IBOutlet NSView *conductorView;
 @property (weak) IBOutlet SynchronizedScrollView *mixerView;
 @property (weak) IBOutlet SynchronizedScrollView *measureView;
@@ -87,6 +87,7 @@
     
     [_tipsView addSubviewWithFitConstraints:_tipsVC.view];
     
+    _trackView.delegate = self;
     _playLineView.userInteractionEnabled = NO;
     
     [_measureView observeScrollForScrollView:_conductorTrackView x:YES y:NO];
@@ -152,6 +153,14 @@
 - (void)namidiDidParse:(NAMidiRepresentation *)namidi sequence:(SequenceRepresentation *)sequence parseInfo:(ParseInfoRepresentation *)parseInfo
 {
     [self updateTipsVisibility];
+}
+
+#pragma mark SynchronizedScrollViewDelegate
+
+- (BOOL)synchronizedScrollView:(SynchronizedScrollView *)scrollView shouldMouseDown:(NSEvent *)theEvent
+{
+    [_trackSelection deselectAll];
+    return YES;
 }
 
 @end

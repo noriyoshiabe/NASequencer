@@ -52,6 +52,17 @@
     return _userInteractionEnabled ? [super hitTest:aPoint] : nil;
 }
 
+- (void)mouseDown:(NSEvent *)theEvent
+{
+    if ([_delegate respondsToSelector:@selector(synchronizedScrollView:shouldMouseDown:)]) {
+        if (![_delegate synchronizedScrollView:self shouldMouseDown:theEvent]) {
+            return;
+        }
+    }
+    
+    [super mouseDown:theEvent];
+}
+
 - (void)observeScrollForScrollView:(NSScrollView *)scrollView x:(BOOL)x y:(BOOL)y
 {
     scrollView.contentView.postsBoundsChangedNotifications = YES;

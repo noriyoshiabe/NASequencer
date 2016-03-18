@@ -8,7 +8,13 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class SynchronizedScrollView;
+@protocol SynchronizedScrollViewDelegate <NSObject>
+- (BOOL)synchronizedScrollView:(SynchronizedScrollView *)scrollView shouldMouseDown:(NSEvent *)theEvent;
+@end
+
 @interface SynchronizedScrollView : NSScrollView
+@property (weak, nonatomic) id<SynchronizedScrollViewDelegate> delegate;
 @property (assign, nonatomic) BOOL userInteractionEnabled;
 - (void)observeScrollForScrollView:(NSScrollView *)scrollView x:(BOOL)x y:(BOOL)y;
 @end
