@@ -10,6 +10,7 @@
 #import "EventListRowView.h"
 #import "Color.h"
 #import "NoteTable.h"
+#import "ColorButton.h"
 #import "NACString.h"
 
 @interface EventListViewController () <NSTableViewDataSource, NSTableViewDelegate, NAMidiRepresentationObserver> {
@@ -19,6 +20,8 @@
 @property (weak) IBOutlet NSView *headerBackground;
 @property (weak) IBOutlet NSView *headerLine;
 @property (weak) IBOutlet NSTableView *tableView;
+@property (weak) IBOutlet ColorButton *noteButton;
+@property (weak) IBOutlet ColorButton *controlButton;
 @end
 
 @implementation EventListViewController
@@ -43,6 +46,20 @@
     _headerBackground.layer.backgroundColor = [NSColor blackColor].CGColor;
     _headerLine.wantsLayer = YES;
     _headerLine.layer.backgroundColor = [Color pink].CGColor;
+    
+    _noteButton.activeBorderColor = [Color pink];
+    _noteButton.activeTextColor = [NSColor whiteColor];
+    _noteButton.activeBackgroundColor = [NSColor blackColor];
+    _noteButton.inactiveBorderColor = [Color gray];
+    _noteButton.inactiveTextColor = [Color gray];
+    _noteButton.inactiveBackgroundColor = [Color darkGray];
+    
+    _controlButton.activeBorderColor = [Color pink];
+    _controlButton.activeTextColor = [NSColor whiteColor];
+    _controlButton.activeBackgroundColor = [NSColor blackColor];
+    _controlButton.inactiveBorderColor = [Color gray];
+    _controlButton.inactiveTextColor = [Color gray];
+    _controlButton.inactiveBackgroundColor = [Color darkGray];
     
     _tableView.dataSource = self;
     _tableView.delegate = self;
@@ -120,7 +137,7 @@
             channel = NACStringFormat("%d", note->channel);
             
             char *noteLabel = NACStringFormat("%s%d/%d", labels[note->noteNo % 12], note->noteNo / 12 - 2, note->noteNo);
-            data = NACStringFormat("%-8s Vel:%d Gt:%d", noteLabel, note->velocity, note->gatetime);
+            data = NACStringFormat("%-8s Vel:%3d Gt:%3d", noteLabel, note->velocity, note->gatetime);
             free(noteLabel);
         }
             break;
@@ -260,6 +277,39 @@
 - (void)namidiDidParse:(NAMidiRepresentation *)namidi sequence:(SequenceRepresentation *)sequence parseInfo:(ParseInfoRepresentation *)parseInfo
 {
     [self buildEvents];
+}
+
+@end
+
+#pragma mark Event list vertical line
+
+@interface EventListScrollView : NSScrollView
+@end
+
+@implementation EventListScrollView
+
+- (void)drawRect:(NSRect)dirtyRect
+{
+    [super drawRect:dirtyRect];
+    
+    CGContextRef ctx = [NSGraphicsContext currentContext].graphicsPort;
+    CGContextSaveGState(ctx);
+    
+    CGContextSetLineWidth(ctx, 0.5);
+    CGContextSetStrokeColorWithColor(ctx, [Color  darkGray].CGColor);
+    
+    const CGFloat lineXs[] = {131.5, 218.5, 283.5};
+    CGFloat height = self.bounds.size.height;
+    
+    for (int i = 0; i < sizeof(lineXs) / sizeof(lineXs[0]); ++i) {
+        CGContextMoveToPoint(ctx, lineXs[i], 0);
+        CGContextAddLineToPoint(ctx, lineXs[i], height);
+        CGContextStrokePath(ctx);
+    }
+    
+    CGContextClipToRect(ctx, dirtyRect);
+    
+    CGContextRestoreGState(ctx);
 }
 
 @end

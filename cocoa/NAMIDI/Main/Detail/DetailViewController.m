@@ -11,7 +11,8 @@
 #import "EventListViewController.h"
 #import "PianoRollViewController.h"
 
-#define EVENT_LIST_MIN_WIDTH 400.0
+#define EVENT_LIST_MIN_WIDTH 464.0
+#define PIANO_ROLL_MIN_WIDTH 120.0
 
 @interface DetailViewController () <NSSplitViewDelegate, SelectionViewControllerDelegate> {
     CGFloat _lastDividerPosition;
@@ -65,7 +66,7 @@
 
 - (CGFloat)splitView:(NSSplitView *)splitView constrainMaxCoordinate:(CGFloat)proposedMaximumPosition ofSubviewAt:(NSInteger)dividerIndex
 {
-    return _selectionVC.listOpened ? CGRectGetWidth(_verticalSplitView.bounds) / 4.0 * 3.0 : 0.0;
+    return _selectionVC.listOpened ? CGRectGetWidth(_verticalSplitView.bounds) - PIANO_ROLL_MIN_WIDTH : 0.0;
 }
 
 - (BOOL)splitView:(NSSplitView *)splitView shouldAdjustSizeOfSubview:(NSView *)view
@@ -90,7 +91,7 @@
 - (void)selectionViewControllerDidToggleListOpened:(SelectionViewController *)controller
 {
     if (_selectionVC.listOpened) {
-        CGFloat position = 0.0 < _lastDividerPosition ? _lastDividerPosition : CGRectGetWidth(_verticalSplitView.bounds) / 2.0;
+        CGFloat position = 0.0 < _lastDividerPosition ? _lastDividerPosition : EVENT_LIST_MIN_WIDTH;
         [_verticalSplitView setPosition:position ofDividerAtIndex:0];
         
         CGRect frame = _eventListVC.view.frame;
