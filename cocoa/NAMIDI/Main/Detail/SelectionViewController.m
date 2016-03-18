@@ -68,6 +68,7 @@
     [super viewDidLoad];
     self.view.wantsLayer = YES;
     self.view.layer.backgroundColor = [Color darkGray].CGColor;
+    ((NSButtonCell *)_listOpener.cell).highlightsBy = NSNoCellMask;
 }
 
 - (void)viewWillAppear
