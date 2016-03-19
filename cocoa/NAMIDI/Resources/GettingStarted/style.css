@@ -1,4 +1,45 @@
 body {
-    background-color: #000;
-    color: #fff;
+  font-family: Helvetica, sans-serif;
+  background-color: #4a4a4a;
+  color: #fff;
+}
+
+.btn-exit {
+  display: inline-block;
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  background-color: #000;
+  border: 2px solid #fff;
+  border-radius: 20px;
+  color: #fff;
+  padding: 3px 20px;
+  text-decoration: none;
+  font-size: 16.0px;
+  text-align: center;
+}
+
+.btn-exit:active {
+  background-color: #47131b;
+  border-color: #ff4261;
+  color: #ff4261;
+}
+
+/* Introduction */
+
+.introduction {
+  display: table-cell;
+  width: 100vw;
+  height: 100vh;
+  text-align: center;
+  vertical-align: middle;
+}
+.introduction h1 {
+  font-size: 6.0vw;
+}
+.introduction h2 {
+  font-size: 4.0vw;
+}
+.introduction p {
+  font-size: 3.0vw;
 }
