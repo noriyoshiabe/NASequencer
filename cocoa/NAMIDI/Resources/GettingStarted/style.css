@@ -28,18 +28,50 @@ body {
 /* Introduction */
 
 .introduction {
-  display: table-cell;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin: auto;
   width: 100vw;
-  height: 100vh;
+  height: 40vw;
   text-align: center;
   vertical-align: middle;
+  transition-property: left, height;
+  transition-duration: 0.25s;
+  transition-timing-function: ease-in-out;
 }
+
+.is-introduction  .introduction { left: 0; }
+.is-demonstration .introduction { left: -100vw; }
+.is-ending        .introduction { left: -100vw; }
+
 .introduction h1 {
   font-size: 6.0vw;
+  opacity: 0;
+  transition: opacity 0.25s ease-in-out;
 }
 .introduction h2 {
   font-size: 4.0vw;
+  opacity: 0;
+  transition: opacity 0.25s ease-in-out;
 }
 .introduction p {
   font-size: 3.0vw;
+  opacity: 0;
+  transition: opacity 0.25s ease-in-out;
 }
+
+.introduction.stage1    { height: 20vw; }
+.introduction.stage1 h1 { opacity: 1; }
+.introduction.stage1 h2 { }
+.introduction.stage1 p  { }
+
+.introduction.stage2    { height: 30vw; }
+.introduction.stage2 h1 { opacity: 1; }
+.introduction.stage2 h2 { }
+.introduction.stage2 p  { opacity: 1; }
+
+.introduction.stage3    { height: 40vw; }
+.introduction.stage3 h1 { opacity: 1; }
+.introduction.stage3 h2 { opacity: 1; }
+.introduction.stage3 p  { opacity: 1; }
