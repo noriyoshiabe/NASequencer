@@ -36,14 +36,10 @@ body {
   height: 20vw;
   text-align: center;
   vertical-align: middle;
-  transition-property: left, height;
+  transition-property: transform;
   transition-duration: 0.25s;
   transition-timing-function: ease-in-out;
 }
-
-.is-introduction  .introduction { left: 0; }
-.is-demonstration .introduction { left: -100vw; }
-.is-ending        .introduction { left: -100vw; }
 
 .introduction h1 {
   font-size: 6.0vw;
@@ -61,17 +57,19 @@ body {
   transition: opacity 0.25s ease-in-out;
 }
 
-.is-stage1 .introduction    { height: 20vw; }
-.is-stage1 .introduction h1 { opacity: 1; }
-.is-stage1 .introduction h2 { }
-.is-stage1 .introduction p  { }
-        
-.is-stage2 .introduction    { height: 30vw; }
-.is-stage2 .introduction h1 { opacity: 1; }
-.is-stage2 .introduction h2 { }
-.is-stage2 .introduction p  { opacity: 1; }
-        
-.is-stage3 .introduction    { height: 40vw; }
-.is-stage3 .introduction h1 { opacity: 1; }
-.is-stage3 .introduction h2 { opacity: 1; }
-.is-stage3 .introduction p  { opacity: 1; }
+.introduction.is-stage1    { transform: translate(0,0vw); }
+.introduction.is-stage1 h1 { opacity: 1; }
+.introduction.is-stage1 h2 { }
+.introduction.is-stage1 p  { }
+                     
+.introduction.is-stage2    { transform: translate(0,-5vw); }
+.introduction.is-stage2 h1 { opacity: 1; }
+.introduction.is-stage2 h2 { }
+.introduction.is-stage2 p  { opacity: 1; }
+                     
+.introduction.is-stage3    { transform: translate(0,-10vw); }
+.introduction.is-stage3 h1 { opacity: 1; }
+.introduction.is-stage3 h2 { opacity: 1; }
+.introduction.is-stage3 p  { opacity: 1; }
+
+.introduction.is-exit { transform: translate(-100vw,-10vw); }
