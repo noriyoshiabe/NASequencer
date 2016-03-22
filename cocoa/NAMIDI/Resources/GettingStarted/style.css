@@ -33,7 +33,7 @@ body {
   bottom: 0;
   margin: auto;
   width: 100vw;
-  height: 40vw;
+  height: 20vw;
   text-align: center;
   vertical-align: middle;
   transition-property: left, height;
@@ -61,17 +61,17 @@ body {
   transition: opacity 0.25s ease-in-out;
 }
 
-.introduction.stage1    { height: 20vw; }
-.introduction.stage1 h1 { opacity: 1; }
-.introduction.stage1 h2 { }
-.introduction.stage1 p  { }
-
-.introduction.stage2    { height: 30vw; }
-.introduction.stage2 h1 { opacity: 1; }
-.introduction.stage2 h2 { }
-.introduction.stage2 p  { opacity: 1; }
-
-.introduction.stage3    { height: 40vw; }
-.introduction.stage3 h1 { opacity: 1; }
-.introduction.stage3 h2 { opacity: 1; }
-.introduction.stage3 p  { opacity: 1; }
+.is-stage1 .introduction    { height: 20vw; }
+.is-stage1 .introduction h1 { opacity: 1; }
+.is-stage1 .introduction h2 { }
+.is-stage1 .introduction p  { }
+        
+.is-stage2 .introduction    { height: 30vw; }
+.is-stage2 .introduction h1 { opacity: 1; }
+.is-stage2 .introduction h2 { }
+.is-stage2 .introduction p  { opacity: 1; }
+        
+.is-stage3 .introduction    { height: 40vw; }
+.is-stage3 .introduction h1 { opacity: 1; }
+.is-stage3 .introduction h2 { opacity: 1; }
+.is-stage3 .introduction p  { opacity: 1; }
