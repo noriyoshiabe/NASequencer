@@ -26,7 +26,10 @@ Player.prototype.stateChange = function (state) {
   }
 
   this.state = state;
-  this.state.entry();
+
+  if (this.state.entry) {
+    this.state.entry();
+  }
 };
 
 /* Utilility */
@@ -107,7 +110,77 @@ CreateNewFile = function (player) {
   this.player = player;
   this.className = 'create-new-file';
   this.el = document.querySelector('.' + this.className);
+  this.file = this.el.querySelector('.file');
+  this.submenu = this.el.querySelector('.submenu');
+  this.new = this.el.querySelector('.new');
+  this.create = this.el.querySelector('.create');
 };
 
+Extend(CreateNewFile.prototype, Base);
+
 CreateNewFile.prototype.entry = function () {
+  this.show();
+  setTimeout(this.entryTransition.bind(this), 0);
 };
+
+CreateNewFile.prototype.entryTransition = function () {
+  this.stateChange('entry');
+  setTimeout(this.showMenu.bind(this), 1000);
+};
+
+CreateNewFile.prototype.showMenu = function () {
+  this.stateChange('show-menu');
+  setTimeout(this.showSubmenu.bind(this), 1000);
+};
+
+CreateNewFile.prototype.showSubmenu = function () {
+  this.file.classList.add('is-active');
+  this.submenu.style.display = 'block';
+  setTimeout(this.selectNew.bind(this), 1000);
+};
+
+CreateNewFile.prototype.selectNew = function () {
+  this.new.classList.add('is-active');
+  setTimeout(function () {
+    this.new.classList.remove('is-active');
+  }.bind(this), 1000);
+  setTimeout(function () {
+    this.new.classList.add('is-active');
+  }.bind(this), 1050);
+  setTimeout(this.showPanel.bind(this), 1500);
+};
+
+CreateNewFile.prototype.showPanel = function () {
+  this.file.classList.remove('is-active');
+  this.create.classList.add('is-active');
+  this.stateChange('show-panel');
+
+  setTimeout(this.clickCreate.bind(this), 1000);
+}
+
+CreateNewFile.prototype.clickCreate = function () {
+  this.create.classList.remove('is-active');
+  setTimeout(function () {
+    this.create.classList.add('is-active');
+  }.bind(this), 50);
+  setTimeout(function () {
+    this.player.stateChange(new Demonstration(this.player));
+  }.bind(this), 150);
+}
+
+CreateNewFile.prototype.exit = function () {
+  this.stateChange('is-exit');
+  this.onTransitionEnd(function () {
+    this.hide();
+  }.bind(this));
+};
+
+/* Demonstration */
+
+Demonstration = function (player) {
+  this.player = player;
+  this.className = 'demonstration';
+  this.el = document.querySelector('.' + this.className);
+};
+
+Extend(Demonstration.prototype, Base);
