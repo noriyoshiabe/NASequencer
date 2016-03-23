@@ -488,7 +488,7 @@ body {
   left: 0;
   bottom: 0;
   width: 3vw;
-  background-color: #4a4a4a;
+  background-color: #6a6a6a;
 }
 
 .demonstration .document .event-list-header {
@@ -613,7 +613,330 @@ body {
   background-color: #ee0;
 }
 
+@keyframes demonstration {
+    0.00% { transform: scale(0,0)      translate(0,0); }
+    0.25% { transform: scale(1.0, 1.0) translate(0,0); }
+   17.50% { transform: scale(1.0, 1.0) translate(0,0); }
+   17.75% { transform: scale(1.0, 1.0) translate(-100vw,0); }
+  100.00% { transform: scale(1.0, 1.0) translate(-100vw,0); }
+}
+
+@keyframes demonstration-description1 {
+    0.00% { opacity: 0; }
+    0.50% { opacity: 0; }
+    0.75% { opacity: 1; }
+    5.00% { opacity: 1; }
+    5.25% { opacity: 0; }
+  100.00% { opacity: 0; }
+}
+
+@keyframes demonstration-description2 {
+    0.00% { opacity: 0; }
+    6.00% { opacity: 0; }
+    6.25% { opacity: 1; }
+    9.25% { opacity: 1; }
+    9.50% { opacity: 0; }
+  100.00% { opacity: 0; }
+}
+
+@keyframes demonstration-description3 {
+    0.00% { opacity: 0; }
+   14.00% { opacity: 0; }
+   14.25% { opacity: 1; }
+   30.25% { opacity: 1; }
+   30.50% { opacity: 0; }
+  100.00% { opacity: 0; }
+}
+
+@keyframes editor1-1 { 0.00% { opacity: 0; } 2.000% { opacity: 0; } 2.001% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor1-2 { 0.00% { opacity: 0; } 2.050% { opacity: 0; } 2.051% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor1-3 { 0.00% { opacity: 0; } 2.100% { opacity: 0; } 2.101% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor1-4 { 0.00% { opacity: 0; } 2.150% { opacity: 0; } 2.151% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor1-5 { 0.00% { opacity: 0; } 2.200% { opacity: 0; } 2.201% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor1-6 { 0.00% { opacity: 0; } 2.250% { opacity: 0; } 2.251% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor1-7 { 0.00% { opacity: 0; } 2.300% { opacity: 0; } 2.301% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor2-1 { 0.00% { opacity: 0; } 2.350% { opacity: 0; } 2.351% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor2-2 { 0.00% { opacity: 0; } 2.400% { opacity: 0; } 2.401% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor2-3 { 0.00% { opacity: 0; } 2.450% { opacity: 0; } 2.451% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor2-4 { 0.00% { opacity: 0; } 2.500% { opacity: 0; } 2.501% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor2-5 { 0.00% { opacity: 0; } 2.550% { opacity: 0; } 2.551% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor2-6 { 0.00% { opacity: 0; } 2.600% { opacity: 0; } 2.601% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor2-7 { 0.00% { opacity: 0; } 2.650% { opacity: 0; } 2.651% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor3-1 { 0.00% { opacity: 0; } 2.700% { opacity: 0; } 2.701% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor3-2 { 0.00% { opacity: 0; } 2.750% { opacity: 0; } 2.751% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor3-3 { 0.00% { opacity: 0; } 2.800% { opacity: 0; } 2.801% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor3-4 { 0.00% { opacity: 0; } 2.850% { opacity: 0; } 2.851% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor3-5 { 0.00% { opacity: 0; } 2.900% { opacity: 0; } 2.901% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor3-6 { 0.00% { opacity: 0; } 2.950% { opacity: 0; } 2.951% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor3-7 { 0.00% { opacity: 0; } 3.000% { opacity: 0; } 3.001% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor4-1 { 0.00% { opacity: 0; } 3.050% { opacity: 0; } 3.051% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor4-2 { 0.00% { opacity: 0; } 3.100% { opacity: 0; } 3.101% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor4-3 { 0.00% { opacity: 0; } 3.150% { opacity: 0; } 3.151% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor4-4 { 0.00% { opacity: 0; } 3.200% { opacity: 0; } 3.201% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor4-5 { 0.00% { opacity: 0; } 3.250% { opacity: 0; } 3.251% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor4-6 { 0.00% { opacity: 0; } 3.300% { opacity: 0; } 3.301% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor4-7 { 0.00% { opacity: 0; } 3.350% { opacity: 0; } 3.351% { opacity: 1; } 100.00% { opacity: 1; } }
+
+@keyframes editor-description {
+    0.00% { opacity: 0; transform: translate(0,1.5vw); }
+    4.00% { opacity: 0; transform: translate(0,1.5vw); }
+    4.25% { opacity: 1;                            }
+    5.00% { opacity: 1;                            }
+    5.25% { opacity: 0; transform: translate(0,-1.5vw); }
+   12.00% { opacity: 0; transform: translate(0,1.5vw); }
+   12.25% { opacity: 1;                            }
+   13.00% { opacity: 0;                            }
+   13.25% { opacity: 0; transform: translate(0,-1.5vw); }
+  100.00% { opacity: 0; transform: translate(0,-1.5vw); }
+}
+
+@keyframes editor {
+    0.00% { transform: translate(0,0); }
+    1.50% { transform: translate(0,0); }
+    1.60% { transform: translate(-0.5vw,-0.5vw); }
+    1.70% { transform: translate(0,0); }
+    1.80% { transform: translate(-0.5vw,-0.5vw); }
+    1.90% { transform: translate(0,0); }
+    9.50% { transform: translate(0,0); }
+    9.60% { transform: translate(-0.5vw,-0.5vw); }
+    9.70% { transform: translate(0,0); }
+    9.80% { transform: translate(-0.5vw,-0.5vw); }
+    9.90% { transform: translate(0,0); }
+  100.00% { transform: translate(0,0); }
+}
+
+@keyframes document {
+    0.00% { background: #ff4261; }
+    4.00% { background: #ff4261; }
+    4.01% { background: #fff; }
+    5.25% { background: #ff4261; }
+   12.00% { background: #ff4261; }
+   12.01% { background: #fff; }
+   13.25% { background: #ff4261; }
+  100.00% { background: #ff4261; }
+}
+
+@keyframes document-first {
+    0.00% { opacity: 0; }
+    4.00% { opacity: 0; }
+    4.01% { opacity: 1; }
+  100.00% { opacity: 1; }
+}
+
+@keyframes document-second {
+    0.00% { opacity: 0; }
+   12.00% { opacity: 0; }
+   12.01% { opacity: 1; }
+  100.00% { opacity: 1; }
+}
+
+@keyframes demonstration-arrow {
+    0.00% { opacity: 0; }
+    6.00% { opacity: 0; }
+    6.01% { opacity: 1; }
+    6.50% { opacity: 1; }
+    6.51% { opacity: 0; }
+    7.00% { opacity: 0; }
+    7.01% { opacity: 1; }
+    7.50% { opacity: 1; }
+    7.51% { opacity: 0; }
+    8.00% { opacity: 0; }
+    8.01% { opacity: 1; }
+    8.50% { opacity: 1; }
+    8.51% { opacity: 0; }
+  100.00% { opacity: 0; }
+}
+
+@keyframes editor5-1 { 0.00% { opacity: 0; } 10.000% { opacity: 0; } 10.001% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor5-2 { 0.00% { opacity: 0; } 10.050% { opacity: 0; } 10.051% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor5-3 { 0.00% { opacity: 0; } 10.100% { opacity: 0; } 10.101% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor5-4 { 0.00% { opacity: 0; } 10.150% { opacity: 0; } 10.151% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor5-5 { 0.00% { opacity: 0; } 10.200% { opacity: 0; } 10.201% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor5-6 { 0.00% { opacity: 0; } 10.250% { opacity: 0; } 10.251% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor5-7 { 0.00% { opacity: 0; } 10.300% { opacity: 0; } 10.301% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor6-1 { 0.00% { opacity: 0; } 10.350% { opacity: 0; } 10.351% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor6-2 { 0.00% { opacity: 0; } 10.400% { opacity: 0; } 10.401% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor6-3 { 0.00% { opacity: 0; } 10.450% { opacity: 0; } 10.451% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor6-4 { 0.00% { opacity: 0; } 10.500% { opacity: 0; } 10.501% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor6-5 { 0.00% { opacity: 0; } 10.550% { opacity: 0; } 10.551% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor6-6 { 0.00% { opacity: 0; } 10.600% { opacity: 0; } 10.601% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor6-7 { 0.00% { opacity: 0; } 10.650% { opacity: 0; } 10.651% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor7-1 { 0.00% { opacity: 0; } 10.700% { opacity: 0; } 10.701% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor7-2 { 0.00% { opacity: 0; } 10.750% { opacity: 0; } 10.751% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor7-3 { 0.00% { opacity: 0; } 10.800% { opacity: 0; } 10.801% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor7-4 { 0.00% { opacity: 0; } 10.850% { opacity: 0; } 10.851% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor7-5 { 0.00% { opacity: 0; } 10.900% { opacity: 0; } 10.901% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor7-6 { 0.00% { opacity: 0; } 10.950% { opacity: 0; } 10.951% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor7-7 { 0.00% { opacity: 0; } 11.000% { opacity: 0; } 11.001% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor8-1 { 0.00% { opacity: 0; } 11.050% { opacity: 0; } 11.051% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor8-2 { 0.00% { opacity: 0; } 11.100% { opacity: 0; } 11.101% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor8-3 { 0.00% { opacity: 0; } 11.150% { opacity: 0; } 11.151% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor8-4 { 0.00% { opacity: 0; } 11.200% { opacity: 0; } 11.201% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor8-5 { 0.00% { opacity: 0; } 11.250% { opacity: 0; } 11.251% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor8-6 { 0.00% { opacity: 0; } 11.300% { opacity: 0; } 11.301% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor8-7 { 0.00% { opacity: 0; } 11.350% { opacity: 0; } 11.351% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor8-8 { 0.00% { opacity: 0; } 11.400% { opacity: 0; } 11.401% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor8-9 { 0.00% { opacity: 0; } 11.450% { opacity: 0; } 11.451% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor8-10 { 0.00% { opacity: 0; } 11.500% { opacity: 0; } 11.501% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor8-11 { 0.00% { opacity: 0; } 11.550% { opacity: 0; } 11.551% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor8-12 { 0.00% { opacity: 0; } 11.600% { opacity: 0; } 11.601% { opacity: 1; } 100.00% { opacity: 1; } }
+@keyframes editor8-13 { 0.00% { opacity: 0; } 11.650% { opacity: 0; } 11.651% { opacity: 1; } 100.00% { opacity: 1; } }
+
+@keyframes document-description {
+    0.00% { opacity: 0; transform: translate(0,1.0vw); }
+   15.00% { opacity: 0; transform: translate(0,1.0vw); }
+   15.25% { opacity: 1;                            }
+   16.00% { opacity: 1;                            }
+   16.25% { opacity: 0; transform: translate(0,-1.0vw); }
+  100.00% { opacity: 0; transform: translate(0,-1.0vw); }
+}
+
+@keyframes play {
+    0.000% { transform: translate(0,0); }
+   15.000% { transform: translate(0,0); }
+   17.000% { transform: translate(24vw,0); }
+   17.001% { transform: translate(0,0); }
+  100.000% { transform: translate(0,0); }
+}
+
+
+.demonstration {
+  transform-origin: center center;
+  animation-duration: 100s;
+  animation-name: demonstration;
+  animation-fill-mode: both;
+}
+
+.demonstration .description p {
+  animation-duration: 100s;
+  animation-fill-mode: both;
+}
+
+.demonstration .description p:nth-child(1) { animation-name: demonstration-description1; }
+.demonstration .description p:nth-child(2) { animation-name: demonstration-description2; }
+.demonstration .description p:nth-child(3) { animation-name: demonstration-description3; }
+
+.demonstration .editor-description {
+  animation-duration: 100s;
+  animation-fill-mode: both;
+  animation-name: editor-description;
+}
+
+.demonstration .document-description {
+  animation-duration: 100s;
+  animation-fill-mode: both;
+  animation-name: document-description;
+}
+
+.demonstration .editor {
+  animation-duration: 100s;
+  animation-fill-mode: both;
+  animation-name: editor;
+}
+
+.demonstration .editor .first p span,
+.demonstration .editor .second p span {
+  animation-duration: 100s;
+  animation-fill-mode: both;
+}
+
+.demonstration .editor .first p:nth-child(1) span:nth-child(1) { animation-name: editor1-1; }
+.demonstration .editor .first p:nth-child(1) span:nth-child(2) { animation-name: editor1-2; }
+.demonstration .editor .first p:nth-child(1) span:nth-child(3) { animation-name: editor1-3; }
+.demonstration .editor .first p:nth-child(1) span:nth-child(4) { animation-name: editor1-4; }
+.demonstration .editor .first p:nth-child(1) span:nth-child(5) { animation-name: editor1-5; }
+.demonstration .editor .first p:nth-child(1) span:nth-child(6) { animation-name: editor1-6; }
+.demonstration .editor .first p:nth-child(1) span:nth-child(7) { animation-name: editor1-7; }
+.demonstration .editor .first p:nth-child(2) span:nth-child(1) { animation-name: editor2-1; }
+.demonstration .editor .first p:nth-child(2) span:nth-child(2) { animation-name: editor2-2; }
+.demonstration .editor .first p:nth-child(2) span:nth-child(3) { animation-name: editor2-3; }
+.demonstration .editor .first p:nth-child(2) span:nth-child(4) { animation-name: editor2-4; }
+.demonstration .editor .first p:nth-child(2) span:nth-child(5) { animation-name: editor2-5; }
+.demonstration .editor .first p:nth-child(2) span:nth-child(6) { animation-name: editor2-6; }
+.demonstration .editor .first p:nth-child(2) span:nth-child(7) { animation-name: editor2-7; }
+.demonstration .editor .first p:nth-child(3) span:nth-child(1) { animation-name: editor3-1; }
+.demonstration .editor .first p:nth-child(3) span:nth-child(2) { animation-name: editor3-2; }
+.demonstration .editor .first p:nth-child(3) span:nth-child(3) { animation-name: editor3-3; }
+.demonstration .editor .first p:nth-child(3) span:nth-child(4) { animation-name: editor3-4; }
+.demonstration .editor .first p:nth-child(3) span:nth-child(5) { animation-name: editor3-5; }
+.demonstration .editor .first p:nth-child(3) span:nth-child(6) { animation-name: editor3-6; }
+.demonstration .editor .first p:nth-child(3) span:nth-child(7) { animation-name: editor3-7; }
+.demonstration .editor .first p:nth-child(4) span:nth-child(1) { animation-name: editor4-1; }
+.demonstration .editor .first p:nth-child(4) span:nth-child(2) { animation-name: editor4-2; }
+.demonstration .editor .first p:nth-child(4) span:nth-child(3) { animation-name: editor4-3; }
+.demonstration .editor .first p:nth-child(4) span:nth-child(4) { animation-name: editor4-4; }
+.demonstration .editor .first p:nth-child(4) span:nth-child(5) { animation-name: editor4-5; }
+.demonstration .editor .first p:nth-child(4) span:nth-child(6) { animation-name: editor4-6; }
+.demonstration .editor .first p:nth-child(4) span:nth-child(7) { animation-name: editor4-7; }
+
+.demonstration .editor .second p:nth-child(1) span:nth-child(1) { animation-name: editor5-1; }
+.demonstration .editor .second p:nth-child(1) span:nth-child(2) { animation-name: editor5-2; }
+.demonstration .editor .second p:nth-child(1) span:nth-child(3) { animation-name: editor5-3; }
+.demonstration .editor .second p:nth-child(1) span:nth-child(4) { animation-name: editor5-4; }
+.demonstration .editor .second p:nth-child(1) span:nth-child(5) { animation-name: editor5-5; }
+.demonstration .editor .second p:nth-child(1) span:nth-child(6) { animation-name: editor5-6; }
+.demonstration .editor .second p:nth-child(1) span:nth-child(7) { animation-name: editor5-7; }
+.demonstration .editor .second p:nth-child(2) span:nth-child(1) { animation-name: editor6-1; }
+.demonstration .editor .second p:nth-child(2) span:nth-child(2) { animation-name: editor6-2; }
+.demonstration .editor .second p:nth-child(2) span:nth-child(3) { animation-name: editor6-3; }
+.demonstration .editor .second p:nth-child(2) span:nth-child(4) { animation-name: editor6-4; }
+.demonstration .editor .second p:nth-child(2) span:nth-child(5) { animation-name: editor6-5; }
+.demonstration .editor .second p:nth-child(2) span:nth-child(6) { animation-name: editor6-6; }
+.demonstration .editor .second p:nth-child(2) span:nth-child(7) { animation-name: editor6-7; }
+.demonstration .editor .second p:nth-child(3) span:nth-child(1) { animation-name: editor7-1; }
+.demonstration .editor .second p:nth-child(3) span:nth-child(2) { animation-name: editor7-2; }
+.demonstration .editor .second p:nth-child(3) span:nth-child(3) { animation-name: editor7-3; }
+.demonstration .editor .second p:nth-child(3) span:nth-child(4) { animation-name: editor7-4; }
+.demonstration .editor .second p:nth-child(3) span:nth-child(5) { animation-name: editor7-5; }
+.demonstration .editor .second p:nth-child(3) span:nth-child(6) { animation-name: editor7-6; }
+.demonstration .editor .second p:nth-child(3) span:nth-child(7) { animation-name: editor7-7; }
+.demonstration .editor .second p:nth-child(4) span:nth-child(1) { animation-name: editor8-1; }
+.demonstration .editor .second p:nth-child(4) span:nth-child(2) { animation-name: editor8-2; }
+.demonstration .editor .second p:nth-child(4) span:nth-child(3) { animation-name: editor8-3; }
+.demonstration .editor .second p:nth-child(4) span:nth-child(4) { animation-name: editor8-4; }
+.demonstration .editor .second p:nth-child(4) span:nth-child(5) { animation-name: editor8-5; }
+.demonstration .editor .second p:nth-child(4) span:nth-child(6) { animation-name: editor8-6; }
+.demonstration .editor .second p:nth-child(4) span:nth-child(7) { animation-name: editor8-7; }
+.demonstration .editor .second p:nth-child(4) span:nth-child(8) { animation-name: editor8-8; }
+.demonstration .editor .second p:nth-child(4) span:nth-child(9) { animation-name: editor8-9; }
+.demonstration .editor .second p:nth-child(4) span:nth-child(10) { animation-name: editor8-10; }
+.demonstration .editor .second p:nth-child(4) span:nth-child(11) { animation-name: editor8-11; }
+.demonstration .editor .second p:nth-child(4) span:nth-child(12) { animation-name: editor8-12; }
+.demonstration .editor .second p:nth-child(4) span:nth-child(13) { animation-name: editor8-13; }
+
+.demonstration .document {
+  animation-duration: 100s;
+  animation-fill-mode: both;
+  animation-name: document;
+}
+
+.demonstration .document .first {
+  animation-duration: 100s;
+  animation-fill-mode: both;
+  animation-name: document-first;
+}
+
+.demonstration .document .second {
+  animation-duration: 100s;
+  animation-fill-mode: both;
+  animation-name: document-second;
+}
+
+.demonstration .arrow {
+  animation-duration: 100s;
+  animation-fill-mode: both;
+  animation-name: demonstration-arrow;
+}
+
+.demonstration .play-line {
+  animation-duration: 100s;
+  animation-fill-mode: both;
+  animation-name: play;
+  animation-timing-function: linear;
+}
+
 /* Time table */
 
-.introduction,    .introduction .anim    { animation-delay: 1s; }
-.create-new-file, .create-new-file .anim { animation-delay: 9s; }
+.introduction,    .introduction *    { animation-delay: 1s; }
+.create-new-file, .create-new-file * { animation-delay: 9s; }
+.demonstration, .demonstration *     { animation-delay: 14s; }
