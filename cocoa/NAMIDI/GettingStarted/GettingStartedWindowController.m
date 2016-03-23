@@ -7,10 +7,14 @@
 //
 
 #import "GettingStartedWindowController.h"
+#import "ApplicationController.h"
+#import "Color.h"
 
 @import WebKit;
 
-@interface GettingStartedWindowController () <WebPolicyDelegate>
+@interface GettingStartedWindowController () <WebPolicyDelegate, NSWindowDelegate> {
+    BOOL _needOpenExample;
+}
 @property (weak) IBOutlet WebView *webView;
 @end
 
@@ -33,14 +37,52 @@
     [_webView setDrawsBackground:NO];
     _webView.policyDelegate = self;
     
-    self.window.backgroundColor = [NSColor grayColor];
+    self.window.backgroundColor = [Color darkGray];
     [self.window toggleFullScreen:self];
 }
 
 - (void)webView:(WebView *)webView decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id<WebPolicyDecisionListener>)listener
 {
-    if ([request.URL.scheme isEqualToString:@"namidi"]) {
-        [self close];
+    if ([request.URL.scheme isEqualToString:@"nasequencer"]) {
+        if ([request.URL.host isEqualToString:@"play"]) {
+            
+        }
+        else if ([request.URL.host isEqualToString:@"exit"]) {
+            [self close];
+        }
+        else if ([request.URL.host isEqualToString:@"example"]) {
+            if (self.window.isFullScreen) {
+                _needOpenExample = YES;
+                [self.window toggleFullScreen:self];
+            }
+            else {
+                [AppController openExampleDocument:@"nas"];
+            }
+        }
+        else if ([request.URL.host isEqualToString:@"syntax"]) {
+            if (self.window.isFullScreen) {
+                [self.window toggleFullScreen:self];
+            }
+            NSString *bookName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleHelpBookName"];
+            [[NSHelpManager sharedHelpManager] openHelpAnchor:@"syntax_reference" inBook:bookName];
+        }
+        else if ([request.URL.host isEqualToString:@"operation"]) {
+            if (self.window.isFullScreen) {
+                [self.window toggleFullScreen:self];
+            }
+            NSString *bookName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleHelpBookName"];
+            [[NSHelpManager sharedHelpManager] openHelpAnchor:@"operation_manual" inBook:bookName];
+        }
+    }
+}
+
+#pragma mark NSWindowDelegate
+
+- (void)windowDidExitFullScreen:(NSNotification *)notification
+{
+    if (_needOpenExample) {
+        [AppController openExampleDocument:@"nas"];
+        _needOpenExample = NO;
     }
 }
 

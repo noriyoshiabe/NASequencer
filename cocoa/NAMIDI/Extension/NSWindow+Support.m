@@ -16,4 +16,9 @@
     [self setFrameTopLeftPoint:aPoint];
 }
 
+- (BOOL)isFullScreen
+{
+    return NSFullScreenWindowMask == (self.styleMask & NSFullScreenWindowMask);
+}
+
 @end

@@ -10,4 +10,5 @@
 
 @interface NSWindow (Support)
 - (void)setFlippedFrameTopLeftPoint:(NSPoint)aPoint;
+- (BOOL)isFullScreen;
 @end
