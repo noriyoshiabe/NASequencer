@@ -634,8 +634,8 @@ body {
     0.00% { opacity: 0; }
     6.00% { opacity: 0; }
     6.25% { opacity: 1; }
-    9.25% { opacity: 1; }
-    9.50% { opacity: 0; }
+   13.00% { opacity: 1; }
+   13.25% { opacity: 0; }
   100.00% { opacity: 0; }
 }
 
@@ -685,7 +685,7 @@ body {
     5.25% { opacity: 0; transform: translate(0,-1.5vw); }
    12.00% { opacity: 0; transform: translate(0,1.5vw); }
    12.25% { opacity: 1;                            }
-   13.00% { opacity: 0;                            }
+   13.00% { opacity: 1;                            }
    13.25% { opacity: 0; transform: translate(0,-1.5vw); }
   100.00% { opacity: 0; transform: translate(0,-1.5vw); }
 }
@@ -713,6 +713,11 @@ body {
    12.00% { background: #ff4261; }
    12.01% { background: #fff; }
    13.25% { background: #ff4261; }
+   14.00% { transform: translate(0,0); }
+   14.10% { transform: translate(-0.5vw,-0.5vw); }
+   14.20% { transform: translate(0,0); }
+   14.30% { transform: translate(-0.5vw,-0.5vw); }
+   14.40% { transform: translate(0,0); }
   100.00% { background: #ff4261; }
 }
 
@@ -935,8 +940,56 @@ body {
   animation-timing-function: linear;
 }
 
+/* Ending */
+
+.ending {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  width: 100vw;
+  height: 50vw;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.ending h1 {
+  font-size: 4.0vw;
+}
+.ending p, li, a {
+  font-size: 1.8vw;
+}
+.ending h2 {
+  font-size: 1.8vw;
+}
+.ending a {
+  color: #4a90e2;
+}
+.ending ul {
+  left: 40vw;
+  width: 20vw;
+  position: relative;
+  text-align: left;
+}
+.ending li {
+  position: relative;
+}
+
+@keyframes ending {
+    0.00% { transform: translate(100vw,0); }
+    0.25% { transform: translate(0,0); }
+  100.00% { transform: translate(0,0); }
+}
+
+.ending {
+  animation-duration: 100s;
+  animation-name: ending;
+  animation-fill-mode: both;
+}
+
 /* Time table */
 
 .introduction,    .introduction *    { animation-delay: 1s; }
 .create-new-file, .create-new-file * { animation-delay: 9s; }
 .demonstration, .demonstration *     { animation-delay: 14s; }
+.ending, .ending *                   { animation-delay: 31.5s; }
