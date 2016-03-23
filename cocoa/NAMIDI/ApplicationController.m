@@ -113,6 +113,9 @@ ApplicationController *AppController;
 
 - (void)showGettingStartedWindow
 {
+    if (_gettingStartedWC) {
+        [_gettingStartedWC close];
+    }
     _gettingStartedWC = [[GettingStartedWindowController alloc] init];
     [_gettingStartedWC showWindow:self];
     [_gettingStartedWC.window center];

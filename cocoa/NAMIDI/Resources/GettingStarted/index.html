@@ -12,6 +12,7 @@
       document.onreadystatechange = function () {
         if ('complete' == document.readyState) {
           time = Date.now();
+          prev = 0;
           body = document.querySelector('body');
           var __elements = document.querySelectorAll('body *');
           for (var i = 0; i < __elements.length; ++i) {
@@ -21,6 +22,47 @@
               elements.push(__elements[i])
             }
           }
+
+          var OFFSET = 14000;
+          var notes = [
+            {time: OFFSET + 15000, method: 'note_on',  noteNo: 48},
+            {time: OFFSET + 15250, method: 'note_off', noteNo: 48},
+            {time: OFFSET + 15250, method: 'note_on',  noteNo: 50},
+            {time: OFFSET + 15500, method: 'note_off', noteNo: 50},
+            {time: OFFSET + 15500, method: 'note_on',  noteNo: 52},
+            {time: OFFSET + 15750, method: 'note_off', noteNo: 52},
+            {time: OFFSET + 15750, method: 'note_on',  noteNo: 53},
+            {time: OFFSET + 16000, method: 'note_off', noteNo: 53},
+            {time: OFFSET + 16000, method: 'note_on',  noteNo: 55},
+            {time: OFFSET + 16250, method: 'note_off', noteNo: 55},
+            {time: OFFSET + 16250, method: 'note_on',  noteNo: 57},
+            {time: OFFSET + 16500, method: 'note_off', noteNo: 57},
+            {time: OFFSET + 16500, method: 'note_on',  noteNo: 59},
+            {time: OFFSET + 16750, method: 'note_off', noteNo: 59},
+            {time: OFFSET + 16750, method: 'note_on',  noteNo: 60},
+            {time: OFFSET + 16750, method: 'note_on',  noteNo: 64},
+            {time: OFFSET + 16750, method: 'note_on',  noteNo: 67},
+            {time: OFFSET + 17000, method: 'note_off', noteNo: 60},
+            {time: OFFSET + 17000, method: 'note_off', noteNo: 64},
+            {time: OFFSET + 17000, method: 'note_off', noteNo: 67},
+          ];
+
+          (function loop(){
+            var elapsed = Date.now() - time;
+            if (OFFSET + 14000 < elapsed && elapsed < OFFSET + 18000) {
+              for (var i = 0; i < notes.length; ++i) {
+                if (prev <= notes[i].time && notes[i].time < elapsed) {
+                  var iframe = document.createElement('IFRAME');
+                  iframe.setAttribute('src', "nasequencer://" + notes[i].method + '/' + notes[i].noteNo);
+                  document.documentElement.appendChild(iframe);
+                  iframe.parentNode.removeChild(iframe);
+                  iframe = null;
+                }
+              }
+            }
+            prev = elapsed;
+            window.requestAnimationFrame(loop);
+          })();
         }
       }
 
@@ -30,6 +72,8 @@
             clearTimeout(timer);
           }
 
+          location.href = "nasequencer://all_note_off";
+
           body.style.display = 'none';
           timer = setTimeout(function () {
             body.style.display = 'block';
@@ -38,6 +82,7 @@
               elements[i].style.animationDelay = (elements[i].__animationDelay - (elapsed / 1000)) + 's';
             }
             timer = null;
+            prev = elapsed;
           }, 50);
       });
     </script>
