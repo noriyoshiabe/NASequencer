@@ -217,20 +217,14 @@
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Control" id="GEO-Iw-cKr">
                         <items>
-                            <menuItem title="Back" keyEquivalent="[" id="c1i-HT-Epn">
-                                <connections>
-                                    <action selector="goBack:" target="-1" id="FzQ-30-G0h"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem isSeparatorItem="YES" id="QBM-jE-hVq"/>
-                            <menuItem title="Rewind" keyEquivalent="r" id="oml-tU-CK9">
-                                <connections>
-                                    <action selector="rewind:" target="-1" id="JwL-yT-gFT"/>
-                                </connections>
-                            </menuItem>
                             <menuItem title="Play/Pause" keyEquivalent="p" id="SBU-p6-Rqp">
                                 <connections>
                                     <action selector="playPause:" target="-1" id="wHr-I0-hcX"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Rewind" keyEquivalent="r" id="oml-tU-CK9">
+                                <connections>
+                                    <action selector="rewind:" target="-1" id="JwL-yT-gFT"/>
                                 </connections>
                             </menuItem>
                             <menuItem title="Forward" keyEquivalent="" id="6sK-WN-suE">
@@ -261,6 +255,12 @@
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="toggleToolbarShown:" target="-1" id="BXY-wc-z0C"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="UwG-QN-u3l"/>
+                            <menuItem title="Back" keyEquivalent="[" id="c1i-HT-Epn">
+                                <connections>
+                                    <action selector="goBack:" target="-1" id="FzQ-30-G0h"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="2Zq-lv-Bfl"/>
