@@ -64,7 +64,7 @@
         EditorViewController *vc = [[EditorViewController alloc] init];
         vc.delegate = self;
         vc.file = file;
-        [_controllers setObject:vc forKey:file.identifier];
+        [_controllers setObject:vc forKey:file];
         
         _statusViewControlelr.files = _files;
         [_statusViewControlelr selectFile:file];
@@ -75,7 +75,7 @@
 {
     [_currentController.view removeFromSuperview];
     
-    EditorViewController *vc = _controllers[file.identifier];
+    EditorViewController *vc = _controllers[file];
     [_contentView addSubviewWithFitConstraints:vc.view];
     _currentController = vc;
     
@@ -101,7 +101,7 @@
 - (void)closeFile:(FileRepresentation *)file
 {
     _currentController = nil;
-    [_controllers removeObjectForKey:file.identifier];
+    [_controllers removeObjectForKey:file];
     [_files removeObject:file];
     
     if (0 == [_files count]) {
@@ -252,9 +252,14 @@
 - (IBAction)saveDocumentAs:(id)sender
 {
     [AppController saveDocumentInEditorWindow:self.window filename:_currentController.file.filename completion:^(NSURL *url) {
-        if ([_currentController.textView.string writeToURL:url atomically:YES encoding:NSUTF8StringEncoding error:nil]) {
-            [self addFileRepresentation:[[FileRepresentation alloc] initWithURL:url]];
-        }
+        
+        [_currentController saveDocumentToURL:url];
+        
+        [_controllers removeObjectForKey:_currentController.file];
+        _currentController.file.url = url;
+        [_controllers setObject:_currentController forKey:_currentController.file];
+        
+        [_statusViewControlelr selectFile:_currentController.file];
     }];
 }
 
@@ -294,8 +299,8 @@
 
 - (void)windowDidBecomeKey:(NSNotification *)notification
 {
-    for (NSString *key in _controllers) {
-        EditorViewController *controller = _controllers[key];
+    for (FileRepresentation *file in _controllers) {
+        EditorViewController *controller = _controllers[file];
         if (controller.isFileChangedOnDisk) {
             [self reloadFileWithWarning:controller];
             controller.fileChangedOnDisk = NO;

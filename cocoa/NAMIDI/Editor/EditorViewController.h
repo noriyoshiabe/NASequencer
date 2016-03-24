@@ -25,6 +25,7 @@
 @property (readonly, nonatomic) BOOL isDocumentEdited;
 @property (assign, nonatomic, getter=isFileChangedOnDisk) BOOL fileChangedOnDisk;
 - (void)saveDocument;
+- (void)saveDocumentToURL:(NSURL *)url;
 - (void)revertDocument;
 - (void)reloadFile;
 @end

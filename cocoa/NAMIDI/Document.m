@@ -37,18 +37,24 @@
     [_namidi parse];
     
     [[Preference sharedInstance] addObserver:self forKeyPath:@"includeSearchPath" options:0 context:NULL];
+    [_file addObserver:self forKeyPath:@"url" options:0 context:NULL];
     return YES;
 }
 
 - (void)dealloc
 {
     [[Preference sharedInstance] removeObserver:self forKeyPath:@"includeSearchPath"];
+    [_file removeObserver:self forKeyPath:@"url"];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context
 {
     if (object == [Preference sharedInstance]) {
         _namidi.includePath = [Preference sharedInstance].includeSearchPath;
+        [_namidi parse];
+    }
+    else if (object == _file) {
+        self.fileURL = _file.url;
         [_namidi parse];
     }
 }

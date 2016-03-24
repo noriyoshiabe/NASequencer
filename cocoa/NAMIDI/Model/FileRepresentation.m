@@ -28,9 +28,9 @@
     return [_url isEqual:file.url];
 }
 
-- (NSString *)identifier
+- (NSUInteger)hash
 {
-    return _url.absoluteString;
+    return _url.hash;
 }
 
 - (NSImage *)fileTypeIcon
@@ -46,6 +46,13 @@
 - (NSString *)directory
 {
     return [_url.path.stringByDeletingLastPathComponent stringByReplacingOccurrencesOfString:NSUserHomeDirectory() withString:@"~"];
+}
+
+#pragma mark NSCopying
+
+- (id)copyWithZone:(NSZone *)zone
+{
+    return [[FileRepresentation allocWithZone:zone] initWithURL:_url];
 }
 
 @end

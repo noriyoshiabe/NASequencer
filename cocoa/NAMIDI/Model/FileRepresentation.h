@@ -8,9 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
-@interface FileRepresentation : NSObject
-@property (readonly) NSString *identifier;
-@property (readonly) NSURL *url;
+@interface FileRepresentation : NSObject <NSCopying>
+@property (readwrite) NSURL *url;
 @property (readonly) NSImage *fileTypeIcon;
 @property (readonly) NSString *filename;
 @property (readonly) NSString *directory;

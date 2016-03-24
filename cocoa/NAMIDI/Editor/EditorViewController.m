@@ -93,8 +93,13 @@
 
 - (void)saveDocument
 {
-    [_textView.string writeToURL:_file.url atomically:YES encoding:NSUTF8StringEncoding error:nil];
-    _modificationDate = [NSFileVersion currentVersionOfItemAtURL:_file.url].modificationDate;
+    [self saveDocumentToURL:_file.url];
+}
+
+- (void)saveDocumentToURL:(NSURL *)url
+{
+    [_textView.string writeToURL:url atomically:YES encoding:NSUTF8StringEncoding error:nil];
+    _modificationDate = [NSFileVersion currentVersionOfItemAtURL:url].modificationDate;
     _savedCount = _changeCount;
 }
 
