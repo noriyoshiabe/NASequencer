@@ -221,8 +221,8 @@
     CGContextDrawLinearGradient(ctx,
                                 [_trackSelection isTrackSelected:_channel] ? _gradientInverse : _gradient,
                                 CGPointMake(0, 0),
-                                CGPointMake(0, dirtyRect.size.height),
-                                kCGGradientDrawsAfterEndLocation);
+                                CGPointMake(0, self.bodyRect.size.height),
+                                kCGGradientDrawsBeforeStartLocation | kCGGradientDrawsAfterEndLocation);
     
     CGContextRestoreGState(ctx);
 }

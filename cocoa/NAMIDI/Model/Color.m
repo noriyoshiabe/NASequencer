@@ -36,7 +36,8 @@ static NSColor *Pink;
     UltraLightGray = GSCALE(242.0);
     
     for (int i = 0; i < 16; ++i) {
-        ChannelColor[i] = HSB(1.0 / 16.0 * i, 1.0, 1.0);
+        int index = (32 - i + 9) % 16;
+        ChannelColor[i] = HSB(1.0 / 16.0 * index, 1.0, 1.0);
     }
     
     StatusBackground = [NSColor colorWithWhite:0 alpha:0.5];
