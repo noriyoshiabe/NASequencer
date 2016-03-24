@@ -31,6 +31,7 @@
 @property (readwrite, nonatomic) NSString *includeSearchPath;
 @property (readwrite, nonatomic) NSData *includeSearchPathBookmark;
 @property (readwrite, nonatomic) NSArray *midiSourceSettings;
+@property (readwrite, nonatomic) NSString *lastRootDirectory;
 + (Preference *)sharedInstance;
 - (void)initialize;
 - (NSString *)defaultIncludeSearchPath;

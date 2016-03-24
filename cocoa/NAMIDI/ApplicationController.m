@@ -175,13 +175,18 @@ ApplicationController *AppController;
 
 - (void)openDocumentInEditorWindow:(NSWindow *)window completion:(void (^)(NSURL *url))completionHandler
 {
+    NSString *lastRootDirectory = [Preference sharedInstance].lastRootDirectory;
+    
     NSOpenPanel *openPanel = [NSOpenPanel openPanel];
     openPanel.allowedFileTypes = self.allowedFileTypesInEditor;
+    openPanel.directoryURL = [NSURL fileURLWithPath:[Preference sharedInstance].includeSearchPath];
     
     [openPanel beginSheetModalForWindow:window completionHandler:^(NSInteger result) {
         if (NSFileHandlingPanelOKButton == result) {
             completionHandler(openPanel.URL);
         }
+        
+        [Preference sharedInstance].lastRootDirectory = lastRootDirectory;
     }];
 }
 

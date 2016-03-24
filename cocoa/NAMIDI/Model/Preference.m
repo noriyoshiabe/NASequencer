@@ -161,4 +161,20 @@ static Preference *_sharedInstance = nil;
     [_userDefaults synchronize];
 }
 
+- (NSString *)lastRootDirectory
+{
+    return [_userDefaults stringForKey:@"NSNavLastRootDirectory"];
+}
+
+- (void)setLastRootDirectory:(NSString *)lastRootDirectory
+{
+    if (lastRootDirectory) {
+        [_userDefaults setValue:lastRootDirectory forKey:@"NSNavLastRootDirectory"];
+    }
+    else {
+        [_userDefaults removeObjectForKey:@"NSNavLastRootDirectory"];
+    }
+    [_userDefaults synchronize];
+}
+
 @end
