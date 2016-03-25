@@ -4,7 +4,7 @@ NASequencer Overview
 NASequencer is a text-based music composition App. It focuses on quick composing and easy management.
 There have been several apps with musical notation for generating music sequence.
 Generally, plain-text is easy to edit and manage, however it can often be unreadable in music composition.
-NASequencer assists you to read structure of music composition by real-time previewing with piano-roll and event-list.
+NASequencer assists you to read structure of music composition by real-time previewing with piano roll and event list.
 Additionally, it assists you to check sound of ensemble by SoundFont synthesizer.
 
 Basic Features
@@ -12,12 +12,12 @@ Basic Features
 - Languages support
   - Note as Sequence
     - NASequencer original format
-    - Focused on readability and affinity for event-list
+    - Focused on readability and affinity for event list
   - ABC Notation Version 2.1
   - Music Macro Language
-- Play back
-- Piano-roll view
-- Event-list view
+- Playback
+- Piano roll view
+- Event list view
 - Mixer control
 - Using external editor
 
