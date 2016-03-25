@@ -181,12 +181,19 @@ E = end of sequence
 Views
 -----
 ### Main View
+![](../shared/main-view.png)
+
+#### Conductor Panel
+#### Mixer Panel
+![](../shared/mixer-panel.png)
 #### Measure
 #### Conductor Track
 #### Channel Track
-#### Mixer Panel
+#### Location
 
 ### Detail View
+![](../shared/detail-view-1.png)
+
 #### Back Button
 #### Track Selection
 #### Piano Roll
@@ -194,12 +201,8 @@ Views
 #### Keyboard
 #### Velocity
 #### Event List
+![](../shared/detail-view-2.png)
 
-### Location
+
 ### Error Window
-
-Embedded Editor
----------------
-
-Welcome Window
---------------
+![](../shared/error-window.png)
