@@ -373,7 +373,9 @@ static int PresetComparator(const void *_preset1, const void *_preset2)
     const Preset **preset1 = (const Preset **)_preset1;
     const Preset **preset2 = (const Preset **)_preset2;
 
-    return (((*preset1)->bankNo << 16) | (*preset1)->midiPresetNo) - (((*preset2)->bankNo << 16) | (*preset2)->midiPresetNo);
+#define ORDER(preset) ((preset)->bankNo | ((preset)->midiPresetNo << 16) | ((int)(120 <= (preset)->bankNo) << 24))
+    return ORDER(*preset1) - ORDER(*preset2);
+#undef ORDER
 }
 
 static int SynthesizerNoteOn(Synthesizer *self, uint8_t channel, uint8_t noteNo, uint8_t velocity)

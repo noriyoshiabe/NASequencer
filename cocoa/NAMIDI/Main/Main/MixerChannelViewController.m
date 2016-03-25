@@ -269,7 +269,7 @@
 
 - (NSString *)selectionLabel
 {
-    return [NSString stringWithFormat:@"%@ bank:%d prg:%d", self.name, self.bankNo, self.programNo];
+    return [NSString stringWithFormat:@"%@    <Program No:%d  Bank No:%d>", self.name, self.programNo, self.bankNo];
 }
 
 @end
