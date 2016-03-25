@@ -79,6 +79,9 @@
         case PlayerEventTimeSignChange:
             [self updateTimeSign];
             break;
+        case PlayerEventForward:
+        case PlayerEventBackward:
+        case PlayerEventSeek:
         case PlayerEventRewind:
             [self updateTempo];
             [self updateTimeSign];
