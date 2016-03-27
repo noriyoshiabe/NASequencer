@@ -7,9 +7,9 @@ Basics
 ### File Format
 - File extension must be '.nas'
 - Source file is written by plain-text
-- All keyword and identifiers are case-insensitive
+- All keyword and identifiers are case-insensitive except macro identifier
 - Writing code shold be ascii charset except string literal and comment
-- Supported file encoding is ascii or utf-8 only
+- Supported file encodings are ascii and utf-8 only
 
 ### About Step
 Indicating note events are preceded by Step.
@@ -111,5 +111,59 @@ An exception is that code like `hoge---hoge` is treated as identifier;
 String is used by [TITLE](#TITLE) and [COPYRIGHT](#COPYRIGHT) statements.
 
 ### Macro
+Macro is a identifier which will be replaced by a code fragment.
+In some cases, it is used to give symbolic names to notes for rhythm track.
+Identifier for macro is case-sensitive.
 
-TODO...
+```
+#define SD E1
+
+480: SD // This will be replaced by E1.
+        // SD means snare drum.
+```
+
+Function type macro is also available.
+
+```
+#define CHORD_WITH_ROOT_ACCENT(a,b,c) a V=127 b c
+
+480: CHORD_WITH_ROOT_ACCENT(C,E,G) // This will be replaced by C V=127 E G
+480: CHORD_WITH_ROOT_ACCENT(D,F,Z) // This will be replaced by D V=127 F Z
+```
+
+`V=127` is assignment for velocity.
+See [NOTE](#NOTE) for the details.
+
+### Include
+Include directive imports the codes written in a sepalate source file.
+
+```
+#include 'drums.nas'
+```
+
+Included file must be placed in the directory that is specified by [Include Search Path](TODO).
+
+This directive is used for importing a macro, a rhythm pattern or etc those are used frequently.
+See [PATTERN](#PATTERN) for definition of pattern statement.
+
+### Line-Brake and Semicolon
+Line-break acts as end of statement.
+If line-break is put into channel statement like below, it is treated as error.
+
+```
+CHANNEL // Error due to the line-break appears without channel number
+1
+```
+
+If an error occurs with statements in one line, semicolon can be used for end of statement. 
+
+```
+GATETIME STEP  120: C D E F  // In this case, 120 is treated as argument of gatetime statement
+                             // so ':' without step count causes error.
+GATETIME STEP; 120: C D E F  // Sepalate statements by semicolon will be correctly interpreted.
+```
+
+References
+----------
+
+
