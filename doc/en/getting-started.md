@@ -127,7 +127,7 @@ The defalut ticks per a measure on 4/4 beat is 1920.
 480 means quarter note length.
 
 **Tips**  
-You can change resolution of quarter note by [RESOLUTION] statement.
+You can change config of ticks per quarter note by [RESOLUTION] statement.
 However in most of cases, it's unnecessary to change it because 480 is the defact standard of division used by many DAW.
 
 ### Note
