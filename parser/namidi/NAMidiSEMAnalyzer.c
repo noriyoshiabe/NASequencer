@@ -16,7 +16,6 @@
 typedef struct _State {
     int resolution;
     int channel;
-    int transpose;
     NoteTable *noteTable;
     struct {
         int step;
@@ -28,6 +27,7 @@ typedef struct _State {
             int value;
         } gatetime;
         int octave;
+        int transpose;
     } channels[16];
 
     NAMap *patternMap;
@@ -61,6 +61,7 @@ static int StateLength(State *self);
 #define GATETIME(state) (state->channels[state->channel - 1].gatetime)
 #define VELOCITY(state) (state->channels[state->channel - 1].velocity)
 #define OCTAVE(state) (state->channels[state->channel - 1].octave)
+#define TRANSPOSE(state) (state->channels[state->channel - 1].transpose)
 
 #define FLUSH(state) TICK(state) += STEP(state); STEP(state) = 0
 
@@ -271,7 +272,7 @@ static void visitTranspose(void *_self, SEMTranspose *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
     FLUSH(self->state);
-    self->state->transpose = sem->value;
+    TRANSPOSE(self->state) = sem->value;
 }
 
 static void visitStep(void *_self, SEMStep *sem)
@@ -290,7 +291,7 @@ static void visitNote(void *_self, SEMNote *sem)
 
     int octave = SEMNOTE_OCTAVE_NONE != sem->octave ? sem->octave : OCTAVE(self->state);
     int noteNo = NoteTableGetNoteNo(self->state->noteTable, sem->baseNote, sem->accidental, octave);
-    noteNo += self->state->transpose;
+    noteNo += TRANSPOSE(self->state);
 
     if (!isValidRange(noteNo, 0, 127)) {
         appendError(self, sem, NAMidiParseErrorInvalidNoteNumber, NACStringFromInteger(noteNo), sem->noteString, NULL);
