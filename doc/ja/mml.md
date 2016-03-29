@@ -6,7 +6,7 @@ MMLについて
 -----------
 Music Macro Language (MML) は、コンピュータ・ミュージックの黎明期にテキスト記述による音楽演奏のために作られた言語です。
 歴史的な経緯のためか様々な実装があり、標準仕様が存在しません。
-NASequencerでは、日本でよく使われているFlash用ライブラリの[FIMML](https://flmml.codeplex.com)の記法をベースにしています。
+NASequencerでは、日本でよく使われているFlash用ライブラリの[FlMML](https://flmml.codeplex.com)の記法をベースにしています。
 ですが、MIDIに特化させているため、音源モジュール関連の互換性はありません。
 また、MIDIに関連する記法として[mml2mid](http://hpc.jp/~mml2mid/mml2mid.txt)の仕様を一部取り入れています。
 その他、NASequencer独自の記法を追加しています。
@@ -109,9 +109,9 @@ $m{vol, note} = @V%vol %note;
 $m{100, CDE} // これは @V100 CDE と展開される
 ```
 
-_[FIMML マクロ機能詳細](https://flmml.codeplex.com/wikipage?title=Reference&referringTitle=Documentation#fl_macro)より_
+_[FlMML マクロ機能詳細](https://flmml.codeplex.com/wikipage?title=Reference&referringTitle=Documentation#fl_macro)より_
 
-※ マクロ機能はFIMMLの仕様に準じます
+※ マクロ機能はFlMMLの仕様に準じます
 
 ### インクルード
 インクルードにより、他のファイルの定義などを読み込むことが出来ます。
@@ -337,7 +337,7 @@ Ch1 |060:C3 | .               .
     |048:C2 | x-----   x-------
 ```
 
-_[FIMML 発音数関連 和音記法より](https://flmml.codeplex.com/wikipage?title=Reference&referringTitle=Documentation#fl_poly)より_
+_[FlMML 発音数関連 和音記法より](https://flmml.codeplex.com/wikipage?title=Reference&referringTitle=Documentation#fl_poly)より_
 
 ### タイ
 & 記号で直前の音符と同じ音程の音符をつなぐとタイとして作用します。

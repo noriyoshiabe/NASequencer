@@ -246,7 +246,7 @@ Indicating copyright is only once per sequence.
 Exported to Standard MIDI File as Copyright Notice (FF 02h) in first MTrk chunk.
 
 ### RESOLUTION
-Changing config of ticks per quarter note.
+Changes config of ticks per quarter note.
 Default value is 480.
 Changing is only once per sequence.
 Exported to Standard MIDI File as division(ticks per quarter-note) in Header Chunks.
@@ -313,7 +313,7 @@ Available key signatures are below.
 Exported to Standard MIDI File as Key Signature(FF 59h 02h) in first MTrk chunk.
 
 ### VELOCITY
-Specify default velocity for [NOTE](#NOTE) statement.
+Specifies default velocity for [NOTE](#NOTE) statement.
 Valid velocity range is 0 to 127.
 Initial value is 100.
 
@@ -322,10 +322,10 @@ VELOCITY 80
 ```
 
 ### GATETIME
-Specify gatetime config for [NOTE](#NOTE) statement。
+Specifies gatetime config for [NOTE](#NOTE) statement。
 
 #### Absolute Setting
-Apply to note event in absolute number if gatetime is omitted with note statement.
+Applies to note event in absolute number if gatetime is omitted with note statement.
 
 ```
 GATETIME 120
@@ -334,7 +334,7 @@ GATETIME 120
 ```
 
 #### Step Setting
-Apply to note event in the value that equals to step length if gatetime is omitted with note statement.
+Applies to note event in the value that equals to step length if gatetime is omitted with note statement.
 
 ```
 GATETIME STEP
@@ -343,7 +343,7 @@ GATETIME STEP
 ```
 
 #### Step + Relative Setting
-Apply to note event in result of addition to step length if gatetime is omitted with note statement.
+Applies to note event in result of addition to step length if gatetime is omitted with note statement.
 
 ```
 GATETIME STEP -10
@@ -353,7 +353,7 @@ GATETIME STEP +120
 ```
 
 ### MARKER
-Insert a marker.
+Inserts a marker.
 Acts as separator of sections for repeat play if repeat state on the player is [Repeat Marker](../operation_manual.md#Repeat_Marker).
 Exported to Standard MIDI File as Marker(FF 06h) in first MTrk chunk.
 
@@ -362,7 +362,7 @@ MARKER 'Intro'
 ```
 
 ### CHANNEL
-Switch current channel.
+Switches current channel.
 Valid channel number is 1 to 16.
 
 ```
@@ -370,7 +370,7 @@ CHANNEL 10
 ```
 
 ### SYNTH
-Change synthesizer of current channel.
+Changes synthesizer of current channel.
 The specified SoundFont has to be loaded in advance.
 See also [Synthesizer Settings](../operation_manual-preference.md#Synthesizer_Settings).
 
@@ -408,7 +408,7 @@ Exported to Standard MIDI File as Program Change(Cn).
 Change timing of preset is at the moment of sending program change event to synthesizer.
 
 ### VOLUME
-Specify volume of current channel.
+Specifies volume of current channel.
 Valid volume range is 0 to 127.
 Initial value is 100.
 Exported to Standard MIDI File as Channel Volume of Control Change (Bn 07h).
@@ -418,7 +418,7 @@ VOLUME 100
 ```
 
 ### CHORUS
-Specify chorus send level of current channel.
+Specifies chorus send level of current channel.
 Valid value range is 0 to 127.
 Initial value is 0.
 Exported to Standard MIDI File as Effects 3 Depth of Control Change (Bn 5Dh).
@@ -428,7 +428,7 @@ CHORUS 40
 ```
 
 ### REVERB
-Specify reverb send level of current channel.
+Specifies reverb send level of current channel.
 Valid value range is 0 to 127.
 Initial value is 0.
 Exported to Standard MIDI File as Effects 1 Depth of Control Change (Bn 58h).
@@ -438,7 +438,7 @@ REVERB 40
 ```
 
 ### EXPRESSION
-Specify expression level of current channel.
+Specifies expression level of current channel.
 Valid value range is 0 to 127.
 Initial value is 127.
 Exported to Standard MIDI File as Expression Controller of Control Change (Bn 0Bh).
@@ -448,16 +448,16 @@ EXPRESSION 100
 ```
 
 ### PAN
-Specify pan position of current channel.
+Specifies pan position of current channel.
 Valid value range is -64 to +64.
 -64 for left, 0 for center and +64 for right.
 Initial value is 0 (center).
 Exported to Standard MIDI File as Pan of Control Change (Bn 0Ah) with converting value 0 to 127.
 
 ### TRANSPOSE
-Up/down pitch of note events in a unit of semitone.
+Ups/downs pitch of note events in a unit of semitone.
 Whole tone up is `+2`.
-Valid value range is -24 to +24.
+Valid value range is -64 to +64.
 Initial value is 0.
 
 ```
@@ -470,7 +470,7 @@ It affects to all notes including channel for percussion after changing.
 Reset transpose berofe percussion notes is needed if it has changed.
 
 ### DETUNE
-Adjust pitch of synthesizer in a unit of cent.
+Adjusts pitch of synthesizer in a unit of cent.
 Valid value range is -2400 to +2400.
 
 
@@ -544,6 +544,6 @@ END
 ```
 
 ### EXPAND
-Expand the defined pattern.
+Expands the defined pattern.
 Nested pattern can be exapnded with colon(:).
 See [PATTERN](#PATTERN) for more details.
