@@ -16,6 +16,7 @@
 typedef struct _State {
     int resolution;
     int channel;
+    int transpose;
     NoteTable *noteTable;
     NoteTable *noteTableForPercussion;
     struct {
@@ -28,7 +29,6 @@ typedef struct _State {
             int value;
         } gatetime;
         int octave;
-        int transpose;
         bool percussion;
     } channels[16];
 
@@ -63,7 +63,6 @@ static int StateLength(State *self);
 #define GATETIME(state) (state->channels[state->channel - 1].gatetime)
 #define VELOCITY(state) (state->channels[state->channel - 1].velocity)
 #define OCTAVE(state) (state->channels[state->channel - 1].octave)
-#define TRANSPOSE(state) (state->channels[state->channel - 1].transpose)
 #define PERCUSSION(state) (state->channels[state->channel - 1].percussion)
 
 #define FLUSH(state) TICK(state) += STEP(state); STEP(state) = 0
@@ -282,7 +281,7 @@ static void visitTranspose(void *_self, SEMTranspose *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
     FLUSH(self->state);
-    TRANSPOSE(self->state) = sem->value;
+    self->state->transpose = sem->value;
 }
 
 static void visitStep(void *_self, SEMStep *sem)
@@ -307,7 +306,7 @@ static void visitNote(void *_self, SEMNote *sem)
     }
     else {
         noteNo = NoteTableGetNoteNo(self->state->noteTable, sem->baseNote, sem->accidental, octave);
-        noteNo += TRANSPOSE(self->state);
+        noteNo += self->state->transpose;
     }
 
     if (!isValidRange(noteNo, 0, 127)) {
