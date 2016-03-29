@@ -33,22 +33,22 @@ add_custom_command(
 add_custom_command(
   OUTPUT syntax_namidi.c
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  COMMAND xxd -i ../doc/ja/namidi.md ${CMAKE_CURRENT_BINARY_DIR}/syntax_namidi.c
-  DEPENDS ../doc/ja/namidi.md
+  COMMAND xxd -i ../doc/en/nas.md ${CMAKE_CURRENT_BINARY_DIR}/syntax_namidi.c
+  DEPENDS ../doc/en/nas.md
 )
 
 add_custom_command(
   OUTPUT syntax_abc.c
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  COMMAND xxd -i ../doc/ja/abc.md ${CMAKE_CURRENT_BINARY_DIR}/syntax_abc.c
-  DEPENDS ../doc/ja/abc.md
+  COMMAND xxd -i ../doc/en/abc.md ${CMAKE_CURRENT_BINARY_DIR}/syntax_abc.c
+  DEPENDS ../doc/en/abc.md
 )
 
 add_custom_command(
   OUTPUT syntax_mml.c
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  COMMAND xxd -i ../doc/ja/mml.md ${CMAKE_CURRENT_BINARY_DIR}/syntax_mml.c
-  DEPENDS ../doc/ja/mml.md
+  COMMAND xxd -i ../doc/en/mml.md ${CMAKE_CURRENT_BINARY_DIR}/syntax_mml.c
+  DEPENDS ../doc/en/mml.md
 )
 
 include_directories(
