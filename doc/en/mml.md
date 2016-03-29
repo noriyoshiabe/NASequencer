@@ -364,3 +364,203 @@ If the notes joined by tie are not same pitch, tie does not affect to the notes.
 NASequencer does not support slur with '&'.
 
 ### Repeat
+Indicates repeat phrase with `/:[<Number of repeat count>] ... / ... :/`.
+If <Number of repeat count> is omitted, repeat count will be twice.
+In last loop of repeating, if '/' is there, exit from loop.
+'/' can be omitted.
+
+```
+/:3 cde / fg :/  // This will equivalent to `cde fg cde fg cde`
+```
+
+### Title
+Indicates the title of sequence.
+Indicating title is only once per sequence.
+Exported to Standard MIDI File as Sequence Name (FF 03h) in first MTrk chunk.
+
+```
+#title 'Syntax Reference'
+```
+
+### Copyright
+Indicates the copyright of sequence.
+Indicating copyright is only once per sequence.
+Exported to Standard MIDI File as Copyright Notice (FF 02h) in first MTrk chunk.
+
+```
+#copyright 'Copyright (c) 2016, Noriyoshi Abe. All Rights Reserved.'
+```
+
+### Marker
+Inserts a marker.
+Acts as separator of sections for repeat play if repeat state on the player is [Repeat Marker](../operation_manual.md#Repeat_Marker).
+Exported to Standard MIDI File as Marker(FF 06h) in first MTrk chunk.
+
+```
+MARKER 'Intro'
+```
+
+**Attention:**  
+Repeat for marker is different from [Repeat](#Repeat) notation.
+Marker repeating is NASequencer's own mechanism.
+By contrast with that [Repeat](#Repeat) affects to sequence events, marker repeating is for playback control on document window.
+
+### Velocity Reverse
+Reverses behavior for [Velocity Shift](#Velocity_Shift)
+
+```
+#velocity reverse
+```
+
+Default behavior is below.
+
+|Function|Symbol|
+|---|---|
+|Velocity Up| `(` |
+|Velocity Down| `)` |
+
+### Octave Reverse
+Reverses behavior for [Octave Shift](#Octave_Shift)
+
+```
+#octave reverse
+```
+
+Default behavior is below.
+
+|Function|Symbol|
+|---|---|
+|Octave Up| `<` |
+|Octave Down| `>` |
+
+### Tempo
+Indicates tempo change by unit of beat per minutes.
+Default value is 120.0.
+Valid tempo range is 30.0 to 200.0 and can be specified up to the second decimal place.
+Can be indicated middle of the sequence.
+Exported to Standard MIDI File as Set Tempo(FF 51h 03h) in first MTrk chunk.
+
+```
+t 128.99
+```
+
+### Channel
+Switches current channel.
+Valid channel number is 1 to 16.
+
+```
+@ch 10
+```
+
+### Synthesizer
+Changes synthesizer of current channel.
+The specified SoundFont has to be loaded in advance.
+See also [Synthesizer Settings](../operation_manual-preference.md#Synthesizer_Settings).
+
+```
+@sy 'SGM-V2.01'
+```
+
+### Bank Select
+Used for changing preset of current channel.
+Equivalent to Bank Select of MIDI message.
+
+```
+@bs 128 // Bank No=128 (MSB=1, LSB=0)
+```
+
+Exported to Standard MIDI File as followings.
+
+- Control Change:Bank Select MSB (Bn 00h)
+- Control Change:Bank Select LSB (Bn 20h)
+
+See also [Programe Change](#Program_Change).
+
+### Program Change
+Used for changing preset of current channel.
+Equivalent to Program Change of MIDI message.
+
+```
+@bs 128 // Bank No=128   Percussion bank of common synthesizers compliant General MIDI
+@pc 0   // Program No=0  Standard Drums
+```
+
+Exported to Standard MIDI File as Program Change(Cn).
+
+**Attention:**  
+Change timing of preset is at the moment of sending program change event to synthesizer.
+
+### Volume
+Specifies volume of current channel.
+Valid volume range is 0 to 127.
+Initial value is 100.
+Exported to Standard MIDI File as Channel Volume of Control Change (Bn 07h).
+
+```
+@vl100
+```
+
+### Chorus
+Specifies chorus send level of current channel.
+Valid value range is 0 to 127.
+Initial value is 0.
+Exported to Standard MIDI File as Effects 3 Depth of Control Change (Bn 5Dh).
+
+```
+@cs40
+```
+
+### REVERB
+Specifies reverb send level of current channel.
+Valid value range is 0 to 127.
+Initial value is 0.
+Exported to Standard MIDI File as Effects 1 Depth of Control Change (Bn 58h).
+
+```
+@rv40
+```
+
+### Expression
+Specifies expression level of current channel.
+Valid value range is 0 to 127.
+Initial value is 127.
+Exported to Standard MIDI File as Expression Controller of Control Change (Bn 0Bh).
+
+```
+@x100
+```
+
+### Pan
+Specifies pan position of current channel.
+Valid value range is -64 to +64.
+-64 for left, 0 for center and +64 for right.
+Initial value is 0 (center).
+Exported to Standard MIDI File as Pan of Control Change (Bn 0Ah) with converting value 0 to 127.
+
+```
+@p30
+```
+
+### Detune
+Adjusts pitch of synthesizer in a unit of cent.
+Valid value range is -2400 to +2400.
+
+
+**Note:**  
+By contrast with that [Note Shift](#Note_Shift) changes scale of note, Detune change tuning of synthesizer.
+
+```
+@d-50
+```
+
+Exported to Standard MIDI File as followings.
+
+- Control Change:RPN（MSB）(Bn 65h 00h) Channel Fine Tuning
+- Control Change:RPN（LSB）(Bn 64h 01h) Channel Fine Tuning
+- Control Change:Data Entry (MSB) (Bn 06h)
+- Control Change:Data Entry (LSB) (Bn 26h)
+- Control Change:RPN（MSB）(Bn 65h 00h) Channel Coarse Tuning
+- Control Change:RPN（LSB）(Bn 64h 02h) Channel Coarse Tuning
+- Control Change:Data Entry (MSB) (Bn 06h) 
+- Control Change:RPN（MSB）(Bn 65h 7Fh) RPN NULL
+- Control Change:RPN（LSB）(Bn 64h 7Fh) RPN NULL

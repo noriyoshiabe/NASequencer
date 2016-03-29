@@ -245,6 +245,10 @@ Indicates the copyright of sequence.
 Indicating copyright is only once per sequence.
 Exported to Standard MIDI File as Copyright Notice (FF 02h) in first MTrk chunk.
 
+```
+COPYRIGHT 'Copyright (c) 2016, Noriyoshi Abe. All Rights Reserved.'
+```
+
 ### RESOLUTION
 Changes config of ticks per quarter note.
 Default value is 480.
@@ -453,6 +457,10 @@ Valid value range is -64 to +64.
 -64 for left, 0 for center and +64 for right.
 Initial value is 0 (center).
 Exported to Standard MIDI File as Pan of Control Change (Bn 0Ah) with converting value 0 to 127.
+
+```
+PAN +30
+```
 
 ### TRANSPOSE
 Ups/downs pitch of note events in a unit of semitone.
