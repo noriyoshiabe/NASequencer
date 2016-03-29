@@ -96,7 +96,7 @@ Ch2 |060:C3 | .
 Initial channel number is 1.
 
 ### Comment
-`==` `--` `//` can be used the line comment. It does not affect the result of sequence.
+`==` `--` `//` can be used for the line comment. It does not affect the result of sequence.
 An exception is that code like `hoge---hoge` is treated as identifier.
 `/* */` is also available for multiple line comments.
 
@@ -184,7 +184,7 @@ See also [About Step](#About_Step).
 
 ### NOTE
 #### Pitch
-Pitch is notated by pitch names (CDEFG) + accidentals (#/b/n) + octave (-2 to 8).
+Pitch is notated by pitch names (CDEFGAB) + accidentals (#/b/n) + octave (-2 to 8).
 Accidentals and octave can be omitted.
 
 If octave is omitted, octave will be a octave of last note.
