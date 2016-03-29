@@ -17,6 +17,7 @@ typedef struct _State {
     int resolution;
     int channel;
     NoteTable *noteTable;
+    NoteTable *noteTableForPercussion;
     struct {
         int step;
         int tick;
@@ -28,6 +29,7 @@ typedef struct _State {
         } gatetime;
         int octave;
         int transpose;
+        bool percussion;
     } channels[16];
 
     NAMap *patternMap;
@@ -62,6 +64,7 @@ static int StateLength(State *self);
 #define VELOCITY(state) (state->channels[state->channel - 1].velocity)
 #define OCTAVE(state) (state->channels[state->channel - 1].octave)
 #define TRANSPOSE(state) (state->channels[state->channel - 1].transpose)
+#define PERCUSSION(state) (state->channels[state->channel - 1].percussion)
 
 #define FLUSH(state) TICK(state) += STEP(state); STEP(state) = 0
 
@@ -174,6 +177,13 @@ static void visitKey(void *_self, SEMKey *sem)
 
     NoteTableRelease(self->state->noteTable);
     self->state->noteTable = NoteTableRetain(sem->noteTable);
+}
+
+static void visitPercussion(void *_self, SEMPercussion *sem)
+{
+    NAMidiSEMAnalyzer *self = _self;
+    FLUSH(self->state);
+    PERCUSSION(self->state) = sem->on;
 }
 
 static void visitMarker(void *_self, SEMMarker *sem)
@@ -290,8 +300,15 @@ static void visitNote(void *_self, SEMNote *sem)
     NAMidiSEMAnalyzer *self = _self;
 
     int octave = SEMNOTE_OCTAVE_NONE != sem->octave ? sem->octave : OCTAVE(self->state);
-    int noteNo = NoteTableGetNoteNo(self->state->noteTable, sem->baseNote, sem->accidental, octave);
-    noteNo += TRANSPOSE(self->state);
+
+    int noteNo;
+    if (PERCUSSION(self->state)) {
+        noteNo = NoteTableGetNoteNo(self->state->noteTableForPercussion, sem->baseNote, sem->accidental, octave);
+    }
+    else {
+        noteNo = NoteTableGetNoteNo(self->state->noteTable, sem->baseNote, sem->accidental, octave);
+        noteNo += TRANSPOSE(self->state);
+    }
 
     if (!isValidRange(noteNo, 0, 127)) {
         appendError(self, sem, NAMidiParseErrorInvalidNoteNumber, NACStringFromInteger(noteNo), sem->noteString, NULL);
@@ -370,6 +387,7 @@ Analyzer *NAMidiSEMAnalyzerCreate(ParseContext *context)
     self->visitor.visitTempo = visitTempo;
     self->visitor.visitTime = visitTime;
     self->visitor.visitKey = visitKey;
+    self->visitor.visitPercussion = visitPercussion;
     self->visitor.visitMarker = visitMarker;
     self->visitor.visitChannel = visitChannel;
     self->visitor.visitVelocity = visitVelocity;
@@ -406,6 +424,7 @@ static State *StateCreate()
     State *self = calloc(1, sizeof(State));
 
     self->noteTable = NoteTableCreate(BaseNote_C, false, false, ModeMajor);
+    self->noteTableForPercussion = NoteTableRetain(self->noteTable);
 
     self->resolution = 480;
     self->channel = 1;
@@ -447,6 +466,7 @@ static void StateDestroy(State *self)
 
     if (!self->copy) {
         NASetDestroy(self->expandingPatternList);
+        NoteTableRelease(self->noteTableForPercussion);
     }
 
     NAMapDestroy(self->patternMap);

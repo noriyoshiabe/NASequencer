@@ -69,11 +69,14 @@ EXPRESSION     expression
 DETUNE         detune
 TRANSPOSE      transpose
 KEY            key
+PERCUSSION     percussion
 
 KEY_SIGN       [cdefgab](#|b)?[[:blank:]]*(maj(or)?|min(or)?)
 NOTE           [cdefgab](#|##|b|bb|n)?(\-?[[:digit:]]{1,2})?
 NOTE_PARAM_V   v
 NOTE_PARAM_GT  gt
+ON             on
+OFF            off
 ID_STRING      [_[:alnum:]][_[:alnum:]\-]*
 IDENTIFIER     {ID_STRING}(:{ID_STRING})*
 
@@ -95,6 +98,7 @@ LOCATION       ^##.+:[[:digit:]]+:[[:digit:]]+\n
 {TEMPO}          { return TEMPO; }
 {TIME}           { return TIME; }
 {KEY}            { return KEY; }
+{PERCUSSION}     { return PERCUSSION; }
 {MARKER}         { return MARKER; }
 {PATTERN}        { return PATTERN; }
 {EXPAND}         { return EXPAND; }
@@ -117,6 +121,8 @@ LOCATION       ^##.+:[[:digit:]]+:[[:digit:]]+\n
 {NOTE}           { yylval->s = strdup(yytext); return NOTE; }
 {NOTE_PARAM_V}   { return NOTE_PARAM_V; }
 {NOTE_PARAM_GT}  { return NOTE_PARAM_GT; }
+{ON}             { return ON; }
+{OFF}            { return OFF; }
 {KEY_SIGN}       { yylval->s = strdup(yytext); return KEY_SIGN; }
 {IDENTIFIER}     { yylval->s = strdup(yytext); return IDENTIFIER; }
 

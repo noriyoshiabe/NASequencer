@@ -100,6 +100,11 @@ static void visitKey(void *self, ASTKey *ast)
     dump(self, ast, STRING(ast, keyString), NULL);
 }
 
+static void visitPercussion(void *self, ASTPercussion *ast)
+{
+    dump(self, ast, BOOL(ast, on), NULL);
+}
+
 static void visitMarker(void *self, ASTMarker *ast)
 {
     dump(self, ast, STRING(ast, text), NULL);
@@ -239,6 +244,7 @@ Analyzer *NAMidiASTDumperCreate(ParseContext *context)
     self->visitor.visitTempo = visitTempo;
     self->visitor.visitTime = visitTime;
     self->visitor.visitKey = visitKey;
+    self->visitor.visitPercussion = visitPercussion;
     self->visitor.visitMarker = visitMarker;
     self->visitor.visitChannel = visitChannel;
     self->visitor.visitVelocity = visitVelocity;

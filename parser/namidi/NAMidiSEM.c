@@ -116,6 +116,20 @@ SEMKey *NAMidiSEMKeyCreate(FileLocation *location)
     return NodeCreate(SEMKey, location);
 }
 
+static void SEMPercussionAccept(void *self, void *visitor)
+{
+    ((SEMVisitor *)visitor)->visitPercussion(visitor, self);
+}
+
+static void SEMPercussionDestroy(void *_self)
+{
+}
+
+SEMPercussion *NAMidiSEMPercussionCreate(FileLocation *location)
+{
+    return NodeCreate(SEMPercussion, location);
+}
+
 static void SEMMarkerAccept(void *self, void *visitor)
 {
     ((SEMVisitor *)visitor)->visitMarker(visitor, self);

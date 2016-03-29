@@ -44,6 +44,11 @@ typedef struct _SEMKey {
     NoteTable *noteTable;
 } SEMKey;
 
+typedef struct _SEMPercussion {
+    Node node;
+    bool on;
+} SEMPercussion;
+
 typedef struct _SEMMarker {
     Node node;
     char *text;
@@ -143,6 +148,7 @@ typedef struct _SEMVisitor {
     void (*visitTempo)(void *self, SEMTempo *sem);
     void (*visitTime)(void *self, SEMTime *sem);
     void (*visitKey)(void *self, SEMKey *sem);
+    void (*visitPercussion)(void *self, SEMPercussion *sem);
     void (*visitMarker)(void *self, SEMMarker *sem);
     void (*visitChannel)(void *self, SEMChannel *sem);
     void (*visitVelocity)(void *self, SEMVelocity *sem);
@@ -169,6 +175,7 @@ extern SEMCopyright *NAMidiSEMCopyrightCreate(FileLocation *location);
 extern SEMTempo *NAMidiSEMTempoCreate(FileLocation *location);
 extern SEMTime *NAMidiSEMTimeCreate(FileLocation *location);
 extern SEMKey *NAMidiSEMKeyCreate(FileLocation *location);
+extern SEMPercussion *NAMidiSEMPercussionCreate(FileLocation *location);
 extern SEMMarker *NAMidiSEMMarkerCreate(FileLocation *location);
 extern SEMChannel *NAMidiSEMChannelCreate(FileLocation *location);
 extern SEMVelocity *NAMidiSEMVelocityCreate(FileLocation *location);

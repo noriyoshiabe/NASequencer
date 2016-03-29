@@ -169,6 +169,15 @@ static void visitKey(void *_self, ASTKey *ast)
     append(self->state->list, sem);
 }
 
+static void visitPercussion(void *_self, ASTPercussion *ast)
+{
+    NAMidiASTAnalyzer *self = _self;
+
+    SEMPercussion *sem = node(Percussion, ast);
+    sem->on = ast->on;
+    append(self->state->list, sem);
+}
+
 static void visitMarker(void *_self, ASTMarker *ast)
 {
     NAMidiASTAnalyzer *self = _self;
@@ -503,6 +512,7 @@ Analyzer *NAMidiASTAnalyzerCreate(ParseContext *context)
     self->visitor.visitTempo = visitTempo;
     self->visitor.visitTime = visitTime;
     self->visitor.visitKey = visitKey;
+    self->visitor.visitPercussion = visitPercussion;
     self->visitor.visitMarker = visitMarker;
     self->visitor.visitChannel = visitChannel;
     self->visitor.visitVelocity = visitVelocity;

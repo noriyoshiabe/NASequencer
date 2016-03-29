@@ -53,6 +53,7 @@ static void dump(NAMidiSEMDumper *self, void *_node, ...)
 #define INTEGER(sem, name) #name, NACStringFromInteger(sem->name)
 #define FLOAT(sem, name) #name, NACStringFromFloat(sem->name, 2)
 #define STRING(sem, name) #name, sem->name ? sem->name : "(null)"
+#define BOOL(ast, name) #name, NACStringFromBoolean(ast->name)
 
 static void visitList(void *_self, SEMList *sem)
 {
@@ -110,6 +111,12 @@ static void visitKey(void *_self, SEMKey *sem)
     NAMidiSEMDumper *self = _self;
     dump(self, sem, NULL);
     NoteTableDump(sem->noteTable, self->indent + 4);
+}
+
+static void visitPercussion(void *_self, SEMPercussion *sem)
+{
+    NAMidiSEMDumper *self = _self;
+    dump(self, sem, BOOL(sem, on), NULL);
 }
 
 static void visitMarker(void *self, SEMMarker *sem)
@@ -220,6 +227,7 @@ Analyzer *NAMidiSEMDumperCreate(ParseContext *context)
     self->visitor.visitTempo = visitTempo;
     self->visitor.visitTime = visitTime;
     self->visitor.visitKey = visitKey;
+    self->visitor.visitPercussion = visitPercussion;
     self->visitor.visitMarker = visitMarker;
     self->visitor.visitChannel = visitChannel;
     self->visitor.visitVelocity = visitVelocity;

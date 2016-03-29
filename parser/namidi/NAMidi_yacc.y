@@ -39,14 +39,14 @@ extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, void **node, const ch
 %token <f>FLOAT
 %token <s>STRING
 
-%token RESOLUTION TITLE COPYRIGHT TEMPO TIME KEY MARKER PATTERN EXPAND
-       END CHANNEL VELOCITY GATETIME STEP BANK PROGRAM SYNTH VOLUME PAN
-       CHORUS REVERB EXPRESSION DETUNE TRANSPOSE NOTE_PARAM_V NOTE_PARAM_GT
+%token RESOLUTION TITLE COPYRIGHT TEMPO TIME KEY PERCUSSION MARKER PATTERN EXPAND
+       END CHANNEL VELOCITY GATETIME STEP BANK PROGRAM SYNTH VOLUME PAN CHORUS
+       REVERB EXPRESSION DETUNE TRANSPOSE NOTE_PARAM_V NOTE_PARAM_GT ON OFF
 %token END_OF_FILE 0
 
 %token <s>NOTE KEY_SIGN IDENTIFIER
 
-%type <node> resolution title copyright tempo time key marker channel velocity gatetime bank program
+%type <node> resolution title copyright tempo time key percussion marker channel velocity gatetime bank program
              synth volume pan chorus reverb expression detune transpose step note expand
 
 %type <node> pattern
@@ -99,6 +99,7 @@ statement
     | tempo
     | time
     | key
+    | percussion
     | marker
     | channel
     | velocity
@@ -188,6 +189,21 @@ key
         {
             ASTKey *n = node(Key, @$);
             n->keyString = $2;
+            $$ = n;
+        }
+    ;
+
+percussion
+    : PERCUSSION ON
+        {
+            ASTPercussion *n = node(Percussion, @$);
+            n->on = true;
+            $$ = n;
+        }
+    | PERCUSSION OFF
+        {
+            ASTPercussion *n = node(Percussion, @$);
+            n->on = false;
             $$ = n;
         }
     ;

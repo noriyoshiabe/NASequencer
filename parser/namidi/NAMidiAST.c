@@ -106,6 +106,20 @@ ASTKey *NAMidiASTKeyCreate(FileLocation *location)
     return NodeCreate(ASTKey, location);
 }
 
+static void ASTPercussionAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitPercussion(visitor, self);
+}
+
+static void ASTPercussionDestroy(void *_self)
+{
+}
+
+ASTPercussion *NAMidiASTPercussionCreate(FileLocation *location)
+{
+    return NodeCreate(ASTPercussion, location);
+}
+
 static void ASTMarkerAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitMarker(visitor, self);

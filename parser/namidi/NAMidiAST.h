@@ -37,6 +37,11 @@ typedef struct _ASTKey {
     char *keyString;
 } ASTKey;
 
+typedef struct _ASTPercussion {
+    Node node;
+    bool on;
+} ASTPercussion;
+
 typedef struct _ASTMarker {
     Node node;
     char *text;
@@ -147,6 +152,7 @@ typedef struct _ASTVisitor {
     void (*visitTempo)(void *self, ASTTempo *ast);
     void (*visitTime)(void *self, ASTTime *ast);
     void (*visitKey)(void *self, ASTKey *ast);
+    void (*visitPercussion)(void *self, ASTPercussion *ast);
     void (*visitMarker)(void *self, ASTMarker *ast);
     void (*visitChannel)(void *self, ASTChannel *ast);
     void (*visitVelocity)(void *self, ASTVelocity *ast);
@@ -175,6 +181,7 @@ extern ASTCopyright *NAMidiASTCopyrightCreate(FileLocation *location);
 extern ASTTempo *NAMidiASTTempoCreate(FileLocation *location);
 extern ASTTime *NAMidiASTTimeCreate(FileLocation *location);
 extern ASTKey *NAMidiASTKeyCreate(FileLocation *location);
+extern ASTPercussion *NAMidiASTPercussionCreate(FileLocation *location);
 extern ASTMarker *NAMidiASTMarkerCreate(FileLocation *location);
 extern ASTChannel *NAMidiASTChannelCreate(FileLocation *location);
 extern ASTVelocity *NAMidiASTVelocityCreate(FileLocation *location);

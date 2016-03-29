@@ -19,6 +19,7 @@ MARKER 'Start'
 
 CHANNEL   10
 ------------------------
+PERCUSSION ON
 SYNTH      'GeneralUser GS Live/Audigy version 1.44'
 BANK       128
 PROGRAM    1
