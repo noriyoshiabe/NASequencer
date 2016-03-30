@@ -298,10 +298,26 @@
             data = NACStringFormat("%d", _event->value);
         }
             break;
+        case MidiEventTypePitch:
+        {
+            PitchEvent *_event = (void *)raw;
+            type = "Pitch";
+            channel = NACStringFormat("%d", _event->channel);
+            data = NACStringFormat("%d", _event->value);
+        }
+            break;
         case MidiEventTypeDetune:
         {
             DetuneEvent *_event = (void *)raw;
             type = "Detune";
+            channel = NACStringFormat("%d", _event->channel);
+            data = NACStringFormat("%d", _event->value);
+        }
+            break;
+        case MidiEventTypePitchSense:
+        {
+            PitchSenseEvent *_event = (void *)raw;
+            type = "Pitch Sense";
             channel = NACStringFormat("%d", _event->channel);
             data = NACStringFormat("%d", _event->value);
         }

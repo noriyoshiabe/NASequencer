@@ -231,11 +231,25 @@ void EventListViewRender(EventListView *self)
                 sprintf(texts[6], "Expression: %d", _event->value);
             }
             break;
+        case MidiEventTypePitch:
+            {
+                PitchEvent *_event = (void *)event;
+                sprintf(texts[2], "%d", _event->channel);
+                sprintf(texts[6], "Pitch: %d", _event->value);
+            }
+            break;
         case MidiEventTypeDetune:
             {
                 DetuneEvent *_event = (void *)event;
                 sprintf(texts[2], "%d", _event->channel);
                 sprintf(texts[6], "Detune: %d", _event->value);
+            }
+            break;
+        case MidiEventTypePitchSense:
+            {
+                PitchSenseEvent *_event = (void *)event;
+                sprintf(texts[2], "%d", _event->channel);
+                sprintf(texts[6], "Pitch Sense: %d", _event->value);
             }
             break;
         case MidiEventTypeSynth:

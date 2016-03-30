@@ -276,6 +276,12 @@ bool ExporterWriteToSMF(Exporter *self, const char *filepath)
                 SMFWriterAppendControlChange(writer, event->tick, event->channel, 11, event->value);
             }
             break;
+        case MidiEventTypePitch:
+            {
+                PitchEvent *event = (PitchEvent *)events[i];
+                SMFWriterAppendPitchBend(writer, event->tick, event->channel, event->value);
+            }
+            break;
         case MidiEventTypeDetune:
             {
                 DetuneEvent *event = (DetuneEvent *)events[i];
@@ -286,6 +292,16 @@ bool ExporterWriteToSMF(Exporter *self, const char *filepath)
                 SMFWriterAppendControlChange(writer, event->tick, event->channel, 101, 0);
                 SMFWriterAppendControlChange(writer, event->tick, event->channel, 100, 2);
                 SMFWriterAppendControlChange(writer, event->tick, event->channel, 6, event->corse.msb);
+                SMFWriterAppendControlChange(writer, event->tick, event->channel, 101, 0x7F);
+                SMFWriterAppendControlChange(writer, event->tick, event->channel, 100, 0x7F);
+            }
+            break;
+        case MidiEventTypePitchSense:
+            {
+                PitchSenseEvent *event = (PitchSenseEvent *)events[i];
+                SMFWriterAppendControlChange(writer, event->tick, event->channel, 101, 0);
+                SMFWriterAppendControlChange(writer, event->tick, event->channel, 100, 0);
+                SMFWriterAppendControlChange(writer, event->tick, event->channel, 6, event->value);
                 SMFWriterAppendControlChange(writer, event->tick, event->channel, 101, 0x7F);
                 SMFWriterAppendControlChange(writer, event->tick, event->channel, 100, 0x7F);
             }

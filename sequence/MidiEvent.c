@@ -50,8 +50,14 @@ void *MidiEventAlloc(MidiEventType type, int id, int tick, int extraSize)
     case MidiEventTypeExpression:
         size = sizeof(ExpressionEvent);
         break;
+    case MidiEventTypePitch:
+        size = sizeof(PitchEvent);
+        break;
     case MidiEventTypeDetune:
         size = sizeof(DetuneEvent);
+        break;
+    case MidiEventTypePitchSense:
+        size = sizeof(PitchSenseEvent);
         break;
     case MidiEventTypeSynth:
         size = sizeof(SynthEvent) + extraSize;
@@ -169,10 +175,24 @@ void MidiEventDump(MidiEvent *self, int indent)
                     self->id, self->tick, self->value);
         }
         break;
+    case MidiEventTypePitch:
+        {
+            PitchEvent *self = _self;
+            printf("Pitch: id=%d tick=%d value=%d\n",
+                    self->id, self->tick, self->value);
+        }
+        break;
     case MidiEventTypeDetune:
         {
             DetuneEvent *self = _self;
-            printf("Synth: id=%d tick=%d value=%d\n",
+            printf("Detune: id=%d tick=%d value=%d\n",
+                    self->id, self->tick, self->value);
+        }
+        break;
+    case MidiEventTypePitchSense:
+        {
+            PitchSenseEvent *self = _self;
+            printf("Pitch Sense: id=%d tick=%d value=%d\n",
                     self->id, self->tick, self->value);
         }
         break;
@@ -198,7 +218,9 @@ int MidiEventGetChannel(const MidiEvent *event)
     case MidiEventTypeReverb:
     case MidiEventTypeSynth:
     case MidiEventTypeExpression:
+    case MidiEventTypePitch:
     case MidiEventTypeDetune:
+    case MidiEventTypePitchSense:
         return ((ChannelEvent *)event)->channel;
     default:
         return 0;

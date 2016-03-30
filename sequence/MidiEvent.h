@@ -17,8 +17,10 @@ typedef enum {
     MidiEventTypeChorus,
     MidiEventTypeReverb,
     MidiEventTypeExpression,
+    MidiEventTypePitch,
 
     MidiEventTypeDetune,
+    MidiEventTypePitchSense,
     MidiEventTypeSynth,
 } MidiEventType;
 
@@ -145,6 +147,14 @@ typedef struct _ExpressionEvent {
     int value;
 } ExpressionEvent;
 
+typedef struct _PitchEvent {
+    MidiEventType type;
+    int id;
+    int tick;
+    int channel;
+    int value;
+} PitchEvent;
+
 typedef struct _DetuneEvent {
     MidiEventType type;
     int id;
@@ -159,6 +169,14 @@ typedef struct _DetuneEvent {
         uint8_t msb;
     } corse;
 } DetuneEvent;
+
+typedef struct _PitchSenseEvent {
+    MidiEventType type;
+    int id;
+    int tick;
+    int channel;
+    int value;
+} PitchSenseEvent;
 
 typedef struct _SynthEvent {
     MidiEventType type;
@@ -192,7 +210,9 @@ static inline char *MidiEventType2String(MidiEventType type)
     CASE(MidiEventTypeChorus);
     CASE(MidiEventTypeReverb);
     CASE(MidiEventTypeExpression);
+    CASE(MidiEventTypePitch);
     CASE(MidiEventTypeDetune);
+    CASE(MidiEventTypePitchSense);
     CASE(MidiEventTypeSynth);
 
     default:

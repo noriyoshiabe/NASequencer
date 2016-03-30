@@ -261,10 +261,28 @@ static void SequenceBuilderAppendExpression(void *_self, int tick, int channel, 
     NAArrayAppend(self->events, event);
 }
 
+static void SequenceBuilderAppendPitch(void *_self, int tick, int channel, int value)
+{
+    SequenceBuilderImpl *self = _self;
+    PitchEvent *event = MidiEventAlloc(MidiEventTypePitch, ++self->id, tick, sizeof(PitchEvent) - sizeof(MidiEvent));
+    event->channel = channel;
+    event->value = value;
+    NAArrayAppend(self->events, event);
+}
+
 static void SequenceBuilderAppendDetune(void *_self, int tick, int channel, int value)
 {
     SequenceBuilderImpl *self = _self;
     DetuneEvent *event = MidiEventAlloc(MidiEventTypeDetune, ++self->id, tick, sizeof(DetuneEvent) - sizeof(MidiEvent));
+    event->channel = channel;
+    event->value = value;
+    NAArrayAppend(self->events, event);
+}
+
+static void SequenceBuilderAppendPitchSense(void *_self, int tick, int channel, int value)
+{
+    SequenceBuilderImpl *self = _self;
+    PitchSenseEvent *event = MidiEventAlloc(MidiEventTypePitchSense, ++self->id, tick, sizeof(PitchSenseEvent) - sizeof(MidiEvent));
     event->channel = channel;
     event->value = value;
     NAArrayAppend(self->events, event);
@@ -324,7 +342,9 @@ SequenceBuilder *SequenceBuilderCreate()
     self->interface.appendChorus = SequenceBuilderAppendChorus;
     self->interface.appendReverb = SequenceBuilderAppendReverb;
     self->interface.appendExpression = SequenceBuilderAppendExpression;
+    self->interface.appendPitch = SequenceBuilderAppendPitch;
     self->interface.appendDetune = SequenceBuilderAppendDetune;
+    self->interface.appendPitchSense = SequenceBuilderAppendPitchSense;
     self->interface.setLength = SequenceBuilderSetLength;
     self->interface.build = SequenceBuilderBuild;
 
@@ -423,10 +443,22 @@ static void __MidiEventDump(MidiEvent *self)
             printf("Expression: tick=%d value=%d\n", self->tick, self->value);
         }
         break;
+    case MidiEventTypePitch:
+        {
+            PitchEvent *self = _self;
+            printf("Pitch: tick=%d value=%d\n", self->tick, self->value);
+        }
+        break;
     case MidiEventTypeDetune:
         {
             DetuneEvent *self = _self;
             printf("Detune: tick=%d value=%d\n", self->tick, self->value);
+        }
+        break;
+    case MidiEventTypePitchSense:
+        {
+            DetuneEvent *self = _self;
+            printf("Pitch Sense: tick=%d value=%d\n", self->tick, self->value);
         }
         break;
     case MidiEventTypeSynth:
