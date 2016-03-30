@@ -302,6 +302,20 @@ SEMExpression *NAMidiSEMExpressionCreate(FileLocation *location)
     return NodeCreate(SEMExpression, location);
 }
 
+static void SEMPitchAccept(void *self, void *visitor)
+{
+    ((SEMVisitor *)visitor)->visitPitch(visitor, self);
+}
+
+static void SEMPitchDestroy(void *_self)
+{
+}
+
+SEMPitch *NAMidiSEMPitchCreate(FileLocation *location)
+{
+    return NodeCreate(SEMPitch, location);
+}
+
 static void SEMDetuneAccept(void *self, void *visitor)
 {
     ((SEMVisitor *)visitor)->visitDetune(visitor, self);
@@ -314,6 +328,20 @@ static void SEMDetuneDestroy(void *_self)
 SEMDetune *NAMidiSEMDetuneCreate(FileLocation *location)
 {
     return NodeCreate(SEMDetune, location);
+}
+
+static void SEMPitchSenseAccept(void *self, void *visitor)
+{
+    ((SEMVisitor *)visitor)->visitPitchSense(visitor, self);
+}
+
+static void SEMPitchSenseDestroy(void *_self)
+{
+}
+
+SEMPitchSense *NAMidiSEMPitchSenseCreate(FileLocation *location)
+{
+    return NodeCreate(SEMPitchSense, location);
 }
 
 static void SEMTransposeAccept(void *self, void *visitor)

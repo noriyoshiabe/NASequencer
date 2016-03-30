@@ -179,7 +179,17 @@ static void visitExpression(void *self, SEMExpression *sem)
     dump(self, sem, INTEGER(sem, value), NULL);
 }
 
+static void visitPitch(void *self, SEMPitch *sem)
+{
+    dump(self, sem, INTEGER(sem, value), NULL);
+}
+
 static void visitDetune(void *self, SEMDetune *sem)
+{
+    dump(self, sem, INTEGER(sem, value), NULL);
+}
+
+static void visitPitchSense(void *self, SEMPitchSense *sem)
 {
     dump(self, sem, INTEGER(sem, value), NULL);
 }
@@ -240,7 +250,9 @@ Analyzer *NAMidiSEMDumperCreate(ParseContext *context)
     self->visitor.visitChorus = visitChorus;
     self->visitor.visitReverb = visitReverb;
     self->visitor.visitExpression = visitExpression;
+    self->visitor.visitPitch = visitPitch;
     self->visitor.visitDetune = visitDetune;
+    self->visitor.visitPitchSense = visitPitchSense;
     self->visitor.visitTranspose = visitTranspose;
     self->visitor.visitStep = visitStep;
     self->visitor.visitNote = visitNote;

@@ -70,6 +70,8 @@ DETUNE         detune
 TRANSPOSE      transpose
 KEY            key
 PERCUSSION     percussion
+PITCH          pitch
+SENSE          sense
 
 KEY_SIGN       [cdefgab](#|b)?[[:blank:]]*(maj(or)?|min(or)?)
 NOTE           [cdefgab](#|##|b|bb|n)?(\-?[[:digit:]]{1,2})?
@@ -117,6 +119,8 @@ LOCATION       ^##.+:[[:digit:]]+:[[:digit:]]+\n
 {EXPRESSION}     { return EXPRESSION; }
 {DETUNE}         { return DETUNE; }
 {TRANSPOSE}      { return TRANSPOSE; }
+{PITCH}          { return PITCH; }
+{SENSE}          { return SENSE; }
 
 {NOTE}           { yylval->s = strdup(yytext); return NOTE; }
 {NOTE_PARAM_V}   { return NOTE_PARAM_V; }

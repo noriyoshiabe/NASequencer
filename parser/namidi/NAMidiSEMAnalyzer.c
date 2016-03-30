@@ -270,11 +270,25 @@ static void visitExpression(void *_self, SEMExpression *sem)
     self->builder->appendExpression(self->builder, TICK(self->state), self->state->channel, sem->value);
 }
 
+static void visitPitch(void *_self, SEMPitch *sem)
+{
+    NAMidiSEMAnalyzer *self = _self;
+    FLUSH(self->state);
+    self->builder->appendPitch(self->builder, TICK(self->state), self->state->channel, sem->value);
+}
+
 static void visitDetune(void *_self, SEMDetune *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
     FLUSH(self->state);
     self->builder->appendDetune(self->builder, TICK(self->state), self->state->channel, sem->value);
+}
+
+static void visitPitchSense(void *_self, SEMPitchSense *sem)
+{
+    NAMidiSEMAnalyzer *self = _self;
+    FLUSH(self->state);
+    self->builder->appendPitchSense(self->builder, TICK(self->state), self->state->channel, sem->value);
 }
 
 static void visitTranspose(void *_self, SEMTranspose *sem)
@@ -399,7 +413,9 @@ Analyzer *NAMidiSEMAnalyzerCreate(ParseContext *context)
     self->visitor.visitChorus = visitChorus;
     self->visitor.visitReverb = visitReverb;
     self->visitor.visitExpression = visitExpression;
+    self->visitor.visitPitch = visitPitch;
     self->visitor.visitDetune = visitDetune;
+    self->visitor.visitPitchSense = visitPitchSense;
     self->visitor.visitTranspose = visitTranspose;
     self->visitor.visitStep = visitStep;
     self->visitor.visitNote = visitNote;

@@ -110,10 +110,20 @@ typedef struct _SEMExpression {
     int value;
 } SEMExpression;
 
+typedef struct _SEMPitch {
+    Node node;
+    int value;
+} SEMPitch;
+
 typedef struct _SEMDetune {
     Node node;
     int value;
 } SEMDetune;
+
+typedef struct _SEMPitchSense {
+    Node node;
+    int value;
+} SEMPitchSense;
 
 typedef struct _SEMTranspose {
     Node node;
@@ -161,7 +171,9 @@ typedef struct _SEMVisitor {
     void (*visitChorus)(void *self, SEMChorus *sem);
     void (*visitReverb)(void *self, SEMReverb *sem);
     void (*visitExpression)(void *self, SEMExpression *sem);
+    void (*visitPitch)(void *self, SEMPitch *sem);
     void (*visitDetune)(void *self, SEMDetune *sem);
+    void (*visitPitchSense)(void *self, SEMPitchSense *sem);
     void (*visitTranspose)(void *self, SEMTranspose *sem);
     void (*visitStep)(void *self, SEMStep *sem);
     void (*visitNote)(void *self, SEMNote *sem);
@@ -188,7 +200,9 @@ extern SEMPan *NAMidiSEMPanCreate(FileLocation *location);
 extern SEMChorus *NAMidiSEMChorusCreate(FileLocation *location);
 extern SEMReverb *NAMidiSEMReverbCreate(FileLocation *location);
 extern SEMExpression *NAMidiSEMExpressionCreate(FileLocation *location);
+extern SEMPitch *NAMidiSEMPitchCreate(FileLocation *location);
 extern SEMDetune *NAMidiSEMDetuneCreate(FileLocation *location);
+extern SEMPitchSense *NAMidiSEMPitchSenseCreate(FileLocation *location);
 extern SEMTranspose *NAMidiSEMTransposeCreate(FileLocation *location);
 extern SEMStep *NAMidiSEMStepCreate(FileLocation *location);
 extern SEMNote *NAMidiSEMNoteCreate(FileLocation *location);

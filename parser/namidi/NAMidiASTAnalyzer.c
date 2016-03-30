@@ -337,6 +337,20 @@ static void visitExpression(void *_self, ASTExpression *ast)
     append(self->state->list, sem);
 }
 
+static void visitPitch(void *_self, ASTPitch *ast)
+{
+    NAMidiASTAnalyzer *self = _self;
+
+    if (!isValidRange(ast->value, -8192, 8191)) {
+        appendError(self, ast, NAMidiParseErrorInvalidPitch, NACStringFromInteger(ast->value), NULL);
+        return;
+    }
+
+    SEMPitch *sem = node(Pitch, ast);
+    sem->value = ast->value;
+    append(self->state->list, sem);
+}
+
 static void visitDetune(void *_self, ASTDetune *ast)
 {
     NAMidiASTAnalyzer *self = _self;
@@ -347,6 +361,20 @@ static void visitDetune(void *_self, ASTDetune *ast)
     }
 
     SEMDetune *sem = node(Detune, ast);
+    sem->value = ast->value;
+    append(self->state->list, sem);
+}
+
+static void visitPitchSense(void *_self, ASTPitchSense *ast)
+{
+    NAMidiASTAnalyzer *self = _self;
+
+    if (!isValidRange(ast->value, 0, 24)) {
+        appendError(self, ast, NAMidiParseErrorInvalidPitchSense, NACStringFromInteger(ast->value), NULL);
+        return;
+    }
+
+    SEMPitchSense *sem = node(PitchSense, ast);
     sem->value = ast->value;
     append(self->state->list, sem);
 }
@@ -525,7 +553,9 @@ Analyzer *NAMidiASTAnalyzerCreate(ParseContext *context)
     self->visitor.visitChorus = visitChorus;
     self->visitor.visitReverb = visitReverb;
     self->visitor.visitExpression = visitExpression;
+    self->visitor.visitPitch = visitPitch;
     self->visitor.visitDetune = visitDetune;
+    self->visitor.visitPitchSense = visitPitchSense;
     self->visitor.visitTranspose = visitTranspose;
     self->visitor.visitStep = visitStep;
     self->visitor.visitNote = visitNote;

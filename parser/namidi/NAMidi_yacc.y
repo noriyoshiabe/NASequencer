@@ -41,13 +41,14 @@ extern int NAMidi_error(YYLTYPE *yylloc, yyscan_t scanner, void **node, const ch
 
 %token RESOLUTION TITLE COPYRIGHT TEMPO TIME KEY PERCUSSION MARKER PATTERN EXPAND
        END CHANNEL VELOCITY GATETIME STEP BANK PROGRAM SYNTH VOLUME PAN CHORUS
-       REVERB EXPRESSION DETUNE TRANSPOSE NOTE_PARAM_V NOTE_PARAM_GT ON OFF
+       REVERB EXPRESSION PITCH DETUNE SENSE TRANSPOSE NOTE_PARAM_V NOTE_PARAM_GT ON OFF
 %token END_OF_FILE 0
 
 %token <s>NOTE KEY_SIGN IDENTIFIER
 
-%type <node> resolution title copyright tempo time key percussion marker channel velocity gatetime bank program
-             synth volume pan chorus reverb expression detune transpose step note expand
+%type <node> resolution title copyright tempo time key percussion marker channel velocity
+             gatetime bank program synth volume pan chorus reverb expression pitch
+             detune pitch_sense transpose step note expand
 
 %type <node> pattern
 %type <i>    signed_integer
@@ -112,7 +113,9 @@ statement
     | chorus
     | reverb
     | expression
+    | pitch
     | detune
+    | pitch_sense
     | transpose
     | step
     | note
@@ -328,11 +331,29 @@ expression
         }
     ;
 
+pitch
+    : PITCH signed_integer
+        {
+            ASTPitch *n = node(Pitch, @$);
+            n->value = $2;
+            $$ = n;
+        }
+    ;
+
 detune
     : DETUNE signed_integer
         {
             ASTDetune *n = node(Detune, @$);
             n->value = $2;
+            $$ = n;
+        }
+    ;
+
+pitch_sense
+    : PITCH SENSE INTEGER
+        {
+            ASTPitchSense *n = node(PitchSense, @$);
+            n->value = $3;
             $$ = n;
         }
     ;

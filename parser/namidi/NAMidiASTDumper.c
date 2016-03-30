@@ -165,7 +165,17 @@ static void visitExpression(void *self, ASTExpression *ast)
     dump(self, ast, INTEGER(ast, value), NULL);
 }
 
+static void visitPitch(void *self, ASTPitch *ast)
+{
+    dump(self, ast, INTEGER(ast, value), NULL);
+}
+
 static void visitDetune(void *self, ASTDetune *ast)
+{
+    dump(self, ast, INTEGER(ast, value), NULL);
+}
+
+static void visitPitchSense(void *self, ASTPitchSense *ast)
 {
     dump(self, ast, INTEGER(ast, value), NULL);
 }
@@ -257,7 +267,9 @@ Analyzer *NAMidiASTDumperCreate(ParseContext *context)
     self->visitor.visitChorus = visitChorus;
     self->visitor.visitReverb = visitReverb;
     self->visitor.visitExpression = visitExpression;
+    self->visitor.visitPitch = visitPitch;
     self->visitor.visitDetune = visitDetune;
+    self->visitor.visitPitchSense = visitPitchSense;
     self->visitor.visitTranspose = visitTranspose;
     self->visitor.visitStep = visitStep;
     self->visitor.visitNote = visitNote;

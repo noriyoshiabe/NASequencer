@@ -275,7 +275,8 @@ void MixerSendPitch(Mixer *self, PitchEvent *event)
 {
     MixerChannel *channel = NAArrayGetValueAt(self->channels, event->channel - 1);
     if (channel->active) {
-        uint8_t bytes[3] = {0xE0 | (0x7F & channel->midiNumber), 0x7F & event->value, 0x7F & (event->value >> 7)};
+        uint16_t pitchBend = event->value + 8192;
+        uint8_t bytes[3] = {0xE0 | (0x7F & channel->midiNumber), 0x7F & pitchBend, 0x7F & (pitchBend >> 7)};
         channel->source->send(channel->source, bytes, 3);
     }
 }

@@ -103,7 +103,7 @@ static void send(void *_self, uint8_t *bytes, size_t length)
     case 0xE0:
         if (3 <= length) {
             uint8_t channel = bytes[0] & 0x0F;
-            self->channels[channel].pitchBendSensitivity = bytes[1] | (bytes[2] << 7);
+            self->channels[channel].pitchBend = bytes[1] | (bytes[2] << 7);
         }
         break;
     }
