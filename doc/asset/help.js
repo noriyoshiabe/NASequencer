@@ -18,7 +18,6 @@ document.onreadystatechange = function () {
         if (isMenuOpen) {
           body.classList.add('is-menu-open');
         }
-        history.pushState({}, document.title, this.getAttribute('href'));
       });
     }
 
