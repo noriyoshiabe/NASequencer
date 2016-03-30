@@ -20,6 +20,12 @@ document.onreadystatechange = function () {
         if (isMenuOpen) {
           body.classList.add('is-menu-open');
         }
+
+        setTimeout(function () {
+          if (!location.hash.match(/__/)) {
+            body.scrollTop = 0;
+          }
+        }, 0);
       });
     }
 
