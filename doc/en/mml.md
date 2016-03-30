@@ -541,6 +541,47 @@ Exported to Standard MIDI File as Pan of Control Change (Bn 0Ah) with converting
 @p30
 ```
 
+### Pitch Bend
+Specifies pitch bend of current chanel.
+Used for choking or arming of guiter, vibrato or etc.
+Initial value is 0.
+
+#### Coarse Pitch Bend Value
+Valid value range is -64 to 63.
+Pitch bend value will be specified value x 128.
+
+```
+pb +63
+```
+
+#### Absolute Pitch Bend Value
+Valid value range is -8192 to +8191.
+
+```
+@pb +8191
+```
+
+Exported to Standard MIDI File as Pitch Bend Change (En) with converting value 0 to 16383.
+
+See also [Pitch Bend Sensitivity](#Pitch_Bend_Sensitivity).
+
+### Pitch Bend Sensitivity
+Configs pitch bend range of current channel in a unit of semitone.
+Valid value range is 0 to 24.
+Initial value is 2.
+
+```
+@ps 4
+```
+
+Exported to Standard MIDI File as followings.
+
+- Control Change:RPN（MSB）(Bn 65h 00h) Pitch Bend Sensitivity
+- Control Change:RPN（LSB）(Bn 64h 00h) Pitch Bend Sensitivity
+- Control Change:Data Entry (MSB) (Bn 06h) 
+- Control Change:RPN（MSB）(Bn 65h 7Fh) RPN NULL
+- Control Change:RPN（LSB）(Bn 64h 7Fh) RPN NULL
+
 ### Detune
 Adjusts pitch of synthesizer in a unit of cent.
 Valid value range is -2400 to +2400.
