@@ -266,14 +266,14 @@ static void visitReverb(void *_self, SEMReverb *sem)
 static void visitExpression(void *_self, SEMExpression *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-    FLUSH(self->state);
+    // Not inclement steps
     self->builder->appendExpression(self->builder, TICK(self->state), self->state->channel, sem->value);
 }
 
 static void visitPitch(void *_self, SEMPitch *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-    FLUSH(self->state);
+    // Not inclement steps
     self->builder->appendPitch(self->builder, TICK(self->state), self->state->channel, sem->value);
 }
 
