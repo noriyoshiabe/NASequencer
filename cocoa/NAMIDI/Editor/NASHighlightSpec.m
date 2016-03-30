@@ -56,7 +56,12 @@ static HighlightSpec *_spec;
                      KEYWORD(@"END") @"|"
                      KEYWORD(@"EXPAND") @"|"
                      KEYWORD(@"DETUNE") @"|"
-                     KEYWORD(@"KEY")
+                     KEYWORD(@"PITCH") @"|"
+                     KEYWORD(@"SENSE") @"|"
+                     KEYWORD(@"ON") @"|"
+                     KEYWORD(@"OFF") @"|"
+                     KEYWORD(@"KEY") @"|"
+                     KEYWORD(@"PERCUSSION")
 #undef KEYWORD
                                                               options:NSRegularExpressionCaseInsensitive error:nil];
     keyword.color = [HighlightColor keyword];
