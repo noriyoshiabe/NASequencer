@@ -279,6 +279,15 @@ Exported to Standard MIDI File as Time Signature(FF 58h 04h) in first MTrk chunk
 TIME 3/4
 ```
 
+### MARKER
+Inserts a marker.
+Acts as separator of sections for repeat play if repeat state on the player is [Repeat Marker](../operation_manual.md#Repeat_Marker).
+Exported to Standard MIDI File as Marker(FF 06h) in first MTrk chunk.
+
+```
+MARKER 'Intro'
+```
+
 ### KEY
 Indicates key signature by tonic name + major or minor.
 `major` and `minor` can be abbreviated to `maj` and `min`.
@@ -288,11 +297,6 @@ White-space can be put into between tonic name and major/minor.
 KEY CMin    // Specify C Minor key
 KEY D Major // Specify D Major key
 ```
-
-**Attention:**  
-State of key signature is not channel individual.  
-It affects to all notes including channel for percussion after changing.
-Reset key signature (setting C major key) berofe percussion notes is needed if it has changed.
 
 Available key signatures are below.
 
@@ -316,8 +320,42 @@ Available key signatures are below.
 
 Exported to Standard MIDI File as Key Signature(FF 59h 02h) in first MTrk chunk.
 
+### TRANSPOSE
+Ups/downs pitch of note events in a unit of semitone.
+Whole tone up is `+2`.
+Valid value range is -64 to +64.
+Initial value is 0.
+
+```
+TRANSPOSE +2
+```
+
+### CHANNEL
+Switches current channel.
+Valid channel number is 1 to 16.
+
+```
+CHANNEL 10
+```
+
+### PERCUSSION
+Specifies percussion mode of current channel.
+If percussion mode is on, settings of [KEY](#KEY) and [TRANSPOSE](#TRANSPOSE) will not affect to scale of note.
+
+```
+TRANSPOSE +2
+
+C1  // This will be D1 by TRANSPOSE
+
+PERCUSSION ON  // Percussion mode is on
+
+C1  // TRANSPOSE does not affect to scale of note and it will stay C1
+
+PERCUSSION OFF // Percussion mode is off
+```
+
 ### VELOCITY
-Specifies default velocity for [NOTE](#NOTE) statement.
+Specifies default velocity of current channel for [NOTE](#NOTE) statement.
 Valid velocity range is 0 to 127.
 Initial value is 100.
 
@@ -326,7 +364,7 @@ VELOCITY 80
 ```
 
 ### GATETIME
-Specifies gatetime config for [NOTE](#NOTE) statement。
+Specifies gatetime config of current channel for [NOTE](#NOTE) statement。
 
 #### Absolute Setting
 Applies to note event in absolute number if gatetime is omitted with note statement.
@@ -354,23 +392,6 @@ GATETIME STEP -10
 480: C // Gatetime will be 470
 GATETIME STEP +120
 480: C // Gatetime will be 600
-```
-
-### MARKER
-Inserts a marker.
-Acts as separator of sections for repeat play if repeat state on the player is [Repeat Marker](../operation_manual.md#Repeat_Marker).
-Exported to Standard MIDI File as Marker(FF 06h) in first MTrk chunk.
-
-```
-MARKER 'Intro'
-```
-
-### CHANNEL
-Switches current channel.
-Valid channel number is 1 to 16.
-
-```
-CHANNEL 10
 ```
 
 ### SYNTH
@@ -461,21 +482,6 @@ Exported to Standard MIDI File as Pan of Control Change (Bn 0Ah) with converting
 ```
 PAN +30
 ```
-
-### TRANSPOSE
-Ups/downs pitch of note events in a unit of semitone.
-Whole tone up is `+2`.
-Valid value range is -64 to +64.
-Initial value is 0.
-
-```
-TRANSPOSE +2
-```
-
-**Attention:**  
-Transpose setting is not channel individual.  
-It affects to all notes including channel for percussion after changing.
-Reset transpose berofe percussion notes is needed if it has changed.
 
 ### DETUNE
 Adjusts pitch of synthesizer in a unit of cent.
