@@ -1,7 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8"/>
-    <title>NAMIDI MIDI Help</title>
+    <title>NASequencer Help</title>
     <link rel="stylesheet" type="text/css" href="../shared/application.css" />
     <script src="../shared/application.js"></script>
   </head>
@@ -9,7 +9,7 @@
     <nav>
       <ul>
         <li>
-          <a class="js-transit" href="#overview">NAMIDI Overview</a>
+          <a class="js-transit" href="#overview">NASequencer Overview</a>
         </li>
         <li>
           <a class="js-transit" href="#getting_started">Getting Started</a>
@@ -29,7 +29,7 @@
           <a class="js-transit" href="#syntax_reference">Syntax Reference</a>
           <ul>
             <li>
-              <a class="js-transit" href="#namidi">Note as MIDI</a>
+              <a class="js-transit" href="#nas">Note as Sequence</a>
             </li>
             <li>
               <a class="js-transit" href="#abc">ABC Notation</a>
@@ -52,7 +52,7 @@
       <a name="top"></a>
       <div class="top">
         <img src="../shared/AppIcon.png" alt="" height="190" width="190" />
-        <h1>NAMIDI Help</h1>
+        <h1>NASequencer Help</h1>
         <ul>
           <li>
             <a class="js-transit" href="#overview">Overview</a>
@@ -65,14 +65,14 @@
 
       <a name="overview"></a>
       <div class="overview">
-        <h2>NAMIDI Overview</h2>
-        <p>This section will be documented on Version 0.5.0. 😵</p>
+        <h2>NASequencer Overview</h2>
+        <%- overview %>
       </div>
 
       <a name="getting_started"></a>
       <div class="getting_started">
         <h2>Getting Started</h2>
-        <p>This section will be documented on Version 0.5.0. 😵</p>
+        <%- getting_started %>
       </div>
 
       <a name="operation_manual"></a>
@@ -83,12 +83,12 @@
 
         <div class="general">
           <h3 >General</h3>
-          <p>This section will be documented on Version 0.5.0. 😵</p>
+          <%- general %>
         </div>
 
         <div class="preference">
           <h3>Preferences</h3>
-          <p>This section will be documented on Version 0.5.0. 😵</p>
+          <%- preference %>
         </div>
       </div>
 
@@ -99,9 +99,9 @@
       <div class="syntax_reference">
         <h2>Syntax Reference</h2>
 
-        <div class="namidi">
+        <div class="nas">
           <h3 >Note as MIDI</h3>
-          <%- namidi %>
+          <%- nas %>
         </div>
 
         <div class="abc">
@@ -118,7 +118,7 @@
       <a name="support"></a>
       <div class="support">
         <h2>Customer Support</h2>
-        <p>This section will be documented on Version 0.5.0. 😵</p>
+        <%- support %>
       </div>
 
       <a name="license"></a>

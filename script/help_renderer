@@ -1,16 +1,26 @@
 #!/usr/bin/env node
 
 var fs = require('fs')
+  , execSync = require('child_process').execSync
   , util = require('util')
   , ejs = require('ejs')
   , marked = require('marked');
 
 
+var locale = 'en';
+var docDir = __dirname + '/../doc';
+var dstDir = '../cocoa/NAMIDI/Resources/NASequencer.help/Contents/Resources';
+
 var contents = {
-  namidi: '../doc/ja/namidi.md',
-  abc: '../doc/ja/abc.md',
-  mml: '../doc/ja/mml.md',
-  license: '../doc/shared/license.md',
+  overview:        docDir + '/' + locale + '/' + 'overview.md',
+  getting_started: docDir + '/' + locale + '/' + 'getting-started.md',
+  general:         docDir + '/' + locale + '/' + 'operation-manual-general.md',
+  preference:      docDir + '/' + locale + '/' + 'operation-manual-preference.md',
+  nas:             docDir + '/' + locale + '/' + 'nas.md',
+  abc:             docDir + '/' + locale + '/' + 'abc.md',
+  mml:             docDir + '/' + locale + '/' + 'mml.md',
+  support:         docDir + '/' + locale + '/' + 'support.md',
+  license:         docDir + '/' + 'base' + '/' + 'license.md',
 }
 
 var renderer = new marked.Renderer();
@@ -21,8 +31,8 @@ renderer.br = function () {
 }
 
 function main(argv, callback) {
-  var template = fs.readFileSync('../doc/template/help.ejs', 'utf-8');
-  var dest = '../cocoa/NAMIDI/Resources/NAMIDI.help/Contents/Resources/en.lproj/index.html';
+  var template = fs.readFileSync(docDir + '/template/help.ejs', 'utf-8');
+  var dest = dstDir + '/en.lproj/index.html';
 
   var renderAttrs = {};
 
@@ -46,11 +56,14 @@ function main(argv, callback) {
       }
     }
 
-    renderAttrs[key] = marked(md, {breaks: true, renderer: renderer});
+    renderAttrs[key] = marked(md, {renderer: renderer});
   }
 
   var html = ejs.render(template, renderAttrs);
   fs.writeFileSync(dest, html);
+
+  execSync('rm -f '+dstDir+'/shared/*.png');
+  execSync('cp '+docDir+'/shared/*.png '+dstDir+'/shared/');
 }
 
 if (!module.parent) {

@@ -27,6 +27,10 @@ document.onreadystatechange = function () {
     }
     body.className = location.hash.substring(1).split('__')[0];
 
+    if ('#top' != location.hash) {
+      body.classList.add('is-menu-open');
+    }
+
     window.addEventListener('popstate', function () {
         var isMenuOpen = body.classList.contains('is-menu-open');
         body.className = location.hash.substring(1).split('__')[0];

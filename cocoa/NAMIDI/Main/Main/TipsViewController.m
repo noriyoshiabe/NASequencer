@@ -32,10 +32,6 @@
 - (IBAction)syntaxReferencePressed:(id)sender
 {
     NSString *ext = _namidi.file.filename.pathExtension.lowercaseString;
-    if ([ext isEqualToString:@"nas"]) {
-        ext = @"namidi";
-    }
-    
     NSString *bookName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleHelpBookName"];
     [[NSHelpManager sharedHelpManager] openHelpAnchor:ext inBook:bookName];
 }
