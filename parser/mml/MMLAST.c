@@ -291,6 +291,20 @@ ASTTempo *MMLASTTempoCreate(FileLocation *location)
     return NodeCreate(ASTTempo, location);
 }
 
+static void ASTTimeAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitTime(visitor, self);
+}
+
+static void ASTTimeDestroy(void *self)
+{
+}
+
+ASTTime *MMLASTTimeCreate(FileLocation *location)
+{
+    return NodeCreate(ASTTime, location);
+}
+
 static void ASTNoteAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitNote(visitor, self);

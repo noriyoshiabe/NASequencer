@@ -58,6 +58,7 @@ EXPRESSION     @x
 PAN            @p
 DETUNE         @d
 TEMPO          t
+TIME           bt
 PITCH          @?pb
 PITCH_SENSE    @ps
 
@@ -107,6 +108,7 @@ LOCATION       ^##.+:[[:digit:]]+:[[:digit:]]+\n
 {PAN}             { return PAN; }
 {DETUNE}          { return DETUNE; }
 {TEMPO}           { return TEMPO; }
+{TIME}            { return TIME; }
 {PITCH}           { return '@' == yytext[0] ? PITCH : C_PITCH; }
 {PITCH_SENSE}     { return PITCH_SENSE; }
 
@@ -130,6 +132,7 @@ LOCATION       ^##.+:[[:digit:]]+:[[:digit:]]+\n
 ">"               { return '>'; }
 "&"               { return '&'; }
 ";"               { return ';'; }
+","               { return ','; }
 "["               { return '['; }
 "]"               { return ']'; }
 

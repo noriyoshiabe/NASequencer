@@ -100,6 +100,12 @@ typedef struct _ASTTempo {
     float tempo;
 } ASTTempo;
 
+typedef struct _ASTTime {
+    Node node;
+    int numerator;
+    int denominator;
+} ASTTime;
+
 typedef struct _ASTNote {
     Node node;
     char *noteString;
@@ -187,6 +193,7 @@ typedef struct _ASTVisitor {
     void (*visitDetune)(void *self, ASTDetune *ast);
     void (*visitPitchSense)(void *self, ASTPitchSense *ast);
     void (*visitTempo)(void *self, ASTTempo *ast);
+    void (*visitTime)(void *self, ASTTime *ast);
     void (*visitNote)(void *self, ASTNote *ast);
     void (*visitRest)(void *self, ASTRest *ast);
     void (*visitOctave)(void *self, ASTOctave *ast);
@@ -222,6 +229,7 @@ extern ASTPitch *MMLASTPitchCreate(FileLocation *location);
 extern ASTDetune *MMLASTDetuneCreate(FileLocation *location);
 extern ASTPitchSense *MMLASTPitchSenseCreate(FileLocation *location);
 extern ASTTempo *MMLASTTempoCreate(FileLocation *location);
+extern ASTTime *MMLASTTimeCreate(FileLocation *location);
 extern ASTNote *MMLASTNoteCreate(FileLocation *location);
 extern ASTRest *MMLASTRestCreate(FileLocation *location);
 extern ASTOctave *MMLASTOctaveCreate(FileLocation *location);

@@ -166,6 +166,11 @@ static void visitTempo(void *self, ASTTempo *ast)
     dump(self, ast, FLOAT(ast, tempo), NULL);
 }
 
+static void visitTime(void *self, ASTTime *ast)
+{
+    dump(self, ast, INTEGER(ast, numerator), INTEGER(ast, denominator), NULL);
+}
+
 static void visitNote(void *self, ASTNote *ast)
 {
     dump(self, ast, STRING(ast, noteString), NULL);
@@ -288,6 +293,7 @@ Analyzer *MMLASTDumperCreate(ParseContext *context)
     self->visitor.visitDetune = visitDetune;
     self->visitor.visitPitchSense = visitPitchSense;
     self->visitor.visitTempo = visitTempo;
+    self->visitor.visitTime = visitTime;
     self->visitor.visitNote = visitNote;
     self->visitor.visitRest = visitRest;
     self->visitor.visitOctave = visitOctave;

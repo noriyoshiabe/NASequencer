@@ -41,13 +41,13 @@ extern int MML_error(YYLTYPE *yylloc, yyscan_t scanner, void **node, const char 
 
 %token END_OF_FILE 0
 %token D_TIMEBASE D_TITLE D_COPYRIGHT D_MARKER  D_VELOCITY D_OCTAVE  REVERSE   
-%token CHANNEL SYNTHESIZER BANK_SELECT PROGRAM_CHANGE VOLUME CHORUS REVERB EXPRESSION PAN PITCH C_PITCH DETUNE TEMPO
+%token CHANNEL SYNTHESIZER BANK_SELECT PROGRAM_CHANGE VOLUME CHORUS REVERB EXPRESSION PAN PITCH C_PITCH DETUNE TEMPO TIME
 %token PITCH_SENSE OCTAVE TRANSPOSE R_TRANSPOSE LENGTH GATETIME A_GATETIME VELOCITY A_VELOCITY TUPLET_START
 %token REPEAT_START REPEAT_END REPEAT_BREAK
 %token <s> NOTE REST TUPLET_END VELOCITY_SHIFT
 
 %type <node> d_timebase d_title d_copyright d_marker d_velocity d_octave channel synthesizer bank_select program_change
-%type <node> volume chorus reverb expression pan pitch detune pitch_sense tempo note rest octave
+%type <node> volume chorus reverb expression pan pitch detune pitch_sense tempo time note rest octave
 %type <node> transpose tie length gatetime velocity tuplet track_change repeat repeat_break chord
 
 %type <i> signed_integer
@@ -116,6 +116,7 @@ statement
     | detune
     | pitch_sense
     | tempo
+    | time
     | note
     | rest
     | octave
@@ -313,6 +314,16 @@ tempo
         {
             ASTTempo *n = node(Tempo, @$);
             n->tempo = $2;
+            $$ = n;
+        }
+    ;
+
+time
+    : TIME INTEGER ',' INTEGER
+        {
+            ASTTime *n = node(Time, @$);
+            n->numerator = $2;
+            n->denominator = $4;
             $$ = n;
         }
     ;

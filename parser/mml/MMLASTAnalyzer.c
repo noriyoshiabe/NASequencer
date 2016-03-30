@@ -14,6 +14,7 @@
 #define appendError(self, ast, ...) self->context->appendError(self->context, &ast->node.location, __VA_ARGS__)
 
 #define isValidRange(v, from, to) (from <= v && v <= to)
+#define isPowerOf2(x) ((x != 0) && ((x & (x - 1)) == 0))
 
 #define isGlobal(state) (GLOBAL == state->name)
 #define isGlobalOrRepeat(state) (GLOBAL == state->name || REPEAT == state->name)
@@ -352,6 +353,21 @@ static void visitTempo(void *_self, ASTTempo *ast)
     append(self->state, sem);
 }
 
+static void visitTime(void *_self, ASTTime *ast)
+{
+    MMLASTAnalyzer *self = _self;
+
+    if (1 > ast->numerator || 1 > ast->denominator || !isPowerOf2(ast->denominator)) {
+        appendError(self, ast, MMLParseErrorInvalidTimeSign, NACStringFromInteger(ast->numerator), NACStringFromInteger(ast->denominator), NULL);
+        return;
+    }
+
+    SEMTime *sem = node(Time, ast);
+    sem->numerator = ast->numerator;
+    sem->denominator = ast->denominator;
+    append(self->state, sem);
+}
+
 static void visitNote(void *_self, ASTNote *ast)
 {
     MMLASTAnalyzer *self = _self;
@@ -685,6 +701,7 @@ Analyzer *MMLASTAnalyzerCreate(ParseContext *context)
     self->visitor.visitDetune = visitDetune;
     self->visitor.visitPitchSense = visitPitchSense;
     self->visitor.visitTempo = visitTempo;
+    self->visitor.visitTime = visitTime;
     self->visitor.visitNote = visitNote;
     self->visitor.visitRest = visitRest;
     self->visitor.visitOctave = visitOctave;

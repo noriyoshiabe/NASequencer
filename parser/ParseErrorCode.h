@@ -123,6 +123,7 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(MMLParseErrorInvalidDetune);
     CASE(MMLParseErrorInvalidPitchSense);
     CASE(MMLParseErrorInvalidTempo);
+    CASE(MMLParseErrorInvalidTimeSign);
     CASE(MMLParseErrorIllegalStateWithNoteLength);
     CASE(MMLParseErrorIllegalStateWithRest);
     CASE(MMLParseErrorInvalidOctave);

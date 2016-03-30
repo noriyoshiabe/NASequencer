@@ -34,6 +34,7 @@ typedef enum {
     MMLParseErrorInvalidDetune,
     MMLParseErrorInvalidPitchSense,
     MMLParseErrorInvalidTempo,
+    MMLParseErrorInvalidTimeSign,
     MMLParseErrorIllegalStateWithNoteLength,
     MMLParseErrorIllegalStateWithRest,
     MMLParseErrorInvalidOctave,

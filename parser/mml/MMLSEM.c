@@ -293,6 +293,20 @@ SEMTempo *MMLSEMTempoCreate(FileLocation *location)
     return NodeCreate(SEMTempo, location);
 }
 
+static void SEMTimeAccept(void *self, void *visitor)
+{
+    ((SEMVisitor *)visitor)->visitTime(visitor, self);
+}
+
+static void SEMTimeDestroy(void *self)
+{
+}
+
+SEMTime *MMLSEMTimeCreate(FileLocation *location)
+{
+    return NodeCreate(SEMTime, location);
+}
+
 static void SEMNoteAccept(void *self, void *visitor)
 {
     ((SEMVisitor *)visitor)->visitNote(visitor, self);

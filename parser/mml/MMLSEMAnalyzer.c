@@ -256,6 +256,12 @@ static void visitTempo(void *_self, SEMTempo *sem)
     self->builder->appendTempo(self->builder, self->tick, sem->tempo);
 }
 
+static void visitTime(void *_self, SEMTime *sem)
+{
+    MMLSEMAnalyzer *self = _self;
+    self->builder->appendTimeSign(self->builder, self->tick, sem->numerator, sem->denominator);
+}
+
 static int calcStep(MMLSEMAnalyzer *self, NoteLength *noteLength)
 {
     if (-1 != noteLength->step) {
@@ -548,6 +554,7 @@ Analyzer *MMLSEMAnalyzerCreate(ParseContext *context)
     self->visitor.visitDetune = visitDetune;
     self->visitor.visitPitchSense = visitPitchSense;
     self->visitor.visitTempo = visitTempo;
+    self->visitor.visitTime = visitTime;
     self->visitor.visitNote = visitNote;
     self->visitor.visitRest = visitRest;
     self->visitor.visitOctave = visitOctave;

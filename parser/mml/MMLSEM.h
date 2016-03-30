@@ -100,6 +100,12 @@ typedef struct _SEMTempo {
     float tempo;
 } SEMTempo;
 
+typedef struct _SEMTime {
+    Node node;
+    int numerator;
+    int denominator;
+} SEMTime;
+
 typedef struct _NoteLength {
     int length;
     int dotCount;
@@ -197,6 +203,7 @@ typedef struct _SEMVisitor {
     void (*visitDetune)(void *self, SEMDetune *sem);
     void (*visitPitchSense)(void *self, SEMPitchSense *sem);
     void (*visitTempo)(void *self, SEMTempo *sem);
+    void (*visitTime)(void *self, SEMTime *sem);
     void (*visitNote)(void *self, SEMNote *sem);
     void (*visitRest)(void *self, SEMRest *sem);
     void (*visitOctave)(void *self, SEMOctave *sem);
@@ -232,6 +239,7 @@ extern SEMPitch *MMLSEMPitchCreate(FileLocation *location);
 extern SEMDetune *MMLSEMDetuneCreate(FileLocation *location);
 extern SEMPitchSense *MMLSEMPitchSenseCreate(FileLocation *location);
 extern SEMTempo *MMLSEMTempoCreate(FileLocation *location);
+extern SEMTime *MMLSEMTimeCreate(FileLocation *location);
 extern SEMNote *MMLSEMNoteCreate(FileLocation *location);
 extern SEMRest *MMLSEMRestCreate(FileLocation *location);
 extern SEMOctave *MMLSEMOctaveCreate(FileLocation *location);
