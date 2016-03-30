@@ -51,12 +51,13 @@ typedef struct _NAMidiSEMAnalyzer {
         Node *title;
         Node *copyright;
     } definedNode;
+
+    int length;
 } NAMidiSEMAnalyzer;
 
 static State *StateCreate();
 static State *StateCopy(State *self);
 static void StateDestroy(State *self);
-static int StateLength(State *self);
 
 #define TICK(state) (state->channels[state->channel - 1].tick)
 #define STEP(state) (state->channels[state->channel - 1].step)
@@ -79,7 +80,7 @@ static Node *process(void *_self, Node *node)
 {
     NAMidiSEMAnalyzer *self = _self;
     node->accept(node, self);
-    self->builder->setLength(self->builder, StateLength(self->state));
+    self->builder->setLength(self->builder, self->length);
     return NULL;
 }
 
@@ -336,6 +337,8 @@ static void visitNote(void *_self, SEMNote *sem)
     int velocity = -1 != sem->velocity ? sem->velocity : VELOCITY(self->state);
 
     self->builder->appendNote(self->builder, TICK(self->state), self->state->channel, noteNo, gatetime, velocity);
+
+    self->length = MAX(self->length, TICK(self->state) + MAX(STEP(self->state), gatetime));
 }
 
 static SEMList *findPattern(NAMidiSEMAnalyzer *self, const char *identifier)
@@ -486,13 +489,4 @@ static void StateDestroy(State *self)
 
     NAMapDestroy(self->patternMap);
     free(self);
-}
-
-static int StateLength(State *self)
-{
-    int length = 0;
-    for (int i = 0; i < 16; ++i) {
-        length = MAX(length, self->channels[i].tick);
-    }
-    return length;
 }
