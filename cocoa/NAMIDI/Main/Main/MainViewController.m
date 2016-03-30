@@ -120,7 +120,7 @@
 
 - (void)updateTipsVisibility
 {
-    _tipsView.hidden = 0 < _namidi.sequence.events.count;
+    _tipsView.hidden = _namidi.sequence.eventsOfConductorTrack.count < _namidi.sequence.events.count;
 }
 
 #pragma mark Keyboad event
