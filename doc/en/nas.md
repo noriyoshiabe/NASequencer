@@ -141,7 +141,7 @@ Include directive imports the codes written in a sepalate source file.
 #include 'drums.nas'
 ```
 
-Included file must be placed in the directory that is specified by [Include Search Path](TODO).
+Included file must be placed in the directory that is specified by [Preferences - Include Search Path](preference.md#Include Search Path).
 
 This directive is used for importing a macro, a rhythm pattern or etc those are used frequently.
 See [PATTERN](#PATTERN) for definition of pattern statement.
@@ -180,7 +180,7 @@ White-space can be put into between number and ':'.
 1920:
 ```
 
-See also [About Step](#About_Step).
+See also [About Step](#About Step).
 
 ### NOTE
 #### Pitch
@@ -281,7 +281,7 @@ TIME 3/4
 
 ### MARKER
 Inserts a marker.
-Acts as separator of sections for repeat play if repeat state on the player is [Repeat Marker](../operation_manual.md#Repeat_Marker).
+Acts as separator of sections for repeat play if [Repeat State](general.md#Repeat State) on the player is Repeat Marker.
 Exported to Standard MIDI File as Marker(FF 06h) in first MTrk chunk.
 
 ```
@@ -397,7 +397,7 @@ GATETIME STEP +120
 ### SYNTH
 Changes synthesizer of current channel.
 The specified SoundFont has to be loaded in advance.
-See also [Synthesizer Settings](../operation_manual-preference.md#Synthesizer_Settings).
+See also [Synthesizer Settings](preference.md#Synthesizer Settings).
 
 ```
 SYNTH 'SGM-V2.01'
@@ -495,7 +495,7 @@ PITCH +8191
 
 Exported to Standard MIDI File as Pitch Bend Change (En) with converting value 0 to 16383.
 
-See also [PITCH SENSE](#PITCH_SENSE).
+See also [PITCH SENSE](#PITCH SENSE).
 
 ### PITCH SENSE
 Configs pitch bend range of current channel in a unit of semitone.

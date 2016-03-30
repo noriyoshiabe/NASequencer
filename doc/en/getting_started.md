@@ -169,4 +169,4 @@ NASequencer suports following languages.
 If you familiar with those. you can choose format form file creation dialog.
 
 ### Advanced Usage
-When you are familiar with basics, read [Operation Manual](general.md) for more advanced usage.
+When you are familiar with basics, read [Operation Manual](__#operation_manual) for more advanced usage.

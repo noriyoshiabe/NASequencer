@@ -17,12 +17,12 @@ Checkbox to toggle show Welcome Window on Launch Application.
 If you want to reset to using Inteneal Editor, uncheck the "Use External Editor" checkbox.
 
 ### Include Search Path
-This path is used by [Include Directive](TODO).
-If the path ponts to default "/Users/\<USERNAME\>/Music/NASequencer" and Include Directive is notated on source file like below,
+This path is used by [Include Directive](nas.md#Include).
+If the path ponts to default "/Users/&lt;USERNAME&gt;/Music/NASequencer" and Include Directive is notated on source file like below,
 ```
 #include "drums-pattern.nas"
 ```
-"/Users/\<USERNAME\>/Music/NASequencer/drums-pattern.nas" is read.
+"/Users/&lt;USERNAME&gt;/Music/NASequencer/drums-pattern.nas" is read.
 
 #### Change Include Search Path
 0. Click "Browse" Button
@@ -45,7 +45,7 @@ _**Full Version Feature**_
 0. Choose prefer SoundFont on selection dialog
 
 #### Change Default Synthesizer
-Order of synthesizer panel affects to the order of [Synth](./operation-manual-general.md#synth) pull-down menu.
+Order of synthesizer panel affects to the order of [Synth](general.md#Mixer Panel) pull-down menu.
 First synthesizer of the order is the default synthesizer used for default sound.
 ![](../shared/preference-synthesizer-2.png)
 

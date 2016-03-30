@@ -26,7 +26,7 @@ If current track switches to new track, current location for note event will be 
 
 #### Track and Channel
 Channel of MIDI is not synchronized with track.
-Switching channel is by [@ch](#@ch) command.
+Switching channel is by [Channel](#Channel) command.
 
 #### Example for Track and Channel
 
@@ -86,7 +86,7 @@ Initial channel number is 1.
 "This is string too."
 ```
 
-String is used by [\#title](##title) and [\#copyright](##copyright) directives。
+String is used by [Title](#Title) and [Copyright](#Copyright) directives。
 
 ### Macro
 Macro is a identifier which will be replaced by a code fragment.
@@ -109,7 +109,7 @@ $m{vol, note} = @V%vol %note;
 $m{100, CDE} // This will be replaced by @V100 CDE
 ```
 
-_Excerpted from [FlMML Detail of Macro](https://flmml.codeplex.com/wikipage?title=Reference&referringTitle=Documentation#fl_macro)_
+<i>Excerpted from [FlMML - Detail of Macro](https://flmml.codeplex.com/wikipage?title=Reference&referringTitle=Documentation#fl_macro)</i>
 
 **Note:**  
 Macro function confirms to the FlMML specification.
@@ -121,7 +121,7 @@ Include directive imports the codes written in a sepalate source file.
 #include 'drums.mml'
 ```
 
-Included file must be placed in the directory that is specified by [Include Search Path](TODO).
+Included file must be placed in the directory that is specified by [Preferences - Include Search Path](preference.md#Include Search Path).
 
 This directive is used for importing a macro, a initialization or etc those are used frequently.
 
@@ -146,7 +146,7 @@ D--  // D♭♭ (Same as C)
 #### Note Length
 Length of note can be notated by a number follow after pitch.
 A number represents for N of 1/N note length.
-Length can be omitted and if it is so, value of [Default Note Length](#Default_Note_Length) is applied to note.
+Length can be omitted and if it is so, value of [Default Note Length](#Default Note Length) is applied to note.
 
 ```
 C4 // Quarter note
@@ -173,7 +173,7 @@ C%480 // Quarter note length on that resolution of quarter note is 480
 ### Rest
 Rest event is notated by `R`.
 In the same way for [Note](#Note), length of rest can be notated by a number follow after rest.
-Length can be omitted and if it is so, value of [Default Note Length](#Default_Note_Length) is applied to rest.
+Length can be omitted and if it is so, value of [Default Note Length](#Default Note Length) is applied to rest.
 
 ```
 R4 // quarter rest
@@ -196,7 +196,7 @@ Ups octave relatively by current setting.
 ##### >
 Downs octave relatively by current setting.
 
-Behavior of '<' and '>' can be reversed by [#octave reverse](##octave_reverse) directive.
+Behavior of '<' and '>' can be reversed by [Octave Reverse](#Octave Reverse) directive.
 
 ### Timebase
 Changes config of ticks per quarter note.
@@ -246,7 +246,7 @@ L384 L192 L128 L96 L64 L48 L32 L24 L16 L12 L8 L6 L4 L3 L2 L1
 #### Gatetime by Ratio
 Specify ratio of gatetime.
 Valid value range is 0 to 16.
-The gatetime of note will be <value>/16.
+The gatetime of note will be specified value / 16.
 Initial value is 15.
 
 ```
@@ -300,13 +300,13 @@ V10 // Velocity will be 87
 )5  // Up 5 steps(1x5=5) so velocity will be 105
 ```
 
-Behavior of '(' and ')' can be reversed by [#velocity reverse](##velocity_reverse) directive.
+Behavior of '(' and ')' can be reversed by [Velocity Reverse](#Velocity Reverse) directive.
 
 ### Tuplet
 Notes surrounded by `{}` acts as tuplet.
 Note length can be specified after `{}`.
-If note length is omitted, [Default Note Length](#Default_Note_Length) is applied to tuplet.
-Length of each note in tuplet will evenly be \<note length of tuplet\> / \<count of notes in tuplet\>.
+If note length is omitted, [Default Note Length](#Default Note Length) is applied to tuplet.
+Length of each note in tuplet will evenly be &lt;note length of tuplet&gt; / &lt;count of notes in tuplet&gt;.
 
 ### Chord
 Notes surrounded by `[]` acts as chord.
@@ -342,7 +342,7 @@ Ch1 |060:C3 | .               .
     |048:C2 | x-----   x-------
 ```
 
-_Excerpted from [FlMML About Number of Voices, Chord Notation](https://flmml.codeplex.com/wikipage?title=Reference&referringTitle=Documentation#fl_poly)_
+<i>Excerpted from [FlMML - About Number of Voices, Chord Notation](https://flmml.codeplex.com/wikipage?title=Reference&referringTitle=Documentation#fl_poly)</i>
 
 ### Tie
 '&' between note and note with same pitch acts as tie.
@@ -365,7 +365,7 @@ NASequencer does not support slur with '&'.
 
 ### Repeat
 Indicates repeat phrase with `/:[<Number of repeat count>] ... / ... :/`.
-If <Number of repeat count> is omitted, repeat count will be twice.
+If &lt;Number of repeat count&gt; is omitted, repeat count will be twice.
 In last loop of repeating, if '/' is there, exit from loop.
 '/' can be omitted.
 
@@ -393,7 +393,7 @@ Exported to Standard MIDI File as Copyright Notice (FF 02h) in first MTrk chunk.
 
 ### Marker
 Inserts a marker.
-Acts as separator of sections for repeat play if repeat state on the player is [Repeat Marker](../operation_manual.md#Repeat_Marker).
+Acts as separator of sections for repeat play if [Repeat State](general.md#Repeat State) on the player is Repeat Marker.
 Exported to Standard MIDI File as Marker(FF 06h) in first MTrk chunk.
 
 ```
@@ -406,7 +406,7 @@ Marker repeating is NASequencer's own mechanism.
 By contrast with that [Repeat](#Repeat) affects to sequence events, marker repeating is for playback control on document window.
 
 ### Velocity Reverse
-Reverses behavior for [Velocity Shift](#Velocity_Shift)
+Reverses behavior for [Velocity Shift](#Velocity Shift)
 
 ```
 #velocity reverse
@@ -420,7 +420,7 @@ Default behavior is below.
 |Velocity Down| `)` |
 
 ### Octave Reverse
-Reverses behavior for [Octave Shift](#Octave_Shift)
+Reverses behavior for [Octave Shift](#Octave Shift)
 
 ```
 #octave reverse
@@ -455,7 +455,7 @@ Valid channel number is 1 to 16.
 ### Synthesizer
 Changes synthesizer of current channel.
 The specified SoundFont has to be loaded in advance.
-See also [Synthesizer Settings](../operation_manual-preference.md#Synthesizer_Settings).
+See also [Synthesizer Settings](preference.md#Synthesizer Settings).
 
 ```
 @sy 'SGM-V2.01'
@@ -474,7 +474,7 @@ Exported to Standard MIDI File as followings.
 - Control Change:Bank Select MSB (Bn 00h)
 - Control Change:Bank Select LSB (Bn 20h)
 
-See also [Programe Change](#Program_Change).
+See also [Programe Change](#Program Change).
 
 ### Program Change
 Used for changing preset of current channel.
@@ -563,7 +563,7 @@ Valid value range is -8192 to +8191.
 
 Exported to Standard MIDI File as Pitch Bend Change (En) with converting value 0 to 16383.
 
-See also [Pitch Bend Sensitivity](#Pitch_Bend_Sensitivity).
+See also [Pitch Bend Sensitivity](#Pitch Bend Sensitivity).
 
 ### Pitch Bend Sensitivity
 Configs pitch bend range of current channel in a unit of semitone.
@@ -588,7 +588,7 @@ Valid value range is -2400 to +2400.
 
 
 **Note:**  
-By contrast with that [Note Shift](#Note_Shift) changes scale of note, Detune change tuning of synthesizer.
+By contrast with that [Note Shift](#Note Shift) changes scale of note, Detune change tuning of synthesizer.
 
 ```
 @d-50

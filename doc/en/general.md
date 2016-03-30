@@ -38,7 +38,7 @@ See below for the detail.
 
 #### In Document Window
 Open source file in editor window.
-If external editor is selected in [Preferences](TODO), external editor will be launched and open source file.
+If external editor is selected in [Preferences - External Editor](preference.md#External Editor), external editor will be launched and open source file.
 
 #### In Embedded Editor
 File Open Dialog will be shown.
@@ -148,7 +148,7 @@ Play again from beginning of sequence when playing location reach to end of sequ
 ![](../shared/repeat_marker@2x.png)
 
 Play again from beginning of section when playing location reach to end of section.
-Section is divided by [Marker Event](TODO).
+Section is divided by [Marker Event](nas.md#MARKER).
 For example, if sequence events are
 ```
 001:01:000 C2 Gatetime=1920
@@ -178,53 +178,52 @@ E = end of sequence
 ```
 
 
-Views
------
-### Main View
+Main View
+---------
 ![](../shared/main-view.png)
 
-#### Conductor Panel
-##### Tempo
+### Conductor Panel
+#### Tempo
 Display tempo value on current location.
 
-##### Time Signature
+#### Time Signature
 Display tempo value on current location.
 
-#### Mixer Panel
+### Mixer Panel
 ![](../shared/mixer-panel.png)
 
-##### Channel
+#### Channel
 Display channel number.
 
-##### Mute
+#### Mute
 Button to toggle mute on/off.
 
-##### Solo
+#### Solo
 Button to toggle solo on/off.
 
-##### Synth
+#### Synth
 Pull-down menu to select synthesizer.
 
 _If there is control event in sequence, player will change synthesizer and pull-down selection will be updated._
 
-##### Preset Pull-Down
+#### Preset Pull-Down
 Pull-down menu to select preset in synthesizer.
 
 _If there is control event in sequence, player will send the event to synthesizer and pull-down selection will be updated._
 
-##### Volume / Pan / Chorus / Reverb
+#### Volume / Pan / Chorus / Reverb
 Slidiers for each synthesis value.
 
 _If there is control event in sequence, player will send the event to synthesizer and slider position will be updated._
 
-##### Level Indicator
+#### Level Indicator
 Display output level for each channel.
 
-#### Measure
+### Measure
 - Display guide for measure and beat
 - Seek current location to clicked position with click
 
-#### Conductor Track
+### Conductor Track
 - Display events below.
     - [Tempo Change](TODO)
     - [Time Signature](TODO)
@@ -232,7 +231,7 @@ Display output level for each channel.
 - Select track with click
 - Show detail view with click after selection
 
-#### Channel Track
+### Channel Track
 - Display [Note](TODO) events
 - Select track with click
 - Show detail view with click after selection
@@ -244,22 +243,24 @@ Additionally, following shortcut key is available.
 - ⌘ + A for select all tracks (including conductor track)
 - ESC for deselct all tracks
 
-#### Location
+### Location
 Display current location. location format is listed below from left side.
 
-- \<measure number>:\<beat>:\<tick>
-- \<minutes>:\<seconds>:\<milli seconds>
+- &lt;measure number&gt;:&lt;beat&gt;:&lt;tick&gt;
+- &lt;minutes&gt;:&lt;seconds&gt;:&lt;milli seconds&gt;
 
-### Detail View
+
+Detail View
+-----------
 ![](../shared/detail-view-1.png)
 
-#### Back Button
+### Back Button
 Button for back to main view.
 
-#### Track Selection
+### Track Selection
 Button to toggle display for events in track.
 
-##### Selection State
+#### Selection State
 ![Display](../shared/track-selection-display.png)
 
 ![No Display](../shared/track-selection-no-display.png)
@@ -267,45 +268,47 @@ Button to toggle display for events in track.
 ![Disable (There is no event in track)](../shared/track-selection-disable.png)
 
 
-#### Measure
+### Measure
 Behavior is same as main-view.
 
 - Display guide for measure and beat
 - Seek current location to clicked position with click
 
-#### Conductor Track
+### Conductor Track
 Display events below.
 
-- [Tempo Change](TODO)
-- [Time Signature](TODO)
-- [Marker](TODO)
+- [Tempo Change](nas.md#TEMPO)
+- [Time Signature](nas.md#TIME)
+- [Marker](nas.md#MARKER)
 
-#### Piano Roll
-Display [Note](TODO) events in selected channel tracks.
+### Piano Roll
+Display [Note](nas.md#NOTE) events in selected channel tracks.
 
-#### Keyboard
+### Keyboard
 - Guide for scale
 - Preview sound on selected channel track with click
 
-#### Velocity
-Display velocity of [Note](TODO) events in selected channel track.
+### Velocity
+Display velocity of [Note](nas.md#NOTE) events in selected channel track.
 
-#### Event List Switch
+### Event List Switch
 Button to toggle display event list.
 
-#### Event List
+### Event List
 Display events in selected tracks
 
 ![](../shared/detail-view-2.png)
 
-##### Filter Switch
-###### Note
+#### Filter Switch
+##### Note
 Button to toggle display note events.
 
-###### Control
+##### Control
 Button to toggle display events except note event.
 
-### Error Window
+
+Error Window
+------------
 If there is syntax or grammer error in source file, error window shows up.
 Errow window can be manually hidden by [x] button. Also, it is automatically hidden after error is corrected and source file is saved.
 

@@ -63,6 +63,9 @@ function renderHelp () {
       else if (href.startsWith('#')) {
         return '<a class="js-transit" href="#'+identifier+'__'+href.substring(1)+'">'+text+'</a>';
       }
+      else if (href.startsWith('__#')) {
+        return '<a class="js-transit" href="#'+href.substring(3)+'">'+text+'</a>';
+      }
       else if (href.match(/.+\.md#.+/)) {
         var matches = href.match(/(.+)\.md#(.+)/);
         return '<a class="js-transit" href="#'+matches[1]+'__'+matches[2]+'">'+text+'</a>';
@@ -70,6 +73,9 @@ function renderHelp () {
       else if (href.match(/.+\.md/)) {
         var matches = href.match(/(.+)\.md/);
         return '<a class="js-transit" href="#'+matches[1]+'">'+text+'</a>';
+      }
+      else {
+        return '<a href="'+href+'">'+text+'</a>';
       }
     }
 
