@@ -58,6 +58,8 @@ EXPRESSION     @x
 PAN            @p
 DETUNE         @d
 TEMPO          t
+PITCH          @?pb
+PITCH_SENSE    @ps
 
 NOTE_LENGTH    ([[:digit:]]*\.{0,2}|%[[:digit:]]+)
 NOTE           [CDEFGAB](\+{1,2}|#{1,2}|-{1,2})?{NOTE_LENGTH}?
@@ -105,6 +107,8 @@ LOCATION       ^##.+:[[:digit:]]+:[[:digit:]]+\n
 {PAN}             { return PAN; }
 {DETUNE}          { return DETUNE; }
 {TEMPO}           { return TEMPO; }
+{PITCH}           { return '@' == yytext[0] ? PITCH : C_PITCH; }
+{PITCH_SENSE}     { return PITCH_SENSE; }
 
 {NOTE}            { yylval->s = strdup(yytext); return NOTE; }
 {REST}            { yylval->s = strdup(yytext); return REST; }

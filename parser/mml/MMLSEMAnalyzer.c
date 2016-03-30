@@ -232,10 +232,22 @@ static void visitPan(void *_self, SEMPan *sem)
     self->builder->appendPan(self->builder, self->tick, self->channel, sem->value - 64);
 }
 
+static void visitPitch(void *_self, SEMPitch *sem)
+{
+    MMLSEMAnalyzer *self = _self;
+    self->builder->appendPitch(self->builder, self->tick, self->channel, sem->value);
+}
+
 static void visitDetune(void *_self, SEMDetune *sem)
 {
     MMLSEMAnalyzer *self = _self;
     self->builder->appendDetune(self->builder, self->tick, self->channel, sem->value);
+}
+
+static void visitPitchSense(void *_self, SEMPitchSense *sem)
+{
+    MMLSEMAnalyzer *self = _self;
+    self->builder->appendPitchSense(self->builder, self->tick, self->channel, sem->value);
 }
 
 static void visitTempo(void *_self, SEMTempo *sem)
@@ -532,7 +544,9 @@ Analyzer *MMLSEMAnalyzerCreate(ParseContext *context)
     self->visitor.visitReverb = visitReverb;
     self->visitor.visitExpression = visitExpression;
     self->visitor.visitPan = visitPan;
+    self->visitor.visitPitch = visitPitch;
     self->visitor.visitDetune = visitDetune;
+    self->visitor.visitPitchSense = visitPitchSense;
     self->visitor.visitTempo = visitTempo;
     self->visitor.visitNote = visitNote;
     self->visitor.visitRest = visitRest;

@@ -146,7 +146,17 @@ static void visitPan(void *self, SEMPan *sem)
     dump(self, sem, INTEGER(sem, value), NULL);
 }
 
+static void visitPitch(void *self, SEMPitch *sem)
+{
+    dump(self, sem, INTEGER(sem, value), NULL);
+}
+
 static void visitDetune(void *self, SEMDetune *sem)
+{
+    dump(self, sem, INTEGER(sem, value), NULL);
+}
+
+static void visitPitchSense(void *self, SEMPitchSense *sem)
 {
     dump(self, sem, INTEGER(sem, value), NULL);
 }
@@ -286,7 +296,9 @@ Analyzer *MMLSEMDumperCreate(ParseContext *context)
     self->visitor.visitReverb = visitReverb;
     self->visitor.visitExpression = visitExpression;
     self->visitor.visitPan = visitPan;
+    self->visitor.visitPitch = visitPitch;
     self->visitor.visitDetune = visitDetune;
+    self->visitor.visitPitchSense = visitPitchSense;
     self->visitor.visitTempo = visitTempo;
     self->visitor.visitNote = visitNote;
     self->visitor.visitRest = visitRest;

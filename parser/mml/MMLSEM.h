@@ -80,10 +80,20 @@ typedef struct _SEMPan {
     int value;
 } SEMPan;
 
+typedef struct _SEMPitch {
+    Node node;
+    int value;
+} SEMPitch;
+
 typedef struct _SEMDetune {
     Node node;
     int value;
 } SEMDetune;
+
+typedef struct _SEMPitchSense {
+    Node node;
+    int value;
+} SEMPitchSense;
 
 typedef struct _SEMTempo {
     Node node;
@@ -183,7 +193,9 @@ typedef struct _SEMVisitor {
     void (*visitReverb)(void *self, SEMReverb *sem);
     void (*visitExpression)(void *self, SEMExpression *sem);
     void (*visitPan)(void *self, SEMPan *sem);
+    void (*visitPitch)(void *self, SEMPitch *sem);
     void (*visitDetune)(void *self, SEMDetune *sem);
+    void (*visitPitchSense)(void *self, SEMPitchSense *sem);
     void (*visitTempo)(void *self, SEMTempo *sem);
     void (*visitNote)(void *self, SEMNote *sem);
     void (*visitRest)(void *self, SEMRest *sem);
@@ -216,7 +228,9 @@ extern SEMChorus *MMLSEMChorusCreate(FileLocation *location);
 extern SEMReverb *MMLSEMReverbCreate(FileLocation *location);
 extern SEMExpression *MMLSEMExpressionCreate(FileLocation *location);
 extern SEMPan *MMLSEMPanCreate(FileLocation *location);
+extern SEMPitch *MMLSEMPitchCreate(FileLocation *location);
 extern SEMDetune *MMLSEMDetuneCreate(FileLocation *location);
+extern SEMPitchSense *MMLSEMPitchSenseCreate(FileLocation *location);
 extern SEMTempo *MMLSEMTempoCreate(FileLocation *location);
 extern SEMNote *MMLSEMNoteCreate(FileLocation *location);
 extern SEMRest *MMLSEMRestCreate(FileLocation *location);

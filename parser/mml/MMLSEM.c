@@ -237,6 +237,20 @@ SEMPan *MMLSEMPanCreate(FileLocation *location)
     return NodeCreate(SEMPan, location);
 }
 
+static void SEMPitchAccept(void *self, void *visitor)
+{
+    ((SEMVisitor *)visitor)->visitPitch(visitor, self);
+}
+
+static void SEMPitchDestroy(void *self)
+{
+}
+
+SEMPitch *MMLSEMPitchCreate(FileLocation *location)
+{
+    return NodeCreate(SEMPitch, location);
+}
+
 static void SEMDetuneAccept(void *self, void *visitor)
 {
     ((SEMVisitor *)visitor)->visitDetune(visitor, self);
@@ -249,6 +263,20 @@ static void SEMDetuneDestroy(void *self)
 SEMDetune *MMLSEMDetuneCreate(FileLocation *location)
 {
     return NodeCreate(SEMDetune, location);
+}
+
+static void SEMPitchSenseAccept(void *self, void *visitor)
+{
+    ((SEMVisitor *)visitor)->visitPitchSense(visitor, self);
+}
+
+static void SEMPitchSenseDestroy(void *self)
+{
+}
+
+SEMPitchSense *MMLSEMPitchSenseCreate(FileLocation *location)
+{
+    return NodeCreate(SEMPitchSense, location);
 }
 
 static void SEMTempoAccept(void *self, void *visitor)

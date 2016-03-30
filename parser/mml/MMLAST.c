@@ -235,6 +235,20 @@ ASTPan *MMLASTPanCreate(FileLocation *location)
     return NodeCreate(ASTPan, location);
 }
 
+static void ASTPitchAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitPitch(visitor, self);
+}
+
+static void ASTPitchDestroy(void *self)
+{
+}
+
+ASTPitch *MMLASTPitchCreate(FileLocation *location)
+{
+    return NodeCreate(ASTPitch, location);
+}
+
 static void ASTDetuneAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitDetune(visitor, self);
@@ -247,6 +261,20 @@ static void ASTDetuneDestroy(void *self)
 ASTDetune *MMLASTDetuneCreate(FileLocation *location)
 {
     return NodeCreate(ASTDetune, location);
+}
+
+static void ASTPitchSenseAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitPitchSense(visitor, self);
+}
+
+static void ASTPitchSenseDestroy(void *self)
+{
+}
+
+ASTPitchSense *MMLASTPitchSenseCreate(FileLocation *location)
+{
+    return NodeCreate(ASTPitchSense, location);
 }
 
 static void ASTTempoAccept(void *self, void *visitor)

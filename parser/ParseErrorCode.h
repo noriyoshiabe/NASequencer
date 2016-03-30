@@ -33,7 +33,9 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(NAMidiParseErrorInvalidChorus);
     CASE(NAMidiParseErrorInvalidReverb);
     CASE(NAMidiParseErrorInvalidExpression);
+    CASE(NAMidiParseErrorInvalidPitch);
     CASE(NAMidiParseErrorInvalidDetune);
+    CASE(NAMidiParseErrorInvalidPitchSense);
     CASE(NAMidiParseErrorInvalidTranspose);
     CASE(NAMidiParseErrorInvalidKeySign);
     CASE(NAMidiParseErrorInvalidStep);
@@ -117,7 +119,9 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(MMLParseErrorInvalidReverb);
     CASE(MMLParseErrorInvalidExpression);
     CASE(MMLParseErrorInvalidPan);
+    CASE(MMLParseErrorInvalidPitch);
     CASE(MMLParseErrorInvalidDetune);
+    CASE(MMLParseErrorInvalidPitchSense);
     CASE(MMLParseErrorInvalidTempo);
     CASE(MMLParseErrorIllegalStateWithNoteLength);
     CASE(MMLParseErrorIllegalStateWithRest);

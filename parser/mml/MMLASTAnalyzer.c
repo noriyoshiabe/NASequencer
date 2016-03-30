@@ -285,6 +285,31 @@ static void visitPan(void *_self, ASTPan *ast)
     append(self->state, sem);
 }
 
+static void visitPitch(void *_self, ASTPitch *ast)
+{
+    MMLASTAnalyzer *self = _self;
+
+    if (ast->coarse) {
+        if (!isValidRange(ast->value, -64, 63)) {
+            appendError(self, ast, MMLParseErrorInvalidPitch, NACStringFromInteger(ast->value), NULL);
+            return;
+        }
+
+        ast->value = ast->value * 128;
+    }
+    else {
+        if (!isValidRange(ast->value, -8192, 8191)) {
+            appendError(self, ast, MMLParseErrorInvalidPitch, NACStringFromInteger(ast->value), NULL);
+            return;
+        }
+    }
+
+
+    SEMPitch *sem = node(Pitch, ast);
+    sem->value = ast->value;
+    append(self->state, sem);
+}
+
 static void visitDetune(void *_self, ASTDetune *ast)
 {
     MMLASTAnalyzer *self = _self;
@@ -295,6 +320,20 @@ static void visitDetune(void *_self, ASTDetune *ast)
     }
 
     SEMDetune *sem = node(Detune, ast);
+    sem->value = ast->value;
+    append(self->state, sem);
+}
+
+static void visitPitchSense(void *_self, ASTPitchSense *ast)
+{
+    MMLASTAnalyzer *self = _self;
+
+    if (!isValidRange(ast->value, 0, 24)) {
+        appendError(self, ast, MMLParseErrorInvalidPitchSense, NACStringFromInteger(ast->value), NULL);
+        return;
+    }
+
+    SEMPitchSense *sem = node(PitchSense, ast);
     sem->value = ast->value;
     append(self->state, sem);
 }
@@ -642,7 +681,9 @@ Analyzer *MMLASTAnalyzerCreate(ParseContext *context)
     self->visitor.visitReverb = visitReverb;
     self->visitor.visitExpression = visitExpression;
     self->visitor.visitPan = visitPan;
+    self->visitor.visitPitch = visitPitch;
     self->visitor.visitDetune = visitDetune;
+    self->visitor.visitPitchSense = visitPitchSense;
     self->visitor.visitTempo = visitTempo;
     self->visitor.visitNote = visitNote;
     self->visitor.visitRest = visitRest;

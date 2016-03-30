@@ -79,10 +79,21 @@ typedef struct _ASTPan {
     int value;
 } ASTPan;
 
+typedef struct _ASTPitch {
+    Node node;
+    int value;
+    bool coarse;
+} ASTPitch;
+
 typedef struct _ASTDetune {
     Node node;
     int value;
 } ASTDetune;
+
+typedef struct _ASTPitchSense {
+    Node node;
+    int value;
+} ASTPitchSense;
 
 typedef struct _ASTTempo {
     Node node;
@@ -172,7 +183,9 @@ typedef struct _ASTVisitor {
     void (*visitReverb)(void *self, ASTReverb *ast);
     void (*visitExpression)(void *self, ASTExpression *ast);
     void (*visitPan)(void *self, ASTPan *ast);
+    void (*visitPitch)(void *self, ASTPitch *ast);
     void (*visitDetune)(void *self, ASTDetune *ast);
+    void (*visitPitchSense)(void *self, ASTPitchSense *ast);
     void (*visitTempo)(void *self, ASTTempo *ast);
     void (*visitNote)(void *self, ASTNote *ast);
     void (*visitRest)(void *self, ASTRest *ast);
@@ -205,7 +218,9 @@ extern ASTChorus *MMLASTChorusCreate(FileLocation *location);
 extern ASTReverb *MMLASTReverbCreate(FileLocation *location);
 extern ASTExpression *MMLASTExpressionCreate(FileLocation *location);
 extern ASTPan *MMLASTPanCreate(FileLocation *location);
+extern ASTPitch *MMLASTPitchCreate(FileLocation *location);
 extern ASTDetune *MMLASTDetuneCreate(FileLocation *location);
+extern ASTPitchSense *MMLASTPitchSenseCreate(FileLocation *location);
 extern ASTTempo *MMLASTTempoCreate(FileLocation *location);
 extern ASTNote *MMLASTNoteCreate(FileLocation *location);
 extern ASTRest *MMLASTRestCreate(FileLocation *location);

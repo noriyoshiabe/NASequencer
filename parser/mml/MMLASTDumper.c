@@ -146,7 +146,17 @@ static void visitPan(void *self, ASTPan *ast)
     dump(self, ast, INTEGER(ast, value), NULL);
 }
 
+static void visitPitch(void *self, ASTPitch *ast)
+{
+    dump(self, ast, INTEGER(ast, value), BOOL(ast, coarse), NULL);
+}
+
 static void visitDetune(void *self, ASTDetune *ast)
+{
+    dump(self, ast, INTEGER(ast, value), NULL);
+}
+
+static void visitPitchSense(void *self, ASTPitchSense *ast)
 {
     dump(self, ast, INTEGER(ast, value), NULL);
 }
@@ -274,7 +284,9 @@ Analyzer *MMLASTDumperCreate(ParseContext *context)
     self->visitor.visitReverb = visitReverb;
     self->visitor.visitExpression = visitExpression;
     self->visitor.visitPan = visitPan;
+    self->visitor.visitPitch = visitPitch;
     self->visitor.visitDetune = visitDetune;
+    self->visitor.visitPitchSense = visitPitchSense;
     self->visitor.visitTempo = visitTempo;
     self->visitor.visitNote = visitNote;
     self->visitor.visitRest = visitRest;
