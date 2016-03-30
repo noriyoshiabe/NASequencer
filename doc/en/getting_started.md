@@ -12,7 +12,7 @@ At the beginning, you need to create an empty file.
 
 ![](../shared/file-creation-dialog.png)
 
-After file creation, editor-window and document window appear.
+After file creation, editor window and document window appear.
 Then, NASequencer starts to watch file changes.
 
 **Tips**  

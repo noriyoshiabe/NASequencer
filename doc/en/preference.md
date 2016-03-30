@@ -47,6 +47,7 @@ _**Full Version Feature**_
 #### Change Default Synthesizer
 Order of synthesizer panel affects to the order of [Synth](general.md#Mixer Panel) pull-down menu.
 First synthesizer of the order is the default synthesizer used for default sound.
+
 ![](../shared/preference-synthesizer-2.png)
 
 Purchase
