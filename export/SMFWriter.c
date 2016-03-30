@@ -222,6 +222,14 @@ void SMFWriterAppendProgramChange(SMFWriter *self, int32_t tick, uint8_t channel
     writeToTrack(self, channel, bytes, sizeof(bytes));
 }
 
+void SMFWriterAppendPitchBend(SMFWriter *self, int32_t tick, uint8_t channel, uint16_t value)
+{
+    uint8_t bytes[3] = {0xE0 | (channel - 1), 0x7F & value, 0x7F & (value >> 7)};
+
+    writeDeltaTime(self, channel, tick);
+    writeToTrack(self, channel, bytes, sizeof(bytes));
+}
+
 static void appendTrackEnd(SMFWriter *self)
 {
     uint8_t bytes[3] = {0xFF, 0x2F, 0x00};

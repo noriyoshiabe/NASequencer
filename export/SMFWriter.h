@@ -20,5 +20,6 @@ extern void SMFWriterAppendNoteOn(SMFWriter *self, int32_t tick, uint8_t channel
 extern void SMFWriterAppendNoteOff(SMFWriter *self, int32_t tick, uint8_t channel, uint8_t noteNo, uint8_t velocity);
 extern void SMFWriterAppendControlChange(SMFWriter *self, int32_t tick, uint8_t channel, uint8_t ccNo, uint8_t value);
 extern void SMFWriterAppendProgramChange(SMFWriter *self, int32_t tick, uint8_t channel, uint8_t programNo);
+extern void SMFWriterAppendPitchBend(SMFWriter *self, int32_t tick, uint8_t channel, uint16_t value);
 
 extern bool SMFWriterSerialize(SMFWriter *self);

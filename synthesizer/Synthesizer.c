@@ -100,6 +100,12 @@ static void send(void *_self, uint8_t *bytes, size_t length)
             self->channels[channel].channelPressure = bytes[1];
         }
         break;
+    case 0xE0:
+        if (3 <= length) {
+            uint8_t channel = bytes[0] & 0x0F;
+            self->channels[channel].pitchBendSensitivity = bytes[1] | (bytes[2] << 7);
+        }
+        break;
     }
 }
 

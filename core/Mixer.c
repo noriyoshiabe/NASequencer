@@ -271,6 +271,15 @@ void MixerSendExpression(Mixer *self, ExpressionEvent *event)
     }
 }
 
+void MixerSendPitch(Mixer *self, PitchEvent *event)
+{
+    MixerChannel *channel = NAArrayGetValueAt(self->channels, event->channel - 1);
+    if (channel->active) {
+        uint8_t bytes[3] = {0xE0 | (0x7F & channel->midiNumber), 0x7F & event->value, 0x7F & (event->value >> 7)};
+        channel->source->send(channel->source, bytes, 3);
+    }
+}
+
 void MixerSendDetune(Mixer *self, DetuneEvent *event)
 {
     MixerChannel *channel = NAArrayGetValueAt(self->channels, event->channel - 1);
@@ -305,6 +314,33 @@ void MixerSendDetune(Mixer *self, DetuneEvent *event)
 
         bytes[1] = 6;
         bytes[2] = event->corse.msb;
+        channel->source->send(channel->source, bytes, 3);
+
+        bytes[1] = 101;
+        bytes[2] = 0x7F;
+        channel->source->send(channel->source, bytes, 3);
+        bytes[1] = 100;
+        channel->source->send(channel->source, bytes, 3);
+    }
+}
+
+void MixerSendPitchSense(Mixer *self, PitchSenseEvent *event)
+{
+    MixerChannel *channel = NAArrayGetValueAt(self->channels, event->channel - 1);
+    if (channel->active) {
+        uint8_t bytes[3];
+
+        bytes[0] = 0xB0 | (0x0F & channel->midiNumber);
+
+        bytes[1] = 101;
+        bytes[2] = 0;
+        channel->source->send(channel->source, bytes, 3);
+
+        bytes[1] = 100;
+        channel->source->send(channel->source, bytes, 3);
+
+        bytes[1] = 6;
+        bytes[2] = event->value;
         channel->source->send(channel->source, bytes, 3);
 
         bytes[1] = 101;
