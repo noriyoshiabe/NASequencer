@@ -16,7 +16,7 @@ After file creation, editor-window and document window appear.
 Then, NASequencer starts to watch file changes.
 
 **Tips**  
-You can change default text-editor to other application from [preferences].
+You can change default text-editor to other application from [Preferences - External Editor](preference.md#External Editor).
 
 Hello NASequencer
 -----------------
@@ -47,7 +47,7 @@ The sequence will be like following list.
 C2 | x---            . 
 ```
 
-Then, press [▶] button on toolbar (or short-cut ⌘P key) to play sequence.
+Then, press play button on toolbar (or short-cut ⌘P key) to play sequence.
 You can hear melody of 'C D E F'.
 
 ### Modify sequence
@@ -127,7 +127,7 @@ The defalut ticks per a measure on 4/4 beat is 1920.
 480 means quarter note length.
 
 **Tips**  
-You can change config of ticks per quarter note by [RESOLUTION] statement.
+You can change config of ticks per quarter note by [RESOLUTION](nas.md#RESOLUTION) statement.
 However in most of cases, it's unnecessary to change it because 480 is the defact standard of division used by many DAW.
 
 ### Note
@@ -137,7 +137,7 @@ However in most of cases, it's unnecessary to change it because 480 is the defac
 
 - `#` is for the sharp, `b` is for the flat and `n` is for natural
 - Double sharp and double flat is acceptable
-- Natural is only affected when [KEY] is specified
+- Natural is only affected when [KEY](nas.md#KEY) is specified
 
 ### Comment
 `==` `--` `//` can be used the line comment. It does not affect the result of sequence.
@@ -158,15 +158,15 @@ When you want to reset it, reopen example from welcome window.
 ### Check Syntax Reference
 Documented about syntax in this section is just for introduction. Please check the references.
 
-- [Note as Sequence]
+- [Note as Sequence](nas.md)
 
 ### Other Languages
 NASequencer suports following languages.
 
-- [ABC Notation]
-- [Music Macro Language]
+- [ABC Notation](abc.md)
+- [Music Macro Language](mml.md)
 
 If you familiar with those. you can choose format form file creation dialog.
 
 ### Advanced Usage
-When you are familiar with basics, read [operation manual] for more advanced usage.
+When you are familiar with basics, read [Operation Manual](general.md) for more advanced usage.

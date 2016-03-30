@@ -30,3 +30,8 @@ Full Version
   - Standard MIDI File (Format 1)
   - Waveform Audio File Format (WAV 44.1kHz Linear PCM 16bit stereo)
   - Advanced Audio Coding (AAC 44.1kHz 192kbps stereo)
+
+--------------
+
+**See Also**  
+[Getting Started](getting_started.md)

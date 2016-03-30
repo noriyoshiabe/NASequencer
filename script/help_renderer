@@ -8,62 +8,91 @@ var fs = require('fs')
 
 
 var locale = 'en';
-var docDir = __dirname + '/../doc';
-var dstDir = '../cocoa/NAMIDI/Resources/NASequencer.help/Contents/Resources';
 
-var contents = {
-  overview:        docDir + '/' + locale + '/' + 'overview.md',
-  getting_started: docDir + '/' + locale + '/' + 'getting-started.md',
-  general:         docDir + '/' + locale + '/' + 'operation-manual-general.md',
-  preference:      docDir + '/' + locale + '/' + 'operation-manual-preference.md',
-  nas:             docDir + '/' + locale + '/' + 'nas.md',
-  abc:             docDir + '/' + locale + '/' + 'abc.md',
-  mml:             docDir + '/' + locale + '/' + 'mml.md',
-  support:         docDir + '/' + locale + '/' + 'support.md',
-  license:         docDir + '/' + 'base' + '/' + 'license.md',
-}
+var srcDir = __dirname + '/../doc';
+var dstDir = '../doc/dest/help';
 
-var renderer = new marked.Renderer();
 
-// For Help Indexer
-renderer.br = function () {
-  return '<br/>';
-}
+function renderHelp () {
 
-function main(argv, callback) {
-  var template = fs.readFileSync(docDir + '/template/help.ejs', 'utf-8');
+  var renderer = new marked.Renderer();
+
+  // For Help Indexer
+  renderer.br = function () {
+    return '<br/>';
+  }
+
+  var contents = [
+    'overview',
+    'getting_started',
+    'general',
+    'preference',
+    'nas',
+    'abc',
+    'mml',
+    'support',
+    'license',
+  ]
+
+  var template = fs.readFileSync(srcDir + '/template/help.ejs', 'utf-8');
   var dest = dstDir + '/en.lproj/index.html';
 
   var renderAttrs = {};
 
-  for (var key in contents) {
-    var md = fs.readFileSync(contents[key], 'utf8');
+  for (var i = 0; i < contents.length; ++i) {
+    var identifier = contents[i];
+    var contentPath = srcDir+'/'+locale+'/'+identifier+'.md';
+    if (!fs.existsSync(contentPath)) {
+      contentPath = srcDir+'/base/'+identifier+'.md';
+    }
+
+    var md = fs.readFileSync(contentPath, 'utf8');
 
     renderer.heading = function (text, level) {
       if (1 == level) {
         return '';
       }
       level += 2;
-      return '<a name="'+key+'__'+text+'"></a><h'+level+'>'+text+'</h'+level+'>';
+      return '<a name="'+identifier+'__'+text+'"></a><h'+level+'>'+text+'</h'+level+'>';
     }
 
     renderer.link = function (href, title, text) {
       if (href.startsWith('http')) {
         return '<a href="'+href+'" target="_blank">'+text+'</a>';
       }
-      else {
-        return '<a class="js-transit" href="#'+key+'__'+href.substring(1)+'">'+text+'</a>';
+      else if (href.startsWith('#')) {
+        return '<a class="js-transit" href="#'+identifier+'__'+href.substring(1)+'">'+text+'</a>';
+      }
+      else if (href.match(/.+\.md#.+/)) {
+        var matches = href.match(/(.+)\.md#(.+)/);
+        return '<a class="js-transit" href="#'+matches[1]+'__'+matches[2]+'">'+text+'</a>';
+      }
+      else if (href.match(/.+\.md/)) {
+        var matches = href.match(/(.+)\.md/);
+        return '<a class="js-transit" href="#'+matches[1]+'">'+text+'</a>';
       }
     }
 
-    renderAttrs[key] = marked(md, {renderer: renderer});
+    renderAttrs[identifier] = marked(md, {renderer: renderer});
   }
 
   var html = ejs.render(template, renderAttrs);
   fs.writeFileSync(dest, html);
+}
 
-  execSync('rm -f '+dstDir+'/shared/*.png');
-  execSync('cp '+docDir+'/shared/*.png '+dstDir+'/shared/');
+
+function main(argv, callback) {
+  execSync('rm -rf '+dstDir);
+
+  execSync('mkdir -p '+dstDir);
+  execSync('mkdir '+dstDir+'/shared');
+  execSync('mkdir '+dstDir+'/en.lproj');
+
+  execSync('cp '+srcDir+'/shared/*.png '+dstDir+'/shared/');
+  execSync('cp '+srcDir+'/asset/help.js '+dstDir+'/shared/');
+  execSync('cp '+srcDir+'/asset/help.css '+dstDir+'/shared/');
+
+  renderHelp();
 }
 
 if (!module.parent) {
