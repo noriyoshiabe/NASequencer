@@ -17,7 +17,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
-#define PROMPT "namidi> "
+#define PROMPT "naseq> "
 #define MAX_HISTORY 100
 
 struct _CLI {

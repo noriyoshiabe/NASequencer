@@ -758,11 +758,11 @@ static CommandTable commandTable[] = {
     {"export", ExportCommandExecute, "export <file>", "export sequence.\nsupported file types are currently .smf, .mid, .midi, .wav, .wave .m4a and .aac."},
     {"help", HelpCommandExecute, "help", "display this help."},
     {"syntax", SyntaxCommandExecute, "syntax <nas|abc|mml>", "syntax reference."},
-    {"about", AboutCommandExecute, "about", "about NAMIDI."},
+    {"about", AboutCommandExecute, "about", "about NASequencer."},
 #ifdef DEBUG
     {"debug", LogCommandExecute, "debug", "for development."},
 #endif
-    {"exit", ExitCommandExecute, "exit", "exit namidi."},
+    {"exit", ExitCommandExecute, "exit", "exit NASequencer."},
 
     {NULL, NULL, NULL, NULL}
 };

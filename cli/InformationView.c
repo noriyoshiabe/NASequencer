@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #define VERSION "0.4.0"
-#define VERSION_LONG "namidi-cli Version "VERSION" January 2, 2016\n"
+#define VERSION_LONG "NASequencer CLI Version "VERSION" January 2, 2016\n"
 
 extern unsigned char ___doc_en_nas_md[];
 extern int ___doc_en_nas_md_len;
@@ -16,16 +16,16 @@ extern unsigned char license_txt[];
 extern int license_txt_len;
 
 const char *HEADER =
-"Welcome to the `NAMIDI` sequencer.\n"
+"Welcome to the NASequencer.\n"
 "\n"
-"NAMIDI(beta): version "VERSION"\n"
+"NASequencer CLI (beta): version "VERSION"\n"
 "Copyright (c) 2016, Noriyoshi Abe. All Rights Reserved.\n";
 
 const char *GETTING_STARTED =
 "Type 'help' for help.  Type 'exit' to finish today's creative activity.\n";
 
 const char *USAGE =
-"Usage: namidi-cli [options] [file]\n"
+"Usage: naseq [options] [file]\n"
 "Options:\n"
 " -o, --outout <file>      Write output to SMF, WAV or AAC.\n"
 "                          WAV and AAC output require valid synthesizer with -s, --sound-font option.\n"

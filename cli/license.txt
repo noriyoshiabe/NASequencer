@@ -1,5 +1,5 @@
-NAMIDI
-======
+NASequencer
+===========
 Copyright (c) 2016, Noriyoshi Abe. All Rights Reserved.
 
 

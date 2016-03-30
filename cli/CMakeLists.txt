@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.2)
 
 project(namidi-cli)
+set(TARGET_NAME naseq)
 
 add_definitions(-Wall)
 
@@ -77,11 +78,11 @@ set(SOURCES
   syntax_mml.c
 )
 
-add_executable(${PROJECT_NAME} ${SOURCES})
-target_link_libraries(${PROJECT_NAME} ${LIBEDIT})
-target_link_libraries(${PROJECT_NAME} namidi-core)
-target_link_libraries(${PROJECT_NAME} namidi-sequence)
-target_link_libraries(${PROJECT_NAME} namidi-parser)
-target_link_libraries(${PROJECT_NAME} namidi-lib)
-target_link_libraries(${PROJECT_NAME} namidi-synthesizer)
-target_link_libraries(${PROJECT_NAME} namidi-export)
+add_executable(${TARGET_NAME} ${SOURCES})
+target_link_libraries(${TARGET_NAME} ${LIBEDIT})
+target_link_libraries(${TARGET_NAME} namidi-core)
+target_link_libraries(${TARGET_NAME} namidi-sequence)
+target_link_libraries(${TARGET_NAME} namidi-parser)
+target_link_libraries(${TARGET_NAME} namidi-lib)
+target_link_libraries(${TARGET_NAME} namidi-synthesizer)
+target_link_libraries(${TARGET_NAME} namidi-export)
