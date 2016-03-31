@@ -1,5 +1,12 @@
+function updateTopicsLabel() {
+  var body = document.querySelector('body');
+  var topic = document.querySelector('a#topic');
+  topic.textContent = body.classList.contains('is-menu-open') ? 'Hide topics' : 'Show topics';
+}
+
 function toggleMenu(e) {
   document.querySelector('body').classList.toggle('is-menu-open');
+  updateTopicsLabel();
   e.preventDefault();
 }
 
@@ -36,6 +43,7 @@ document.onreadystatechange = function () {
 
     if ('#top' != location.hash) {
       body.classList.add('is-menu-open');
+      updateTopicsLabel();
     }
 
     window.addEventListener('popstate', function () {
