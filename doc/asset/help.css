@@ -6,6 +6,7 @@ nav {
   bottom: 0;
   width: 200px;
   padding: 20px 10px;
+  overflow-y: auto;
 }
 
 .is-menu-open nav {
@@ -18,6 +19,10 @@ main {
   left: 0;
   right: 0;
   padding: 20px;
+}
+
+main:not(:hover) {
+  overflow: hidden;
 }
 
 .is-menu-open main {

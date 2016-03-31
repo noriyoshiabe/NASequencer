@@ -510,7 +510,7 @@ Exported to Standard MIDI File as Effects 3 Depth of Control Change (Bn 5Dh).
 @cs40
 ```
 
-### REVERB
+### Reverb
 Specifies reverb send level of current channel.
 Valid value range is 0 to 127.
 Initial value is 0.

@@ -146,7 +146,7 @@ Included file must be placed in the directory that is specified by [Preferences 
 This directive is used for importing a macro, a rhythm pattern or etc those are used frequently.
 See [PATTERN](#PATTERN) for definition of pattern statement.
 
-### Line-Brake and Semicolon
+### Line-Break and Semicolon
 Line-break acts as end of statement.
 If line-break is put into channel statement like below, it is treated as error.
 

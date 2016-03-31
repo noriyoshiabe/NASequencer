@@ -23,6 +23,7 @@ function renderHelp () {
   }
 
   var contents = [
+    'index',
     'overview',
     'getting_started',
     'general',
@@ -68,7 +69,8 @@ function renderHelp () {
       }
       else if (href.match(/.+\.md#.+/)) {
         var matches = href.match(/(.+)\.md#(.+)/);
-        return '<a class="js-transit" href="#'+matches[1]+'__'+matches[2]+'">'+text+'</a>';
+        var anchor = '=' == matches[2] ? text : matches[2];
+        return '<a class="js-transit" href="#'+matches[1]+'__'+anchor+'">'+text+'</a>';
       }
       else if (href.match(/.+\.md/)) {
         var matches = href.match(/(.+)\.md/);
