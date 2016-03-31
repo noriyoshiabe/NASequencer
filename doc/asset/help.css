@@ -13,6 +13,50 @@ nav {
   display: block;
 }
 
+nav input[type="checkbox"] {
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  -o-appearance: none;
+  width: 0;
+  margin: 0;
+}
+
+nav input[type="checkbox"] ~ ul {
+  height: 0;
+  overflow: hidden;
+}
+
+nav input[type="checkbox"]:checked ~ ul{
+  height: auto;
+}
+
+nav li {
+  list-style: none;
+}
+
+nav input[type="checkbox"] {
+	position: relative;
+}
+
+nav input[type="checkbox"]::after {
+	display: block;
+	content: '';
+	position: absolute;
+	top: -0.6em;
+	left: -1em;
+  width: 0;
+	height: 0;
+	border-top: 4px solid transparent;
+	border-right: 7px solid transparent;
+	border-bottom: 4px solid transparent;
+	border-left: 7px solid #AAA;
+  transform-origin: 0.2em 0.3em;
+}
+
+nav input[type="checkbox"]:checked::after {
+	transform: rotate(90deg);
+}
+
 main {
   position: absolute;
   top: 0;
