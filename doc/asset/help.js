@@ -44,6 +44,11 @@ document.onreadystatechange = function () {
       if (isMenuOpen) {
         body.classList.add('is-menu-open');
       }
+
+      body.style.overflow = 'hidden';
+      setTimeout(function () {
+        body.style.overflow = '';
+      }, 10);
     });
 
     break;
