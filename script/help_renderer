@@ -10,7 +10,7 @@ var fs = require('fs')
 var locale = 'en';
 
 var srcDir = __dirname + '/../doc';
-var dstDir = '../doc/dest/help';
+var dstDir = '../doc/dest/help/Contents';
 
 
 function renderHelp () {
@@ -36,7 +36,7 @@ function renderHelp () {
   ]
 
   var template = fs.readFileSync(srcDir + '/template/help.ejs', 'utf-8');
-  var dest = dstDir + '/en.lproj/index.html';
+  var dest = dstDir + '/Resources/en.lproj/index.html';
 
   var renderAttrs = {};
 
@@ -93,12 +93,13 @@ function main(argv, callback) {
   execSync('rm -rf '+dstDir);
 
   execSync('mkdir -p '+dstDir);
-  execSync('mkdir '+dstDir+'/shared');
-  execSync('mkdir '+dstDir+'/en.lproj');
+  execSync('mkdir -p '+dstDir+'/Resources/shared');
+  execSync('mkdir -p '+dstDir+'/Resources/en.lproj');
 
-  execSync('cp '+srcDir+'/shared/*.png '+dstDir+'/shared/');
-  execSync('cp '+srcDir+'/asset/help.js '+dstDir+'/shared/');
-  execSync('cp '+srcDir+'/asset/help.css '+dstDir+'/shared/');
+  execSync('cp '+srcDir+'/shared/*.png '+dstDir+'/Resources/shared');
+  execSync('cp '+srcDir+'/asset/help.js '+dstDir+'/Resources/shared');
+  execSync('cp '+srcDir+'/asset/help.css '+dstDir+'/Resources/shared');
+  execSync('cp '+srcDir+'/asset/Info.plist '+dstDir);
 
   renderHelp();
 }

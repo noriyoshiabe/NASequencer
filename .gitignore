@@ -4,7 +4,7 @@ xcuserdata
 *.xccheckout
 
 NAMIDI.app/
-help/*.html
+*.help/
 *.dmg
 release/
 
