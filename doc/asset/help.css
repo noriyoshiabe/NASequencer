@@ -45,8 +45,13 @@ nav li {
   margin: 0;
 }
 
-nav li.is-active {
-  background-color: #f2f2f2;
+nav li.is-active:before {
+  content: " ";
+  position: absolute;
+  width: 200px;
+  height: 30px;
+  background-color: #000;
+  opacity: 0.06;
 }
 
 nav li > *:first-child {
@@ -89,6 +94,10 @@ nav a {
   font-size: 0.85rem;
   height: 30px;
   line-height: 30px;
+}
+
+nav a:hover {
+  text-decoration: none;
 }
 
 main {
