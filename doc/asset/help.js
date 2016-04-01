@@ -10,6 +10,25 @@ function toggleMenu(e) {
   e.preventDefault();
 }
 
+function openTopic(anchor) {
+  var link = document.querySelector('nav a[href="'+anchor+'"]');
+
+  if (link) {
+    var list = link.parentNode.closest('ul');
+
+    while (list) {
+      if (list && list.previousSibling && list.previousSibling.previousSibling) {
+        var element = list.previousSibling.previousSibling;
+        if ('INPUT' == element.nodeName && 'checkbox' == element.type) {
+          element.checked = true;
+        }
+      }
+
+      list = list.parentNode.closest('ul');
+    }
+  }
+}
+
 document.onreadystatechange = function () {
   switch (document.readyState) {
   case 'interactive':
@@ -44,6 +63,7 @@ document.onreadystatechange = function () {
     if ('#top' != location.hash) {
       body.classList.add('is-menu-open');
       updateTopicsLabel();
+      openTopic(location.hash);
     }
 
     window.addEventListener('popstate', function () {
@@ -52,6 +72,8 @@ document.onreadystatechange = function () {
       if (isMenuOpen) {
         body.classList.add('is-menu-open');
       }
+
+      openTopic(location.hash);
 
       body.style.overflow = 'hidden';
       setTimeout(function () {
