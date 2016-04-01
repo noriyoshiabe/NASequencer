@@ -26,8 +26,12 @@ nav input[type="checkbox"] ~ ul {
   overflow: hidden;
 }
 
-nav input[type="checkbox"]:checked ~ ul{
+nav input[type="checkbox"]:checked ~ ul {
   height: auto;
+}
+
+nav input[type="checkbox"]:not(:checked) ~ ul li {
+  display: none;
 }
 
 nav {
