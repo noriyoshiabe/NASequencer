@@ -17,7 +17,7 @@ Basics
 - File extension must be '.mml'
 - Source file is written by plain-text
 - All keyword and identifiers are case-insensitive except macro identifier
-- Writing code shold be ascii charset except string literal and comment
+- Writing code should be ascii charset except string literal and comment
 - Supported file encodings are ascii and utf-8 only
 
 ### Track Separator
@@ -38,7 +38,7 @@ eeee;
 cdef;
 ```
 
-The result of avobe sequence will be following.
+The result of above sequence will be following.
 
 ```
             | 1
@@ -115,7 +115,7 @@ $m{100, CDE} // This will be replaced by @V100 CDE
 Macro function confirms to the FlMML specification.
 
 ### Include
-Include directive imports the codes written in a sepalate source file.
+Include directive imports the codes written in a separate source file.
 
 ```
 #include 'drums.mml'
@@ -152,7 +152,7 @@ Length can be omitted and if it is so, value of [Default Note Length](#Default N
 C4 // Quarter note
 ```
 
-Dotted note is represened by dot(.) follow after note length,
+Dotted note is represented by dot(.) follow after note length,
 
 ```
 C4. // Dotted quarter note
@@ -234,7 +234,7 @@ C     // This will be back to C
 Specifies default note length for when length of [Note](#Note) is omitted.
 Valid value range is 1 to 384.
 Initial value is 4.
-In the case that the specified number is more than 384 or the result of caluclated length is not a multiple of 1/384 note length,
+In the case that the specified number is more than 384 or the result of calculated length is not a multiple of 1/384 note length,
 NASequencer deals with it as error.
 Acceptable values are followings.
 
@@ -254,7 +254,7 @@ Q14
 C4 // Gatetime will be 14/16 of quarter note length
 ```
 
-#### Minux Value of Gatetime Ratio
+#### Minus Value of Gatetime Ratio
 Subtract length of specified value / 192 from result of gatetime with Gatetime by Ratio.
 
 ```
@@ -289,7 +289,7 @@ Ups velocity one step relatively by current setting.
 ##### )
 Downs velocity one step relatively by current setting.
 
-Differents how much one step changes velocity by the last velocity command whith is used `V` or `@V`.
+How much one step changes velocity is different by the last velocity command which is used `V` or `@V`.
 With number follow after '(' or ')', how many steps up/down velocity can be specified.
 
 ```
@@ -322,7 +322,7 @@ With 'R' command, timing of sound can be delayed.
 L8 [C4.RERG]D. C2
 ```
 
-The result of avobe sequence will be following.
+The result of above sequence will be following.
 
 ```
             | 1               2

@@ -63,7 +63,7 @@ _**Full Version Feature**_
 
     ![Export Button](../shared/export@2x.png)
 
-0. Select file type in expoting sheet.
+0. Select file type in exporting sheet.
     Following file types are available
 
     - Standard MIDI File (Format 1)
@@ -212,7 +212,7 @@ Pull-down menu to select preset in synthesizer.
 _If there is control event in sequence, player will send the event to synthesizer and pull-down selection will be updated._
 
 #### Volume / Pan / Chorus / Reverb
-Slidiers for each synthesis value.
+Sliders for each synthesis value.
 
 _If there is control event in sequence, player will send the event to synthesizer and slider position will be updated._
 
@@ -241,13 +241,13 @@ You can select multiple track with ⌘ + click or Shift + click
 Additionally, following shortcut key is available.
 
 - ⌘ + A for select all tracks (including conductor track)
-- ESC for deselct all tracks
+- ESC for deselect all tracks
 
 ### Location
 Display current location. location format is listed below from left side.
 
 - &lt;measure number&gt;:&lt;beat&gt;:&lt;tick&gt;
-- &lt;minutes&gt;:&lt;seconds&gt;:&lt;milli seconds&gt;
+- &lt;minutes&gt;:&lt;seconds&gt;:&lt;milliseconds&gt;
 
 
 Detail View
@@ -309,7 +309,7 @@ Button to toggle display events except note event.
 
 Error Window
 ------------
-If there is syntax or grammer error in source file, error window shows up.
-Errow window can be manually hidden by [x] button. Also, it is automatically hidden after error is corrected and source file is saved.
+If there is syntax or grammar error in source file, error window shows up.
+Error window can be manually hidden by [x] button. Also, it is automatically hidden after error is corrected and source file is saved.
 
 ![](../shared/error-window.png)

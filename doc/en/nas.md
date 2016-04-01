@@ -8,7 +8,7 @@ Basics
 - File extension must be '.nas'
 - Source file is written by plain-text
 - All keyword and identifiers are case-insensitive except macro identifier
-- Writing code shold be ascii charset except string literal and comment
+- Writing code should be ascii charset except string literal and comment
 - Supported file encodings are ascii and utf-8 only
 
 ### About Step
@@ -40,7 +40,7 @@ Quarter note length of C major will be below.
 ```
 
 Each time step is indicated, current location forwards by step value.
-Current location naver backwards.
+Current location never backwards.
 
 ### Step with Channel
 Current location is channel individual.
@@ -59,7 +59,7 @@ CHANNEL 1
 480: F
 ```
 
-The result of avobe sequence will be following.
+The result of above sequence will be following.
 
 ```
             | 1
@@ -135,7 +135,7 @@ Function type macro is also available.
 See [NOTE](#NOTE) for the details.
 
 ### Include
-Include directive imports the codes written in a sepalate source file.
+Include directive imports the codes written in a separate source file.
 
 ```
 #include 'drums.nas'
@@ -191,7 +191,7 @@ If octave is omitted, octave will be a octave of last note.
 Initial value of octave is 2.
 `#` is for the Sharp, `b` is for the `Flat` and `n` is for Natural.
 Double Sharp and Double Flat is acceptable.
-Natural affecting to pitch is only in tha case that [KEY](#KEY) is specified.
+Natural affecting to pitch is only in the case that [KEY](#KEY) is specified.
 
 ```
 480: C     // Octave is omitted so octave is default value of 2. Pitch will be C2.
@@ -484,8 +484,8 @@ PAN +30
 ```
 
 ### PITCH
-Specifies pitch bend of current chanel.
-Used for choking or arming of guiter, vibrato or etc.
+Specifies pitch bend of current channel.
+Used for choking or arming of guitar, vibrato or etc.
 Valid value range is -8192 to +8191.
 Initial value is 0.
 
@@ -498,7 +498,7 @@ Exported to Standard MIDI File as Pitch Bend Change (En) with converting value 0
 See also [PITCH SENSE](#PITCH SENSE).
 
 ### PITCH SENSE
-Configs pitch bend range of current channel in a unit of semitone.
+Configures pitch bend range of current channel in a unit of semitone.
 Valid value range is 0 to 24.
 Initial value is 2.
 
@@ -540,7 +540,7 @@ Exported to Standard MIDI File as followings.
 
 ### PATTERN
 Pattern is for naming identifier and reusing fragment of codes that appears repeatedly.
-Pattern is defined by folloing syntax.
+Pattern is defined by following syntax.
 
 ```
 PATTERN <identifier>
@@ -558,7 +558,7 @@ Identifier must satisfy the following rules.
 Defined pattern is expanded by [EXPAND](#EXPAND) statement.
 
 Pattern definition can be nested.
-Specifying identifier of expantion is different if the EXPAND statemnt is inside of parent pattern or not.
+Specifying identifier of expansion is different if the EXPAND statement is inside of parent pattern or not.
 
 ```
 PATTERN parent
@@ -590,5 +590,5 @@ END
 
 ### EXPAND
 Expands the defined pattern.
-Nested pattern can be exapnded with colon(:).
+Nested pattern can be expanded with colon(:).
 See [PATTERN](#PATTERN) for more details.

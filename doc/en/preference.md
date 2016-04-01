@@ -14,11 +14,11 @@ Checkbox to toggle show Welcome Window on Launch Application.
 0. Click "Select" Button
 0. Choose prefer app on selection dialog
 
-If you want to reset to using Inteneal Editor, uncheck the "Use External Editor" checkbox.
+If you want to reset to using Internal Editor, uncheck the "Use External Editor" checkbox.
 
 ### Include Search Path
 This path is used by [Include Directive](nas.md#Include).
-If the path ponts to default "/Users/&lt;USERNAME&gt;/Music/NASequencer" and Include Directive is notated on source file like below,
+If the path points to default "/Users/&lt;USERNAME&gt;/Music/NASequencer" and Include Directive is notated on source file like below,
 ```
 #include "drums-pattern.nas"
 ```
@@ -54,7 +54,7 @@ Purchase
 --------
 ### Purchase Full Version
 Click "Purchase" button to purchase from App Store and unlock full version features.
-Your purchase will help NASequencer’s development. Thank you!
+Your purchase will help NASequencer's development. Thank you!
 
 #### Full Version Features
 - Adding Synthesizer

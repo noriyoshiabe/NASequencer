@@ -30,7 +30,7 @@ Hello NASequencer
 ```
 
 The first example is that's it!  
-Type above snipet in editor-eindow.
+Type above snippet in editor-window.
 Then save it.
 
 Now, you can see the sequence in document window.
