@@ -146,7 +146,7 @@ Included file must be placed in the directory that is specified by [Preferences 
 This directive is used for importing a macro, a rhythm pattern or etc those are used frequently.
 See [PATTERN](#PATTERN) for definition of pattern statement.
 
-### Line-Break and Semicolon
+### Line-Break
 Line-break acts as end of statement.
 If line-break is put into channel statement like below, it is treated as error.
 
@@ -154,6 +154,8 @@ If line-break is put into channel statement like below, it is treated as error.
 CHANNEL // Error due to the line-break appears without channel number
 1
 ```
+
+#### Semicolon
 
 If an error occurs with statements in one line, semicolon can be used for end of statement. 
 
@@ -281,7 +283,7 @@ TIME 3/4
 
 ### MARKER
 Inserts a marker.
-Acts as separator of sections for repeat play if [Repeat State](general.md#Repeat State) on the player is Repeat Marker.
+Acts as separator of sections for repeat play if [Repeat State](general.md#Toggle Repeat) on the player is Repeat Marker.
 Exported to Standard MIDI File as Marker(FF 06h) in first MTrk chunk.
 
 ```

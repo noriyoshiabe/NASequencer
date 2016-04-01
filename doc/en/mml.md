@@ -393,7 +393,7 @@ Exported to Standard MIDI File as Copyright Notice (FF 02h) in first MTrk chunk.
 
 ### Marker
 Inserts a marker.
-Acts as separator of sections for repeat play if [Repeat State](general.md#Repeat State) on the player is Repeat Marker.
+Acts as separator of sections for repeat play if [Repeat State](general.md#Toggle Repeat) on the player is Repeat Marker.
 Exported to Standard MIDI File as Marker(FF 06h) in first MTrk chunk.
 
 ```

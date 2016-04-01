@@ -66,6 +66,10 @@ nav li li li > *:first-child {
   margin-left: 50px;
 }
 
+nav li li li li > *:first-child {
+  margin-left: 65px;
+}
+
 nav input[type="checkbox"] {
 	position: relative;
 }

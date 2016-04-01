@@ -219,20 +219,22 @@ _If there is control event in sequence, player will send the event to synthesize
 #### Level Indicator
 Display output level for each channel.
 
+<a name="general__main_measure"></a>
 ### Measure
 - Display guide for measure and beat
 - Seek current location to clicked position with click
 
+<a name="general__main_conductor_track"></a>
 ### Conductor Track
 - Display events below.
-    - [Tempo Change](TODO)
-    - [Time Signature](TODO)
-    - [Marker](TODO)
+    - [Tempo Change](nas.md#TEMPO)
+    - [Time Signature](nas.md#TIME)
+    - [Marker](nas.md#MARKER)
 - Select track with click
 - Show detail view with click after selection
 
 ### Channel Track
-- Display [Note](TODO) events
+- Display [Note](nas.md#NOTE) events
 - Select track with click
 - Show detail view with click after selection
 
@@ -267,13 +269,14 @@ Button to toggle display for events in track.
 
 ![Disable (There is no event in track)](../shared/track-selection-disable.png)
 
-
+<a name="general__detail_measure"></a>
 ### Measure
 Behavior is same as main-view.
 
 - Display guide for measure and beat
 - Seek current location to clicked position with click
 
+<a name="general__detail_conductor_track"></a>
 ### Conductor Track
 Display events below.
 

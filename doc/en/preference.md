@@ -5,7 +5,7 @@ General Settings
 ----------------
 ![](../shared/preference-general.png)
 
-### Show Welcome on Launch
+### Show Welcome
 Checkbox to toggle show Welcome Window on Launch Application.
 
 ### External Editor
