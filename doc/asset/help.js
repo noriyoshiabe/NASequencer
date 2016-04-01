@@ -29,6 +29,19 @@ function openTopic(anchor) {
   }
 }
 
+function selectTopic(anchor) {
+  var links = document.querySelectorAll('nav a');
+  for (var i = 0; i < links.length; ++i) {
+    var link = links[i];
+    if (link.hash == anchor) {
+      link.closest('li').classList.add('is-active');
+    }
+    else {
+      link.closest('li').classList.remove('is-active');
+    }
+  }
+}
+
 document.onreadystatechange = function () {
   switch (document.readyState) {
   case 'interactive':
@@ -64,6 +77,7 @@ document.onreadystatechange = function () {
       body.classList.add('is-menu-open');
       updateTopicsLabel();
       openTopic(location.hash);
+      selectTopic(location.hash);
     }
 
     window.addEventListener('popstate', function () {
@@ -74,6 +88,7 @@ document.onreadystatechange = function () {
       }
 
       openTopic(location.hash);
+      selectTopic(location.hash);
 
       body.style.overflow = 'hidden';
       setTimeout(function () {

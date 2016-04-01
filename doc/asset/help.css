@@ -5,7 +5,7 @@ nav {
   left: 0;
   bottom: 0;
   width: 200px;
-  padding: 20px 10px;
+  padding: 20px 0;
   overflow-y: auto;
 }
 
@@ -31,18 +31,34 @@ nav input[type="checkbox"]:checked ~ ul{
 }
 
 nav {
-  padding: 5px 8px;
+  padding: 8px 0;
 	border-right: 1px solid #ddd;
 }
 
 nav ul {
-  padding-top 0;
-  padding-bottom 0;
+  padding: 0;
+  margin: 0;
 }
 
 nav li {
   list-style: none;
-  margin: 10px 0 0 -10px;
+  margin: 0;
+}
+
+nav li.is-active {
+  background-color: #f2f2f2;
+}
+
+nav li > *:first-child {
+  margin-left: 20px;
+}
+
+nav li li > *:first-child {
+  margin-left: 35px;
+}
+
+nav li li li > *:first-child {
+  margin-left: 50px;
 }
 
 nav input[type="checkbox"] {
@@ -71,6 +87,8 @@ nav input[type="checkbox"]:checked::after {
 nav a {
   color: #555;
   font-size: 0.85rem;
+  height: 30px;
+  line-height: 30px;
 }
 
 main {
