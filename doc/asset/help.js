@@ -78,6 +78,12 @@ document.onreadystatechange = function () {
       updateTopicsLabel();
       openTopic(location.hash);
       selectTopic(location.hash);
+
+      setTimeout(function () {
+        if (!location.hash.match(/__/)) {
+          body.scrollTop = 0;
+        }
+      }, 0);
     }
 
     window.addEventListener('popstate', function () {
