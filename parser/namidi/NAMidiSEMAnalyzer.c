@@ -344,16 +344,22 @@ static void visitNote(void *_self, SEMNote *sem)
 static SEMList *findPattern(NAMidiSEMAnalyzer *self, const char *identifier)
 {
     char **ids = NACStringSplit(NACStringDuplicate(identifier), ":", NULL);
-    NAMap *petternMap = self->state->patternMap;
+    NAMap *patternMap = self->state->patternMap;
     SEMList *list = NULL;
     while (*ids) {
-        list = NAMapGet(petternMap, *ids);
+        list = NAMapGet(patternMap, *ids);
         if (!list) {
             return NULL;
         }
 
-        petternMap = list->patternMap;
+        patternMap = list->patternMap;
         ++ids;
+
+        NAIterator *iterator = NAMapGetIterator(patternMap);
+        while (iterator->hasNext(iterator)) {
+            NAMapEntry *entry = iterator->next(iterator);
+            NAMapPut(self->state->patternMap, entry->key, entry->value);
+        }
     }
 
     return list;
@@ -363,25 +369,23 @@ static void visitExpand(void *_self, SEMExpand *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
 
-    SEMList *pattern = findPattern(self, sem->identifier);
-    if (!pattern) {
-        appendError(self, sem, NAMidiParseErrorPatternMissing, sem->identifier, NULL);
-        return;
-    }
-
-    if (NASetContains(self->state->expandingPatternList, pattern)) {
-        appendError(self, sem, NAMidiParseErrorCircularPatternReference, sem->identifier, NULL);
-        return;
-    }
-
     NAStackPush(self->stateStack, self->state);
     self->state = StateCopy(self->state);
 
-    NASetAdd(self->state->expandingPatternList, pattern);
-    pattern->node.accept(pattern, self);
-    NASetRemove(self->state->expandingPatternList, pattern);
+    SEMList *pattern = findPattern(self, sem->identifier);
+    if (!pattern) {
+        appendError(self, sem, NAMidiParseErrorPatternMissing, sem->identifier, NULL);
+    }
+    else if (NASetContains(self->state->expandingPatternList, pattern)) {
+        appendError(self, sem, NAMidiParseErrorCircularPatternReference, sem->identifier, NULL);
+    }
+    else {
+        NASetAdd(self->state->expandingPatternList, pattern);
+        pattern->node.accept(pattern, self);
+        NASetRemove(self->state->expandingPatternList, pattern);
 
-    FLUSH(self->state);
+        FLUSH(self->state);
+    }
 
     State *local = self->state;
     self->state = NAStackPop(self->stateStack);
