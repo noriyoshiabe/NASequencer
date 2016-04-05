@@ -307,6 +307,8 @@ static void visitStep(void *_self, SEMStep *sem)
 
     STEP(self->state) = sem->step;
     GATETIME(self->state).step = sem->step;
+
+    self->length = MAX(self->length, TICK(self->state) + STEP(self->state));
 }
 
 static void visitNote(void *_self, SEMNote *sem)
