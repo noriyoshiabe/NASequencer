@@ -339,6 +339,15 @@ static void visitPitchSense(void *_self, ASTPitchSense *ast)
     append(self->state, sem);
 }
 
+static void visitSustain(void *_self, ASTSustain *ast)
+{
+    MMLASTAnalyzer *self = _self;
+
+    SEMSustain *sem = node(Sustain, ast);
+    sem->value = ast->value;
+    append(self->state, sem);
+}
+
 static void visitTempo(void *_self, ASTTempo *ast)
 {
     MMLASTAnalyzer *self = _self;
@@ -700,6 +709,7 @@ Analyzer *MMLASTAnalyzerCreate(ParseContext *context)
     self->visitor.visitPitch = visitPitch;
     self->visitor.visitDetune = visitDetune;
     self->visitor.visitPitchSense = visitPitchSense;
+    self->visitor.visitSustain = visitSustain;
     self->visitor.visitTempo = visitTempo;
     self->visitor.visitTime = visitTime;
     self->visitor.visitNote = visitNote;

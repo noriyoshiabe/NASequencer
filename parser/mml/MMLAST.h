@@ -95,6 +95,11 @@ typedef struct _ASTPitchSense {
     int value;
 } ASTPitchSense;
 
+typedef struct _ASTSustain {
+    Node node;
+    int value;
+} ASTSustain;
+
 typedef struct _ASTTempo {
     Node node;
     float tempo;
@@ -192,6 +197,7 @@ typedef struct _ASTVisitor {
     void (*visitPitch)(void *self, ASTPitch *ast);
     void (*visitDetune)(void *self, ASTDetune *ast);
     void (*visitPitchSense)(void *self, ASTPitchSense *ast);
+    void (*visitSustain)(void *self, ASTSustain *ast);
     void (*visitTempo)(void *self, ASTTempo *ast);
     void (*visitTime)(void *self, ASTTime *ast);
     void (*visitNote)(void *self, ASTNote *ast);
@@ -228,6 +234,7 @@ extern ASTPan *MMLASTPanCreate(FileLocation *location);
 extern ASTPitch *MMLASTPitchCreate(FileLocation *location);
 extern ASTDetune *MMLASTDetuneCreate(FileLocation *location);
 extern ASTPitchSense *MMLASTPitchSenseCreate(FileLocation *location);
+extern ASTSustain *MMLASTSustainCreate(FileLocation *location);
 extern ASTTempo *MMLASTTempoCreate(FileLocation *location);
 extern ASTTime *MMLASTTimeCreate(FileLocation *location);
 extern ASTNote *MMLASTNoteCreate(FileLocation *location);

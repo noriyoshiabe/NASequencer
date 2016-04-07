@@ -277,6 +277,20 @@ ASTPitchSense *MMLASTPitchSenseCreate(FileLocation *location)
     return NodeCreate(ASTPitchSense, location);
 }
 
+static void ASTSustainAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitSustain(visitor, self);
+}
+
+static void ASTSustainDestroy(void *self)
+{
+}
+
+ASTSustain *MMLASTSustainCreate(FileLocation *location)
+{
+    return NodeCreate(ASTSustain, location);
+}
+
 static void ASTTempoAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitTempo(visitor, self);

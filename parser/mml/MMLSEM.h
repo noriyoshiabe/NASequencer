@@ -95,6 +95,11 @@ typedef struct _SEMPitchSense {
     int value;
 } SEMPitchSense;
 
+typedef struct _SEMSustain {
+    Node node;
+    int value;
+} SEMSustain;
+
 typedef struct _SEMTempo {
     Node node;
     float tempo;
@@ -202,6 +207,7 @@ typedef struct _SEMVisitor {
     void (*visitPitch)(void *self, SEMPitch *sem);
     void (*visitDetune)(void *self, SEMDetune *sem);
     void (*visitPitchSense)(void *self, SEMPitchSense *sem);
+    void (*visitSustain)(void *self, SEMSustain *sem);
     void (*visitTempo)(void *self, SEMTempo *sem);
     void (*visitTime)(void *self, SEMTime *sem);
     void (*visitNote)(void *self, SEMNote *sem);
@@ -238,6 +244,7 @@ extern SEMPan *MMLSEMPanCreate(FileLocation *location);
 extern SEMPitch *MMLSEMPitchCreate(FileLocation *location);
 extern SEMDetune *MMLSEMDetuneCreate(FileLocation *location);
 extern SEMPitchSense *MMLSEMPitchSenseCreate(FileLocation *location);
+extern SEMSustain *MMLSEMSustainCreate(FileLocation *location);
 extern SEMTempo *MMLSEMTempoCreate(FileLocation *location);
 extern SEMTime *MMLSEMTimeCreate(FileLocation *location);
 extern SEMNote *MMLSEMNoteCreate(FileLocation *location);

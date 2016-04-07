@@ -61,6 +61,8 @@ TEMPO          t
 TIME           bt
 PITCH          @?pb
 PITCH_SENSE    @ps
+PEDAL_ON       p
+PEDAL_OFF      x
 
 NOTE_LENGTH    ([[:digit:]]*\.{0,2}|%[[:digit:]]+)
 NOTE           [CDEFGAB](\+{1,2}|#{1,2}|-{1,2})?{NOTE_LENGTH}?
@@ -111,6 +113,8 @@ LOCATION       ^##.+:[[:digit:]]+:[[:digit:]]+\n
 {TIME}            { return TIME; }
 {PITCH}           { return '@' == yytext[0] ? PITCH : C_PITCH; }
 {PITCH_SENSE}     { return PITCH_SENSE; }
+{PEDAL_ON}        { return PEDAL_ON; }
+{PEDAL_OFF}       { return PEDAL_OFF; }
 
 {NOTE}            { yylval->s = strdup(yytext); return NOTE; }
 {REST}            { yylval->s = strdup(yytext); return REST; }

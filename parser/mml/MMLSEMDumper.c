@@ -161,6 +161,11 @@ static void visitPitchSense(void *self, SEMPitchSense *sem)
     dump(self, sem, INTEGER(sem, value), NULL);
 }
 
+static void visitSustain(void *self, SEMSustain *sem)
+{
+    dump(self, sem, INTEGER(sem, value), NULL);
+}
+
 static void visitTempo(void *self, SEMTempo *sem)
 {
     dump(self, sem, FLOAT(sem, tempo), NULL);
@@ -304,6 +309,7 @@ Analyzer *MMLSEMDumperCreate(ParseContext *context)
     self->visitor.visitPitch = visitPitch;
     self->visitor.visitDetune = visitDetune;
     self->visitor.visitPitchSense = visitPitchSense;
+    self->visitor.visitSustain = visitSustain;
     self->visitor.visitTempo = visitTempo;
     self->visitor.visitTime = visitTime;
     self->visitor.visitNote = visitNote;

@@ -250,6 +250,12 @@ static void visitPitchSense(void *_self, SEMPitchSense *sem)
     self->builder->appendPitchSense(self->builder, self->tick, self->channel, sem->value);
 }
 
+static void visitSustain(void *_self, SEMSustain *sem)
+{
+    MMLSEMAnalyzer *self = _self;
+    self->builder->appendSustain(self->builder, self->tick, self->channel, sem->value);
+}
+
 static void visitTempo(void *_self, SEMTempo *sem)
 {
     MMLSEMAnalyzer *self = _self;
@@ -553,6 +559,7 @@ Analyzer *MMLSEMAnalyzerCreate(ParseContext *context)
     self->visitor.visitPitch = visitPitch;
     self->visitor.visitDetune = visitDetune;
     self->visitor.visitPitchSense = visitPitchSense;
+    self->visitor.visitSustain = visitSustain;
     self->visitor.visitTempo = visitTempo;
     self->visitor.visitTime = visitTime;
     self->visitor.visitNote = visitNote;

@@ -279,6 +279,20 @@ SEMPitchSense *MMLSEMPitchSenseCreate(FileLocation *location)
     return NodeCreate(SEMPitchSense, location);
 }
 
+static void SEMSustainAccept(void *self, void *visitor)
+{
+    ((SEMVisitor *)visitor)->visitSustain(visitor, self);
+}
+
+static void SEMSustainDestroy(void *self)
+{
+}
+
+SEMSustain *MMLSEMSustainCreate(FileLocation *location)
+{
+    return NodeCreate(SEMSustain, location);
+}
+
 static void SEMTempoAccept(void *self, void *visitor)
 {
     ((SEMVisitor *)visitor)->visitTempo(visitor, self);
