@@ -23,7 +23,7 @@ static HighlightSpec *_spec;
     lineComment.color = [HighlightColor comment];
     
     HighlightSpec *directive = [[HighlightSpec alloc] init];
-    directive.regex = [NSRegularExpression regularExpressionWithPattern:@"^\\s*#\\s*[a-zA-Z]+.*$" options:NSRegularExpressionAnchorsMatchLines error:nil];
+    directive.regex = [NSRegularExpression regularExpressionWithPattern:@"^\\s*#\\s*[a-zA-Z]+.*?(?<!\\\\)$" options:NSRegularExpressionAnchorsMatchLines | NSRegularExpressionDotMatchesLineSeparators error:nil];
     directive.color = [HighlightColor directive];
     
     HighlightSpec *string = [[HighlightSpec alloc] init];

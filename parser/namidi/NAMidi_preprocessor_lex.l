@@ -29,6 +29,7 @@
 %x QUOTE_STRING
 %x DOUBLE_QUOTE_STRING
 %x MACRO
+%x LINE_CONTINUE
 
 STRING         \"[^\"]*\"|'[^']*'
 
@@ -41,8 +42,35 @@ MACRO_SYMBOL   [_[:alpha:]][_[:alnum:]#\+-]*
 MACRO_ARGS     \([[:blank:]]*{MACRO_SYMBOL}([[:blank:]]*,[[:blank:]]*{MACRO_SYMBOL})*[[:blank:]]*\)
 MACRO_DEFINE   {MACRO_SYMBOL}([[:blank:]]*{MACRO_ARGS})?[[:blank:]].*$
 MACRO_REF      {MACRO_SYMBOL}([[:blank:]]*\([^\(\)]*\))?
+LINE_CONTINUE  ^.*\\\n
 
 %%
+
+{LINE_CONTINUE}   { yymore(); BEGIN(LINE_CONTINUE); }
+<LINE_CONTINUE>{LINE_CONTINUE} { yymore(); }
+<LINE_CONTINUE>.  {
+                      int lineBreakCount = 0;
+                      char *pc = yytext + yyleng;
+                      while (pc > yytext) {
+                          char c = *--pc;
+                          switch (c) {
+                          case '\n':
+                              ++lineBreakCount;
+                              break;
+                          case '\\':
+                              break;
+                          default:
+                              unput(c);
+                              break;
+                          }
+                      }
+
+                      while (lineBreakCount--) {
+                          unput('\n');
+                      }
+
+                      BEGIN(INITIAL);
+                  }
 
 {INCLUDE}         { BEGIN(INCLUDE); }
 <INCLUDE>{STRING} {
