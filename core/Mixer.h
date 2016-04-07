@@ -48,6 +48,7 @@ extern void MixerSendReverb(Mixer *self, ReverbEvent *event);
 extern void MixerSendExpression(Mixer *self, ExpressionEvent *event);
 extern void MixerSendPitch(Mixer *self, PitchEvent *event);
 extern void MixerSendSustain(Mixer *self, SustainEvent *event);
+extern void MixerSendSustainOff(Mixer *self);
 extern void MixerSendDetune(Mixer *self, DetuneEvent *event);
 extern void MixerSendPitchSense(Mixer *self, PitchSenseEvent *event);
 extern void MixerSendSynth(Mixer *self, SynthEvent *event);

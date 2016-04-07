@@ -560,6 +560,7 @@ static void PlayerSendAllNoteOff(Player *self)
     }
 
     MixerSendAllNoteOff(self->mixer);
+    MixerSendSustainOff(self->mixer);
 }
 
 static int64_t currentMicroSec()

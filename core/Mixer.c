@@ -294,6 +294,17 @@ void MixerSendSustain(Mixer *self, SustainEvent *event)
     }
 }
 
+void MixerSendSustainOff(Mixer *self)
+{
+    uint8_t bytes[3] = {0, 0x40, 0x00};
+
+    for (int i = 0; i < 16; ++i) {
+        MixerChannel *channel = NAArrayGetValueAt(self->channels, i);
+        bytes[0] = 0xB0 | i;
+        channel->source->send(channel->source, bytes, 3);
+    }
+}
+
 void MixerSendDetune(Mixer *self, DetuneEvent *event)
 {
     MixerChannel *channel = NAArrayGetValueAt(self->channels, event->channel - 1);
