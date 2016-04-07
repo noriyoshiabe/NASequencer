@@ -58,6 +58,7 @@ static HighlightSpec *_spec;
                      KEYWORD(@"DETUNE") @"|"
                      KEYWORD(@"PITCH") @"|"
                      KEYWORD(@"SENSE") @"|"
+                     KEYWORD(@"SUSTAIN") @"|"
                      KEYWORD(@"ON") @"|"
                      KEYWORD(@"OFF") @"|"
                      KEYWORD(@"KEY") @"|"

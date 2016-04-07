@@ -51,7 +51,8 @@ static HighlightSpec *_spec;
                      KEYWORD(@"@?ns\\s*[0-9\\-]*") @"|"
                      KEYWORD(@"l\\s*[0-9]*") @"|"
                      KEYWORD(@"@?q\\s*[0-9]*") @"|"
-                     KEYWORD(@"@?v\\s*[0-9]*")
+                     KEYWORD(@"@?v\\s*[0-9]*") @"|"
+                     KEYWORD(@"p|x") @"|"
 #undef KEYWORD
                                                               options:NSRegularExpressionCaseInsensitive error:nil];
     keyword.color = [HighlightColor keyword];
