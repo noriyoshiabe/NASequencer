@@ -275,11 +275,8 @@ void MixerSendPitch(Mixer *self, PitchEvent *event)
 {
     MixerChannel *channel = NAArrayGetValueAt(self->channels, event->channel - 1);
     if (channel->active) {
-        uint8_t bytes[3];
-
-        bytes[0] = 0xB0 | (0x0F & channel->midiNumber);
-        bytes[1] = 0x40;
-        bytes[2] = 0x7F & event->value;
+        uint16_t pitchBend = event->value + 8192;
+        uint8_t bytes[3] = {0xE0 | (0x7F & channel->midiNumber), 0x7F & pitchBend, 0x7F & (pitchBend >> 7)};
         channel->source->send(channel->source, bytes, 3);
     }
 }
@@ -288,8 +285,11 @@ void MixerSendSustain(Mixer *self, SustainEvent *event)
 {
     MixerChannel *channel = NAArrayGetValueAt(self->channels, event->channel - 1);
     if (channel->active) {
-        uint16_t pitchBend = event->value + 8192;
-        uint8_t bytes[3] = {0xE0 | (0x7F & channel->midiNumber), 0x7F & pitchBend, 0x7F & (pitchBend >> 7)};
+        uint8_t bytes[3];
+
+        bytes[0] = 0xB0 | (0x0F & channel->midiNumber);
+        bytes[1] = 0x40;
+        bytes[2] = 0x7F & event->value;
         channel->source->send(channel->source, bytes, 3);
     }
 }
