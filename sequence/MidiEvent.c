@@ -53,6 +53,9 @@ void *MidiEventAlloc(MidiEventType type, int id, int tick, int extraSize)
     case MidiEventTypePitch:
         size = sizeof(PitchEvent);
         break;
+    case MidiEventTypeSustain:
+        size = sizeof(SustainEvent);
+        break;
     case MidiEventTypeDetune:
         size = sizeof(DetuneEvent);
         break;
@@ -182,6 +185,13 @@ void MidiEventDump(MidiEvent *self, int indent)
                     self->id, self->tick, self->value);
         }
         break;
+    case MidiEventTypeSustain:
+        {
+            SustainEvent *self = _self;
+            printf("Sustain: id=%d tick=%d value=%d\n",
+                    self->id, self->tick, self->value);
+        }
+        break;
     case MidiEventTypeDetune:
         {
             DetuneEvent *self = _self;
@@ -219,6 +229,7 @@ int MidiEventGetChannel(const MidiEvent *event)
     case MidiEventTypeSynth:
     case MidiEventTypeExpression:
     case MidiEventTypePitch:
+    case MidiEventTypeSustain:
     case MidiEventTypeDetune:
     case MidiEventTypePitchSense:
         return ((ChannelEvent *)event)->channel;

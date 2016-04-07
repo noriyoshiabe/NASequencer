@@ -118,6 +118,11 @@ typedef struct _ASTPitchSense {
     int value;
 } ASTPitchSense;
 
+typedef struct _ASTSustain {
+    Node node;
+    int value;
+} ASTSustain;
+
 typedef struct _ASTTranspose {
     Node node;
     int value;
@@ -178,6 +183,7 @@ typedef struct _ASTVisitor {
     void (*visitPitch)(void *self, ASTPitch *ast);
     void (*visitDetune)(void *self, ASTDetune *ast);
     void (*visitPitchSense)(void *self, ASTPitchSense *ast);
+    void (*visitSustain)(void *self, ASTSustain *ast);
     void (*visitTranspose)(void *self, ASTTranspose *ast);
     void (*visitStep)(void *self, ASTStep *ast);
     void (*visitNote)(void *self, ASTNote *ast);
@@ -209,6 +215,7 @@ extern ASTExpression *NAMidiASTExpressionCreate(FileLocation *location);
 extern ASTPitch *NAMidiASTPitchCreate(FileLocation *location);
 extern ASTDetune *NAMidiASTDetuneCreate(FileLocation *location);
 extern ASTPitchSense *NAMidiASTPitchSenseCreate(FileLocation *location);
+extern ASTSustain *NAMidiASTSustainCreate(FileLocation *location);
 extern ASTTranspose *NAMidiASTTransposeCreate(FileLocation *location);
 extern ASTStep *NAMidiASTStepCreate(FileLocation *location);
 extern ASTNote *NAMidiASTNoteCreate(FileLocation *location);

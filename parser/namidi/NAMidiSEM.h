@@ -125,6 +125,11 @@ typedef struct _SEMPitchSense {
     int value;
 } SEMPitchSense;
 
+typedef struct _SEMSustain {
+    Node node;
+    int value;
+} SEMSustain;
+
 typedef struct _SEMTranspose {
     Node node;
     int value;
@@ -174,6 +179,7 @@ typedef struct _SEMVisitor {
     void (*visitPitch)(void *self, SEMPitch *sem);
     void (*visitDetune)(void *self, SEMDetune *sem);
     void (*visitPitchSense)(void *self, SEMPitchSense *sem);
+    void (*visitSustain)(void *self, SEMSustain *sem);
     void (*visitTranspose)(void *self, SEMTranspose *sem);
     void (*visitStep)(void *self, SEMStep *sem);
     void (*visitNote)(void *self, SEMNote *sem);
@@ -203,6 +209,7 @@ extern SEMExpression *NAMidiSEMExpressionCreate(FileLocation *location);
 extern SEMPitch *NAMidiSEMPitchCreate(FileLocation *location);
 extern SEMDetune *NAMidiSEMDetuneCreate(FileLocation *location);
 extern SEMPitchSense *NAMidiSEMPitchSenseCreate(FileLocation *location);
+extern SEMSustain *NAMidiSEMSustainCreate(FileLocation *location);
 extern SEMTranspose *NAMidiSEMTransposeCreate(FileLocation *location);
 extern SEMStep *NAMidiSEMStepCreate(FileLocation *location);
 extern SEMNote *NAMidiSEMNoteCreate(FileLocation *location);

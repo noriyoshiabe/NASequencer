@@ -20,6 +20,7 @@ typedef struct _SequenceBuilder {
     void (*appendReverb)(void *self, int tick, int channel, int value);
     void (*appendExpression)(void *self, int tick, int channel, int value);
     void (*appendPitch)(void *self, int tick, int channel, int value);
+    void (*appendSustain)(void *self, int tick, int channel, int value);
     void (*appendDetune)(void *self, int tick, int channel, int value);
     void (*appendPitchSense)(void *self, int tick, int channel, int value);
     void (*setLength)(void *self, int length);

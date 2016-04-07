@@ -240,6 +240,17 @@ static void SequenceBuilderAppendPitchSense(void *_self, int tick, int channel, 
     NAArrayAppend(sequence->events, event);
 }
 
+static void SequenceBuilderAppendSustain(void *_self, int tick, int channel, int value)
+{
+    SequenceBuilderImpl *self = _self;
+    Sequence *sequence = self->sequence;
+
+    SustainEvent *event = MidiEventAlloc(MidiEventTypeSustain, ++self->id, tick, sizeof(SustainEvent) - sizeof(MidiEvent));
+    event->channel = channel;
+    event->value = value;
+    NAArrayAppend(sequence->events, event);
+}
+
 static void SequenceBuilderSetLength(void *_self, int length)
 {
     SequenceBuilderImpl *self = _self;
@@ -279,6 +290,7 @@ SequenceBuilder *SequenceBuilderCreate()
     self->interface.appendReverb = SequenceBuilderAppendReverb;
     self->interface.appendExpression = SequenceBuilderAppendExpression;
     self->interface.appendPitch = SequenceBuilderAppendPitch;
+    self->interface.appendSustain = SequenceBuilderAppendSustain;
     self->interface.appendDetune = SequenceBuilderAppendDetune;
     self->interface.appendPitchSense = SequenceBuilderAppendPitchSense;
     self->interface.setLength = SequenceBuilderSetLength;

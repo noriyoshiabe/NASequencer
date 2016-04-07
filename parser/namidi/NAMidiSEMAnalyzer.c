@@ -292,6 +292,13 @@ static void visitPitchSense(void *_self, SEMPitchSense *sem)
     self->builder->appendPitchSense(self->builder, TICK(self->state), self->state->channel, sem->value);
 }
 
+static void visitSustain(void *_self, SEMSustain *sem)
+{
+    NAMidiSEMAnalyzer *self = _self;
+    // Not inclement steps
+    self->builder->appendSustain(self->builder, TICK(self->state), self->state->channel, sem->value);
+}
+
 static void visitTranspose(void *_self, SEMTranspose *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
@@ -425,6 +432,7 @@ Analyzer *NAMidiSEMAnalyzerCreate(ParseContext *context)
     self->visitor.visitPitch = visitPitch;
     self->visitor.visitDetune = visitDetune;
     self->visitor.visitPitchSense = visitPitchSense;
+    self->visitor.visitSustain = visitSustain;
     self->visitor.visitTranspose = visitTranspose;
     self->visitor.visitStep = visitStep;
     self->visitor.visitNote = visitNote;

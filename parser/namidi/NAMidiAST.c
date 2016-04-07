@@ -334,6 +334,20 @@ ASTPitchSense *NAMidiASTPitchSenseCreate(FileLocation *location)
     return NodeCreate(ASTPitchSense, location);
 }
 
+static void ASTSustainAccept(void *self, void *visitor)
+{
+    ((ASTVisitor *)visitor)->visitSustain(visitor, self);
+}
+
+static void ASTSustainDestroy(void *_self)
+{
+}
+
+ASTSustain *NAMidiASTSustainCreate(FileLocation *location)
+{
+    return NodeCreate(ASTSustain, location);
+}
+
 static void ASTTransposeAccept(void *self, void *visitor)
 {
     ((ASTVisitor *)visitor)->visitTranspose(visitor, self);

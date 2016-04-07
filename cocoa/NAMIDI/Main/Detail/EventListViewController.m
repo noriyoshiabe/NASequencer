@@ -306,6 +306,14 @@
             data = NACStringFormat("%d", _event->value);
         }
             break;
+        case MidiEventTypeSustain:
+        {
+            SustainEvent *_event = (void *)raw;
+            type = "Sustain";
+            channel = NACStringFormat("%d", _event->channel);
+            data = NACStringFormat("%s", 64 <= _event->value ? "ON" : "OFF");
+        }
+            break;
         case MidiEventTypeDetune:
         {
             DetuneEvent *_event = (void *)raw;

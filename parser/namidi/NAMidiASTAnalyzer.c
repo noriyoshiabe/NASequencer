@@ -379,6 +379,15 @@ static void visitPitchSense(void *_self, ASTPitchSense *ast)
     append(self->state->list, sem);
 }
 
+static void visitSustain(void *_self, ASTSustain *ast)
+{
+    NAMidiASTAnalyzer *self = _self;
+
+    SEMSustain *sem = node(Sustain, ast);
+    sem->value = ast->value;
+    append(self->state->list, sem);
+}
+
 static void visitTranspose(void *_self, ASTTranspose *ast)
 {
     NAMidiASTAnalyzer *self = _self;
@@ -556,6 +565,7 @@ Analyzer *NAMidiASTAnalyzerCreate(ParseContext *context)
     self->visitor.visitPitch = visitPitch;
     self->visitor.visitDetune = visitDetune;
     self->visitor.visitPitchSense = visitPitchSense;
+    self->visitor.visitSustain = visitSustain;
     self->visitor.visitTranspose = visitTranspose;
     self->visitor.visitStep = visitStep;
     self->visitor.visitNote = visitNote;

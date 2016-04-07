@@ -18,6 +18,7 @@ typedef enum {
     MidiEventTypeReverb,
     MidiEventTypeExpression,
     MidiEventTypePitch,
+    MidiEventTypeSustain,
 
     MidiEventTypeDetune,
     MidiEventTypePitchSense,
@@ -178,6 +179,14 @@ typedef struct _PitchSenseEvent {
     int value;
 } PitchSenseEvent;
 
+typedef struct _SustainEvent {
+    MidiEventType type;
+    int id;
+    int tick;
+    int channel;
+    int value;
+} SustainEvent;
+
 typedef struct _SynthEvent {
     MidiEventType type;
     int id;
@@ -211,6 +220,7 @@ static inline char *MidiEventType2String(MidiEventType type)
     CASE(MidiEventTypeReverb);
     CASE(MidiEventTypeExpression);
     CASE(MidiEventTypePitch);
+    CASE(MidiEventTypeSustain);
     CASE(MidiEventTypeDetune);
     CASE(MidiEventTypePitchSense);
     CASE(MidiEventTypeSynth);

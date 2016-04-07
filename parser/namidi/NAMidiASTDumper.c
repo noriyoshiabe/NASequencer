@@ -180,6 +180,11 @@ static void visitPitchSense(void *self, ASTPitchSense *ast)
     dump(self, ast, INTEGER(ast, value), NULL);
 }
 
+static void visitSustain(void *self, ASTSustain *ast)
+{
+    dump(self, ast, INTEGER(ast, value), NULL);
+}
+
 static void visitTranspose(void *self, ASTTranspose *ast)
 {
     dump(self, ast, INTEGER(ast, value), NULL);
@@ -270,6 +275,7 @@ Analyzer *NAMidiASTDumperCreate(ParseContext *context)
     self->visitor.visitPitch = visitPitch;
     self->visitor.visitDetune = visitDetune;
     self->visitor.visitPitchSense = visitPitchSense;
+    self->visitor.visitSustain = visitSustain;
     self->visitor.visitTranspose = visitTranspose;
     self->visitor.visitStep = visitStep;
     self->visitor.visitNote = visitNote;

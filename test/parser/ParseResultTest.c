@@ -270,6 +270,15 @@ static void SequenceBuilderAppendPitch(void *_self, int tick, int channel, int v
     NAArrayAppend(self->events, event);
 }
 
+static void SequenceBuilderAppendSustain(void *_self, int tick, int channel, int value)
+{
+    SequenceBuilderImpl *self = _self;
+    SustainEvent *event = MidiEventAlloc(MidiEventTypeSustain, ++self->id, tick, sizeof(SustainEvent) - sizeof(MidiEvent));
+    event->channel = channel;
+    event->value = value;
+    NAArrayAppend(self->events, event);
+}
+
 static void SequenceBuilderAppendDetune(void *_self, int tick, int channel, int value)
 {
     SequenceBuilderImpl *self = _self;
@@ -343,6 +352,7 @@ SequenceBuilder *SequenceBuilderCreate()
     self->interface.appendReverb = SequenceBuilderAppendReverb;
     self->interface.appendExpression = SequenceBuilderAppendExpression;
     self->interface.appendPitch = SequenceBuilderAppendPitch;
+    self->interface.appendSustain = SequenceBuilderAppendSustain;
     self->interface.appendDetune = SequenceBuilderAppendDetune;
     self->interface.appendPitchSense = SequenceBuilderAppendPitchSense;
     self->interface.setLength = SequenceBuilderSetLength;
@@ -447,6 +457,12 @@ static void __MidiEventDump(MidiEvent *self)
         {
             PitchEvent *self = _self;
             printf("Pitch: tick=%d value=%d\n", self->tick, self->value);
+        }
+        break;
+    case MidiEventTypeSustain:
+        {
+            SustainEvent *self = _self;
+            printf("Sustain: tick=%d value=%d\n", self->tick, self->value);
         }
         break;
     case MidiEventTypeDetune:

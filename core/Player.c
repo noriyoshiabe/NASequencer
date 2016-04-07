@@ -489,6 +489,9 @@ static void PlayerScanEvents(Player *self, int32_t prevTick, int32_t tick)
                 case MidiEventTypePitch:
                     MixerSendPitch(self->mixer, (PitchEvent *)event);
                     break;
+                case MidiEventTypeSustain:
+                    MixerSendSustain(self->mixer, (SustainEvent *)event);
+                    break;
                 case MidiEventTypeDetune:
                     MixerSendDetune(self->mixer, (DetuneEvent *)event);
                     break;

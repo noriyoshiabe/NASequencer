@@ -194,6 +194,11 @@ static void visitPitchSense(void *self, SEMPitchSense *sem)
     dump(self, sem, INTEGER(sem, value), NULL);
 }
 
+static void visitSustain(void *self, SEMSustain *sem)
+{
+    dump(self, sem, INTEGER(sem, value), NULL);
+}
+
 static void visitTranspose(void *self, SEMTranspose *sem)
 {
     dump(self, sem, INTEGER(sem, value), NULL);
@@ -253,6 +258,7 @@ Analyzer *NAMidiSEMDumperCreate(ParseContext *context)
     self->visitor.visitPitch = visitPitch;
     self->visitor.visitDetune = visitDetune;
     self->visitor.visitPitchSense = visitPitchSense;
+    self->visitor.visitSustain = visitSustain;
     self->visitor.visitTranspose = visitTranspose;
     self->visitor.visitStep = visitStep;
     self->visitor.visitNote = visitNote;

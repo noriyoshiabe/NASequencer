@@ -282,6 +282,12 @@ bool ExporterWriteToSMF(Exporter *self, const char *filepath)
                 SMFWriterAppendPitchBend(writer, event->tick, event->channel, event->value + 8192);
             }
             break;
+        case MidiEventTypeSustain:
+            {
+                SustainEvent *event = (SustainEvent *)events[i];
+                SMFWriterAppendControlChange(writer, event->tick, event->channel, 64, event->value);
+            }
+            break;
         case MidiEventTypeDetune:
             {
                 DetuneEvent *event = (DetuneEvent *)events[i];

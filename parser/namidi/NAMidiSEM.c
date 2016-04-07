@@ -344,6 +344,20 @@ SEMPitchSense *NAMidiSEMPitchSenseCreate(FileLocation *location)
     return NodeCreate(SEMPitchSense, location);
 }
 
+static void SEMSustainAccept(void *self, void *visitor)
+{
+    ((SEMVisitor *)visitor)->visitSustain(visitor, self);
+}
+
+static void SEMSustainDestroy(void *_self)
+{
+}
+
+SEMSustain *NAMidiSEMSustainCreate(FileLocation *location)
+{
+    return NodeCreate(SEMSustain, location);
+}
+
 static void SEMTransposeAccept(void *self, void *visitor)
 {
     ((SEMVisitor *)visitor)->visitTranspose(visitor, self);
