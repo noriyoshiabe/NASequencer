@@ -372,10 +372,14 @@ char *NAMidiPreprocessorExpandMacro(NAMidiPreprocessor *self, int line, int colu
     return ret;
 }
 
-void NAMidiPreprocessorConsumeExpandingChar(NAMidiPreprocessor *self)
+void NAMidiPreprocessorConsumeExpandingChar(NAMidiPreprocessor *self, int length)
 {
-    if (0 < self->expanding && 0 == --self->expanding) {
-        NASetRemoveAll(self->expandingMacroSet);
+    if (0 < self->expanding) {
+        self->expanding -= length;
+        if (0 >= self->expanding) {
+            NASetRemoveAll(self->expandingMacroSet);
+            self->expanding = 0;
+        }
     }
 }
 
