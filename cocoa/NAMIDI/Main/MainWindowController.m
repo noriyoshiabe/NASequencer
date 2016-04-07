@@ -16,7 +16,10 @@
 #import "EditorWindowController.h"
 #import "Preference.h"
 
-@interface MainWindowController () <TrackSelectionDelegate, NAMidiRepresentationObserver, PlayerRepresentationObserver, MainViewControllerDelegate, NSUserInterfaceValidations, NSWindowDelegate>
+@interface MainWindowController () <TrackSelectionDelegate, NAMidiRepresentationObserver, PlayerRepresentationObserver, MainViewControllerDelegate, NSUserInterfaceValidations, NSWindowDelegate> {
+    BOOL _retryingParse;
+}
+
 @property (weak) IBOutlet NSView *contentView;
 @property (weak) IBOutlet LocationView *locationView;
 @property (strong, nonatomic) MainViewController *mainVC;
@@ -244,23 +247,34 @@
 {
     if (namidi.hasError) {
         if (GeneralParseErrorFileNotFound == parseInfo.errors[0].code) {
-            [_errorWC close];
-            
-            NSString *informative = NSLocalizedString(@"Main_FileMissingInformative", @"\"%@/%@\" is missing.\nThis error is unrecoverable.");
-            
-            NSAlert *alert = [[NSAlert alloc] init];
-            alert.messageText = NSLocalizedString(@"FileMissing", @"File missing");
-            alert.informativeText = [NSString stringWithFormat:informative, _namidi.file.directory, _namidi.file.filename];
-            [alert addButtonWithTitle:NSLocalizedString(@"Close", @"Close")];;
-            [alert beginSheetModalForWindow:self.window completionHandler:^(NSModalResponse returnCode) {
-                [self close];
-            }];
+            if (_retryingParse) {
+                [_errorWC close];
+                
+                NSString *informative = NSLocalizedString(@"Main_FileMissingInformative", @"\"%@/%@\" is missing.\nThis error is unrecoverable.");
+                
+                NSAlert *alert = [[NSAlert alloc] init];
+                alert.messageText = NSLocalizedString(@"FileMissing", @"File missing");
+                alert.informativeText = [NSString stringWithFormat:informative, _namidi.file.directory, _namidi.file.filename];
+                [alert addButtonWithTitle:NSLocalizedString(@"Close", @"Close")];;
+                [alert beginSheetModalForWindow:self.window completionHandler:^(NSModalResponse returnCode) {
+                    [self close];
+                }];
+            }
+            else {
+                _retryingParse = YES;
+                
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [namidi parse];
+                });
+            }
         }
         else {
+            _retryingParse = NO;
             [self showErrorWindow];
         }
     }
     else {
+        _retryingParse = NO;
         [_errorWC close];
     }
 }
