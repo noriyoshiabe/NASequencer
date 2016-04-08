@@ -12,6 +12,8 @@ typedef enum {
     NAMidiParseErrorCircularMacroReference,
     NAMidiParseErrorMacroArgumentsMissing,
     NAMidiParseErrorWrongNumberOfMacroArguments,
+    NAMidiParseErrorIllegalUndefInsideMacro,
+    NAMidiParseErrorUndefinedMacroSymbol,
     NAMidiParseErrorUnexpectedEOF,
     NAMidiParseErrorUnexpectedEOL,
     NAMidiParseErrorInvalidResolution,

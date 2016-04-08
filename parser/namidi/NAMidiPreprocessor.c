@@ -24,6 +24,11 @@ typedef struct Macro {
     int targetLength;
 } Macro;
 
+typedef struct _Expanding {
+    Macro *macro;
+    int count;
+} Expanding;
+
 static Macro *MacroCreate(char *target, char *replacement);
 static void MacroDestroy(Macro *self);
 
@@ -51,7 +56,8 @@ struct _NAMidiPreprocessor {
     NAMap *macros;
     NAArray *orderedMacroList;
     NASet *expandingMacroSet;
-    int expanding;
+    Expanding *expanding;
+    NAStack *expandingStack;
 };
 
 extern int NAMidi_preprocessor_lex(yyscan_t yyscanner, FILE *stream);
@@ -67,6 +73,7 @@ NAMidiPreprocessor *NAMidiPreprocessorCreate(ParseContext *context)
     self->macros = NAMapCreate(NAHashCString, NADescriptionCString, NADescriptionAddress);
     self->orderedMacroList = NAArrayCreate(4, NADescriptionAddress);
     self->expandingMacroSet = NASetCreate(NAHashAddress, NADescriptionAddress);
+    self->expandingStack = NAStackCreate(4);
     return self;
 }
 
@@ -77,6 +84,7 @@ void NAMidiPreprocessorDestroy(NAMidiPreprocessor *self)
 
     NAArrayDestroy(self->orderedMacroList);
     NASetDestroy(self->expandingMacroSet);
+    NAStackDestroy(self->expandingStack);
 
     NASetDestroy(self->readingFileSet);
     NAStackDestroy(self->bufferStack);
@@ -268,6 +276,26 @@ void NAMidiPreprocessorAppendMacro(NAMidiPreprocessor *self, int line, int colum
     NAArraySort(self->orderedMacroList, MacroLengthComparator);
 }
 
+void NAMidiPreprocessorRemoveMacro(NAMidiPreprocessor *self, int line, int column, char *identifier)
+{
+    FileLocation location = {self->currentBuffer->filepath, line, column};
+
+    if (self->expanding) {
+        self->context->appendError(self->context, &location, NAMidiParseErrorIllegalUndefInsideMacro, identifier, NULL);
+        return;
+    }
+
+    Macro *macro = NAMapRemove(self->macros, identifier);
+    if (!macro) {
+        self->context->appendError(self->context, &location, NAMidiParseErrorUndefinedMacroSymbol, identifier, NULL);
+        return;
+    }
+
+    int index = NAArrayFindFirstIndex(self->orderedMacroList, macro, NAArrayAddressComparator);
+    NAArrayRemoveAt(self->orderedMacroList, index);
+    MacroDestroy(macro);
+}
+
 static void NAMidiPreprocessorExpandMacroInternal(NAMidiPreprocessor *self, FileLocation *location, NAStringBuffer *buffer, char *string)
 {
     NAStringBuffer *expandBuffer = NAStringBufferCreate(256);
@@ -340,6 +368,13 @@ static void NAMidiPreprocessorExpandMacroInternal(NAMidiPreprocessor *self, File
 EXPANDED:
     NASetAdd(self->expandingMacroSet, macro);
 
+    if (self->expanding) {
+        NAStackPush(self->expandingStack, self->expanding);
+    }
+    self->expanding = malloc(sizeof(Expanding));
+    self->expanding->macro = macro;
+    self->expanding->count = NAStringBufferGetLength(expandBuffer);
+
     char *expanded = NAStringBufferRetriveCString(expandBuffer);
     NAStringBufferAppendString(buffer, expanded);
     free(expanded);
@@ -361,7 +396,6 @@ char *NAMidiPreprocessorExpandMacro(NAMidiPreprocessor *self, int line, int colu
     if (0 < length) {
         NAStringBufferAppendChar(buffer, ' ');
         ret = NAStringBufferRetriveCString(buffer);
-        self->expanding += length;
     }
 
     NAStringBufferDestroy(buffer);
@@ -370,11 +404,12 @@ char *NAMidiPreprocessorExpandMacro(NAMidiPreprocessor *self, int line, int colu
 
 void NAMidiPreprocessorConsumeExpandingChar(NAMidiPreprocessor *self, int length)
 {
-    if (0 < self->expanding) {
-        self->expanding -= length;
-        if (0 >= self->expanding) {
-            NASetRemoveAll(self->expandingMacroSet);
-            self->expanding = 0;
+    if (self->expanding) {
+        self->expanding->count -= length;
+        if (0 >= self->expanding->count) {
+            NASetRemove(self->expandingMacroSet, self->expanding->macro);
+            free(self->expanding);
+            self->expanding = NAStackPop(self->expandingStack);
         }
     }
 }

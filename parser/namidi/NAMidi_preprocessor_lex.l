@@ -29,6 +29,7 @@
 %x QUOTE_STRING
 %x DOUBLE_QUOTE_STRING
 %x MACRO
+%x UNDEF
 %x LINE_CONTINUE
 
 STRING         \"[^\"]*\"|'[^']*'
@@ -38,6 +39,7 @@ LINE_COMMENT   [[:blank:]]*(\/\/|==|--).*$
 
 INCLUDE        ^[[:blank:]]*#[[:blank:]]*include
 DEFINE         ^[[:blank:]]*#[[:blank:]]*define
+UNDEF          ^[[:blank:]]*#[[:blank:]]*undef
 MACRO_SYMBOL   [_[:alpha:]][_[:alnum:]#\+-]*
 MACRO_ARGS     \([[:blank:]]*{MACRO_SYMBOL}([[:blank:]]*,[[:blank:]]*{MACRO_SYMBOL})*[[:blank:]]*\)
 MACRO_DEFINE   {MACRO_SYMBOL}([[:blank:]]*{MACRO_ARGS})?[[:blank:]].*$
@@ -89,6 +91,10 @@ LINE_CONTINUE  ^.*\\\n
 <MACRO>{MACRO_DEFINE} { NAMidiPreprocessorAppendMacro(yyextra, yylineno, yycolumn, yytext); }
 <MACRO>\n             { fputc('\n', stream); BEGIN(INITIAL);  }
 <MACRO>.              { }
+
+{UNDEF}           { BEGIN(UNDEF); }
+<UNDEF>{MACRO_SYMBOL} { NAMidiPreprocessorRemoveMacro(yyextra, yylineno, yycolumn, yytext); }
+<UNDEF>\n         { fputc('\n', stream); BEGIN(INITIAL);  }
 
 {MACRO_REF}       {
                       char *expanded = NAMidiPreprocessorExpandMacro(yyextra, yylineno, yycolumn, yytext);
