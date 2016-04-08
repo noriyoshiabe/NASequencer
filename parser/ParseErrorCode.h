@@ -16,7 +16,6 @@ static inline const char *ParseErrorCode2String(int code)
     CASE(NAMidiParseErrorCircularFileInclude);
     CASE(NAMidiParseErrorMacroRedefined);
     CASE(NAMidiParseErrorDuplicatedMacroArguments);
-    CASE(NAMidiParseErrorUndefinedMacroArgument);
     CASE(NAMidiParseErrorCircularMacroReference);
     CASE(NAMidiParseErrorMacroArgumentsMissing);
     CASE(NAMidiParseErrorWrongNumberOfMacroArguments);

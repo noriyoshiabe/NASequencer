@@ -257,10 +257,6 @@ void NAMidiPreprocessorAppendMacro(NAMidiPreprocessor *self, int line, int colum
                 MacroDestroy(macro);
                 return;
             }
-            else if (!strstr(replacement, split[i])) {
-                self->context->appendError(self->context, &location, NAMidiParseErrorUndefinedMacroArgument, split[i], NULL);
-                MacroDestroy(macro);
-            }
             else {
                 NAMapPut(macro->args, strdup(split[i]), NACIntegerFromInteger(i));
             }
