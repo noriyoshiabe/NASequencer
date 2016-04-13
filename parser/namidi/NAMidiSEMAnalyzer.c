@@ -378,6 +378,9 @@ static void visitExpand(void *_self, SEMExpand *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
 
+    // Need flush before state is pushed
+    FLUSH(self->state);
+
     NAStackPush(self->stateStack, self->state);
     self->state = StateCopy(self->state);
 
