@@ -117,6 +117,7 @@
 		028209221C70A3C0003EBCFB /* EditorTabItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 028209201C70A3C0003EBCFB /* EditorTabItem.m */; };
 		028209231C70A3C0003EBCFB /* EditorTabItem.xib in Resources */ = {isa = PBXBuildFile; fileRef = 028209211C70A3C0003EBCFB /* EditorTabItem.xib */; };
 		028209271C70A5D8003EBCFB /* FileRepresentation.m in Sources */ = {isa = PBXBuildFile; fileRef = 028209261C70A5D8003EBCFB /* FileRepresentation.m */; };
+		0284DC981CBEA382007CED1C /* bebop25.nas in Resources */ = {isa = PBXBuildFile; fileRef = 0284DC971CBEA382007CED1C /* bebop25.nas */; };
 		028589551C71320A00A53B8C /* EditorStatusViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 028589531C71320A00A53B8C /* EditorStatusViewController.m */; };
 		028589561C71320A00A53B8C /* EditorStatusViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 028589541C71320A00A53B8C /* EditorStatusViewController.xib */; };
 		02A673FA1C6B3A5C00914C8B /* ABCIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 02A673E91C6B3A5C00914C8B /* ABCIcon.iconset */; };
@@ -129,7 +130,6 @@
 		02AE740D1C96D8C50036B8B1 /* ABHIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 02AE740C1C96D8C50036B8B1 /* ABHIcon.iconset */; };
 		02B160811C9685FF009A2823 /* NSBundle+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 02B160801C9685FF009A2823 /* NSBundle+Support.m */; };
 		02B160831C96924B009A2823 /* NASIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 02B160821C96924B009A2823 /* NASIcon.iconset */; };
-		02B160851C96988D009A2823 /* example.nas in Resources */ = {isa = PBXBuildFile; fileRef = 02B160841C96988D009A2823 /* example.nas */; };
 		02CAF6A91C771F6E00AD81B2 /* SynchronizedScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CAF6A81C771F6E00AD81B2 /* SynchronizedScrollView.m */; };
 		02CAF6C01C77858000AD81B2 /* LocationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CAF6BF1C77858000AD81B2 /* LocationView.m */; };
 		02CAF6C41C778C2200AD81B2 /* ErrorWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CAF6C21C778C2200AD81B2 /* ErrorWindowController.m */; };
@@ -342,6 +342,7 @@
 		028209211C70A3C0003EBCFB /* EditorTabItem.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EditorTabItem.xib; sourceTree = "<group>"; };
 		028209251C70A5D8003EBCFB /* FileRepresentation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileRepresentation.h; sourceTree = "<group>"; };
 		028209261C70A5D8003EBCFB /* FileRepresentation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileRepresentation.m; sourceTree = "<group>"; };
+		0284DC971CBEA382007CED1C /* bebop25.nas */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = bebop25.nas; sourceTree = "<group>"; };
 		028589521C71320A00A53B8C /* EditorStatusViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorStatusViewController.h; sourceTree = "<group>"; };
 		028589531C71320A00A53B8C /* EditorStatusViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditorStatusViewController.m; sourceTree = "<group>"; };
 		028589541C71320A00A53B8C /* EditorStatusViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EditorStatusViewController.xib; sourceTree = "<group>"; };
@@ -358,7 +359,6 @@
 		02B1607F1C9685FF009A2823 /* NSBundle+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSBundle+Support.h"; sourceTree = "<group>"; };
 		02B160801C9685FF009A2823 /* NSBundle+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSBundle+Support.m"; sourceTree = "<group>"; };
 		02B160821C96924B009A2823 /* NASIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = NASIcon.iconset; sourceTree = "<group>"; };
-		02B160841C96988D009A2823 /* example.nas */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = example.nas; sourceTree = "<group>"; };
 		02CAF6A71C771F6E00AD81B2 /* SynchronizedScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SynchronizedScrollView.h; sourceTree = "<group>"; };
 		02CAF6A81C771F6E00AD81B2 /* SynchronizedScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SynchronizedScrollView.m; sourceTree = "<group>"; };
 		02CAF6BE1C77858000AD81B2 /* LocationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocationView.h; sourceTree = "<group>"; };
@@ -501,7 +501,7 @@
 		0232CB271C8931D000542D34 /* Example */ = {
 			isa = PBXGroup;
 			children = (
-				02B160841C96988D009A2823 /* example.nas */,
+				0284DC971CBEA382007CED1C /* bebop25.nas */,
 				0232CB281C8931D000542D34 /* example.abc */,
 				0232CB291C8931D000542D34 /* example.mml */,
 			);
@@ -888,10 +888,10 @@
 				024A5B1E1C69FFD40079D22C /* MainWindowController.xib in Resources */,
 				0216EDFD1C7ADA09009A7B90 /* PianoRollViewController.xib in Resources */,
 				02CD04241C871B4500BF6683 /* SynthesizerCellView.xib in Resources */,
+				0284DC981CBEA382007CED1C /* bebop25.nas in Resources */,
 				0216EDF81C7AC431009A7B90 /* ConductorTrackViewController.xib in Resources */,
 				026D42D71C7ABC08000267AD /* DetailViewController.xib in Resources */,
 				028589561C71320A00A53B8C /* EditorStatusViewController.xib in Resources */,
-				02B160851C96988D009A2823 /* example.nas in Resources */,
 				02A673FB1C6B3A5C00914C8B /* AppIcon.iconset in Resources */,
 				020CF8391C6A1BFD0025DF84 /* GettingStartedWindowController.xib in Resources */,
 				025FAF9B1C7FAD7200E4C3B3 /* GeneralUser GS Live-Audigy v1.44.sf2 in Resources */,

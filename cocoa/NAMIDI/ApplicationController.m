@@ -255,8 +255,11 @@ ApplicationController *AppController;
 {
     [self createExampleDirectory];
     
-    NSString *filename = [NSString stringWithFormat:@"example.%@", fileType];
-    NSURL *srcUrl = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"example" ofType:fileType]];
+    NSString *filename = @{@"nas": @"bebop25.nas",
+                           @"abc": @"example.abc",
+                           @"mml": @"example.mml"}[fileType];
+    
+    NSURL *srcUrl = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:filename.stringByDeletingPathExtension ofType:fileType]];
     NSURL *dstUrl = [NSURL fileURLWithPath:[self.exampleDirectoryPath stringByAppendingPathComponent:filename]];
     
     [[NSString stringWithContentsOfURL:srcUrl encoding:NSUTF8StringEncoding error:nil] writeToURL:dstUrl atomically:YES encoding:NSUTF8StringEncoding error:nil];
