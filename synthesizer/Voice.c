@@ -52,6 +52,8 @@ extern void VoiceInitialize(Voice *self, Channel *channel, uint8_t noteNo, uint8
     LFOInit(&self->modLfo);
     LFOInit(&self->vibLfo);
 
+    LowPassFilterInit(&self->LPF);
+
     VoiceModulatorInitialize(self);
     VoiceUpdateRuntimeParams(self);
 }

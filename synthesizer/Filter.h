@@ -16,8 +16,7 @@ typedef struct _LowPassFilter {
     double last_frequency_cent;
 } LowPassFilter;
 
-extern LowPassFilter *LowPassFilterCreate(double sampleRate, double frequency, double q);
-extern void LowPassFilterDestroy(LowPassFilter *self);
+extern void LowPassFilterInit(LowPassFilter *self);
 extern void LowPassFilterCalcLPFCoefficient(LowPassFilter *self, double sampleRate, double frequency_cent, double q_cB);
 extern double LowPassFilterApply(LowPassFilter *self, double input);
 

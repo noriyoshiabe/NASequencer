@@ -6,16 +6,10 @@
 
 static void _LowPassFilterCalcLPFCoefficient(LowPassFilter *self, double sampleRate, double frequency, double q);
 
-LowPassFilter *LowPassFilterCreate(double sampleRate, double frequency, double q)
+void LowPassFilterInit(LowPassFilter *self)
 {
-    LowPassFilter *self = calloc(1, sizeof(LowPassFilter));
-    _LowPassFilterCalcLPFCoefficient(self, sampleRate, frequency, q);
-    return self;
-}
-
-void LowPassFilterDestroy(LowPassFilter *self)
-{
-    free(self);
+    const LowPassFilter ZERO = {};
+    *self = ZERO;
 }
 
 void LowPassFilterCalcLPFCoefficient(LowPassFilter *self, double sampleRate, double frequency_cent, double q_cB)
