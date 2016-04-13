@@ -99,9 +99,10 @@ DETUNE    +10
 GATETIME  STEP - 10
 
 PATTERN piano-chord
-  KEY Cmaj
   VELOCITY  100
-
+    
+    0: KEY Cmaj
+  
   480: C2 E2 G2 B2
 
   120: C2 E2 G2 B2
@@ -111,9 +112,10 @@ PATTERN piano-chord
   240: C2 E2 G2 B2
   240: C2 E2 G2 B2
 
-  KEY Cmin
   VELOCITY  60
-
+  
+    0: KEY Cmin
+    
   480: C2 GT=960 E2 G2 B2
                   
   120:    E2 G2 B2 V=100

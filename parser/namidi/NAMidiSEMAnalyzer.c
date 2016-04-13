@@ -113,8 +113,6 @@ static void visitResolution(void *_self, SEMResolution *sem)
         return;
     }
 
-    FLUSH(self->state);
-
     self->state->resolution = sem->resolution;
     self->builder->setResolution(self->builder, sem->resolution);
     self->definedNode.resolution = (Node *)sem;
@@ -130,8 +128,6 @@ static void visitTitle(void *_self, SEMTitle *sem)
         return;
     }
 
-    FLUSH(self->state);
-
     self->builder->appendTitle(self->builder, 0, sem->title);
     self->definedNode.title = (Node *)sem;
 }
@@ -146,8 +142,6 @@ static void visitCopyright(void *_self, SEMCopyright *sem)
         return;
     }
 
-    FLUSH(self->state);
-
     self->builder->appendCopyright(self->builder, 0, sem->text);
     self->definedNode.copyright = (Node *)sem;
 }
@@ -155,22 +149,18 @@ static void visitCopyright(void *_self, SEMCopyright *sem)
 static void visitTempo(void *_self, SEMTempo *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-    FLUSH(self->state);
     self->builder->appendTempo(self->builder, TICK(self->state), sem->tempo);
 }
 
 static void visitTime(void *_self, SEMTime *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-    FLUSH(self->state);
     self->builder->appendTimeSign(self->builder, TICK(self->state), sem->numerator, sem->denominator);
 }
 
 static void visitKey(void *_self, SEMKey *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-
-    FLUSH(self->state);
 
     MidiKeySign keysign = NoteTableGetMidiKeySign(sem->noteTable);
     self->builder->appendKey(self->builder, TICK(self->state), keysign.sf, keysign.mi);
@@ -182,14 +172,12 @@ static void visitKey(void *_self, SEMKey *sem)
 static void visitPercussion(void *_self, SEMPercussion *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-    FLUSH(self->state);
     PERCUSSION(self->state) = sem->on;
 }
 
 static void visitMarker(void *_self, SEMMarker *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-    FLUSH(self->state);
     self->builder->appendMarker(self->builder, TICK(self->state), sem->text);
 }
 
@@ -203,14 +191,12 @@ static void visitChannel(void *_self, SEMChannel *sem)
 static void visitVelocity(void *_self, SEMVelocity *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-    FLUSH(self->state);
     VELOCITY(self->state) = sem->value;
 }
 
 static void visitGatetime(void *_self, SEMGatetime *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-    FLUSH(self->state);
     GATETIME(self->state).absolute = sem->absolute;
     GATETIME(self->state).value = sem->value;
 }
@@ -225,84 +211,72 @@ static void visitBank(void *_self, SEMBank *sem)
 static void visitProgram(void *_self, SEMProgram *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-    FLUSH(self->state);
     self->builder->appendProgram(self->builder, TICK(self->state), self->state->channel, sem->programNo);
 }
 
 static void visitSynth(void *_self, SEMSynth *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-    FLUSH(self->state);
     self->builder->appendSynth(self->builder, TICK(self->state), self->state->channel, sem->name);
 }
 
 static void visitVolume(void *_self, SEMVolume *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-    FLUSH(self->state);
     self->builder->appendVolume(self->builder, TICK(self->state), self->state->channel, sem->value);
 }
 
 static void visitPan(void *_self, SEMPan *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-    FLUSH(self->state);
     self->builder->appendPan(self->builder, TICK(self->state), self->state->channel, sem->value);
 }
 
 static void visitChorus(void *_self, SEMChorus *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-    FLUSH(self->state);
     self->builder->appendChorus(self->builder, TICK(self->state), self->state->channel, sem->value);
 }
 
 static void visitReverb(void *_self, SEMReverb *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-    FLUSH(self->state);
     self->builder->appendReverb(self->builder, TICK(self->state), self->state->channel, sem->value);
 }
 
 static void visitExpression(void *_self, SEMExpression *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-    // Not inclement steps
     self->builder->appendExpression(self->builder, TICK(self->state), self->state->channel, sem->value);
 }
 
 static void visitPitch(void *_self, SEMPitch *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-    // Not inclement steps
     self->builder->appendPitch(self->builder, TICK(self->state), self->state->channel, sem->value);
 }
 
 static void visitDetune(void *_self, SEMDetune *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-    FLUSH(self->state);
     self->builder->appendDetune(self->builder, TICK(self->state), self->state->channel, sem->value);
 }
 
 static void visitPitchSense(void *_self, SEMPitchSense *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-    FLUSH(self->state);
     self->builder->appendPitchSense(self->builder, TICK(self->state), self->state->channel, sem->value);
 }
 
 static void visitSustain(void *_self, SEMSustain *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-    // Not inclement steps
     self->builder->appendSustain(self->builder, TICK(self->state), self->state->channel, sem->value);
 }
 
 static void visitTranspose(void *_self, SEMTranspose *sem)
 {
     NAMidiSEMAnalyzer *self = _self;
-    FLUSH(self->state);
     self->state->transpose = sem->value;
 }
 
