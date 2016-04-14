@@ -1,0 +1,300 @@
+#title 'Jaunty Gumption'
+#copyright 'By Kevin MacLeod (http://incompetech.com) Licensed under Creative Commons: By Attribution 3.0 License http://creativecommons.org/licenses/by/3.0/'
+
+// Conductror
+// ------------------------------------
+t145
+bt4,4
+L1
+
+// A
+#marker "A"
+rrrr rrrr rrrr rrrr
+
+// B
+#marker "B"
+rrrr rrrr
+
+// A'
+#marker "A'"
+rrrr rrrr rrrr rrrr
+
+// B'
+#marker "B'"
+rrrr rrrr
+
+// C
+#marker "C"
+rrrr rrrr rrrr rrrr
+
+// Ending
+#marker 'Ending'
+
+;
+
+// Main Riff
+// ------------------------------------
+
+@CH1
+@BS0
+@PC80
+V14
+
+O4
+L8
+
+// A
+r g < Q5 c > g < e > g < c > g < Q15 d+4 c4 > g+4 < d+4 c r r2. r1 >
+r g < Q5 c g e c > g < c Q15 d+4 c4 > g+4 < d+4 e > r r2. r1
+r g < Q5 c > g < e > g < c > g < Q15 d+4 c4 > g+4 < d+4 c r r2. r1 >
+r g < Q5 c > g < e c > g < c Q15 d+4 c4 > g+4 < d+4 e > r r2. r1
+
+// B
+r4 a4 < c r c r c2. r4 >
+r4 g4 < c r c r c2. r4 >
+r4 a4 < c r d r c2. r4 >
+r4 b4 < d r e r d4. r > g4. r
+
+// A'
+r g < Q5 c > g < e > g < c > g < Q15 d+4 c4 > g+4 < d+4 c r r2. r1 >
+r g < Q5 c > g < e c > g < c Q15 d+4 c4 > g+4 < d+4 e r r2. r1
+r1 r2 r Q5 d+ d+ d+ Q15 e r r2. r1
+r1 r2 r Q5 d+ d+ d+ Q15 e > r r2. r1
+
+// B'
+r4 a4 < c r c r c2. r4 >
+r4 g4 < c r c r c2. r4 >
+r4 a4 < c r d r c2. r4 >
+r4 b4 < d r e r d4. r > g4. r
+
+// C
+r1 r1 r4 Q12 g4 < c4 e4 Q15 f2 e4. d
+c4 r2. r1 > r4 g4 < Q12 c r e r Q15 f2 e4. d
+c4 r2. r1 > r4 a4 < c r f r Q15 a2 g4. f
+c4 r2. r1 > r4 a4 < Q12 c r f r Q15 a4. r b4. r <
+c4
+
+;
+
+
+// Main Riff - Harpsichord
+// ------------------------------------
+
+@CH2
+@BS0
+@PC7
+V12
+O4
+L1
+
+// A
+rrrr rrrr rrrr rrrr
+
+// B
+rrrr rrrr
+
+// A'
+rrrr rrrr
+
+L8
+r [g>g<] < Q5 [c>c<] > [g>g<] < [e>e<] > [g>g<] < [c>c<] > [g>g<] < Q15 [d+4>d+4<] [c4>c4<] > [g+4>g+4<] < [d+4>d+4<] [c>c<] r r2. r1 >
+r [g>g<] < Q5 [c>c<] > [g>g<] < [e>e<] [c>c<] > [g>g<] < [c>c<] Q15 [d+4>d+4<] [c4>c4<] > [g+4>g+4<] < [d+4>d+4<] [e>e<] > r r2. r1
+
+;
+
+
+// Guitar
+// ------------------------------------
+
+@CH3
+@BS0
+@PC28
+O2
+Q8
+L8
+V10
+
+// A
+
+r [ce] r [ce] r [ce] r [ce] r [cd+] r [cd+] r [cd+] r [cd+] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce]
+r [ce] r [ce] r [ce] r [ce] r [cd+] r [cd+] r [cd+] r [cd+] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce]
+r [ce] r [ce] r [ce] r [ce] r [cd+] r [cd+] r [cd+] r [cd+] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce]
+r [ce] r [ce] r [ce] r [ce] r [cd+] r [cd+] r [cd+] r [cd+] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce]
+
+// B
+
+r [cf] r [cf] r [cf] r [cf] r [cf] r [cf] r [cf] r [cf] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce]
+r [cf] r [cf] r [cf] r [cf] r [cf] r [cf] r [cf] r [cf] r [dg] r [dg] r [dg] r [dg] r [dg] r [dg] r [dg] r [dg]
+
+// A'
+
+r [ce] r [ce] r [ce] r [ce] r [cd+] r [cd+] r [cd+] r [cd+] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce]
+r [ce] r [ce] r [ce] r [ce] r [cd+] r [cd+] r [cd+] r [cd+] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce]
+r [ce] r [ce] r [ce] r [ce] r [cd+] r [cd+] r [cd+] r [cd+] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce]
+r [ce] r [ce] r [ce] r [ce] r [cd+] r [cd+] r [cd+] r [cd+] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce]
+
+// B'
+
+r [cf] r [cf] r [cf] r [cf] r [cf] r [cf] r [cf] r [cf] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce]
+r [cf] r [cf] r [cf] r [cf] r [cf] r [cf] r [cf] r [cf] r [dg] r [dg] r [dg] r [dg] r [dg] r [dg] r [dg] r [dg]
+
+// C
+r1 r1 r [ce] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce]
+r1 r1 r [ce] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce]
+r1 r1 r [fa] r [fa] r [fa] r [fa] r [fa] r [fa] r [fa] r [fa]
+r1 r1 r [fa] r [fa] r [fa] r [fa] r [fa] r [fa] r [fa] r [fa]
+
+// Ending
+r [ce] r [ce] r [ce] r [ce] r [cd+] r [cd+] r [cd+] r [cd+] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce]
+r [ce] r [ce] r [ce] r [ce] r [cd+] r [cd+] r [cd+] r [cd+] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce] r [ce]
+
+;
+
+
+// Kalinba
+// ------------------------------------
+
+@CH4
+@BS0
+@PC109
+L16
+Q10
+V10
+@vl127
+
+// A
+r1 r1 r1 r1
+r1 r1 r1 r1
+r1 r1 O1 efga b<cde fgab <cdef gab<c defg ab<cd V15 e8e8 V10
+r1 r1 O1 efga b<cde fgab <cdef gab<c defg ab<cd V15 e8e8 V10
+
+// B
+O4
+V12
+L16 r1 r8 [fa] [fa] L8 [fa] [fa] [a<c>] [a<c>] [a<c>] [fa]
+L16 r1 r8 [eg] [eg] L8 [eg] [eg] [g<c>] [g<c>] [g<c>] [eg]
+L16 r1 r8 [fa] [fa] L8 [fa] [fa] [a<c>] [a<c>] [a<c>] [fa]
+L8 r1 [gb] [e4g4] [ce] > b g d r
+
+// A'
+V10
+L16
+r1 r1 O1 efga b<cde fgab <cdef gab<c defg ab<cd V15 e8e8 V10
+r1 r1 O1 efga b<cde fgab <cdef gab<c defg ab<cd V15 e8e8 V10
+r1 r1 O1 efga b<cde fgab <cdef gab<c defg ab<cd V15 e8e8 V10
+r1 r1 O1 efga b<cde fgab <cdef gab<c defg ab<cd V15 e8e8 V10
+
+// B'
+O4
+V12
+L16 r1 r8 [fa] [fa] L8 [fa] [fa] [a<c>] [a<c>] [a<c>] [fa]
+L16 r1 r8 [eg] [eg] L8 [eg] [eg] [g<c>] [g<c>] [g<c>] [eg]
+L16 r1 r8 [fa] [fa] L8 [fa] [fa] [a<c>] [a<c>] [a<c>] [fa]
+L8 r1 [gb] [e4g4] [ce] > b g d r
+
+// C
+V12
+O5
+L8 c > g e < c > g e < c > g < { d > b g < d > b g < d > b g < d > b g <}1
+L8 c > g e < c > g e < c > e < { c > g e < c > g e < c > g e < c > g e <}1
+L8 c > g e < c > g e < c > g < d > b g < d > {b g < d > b g b <}2
+L8 c > g e < c > g e < {c > g e}4 < c > g e < c > {g e < c > g e < c}2
+
+V12
+L8 [f>f<] [c>c<] > [a>a<] < [f>f<] [c>c<] > [a>a<] < [f>f<] [c>c<] { [g>g<] [d>d<] > [b>b<] < [g>g<] [d>d<] > [b>b<] < [g>g<] [d>d<] > [b>b<] < [g>g<] [d>d<] > [b>b<] <}1
+L8 [f>f<] [c>c<] > [a>a<] < [f>f<] [c>c<] > [a>a<] < [f>f<] [c>c<] { [f>f<] [c>c<] > [a>a<] < [f>f<] [c>c<] > [a>a<] < [f>f<] [c>c<] > [a>a<] < [f>f<] [c>c<] > [a>a<] <}1
+L8 [f>f<] [c>c<] > [a>a<] < [f>f<] [c>c<] > [a>a<] < [f>f<] [c>c<] [g>g<] [d>d<] > [b>b<] < [g>g<] {[d>d<] > [b>b<] < [g>g<] [d>d<] > [b>b<] [b>b<] <}2
+L8 [f>f<] [c>c<] > [a>a<] < [f>f<] [c>c<] > [a>a<] < {[f>f<] [c>c<] > [a>a<]}4 < [f>f<] [c>c<] > [a>a<] < [f>f<] {[c>c<] > [a>a<] < [f>f<] [c>c<] > [a>a<] < [f>f<]}2
+
+;
+
+
+// Piano
+// ------------------------------------
+
+@CH5
+
+@BS0
+@PC6
+Q8
+L1
+O2
+V11
+
+// A
+rrrr rrrr rrrr rrrr
+// B
+rrrr rrrr
+// A'
+rrrr rrrr rrrr rrrr
+// B'
+rrrr rrrr
+// C'
+
+L4
+
+[eg] [eg] [eg] [eg] [fg+] [fg+] [fg+] [fg+]
+r r r r r r r r
+[eg] [eg] [eg] [eg] [fg+] [fg+] [fg+] [fg+]
+r r r r r r r r
+[fa] [fa] [fa] [fa] [fa+] [fa+] [fa+] [fa+]
+r r r r r r r r
+[fa] [fa] [fa] [fa] [fa+] [fa+] [fa+] [fa+]
+r r r r r r r r
+
+;
+
+
+// Taiko
+// ------------------------------------
+
+@CH10
+@BS0
+@PC117
+@V127
+@VL127
+
+L4
+O4
+
+// A
+e > f+ < e > f+ g d+ g d+ < e > f+ < e > f+ < e > f+ < e > f+ <
+e > f+ < e > f+ g d+ g d+ < e > f+ < e > f+ < e > f+ < e > f+ <
+e > f+ < e > f+ g d+ g d+ < e > f+ < e > f+ < e > f+ < e > f+ <
+e > f+ < e > f+ g d+ g d+ < e > f+ < e > f+ < e > f+ < e > f+
+
+// B
+g > b < g > b < g > b < g > b
+b < f+ > b < f+ <  e > f+ < e > f+
+g > b < g > b < g > b < g > b <
+f+ d f+ d f+ d f+ a+8 < d8
+
+// A
+e > f+ < e > f+ g d+ g d+ < e > f+ < e > f+ < e > f+ < e > f+ <
+e > f+ < e > f+ g d+ g d+ < e > f+ < e > f+ < e > f+ < e > f+ <
+e > f+ < e > f+ g d+ g d+ < e > f+ < e > f+ < e > f+ < e > f+ <
+e > f+ < e > f+ g d+ g d+ < e > f+ < e > f+ < e > f+ < e > f+
+
+// B
+g > b < g > b < g > b < g > b <<
+e > f+ < e > f+ < e > f+ < e > f+
+g > b < g > b < g > b < g > b <
+f+ d f+ d f+ d f+ a+8 < d8
+
+// C
+e2 > f+2 < e+2 > f+2 <
+e > f+ < e > f+ < e > f+ < e > f+ <
+e2 > f+2 < e+2 > f+2 <
+e > f+ < e > f+ < e > f+ < e > f+ <<
+
+c2 > e2 < c+2 > e2 <
+c > e < c > e < c > e < c > e <
+c2 > e2 < c+2 > e2 <
+c > e < c > e < c > e < c > e
+
+// Ending
+e > f+ < e > f+ g d+ g d+ < e > f+ < e > f+ < e > f+ < e > f+ <
+e > f+ < e > f+ g d+ g d+ < e > f+ < e > f+ < e > f+ < e > f+ <
+
+;
+

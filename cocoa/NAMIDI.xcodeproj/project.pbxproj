@@ -47,7 +47,6 @@
 		0232CB241C891EF700542D34 /* ListenToExampleRowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0232CB231C891EF700542D34 /* ListenToExampleRowView.m */; };
 		0232CB261C891F0F00542D34 /* ListenToExampleRowView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0232CB251C891F0F00542D34 /* ListenToExampleRowView.xib */; };
 		0232CB2B1C8931D000542D34 /* example.abc in Resources */ = {isa = PBXBuildFile; fileRef = 0232CB281C8931D000542D34 /* example.abc */; };
-		0232CB2C1C8931D000542D34 /* example.mml in Resources */ = {isa = PBXBuildFile; fileRef = 0232CB291C8931D000542D34 /* example.mml */; };
 		023BB20F1C6EF17B0030487C /* NSArray+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 023BB20E1C6EF17B0030487C /* NSArray+Support.m */; };
 		0240A2481C6C30F2002D6F72 /* ApplicationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0240A2471C6C30F2002D6F72 /* ApplicationController.m */; };
 		024A19061C768AC800B0AC56 /* FlippedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A19051C768AC800B0AC56 /* FlippedView.m */; };
@@ -120,6 +119,7 @@
 		0284DC981CBEA382007CED1C /* bebop25.nas in Resources */ = {isa = PBXBuildFile; fileRef = 0284DC971CBEA382007CED1C /* bebop25.nas */; };
 		028589551C71320A00A53B8C /* EditorStatusViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 028589531C71320A00A53B8C /* EditorStatusViewController.m */; };
 		028589561C71320A00A53B8C /* EditorStatusViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 028589541C71320A00A53B8C /* EditorStatusViewController.xib */; };
+		029BADC81CBFFE52008EC950 /* jaunty_gumption.mml in Resources */ = {isa = PBXBuildFile; fileRef = 029BADC71CBFFE52008EC950 /* jaunty_gumption.mml */; };
 		02A673FA1C6B3A5C00914C8B /* ABCIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 02A673E91C6B3A5C00914C8B /* ABCIcon.iconset */; };
 		02A673FB1C6B3A5C00914C8B /* AppIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 02A673EA1C6B3A5C00914C8B /* AppIcon.iconset */; };
 		02A673FC1C6B3A5C00914C8B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 02A673EB1C6B3A5C00914C8B /* Assets.xcassets */; };
@@ -227,7 +227,6 @@
 		0232CB231C891EF700542D34 /* ListenToExampleRowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ListenToExampleRowView.m; sourceTree = "<group>"; };
 		0232CB251C891F0F00542D34 /* ListenToExampleRowView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ListenToExampleRowView.xib; sourceTree = "<group>"; };
 		0232CB281C8931D000542D34 /* example.abc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = example.abc; sourceTree = "<group>"; };
-		0232CB291C8931D000542D34 /* example.mml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = example.mml; sourceTree = "<group>"; };
 		023BB20D1C6EF17B0030487C /* NSArray+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+Support.h"; sourceTree = "<group>"; };
 		023BB20E1C6EF17B0030487C /* NSArray+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Support.m"; sourceTree = "<group>"; };
 		0240A2461C6C30F2002D6F72 /* ApplicationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationController.h; sourceTree = "<group>"; };
@@ -346,6 +345,7 @@
 		028589521C71320A00A53B8C /* EditorStatusViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorStatusViewController.h; sourceTree = "<group>"; };
 		028589531C71320A00A53B8C /* EditorStatusViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditorStatusViewController.m; sourceTree = "<group>"; };
 		028589541C71320A00A53B8C /* EditorStatusViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EditorStatusViewController.xib; sourceTree = "<group>"; };
+		029BADC71CBFFE52008EC950 /* jaunty_gumption.mml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = jaunty_gumption.mml; sourceTree = "<group>"; };
 		02A673E91C6B3A5C00914C8B /* ABCIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = ABCIcon.iconset; sourceTree = "<group>"; };
 		02A673EA1C6B3A5C00914C8B /* AppIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = AppIcon.iconset; sourceTree = "<group>"; };
 		02A673EB1C6B3A5C00914C8B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -503,7 +503,7 @@
 			children = (
 				0284DC971CBEA382007CED1C /* bebop25.nas */,
 				0232CB281C8931D000542D34 /* example.abc */,
-				0232CB291C8931D000542D34 /* example.mml */,
+				029BADC71CBFFE52008EC950 /* jaunty_gumption.mml */,
 			);
 			path = Example;
 			sourceTree = "<group>";
@@ -862,7 +862,6 @@
 				0216EE071C7C3C76009A7B90 /* PianoRollConductorViewController.xib in Resources */,
 				025423641C6F31DF007D53CC /* EditorViewController.xib in Resources */,
 				026D42EC1C7ABC08000267AD /* PlayLineViewController.xib in Resources */,
-				0232CB2C1C8931D000542D34 /* example.mml in Resources */,
 				0232CB211C891AD400542D34 /* ListenToExampleWindowController.xib in Resources */,
 				0232CB2B1C8931D000542D34 /* example.abc in Resources */,
 				02CAF6C51C778C2200AD81B2 /* ErrorWindowController.xib in Resources */,
@@ -884,6 +883,7 @@
 				0254235F1C6F2EB6007D53CC /* EditorWindowController.xib in Resources */,
 				0214836B1C84B2E700D653AE /* ExportWindowController.xib in Resources */,
 				028209231C70A3C0003EBCFB /* EditorTabItem.xib in Resources */,
+				029BADC81CBFFE52008EC950 /* jaunty_gumption.mml in Resources */,
 				02AE740D1C96D8C50036B8B1 /* ABHIcon.iconset in Resources */,
 				024A5B1E1C69FFD40079D22C /* MainWindowController.xib in Resources */,
 				0216EDFD1C7ADA09009A7B90 /* PianoRollViewController.xib in Resources */,

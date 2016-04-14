@@ -257,7 +257,7 @@ ApplicationController *AppController;
     
     NSString *filename = @{@"nas": @"bebop25.nas",
                            @"abc": @"example.abc",
-                           @"mml": @"example.mml"}[fileType];
+                           @"mml": @"jaunty_gumption.mml"}[fileType];
     
     NSURL *srcUrl = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:filename.stringByDeletingPathExtension ofType:fileType]];
     NSURL *dstUrl = [NSURL fileURLWithPath:[self.exampleDirectoryPath stringByAppendingPathComponent:filename]];
