@@ -992,7 +992,7 @@ static bool calcStep(ABCSEMAnalyzer *self, VoiceContext *voice, NoteLength *leng
     }
 
     if (voice->inGraceNote) {
-        divider *= 4;
+        divider *= 8;
     }
 
     if (0 != voice->unitNoteLength * multiplier % divider) {
