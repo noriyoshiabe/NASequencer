@@ -202,10 +202,14 @@ static void setFileContext(ABCSEMAnalyzer *self)
     while (iterator->hasNext(iterator)) {
         NAMapEntry *entry = iterator->next(iterator);
         VoiceContext *voice = entry->value;
-        voice->unitNoteLength = self->file.unitNoteLength;
         voice->tick = self->file.tick;
         voice->accidental.untilBar = self->file.accidental.untilBar;
         voice->accidental.allOctave = self->file.accidental.allOctave;
+
+        char *identifier = entry->key;
+        if ('#' == identifier[0]) {
+            voice->unitNoteLength = self->file.unitNoteLength;
+        }
     }
 }
 
@@ -397,6 +401,10 @@ static void visitList(void *_self, SEMList *sem)
     ABCSEMAnalyzer *self = _self;
 
     self->voice = NAMapGet(self->voiceMap, sem->voiceId);
+    if (0 == self->voice->unitNoteLength) {
+        VoiceContext *_voice = NAMapGet(self->voiceMap, "#");
+        self->voice->unitNoteLength = _voice->unitNoteLength;
+    }
 
     self->repeat = NAMapGet(self->repeatMap, sem);
     if (!self->repeat) {
