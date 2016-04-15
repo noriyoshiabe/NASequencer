@@ -443,8 +443,12 @@ static void visitVoice(void *_self, SEMVoice *sem)
 {
     ABCSEMAnalyzer *self = _self;
 
-    self->voice->transpose = sem->transpose;
-    self->voice->octave = sem->octave;
+    if (sem->hasTranspose) {
+        self->voice->transpose = sem->transpose;
+    }
+    if (sem->hasOctave) {
+        self->voice->octave = sem->octave;
+    }
 }
 
 static void visitDecoration(void *_self, SEMDecoration *sem)

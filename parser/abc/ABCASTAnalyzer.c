@@ -600,11 +600,11 @@ static void visitVoice(void *_self, ASTVoice *ast)
         break;
     case TuneBody:
         {
-            SEMVoice *voice = NAMapGet(self->tune->voiceMap, ast->identifier);
-            if (!voice) {
-                voice = node(Voice, ast);
-                voice->identifier = strdup(ast->identifier);
-                NAMapPut(self->tune->voiceMap, voice->identifier, voice);
+            SEMVoice *_voice = NAMapGet(self->tune->voiceMap, ast->identifier);
+            if (!_voice) {
+                _voice = node(Voice, ast);
+                _voice->identifier = strdup(ast->identifier);
+                NAMapPut(self->tune->voiceMap, _voice->identifier, _voice);
             }
 
             SEMList *list = node(List, ast);
@@ -614,8 +614,10 @@ static void visitVoice(void *_self, ASTVoice *ast)
 
             self->list = list;
 
-            voice = node(Voice, ast);
+            SEMVoice *voice = node(Voice, ast);
             voice->identifier = strdup(ast->identifier);
+            voice->transpose = _voice->transpose;
+            voice->octave = _voice->octave;
 
             self->voice = voice;
 
@@ -649,6 +651,7 @@ static void visitVoiceParam(void *_self, ASTVoiceParam *ast)
         }
         else {
             self->voice->transpose = ast->intValue;
+            self->voice->hasTranspose = true;
         }
         break;
     case VoiceOctave:
@@ -657,6 +660,7 @@ static void visitVoiceParam(void *_self, ASTVoiceParam *ast)
         }
         else {
             self->voice->octave = ast->intValue;
+            self->voice->hasOctave = true;
         }
         break;
     case VoiceStaffLines:
