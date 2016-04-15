@@ -60,6 +60,8 @@ typedef struct _ABCASTAnalyzer {
     SEMMeter *tuneMeter;
 
     regex_t nthRepeatRegex;
+
+    char *lastStringInforamationText;
 } ABCASTAnalyzer;
 
 static BaseNote KeyChar2BaseNote(char c);
@@ -98,7 +100,7 @@ static void visitFileIdentification(void *self, ASTFileIdentification *ast)
 {
 }
 
-static void visitStringInformation(void *self, ASTStringInformation *ast)
+static void visitStringInformation(void *_self, ASTStringInformation *ast)
 {
 }
 
@@ -148,7 +150,10 @@ static void visitTitle(void *_self, ASTTitle *ast)
         return;
     }
 
-    NAArrayAppend(self->tune->titleList, strdup(ast->title));
+    char *text = malloc(1024);
+    strncpy(text, ast->title, 1023);
+    NAArrayAppend(self->tune->titleList, text);
+    self->lastStringInforamationText = text;
 }
 
 static void visitKey(void *_self, ASTKey *ast)
@@ -502,7 +507,10 @@ static void visitTransCopyright(void *_self, ASTTransCopyright *ast)
         return;
     }
 
-    NAArrayAppend(self->tune->copyrightList, strdup(ast->text));
+    char *text = malloc(1024);
+    strncpy(text, ast->text, 1023);
+    NAArrayAppend(self->tune->copyrightList, text);
+    self->lastStringInforamationText = text;
 }
 
 static void visitInstCharSet(void *self, ASTInstCharSet *ast)
@@ -555,8 +563,13 @@ static void visitRedefinableSymbol(void *self, ASTRedefinableSymbol *ast)
 {
 }
 
-static void visitContinuation(void *self, ASTContinuation *ast)
+static void visitContinuation(void *_self, ASTContinuation *ast)
 {
+    ABCASTAnalyzer *self = _self;
+
+    if (self->lastStringInforamationText) {
+        snprintf(self->lastStringInforamationText, 1023, "%s %s", self->lastStringInforamationText, ast->string);
+    }
 }
 
 static void visitVoice(void *_self, ASTVoice *ast)
