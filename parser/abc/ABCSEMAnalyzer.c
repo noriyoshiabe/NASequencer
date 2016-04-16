@@ -145,7 +145,7 @@ typedef struct _ABCSEMAnalyzer {
     } pending;
 } ABCSEMAnalyzer;
 
-static int VoiceIdComparator(const void *_id1, const void *_id2);
+static int VoiceIndexComparator(const void *_voice1, const void *_voice2);
 #define inFileFeader(self) (NULL == self->tune)
 static void appendPendingNote(ABCSEMAnalyzer *self, VoiceContext *voice, void *sem, int tick, int channel, int noteNo, int gatetime, int velocity);
 static void flushPendingNote(ABCSEMAnalyzer *self, VoiceContext *voice);
@@ -279,10 +279,10 @@ static void visitTune(void *_self, SEMTune *sem)
     }
 
     int count = NAMapCount(sem->voiceMap);
-    char **voiceIds = NAMapGetKeys(sem->voiceMap, alloca(sizeof(char *) * count));
-    qsort(voiceIds, count, sizeof(char *), VoiceIdComparator);
+    SEMVoice **voices = NAMapGetValues(sem->voiceMap, alloca(sizeof(SEMVoice *) * count));
+    qsort(voices, count, sizeof(SEMVoice *), VoiceIndexComparator);
     for (int i = 0; i < count; ++i) {
-        SEMVoice *voice = NAMapGet(sem->voiceMap, voiceIds[i]);
+        SEMVoice *voice = voices[i];
 
         VoiceContext *context = VoiceContextCreate();
         context->channel = i + 1;
@@ -290,7 +290,7 @@ static void visitTune(void *_self, SEMTune *sem)
         context->octave = voice->octave;
         context->velocity = 100;
 
-        NAMapPut(self->voiceMap, voiceIds[i], context);
+        NAMapPut(self->voiceMap, voices[i]->identifier, context);
     }
 
     setFileContext(self);
@@ -1044,12 +1044,12 @@ static int calcBrokenRhythmOffset(SEMBrokenRhythm *sem, int step)
     return _step - step;
 }
 
-static int VoiceIdComparator(const void *_id1, const void *_id2)
+static int VoiceIndexComparator(const void *_voice1, const void *_voice2)
 {
-    const char **id1 = (const char **)_id1;
-    const char **id2 = (const char **)_id2;
+    const SEMVoice **voice1 = (const SEMVoice **)_voice1;
+    const SEMVoice **voice2 = (const SEMVoice **)_voice2;
 
-    return strcmp(*id1, *id2);
+    return (*voice1)->index - (*voice2)->index;
 }
 
 static RepeatContext *RepeatContextCreate()

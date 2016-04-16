@@ -69,6 +69,7 @@ typedef struct _SEMVoice {
     int octave;
     bool hasTranspose;
     bool hasOctave;
+    int index;
 } SEMVoice;
 
 typedef struct _NoteLength {

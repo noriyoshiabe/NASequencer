@@ -21,6 +21,7 @@ extern void *NAMapPut(NAMap *self, void *key, void *value);
 extern void *NAMapGet(NAMap *self, void *key);
 extern int NAMapCount(NAMap *self);
 extern void **NAMapGetKeys(NAMap *self, void *buffer);
+extern void **NAMapGetValues(NAMap *self, void *buffer);
 extern void *NAMapRemove(NAMap *self, void *key);
 extern void NAMapRemoveAll(NAMap *self);
 extern void NAMapTraverseKey(NAMap *self, void (*function)(void *));
@@ -31,6 +32,7 @@ extern void NAMapDescription(void *self, FILE *stream);
 extern const int NAMapIteratorSize;
 
 #define NAMapGetKeys(self, buffer) (void *)NAMapGetKeys(self, buffer)
+#define NAMapGetValues(self, buffer) (void *)NAMapGetValues(self, buffer)
 #define NAMapTraverseKey(self, function) NAMapTraverseKey(self, (void *)function)
 #define NAMapTraverseValue(self, function) NAMapTraverseValue(self, (void *)function)
 #define NAMapGetIterator(self) NAMapGetIterator(self, alloca(NAMapIteratorSize))

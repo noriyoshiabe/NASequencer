@@ -62,6 +62,8 @@ typedef struct _ABCASTAnalyzer {
     regex_t nthRepeatRegex;
 
     char *lastStringInforamationText;
+
+    int voiceIndex;
 } ABCASTAnalyzer;
 
 static BaseNote KeyChar2BaseNote(char c);
@@ -104,7 +106,7 @@ static void visitStringInformation(void *_self, ASTStringInformation *ast)
 {
 }
 
-static SEMPart *createPart(SEMTune *tune, FileLocation *location, const char *identifier)
+static SEMPart *createPart(ABCASTAnalyzer *self, SEMTune *tune, FileLocation *location, const char *identifier)
 {
     SEMPart *part = ABCSEMPartCreate(location);
     part->identifier = strdup(identifier);
@@ -118,6 +120,7 @@ static SEMPart *createPart(SEMTune *tune, FileLocation *location, const char *id
     if (!NAMapContainsKey(tune->voiceMap, "#")) {
         SEMVoice *voice = ABCSEMVoiceCreate(NULL);
         voice->identifier = strdup("#");
+        voice->index = ++self->voiceIndex;
         NAMapPut(tune->voiceMap, voice->identifier, voice);
     }
 
@@ -134,7 +137,7 @@ static void visitReferenceNumber(void *_self, ASTReferenceNumber *ast)
     append(self->file, tune);
     self->tune = tune;
 
-    self->part = createPart(tune, NULL, "#");
+    self->part = createPart(self, tune, NULL, "#");
     self->list = NAMapGet(self->part->listMap, "#");
 
     self->state = TuneHeader;
@@ -491,7 +494,7 @@ static void visitParts(void *_self, ASTParts *ast)
                 return;
             }
 
-            self->part = createPart(self->tune, &ast->node.location, identifier);
+            self->part = createPart(self, self->tune, &ast->node.location, identifier);
             self->list = NAMapGet(self->part->listMap, "#");
         }
         break;
@@ -586,6 +589,7 @@ static void visitVoice(void *_self, ASTVoice *ast)
             if (!voice) {
                 voice = node(Voice, ast);
                 voice->identifier = strdup(ast->identifier);
+                voice->index = ++self->voiceIndex;
                 NAMapPut(self->tune->voiceMap, voice->identifier, voice);
             }
 
@@ -604,6 +608,7 @@ static void visitVoice(void *_self, ASTVoice *ast)
             if (!_voice) {
                 _voice = node(Voice, ast);
                 _voice->identifier = strdup(ast->identifier);
+                _voice->index = ++self->voiceIndex;
                 NAMapPut(self->tune->voiceMap, _voice->identifier, _voice);
             }
 
@@ -616,6 +621,7 @@ static void visitVoice(void *_self, ASTVoice *ast)
 
             SEMVoice *voice = node(Voice, ast);
             voice->identifier = strdup(ast->identifier);
+            voice->index = ++self->voiceIndex;
             voice->transpose = _voice->transpose;
             voice->octave = _voice->octave;
 

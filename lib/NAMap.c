@@ -5,6 +5,7 @@
 #include <string.h>
 
 #undef NAMapGetKeys
+#undef NAMapGetValues
 #undef NAMapTraverseKey
 #undef NAMapTraverseValue
 #undef NAMapGetIterator
@@ -185,6 +186,22 @@ void **NAMapGetKeys(NAMap *self, void *buffer)
     }
 
     return keys;
+}
+
+void **NAMapGetValues(NAMap *self, void *buffer)
+{
+    void **values = buffer;
+    int idx = 0;
+
+    for (int i = 0; i < self->size; ++i) {
+        Entry *entry = self->buckets[i];
+        while (entry != NULL) {
+            values[idx++] = entry->value;
+            entry = entry->next;
+        }
+    }
+
+    return values;
 }
 
 void *NAMapRemove(NAMap *self, void *key)
