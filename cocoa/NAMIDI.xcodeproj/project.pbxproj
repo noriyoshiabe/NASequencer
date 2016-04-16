@@ -10,6 +10,7 @@
 		0201F7D11C688BB100A201F6 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0201F7D01C688BB100A201F6 /* AppDelegate.m */; };
 		0201F7D41C688BB100A201F6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0201F7D31C688BB100A201F6 /* main.m */; };
 		0201F7D71C688BB100A201F6 /* Document.m in Sources */ = {isa = PBXBuildFile; fileRef = 0201F7D61C688BB100A201F6 /* Document.m */; };
+		0203F5A41CC23D2200F7C5BA /* luminous_rain.abc in Resources */ = {isa = PBXBuildFile; fileRef = 0203F5A31CC23D2200F7C5BA /* luminous_rain.abc */; };
 		020CF8321C6A059C0025DF84 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 020CF8311C6A059C0025DF84 /* WebKit.framework */; };
 		020CF8391C6A1BFD0025DF84 /* GettingStartedWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 020CF8381C6A1BFD0025DF84 /* GettingStartedWindowController.xib */; };
 		020CF8561C6AD4D80025DF84 /* PreferenceWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 020CF8541C6AD4D80025DF84 /* PreferenceWindowController.m */; };
@@ -46,7 +47,6 @@
 		0232CB211C891AD400542D34 /* ListenToExampleWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0232CB1F1C891AD400542D34 /* ListenToExampleWindowController.xib */; };
 		0232CB241C891EF700542D34 /* ListenToExampleRowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0232CB231C891EF700542D34 /* ListenToExampleRowView.m */; };
 		0232CB261C891F0F00542D34 /* ListenToExampleRowView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0232CB251C891F0F00542D34 /* ListenToExampleRowView.xib */; };
-		0232CB2B1C8931D000542D34 /* example.abc in Resources */ = {isa = PBXBuildFile; fileRef = 0232CB281C8931D000542D34 /* example.abc */; };
 		023BB20F1C6EF17B0030487C /* NSArray+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 023BB20E1C6EF17B0030487C /* NSArray+Support.m */; };
 		0240A2481C6C30F2002D6F72 /* ApplicationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0240A2471C6C30F2002D6F72 /* ApplicationController.m */; };
 		024A19061C768AC800B0AC56 /* FlippedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A19051C768AC800B0AC56 /* FlippedView.m */; };
@@ -168,6 +168,7 @@
 		0201F7D51C688BB100A201F6 /* Document.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Document.h; sourceTree = "<group>"; };
 		0201F7D61C688BB100A201F6 /* Document.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Document.m; sourceTree = "<group>"; };
 		0201F7E01C688BB100A201F6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0203F5A31CC23D2200F7C5BA /* luminous_rain.abc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = luminous_rain.abc; sourceTree = "<group>"; };
 		020CF8311C6A059C0025DF84 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		020CF8381C6A1BFD0025DF84 /* GettingStartedWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = GettingStartedWindowController.xib; sourceTree = "<group>"; };
 		020CF8531C6AD4D80025DF84 /* PreferenceWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferenceWindowController.h; sourceTree = "<group>"; };
@@ -226,7 +227,6 @@
 		0232CB221C891EF700542D34 /* ListenToExampleRowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ListenToExampleRowView.h; sourceTree = "<group>"; };
 		0232CB231C891EF700542D34 /* ListenToExampleRowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ListenToExampleRowView.m; sourceTree = "<group>"; };
 		0232CB251C891F0F00542D34 /* ListenToExampleRowView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ListenToExampleRowView.xib; sourceTree = "<group>"; };
-		0232CB281C8931D000542D34 /* example.abc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = example.abc; sourceTree = "<group>"; };
 		023BB20D1C6EF17B0030487C /* NSArray+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+Support.h"; sourceTree = "<group>"; };
 		023BB20E1C6EF17B0030487C /* NSArray+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Support.m"; sourceTree = "<group>"; };
 		0240A2461C6C30F2002D6F72 /* ApplicationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationController.h; sourceTree = "<group>"; };
@@ -502,7 +502,7 @@
 			isa = PBXGroup;
 			children = (
 				0284DC971CBEA382007CED1C /* bebop25.nas */,
-				0232CB281C8931D000542D34 /* example.abc */,
+				0203F5A31CC23D2200F7C5BA /* luminous_rain.abc */,
 				029BADC71CBFFE52008EC950 /* jaunty_gumption.mml */,
 			);
 			path = Example;
@@ -863,7 +863,6 @@
 				025423641C6F31DF007D53CC /* EditorViewController.xib in Resources */,
 				026D42EC1C7ABC08000267AD /* PlayLineViewController.xib in Resources */,
 				0232CB211C891AD400542D34 /* ListenToExampleWindowController.xib in Resources */,
-				0232CB2B1C8931D000542D34 /* example.abc in Resources */,
 				02CAF6C51C778C2200AD81B2 /* ErrorWindowController.xib in Resources */,
 				025FA9031C7D1BE900E4C3B3 /* PianoRollKeyboardViewController.xib in Resources */,
 				02A673FD1C6B3A5C00914C8B /* MMLIcon.iconset in Resources */,
@@ -873,6 +872,7 @@
 				02A673FA1C6B3A5C00914C8B /* ABCIcon.iconset in Resources */,
 				026D42DB1C7ABC08000267AD /* SelectionViewController.xib in Resources */,
 				0216EE0C1C7C5D15009A7B90 /* PianoRollNoteViewController.xib in Resources */,
+				0203F5A41CC23D2200F7C5BA /* luminous_rain.abc in Resources */,
 				026D42E71C7ABC08000267AD /* TrackChannelViewController.xib in Resources */,
 				024A5B2F1C69FFD90079D22C /* WelcomeWindowController.xib in Resources */,
 				020CF8721C6AF53D0025DF84 /* PurchaseViewController.xib in Resources */,

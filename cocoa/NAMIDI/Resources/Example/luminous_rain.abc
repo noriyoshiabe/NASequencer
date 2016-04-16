@@ -1,0 +1,67 @@
+%abc-2.1
+X: 1
+T: Luminous Rain
+Z: abc-copyright By Kevin MacLeod (http://incompetech.com)
++: Licensed under Creative Commons: By Attribution 3.0 License
++: http://creativecommons.org/licenses/by/3.0/
+M: C
+Q: 90
+L: 1/4
+V: R transpose=+12
+V: L transpose=0
+K: G Major 
+%
+% Piano - Right hand
+% ------------------
+V: R
+!mp!
+| z3 g |
+% 2
+| d3 g | ^d/16 e15/16-e2 g | d g [b,e] g | [ce]3 g |
+| d3 g | c3 g | [b,d] g/a/ b a/g/ | d3 g |
+% 10
+| d2 z/g/ g | c2 z/g/ g/c/ | d/g/g/a/b/a/g/f/ | e > g b/a/g |
+| d3 g | c2 z/g/ g | d/g/ g c/g/ g/a/ | [egb]2 z/[gb]/ a/g/ |
+% 18
+| d2 z/[gb]/ a/g/ | [ce]2 z/[gb]/ a/g/ | [ce] b/a/g/c/e/a/ | g2 z/ g/-g |
+% 22
+| d2 z/ g/-g | c2 z/ g/-g | [b,e]/=f/g/a/b/a/g/^f/ | [ce]/^f/g/a/b/a/g/f/ |
+| e3 a/g/ | f3 g |
+% 28
+| d3 g | c3 g/a/ | [gb]/a/g/b/ [ac']/b/a/g/ | e/f/g/a/ g/f e/ |
+| d2 z/ g/-g | c2 z/ g/-g | [b,e]/g/-g [ceg]2 | [b,^d]/16-[b,e]7/16 g a/ b c'/4 g/4 e/ |
+% 36
+| [ea]/g/e/g/ f/[eg]/ a |
+% 37
+| d2 z/ g/-g | c2 z/ g a/ | b e' b [fa] | g a2 a |
+| g a [df] g |
+% 38
+[dg]4 | -[dg]4 |
+%
+% Piano - Left hand
+% ------------------
+V: L
+!p!
+| z3 z/g/ |
+% 2
+| -g4 | -g3 z/g/ | -g-g/g/ -g-g/g/ | g2 [df]2 |
+| [g,d] [g,d] [g,d] [g,d] | [g,c] [g,c] [g,c] [g,c] | [b,e] [b,e] [g,c] [g,c] | [a,d] [a,d] [a,d] [a,d] |
+% 10
+| [g,d] [g,e] [g,d] [g,d] | [g,c] [g,e] [g,c] [g,c] | [b,e] [b,e] [a,d] [a,d] | [g,c] [g,c] [a,d] [a,d] |
+| [g,d] [g,d] [g,d] [g,d] | [g,e] [g,e] [g,e] [g,e] | [g,d] [g,d] [=f,d] [f,d] | !accent! [e,e]4 & z b,b,b, |
+% 18
+| [d,d] [d,f] [d,g] [d,d] | [c,c] [c,g] [c,f] [c,c] | [d,d] [d,d] [d,d] [d,d] | z [g,g]/[g,a]/ [g,g]2 |
+% 22
+| [g,d] [g,d] [g,d] [g,d] | [g,c] [g,c] [g,c] [g,c] | e,2 d,2 & z e z d | c,2 b,,2 & z c z b, |
+| a,,4 & z a, a, a, | [a,d] [a,d] [a,d]2 |
+% 28
+| [g,d] [g,e] [g,d] [g,d] | [g,c] [g,e] [g,c] [g,c] | [e,b,]2 [d,a,]2 & z3/2 e/ z/ d d/ | [c,g,]2 [d,a,]2 & z3/2 c/ z d |
+| [g,,g,]3 g,/g/ & z [b,d]/[ce]/ [b,d]2 | g,,3 g,/g/ & z [b,d]/[ce]/ [b,d]2 | [e,b,]2 [c,g,]2 & z e/b,/ z/ c/ g | e,2 c,2 & z/b,/ e z/g,/ c |
+% 36
+| e,2 & z/ b,/e d/e/f/g/ |
+% 37
+|[g,,g,]2 g,,-g,,/g/ & z g,/[ce]/ [b,d]2 | g,,2-g,,/g-g/ & z [b,d]/[ce]/ [b,d]2 | e,2 d,2 & z e z d | c,4 & z c3 |
+% 38
+| c, c, d, d, |
+% 39
+| [gb]/[ea]/[dg]/[b,e]/ [g,g]/[e,e]/[d,d]/[b,,b,]/ & g,,4 | d/b,/d/[b,e]/ -[b,e]2 & g,,/e,,/d,, -d,,2 | [g,,g,b,]4 | -[g,,g,b,]4 |
