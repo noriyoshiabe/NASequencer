@@ -119,8 +119,8 @@
 		0284DC981CBEA382007CED1C /* bebop25.nas in Resources */ = {isa = PBXBuildFile; fileRef = 0284DC971CBEA382007CED1C /* bebop25.nas */; };
 		028589551C71320A00A53B8C /* EditorStatusViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 028589531C71320A00A53B8C /* EditorStatusViewController.m */; };
 		028589561C71320A00A53B8C /* EditorStatusViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 028589541C71320A00A53B8C /* EditorStatusViewController.xib */; };
-		0290B8C41CC4C0D0009524A3 /* PresetSelectionWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0290B8C21CC4C0D0009524A3 /* PresetSelectionWindowController.m */; };
-		0290B8C51CC4C0D0009524A3 /* PresetSelectionWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0290B8C31CC4C0D0009524A3 /* PresetSelectionWindowController.xib */; };
+		0290B8C91CC4D637009524A3 /* PresetSelectionWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0290B8C71CC4D637009524A3 /* PresetSelectionWindowController.m */; };
+		0290B8CA1CC4D637009524A3 /* PresetSelectionWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0290B8C81CC4D637009524A3 /* PresetSelectionWindowController.xib */; };
 		029BADC81CBFFE52008EC950 /* jaunty_gumption.mml in Resources */ = {isa = PBXBuildFile; fileRef = 029BADC71CBFFE52008EC950 /* jaunty_gumption.mml */; };
 		02A673FA1C6B3A5C00914C8B /* ABCIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 02A673E91C6B3A5C00914C8B /* ABCIcon.iconset */; };
 		02A673FB1C6B3A5C00914C8B /* AppIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 02A673EA1C6B3A5C00914C8B /* AppIcon.iconset */; };
@@ -347,9 +347,9 @@
 		028589521C71320A00A53B8C /* EditorStatusViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorStatusViewController.h; sourceTree = "<group>"; };
 		028589531C71320A00A53B8C /* EditorStatusViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditorStatusViewController.m; sourceTree = "<group>"; };
 		028589541C71320A00A53B8C /* EditorStatusViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EditorStatusViewController.xib; sourceTree = "<group>"; };
-		0290B8C11CC4C0D0009524A3 /* PresetSelectionWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PresetSelectionWindowController.h; sourceTree = "<group>"; };
-		0290B8C21CC4C0D0009524A3 /* PresetSelectionWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PresetSelectionWindowController.m; sourceTree = "<group>"; };
-		0290B8C31CC4C0D0009524A3 /* PresetSelectionWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PresetSelectionWindowController.xib; sourceTree = "<group>"; };
+		0290B8C61CC4D637009524A3 /* PresetSelectionWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PresetSelectionWindowController.h; sourceTree = "<group>"; };
+		0290B8C71CC4D637009524A3 /* PresetSelectionWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PresetSelectionWindowController.m; sourceTree = "<group>"; };
+		0290B8C81CC4D637009524A3 /* PresetSelectionWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PresetSelectionWindowController.xib; sourceTree = "<group>"; };
 		029BADC71CBFFE52008EC950 /* jaunty_gumption.mml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = jaunty_gumption.mml; sourceTree = "<group>"; };
 		02A673E91C6B3A5C00914C8B /* ABCIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = ABCIcon.iconset; sourceTree = "<group>"; };
 		02A673EA1C6B3A5C00914C8B /* AppIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = AppIcon.iconset; sourceTree = "<group>"; };
@@ -552,6 +552,9 @@
 				02CAF6C11C778C2200AD81B2 /* ErrorWindowController.h */,
 				02CAF6C21C778C2200AD81B2 /* ErrorWindowController.m */,
 				02CAF6C31C778C2200AD81B2 /* ErrorWindowController.xib */,
+				0290B8C61CC4D637009524A3 /* PresetSelectionWindowController.h */,
+				0290B8C71CC4D637009524A3 /* PresetSelectionWindowController.m */,
+				0290B8C81CC4D637009524A3 /* PresetSelectionWindowController.xib */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -709,9 +712,6 @@
 				02CD04271C888A8C00BF6683 /* TipsViewController.h */,
 				02CD04281C888A8C00BF6683 /* TipsViewController.m */,
 				02CD04291C888A8C00BF6683 /* TipsViewController.xib */,
-				0290B8C11CC4C0D0009524A3 /* PresetSelectionWindowController.h */,
-				0290B8C21CC4C0D0009524A3 /* PresetSelectionWindowController.m */,
-				0290B8C31CC4C0D0009524A3 /* PresetSelectionWindowController.xib */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -884,7 +884,7 @@
 				026D42E71C7ABC08000267AD /* TrackChannelViewController.xib in Resources */,
 				024A5B2F1C69FFD90079D22C /* WelcomeWindowController.xib in Resources */,
 				020CF8721C6AF53D0025DF84 /* PurchaseViewController.xib in Resources */,
-				0290B8C51CC4C0D0009524A3 /* PresetSelectionWindowController.xib in Resources */,
+				0290B8CA1CC4D637009524A3 /* PresetSelectionWindowController.xib in Resources */,
 				0232CB1B1C8905A300542D34 /* WelcomeRecentRowView.xib in Resources */,
 				0232CB261C891F0F00542D34 /* ListenToExampleRowView.xib in Resources */,
 				02B160831C96924B009A2823 /* NASIcon.iconset in Resources */,
@@ -984,7 +984,7 @@
 				0232CB161C88FA9700542D34 /* AlphaHilightButtonCell.m in Sources */,
 				02CD04341C889AC400BF6683 /* ColorButton.m in Sources */,
 				026D42EB1C7ABC08000267AD /* PlayLineViewController.m in Sources */,
-				0290B8C41CC4C0D0009524A3 /* PresetSelectionWindowController.m in Sources */,
+				0290B8C91CC4D637009524A3 /* PresetSelectionWindowController.m in Sources */,
 				02B160811C9685FF009A2823 /* NSBundle+Support.m in Sources */,
 				02CAF6C41C778C2200AD81B2 /* ErrorWindowController.m in Sources */,
 				021483771C86454500D653AE /* Preference.m in Sources */,

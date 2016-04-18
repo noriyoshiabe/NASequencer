@@ -17,10 +17,7 @@
 #import "Preference.h"
 #import "PresetSelectionWindowController.h"
 
-@interface MainWindowController () <TrackSelectionDelegate, NAMidiRepresentationObserver, PlayerRepresentationObserver, MainViewControllerDelegate, NSUserInterfaceValidations, NSWindowDelegate> {
-    BOOL _isPresetSelectionShown;
-}
-
+@interface MainWindowController () <TrackSelectionDelegate, NAMidiRepresentationObserver, PlayerRepresentationObserver, MainViewControllerDelegate, NSUserInterfaceValidations, NSWindowDelegate>
 @property (weak) IBOutlet NSView *contentView;
 @property (weak) IBOutlet LocationView *locationView;
 @property (strong, nonatomic) MainViewController *mainVC;
@@ -54,6 +51,7 @@
     _detailVC = [[DetailViewController alloc] init];
     
     _presetSelectionController = [[PresetSelectionWindowController alloc] init];
+    _presetSelectionController.mixer = _namidi.mixer;
     
     _mainVC.delegate = self;
     
@@ -243,9 +241,8 @@
 - (void)mainViewController:(MainViewController *)controller didSelectPresetButtonWithChannel:(MixerChannelRepresentation *)mixerChannel
 {
     _presetSelectionController.mixerChannel = mixerChannel;
-    _isPresetSelectionShown = YES;
     [self.window beginSheet:_presetSelectionController.window completionHandler:^(NSModalResponse returnCode) {
-        _isPresetSelectionShown = NO;
+        _presetSelectionController.mixerChannel = nil;
     }];
 }
 
@@ -264,7 +261,7 @@
         if (GeneralParseErrorFileNotFound == parseInfo.errors[0].code) {
             [_errorWC close];
             
-            if (_isPresetSelectionShown) {
+            if (_presetSelectionController.mixerChannel) {
                 [self.window endSheet:_presetSelectionController.window];
             }
             

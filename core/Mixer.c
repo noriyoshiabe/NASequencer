@@ -669,6 +669,11 @@ int MixerChannelGetNumber(MixerChannel *self)
     return self->number;
 }
 
+int MixerChannelGetMidiNumber(MixerChannel *self)
+{
+    return self->midiNumber;
+}
+
 MidiSourceDescription *MixerChannelGetMidiSourceDescription(MixerChannel *self)
 {
     return self->description;

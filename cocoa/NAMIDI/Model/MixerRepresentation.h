@@ -18,6 +18,7 @@
 
 @interface MixerChannelRepresentation : NSObject
 @property (readonly, nonatomic) int number;
+@property (readonly, nonatomic) int midiNumber;
 @property (readonly, nonatomic) NSArray<PresetRepresentation *> *presets;
 @property (readonly, nonatomic) Level level;
 @property (readwrite, nonatomic) MidiSourceDescriptionRepresentation *midiSourceDescription;
@@ -46,4 +47,5 @@
 - (void)removeObserver:(id<MixerRepresentationObserver>)observer;
 - (void)sendNoteOn:(NoteEvent *)event;
 - (void)sendNoteOff:(NoteEvent *)event;
+- (void)sendAllSoundOff:(MixerChannelRepresentation *)channel;
 @end

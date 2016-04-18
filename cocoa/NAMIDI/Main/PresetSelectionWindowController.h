@@ -10,5 +10,6 @@
 #import "MixerRepresentation.h"
 
 @interface PresetSelectionWindowController : NSWindowController
+@property (strong, nonatomic) MixerRepresentation *mixer;
 @property (strong, nonatomic) MixerChannelRepresentation *mixerChannel;
 @end

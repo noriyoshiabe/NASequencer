@@ -59,6 +59,7 @@ extern Level MixerGetLevel(Mixer *self);
 extern NAArray *MixerGetChannels(Mixer *self);
 
 extern int MixerChannelGetNumber(MixerChannel *self);
+extern int MixerChannelGetMidiNumber(MixerChannel *self);
 extern MidiSourceDescription *MixerChannelGetMidiSourceDescription(MixerChannel *self);
 extern int MixerChannelGetPresetCount(MixerChannel *self);
 extern PresetInfo **MixerChannelGetPresetInfos(MixerChannel *self);

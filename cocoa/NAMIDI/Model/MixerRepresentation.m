@@ -97,6 +97,11 @@
     return MixerChannelGetNumber(_raw);
 }
 
+- (int)midiNumber
+{
+    return MixerChannelGetMidiNumber(_raw);
+}
+
 - (MidiSourceDescriptionRepresentation *)midiSourceDescription
 {
     return _midiSourceDescription;
@@ -266,6 +271,11 @@ static MixerObserverCallbacks callbacks = {onChannelStatusChange, onAvailableMid
 - (void)sendNoteOff:(NoteEvent *)event
 {
     MixerSendNoteOff(_mixer, event);
+}
+
+- (void)sendAllSoundOff:(MixerChannelRepresentation *)channel
+{
+    MixerSendAllSoundOff(_mixer, channel.midiNumber);
 }
 
 - (void)onChannelStatusChange:(MixerChannel *)channel kind:(MixerChannelStatusKind)kind
