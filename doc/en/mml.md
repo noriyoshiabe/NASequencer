@@ -186,7 +186,7 @@ Valid octave range is -2 to +8.
 Initial value is +2.
 
 ```
-@o4  // Octave 4
+o4  // Octave 4
 ```
 
 #### Octave Shift
@@ -397,7 +397,7 @@ Acts as separator of sections for repeat play if [Repeat State](general.md#Toggl
 Exported to Standard MIDI File as Marker(FF 06h) in first MTrk chunk.
 
 ```
-MARKER 'Intro'
+#marker 'Intro'
 ```
 
 **Attention:**  
@@ -442,6 +442,15 @@ Exported to Standard MIDI File as Set Tempo(FF 51h 03h) in first MTrk chunk.
 
 ```
 t 128.99
+```
+
+### Time Signature
+Indicates time signature.
+Can be indicated middle of the sequence.
+Exported to Standard MIDI File as Time Signature(FF 58h 04h) in first MTrk chunk.
+
+```
+bt 3/4
 ```
 
 ### Channel

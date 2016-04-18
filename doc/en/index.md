@@ -113,6 +113,7 @@ Index
             - [Velocity Reverse](mml.md#=)
             - [Octave Reverse](mml.md#=)
             - [Tempo](mml.md#=)
+            - [Time Signature](mml.md#=)
             - [Channel](mml.md#=)
             - [Synthesizer](mml.md#=)
             - [Bank Select](mml.md#=)
