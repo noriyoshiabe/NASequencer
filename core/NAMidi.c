@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 typedef struct Observer {
     void *receiver;
@@ -131,17 +132,39 @@ void NAMidiSetIncludePath(NAMidi *self, const char *includePath)
     self->includePath = strdup(includePath);
 }
 
+static Sequence *NAMidiParseInternal(NAMidi *self, const char *filepath, ParseInfo **info)
+{
+    SequenceBuilder *builder = SequenceBuilderCreate();
+    Parser *parser = ParserCreate(builder, self->includePath);
+    Sequence *sequence = ParserParseFile(parser, filepath, info);
+    ParserDestroy(parser);
+    builder->destroy(builder);
+
+    return sequence;
+}
+    
 void NAMidiParse(NAMidi *self, const char *filepath)
 {
     ParseInfo *info = NULL;
 
     NAArrayTraverseWithContext(self->observers, self, NAMidiNotifyBeforeParse, self->changed);
 
-    SequenceBuilder *builder = SequenceBuilderCreate();
-    Parser *parser = ParserCreate(builder, self->includePath);
-    Sequence *sequence = ParserParseFile(parser, filepath, &info);
-    ParserDestroy(parser);
-    builder->destroy(builder);
+    Sequence *sequence = NAMidiParseInternal(self, filepath, &info);
+    if (0 < NAArrayCount(info->errors) && self->changed) {
+        ParseError *error = NAArrayGetValueAt(info->errors, 0);
+
+        /*
+         * Retry parsing once, after file not found error occurs with reloading.
+         * Cause some of editor, for example MacVim, remove file with saving?
+         */
+        if (GeneralParseErrorFileNotFound == error->code) {
+            SequenceRelease(sequence);
+            ParseInfoRelease(info);
+
+            usleep(50 * 1000);
+            sequence = NAMidiParseInternal(self, filepath, &info);
+        }
+    }
 
     if (self->sequence) {
         SequenceRelease(self->sequence);
