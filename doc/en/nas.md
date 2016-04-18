@@ -134,6 +134,28 @@ Function type macro is also available.
 `V=127` is assignment for velocity.
 See [NOTE](#NOTE) for the details.
 
+Macro definition can be continued to next line with '\' right before end of line.
+
+```
+#define ARPEGGIO(root, third, fifth, seventh) \
+  480: root GT=1920 \
+  480: third GT=1440 \
+  480: fifth GT=960  \
+  480: seventh GT=480
+
+ARPEGGIO(C,E,G,B) // This will be replaced by
+                  // 480: C GT=1920 480: E GT=1440 480: G GT=960 480: B GT=480
+```
+
+Macro definition can be undefined.
+```
+#define SD E1
+480: SD // This will be replaced by E1.
+
+#undef SD
+480: SD // This will be syntax error.
+```
+
 ### Include
 Include directive imports the codes written in a separate source file.
 
