@@ -61,7 +61,7 @@ _**Full Version Feature**_
 
 0. Choose \[File\] -> \[Export...\] from menu or click toolbar button in document window.
 
-    ![Export Button](../shared/export@2x.png)
+![](../shared/export@2x.png) _Export Button_
 
 0. Select file type in exporting sheet.
     Following file types are available
@@ -84,9 +84,9 @@ Play sequence in current document window.
 
 Choose \[Control\] -> \[Play/Pause\] from menu or click toolbar button in document window.
 
-![Play Button](../shared/play@2x.png)
+![](../shared/play@2x.png) _Play Button_
 
-![Pause Button](../shared/pause@2x.png)
+![](../shared/pause@2x.png) _Pause Button_
 
 **Shortcut Key**  
 ⌘ + P
@@ -96,7 +96,7 @@ Rewind playing location to beginning of sequence.
 
 Choose \[Control\] -> \[Rewind\] from menu or click toolbar button in document window.
 
-![Rewind Button](../shared/rewind@2x.png)
+![](../shared/rewind@2x.png) _Rewind Button_
 
 **Shortcut Key**  
 ⌘ + R
@@ -106,7 +106,7 @@ Forward playing location to beginning of next measure.
 
 Choose \[Control\] -> \[Forward\] from menu or click toolbar button in document window.
 
-![Forward Button](../shared/forward@2x.png)
+![](../shared/forward@2x.png) _Forward Button_
 
 **Shortcut Key**  
 ⌘ + F
@@ -116,7 +116,7 @@ Backward playing location to beginning of previous measure.
 
 Choose \[Control\] -> \[Backward\] from menu or click toolbar button in document window.
 
-![Backward Button](../shared/backward@2x.png)
+![](../shared/backward@2x.png) _Backward Button_
 
 **Shortcut Key**  
 ⌘ + B
@@ -127,7 +127,7 @@ Repeat Off -> Repeat All -> Repeat Marker -> Repeat Off ...
 
 Choose \[Control\] -> \[Toggle Repeat\] from menu or click toolbar button in document window.
 
-![Repeat Button](../shared/repeat_off@2x.png)
+![](../shared/repeat_off@2x.png) _Repeat Button_
 
 **Shortcut Key**  
 ⌘ + Shift + R
@@ -144,7 +144,6 @@ Stop playback when playing location reach to end of sequence.
 Play again from beginning of sequence when playing location reach to end of sequence.
 
 ##### Repeat Marker
-
 ![](../shared/repeat_marker@2x.png)
 
 Play again from beginning of section when playing location reach to end of section.
@@ -263,11 +262,12 @@ Button for back to main view.
 Button to toggle display for events in track.
 
 #### Selection State
-![Display](../shared/track-selection-display.png)
-
-![No Display](../shared/track-selection-no-display.png)
-
-![Disable (There is no event in track)](../shared/track-selection-disable.png)
+##### Display
+![](../shared/track-selection-display.png)
+##### No Display
+![](../shared/track-selection-no-display.png)
+##### Disable (There is no event in track)
+![](../shared/track-selection-disable.png)
 
 <a name="general__detail_measure"></a>
 ### Measure
