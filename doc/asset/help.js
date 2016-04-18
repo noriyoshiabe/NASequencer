@@ -55,8 +55,6 @@ document.onreadystatechange = function () {
     var transits = document.querySelectorAll('.js-transit');
     for (var i = 0; i < transits.length; ++i) {
       transits[i].addEventListener('click', function () {
-        history.pushState({}, document.title, this.getAttribute('href'));
-
         var isMenuOpen = body.classList.contains('is-menu-open');
         body.className = this.getAttribute('href').substring(1).split('__')[0];
         if (isMenuOpen) {
