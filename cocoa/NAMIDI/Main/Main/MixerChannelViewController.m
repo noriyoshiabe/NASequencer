@@ -196,7 +196,7 @@
 
 - (IBAction)presetButtonPressed:(id)sender
 {
-    [_delegate mixerChannelViewController:self didSelectChannel:_mixerChannel];
+    [_delegate mixerChannelViewController:self didSelectPresetButtonWithChannel:_mixerChannel];
 }
 
 #pragma mark MixerRepresentationObserver

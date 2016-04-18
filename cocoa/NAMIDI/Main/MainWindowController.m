@@ -15,8 +15,12 @@
 #import "ApplicationController.h"
 #import "EditorWindowController.h"
 #import "Preference.h"
+#import "PresetSelectionWindowController.h"
 
-@interface MainWindowController () <TrackSelectionDelegate, NAMidiRepresentationObserver, PlayerRepresentationObserver, MainViewControllerDelegate, NSUserInterfaceValidations, NSWindowDelegate>
+@interface MainWindowController () <TrackSelectionDelegate, NAMidiRepresentationObserver, PlayerRepresentationObserver, MainViewControllerDelegate, NSUserInterfaceValidations, NSWindowDelegate> {
+    BOOL _isPresetSelectionShown;
+}
+
 @property (weak) IBOutlet NSView *contentView;
 @property (weak) IBOutlet LocationView *locationView;
 @property (strong, nonatomic) MainViewController *mainVC;
@@ -25,6 +29,7 @@
 @property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
 @property (strong, nonatomic) TrackSelection *trackSelection;
 @property (strong, nonatomic) EditorWindowController *editorWC;
+@property (strong, nonatomic) PresetSelectionWindowController *presetSelectionController;
 @end
 
 @implementation MainWindowController
@@ -47,6 +52,8 @@
     
     _mainVC = [[MainViewController alloc] init];
     _detailVC = [[DetailViewController alloc] init];
+    
+    _presetSelectionController = [[PresetSelectionWindowController alloc] init];
     
     _mainVC.delegate = self;
     
@@ -233,6 +240,15 @@
     [self showDetailView];
 }
 
+- (void)mainViewController:(MainViewController *)controller didSelectPresetButtonWithChannel:(MixerChannelRepresentation *)mixerChannel
+{
+    _presetSelectionController.mixerChannel = mixerChannel;
+    _isPresetSelectionShown = YES;
+    [self.window beginSheet:_presetSelectionController.window completionHandler:^(NSModalResponse returnCode) {
+        _isPresetSelectionShown = NO;
+    }];
+}
+
 #pragma mark TrackSelectionDelegate
 
 - (void)trackSelectionDidEnterSelection:(TrackSelection *)trackSelection
@@ -247,6 +263,10 @@
     if (namidi.hasError) {
         if (GeneralParseErrorFileNotFound == parseInfo.errors[0].code) {
             [_errorWC close];
+            
+            if (_isPresetSelectionShown) {
+                [self.window endSheet:_presetSelectionController.window];
+            }
             
             NSString *informative = NSLocalizedString(@"Main_FileMissingInformative", @"\"%@/%@\" is missing.\nThis error is unrecoverable.");
             

@@ -12,7 +12,7 @@
 
 @class MixerViewController;
 @protocol MixerViewControllerDelegate <NSObject>
-- (void)mixerViewController:(MixerViewController *)controller didSelectChannel:(MixerChannelRepresentation *)mixerChannel;
+- (void)mixerViewController:(MixerViewController *)controller didSelectPresetButtonWithChannel:(MixerChannelRepresentation *)mixerChannel;
 @end
 
 @interface MixerViewController : NSViewController

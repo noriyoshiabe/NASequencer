@@ -136,9 +136,8 @@
 
 #pragma mark MixerChannelViewControllerDelegate
 
-- (void)mixerChannelViewController:(MixerChannelViewController *)controller didSelectChannel:(MixerChannelRepresentation *)mixerChannel
-{
-    [_delegate mixerViewController:self didSelectChannel:mixerChannel];
+- (void)mixerChannelViewController:(MixerChannelViewController *)controller didSelectPresetButtonWithChannel:(MixerChannelRepresentation *)mixerChannel {
+    [_delegate mixerViewController:self didSelectPresetButtonWithChannel:mixerChannel];
 }
 
 @end

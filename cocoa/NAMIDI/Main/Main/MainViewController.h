@@ -14,6 +14,7 @@
 @class MainViewController;
 @protocol MainViewControllerDelegate <NSObject>
 - (void)mainViewControllerDidEnterSelection:(MainViewController *)controller;
+- (void)mainViewController:(MainViewController *)controller didSelectPresetButtonWithChannel:(MixerChannelRepresentation *)mixerChannel;
 @end
 
 @interface MainViewController : NSViewController
