@@ -444,6 +444,17 @@ Exported to Standard MIDI File as Channel Volume of Control Change (Bn 07h).
 VOLUME 100
 ```
 
+### PAN
+Specifies pan position of current channel.
+Valid value range is -64 to +64.
+-64 for left, 0 for center and +64 for right.
+Initial value is 0 (center).
+Exported to Standard MIDI File as Pan of Control Change (Bn 0Ah) with converting value 0 to 127.
+
+```
+PAN +30
+```
+
 ### CHORUS
 Specifies chorus send level of current channel.
 Valid value range is 0 to 127.
@@ -474,15 +485,19 @@ Exported to Standard MIDI File as Expression Controller of Control Change (Bn 0B
 EXPRESSION 100
 ```
 
-### PAN
-Specifies pan position of current channel.
-Valid value range is -64 to +64.
--64 for left, 0 for center and +64 for right.
-Initial value is 0 (center).
-Exported to Standard MIDI File as Pan of Control Change (Bn 0Ah) with converting value 0 to 127.
+### SUSTAIN
+Specifies damper pedal on/off of current channel.
+Initial state is 'OFF'.
+Exported to Standard MIDI File as Damper pedal on/off (Sustain) of Control Change (Bn 40h) with value 0 or 127.
 
+#### ON
 ```
-PAN +30
+SUSTAIN ON
+```
+
+#### OFF
+```
+SUSTAIN OFF
 ```
 
 ### PITCH
