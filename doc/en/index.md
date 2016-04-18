@@ -51,7 +51,6 @@ Index
         - <input type="checkbox"/>[Basics](nas.md#=)
             - [File Format](nas.md#=)
             - [About Step](nas.md#=)
-            - [Step with Channel](nas.md#=)
             - [Comment](nas.md#=)
             - [String](nas.md#=)
             - [Macro](nas.md#=)

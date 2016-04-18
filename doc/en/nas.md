@@ -42,7 +42,7 @@ Quarter note length of C major will be below.
 Each time step is indicated, current location forwards by step value.
 Current location never backwards.
 
-### Step with Channel
+#### Step with Channel
 Current location is channel individual.
 If current channel switches to new channel, current location will be zero.
 However, current channel back to previous channel, current location also back to the location before switching channel.
@@ -94,6 +94,104 @@ Ch2 |060:C3 | .
 ```
 
 Initial channel number is 1.
+
+#### Step with Control Event
+At the begging of channel, step can be omitted.
+
+```
+CHANNEL 2
+PAN -40  // Initial location is zero and step is omitted
+
+480: C
+480: D
+480: E
+480: F
+```
+
+The result of above sequence will be following as expected.
+
+
+```
+            | 1
+==============================
+Ch1 |053:F  | .           x---
+    |052:E  | .       x---
+    |051:D# | .
+    |050:D  | .   x---
+    |049:C# | .
+    |048:C2 | x---
+------------------------------
+            | * <- PAN
+```
+
+However in the middle of sequence, it can be unexpected result if step is omitted. 
+
+```
+CHANNEL 2
+PAN -40  // Initial location is zero and step is omitted
+
+480: C
+480: D
+480: E
+480: F
+
+PAN +40  // Step is omitted.
+         // This will cause unexpected result.
+
+480: C
+480: D
+480: E
+480: F
+```
+
+The result of above sequence will be following.
+
+```
+            | 1               2
+==============================================
+Ch2 |053:F  | .           x---.           x---
+    |052:E  | .       x---    .       x---
+    |051:D# | .               .
+    |050:D  | .   x---        .   x---
+    |049:C# | .               .
+    |048:C2 | x---            x---
+----------------------------------------------
+            | * <- PAN    * <- Unexpected result of PAN
+```
+
+Second of PAN event should be notated with step like below.
+```
+CHANNEL 2
+PAN -40  // Initial location is zero and step is omitted
+
+480: C
+480: D
+480: E
+480: F
+
+  0: PAN +40  // Notate zero step and forward current location.
+
+480: C
+480: D
+480: E
+480: F
+```
+
+The result of above sequence will be following.
+
+```
+            | 1               2
+==============================================
+Ch2 |053:F  | .           x---.           x---
+    |052:E  | .       x---    .       x---
+    |051:D# | .               .
+    |050:D  | .   x---        .   x---
+    |049:C# | .               .
+    |048:C2 | x---            x---
+----------------------------------------------
+            | * <- PAN        * <- PAN
+```
+
 
 ### Comment
 `==` `--` `//` can be used for the line comment. It does not affect the result of sequence.
@@ -225,7 +323,7 @@ Natural affecting to pitch is only in the case that [KEY](#KEY) is specified.
 480: C##2  // C##2 (Same as D2)
 480: Cbb2  // C♭♭2 (Same as A#1)
 
-KEY CMin   // Specify C minor key
+  0: KEY CMin  // Specify C minor key
 
 480: E2    // Treated as E♭2 on C major key
 480: En2   // Treated as E2 on C major key
