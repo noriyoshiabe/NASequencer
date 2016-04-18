@@ -421,10 +421,6 @@ static void MixerProcessMessage(Mixer *self)
         case MixerMessageAttachSource:
             if (-1 == NAArrayFindFirstIndex(self->activeSources, msg.data, NAArrayAddressComparator)) {
                 NAArrayAppend(self->activeSources, msg.data);
-
-                MidiSource *source = msg.data;
-                source->setLevelEnable(source, self->levelEnable);
-                source->registerCallback(source, MixerMidiSourceCallback, self);
             }
             break;
         case MixerMessageDetachSource:
@@ -434,8 +430,6 @@ static void MixerProcessMessage(Mixer *self)
                 int index = NAArrayFindFirstIndex(self->activeSources, source, NAArrayAddressComparator);
                 if (-1 != index) {
                     NAArrayRemoveAt(self->activeSources, index);
-
-                    source->unregisterCallback(source, MixerMidiSourceCallback, self);
                 }
 
                 MidiSourceManagerDeallocMidiSource(MidiSourceManagerSharedInstance(), source);
@@ -624,6 +618,8 @@ static void MixerMidiSourceManagerOnUnloadAvailableMidiSourceDescription(void *r
                 MidiSource *source = NAMapGet(self->sourceMap, defaultDescription); 
                 if (!source) {
                     source = MidiSourceManagerAllocMidiSource(manager, defaultDescription, self->sampleRate);
+                    source->setLevelEnable(source, self->levelEnable);
+                    source->registerCallback(source, MixerMidiSourceCallback, self);
                     NAMapPut(self->sourceMap, defaultDescription, source);
                 }
 
@@ -636,6 +632,7 @@ static void MixerMidiSourceManagerOnUnloadAvailableMidiSourceDescription(void *r
             }
         }
 
+        sourceToUnload->unregisterCallback(sourceToUnload, MixerMidiSourceCallback, self);
         NAMessageQPost(self->msgQ, MixerMessageDetachSource, sourceToUnload);
     }
 }
@@ -739,6 +736,8 @@ void MixerChannelSetMidiSourceDescription(MixerChannel *self, MidiSourceDescript
     if (!source) {
         MidiSourceManager *manager = MidiSourceManagerSharedInstance();
         source = MidiSourceManagerAllocMidiSource(manager, description, self->mixer->sampleRate);
+        source->setLevelEnable(source, self->mixer->levelEnable);
+        source->registerCallback(source, MixerMidiSourceCallback, self->mixer);
         NAMapPut(self->mixer->sourceMap, description, source);
     }
 
