@@ -123,6 +123,16 @@
     _tipsView.hidden = _namidi.sequence.eventsOfConductorTrack.count < _namidi.sequence.events.count;
 }
 
+- (CGPoint)scrollPoint
+{
+    return _measureView.contentView.bounds.origin;
+}
+
+- (void)setScrollPoint:(CGPoint)scrollPoint
+{
+    [_measureView.contentView scrollToPoint:scrollPoint];
+}
+
 #pragma mark Keyboad event
 
 - (void)keyDown:(NSEvent *)theEvent

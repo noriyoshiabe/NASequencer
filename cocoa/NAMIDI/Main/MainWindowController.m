@@ -103,12 +103,14 @@
 {
     [_detailVC.view removeFromSuperview];
     [_contentView addSubviewWithFitConstraints:_mainVC.view];
+    _mainVC.scrollPoint = _detailVC.scrollPoint;
 }
 
 - (void)showDetailView
 {
     [_mainVC.view removeFromSuperview];
     [_contentView addSubviewWithFitConstraints:_detailVC.view];
+    _detailVC.scrollPoint = _mainVC.scrollPoint;
 }
 
 - (void)showEditor

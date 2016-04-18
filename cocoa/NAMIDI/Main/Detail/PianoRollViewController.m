@@ -164,6 +164,16 @@
     _conductorBottomLineConstraint.constant = visible ? CONDUCTOR_BOTTOM_LINE_HEIGHT : 0.0;
 }
 
+- (CGPoint)scrollPoint
+{
+    return _measureView.contentView.bounds.origin;
+}
+
+- (void)setScrollPoint:(CGPoint)scrollPoint
+{
+    [_measureView.contentView scrollToPoint:scrollPoint];
+}
+
 #pragma mark NSSplitViewDelegate
 
 - (CGFloat)splitView:(NSSplitView *)splitView constrainMinCoordinate:(CGFloat)proposedMinimumPosition ofSubviewAt:(NSInteger)dividerIndex

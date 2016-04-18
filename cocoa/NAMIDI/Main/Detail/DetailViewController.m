@@ -96,6 +96,16 @@
     [_eventListVC filterControlEvent:sender];
 }
 
+- (CGPoint)scrollPoint
+{
+    return _pianoRollVC.scrollPoint;
+}
+
+- (void)setScrollPoint:(CGPoint)scrollPoint
+{
+    _pianoRollVC.scrollPoint = scrollPoint;
+}
+
 #pragma mark NSSplitViewDelegate
 
 - (CGFloat)splitView:(NSSplitView *)splitView constrainMinCoordinate:(CGFloat)proposedMinimumPosition ofSubviewAt:(NSInteger)dividerIndex
