@@ -1,7 +1,7 @@
 #title 'Jaunty Gumption'
 #copyright 'By Kevin MacLeod (http://incompetech.com) Licensed under Creative Commons: By Attribution 3.0 License http://creativecommons.org/licenses/by/3.0/'
 
-// Conductror
+// Conductor
 // ------------------------------------
 t145
 bt4,4
@@ -36,6 +36,7 @@ rrrr rrrr rrrr rrrr
 // ------------------------------------
 
 @CH1
+@SY'GeneralUser GS Live/Audigy version 1.44'
 @BS0
 @PC80
 V14
@@ -81,6 +82,7 @@ c4
 // ------------------------------------
 
 @CH2
+@SY'GeneralUser GS Live/Audigy version 1.44'
 @BS0
 @PC7
 V12
@@ -107,6 +109,7 @@ r [g>g<] < Q5 [c>c<] > [g>g<] < [e>e<] [c>c<] > [g>g<] < [c>c<] Q15 [d+4>d+4<] [
 // ------------------------------------
 
 @CH3
+@SY'GeneralUser GS Live/Audigy version 1.44'
 @BS0
 @PC28
 O2
@@ -155,6 +158,7 @@ r [ce] r [ce] r [ce] r [ce] r [cd+] r [cd+] r [cd+] r [cd+] r [ce] r [ce] r [ce]
 // ------------------------------------
 
 @CH4
+@SY'GeneralUser GS Live/Audigy version 1.44'
 @BS0
 @PC109
 L16
@@ -213,7 +217,7 @@ L8 [f>f<] [c>c<] > [a>a<] < [f>f<] [c>c<] > [a>a<] < {[f>f<] [c>c<] > [a>a<]}4 <
 // ------------------------------------
 
 @CH5
-
+@SY'GeneralUser GS Live/Audigy version 1.44'
 @BS0
 @PC6
 Q8
@@ -249,6 +253,7 @@ r r r r r r r r
 // ------------------------------------
 
 @CH10
+@SY'GeneralUser GS Live/Audigy version 1.44'
 @BS0
 @PC117
 @V127

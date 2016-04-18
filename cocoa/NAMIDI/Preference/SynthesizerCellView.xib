@@ -23,20 +23,20 @@
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="RZQ-qu-Ju5">
                         <rect key="frame" x="18" y="57" width="315" height="17"/>
                         <constraints>
-                            <constraint firstAttribute="width" constant="311" id="G8i-MH-Se2"/>
+                            <constraint firstAttribute="width" constant="315" id="G8i-MH-Se2"/>
                             <constraint firstAttribute="height" constant="17" id="TAi-fc-kie"/>
                         </constraints>
-                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="GeneralUser GS Live/Audigy version 1.44" id="ZyH-rl-BZc">
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" sendsActionOnEndEditing="YES" title="GeneralUser GS Live/Audigy version 1.44" drawsBackground="YES" id="ZyH-rl-BZc">
                             <font key="font" metaFont="systemMedium" size="12"/>
                             <color key="textColor" red="0.23137254900000001" green="0.23137254900000001" blue="0.23137254900000001" alpha="1" colorSpace="calibratedRGB"/>
-                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" white="1" alpha="0.0" colorSpace="deviceWhite"/>
                         </textFieldCell>
                         <connections>
                             <binding destination="-2" name="value" keyPath="synthesizerName" id="ZwY-E3-nN1"/>
                         </connections>
                     </textField>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7d1-9z-4gl">
-                        <rect key="frame" x="396" y="50" width="64" height="28"/>
+                        <rect key="frame" x="398" y="50" width="64" height="28"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="54" id="2lB-gV-HxH"/>
                             <constraint firstAttribute="height" constant="18" id="zdI-nC-Ssv"/>
@@ -129,7 +129,7 @@
                         </connections>
                     </textField>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0VF-S9-xap">
-                        <rect key="frame" x="334" y="50" width="64" height="28"/>
+                        <rect key="frame" x="336" y="50" width="64" height="28"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="18" id="1qh-DM-6ga"/>
                             <constraint firstAttribute="width" constant="54" id="jfQ-xn-DkI"/>
@@ -207,7 +207,7 @@
                     <constraint firstItem="TT7-Uw-dnA" firstAttribute="leading" secondItem="HR5-EX-Eyh" secondAttribute="trailing" constant="11" id="VYP-kO-HqQ"/>
                     <constraint firstItem="0Q3-I2-WbF" firstAttribute="top" secondItem="RZQ-qu-Ju5" secondAttribute="bottom" constant="10" id="ZO2-9p-lhf"/>
                     <constraint firstItem="0VF-S9-xap" firstAttribute="leading" secondItem="RZQ-qu-Ju5" secondAttribute="trailing" constant="8" id="bJS-WL-3kd"/>
-                    <constraint firstItem="RZQ-qu-Ju5" firstAttribute="leading" secondItem="lOf-LZ-Slo" secondAttribute="leading" constant="20" id="bOI-nv-cgv"/>
+                    <constraint firstItem="RZQ-qu-Ju5" firstAttribute="leading" secondItem="lOf-LZ-Slo" secondAttribute="leading" constant="18" id="bOI-nv-cgv"/>
                     <constraint firstItem="0Q3-I2-WbF" firstAttribute="leading" secondItem="lOf-LZ-Slo" secondAttribute="leading" constant="20" id="c1R-Mv-xcv"/>
                     <constraint firstItem="0VF-S9-xap" firstAttribute="top" secondItem="lOf-LZ-Slo" secondAttribute="top" constant="10" id="fBP-yM-gqY"/>
                     <constraint firstItem="CxH-dp-nLG" firstAttribute="leading" secondItem="CHb-hq-G6z" secondAttribute="trailing" constant="11" id="gx6-N3-EDc"/>

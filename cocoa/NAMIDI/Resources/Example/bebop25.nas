@@ -1,7 +1,7 @@
 TITLE 'Bebop 25'
 COPYRIGHT 'By Audionautix (http://audionautix.com/) Licensed under Creative Commons: By Attribution 3.0 License http://creativecommons.org/licenses/by/3.0/'
 
-// Conductror
+// Conductor
 ========================================
     0: TIME 4/4
        TEMPO 104
@@ -17,6 +17,7 @@ COPYRIGHT 'By Audionautix (http://audionautix.com/) Licensed under Creative Comm
 // Piano 1
 ========================================
 CHANNEL 2
+SYNTH 'GeneralUser GS Live/Audigy version 1.44'
 BANK 0
 PROGRAM 2
 
@@ -34,6 +35,7 @@ EXPAND piano-left:section-b-2
 // Piano 2
 ========================================
 CHANNEL 3
+SYNTH 'GeneralUser GS Live/Audigy version 1.44'
 BANK 0
 PROGRAM 2
 
@@ -51,6 +53,7 @@ EXPAND piano-right:section-b-2
 // Bass
 ========================================
 CHANNEL 12
+SYNTH 'GeneralUser GS Live/Audigy version 1.44'
 BANK 0
 PROGRAM 33
 VOLUME 127
@@ -66,6 +69,7 @@ EXPAND bass:section-b-2
 // Drums
 ========================================
 CHANNEL 10
+SYNTH 'GeneralUser GS Live/Audigy version 1.44'
 BANK 120
 PROGRAM 1
 VOLUME 127
