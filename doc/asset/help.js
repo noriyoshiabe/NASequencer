@@ -7,7 +7,10 @@ function updateTopicsLabel() {
 function toggleMenu(e) {
   document.querySelector('body').classList.toggle('is-menu-open');
   updateTopicsLabel();
-  e.preventDefault();
+
+  if (e && e.preventDefault) {
+    e.preventDefault();
+  }
 }
 
 function openTopic(anchor) {
