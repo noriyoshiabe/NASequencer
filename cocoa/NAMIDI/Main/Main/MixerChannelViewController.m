@@ -17,7 +17,7 @@
 @property (weak) IBOutlet NSButton *muteButton;
 @property (weak) IBOutlet NSButton *soloButton;
 @property (weak) IBOutlet NSPopUpButton *synthButton;
-@property (weak) IBOutlet NSPopUpButton *presetButton;
+@property (weak) IBOutlet NSButton *presetButton;
 @property (weak) IBOutlet NSSlider *volumeSlider;
 @property (weak) IBOutlet NSSlider *panSlider;
 @property (weak) IBOutlet NSSlider *chorusSlider;
@@ -37,9 +37,8 @@
 @property (readonly, nonatomic) int R;
 
 @property (readonly, nonatomic) NSArray<MidiSourceDescriptionRepresentation *> *availableDescriptions;
-@property (readonly, nonatomic) NSArray<PresetRepresentation *> *presets;
 @property (readwrite, nonatomic) MidiSourceDescriptionRepresentation *midiSourceDescription;
-@property (readwrite, nonatomic) PresetRepresentation *preset;
+@property (readonly, nonatomic) NSString *presetLabel;
 @end
 
 @implementation MixerChannelViewController
@@ -68,9 +67,7 @@
     [_synthButton bind:@"contentValues" toObject:self withKeyPath:@"availableDescriptions.name" options:nil];
     [_synthButton bind:@"selectedObject" toObject:self withKeyPath:@"midiSourceDescription" options:nil];
     
-    [_presetButton bind:@"content" toObject:self withKeyPath:@"presets" options:nil];
-    [_presetButton bind:@"contentValues" toObject:self withKeyPath:@"presets.selectionLabel" options:nil];
-    [_presetButton bind:@"selectedObject" toObject:self withKeyPath:@"preset" options:nil];
+    [_presetButton bind:@"title" toObject:self withKeyPath:@"presetLabel" options:nil];
     
     [_volumeSlider bind:@"value" toObject:self withKeyPath:@"volume" options:nil];
     [_panSlider bind:@"value" toObject:self withKeyPath:@"pan" options:nil];
@@ -94,9 +91,7 @@
     [_synthButton unbind:@"content"];
     [_synthButton unbind:@"selectedObject"];
     
-    [_presetButton unbind:@"contentValues"];
-    [_presetButton unbind:@"content"];
-    [_presetButton unbind:@"selectedObject"];
+    [_presetButton unbind:@"title"];
     
     [_volumeSlider unbind:@"value"];
     [_panSlider unbind:@"value"];
@@ -119,14 +114,9 @@
     return _mixerChannel.midiSourceDescription;
 }
 
-- (NSArray<PresetRepresentation *> *)presets
+- (NSString *)presetLabel
 {
-    return _mixerChannel.presets;
-}
-
-- (PresetRepresentation *)preset
-{
-    return _mixerChannel.preset;
+    return _mixerChannel.preset.name;
 }
 
 - (bool)mute
@@ -174,11 +164,6 @@
     _mixerChannel.midiSourceDescription = midiSourceDescription;
 }
 
-- (void)setPreset:(PresetRepresentation *)preset
-{
-    _mixerChannel.preset = preset;
-}
-
 - (void)setMute:(bool)mute
 {
     _mixerChannel.mute = mute;
@@ -209,6 +194,11 @@
     _mixerChannel.reverb = reverb;
 }
 
+- (IBAction)presetButtonPressed:(id)sender
+{
+    [_delegate mixerChannelViewController:self didSelectChannel:_mixerChannel];
+}
+
 #pragma mark MixerRepresentationObserver
 
 - (void)mixer:(MixerRepresentation *)mixer onChannelStatusChange:(MixerChannelRepresentation *)channel kind:(MixerChannelStatusKind)kind
@@ -217,10 +207,10 @@
         switch (kind) {
             case MixerChannelStatusKindMidiSourceDescription:
                 [self notifyValueChangeForKey:@"midiSourceDescription"];
-                [self notifyValueChangeForKey:@"presets"];
+                [self notifyValueChangeForKey:@"presetLabel"];
                 break;
             case MixerChannelStatusKindPreset:
-                [self notifyValueChangeForKey:@"preset"];
+                [self notifyValueChangeForKey:@"presetLabel"];
                 break;
             case MixerChannelStatusKindVolume:
                 [self notifyValueChangeForKey:@"volume"];
@@ -255,21 +245,6 @@
 {
     [self notifyValueChangeForKey:@"L"];
     [self notifyValueChangeForKey:@"R"];
-}
-
-@end
-
-#pragma mark For Binding
-
-@interface PresetRepresentation (MixerChannelView)
-- (NSString *)selectionLabel;
-@end
-
-@implementation PresetRepresentation (MixerChannelView)
-
-- (NSString *)selectionLabel
-{
-    return [NSString stringWithFormat:@"%@    <Program No:%d  Bank No:%d>", self.name, self.programNo, self.bankNo];
 }
 
 @end

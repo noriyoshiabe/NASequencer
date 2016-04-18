@@ -18,7 +18,7 @@
 #import "SynchronizedScrollView.h"
 #import "Color.h"
 
-@interface MainViewController () <NAMidiRepresentationObserver, SynchronizedScrollViewDelegate>
+@interface MainViewController () <NAMidiRepresentationObserver, SynchronizedScrollViewDelegate, MixerViewControllerDelegate>
 @property (weak) IBOutlet NSView *conductorView;
 @property (weak) IBOutlet SynchronizedScrollView *mixerView;
 @property (weak) IBOutlet SynchronizedScrollView *measureView;
@@ -59,6 +59,8 @@
     _playLineVC = [[PlayLineViewController alloc] init];
     _playLineVC.containerView = _playLineView;
     _tipsVC = [[TipsViewController alloc] init];
+    
+    _mixerVC.delegate = self;
     
     _conductorVC.namidi = _namidi;
     _measureVC.namidi = _namidi;
@@ -171,6 +173,13 @@
 {
     [_trackSelection deselectAll];
     return YES;
+}
+
+#pragma mark MixerViewControllerDelegate
+
+- (void)mixerViewController:(MixerViewController *)controller didSelectChannel:(MixerChannelRepresentation *)mixerChannel
+{
+    NSLog(@"################ %d", mixerChannel.number);
 }
 
 @end

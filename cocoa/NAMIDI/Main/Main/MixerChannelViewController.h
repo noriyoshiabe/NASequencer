@@ -9,7 +9,13 @@
 #import <Cocoa/Cocoa.h>
 #import "MixerRepresentation.h"
 
+@class MixerChannelViewController;
+@protocol MixerChannelViewControllerDelegate <NSObject>
+- (void)mixerChannelViewController:(MixerChannelViewController *)controller didSelectChannel:(MixerChannelRepresentation *)mixerChannel;
+@end
+
 @interface MixerChannelViewController : NSViewController
+@property (assign, nonatomic) id<MixerChannelViewControllerDelegate> delegate;
 @property (strong, nonatomic) MixerRepresentation *mixer;
 @property (assign, nonatomic) int channel;
 @end

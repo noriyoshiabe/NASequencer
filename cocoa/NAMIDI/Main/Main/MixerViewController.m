@@ -10,7 +10,7 @@
 #import "MixerChannelViewController.h"
 #import "LevelIndicator.h"
 
-@interface MixerViewController () <NAMidiRepresentationObserver, MixerRepresentationObserver> {
+@interface MixerViewController () <NAMidiRepresentationObserver, MixerRepresentationObserver, MixerChannelViewControllerDelegate> {
     MixerRepresentation *_mixer;
 }
 
@@ -41,6 +41,7 @@
     
     for (int i = 0; i < 16; ++i) {
         MixerChannelViewController *channelVC = [[MixerChannelViewController alloc] init];
+        channelVC.delegate = self;
         channelVC.mixer = _mixer;
         channelVC.channel = i + 1;
         [_controllers addObject:channelVC];
@@ -131,6 +132,13 @@
 {
     [self notifyValueChangeForKey:@"L"];
     [self notifyValueChangeForKey:@"R"];
+}
+
+#pragma mark MixerChannelViewControllerDelegate
+
+- (void)mixerChannelViewController:(MixerChannelViewController *)controller didSelectChannel:(MixerChannelRepresentation *)mixerChannel
+{
+    [_delegate mixerViewController:self didSelectChannel:mixerChannel];
 }
 
 @end

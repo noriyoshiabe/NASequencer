@@ -8,7 +8,14 @@
 
 #import <Cocoa/Cocoa.h>
 #import "NAMidiRepresentation.h"
+#import "MixerRepresentation.h"
+
+@class MixerViewController;
+@protocol MixerViewControllerDelegate <NSObject>
+- (void)mixerViewController:(MixerViewController *)controller didSelectChannel:(MixerChannelRepresentation *)mixerChannel;
+@end
 
 @interface MixerViewController : NSViewController
+@property (assign, nonatomic) id<MixerViewControllerDelegate> delegate;
 @property (strong, nonatomic) NAMidiRepresentation *namidi;
 @end
