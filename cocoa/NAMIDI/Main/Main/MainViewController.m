@@ -152,9 +152,24 @@
 
 #pragma mark Menu Action
 
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem
+{
+    if (@selector(deselectAll:) == menuItem.action) {
+        return _trackSelection.isAnyTrackSelected;
+    }
+    else {
+        return YES;
+    }
+}
+
 - (IBAction)selectAll:(id)sender
 {
     [_trackSelection selectAll];
+}
+
+- (IBAction)deselectAll:(id)sender
+{
+    [_trackSelection deselectAll];
 }
 
 - (void)cancelOperation:(id)sender

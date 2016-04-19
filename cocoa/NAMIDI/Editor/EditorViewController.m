@@ -189,6 +189,16 @@
 
 #pragma mark Menu Action
 
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem
+{
+    if (@selector(deselectAll:) == menuItem.action) {
+        return 0 < _textView.selectedRange.length;
+    }
+    else {
+        return YES;
+    }
+}
+
 - (IBAction)saveDocument:(id)sender
 {
     [self saveDocument];
@@ -198,6 +208,18 @@
 - (IBAction)performClose:(id)sender
 {
     [_delegate editorViewController:self didPerformCloseAction:sender];
+}
+
+- (IBAction)deselectAll:(id)sender
+{
+    [_textView setSelectedRange:NSMakeRange(_textView.selectedRange.location + _textView.selectedRange.length, 0)];
+}
+
+- (void)cancelOperation:(id)sender
+{
+    if (0 < _textView.selectedRange.length) {
+        [_textView setSelectedRange:NSMakeRange(_textView.selectedRange.location + _textView.selectedRange.length, 0)];
+    }
 }
 
 #pragma mark NSFilePresenter
