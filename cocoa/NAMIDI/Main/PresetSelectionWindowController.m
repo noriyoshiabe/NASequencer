@@ -7,9 +7,18 @@
 //
 
 #import "PresetSelectionWindowController.h"
+#import "ColorButton.h"
 
 @interface PresetTableView : NSTableView
 @property (weak, nonatomic) PresetSelectionWindowController *controller;
+@end
+
+@interface PresetKeyboardButton : ColorButton
+@property (weak, nonatomic) IBOutlet PresetSelectionWindowController *controller;
+@property (assign, nonatomic) unichar key;
+@property (assign, nonatomic) int sentNoteNo;
+- (void)sendNoteOn:(unichar)key;
+- (void)sendNoteOff;
 @end
 
 @interface PresetSelectionWindowController () <NSWindowDelegate, NSTableViewDataSource, NSTableViewDelegate, MixerRepresentationObserver, NSWindowDelegate> {
@@ -20,9 +29,21 @@
 @property (weak) IBOutlet NSTextField *bankNoField;
 @property (weak) IBOutlet NSTextField *programNoField;
 @property (weak) IBOutlet PresetTableView *presetTableView;
+@property (strong, nonatomic) NSMutableDictionary<NSNumber *, PresetKeyboardButton *> *keys;
+@property (weak) IBOutlet NSTextField *octaveLabel1;
+@property (weak) IBOutlet NSTextField *octaveLabel2;
 @end
 
 @implementation PresetSelectionWindowController
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        _keys = [NSMutableDictionary dictionary];
+    }
+    return self;
+}
 
 - (NSString *)windowNibName
 {
@@ -34,6 +55,7 @@
     [super windowDidLoad];
     _presetTableView.controller = self;
     _octave = 2;
+    [self updateOctaveLabel];
 }
 
 - (void)setMixerChannel:(MixerChannelRepresentation *)mixerChannel
@@ -76,11 +98,6 @@
     NSUInteger index = [_mixerChannel.presets indexOfObject:_mixerChannel.preset];
     [_presetTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:index] byExtendingSelection:NO];
     [_presetTableView scrollRowToVisible:index];
-}
-
-- (void)updateOctaveLabel
-{
-    // TODO
 }
 
 - (NSString *)synthesizerName
@@ -166,8 +183,32 @@
     return -1;
 }
 
+- (void)updateOctaveLabel
+{
+    for (PresetKeyboardButton *button in _keys.allValues) {
+        if (-1 == [self noteNo:button.key]) {
+            button.enabled = NO;
+        }
+        else {
+            button.enabled = YES;
+        }
+    }
+    
+    _octaveLabel1.stringValue = [NSString stringWithFormat:@"C%d", _octave];
+    if (8 > _octave) {
+        _octaveLabel2.stringValue = [NSString stringWithFormat:@"C%d", _octave + 1];
+    }
+    else {
+        _octaveLabel2.stringValue = @"";
+    }
+}
+
 - (void)keyDown:(NSEvent *)theEvent
 {
+    if (theEvent.isARepeat) {
+        return;
+    }
+    
     unichar key = [theEvent.charactersIgnoringModifiers characterAtIndex:0];
     switch (key) {
         case NSCarriageReturnCharacter:
@@ -187,15 +228,10 @@
             break;
         default:
         {
-            if (!theEvent.isARepeat) {
-                int noteNo = [self noteNo:key];
-                if (-1 != noteNo) {
-                    NoteEvent note;
-                    note.channel = _mixerChannel.number;
-                    note.noteNo = noteNo;
-                    note.velocity = 100;
-                    [_mixer sendNoteOn:&note];
-                }
+            PresetKeyboardButton *button = _keys[@(key)];
+            if (button.enabled) {
+                button.state = NSOnState;
+                [button sendNoteOn:key];
             }
         }
             break;
@@ -205,13 +241,8 @@
 - (void)keyUp:(NSEvent *)theEvent
 {
     unichar key = [theEvent.charactersIgnoringModifiers characterAtIndex:0];
-    int noteNo = [self noteNo:key];
-    if (-1 != noteNo) {
-        NoteEvent note;
-        note.channel = _mixerChannel.number;
-        note.noteNo = noteNo;
-        [_mixer sendNoteOff:&note];
-    }
+    _keys[@(key)].state = NSOffState;
+    [_keys[@(key)] sendNoteOff];
 }
 
 #pragma mark NSTableViewDataSource
@@ -269,7 +300,6 @@
 @end
 
 
-
 @implementation PresetTableView
 
 - (void)keyDown:(NSEvent *)theEvent
@@ -287,6 +317,86 @@
     else {
         [_controller keyDown:theEvent];
     }
+}
+
+@end
+
+
+@implementation PresetKeyboardButton
+
+- (void)awakeFromNib
+{
+    [super awakeFromNib];
+    [self addTrackingRect:self.bounds owner:self userData:nil assumeInside:NO];
+    [_controller.keys setObject:self forKey:@(self.key)];
+}
+
+- (unichar)key
+{
+    return [self.title.lowercaseString characterAtIndex:0];
+}
+
+- (void)sendNoteOn:(unichar)key
+{
+    int noteNo = [_controller noteNo:key];
+    if (-1 != noteNo) {
+        NoteEvent note;
+        note.channel = _controller.mixerChannel.number;
+        note.noteNo = noteNo;
+        note.velocity = 100;
+        [_controller.mixer sendNoteOn:&note];
+    }
+    
+    _sentNoteNo = noteNo;
+}
+
+- (void)sendNoteOff
+{
+    if (-1 != _sentNoteNo) {
+        NoteEvent note;
+        note.channel = _controller.mixerChannel.number;
+        note.noteNo = _sentNoteNo;
+        [_controller.mixer sendNoteOff:&note];
+    }
+}
+
+- (void)mouseDown:(NSEvent *)theEvent
+{
+    if (!self.enabled) {
+        return;
+    }
+    
+    self.state = NSOnState;
+    [self sendNoteOn:self.key];
+}
+
+- (void)mouseUp:(NSEvent *)theEvent
+{
+    if (!self.enabled) {
+        return;
+    }
+    
+    self.state = NSOffState;
+    [self sendNoteOff];
+}
+
+- (void)mouseExited:(NSEvent *)theEvent
+{
+    if (!self.enabled) {
+        return;
+    }
+    
+    self.state = NSOffState;
+    [self sendNoteOff];
+}
+
+- (void)setEnabled:(BOOL)enabled
+{
+    if (!enabled && NSOnState == self.state) {
+        self.state = NSOffState;
+        [self sendNoteOff];
+    }
+    [super setEnabled:enabled];
 }
 
 @end
