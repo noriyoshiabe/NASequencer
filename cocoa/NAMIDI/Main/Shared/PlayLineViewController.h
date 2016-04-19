@@ -9,9 +9,11 @@
 #import <Cocoa/Cocoa.h>
 #import "MeasureScaleAssistant.h"
 #import "NAMidiRepresentation.h"
+#import "MainWindowContext.h"
 
 @interface PlayLineViewController : NSViewController
 @property (weak, nonatomic) NSScrollView *containerView;
 @property (strong, nonatomic) NAMidiRepresentation *namidi;
 @property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
+@property (strong, nonatomic) MainWindowContext *mainWindowContext;
 @end

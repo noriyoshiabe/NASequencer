@@ -51,6 +51,8 @@
     _eventListVC.trackSelection = _trackSelection;
     _pianoRollVC.trackSelection = _trackSelection;
     
+    _pianoRollVC.mainWindowContext = _mainWindowContext;
+    
     [_selectionView addSubviewWithFitConstraints:_selectionVC.view];
     [_pianoRollView addSubviewWithFitConstraints:_pianoRollVC.view];
     

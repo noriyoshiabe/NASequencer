@@ -99,6 +99,11 @@
                             <action selector="toggleRepeat:" target="-1" id="u5c-VJ-94a"/>
                         </connections>
                     </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="2E757421-3CFD-4CE4-B37C-B74E0F27B978" explicitItemIdentifier="AutoScroll" label="Auto Scroll" paletteLabel="Auto Scroll" tag="-1" image="auto_scroll_off" id="VpO-QX-X6k">
+                        <connections>
+                            <action selector="toggleAutoScroll:" target="-1" id="NRc-iy-CW7"/>
+                        </connections>
+                    </toolbarItem>
                     <toolbarItem implicitItemIdentifier="116150C3-7CAC-409E-AD39-7A2C83CE3742" label="Export" paletteLabel="Export" tag="-1" image="export" id="YUF-3s-pU0">
                         <connections>
                             <action selector="export:" target="-1" id="CJu-ZW-J9x"/>
@@ -115,6 +120,7 @@
                     <toolbarItem reference="te0-bl-VQh"/>
                     <toolbarItem reference="RYG-zr-Tvh"/>
                     <toolbarItem reference="5Cn-B4-1t4"/>
+                    <toolbarItem reference="VpO-QX-X6k"/>
                     <toolbarItem reference="lm7-Jm-Vyk"/>
                     <toolbarItem reference="YUF-3s-pU0"/>
                 </defaultToolbarItems>
@@ -125,6 +131,7 @@
         </window>
     </objects>
     <resources>
+        <image name="auto_scroll_off" width="24" height="24"/>
         <image name="back" width="24" height="24"/>
         <image name="backward" width="24" height="24"/>
         <image name="export" width="24" height="24"/>

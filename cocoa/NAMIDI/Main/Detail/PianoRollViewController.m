@@ -112,6 +112,8 @@
     _keyboardVC.trackSelection = _trackSelection;
     _velocityVC.trackSelection = _trackSelection;
     
+    _playLineVC.mainWindowContext = _mainWindowContext;
+    
     _measureView.documentView = _measureVC.view;
     _playLineView.documentView = _playLineVC.view;
     _conductorView.documentView = _conductorVC.view;

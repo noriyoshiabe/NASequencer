@@ -12,6 +12,7 @@
 		0201F7D71C688BB100A201F6 /* Document.m in Sources */ = {isa = PBXBuildFile; fileRef = 0201F7D61C688BB100A201F6 /* Document.m */; };
 		0203F5A41CC23D2200F7C5BA /* luminous_rain.abc in Resources */ = {isa = PBXBuildFile; fileRef = 0203F5A31CC23D2200F7C5BA /* luminous_rain.abc */; };
 		020600F11CC5FC840011660E /* NSEvent+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 020600F01CC5FC840011660E /* NSEvent+Support.m */; };
+		020600F41CC60E920011660E /* MainWindowContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 020600F31CC60E920011660E /* MainWindowContext.m */; };
 		020CF8321C6A059C0025DF84 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 020CF8311C6A059C0025DF84 /* WebKit.framework */; };
 		020CF8391C6A1BFD0025DF84 /* GettingStartedWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 020CF8381C6A1BFD0025DF84 /* GettingStartedWindowController.xib */; };
 		020CF8561C6AD4D80025DF84 /* PreferenceWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 020CF8541C6AD4D80025DF84 /* PreferenceWindowController.m */; };
@@ -174,6 +175,8 @@
 		0203F5A31CC23D2200F7C5BA /* luminous_rain.abc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = luminous_rain.abc; sourceTree = "<group>"; };
 		020600EF1CC5FC840011660E /* NSEvent+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSEvent+Support.h"; sourceTree = "<group>"; };
 		020600F01CC5FC840011660E /* NSEvent+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSEvent+Support.m"; sourceTree = "<group>"; };
+		020600F21CC60E920011660E /* MainWindowContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainWindowContext.h; sourceTree = "<group>"; };
+		020600F31CC60E920011660E /* MainWindowContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainWindowContext.m; sourceTree = "<group>"; };
 		020CF8311C6A059C0025DF84 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		020CF8381C6A1BFD0025DF84 /* GettingStartedWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = GettingStartedWindowController.xib; sourceTree = "<group>"; };
 		020CF8531C6AD4D80025DF84 /* PreferenceWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferenceWindowController.h; sourceTree = "<group>"; };
@@ -734,6 +737,8 @@
 				026D42D31C7ABC08000267AD /* PlayLineViewController.h */,
 				026D42D41C7ABC08000267AD /* PlayLineViewController.m */,
 				026D42D51C7ABC08000267AD /* PlayLineViewController.xib */,
+				020600F21CC60E920011660E /* MainWindowContext.h */,
+				020600F31CC60E920011660E /* MainWindowContext.m */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -951,6 +956,7 @@
 				020CF87E1C6B20C50025DF84 /* Application.m in Sources */,
 				0262BAF51C8A458700BEB76A /* MMLHighlightSpec.m in Sources */,
 				02633E981C74AC9F00B9FF0E /* Color.m in Sources */,
+				020600F41CC60E920011660E /* MainWindowContext.m in Sources */,
 				026D42E41C7ABC08000267AD /* MixerViewController.m in Sources */,
 				0262BAF21C8A30F400BEB76A /* ABCHighlightSpec.m in Sources */,
 				026D42E61C7ABC08000267AD /* TrackChannelViewController.m in Sources */,

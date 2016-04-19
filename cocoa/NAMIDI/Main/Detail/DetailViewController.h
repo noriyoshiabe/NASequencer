@@ -10,10 +10,12 @@
 #import "MeasureScaleAssistant.h"
 #import "TrackSelection.h"
 #import "NAMidiRepresentation.h"
+#import "MainWindowContext.h"
 
 @interface DetailViewController : NSViewController
 @property (strong, nonatomic) NAMidiRepresentation *namidi;
 @property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
 @property (strong, nonatomic) TrackSelection *trackSelection;
+@property (strong, nonatomic) MainWindowContext *mainWindowContext;
 @property (assign, nonatomic) CGPoint scrollPoint;
 @end

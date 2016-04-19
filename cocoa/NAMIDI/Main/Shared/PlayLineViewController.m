@@ -15,6 +15,7 @@
 }
 @property (weak, nonatomic) NSScrollView *containerView;
 @property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
+@property (strong, nonatomic) MainWindowContext *mainWindowContext;
 @property (strong, nonatomic) SequenceRepresentation *sequence;
 @property (strong, nonatomic) PlayerRepresentation *player;
 @property (assign, nonatomic) int tick;
@@ -31,6 +32,7 @@
     [super viewDidLoad];
     _playLineView.containerView = _containerView;
     _playLineView.scaleAssistant = _scaleAssistant;
+    _playLineView.mainWindowContext = _mainWindowContext;
     _playLineView.sequence = _namidi.sequence;
     _playLineView.player = _namidi.player;
     
@@ -131,7 +133,10 @@
 - (void)player:(PlayerRepresentation *)player onNotifyClock:(int)tick usec:(int64_t)usec location:(Location)location
 {
     [self update];
-    [self scrollToCurrent];
+    
+    if (_mainWindowContext.autoScrollEnabled) {
+        [self scrollToCurrent];
+    }
 }
 
 @end

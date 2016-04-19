@@ -16,9 +16,11 @@
 #import "EditorWindowController.h"
 #import "Preference.h"
 #import "PresetSelectionWindowController.h"
+#import "MainWindowContext.h"
 
 @interface MainWindowController () <TrackSelectionDelegate, NAMidiRepresentationObserver, PlayerRepresentationObserver, MainViewControllerDelegate, NSUserInterfaceValidations, NSWindowDelegate> {
     BOOL _isShiftKeyPressed;
+    MainWindowContext *_mainWindowContext;
 }
 @property (weak) IBOutlet NSView *contentView;
 @property (weak) IBOutlet LocationView *locationView;
@@ -45,6 +47,8 @@
     
     self.window.contentView.wantsLayer = YES;
     self.window.contentView.layer.masksToBounds = YES;
+    
+    _mainWindowContext = [[MainWindowContext alloc] init];
     
     [_namidi addObserver:self];
     [_namidi.player addObserver:self];
@@ -73,6 +77,9 @@
     _mainVC.scaleAssistant = _scaleAssistant;
     _detailVC.scaleAssistant = _scaleAssistant;
     
+    _mainVC.mainWindowContext = _mainWindowContext;
+    _detailVC.mainWindowContext = _mainWindowContext;
+    
     _locationView.player = _namidi.player;
     
     [self showMainView];
@@ -84,7 +91,9 @@
     [self showEditor];
     
     _isShiftKeyPressed = [NSEvent isShiftKeyPressed];
+    
     [self updateToolBarItemFowardBackward];
+    [self updateToolBarItemAutoScroll];
 }
 
 - (void)dealloc
@@ -186,6 +195,15 @@
     }
 }
 
+- (void)updateToolBarItemAutoScroll
+{
+    NSToolbarItem *autoScroll = [self.window.toolbar.items objectPassingTest:^BOOL(__kindof NSToolbarItem *obj, NSUInteger idx, BOOL *stop) {
+        return *stop = [obj.itemIdentifier isEqualToString:@"AutoScroll"];
+    }];
+    
+    autoScroll.image = [NSImage imageNamed:_mainWindowContext.autoScrollEnabled ? @"auto_scroll_on" : @"auto_scroll_off"];
+}
+
 - (void)updateToolBarItemFowardBackward
 {
     NSToolbarItem *forward = [self.window.toolbar.items objectPassingTest:^BOOL(__kindof NSToolbarItem *obj, NSUInteger idx, BOOL *stop) {
@@ -264,6 +282,12 @@
 - (IBAction)toggleRepeat:(id)sender
 {
     [_namidi.player toggleRepeat];
+}
+
+- (IBAction)toggleAutoScroll:(id)sender
+{
+    _mainWindowContext.autoScrollEnabled = !_mainWindowContext.autoScrollEnabled;
+    [self updateToolBarItemAutoScroll];
 }
 
 - (IBAction)export:(id)sender

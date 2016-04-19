@@ -78,6 +78,8 @@
     _conductorTrackVC.trackSelection = _trackSelection;
     _trackVC.trackSelection = _trackSelection;
     
+    _playLineVC.mainWindowContext = _mainWindowContext;
+    
     _conductorVC.view.frame = _conductorView.bounds;
     [_conductorView addSubview:_conductorVC.view];
     
