@@ -205,10 +205,10 @@ Pull-down menu to select synthesizer.
 
 _If there is control event in sequence, player will change synthesizer and pull-down selection will be updated._
 
-#### Preset Pull-Down
-Pull-down menu to select preset in synthesizer.
+#### Preset
+Button to show [Preset Selection](#Preset Selection) sheet.
 
-_If there is control event in sequence, player will send the event to synthesizer and pull-down selection will be updated._
+_If there is control event in sequence, player will send the event to synthesizer and preset selection will be updated._
 
 #### Volume / Pan / Chorus / Reverb
 Sliders for each synthesis value.
@@ -217,6 +217,23 @@ _If there is control event in sequence, player will send the event to synthesize
 
 #### Level Indicator
 Display output level for each channel.
+
+### Preset Selection
+![](../shared/preset-selection.png)
+
+Shown by preset button on [Mixer Panel](#Mixer Panel).
+
+**Note:**  
+Text field for Synthesizer Name is selectable.
+You can copy it and paste to source file for [SYNTH](nas.md#SYNTH) statement.
+
+#### Preset List
+List of available presets of synthesizer. By click list or arrow key up/down, selected preset will be changed.
+
+#### Keyboard Preview
+In Preset Selection sheet, previewing sound of preset is available.
+Mapping of hardware keyboard is shown on the sheet.
+Left and right arrow keys are for octave shift.
 
 <a name="general__main_measure"></a>
 ### Measure

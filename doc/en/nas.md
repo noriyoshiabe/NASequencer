@@ -486,7 +486,7 @@ VELOCITY 80
 ```
 
 ### GATETIME
-Specifies gatetime config of current channel for [NOTE](#NOTE) statement。
+Specifies gatetime config of current channel for [NOTE](#NOTE) statement.
 
 #### Absolute Setting
 Applies to note event in absolute number if gatetime is omitted with note statement.

@@ -20,6 +20,7 @@ Index
         - <input type="checkbox"/>[Main View](general.md#=)
             - [Conductor Panel](general.md#=)
             - [Mixer Panel](general.md#=)
+            - [Preset Selection](general.md#=)
             - [Measure](general.md#main_measure)
             - [Conductor Track](general.md#main_conductor_track)
             - [Channel Track](general.md#=)
