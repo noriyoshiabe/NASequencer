@@ -54,6 +54,8 @@
 - (void)windowDidLoad
 {
     [super windowDidLoad];
+    self.window.preventsApplicationTerminationWhenModal = NO;
+    
     _presetTableView.controller = self;
     _octave = 2;
     [self updateOctaveLabel];
@@ -71,9 +73,7 @@
         
         [_mixer removeObserver:self];
         
-        for (PresetKeyboardButton *button in _keys.allValues) {
-            [button reset];
-        }
+        [self cancelAllKeys];
     }
     
     _mixerChannel = mixerChannel;
@@ -123,6 +123,19 @@
 - (IBAction)okButtonPressed:(id)sender
 {
     [self.window.sheetParent endSheet:self.window returnCode:NSModalResponseCancel];
+}
+
+- (IBAction)performClose:(id)sender
+{
+    [self.window.sheetParent endSheet:self.window returnCode:NSModalResponseCancel];
+}
+
+- (void)windowDidBecomeKey:(NSNotification *)notification
+{
+    self.presetTableView.nextResponder = self;
+    self.synthesizerNameField.nextResponder = self;
+    self.bankNoField.nextResponder = self;
+    self.programNoField.nextResponder = self;
 }
 
 - (void)cancelOperation:(id)sender
@@ -188,6 +201,13 @@
     return -1;
 }
 
+- (void)cancelAllKeys
+{
+    for (PresetKeyboardButton *button in _keys.allValues) {
+        [button reset];
+    }
+}
+
 - (void)updateOctaveLabel
 {
     for (PresetKeyboardButton *button in _keys.allValues) {
@@ -210,7 +230,7 @@
 
 - (void)keyDown:(NSEvent *)theEvent
 {
-    if (theEvent.isARepeat) {
+    if (theEvent.isARepeat || (theEvent.modifierFlags & NSCommandKeyMask)) {
         return;
     }
     
@@ -248,6 +268,13 @@
     unichar key = [theEvent.charactersIgnoringModifiers characterAtIndex:0];
     _keys[@(key)].state = NSOffState;
     [_keys[@(key)] sendNoteOff];
+}
+
+- (void)flagsChanged:(NSEvent *)theEvent
+{
+    if (theEvent.modifierFlags & NSCommandKeyMask) {
+        [self cancelAllKeys];
+    }
 }
 
 #pragma mark NSTableViewDataSource
@@ -370,6 +397,7 @@
 {
     [self sendNoteOff];
     _sentNoteNo = -1;
+    self.state = NSOffState;
 }
 
 - (void)mouseDown:(NSEvent *)theEvent
