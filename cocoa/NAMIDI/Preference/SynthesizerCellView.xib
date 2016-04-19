@@ -26,7 +26,7 @@
                             <constraint firstAttribute="width" constant="315" id="G8i-MH-Se2"/>
                             <constraint firstAttribute="height" constant="17" id="TAi-fc-kie"/>
                         </constraints>
-                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" sendsActionOnEndEditing="YES" title="GeneralUser GS Live/Audigy version 1.44" drawsBackground="YES" id="ZyH-rl-BZc">
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="GeneralUser GS Live/Audigy version 1.44" drawsBackground="YES" id="ZyH-rl-BZc">
                             <font key="font" metaFont="systemMedium" size="12"/>
                             <color key="textColor" red="0.23137254900000001" green="0.23137254900000001" blue="0.23137254900000001" alpha="1" colorSpace="calibratedRGB"/>
                             <color key="backgroundColor" white="1" alpha="0.0" colorSpace="deviceWhite"/>
