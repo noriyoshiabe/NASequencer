@@ -16,6 +16,8 @@ Index
             - [Rewind](general.md#=)
             - [Forward](general.md#=)
             - [Backward](general.md#=)
+            - [Forward to Marker](general.md#=)
+            - [Backward to Marker](general.md#=)
             - [Toggle Repeat](general.md#=)
         - <input type="checkbox"/>[Main View](general.md#=)
             - [Conductor Panel](general.md#=)
