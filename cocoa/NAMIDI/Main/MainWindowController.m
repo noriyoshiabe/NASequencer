@@ -17,7 +17,9 @@
 #import "Preference.h"
 #import "PresetSelectionWindowController.h"
 
-@interface MainWindowController () <TrackSelectionDelegate, NAMidiRepresentationObserver, PlayerRepresentationObserver, MainViewControllerDelegate, NSUserInterfaceValidations, NSWindowDelegate>
+@interface MainWindowController () <TrackSelectionDelegate, NAMidiRepresentationObserver, PlayerRepresentationObserver, MainViewControllerDelegate, NSUserInterfaceValidations, NSWindowDelegate> {
+    BOOL _isShiftKeyPressed;
+}
 @property (weak) IBOutlet NSView *contentView;
 @property (weak) IBOutlet LocationView *locationView;
 @property (strong, nonatomic) MainViewController *mainVC;
@@ -80,6 +82,9 @@
     }
     
     [self showEditor];
+    
+    _isShiftKeyPressed = [NSEvent isShiftKeyPressed];
+    [self updateToolBarItemFowardBackward];
 }
 
 - (void)dealloc
@@ -149,11 +154,21 @@
 
 - (void)updateToolBarItem
 {
+    [self updateToolBarItemPlayPause];
+    [self updateToolBarItemRepeat];
+}
+
+- (void)updateToolBarItemPlayPause
+{
     NSToolbarItem *playPause = [self.window.toolbar.items objectPassingTest:^BOOL(__kindof NSToolbarItem *obj, NSUInteger idx, BOOL *stop) {
         return *stop = [obj.itemIdentifier isEqualToString:@"PlayPause"];
     }];
     playPause.image = [NSImage imageNamed:_namidi.player.isPlaying ?  @"pause" : @"play"];
     
+}
+
+- (void)updateToolBarItemRepeat
+{
     NSToolbarItem *repeat = [self.window.toolbar.items objectPassingTest:^BOOL(__kindof NSToolbarItem *obj, NSUInteger idx, BOOL *stop) {
         return *stop = [obj.itemIdentifier isEqualToString:@"Repeat"];
     }];
@@ -168,6 +183,29 @@
         case PlayerRepeatStateRepeatSection:
             repeat.image = [NSImage imageNamed:@"repeat_marker"];
             break;
+    }
+}
+
+- (void)updateToolBarItemFowardBackward
+{
+    NSToolbarItem *forward = [self.window.toolbar.items objectPassingTest:^BOOL(__kindof NSToolbarItem *obj, NSUInteger idx, BOOL *stop) {
+        return *stop = [obj.itemIdentifier isEqualToString:@"Forward"];
+    }];
+    
+    NSToolbarItem *backward = [self.window.toolbar.items objectPassingTest:^BOOL(__kindof NSToolbarItem *obj, NSUInteger idx, BOOL *stop) {
+        return *stop = [obj.itemIdentifier isEqualToString:@"Backward"];
+    }];
+    
+    forward.image = [NSImage imageNamed:[NSEvent isShiftKeyPressed] ? @"forward_marker" : @"forward"];
+    backward.image = [NSImage imageNamed:[NSEvent isShiftKeyPressed] ? @"backward_marker" : @"backward"];
+}
+
+- (void)flagsChanged:(NSEvent *)theEvent
+{
+    BOOL isShiftKeyPressed = [NSEvent isShiftKeyPressed];
+    if (_isShiftKeyPressed != isShiftKeyPressed) {
+        [self updateToolBarItemFowardBackward];
+        _isShiftKeyPressed = isShiftKeyPressed;
     }
 }
 
@@ -205,12 +243,22 @@
 
 - (IBAction)backward:(id)sender
 {
-    [_namidi.player backward];
+    if ([NSEvent isShiftKeyPressed]) {
+        [_namidi.player backwardToMarker];
+    }
+    else {
+        [_namidi.player backward];
+    }
 }
 
 - (IBAction)forward:(id)sender
 {
-    [_namidi.player forward];
+    if ([NSEvent isShiftKeyPressed]) {
+        [_namidi.player forwardToMarker];
+    }
+    else {
+        [_namidi.player forward];
+    }
 }
 
 - (IBAction)toggleRepeat:(id)sender

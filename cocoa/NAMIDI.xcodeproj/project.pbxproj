@@ -11,6 +11,7 @@
 		0201F7D41C688BB100A201F6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0201F7D31C688BB100A201F6 /* main.m */; };
 		0201F7D71C688BB100A201F6 /* Document.m in Sources */ = {isa = PBXBuildFile; fileRef = 0201F7D61C688BB100A201F6 /* Document.m */; };
 		0203F5A41CC23D2200F7C5BA /* luminous_rain.abc in Resources */ = {isa = PBXBuildFile; fileRef = 0203F5A31CC23D2200F7C5BA /* luminous_rain.abc */; };
+		020600F11CC5FC840011660E /* NSEvent+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 020600F01CC5FC840011660E /* NSEvent+Support.m */; };
 		020CF8321C6A059C0025DF84 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 020CF8311C6A059C0025DF84 /* WebKit.framework */; };
 		020CF8391C6A1BFD0025DF84 /* GettingStartedWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 020CF8381C6A1BFD0025DF84 /* GettingStartedWindowController.xib */; };
 		020CF8561C6AD4D80025DF84 /* PreferenceWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 020CF8541C6AD4D80025DF84 /* PreferenceWindowController.m */; };
@@ -171,6 +172,8 @@
 		0201F7D61C688BB100A201F6 /* Document.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Document.m; sourceTree = "<group>"; };
 		0201F7E01C688BB100A201F6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0203F5A31CC23D2200F7C5BA /* luminous_rain.abc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = luminous_rain.abc; sourceTree = "<group>"; };
+		020600EF1CC5FC840011660E /* NSEvent+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSEvent+Support.h"; sourceTree = "<group>"; };
+		020600F01CC5FC840011660E /* NSEvent+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSEvent+Support.m"; sourceTree = "<group>"; };
 		020CF8311C6A059C0025DF84 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		020CF8381C6A1BFD0025DF84 /* GettingStartedWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = GettingStartedWindowController.xib; sourceTree = "<group>"; };
 		020CF8531C6AD4D80025DF84 /* PreferenceWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferenceWindowController.h; sourceTree = "<group>"; };
@@ -534,6 +537,8 @@
 				0232CB0F1C88C88700542D34 /* NSWindow+Support.m */,
 				02B1607F1C9685FF009A2823 /* NSBundle+Support.h */,
 				02B160801C9685FF009A2823 /* NSBundle+Support.m */,
+				020600EF1CC5FC840011660E /* NSEvent+Support.h */,
+				020600F01CC5FC840011660E /* NSEvent+Support.m */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -1001,6 +1006,7 @@
 				028209221C70A3C0003EBCFB /* EditorTabItem.m in Sources */,
 				024A5B361C6A01280079D22C /* GettingStartedWindowController.m in Sources */,
 				020CF87A1C6B0AB20025DF84 /* AboutWindowController.m in Sources */,
+				020600F11CC5FC840011660E /* NSEvent+Support.m in Sources */,
 				028589551C71320A00A53B8C /* EditorStatusViewController.m in Sources */,
 				02A973C51C798B6100C21B8E /* NSColor+Support.m in Sources */,
 				025FAF931C7F182700E4C3B3 /* NSThread+Support.m in Sources */,

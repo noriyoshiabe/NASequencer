@@ -45,6 +45,8 @@ extern void PlayerPlayPause(Player *self);
 extern void PlayerRewind(Player *self);
 extern void PlayerForward(Player *self);
 extern void PlayerBackWard(Player *self);
+extern void PlayerForwardToMarker(Player *self);
+extern void PlayerBackWardToMarker(Player *self);
 extern void PlayerSeek(Player *self, Location location);
 extern void PlayerToggleRepeat(Player *self);
 

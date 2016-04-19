@@ -16,6 +16,8 @@ typedef enum _PlayerMessage {
     PlayerMessageRewind,
     PlayerMessageForward,
     PlayerMessageBackward,
+    PlayerMessageForwardToMarker,
+    PlayerMessageBackwardToMarker,
     PlayerMessageSeek,
     PlayerMessageToggleRepeat,
     PlayerMessageDestroy,
@@ -153,6 +155,16 @@ void PlayerForward(Player *self)
 void PlayerBackWard(Player *self)
 {
     NAMessageQPost(self->msgQ, PlayerMessageBackward, NULL);
+}
+
+void PlayerForwardToMarker(Player *self)
+{
+    NAMessageQPost(self->msgQ, PlayerMessageForwardToMarker, NULL);
+}
+
+void PlayerBackWardToMarker(Player *self)
+{
+    NAMessageQPost(self->msgQ, PlayerMessageBackwardToMarker, NULL);
 }
 
 void PlayerSeek(Player *self, Location location)
@@ -322,6 +334,28 @@ static void PlayerProcessMessage(Player *self, PlayerMessage message, void *data
 
             tick = TimeTableTickByMeasure(self->sequence->timeTable, location.m);
             PlayerSeekToTick(self, tick);
+            PlayerTriggerEvent(self, PlayerEventBackward);
+        }
+        break;
+    case PlayerMessageForwardToMarker:
+        {
+            RepeatSection repeatSection = TimeTableRepeatSectionOnTick(self->sequence->timeTable, self->tick);
+            PlayerSeekToTick(self, repeatSection.tickEnd);
+            PlayerTriggerEvent(self, PlayerEventForward);
+        }
+        break;
+    case PlayerMessageBackwardToMarker:
+        {
+            int32_t tick = TimeTableMicroSec2Tick(self->sequence->timeTable, self->usec);
+            Location location = TimeTableTick2Location(self->sequence->timeTable, tick);
+            location.m -= 1 == location.b ? 1 : 0;
+            location.m = MAX(1, location.m);
+            location.b = 1;
+            location.t = 0;
+
+            tick = TimeTableTickByMeasure(self->sequence->timeTable, location.m);
+            RepeatSection repeatSection = TimeTableRepeatSectionOnTick(self->sequence->timeTable, tick);
+            PlayerSeekToTick(self, repeatSection.tickStart);
             PlayerTriggerEvent(self, PlayerEventBackward);
         }
         break;

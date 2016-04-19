@@ -237,6 +237,18 @@
                                     <action selector="backward:" target="-1" id="S1h-oe-mmn"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Forward to Marker" keyEquivalent="" id="xHC-hl-Fuv">
+                                <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                <connections>
+                                    <action selector="forward:" target="-1" id="Hj9-9Y-4od"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Backward to Marker" keyEquivalent="" id="DTi-eP-7Hw">
+                                <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                <connections>
+                                    <action selector="backward:" target="-1" id="3Rd-2C-2S2"/>
+                                </connections>
+                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="0wo-Ro-HIi"/>
                             <menuItem title="Toggle Repeat" keyEquivalent="R" id="h3n-ff-WM1">
                                 <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>

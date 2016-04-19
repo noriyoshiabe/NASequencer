@@ -34,6 +34,8 @@
 - (void)rewind;
 - (void)forward;
 - (void)backward;
+- (void)forwardToMarker;
+- (void)backwardToMarker;
 - (void)seek:(Location)location;
 - (void)toggleRepeat;
 @end
