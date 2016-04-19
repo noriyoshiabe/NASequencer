@@ -113,3 +113,22 @@ I can be reached at: s_chriscollins@hotmail.com.
 
 Thank you!
 -~Chris
+
+
+Music for Example Sequence
+--------------------------
+
+### Bebop 25
+By Audionautix (http://audionautix.com/)  
+Licensed under Creative Commons: By Attribution 3.0 License  
+http://creativecommons.org/licenses/by/3.0/
+
+### Luminous Rain
+By Kevin MacLeod (http://incompetech.com)  
+Licensed under Creative Commons: By Attribution 3.0 License  
+http://creativecommons.org/licenses/by/3.0/
+
+### Jaunty Gumption
+By Kevin MacLeod (http://incompetech.com)  
+Licensed under Creative Commons: By Attribution 3.0 License  
+http://creativecommons.org/licenses/by/3.0/
