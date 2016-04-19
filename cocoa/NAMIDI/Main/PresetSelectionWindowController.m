@@ -19,6 +19,7 @@
 @property (assign, nonatomic) int sentNoteNo;
 - (void)sendNoteOn:(unichar)key;
 - (void)sendNoteOff;
+- (void)reset;
 @end
 
 @interface PresetSelectionWindowController () <NSWindowDelegate, NSTableViewDataSource, NSTableViewDelegate, MixerRepresentationObserver, NSWindowDelegate> {
@@ -69,6 +70,10 @@
         _presetTableView.delegate = nil;
         
         [_mixer removeObserver:self];
+        
+        for (PresetKeyboardButton *button in _keys.allValues) {
+            [button reset];
+        }
     }
     
     _mixerChannel = mixerChannel;
@@ -329,6 +334,7 @@
     [super awakeFromNib];
     [self addTrackingRect:self.bounds owner:self userData:nil assumeInside:NO];
     [_controller.keys setObject:self forKey:@(self.key)];
+    _sentNoteNo = -1;
 }
 
 - (unichar)key
@@ -358,6 +364,12 @@
         note.noteNo = _sentNoteNo;
         [_controller.mixer sendNoteOff:&note];
     }
+}
+
+- (void)reset
+{
+    [self sendNoteOff];
+    _sentNoteNo = -1;
 }
 
 - (void)mouseDown:(NSEvent *)theEvent
