@@ -19,6 +19,7 @@ Index
             - [Forward to Marker](general.md#=)
             - [Backward to Marker](general.md#=)
             - [Toggle Repeat](general.md#=)
+            - [Toggle Auto Scroll](general.md#=)
         - <input type="checkbox"/>[Main View](general.md#=)
             - [Conductor Panel](general.md#=)
             - [Mixer Panel](general.md#=)

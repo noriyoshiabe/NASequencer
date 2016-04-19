@@ -196,6 +196,15 @@ S = beginning of sequence
 E = end of sequence
 ```
 
+### Toggle Auto Scroll
+Toggle enable/disable auto scroll sequence view to playing position.
+
+![](../shared/auto_scroll_off@2x.png) _Auto Scroll Button (Disable)_
+![](../shared/auto_scroll_on@2x.png) _Auto Scroll Button (Enable)_
+
+**Shortcut Key**  
+Control + S
+
 
 Main View
 ---------
