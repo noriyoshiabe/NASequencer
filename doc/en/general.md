@@ -109,7 +109,7 @@ Choose \[Control\] -> \[Forward\] from menu or click toolbar button in document 
 ![](../shared/forward@2x.png) _Forward Button_
 
 **Shortcut Key**  
-⌘ + F
+⌘ + →
 
 ### Backward
 Backward playing location to beginning of previous measure.
@@ -119,7 +119,27 @@ Choose \[Control\] -> \[Backward\] from menu or click toolbar button in document
 ![](../shared/backward@2x.png) _Backward Button_
 
 **Shortcut Key**  
-⌘ + B
+⌘ + ←
+
+### Forward to Marker
+Forward playing location to next marker notated by [Marker Event](nas.md#MARKER).
+
+Choose \[Control\] -> \[Forward to Marker\] from menu or click toolbar button with shift key in document window.
+
+![](../shared/forward_marker@2x.png) _Forward to Marker Button (With Shift Key Pressed)_
+
+**Shortcut Key**  
+Shift + ⌘ + →
+
+### Backward to Marker
+Backward playing location to next marker notated by [Marker Event](nas.md#MARKER).
+
+Choose \[Control\] -> \[Backward to Marker\] from menu or click toolbar button with shift key in document window.
+
+![](../shared/backward_marker@2x.png) _Backward to Marker Button (With Shift Key Pressed)_
+
+**Shortcut Key**  
+Shift + ⌘ + ←
 
 ### Toggle Repeat
 Change repeat state in a cycle.
@@ -228,12 +248,12 @@ Text field for Synthesizer Name is selectable.
 You can copy it and paste to source file for [SYNTH](nas.md#SYNTH) statement.
 
 #### Preset List
-List of available presets of synthesizer. By click list or arrow key up/down, selected preset will be changed.
+List of available presets of synthesizer. By click list or ←→ key up/down, selected preset will be changed.
 
 #### Keyboard Preview
 In Preset Selection sheet, previewing sound of preset is available.
 Mapping of hardware keyboard is shown on the sheet.
-Left and right arrow keys are for octave shift.
+←→ keys are for octave shift.
 
 <a name="general__main_measure"></a>
 ### Measure
