@@ -80,7 +80,7 @@
                             <constraint firstAttribute="height" constant="15" id="fuD-F7-ePJ"/>
                             <constraint firstAttribute="width" constant="300" id="o08-cX-r4e"/>
                         </constraints>
-                        <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="-1440" maxValue="1440" tickMarkPosition="above" sliderType="linear" id="9f3-iE-QhO"/>
+                        <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="-1440" maxValue="200" tickMarkPosition="above" sliderType="linear" id="9f3-iE-QhO"/>
                         <connections>
                             <binding destination="-2" name="enabled" keyPath="available" id="BdE-nm-jOb"/>
                             <binding destination="-2" name="value" keyPath="gain" id="Pm0-Nv-oOf"/>
@@ -92,7 +92,7 @@
                             <constraint firstAttribute="height" constant="15" id="4zY-aB-cYH"/>
                             <constraint firstAttribute="width" constant="300" id="OX1-ob-l2U"/>
                         </constraints>
-                        <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="-1440" maxValue="1440" tickMarkPosition="above" sliderType="linear" id="7Ea-yc-cr5"/>
+                        <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="-1440" maxValue="200" tickMarkPosition="above" sliderType="linear" id="7Ea-yc-cr5"/>
                         <connections>
                             <binding destination="-2" name="enabled" keyPath="available" id="egC-DW-dkd"/>
                             <binding destination="-2" name="value" keyPath="masterVolume" id="nB1-ch-PYP"/>
