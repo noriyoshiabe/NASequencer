@@ -1,4 +1,5 @@
 #include "AudioOut.h"
+#include "Define.h"
 
 #include <audiounit/AudioUnit.h>
 #include <alloca.h>
@@ -28,6 +29,11 @@ static OSStatus _RenderCallback(void *inRefCon, AudioUnitRenderActionFlags *ioAc
 
     if (self->callback) {
         self->callback(self->receiver, buffer, inNumberFrames);
+    }
+    
+    for (int i = 0; i < inNumberFrames; ++i) {
+        buffer[i].L = Clip(buffer[i].L, -1.0, 1.0);
+        buffer[i].R = Clip(buffer[i].R, -1.0, 1.0);
     }
 
     return noErr;
