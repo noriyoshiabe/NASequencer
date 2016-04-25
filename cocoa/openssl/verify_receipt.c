@@ -9,6 +9,9 @@
 #include <openssl/pkcs7.h>
 #include <openssl/err.h>
 
+#include <IOKit/IOKitLib.h>
+#include <CoreFoundation/CoreFoundation.h>
+
 #include "NAArray.h"
 #include "NAMap.h"
 #include "NACInteger.h"
@@ -43,9 +46,14 @@ static NAByteBuffer *buildASNBytes(const uint8_t *p, size_t length);
 
 static void destroyReceipt(NAArray *receipt);
 
+static NAByteBuffer *getMacAddress();
+
 #define DEBUG
 #ifdef DEBUG
 static void dumpReceipt(NAArray *receipt, int indent);
+#define Log(...) printf(__VA_ARGS__)
+#else
+#define Log(...)
 #endif
 
 static inline uint8_t *readBinary(const char *filepath, size_t *length)
@@ -69,8 +77,8 @@ static inline uint8_t *readBinary(const char *filepath, size_t *length)
 static NAArray *parseReceipt(const uint8_t *p, const uint8_t *end)
 {
     int type = 0;
-	int xclass = 0;
-	long length = 0;
+    int xclass = 0;
+    long length = 0;
 
     ASN1_get_object(&p, &length, &type, &xclass, end - p);
 
@@ -91,6 +99,7 @@ static NAArray *parseASNSet(const uint8_t *p, const uint8_t *end)
     NAArray *array =  NAArrayCreate(4, NADescriptionAddress);
 
     while (p < end) {
+        printf("------\n");
         ASN1_get_object(&p, &length, &type, &xclass, end - p);
         NAArrayAppend(array, parseASNSequence(p, p + length));
         p += length;
@@ -104,29 +113,29 @@ static NAMap *parseASNSequence(const uint8_t *p, const uint8_t *end)
     NAMap *map = NAMapCreate(NAHashCInteger, NADescriptionCInteger, NADescriptionAddress);
 
     int type = 0;
-	int xclass = 0;
-	long length = 0;
+    int xclass = 0;
+    long length = 0;
 
     while (p < end) {
         int attr_type = 0;
-		int attr_version = 0;
+        int attr_version = 0;
         
-		ASN1_get_object(&p, &length, &type, &xclass, end - p);
-		if (type == V_ASN1_INTEGER) {
+        ASN1_get_object(&p, &length, &type, &xclass, end - p);
+        if (type == V_ASN1_INTEGER) {
             if (1 == length) {
                 attr_type = p[0];
             }
             else if (2 == length) {
                 attr_type = (p[0] << 8) | p[1];
             }
-		}
-		p += length;
+        }
+        p += length;
 
-		ASN1_get_object(&p, &length, &type, &xclass, end - p);
-		if (type == V_ASN1_INTEGER && 1 == length) {
+        ASN1_get_object(&p, &length, &type, &xclass, end - p);
+        if (type == V_ASN1_INTEGER && 1 == length) {
             attr_version = p[0];
-		}
-		p += length;
+        }
+        p += length;
 
         char *string = NULL;
 
@@ -182,7 +191,7 @@ static NAMap *parseASNSequence(const uint8_t *p, const uint8_t *end)
             NAMapPut(map, NACIntegerFromInteger(ReceiptKeyInAppPurchaseCancelDate), parseASNString(p, end));
             break;
         }
-		p += length;
+        p += length;
     }
 
     return map;
@@ -191,7 +200,7 @@ static NAMap *parseASNSequence(const uint8_t *p, const uint8_t *end)
 static char *parseASNString(const uint8_t *p, const uint8_t *end)
 {
     int type = 0;
-	int xclass = 0;
+    int xclass = 0;
     long length = 0;
 
     const uint8_t *str_p = p;
@@ -206,7 +215,7 @@ static char *parseASNString(const uint8_t *p, const uint8_t *end)
 static int *parseASNInteger(const uint8_t *p, const uint8_t *end)
 {
     int type = 0;
-	int xclass = 0;
+    int xclass = 0;
     long length = 0;
 
     const uint8_t *num_p = p;
@@ -230,14 +239,19 @@ static int *parseASNInteger(const uint8_t *p, const uint8_t *end)
     return ret;
 }
 
-
 static NAByteBuffer *buildASNBytes(const uint8_t *p, size_t length)
 {
     NAByteBuffer *buffer = NAByteBufferCreate(length);
     NAByteBufferWriteData(buffer, (void *)p, length);
-
     return buffer;
 }
+
+static int *integerAddress(int i, int *p)
+{
+    *p = i;
+    return p;
+}
+#define integerAddress(i) integerAddress(i, alloca(sizeof(int)))
 
 int main(int argc, char **argv)
 {
@@ -276,17 +290,44 @@ int main(int argc, char **argv)
     free(x509Buffer);
     free(receiptBuffer);
 
-
     ASN1_OCTET_STRING *octets = p7->d.sign->contents->d.data;
 
-    NAArray *receipt = parseReceipt(octets->data, octets->data + octets->length);
+    NAArray *receiptSet = parseReceipt(octets->data, octets->data + octets->length);
 
     PKCS7_free(p7);
+    NAArrayDescription(receiptSet, stdout);
+
+    NAMap *receipt = NAArrayGetValueAt(receiptSet, 0);
+    NAMapDescription(receipt, stdout);
+
+    printf("%d\n", __LINE__);
+    NAByteBuffer *guid = NAByteBufferCreate(128);
+    printf("%d\n", __LINE__);
+    NAByteBuffer *macAddress = getMacAddress();
+    printf("%d\n", __LINE__);
+    NAByteBuffer *opaque = NAMapGet(receipt, integerAddress(ReceiptKeyOpaque));
+    printf("%d %p\n", __LINE__, opaque);
+    NAByteBuffer *bundleIDHash = NAMapGet(receipt, integerAddress(ReceiptKeyBundleIDHash));
+    printf("%d\n", __LINE__);
+    NAByteBuffer *sha1Hash = NAMapGet(receipt, integerAddress(ReceiptKeySha1Hash));
+    printf("%d\n", __LINE__);
+    NAByteBufferWriteData(guid, NAByteBufferData(macAddress), NAByteBufferDataLength(macAddress));
+    printf("%d %p\n", __LINE__, opaque);
+    NAByteBufferWriteData(guid, NAByteBufferData(opaque), NAByteBufferDataLength(opaque));
+    printf("%d\n", __LINE__);
+    NAByteBufferWriteData(guid, NAByteBufferData(bundleIDHash), NAByteBufferDataLength(bundleIDHash));
+    printf("%d\n", __LINE__);
+
+    printf("%d\n", __LINE__);
+    uint8_t digest[SHA_DIGEST_LENGTH];
+    SHA1(NAByteBufferData(guid), NAByteBufferDataLength(guid), digest);
+
+    NAByteBufferDestroy(guid);
 
 #ifdef DEBUG
-    dumpReceipt(receipt, 0);
+    dumpReceipt(receiptSet, 0);
 #endif
-    destroyReceipt(receipt);
+    destroyReceipt(receiptSet);
 
     return 0;
 }
@@ -304,13 +345,19 @@ static void destroyReceipt(NAArray *receipt)
 
             switch (key) {
             case ReceiptKeyBundleID:
+                free(entry->value);
+                break;
             case ReceiptKeyBundleIDHash:
+                NAByteBufferDestroy(entry->value);
+                break;
             case ReceiptKeyBundleShortVersion:
             case ReceiptKeyOriginalAppVersion:
             case ReceiptKeyExpirationDate:
+                free(entry->value);
+                break;
             case ReceiptKeyOpaque:
             case ReceiptKeySha1Hash:
-                free(entry->value);
+                NAByteBufferDestroy(entry->value);
                 break;
             case ReceiptKeyInAppPurchase:
                 destroyReceipt(entry->value);
@@ -331,6 +378,57 @@ static void destroyReceipt(NAArray *receipt)
     }
 
     NAArrayDestroy(receipt);
+}
+
+static NAByteBuffer *getMacAddress()
+{
+    kern_return_t kernResult;
+    mach_port_t master_port;
+    CFMutableDictionaryRef matchingDict;
+    io_iterator_t iterator;
+    io_object_t service;
+    CFDataRef macAddress = NULL;
+    kernResult = IOMasterPort(MACH_PORT_NULL, &master_port);
+
+    if (kernResult != KERN_SUCCESS) {
+        Log("IOMasterPort returned %d\n", kernResult);
+        return NULL;
+    }
+
+    matchingDict = IOBSDNameMatching(master_port, 0, "en0");
+    if (!matchingDict) {
+        Log("IOBSDNameMatching returned empty dictionary\n");
+        return NULL;
+    }
+
+    
+    kernResult = IOServiceGetMatchingServices(master_port, matchingDict, &iterator);
+    if (kernResult != KERN_SUCCESS) {
+        Log("IOServiceGetMatchingServices returned %d\n", kernResult);
+        return NULL;
+    }
+
+    while ((service = IOIteratorNext(iterator)) != 0) {
+        io_object_t parentService;
+        kernResult = IORegistryEntryGetParentEntry(service, kIOServicePlane, &parentService);
+        if (kernResult == KERN_SUCCESS) {
+            if (macAddress) {
+                CFRelease(macAddress);
+            }
+            macAddress = (CFDataRef) IORegistryEntryCreateCFProperty(parentService, CFSTR("IOMACAddress"), kCFAllocatorDefault, 0);
+            IOObjectRelease(parentService);
+        }
+        else {
+            Log("IORegistryEntryGetParentEntry returned %d\n", kernResult);
+        }
+        IOObjectRelease(service);
+    }
+
+    IOObjectRelease(iterator);
+    NAByteBuffer *ret = NAByteBufferCreate(CFDataGetLength(macAddress));
+    NAByteBufferWriteData(ret, (void *)CFDataGetBytePtr(macAddress), CFDataGetLength(macAddress));
+    CFRelease(macAddress);
+    return ret;
 }
 
 #ifdef DEBUG
