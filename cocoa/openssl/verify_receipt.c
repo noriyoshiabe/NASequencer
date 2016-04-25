@@ -41,6 +41,13 @@ static char *parseASNString(const uint8_t *p, const uint8_t *end);
 static int *parseASNInteger(const uint8_t *p, const uint8_t *end);
 static NAByteBuffer *buildASNBytes(const uint8_t *p, size_t length);
 
+static void destroyReceipt(NAArray *receipt);
+
+#define DEBUG
+#ifdef DEBUG
+static void dumpReceipt(NAArray *receipt, int indent);
+#endif
+
 static inline uint8_t *readBinary(const char *filepath, size_t *length)
 {
     uint8_t *ret = NULL;
@@ -276,5 +283,165 @@ int main(int argc, char **argv)
 
     PKCS7_free(p7);
 
+#ifdef DEBUG
+    dumpReceipt(receipt, 0);
+#endif
+    destroyReceipt(receipt);
+
     return 0;
 }
+
+static void destroyReceipt(NAArray *receipt)
+{
+    NAIterator *iterator = NAArrayGetIterator(receipt);
+    while (iterator->hasNext(iterator)) {
+        NAMap *map = iterator->next(iterator);
+        NAIterator *_iterator = NAMapGetIterator(map);
+        while (_iterator->hasNext(_iterator)) {
+            NAMapEntry *entry = _iterator->next(_iterator);
+            ReceiptKey key = *((ReceiptKey *)entry->key);
+            free(entry->key);
+
+            switch (key) {
+            case ReceiptKeyBundleID:
+            case ReceiptKeyBundleIDHash:
+            case ReceiptKeyBundleShortVersion:
+            case ReceiptKeyOriginalAppVersion:
+            case ReceiptKeyExpirationDate:
+            case ReceiptKeyOpaque:
+            case ReceiptKeySha1Hash:
+                free(entry->value);
+                break;
+            case ReceiptKeyInAppPurchase:
+                destroyReceipt(entry->value);
+                break;
+            case ReceiptKeyInAppPurchaseQuantity:
+            case ReceiptKeyInAppPurchaseProductId:
+            case ReceiptKeyInAppPurchaseTransactionId:
+            case ReceiptKeyInAppPurchasePurchaseDate:
+            case ReceiptKeyInAppPurchaseOriginalTransactionId:
+            case ReceiptKeyInAppPurchaseOriginalPurchaseDate:
+            case ReceiptKeyInAppPurchaseSubscriptionExpirationDate:
+            case ReceiptKeyInAppPurchaseWebOrderLineItemID:
+            case ReceiptKeyInAppPurchaseCancelDate:
+                free(entry->value);
+                break;
+            }
+        }
+    }
+
+    NAArrayDestroy(receipt);
+}
+
+#ifdef DEBUG
+
+static inline const char *ReceiptKey2String(ReceiptKey key)
+{
+#define CASE(key) case key: return &#key[10]
+    switch (key) {
+    CASE(ReceiptKeyBundleID);
+    CASE(ReceiptKeyBundleIDHash);
+    CASE(ReceiptKeyBundleShortVersion);
+    CASE(ReceiptKeyOriginalAppVersion);
+    CASE(ReceiptKeyExpirationDate);
+    CASE(ReceiptKeyOpaque);
+    CASE(ReceiptKeySha1Hash);
+    CASE(ReceiptKeyInAppPurchase);
+    CASE(ReceiptKeyInAppPurchaseQuantity);
+    CASE(ReceiptKeyInAppPurchaseProductId);
+    CASE(ReceiptKeyInAppPurchaseTransactionId);
+    CASE(ReceiptKeyInAppPurchasePurchaseDate);
+    CASE(ReceiptKeyInAppPurchaseOriginalTransactionId);
+    CASE(ReceiptKeyInAppPurchaseOriginalPurchaseDate);
+    CASE(ReceiptKeyInAppPurchaseSubscriptionExpirationDate);
+    CASE(ReceiptKeyInAppPurchaseWebOrderLineItemID);
+    CASE(ReceiptKeyInAppPurchaseCancelDate);
+    }
+#undef CASE
+}
+
+static void dumpReceipt(NAArray *receipt, int indent)
+{
+    NAIterator *iterator = NAArrayGetIterator(receipt);
+    while (iterator->hasNext(iterator)) {
+        NAMap *map = iterator->next(iterator);
+        NAIterator *_iterator = NAMapGetIterator(map);
+        while (_iterator->hasNext(_iterator)) {
+            NAMapEntry *entry = _iterator->next(_iterator);
+            ReceiptKey key = *((ReceiptKey *)entry->key);
+
+            printf("%*s%s: ", indent, "", ReceiptKey2String(key));
+
+            NAByteBuffer *buffer;
+            int length;
+            uint8_t *data;
+
+            switch (key) {
+            case ReceiptKeyBundleID:
+                printf("%s", (char *)entry->value);
+                break;
+            case ReceiptKeyBundleIDHash:
+                buffer = entry->value;
+                data = NAByteBufferData(buffer);
+                length = NAByteBufferDataLength(buffer);
+                for (int i = 0; i < length; ++i) {
+                    printf("%02x", data[i]);
+                }
+                break;
+            case ReceiptKeyBundleShortVersion:
+                printf("%s", (char *)entry->value);
+                break;
+            case ReceiptKeyOriginalAppVersion:
+                printf("%s", (char *)entry->value);
+                break;
+            case ReceiptKeyExpirationDate:
+                printf("%s", (char *)entry->value);
+                break;
+            case ReceiptKeyOpaque:
+            case ReceiptKeySha1Hash:
+                buffer = entry->value;
+                data = NAByteBufferData(buffer);
+                length = NAByteBufferDataLength(buffer);
+                for (int i = 0; i < length; ++i) {
+                    printf("%02x", data[i]);
+                }
+                break;
+            case ReceiptKeyInAppPurchase:
+                printf("\n");
+                dumpReceipt(entry->value, indent + 4);
+                continue;
+            case ReceiptKeyInAppPurchaseQuantity:
+                printf("%d", *((int *)entry->value));
+                break;
+            case ReceiptKeyInAppPurchaseProductId:
+                printf("%s", (char *)entry->value);
+                break;
+            case ReceiptKeyInAppPurchaseTransactionId:
+                printf("%s", (char *)entry->value);
+                break;
+            case ReceiptKeyInAppPurchasePurchaseDate:
+                printf("%s", (char *)entry->value);
+                break;
+            case ReceiptKeyInAppPurchaseOriginalTransactionId:
+                printf("%s", (char *)entry->value);
+                break;
+            case ReceiptKeyInAppPurchaseOriginalPurchaseDate:
+                printf("%s", (char *)entry->value);
+                break;
+            case ReceiptKeyInAppPurchaseSubscriptionExpirationDate:
+                printf("%s", (char *)entry->value);
+                break;
+            case ReceiptKeyInAppPurchaseWebOrderLineItemID:
+                printf("%d", *((int *)entry->value));
+                break;
+            case ReceiptKeyInAppPurchaseCancelDate:
+                printf("%s", (char *)entry->value);
+                break;
+            }
+
+            printf("\n");
+        }
+    }
+}
+
+#endif
