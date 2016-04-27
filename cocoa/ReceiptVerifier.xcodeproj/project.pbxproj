@@ -1,0 +1,289 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		02B148FF1CD081AA00B89DB1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 02B148FE1CD081AA00B89DB1 /* main.m */; };
+		02B149071CD0821600B89DB1 /* ReceiptVerifier.m in Sources */ = {isa = PBXBuildFile; fileRef = 02B149061CD0821600B89DB1 /* ReceiptVerifier.m */; };
+		02B1490A1CD0825600B89DB1 /* AppStoreReceipt.m in Sources */ = {isa = PBXBuildFile; fileRef = 02B149091CD0825600B89DB1 /* AppStoreReceipt.m */; };
+		02B1490D1CD084FC00B89DB1 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 02B1490B1CD084FC00B89DB1 /* libcrypto.a */; };
+		02B1490E1CD084FC00B89DB1 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 02B1490C1CD084FC00B89DB1 /* libssl.a */; };
+		02B149111CD08B4700B89DB1 /* IAPReceipt.m in Sources */ = {isa = PBXBuildFile; fileRef = 02B149101CD08B4700B89DB1 /* IAPReceipt.m */; };
+		02B149141CD08FDA00B89DB1 /* ASNReceipt.m in Sources */ = {isa = PBXBuildFile; fileRef = 02B149131CD08FDA00B89DB1 /* ASNReceipt.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		02B148F91CD081AA00B89DB1 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		02B148FB1CD081AA00B89DB1 /* ReceiptVerifier */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ReceiptVerifier; sourceTree = BUILT_PRODUCTS_DIR; };
+		02B148FE1CD081AA00B89DB1 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		02B149051CD0821600B89DB1 /* ReceiptVerifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReceiptVerifier.h; sourceTree = "<group>"; };
+		02B149061CD0821600B89DB1 /* ReceiptVerifier.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReceiptVerifier.m; sourceTree = "<group>"; };
+		02B149081CD0825600B89DB1 /* AppStoreReceipt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppStoreReceipt.h; sourceTree = "<group>"; };
+		02B149091CD0825600B89DB1 /* AppStoreReceipt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppStoreReceipt.m; sourceTree = "<group>"; };
+		02B1490B1CD084FC00B89DB1 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = openssl/lib/libcrypto.a; sourceTree = "<group>"; };
+		02B1490C1CD084FC00B89DB1 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = openssl/lib/libssl.a; sourceTree = "<group>"; };
+		02B1490F1CD08B4700B89DB1 /* IAPReceipt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAPReceipt.h; sourceTree = "<group>"; };
+		02B149101CD08B4700B89DB1 /* IAPReceipt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAPReceipt.m; sourceTree = "<group>"; };
+		02B149121CD08FDA00B89DB1 /* ASNReceipt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASNReceipt.h; sourceTree = "<group>"; };
+		02B149131CD08FDA00B89DB1 /* ASNReceipt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASNReceipt.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		02B148F81CD081AA00B89DB1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				02B1490D1CD084FC00B89DB1 /* libcrypto.a in Frameworks */,
+				02B1490E1CD084FC00B89DB1 /* libssl.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		02B148F21CD081AA00B89DB1 = {
+			isa = PBXGroup;
+			children = (
+				02B1490B1CD084FC00B89DB1 /* libcrypto.a */,
+				02B1490C1CD084FC00B89DB1 /* libssl.a */,
+				02B148FD1CD081AA00B89DB1 /* ReceiptVerifier */,
+				02B148FC1CD081AA00B89DB1 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		02B148FC1CD081AA00B89DB1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				02B148FB1CD081AA00B89DB1 /* ReceiptVerifier */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		02B148FD1CD081AA00B89DB1 /* ReceiptVerifier */ = {
+			isa = PBXGroup;
+			children = (
+				02B148FE1CD081AA00B89DB1 /* main.m */,
+				02B149051CD0821600B89DB1 /* ReceiptVerifier.h */,
+				02B149061CD0821600B89DB1 /* ReceiptVerifier.m */,
+				02B149081CD0825600B89DB1 /* AppStoreReceipt.h */,
+				02B149091CD0825600B89DB1 /* AppStoreReceipt.m */,
+				02B1490F1CD08B4700B89DB1 /* IAPReceipt.h */,
+				02B149101CD08B4700B89DB1 /* IAPReceipt.m */,
+				02B149121CD08FDA00B89DB1 /* ASNReceipt.h */,
+				02B149131CD08FDA00B89DB1 /* ASNReceipt.m */,
+			);
+			path = ReceiptVerifier;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		02B148FA1CD081AA00B89DB1 /* ReceiptVerifier */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 02B149021CD081AA00B89DB1 /* Build configuration list for PBXNativeTarget "ReceiptVerifier" */;
+			buildPhases = (
+				02B148F71CD081AA00B89DB1 /* Sources */,
+				02B148F81CD081AA00B89DB1 /* Frameworks */,
+				02B148F91CD081AA00B89DB1 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ReceiptVerifier;
+			productName = ReceiptVerifier;
+			productReference = 02B148FB1CD081AA00B89DB1 /* ReceiptVerifier */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		02B148F31CD081AA00B89DB1 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0730;
+				ORGANIZATIONNAME = "Noriyoshi Abe";
+				TargetAttributes = {
+					02B148FA1CD081AA00B89DB1 = {
+						CreatedOnToolsVersion = 7.3;
+					};
+				};
+			};
+			buildConfigurationList = 02B148F61CD081AA00B89DB1 /* Build configuration list for PBXProject "ReceiptVerifier" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 02B148F21CD081AA00B89DB1;
+			productRefGroup = 02B148FC1CD081AA00B89DB1 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				02B148FA1CD081AA00B89DB1 /* ReceiptVerifier */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		02B148F71CD081AA00B89DB1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				02B1490A1CD0825600B89DB1 /* AppStoreReceipt.m in Sources */,
+				02B149111CD08B4700B89DB1 /* IAPReceipt.m in Sources */,
+				02B149071CD0821600B89DB1 /* ReceiptVerifier.m in Sources */,
+				02B149141CD08FDA00B89DB1 /* ASNReceipt.m in Sources */,
+				02B148FF1CD081AA00B89DB1 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		02B149001CD081AA00B89DB1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = openssl/include;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		02B149011CD081AA00B89DB1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = openssl/include;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		02B149031CD081AA00B89DB1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/openssl/lib",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		02B149041CD081AA00B89DB1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/openssl/lib",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		02B148F61CD081AA00B89DB1 /* Build configuration list for PBXProject "ReceiptVerifier" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				02B149001CD081AA00B89DB1 /* Debug */,
+				02B149011CD081AA00B89DB1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		02B149021CD081AA00B89DB1 /* Build configuration list for PBXNativeTarget "ReceiptVerifier" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				02B149031CD081AA00B89DB1 /* Debug */,
+				02B149041CD081AA00B89DB1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 02B148F31CD081AA00B89DB1 /* Project object */;
+}
