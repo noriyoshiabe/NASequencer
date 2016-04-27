@@ -37,6 +37,40 @@ typedef enum {
     ReceiptKeyInAppPurchaseCancelDate,
 } ReceiptKey;
 
+typedef struct _Receipt {
+    char *bundleID;
+    char *bundleShortVersion;
+    char *originalAppVersion;
+    char *expirationDate;
+
+    struct {
+        uint8_t *bytes;
+        int length;
+    } bundleIDHash;
+    struct {
+        uint8_t *bytes;
+        int length;
+    } opaque;
+    struct {
+        uint8_t *bytes;
+        int length;
+    } sha1;
+
+    NAArray *iapReceipts;
+} Receipt;
+
+typedef struct _IAPReceipt {
+    int quantity;
+    char *productId;
+    char *transactionId;
+    char *purchaseDate;
+    char *originalTransactionId;
+    char *originalPurchaseDate;
+    char *subscriptionExpirationDate;
+    int webOrderLineItemID;
+    char *cancelDate;
+} IAPReceipt;
+
 static NAArray *parseReceipt(const uint8_t *p, const uint8_t *end);
 static NAArray *parseASNSet(const uint8_t *p, const uint8_t *end);
 static NAMap *parseASNSequence(const uint8_t *p, const uint8_t *end);
@@ -99,7 +133,6 @@ static NAArray *parseASNSet(const uint8_t *p, const uint8_t *end)
     NAArray *array =  NAArrayCreate(4, NADescriptionAddress);
 
     while (p < end) {
-        printf("------\n");
         ASN1_get_object(&p, &length, &type, &xclass, end - p);
         NAArrayAppend(array, parseASNSequence(p, p + length));
         p += length;
@@ -295,6 +328,10 @@ int main(int argc, char **argv)
     NAArray *receiptSet = parseReceipt(octets->data, octets->data + octets->length);
 
     PKCS7_free(p7);
+
+#ifdef DEBUG
+    dumpReceipt(receiptSet, 0);
+#endif
     NAArrayDescription(receiptSet, stdout);
 
     NAMap *receipt = NAArrayGetValueAt(receiptSet, 0);
@@ -324,9 +361,6 @@ int main(int argc, char **argv)
 
     NAByteBufferDestroy(guid);
 
-#ifdef DEBUG
-    dumpReceipt(receiptSet, 0);
-#endif
     destroyReceipt(receiptSet);
 
     return 0;
@@ -462,6 +496,7 @@ static void dumpReceipt(NAArray *receipt, int indent)
 {
     NAIterator *iterator = NAArrayGetIterator(receipt);
     while (iterator->hasNext(iterator)) {
+        printf("%*s -----\n", indent, "");
         NAMap *map = iterator->next(iterator);
         NAIterator *_iterator = NAMapGetIterator(map);
         while (_iterator->hasNext(_iterator)) {
