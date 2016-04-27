@@ -15,6 +15,7 @@
 
 @interface ReceiptVerifier () {
     X509_STORE *_store;
+    NSArray *_iapReceipts;
 }
 @end
 
@@ -93,18 +94,28 @@
         return;
     }
     
+    _iapReceipts = receipt.iapReceipts;
+    
     EVP_cleanup();
     [_delegate verifierDidVerifySuccess:self];
-    
-    for (IAPReceipt *iapReceipt in receipt.iapReceipts) {
-        if (iapReceipt.productId && iapReceipt.originalTransactionId && iapReceipt.originalPurchaseDate) {
-            if (!iapReceipt.cancelDate) {
-                if (0 < iapReceipt.quantity) {
-                    [_delegate verifier:self didIAPProductFound:iapReceipt.productId quantity:iapReceipt.quantity];
+}
+
+- (void)findIAPProduct:(NSString *)productID
+{
+    for (IAPReceipt *iapReceipt in _iapReceipts) {
+        if ([iapReceipt.productId isEqualToString:productID]) {
+            if (iapReceipt.originalTransactionId && iapReceipt.originalPurchaseDate) {
+                if (!iapReceipt.cancelDate) {
+                    if (0 < iapReceipt.quantity) {
+                        [_delegate verifier:self didIAPProductFound:iapReceipt.productId quantity:iapReceipt.quantity];
+                        return;
+                    }
                 }
             }
         }
     }
+    
+    [_delegate verifier:self didIAPProductNotFound:productID];
 }
 
 - (NSData *)macAddress

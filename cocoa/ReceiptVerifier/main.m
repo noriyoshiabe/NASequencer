@@ -19,6 +19,7 @@
 - (void)verifierDidVerifySuccess:(ReceiptVerifier *)verifier
 {
     NSLog(@"%s", __func__);
+    [verifier findIAPProduct:@"test_product_id"];
 }
 
 - (void)verifierDidVerifyFail:(ReceiptVerifier *)verifier
@@ -30,6 +31,12 @@
 {
     NSLog(@"%s", __func__);
     NSLog(@"%@: %d", productID, quantity);
+}
+
+- (void)verifier:(ReceiptVerifier *)verifier didIAPProductNotFound:(NSString *)productID
+{
+    NSLog(@"%s", __func__);
+    NSLog(@"%@", productID);
 }
 
 @end

@@ -15,10 +15,12 @@
 - (void)verifierDidVerifySuccess:(ReceiptVerifier*)verifier;
 - (void)verifierDidVerifyFail:(ReceiptVerifier*)verifier;
 - (void)verifier:(ReceiptVerifier*)verifier didIAPProductFound:(NSString *)productID quantity:(int)quantity;
+- (void)verifier:(ReceiptVerifier*)verifier didIAPProductNotFound:(NSString *)productID;
 @end
 
 @interface ReceiptVerifier : NSObject
 @property (weak, nonatomic) id<ReceiptVerifierDelegate> delegate;
 + (ReceiptVerifier *)verifierFromCertFile:(NSString *)filepath;
 - (void)verify:(AppStoreReceipt *)receipt;
+- (void)findIAPProduct:(NSString *)productID;
 @end
