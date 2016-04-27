@@ -12,6 +12,7 @@
 
 @interface AppStoreReceipt : ASNReceipt
 + (AppStoreReceipt *)parseFromFile:(NSString *)filepath;
+@property (readonly, nonatomic) BOOL exist;
 @property (readonly, nonatomic) PKCS7 *p7;
 @property (readonly, nonatomic) NSString *bundleIdentifier;
 @property (readonly, nonatomic) NSData *bundleIdHash;

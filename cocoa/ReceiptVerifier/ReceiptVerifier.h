@@ -8,6 +8,17 @@
 
 #import <Foundation/Foundation.h>
 
-@interface ReceiptVerifier : NSObject
+#import "AppStoreReceipt.h"
 
+@class ReceiptVerifier;
+@protocol ReceiptVerifierDelegate <NSObject>
+- (void)verifierDidVerifySuccess:(ReceiptVerifier*)verifier;
+- (void)verifierDidVerifyFail:(ReceiptVerifier*)verifier;
+- (void)verifier:(ReceiptVerifier*)verifier didIAPProductFound:(NSString *)productID quantity:(int)quantity;
+@end
+
+@interface ReceiptVerifier : NSObject
+@property (weak, nonatomic) id<ReceiptVerifierDelegate> delegate;
++ (ReceiptVerifier *)verifierFromCertFile:(NSString *)filepath;
+- (void)verify:(AppStoreReceipt *)receipt;
 @end

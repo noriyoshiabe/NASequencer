@@ -41,6 +41,7 @@
 		02B149101CD08B4700B89DB1 /* IAPReceipt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAPReceipt.m; sourceTree = "<group>"; };
 		02B149121CD08FDA00B89DB1 /* ASNReceipt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASNReceipt.h; sourceTree = "<group>"; };
 		02B149131CD08FDA00B89DB1 /* ASNReceipt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASNReceipt.m; sourceTree = "<group>"; };
+		02B149151CD0A67900B89DB1 /* ReceiptVerifierHardCodedString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ReceiptVerifierHardCodedString.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,6 +87,7 @@
 				02B149101CD08B4700B89DB1 /* IAPReceipt.m */,
 				02B149121CD08FDA00B89DB1 /* ASNReceipt.h */,
 				02B149131CD08FDA00B89DB1 /* ASNReceipt.m */,
+				02B149151CD0A67900B89DB1 /* ReceiptVerifierHardCodedString.h */,
 			);
 			path = ReceiptVerifier;
 			sourceTree = "<group>";

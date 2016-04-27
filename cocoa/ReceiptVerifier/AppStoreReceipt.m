@@ -20,8 +20,12 @@
 {
     AppStoreReceipt *receipt = [[AppStoreReceipt alloc] init];
     
-    NSData *receiptDate = [NSData dataWithContentsOfFile:filepath];
-    BIO *b_receipt = BIO_new_mem_buf(receiptDate.bytes, (int)receiptDate.length);
+    NSData *receiptData = [NSData dataWithContentsOfFile:filepath];
+    if (!receiptData) {
+        return receipt;
+    }
+    
+    BIO *b_receipt = BIO_new_mem_buf(receiptData.bytes, (int)receiptData.length);
     receipt->_p7 = d2i_PKCS7_bio(b_receipt, NULL);
     BIO_free(b_receipt);
     
@@ -66,6 +70,11 @@
             ,_originalAppVersion
             ,_expirationDate
             ,_iapReceipts];
+}
+
+- (BOOL)exist
+{
+    return NULL != _p7;
 }
 
 - (void)parsePKCS7
