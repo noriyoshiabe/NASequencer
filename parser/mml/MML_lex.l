@@ -37,7 +37,7 @@ DIGIT          [[:digit:]]
 
 INTEGER        {NONZERO}{DIGIT}*|0
 FLOAT          ({NONZERO}{DIGIT}*|0)\.{DIGIT}+
-STRING         \"[^\"]*\"|'[^']*'
+STRING         \"[^\"\n]*\"|'[^'\n]*'
 
 D_TIMEBASE     ^[[:blank:]]*#[[:blank:]]*timebase
 D_TITLE        ^[[:blank:]]*#[[:blank:]]*title

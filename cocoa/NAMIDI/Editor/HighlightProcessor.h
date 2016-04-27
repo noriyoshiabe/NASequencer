@@ -13,6 +13,7 @@
 @property (strong, nonatomic) NSColor *color;
 @property (strong, nonatomic) HighlightSpec *next;
 @property (strong, nonatomic) HighlightSpec *orverride;
+@property (strong, nonatomic) HighlightSpec *postProcess;
 @end
 
 @interface HighlightProcessor : NSObject

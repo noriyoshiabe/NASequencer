@@ -19,7 +19,7 @@ static HighlightSpec *_spec;
     tune.color = [HighlightColor tuneBody];
     
     HighlightSpec *tuneHeader = [[HighlightSpec alloc] init];
-    tuneHeader.regex = [NSRegularExpression regularExpressionWithPattern:@"^X:.*?(K:.*?(?=\n|$)|\n(?![A-Z%]))" options:NSRegularExpressionDotMatchesLineSeparators error:nil];
+    tuneHeader.regex = [NSRegularExpression regularExpressionWithPattern:@"^X:.*?(K:.*?(?=\n|$)|\n(?![A-Z+%]))" options:NSRegularExpressionDotMatchesLineSeparators error:nil];
     tuneHeader.color = [HighlightColor tuneHeader];
 
     HighlightSpec *freeText = [[HighlightSpec alloc] init];
@@ -35,7 +35,7 @@ static HighlightSpec *_spec;
     tuneBodydirective.color = [HighlightColor directive];
     
     HighlightSpec *information = [[HighlightSpec alloc] init];
-    information.regex = [NSRegularExpression regularExpressionWithPattern:@"^[a-zA-Z]:.*$" options:NSRegularExpressionAnchorsMatchLines error:nil];
+    information.regex = [NSRegularExpression regularExpressionWithPattern:@"^[a-zA-Z+]:.*$" options:NSRegularExpressionAnchorsMatchLines error:nil];
     information.color = [HighlightColor comment];
     
     HighlightSpec *decoration = [[HighlightSpec alloc] init];

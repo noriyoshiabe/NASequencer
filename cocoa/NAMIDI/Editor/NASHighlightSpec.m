@@ -27,7 +27,7 @@ static HighlightSpec *_spec;
     directive.color = [HighlightColor directive];
     
     HighlightSpec *string = [[HighlightSpec alloc] init];
-    string.regex = [NSRegularExpression regularExpressionWithPattern:@"\"[^\"]*\"|'[^']*'" options:NSRegularExpressionDotMatchesLineSeparators error:nil];
+    string.regex = [NSRegularExpression regularExpressionWithPattern:@"\"[^\"\\n]*\"|'[^'\\n]*'" options:NSRegularExpressionDotMatchesLineSeparators error:nil];
     string.color = [HighlightColor string];
 
     HighlightSpec *keyword = [[HighlightSpec alloc] init];
@@ -77,12 +77,12 @@ static HighlightSpec *_spec;
     
     multiLineComment.next = lineComment;
     lineComment.next = directive;
-    directive.next = string;
-    string.next = keyword;
+    directive.next = keyword;
     keyword.next = step;
     step.next = noteParam;
     
     _spec = multiLineComment;
+    _spec.postProcess = string;
 }
 
 + (HighlightSpec *)spec

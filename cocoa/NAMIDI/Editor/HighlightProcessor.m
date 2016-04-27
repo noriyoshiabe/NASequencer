@@ -60,6 +60,10 @@
             [self processTextStorage:textStorage spec:spec.next range:NSMakeRange(prevLocation, range.location + range.length - prevLocation)];
         }
     }
+    
+    if (spec.postProcess) {
+        [self processTextStorage:textStorage spec:spec.postProcess range:range];
+    }
 }
 
 @end

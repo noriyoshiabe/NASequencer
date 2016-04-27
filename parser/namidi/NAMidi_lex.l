@@ -42,7 +42,7 @@ DIGIT          [[:digit:]]
 
 INTEGER        {NONZERO}{DIGIT}*|0
 FLOAT          ({NONZERO}{DIGIT}*|0)\.{DIGIT}+
-STRING         \"[^\"]*\"|'[^']*'
+STRING         \"[^\"\n]*\"|'[^'\n]*'
 
 RESOLUTION     resolution
 TITLE          title
