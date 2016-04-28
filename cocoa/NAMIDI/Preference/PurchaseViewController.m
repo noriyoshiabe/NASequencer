@@ -147,6 +147,9 @@ extern BOOL __fakePurchased__;
 
 - (IBAction)shareOnFacebookPressed:(id)sender
 {
+    NSString *encodedUrl = [@"https://nasequencer.com" stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet alphanumericCharacterSet]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://www.facebook.com/sharer/sharer.php?u=%@", encodedUrl]];
+    [[NSWorkspace sharedWorkspace] openURL: url];
 }
 
 #pragma mark ReceiptVerifierDelegate
