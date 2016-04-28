@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		02018D9E1CD1CD290025C851 /* IAP.m in Sources */ = {isa = PBXBuildFile; fileRef = 02018D9D1CD1CD290025C851 /* IAP.m */; };
 		0201F7D11C688BB100A201F6 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0201F7D01C688BB100A201F6 /* AppDelegate.m */; };
 		0201F7D41C688BB100A201F6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0201F7D31C688BB100A201F6 /* main.m */; };
 		0201F7D71C688BB100A201F6 /* Document.m in Sources */ = {isa = PBXBuildFile; fileRef = 0201F7D61C688BB100A201F6 /* Document.m */; };
@@ -173,6 +174,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		02018D9C1CD1CD290025C851 /* IAP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAP.h; sourceTree = "<group>"; };
+		02018D9D1CD1CD290025C851 /* IAP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAP.m; sourceTree = "<group>"; };
 		0201F7CC1C688BB100A201F6 /* NASequencer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NASequencer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0201F7CF1C688BB100A201F6 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		0201F7D01C688BB100A201F6 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -830,6 +833,8 @@
 				02F3505D1CD1AECC00DB8499 /* ReceiptVerifier.h */,
 				02F3505E1CD1AECC00DB8499 /* ReceiptVerifier.m */,
 				02F3505F1CD1AECC00DB8499 /* ReceiptVerifierHardCodedString.h */,
+				02018D9C1CD1CD290025C851 /* IAP.h */,
+				02018D9D1CD1CD290025C851 /* IAP.m */,
 			);
 			path = IAP;
 			sourceTree = "<group>";
@@ -1076,6 +1081,7 @@
 				02CD04221C871B3400BF6683 /* SynthesizerCellView.m in Sources */,
 				02CD04311C88930700BF6683 /* TextLink.m in Sources */,
 				0216EDF71C7AC431009A7B90 /* ConductorTrackViewController.m in Sources */,
+				02018D9E1CD1CD290025C851 /* IAP.m in Sources */,
 				024A19061C768AC800B0AC56 /* FlippedView.m in Sources */,
 				028209221C70A3C0003EBCFB /* EditorTabItem.m in Sources */,
 				024A5B361C6A01280079D22C /* GettingStartedWindowController.m in Sources */,

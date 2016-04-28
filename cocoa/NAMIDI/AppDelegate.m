@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import "ApplicationController.h"
+#import "IAP.h"
 
 @interface AppDelegate ()
 @property (nonatomic) BOOL inLaunchOrReopenProcess;
@@ -18,11 +19,13 @@
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
     [AppController initialize];
+    [[IAP sharedInstance] initialize];
     self.inLaunchOrReopenProcess = YES;
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification
 {
+    [[IAP sharedInstance] finalize];
 }
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification

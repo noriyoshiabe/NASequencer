@@ -7,9 +7,11 @@
 //
 
 #import "PurchaseViewController.h"
+#import "IAP.h"
 
 @interface PurchaseViewController ()
 
+@property (weak) IBOutlet NSTextField *priceLabel;
 @end
 
 @implementation PurchaseViewController
@@ -38,6 +40,26 @@
 {
     [super viewDidLoad];
     // Do view setup here.
+}
+
+- (void)viewWillAppear
+{
+    [super viewWillAppear];
+    
+    _priceLabel.stringValue = NSLocalizedString(@"Preference_PurchasePriceLoading", @"Loading…");
+    
+    [[IAP sharedInstance] requestProductInfo:@[kIAPProductFullVersion] callback:^(SKProductsResponse *response) {
+        
+        NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+        // TODO replace to product's locale
+        formatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US"];
+        formatter.numberStyle = NSNumberFormatterCurrencyISOCodeStyle;
+        formatter.formatterBehavior = NSNumberFormatterBehavior10_4;
+        
+        NSString *format = NSLocalizedString(@"Preference_PurchasePriceFormat", @"%@, for all your Macs");
+        // TODO replace to product's price;
+        _priceLabel.stringValue = [NSString stringWithFormat:format, [formatter stringFromNumber:[NSDecimalNumber numberWithFloat:24.99]]];
+    }];
 }
 
 - (IBAction)purchasePressed:(id)sender
