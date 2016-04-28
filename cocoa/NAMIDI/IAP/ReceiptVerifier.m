@@ -100,8 +100,21 @@
     [_delegate verifierDidVerifySuccess:self];
 }
 
+#ifdef DEBUG
+// TODO remove
+BOOL __fakePurchased__ = NO;
+#endif
+
 - (void)findIAPProduct:(NSString *)productID
 {
+#ifdef DEBUG
+    // TODO remove
+    if (__fakePurchased__) {
+        [_delegate verifier:self didIAPProductFound:productID quantity:1];
+        return;
+    }
+#endif
+    
     for (IAPReceipt *iapReceipt in _iapReceipts) {
         if ([iapReceipt.productId isEqualToString:productID]) {
             if (iapReceipt.originalTransactionId && iapReceipt.originalPurchaseDate) {

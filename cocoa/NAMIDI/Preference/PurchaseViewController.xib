@@ -7,7 +7,12 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="PurchaseViewController">
             <connections>
+                <outlet property="additionalViewContainer" destination="aTz-Qa-0v8" id="swy-4F-RKI"/>
                 <outlet property="priceLabel" destination="nED-Bo-6AL" id="6Bt-nH-z2h"/>
+                <outlet property="purchaseButton" destination="8OH-tp-eX5" id="rPo-pS-Ery"/>
+                <outlet property="purchaseView" destination="WFZ-bh-EqY" id="p7d-Oa-Y7I"/>
+                <outlet property="restorePurchaseButton" destination="oLw-g9-G4w" id="bJT-H7-fKG"/>
+                <outlet property="thanksView" destination="444-zo-i6o" id="t2P-T1-AF6"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
         </customObject>
@@ -58,14 +63,6 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nED-Bo-6AL">
-                    <rect key="frame" x="164" y="90" width="348" height="18"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="USD 25, for all your Macs" id="cIe-NV-zlP">
-                        <font key="font" metaFont="systemBold" size="14"/>
-                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="0.84999999999999998" colorSpace="calibratedRGB"/>
-                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="okV-mx-wuN">
                     <rect key="frame" x="18" y="200" width="428" height="16"/>
                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Exporting your sequence data to" id="MtF-Qg-Kmx">
@@ -85,6 +82,24 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
+                <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aTz-Qa-0v8">
+                    <rect key="frame" x="0.0" y="0.0" width="530" height="141"/>
+                </customView>
+            </subviews>
+            <point key="canvasLocation" x="332" y="383"/>
+        </customView>
+        <customView id="WFZ-bh-EqY">
+            <rect key="frame" x="0.0" y="0.0" width="530" height="141"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="in9-TN-BXO">
+                    <rect key="frame" x="18" y="120" width="428" height="16"/>
+                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Your purchase will help NASequencer’s development." id="Yw2-aB-Thp">
+                        <font key="font" metaFont="cellTitle"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8OH-tp-eX5">
                     <rect key="frame" x="14" y="80" width="147" height="32"/>
                     <buttonCell key="cell" type="push" title="Purchase" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="HZr-xG-I2b">
@@ -95,6 +110,22 @@
                         <action selector="purchasePressed:" target="-2" id="nja-43-feJ"/>
                     </connections>
                 </button>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nED-Bo-6AL">
+                    <rect key="frame" x="164" y="90" width="348" height="18"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="USD 25, for all your Macs" id="cIe-NV-zlP">
+                        <font key="font" metaFont="systemBold" size="14"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="0.84999999999999998" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rLU-hc-L90">
+                    <rect key="frame" x="18" y="49" width="143" height="18"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Already Purchased?" id="lh2-uC-4ou">
+                        <font key="font" metaFont="systemBold" size="14"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="0.84999999999999998" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oLw-g9-G4w">
                     <rect key="frame" x="14" y="13" width="147" height="32"/>
                     <buttonCell key="cell" type="push" title="Restore Purchase" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Idi-Sp-hz5">
@@ -105,24 +136,74 @@
                         <action selector="restorePurchasePressed:" target="-2" id="Sa7-v0-FPT"/>
                     </connections>
                 </button>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rLU-hc-L90">
-                    <rect key="frame" x="18" y="49" width="143" height="18"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Already Purchased?" id="lh2-uC-4ou">
+            </subviews>
+            <point key="canvasLocation" x="332" y="706.5"/>
+        </customView>
+        <customView id="444-zo-i6o">
+            <rect key="frame" x="0.0" y="0.0" width="530" height="141"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="v3L-19-dI9">
+                    <rect key="frame" x="18" y="114" width="206" height="18"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Thank you for your purchase!" id="R4q-kt-mUt">
                         <font key="font" metaFont="systemBold" size="14"/>
-                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="0.84999999999999998" colorSpace="calibratedRGB"/>
-                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
-                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="in9-TN-BXO">
-                    <rect key="frame" x="18" y="120" width="428" height="16"/>
-                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Your purchase will help NASequencer’s development." id="Yw2-aB-Thp">
-                        <font key="font" metaFont="cellTitle"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
+                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fc2-5W-BdS">
+                    <rect key="frame" x="18" y="46" width="493" height="64"/>
+                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" id="xf3-cg-yfg">
+                        <font key="font" metaFont="cellTitle"/>
+                        <string key="title">Again, thank you so much for the purchase and your supporting NASequencer’s development. You can now activate NASequencer on any other your Mac by “Restore Purchase” Button.  Please help spread the world about NASequencer if you don’t mind.</string>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5zq-pp-dls" customClass="PurchaseViewShareButton">
+                    <rect key="frame" x="186" y="13" width="150" height="25"/>
+                    <buttonCell key="cell" type="square" title="Share on Facebook" bezelStyle="shadowlessSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="DBd-Zh-Yp7">
+                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="color" keyPath="inactiveBackgroundColor">
+                            <color key="value" red="0.23137254901960785" green="0.32549019607843138" blue="0.60784313725490191" alpha="1" colorSpace="calibratedRGB"/>
+                        </userDefinedRuntimeAttribute>
+                        <userDefinedRuntimeAttribute type="color" keyPath="activeBackgroundColor">
+                            <color key="value" red="0.19106985287966377" green="0.26830238965974784" blue="0.5" alpha="1" colorSpace="calibratedRGB"/>
+                        </userDefinedRuntimeAttribute>
+                        <userDefinedRuntimeAttribute type="color" keyPath="inactiveTextColor">
+                            <color key="value" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                    <connections>
+                        <action selector="shareOnFacebookPressed:" target="-2" id="Zea-B3-a5l"/>
+                    </connections>
+                </button>
+                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wR6-Em-gl2" customClass="PurchaseViewShareButton">
+                    <rect key="frame" x="20" y="13" width="150" height="25"/>
+                    <buttonCell key="cell" type="square" title="Tweet" bezelStyle="shadowlessSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Y1x-zz-bSk">
+                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="color" keyPath="inactiveBackgroundColor">
+                            <color key="value" red="0.22352941176470587" green="0.66666666666666663" blue="0.94901960784313721" alpha="1" colorSpace="calibratedRGB"/>
+                        </userDefinedRuntimeAttribute>
+                        <userDefinedRuntimeAttribute type="color" keyPath="activeBackgroundColor">
+                            <color key="value" red="0.1150023289534301" green="0.35236064341166823" blue="0.5" alpha="1" colorSpace="calibratedRGB"/>
+                        </userDefinedRuntimeAttribute>
+                        <userDefinedRuntimeAttribute type="color" keyPath="inactiveTextColor">
+                            <color key="value" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                    <connections>
+                        <action selector="tweetPressed:" target="-2" id="QBN-iH-nnd"/>
+                    </connections>
+                </button>
             </subviews>
-            <point key="canvasLocation" x="332" y="383"/>
+            <point key="canvasLocation" x="332" y="905.5"/>
         </customView>
     </objects>
 </document>

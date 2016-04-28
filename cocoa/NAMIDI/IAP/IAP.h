@@ -11,9 +11,19 @@
 
 #define kIAPProductFullVersion @"com.nasequencer.NASequencer.full_version"
 
+@class IAP;
+@protocol IAPObserver <NSObject>
+- (void)iap:(IAP *)iap didPurchaseProduct:(NSString *)productId;
+@end
+
 @interface IAP : NSObject
 + (IAP *)sharedInstance;
 - (void)initialize;
 - (void)finalize;
+- (void)addObserver:(id<IAPObserver>)observer;
+- (void)removeObserver:(id<IAPObserver>)observer;
 - (void)requestProductInfo:(NSArray *)productIdentifiers callback:(void (^)(SKProductsResponse *response))callback;
+#ifdef DEBUG
+- (void)notifyPurchased:(NSString *)productID;
+#endif
 @end

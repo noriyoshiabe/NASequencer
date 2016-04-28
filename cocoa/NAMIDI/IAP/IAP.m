@@ -7,6 +7,7 @@
 //
 
 #import "IAP.h"
+#import "ObserverList.h"
 
 @interface ProductRequestInfo : NSObject
 @property (strong, nonatomic) SKProductsRequest *request;
@@ -18,6 +19,7 @@
 
 @interface IAP () <SKProductsRequestDelegate, SKPaymentTransactionObserver> {
     NSMutableArray *_productRequestInfos;
+    ObserverList *_observers;
 }
 @end
 
@@ -39,6 +41,7 @@ static IAP *_sharedInstance = nil;
     self = [super init];
     if (self) {
         _productRequestInfos = [NSMutableArray array];
+        _observers = [[ObserverList alloc] init];
     }
     return self;
 }
@@ -51,6 +54,16 @@ static IAP *_sharedInstance = nil;
 - (void)finalize
 {
     [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
+}
+
+- (void)addObserver:(id<IAPObserver>)observer
+{
+    [_observers addObserver:observer];
+}
+
+- (void)removeObserver:(id<IAPObserver>)observer
+{
+    [_observers removeObserver:observer];
 }
 
 - (void)requestProductInfo:(NSArray *)productIdentifiers callback:(void (^)(SKProductsResponse *response))callback
@@ -72,6 +85,15 @@ static IAP *_sharedInstance = nil;
     productsRequest.delegate = self;
     [productsRequest start];
 #endif
+}
+
+- (void)notifyPurchased:(NSString *)productID
+{
+    [NSThread performBlockOnMainThread:^{
+        for (id<IAPObserver> observer in _observers) {
+            [observer iap:self didPurchaseProduct:productID];
+        }
+    }];
 }
 
 #pragma mark SKProductsRequestDelegate
