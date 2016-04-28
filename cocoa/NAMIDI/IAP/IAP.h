@@ -13,17 +13,20 @@
 
 @class IAP;
 @protocol IAPObserver <NSObject>
-- (void)iap:(IAP *)iap didPurchaseProduct:(NSString *)productId;
+- (void)iap:(IAP *)iap didUpdateTransaction:(SKPaymentTransaction *)transaction;
 @end
 
 @interface IAP : NSObject
+@property (readonly, nonatomic) BOOL hasFullVersion;
 + (IAP *)sharedInstance;
 - (void)initialize;
 - (void)finalize;
 - (void)addObserver:(id<IAPObserver>)observer;
 - (void)removeObserver:(id<IAPObserver>)observer;
 - (void)requestProductInfo:(NSArray *)productIdentifiers callback:(void (^)(SKProductsResponse *response))callback;
+- (void)finishTransaction:(SKPaymentTransaction *)transaction;
+// TODO remove
 #ifdef DEBUG
-- (void)notifyPurchased:(NSString *)productID;
+- (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray <SKPaymentTransaction *> *)transactions;
 #endif
 @end

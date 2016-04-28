@@ -11,6 +11,34 @@
 #import "ReceiptVerifier.h"
 #import "ColorButton.h"
 
+// TODO remove
+#ifdef DEBUG
+@interface FakePaymentTransaction : SKPaymentTransaction {
+    SKPaymentTransactionState __state;
+    NSError *__error;
+}
+@end
+@implementation FakePaymentTransaction
+- (instancetype)initWithState:(SKPaymentTransactionState)state error:(NSError *)error
+{
+    self = [super init];
+    if (self) {
+        __state = state;
+        __error = error;
+    }
+    return self;
+}
+- (SKPaymentTransactionState)transactionState
+{
+    return __state;
+}
+- (NSError *)error
+{
+    return __error;
+}
+@end
+#endif
+
 @interface PurchaseViewController () <ReceiptVerifierDelegate, IAPObserver>
 @property (weak) IBOutlet NSView *additionalViewContainer;
 @property (weak) IBOutlet NSView *purchaseView;
@@ -84,10 +112,10 @@
     _restorePurchaseButton.enabled = NO;
     
     if (![SKPaymentQueue canMakePayments]) {
-        _priceLabel.stringValue = NSLocalizedString(@"Preference_PurchaseCannotMakePayments", @"Sorry, you are not allowed to make payments.");
+        _priceLabel.stringValue = NSLocalizedString(@"Purchase_CannotMakePayments", @"Sorry, you are not allowed to make payments.");
     }
     else {
-        _priceLabel.stringValue = NSLocalizedString(@"Preference_PurchasePriceLoading", @"Loading…");
+        _priceLabel.stringValue = NSLocalizedString(@"Purchase_PriceLoading", @"Loading…");
         
         [[IAP sharedInstance] requestProductInfo:@[kIAPProductFullVersion] callback:^(SKProductsResponse *response) {
             
@@ -97,7 +125,7 @@
             formatter.numberStyle = NSNumberFormatterCurrencyISOCodeStyle;
             formatter.formatterBehavior = NSNumberFormatterBehavior10_4;
             
-            NSString *format = NSLocalizedString(@"Preference_PurchasePriceFormat", @"%@, for all your Macs");
+            NSString *format = NSLocalizedString(@"Purchase_PriceFormat", @"%@, for all your Macs");
             // TODO replace to product's price;
             _priceLabel.stringValue = [NSString stringWithFormat:format, [formatter stringFromNumber:[NSDecimalNumber numberWithFloat:24.99]]];
             
@@ -122,8 +150,10 @@ extern BOOL __fakePurchased__;
 {
     // TODO
     __fakePurchased__ = YES;
+    
+    [[IAP sharedInstance] paymentQueue:[SKPaymentQueue defaultQueue] updatedTransactions:@[[[FakePaymentTransaction alloc] initWithState:SKPaymentTransactionStatePurchasing error:nil]]];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [[IAP sharedInstance] notifyPurchased:kIAPProductFullVersion];
+        [[IAP sharedInstance] paymentQueue:[SKPaymentQueue defaultQueue] updatedTransactions:@[[[FakePaymentTransaction alloc] initWithState:SKPaymentTransactionStateFailed error:[NSError errorWithDomain:SKErrorDomain code:SKErrorPaymentInvalid userInfo:nil]]]];
     });
 }
 
@@ -131,8 +161,10 @@ extern BOOL __fakePurchased__;
 {
     // TODO
     __fakePurchased__ = YES;
+    
+    [[IAP sharedInstance] paymentQueue:[SKPaymentQueue defaultQueue] updatedTransactions:@[[[FakePaymentTransaction alloc] initWithState:SKPaymentTransactionStatePurchasing error:nil]]];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [[IAP sharedInstance] notifyPurchased:kIAPProductFullVersion];
+        [[IAP sharedInstance] paymentQueue:[SKPaymentQueue defaultQueue] updatedTransactions:@[[[FakePaymentTransaction alloc] initWithState:SKPaymentTransactionStateRestored error:[NSError errorWithDomain:SKErrorDomain code:SKErrorPaymentInvalid userInfo:nil]]]];
     });
 }
 
@@ -192,9 +224,24 @@ extern BOOL __fakePurchased__;
 
 #pragma mark IAPObserver
 
-- (void)iap:(IAP *)iap didPurchaseProduct:(NSString *)productId
+- (void)iap:(IAP *)iap didUpdateTransaction:(SKPaymentTransaction *)transaction
 {
-    [self verifyReceipt];;
+    switch (transaction.transactionState) {
+        case SKPaymentTransactionStatePurchasing:
+            _purchaseButton.enabled = NO;
+            _restorePurchaseButton.enabled = NO;
+            break;
+        case SKPaymentTransactionStateDeferred:
+            break;
+        case SKPaymentTransactionStateFailed:
+            _purchaseButton.enabled = YES;
+            _restorePurchaseButton.enabled = YES;
+            break;
+        case SKPaymentTransactionStatePurchased:
+        case SKPaymentTransactionStateRestored:
+            [self verifyReceipt];
+            break;
+    }
 }
 
 @end

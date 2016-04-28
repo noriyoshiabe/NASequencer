@@ -87,13 +87,9 @@ static IAP *_sharedInstance = nil;
 #endif
 }
 
-- (void)notifyPurchased:(NSString *)productID
+- (void)finishTransaction:(SKPaymentTransaction *)transaction
 {
-    [NSThread performBlockOnMainThread:^{
-        for (id<IAPObserver> observer in _observers) {
-            [observer iap:self didPurchaseProduct:productID];
-        }
-    }];
+    [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
 }
 
 #pragma mark SKProductsRequestDelegate
@@ -117,7 +113,13 @@ static IAP *_sharedInstance = nil;
 
 - (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray <SKPaymentTransaction *> *)transactions
 {
-    // TODO
+    for (SKPaymentTransaction *transaction in transactions) {
+        [NSThread performBlockOnMainThread:^{
+            for (id<IAPObserver> observer in _observers) {
+                [observer iap:self didUpdateTransaction:transaction];
+            }
+        }];
+    }
 }
 
 @end
