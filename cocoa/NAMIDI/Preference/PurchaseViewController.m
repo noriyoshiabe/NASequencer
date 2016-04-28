@@ -138,18 +138,34 @@ extern BOOL __fakePurchased__;
 
 - (IBAction)tweetPressed:(id)sender
 {
+// TODO remove
+#ifdef DEBUG
+    NSAlert *alert = [[NSAlert alloc] init];
+    alert.messageText = @"Sorry, this function is for production app.";
+    [alert addButtonWithTitle:NSLocalizedString(@"OK", @"OK")];;
+    [alert runModal];
+#else
     NSString *text = NSLocalizedString(@"Preference_PurchaseTweetMessage", @"NASequencer, the text-based music composition App.");
     NSString *encodedText = [text stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet alphanumericCharacterSet]];
     NSString *encodedUrl = [@"https://nasequencer.com" stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet alphanumericCharacterSet]];
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://twitter.com/intent/tweet?text=%@&url=%@&related=nasequencer", encodedText, encodedUrl]];
     [[NSWorkspace sharedWorkspace] openURL: url];
+#endif
 }
 
 - (IBAction)shareOnFacebookPressed:(id)sender
 {
+// TODO remove
+#ifdef DEBUG
+    NSAlert *alert = [[NSAlert alloc] init];
+    alert.messageText = @"Sorry, this function is for production app.";
+    [alert addButtonWithTitle:NSLocalizedString(@"OK", @"OK")];;
+    [alert runModal];
+#else
     NSString *encodedUrl = [@"https://nasequencer.com" stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet alphanumericCharacterSet]];
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://www.facebook.com/sharer/sharer.php?u=%@", encodedUrl]];
     [[NSWorkspace sharedWorkspace] openURL: url];
+#endif
 }
 
 #pragma mark ReceiptVerifierDelegate
