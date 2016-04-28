@@ -13,8 +13,9 @@
 #import <Fabric/Fabric.h>
 #import <Crashlytics/Crashlytics.h>
 
-@interface AppDelegate () <IAPObserver>
-@property (nonatomic) BOOL inLaunchOrReopenProcess;
+@interface AppDelegate () {
+    BOOL _inLaunchOrReopenProcess;
+}
 @end
 
 @implementation AppDelegate
@@ -29,25 +30,22 @@
 #endif
     
     [AppController initialize];
-    
-    [[IAP sharedInstance] addObserver:self];
     [[IAP sharedInstance] initialize];
     
-    self.inLaunchOrReopenProcess = YES;
+    _inLaunchOrReopenProcess = YES;
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification
 {
-    [[IAP sharedInstance] removeObserver:self];
     [[IAP sharedInstance] finalize];
 }
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
-    if (self.inLaunchOrReopenProcess && AppController.needShowWelcome) {
+    if (_inLaunchOrReopenProcess && AppController.needShowWelcome) {
         [AppController showWelcomeWindow];
     }
-    self.inLaunchOrReopenProcess = NO;
+    _inLaunchOrReopenProcess = NO;
 }
 
 - (BOOL)applicationShouldOpenUntitledFile:(NSApplication *)sender
@@ -63,7 +61,7 @@
 
 - (BOOL)applicationShouldHandleReopen:(NSApplication *)sender hasVisibleWindows:(BOOL)flag
 {
-    self.inLaunchOrReopenProcess = YES;
+    _inLaunchOrReopenProcess = YES;
     return YES;
 }
 
@@ -117,30 +115,6 @@
     }
     
     return YES;
-}
-
-#pragma mark IAPObserver
-
-- (void)iap:(IAP *)iap didUpdateTransaction:(SKPaymentTransaction *)transaction
-{
-    switch (transaction.transactionState) {
-        case SKPaymentTransactionStatePurchasing:
-        case SKPaymentTransactionStateDeferred:
-            break;
-        case SKPaymentTransactionStateFailed:
-        {
-            NSString *informative = NSLocalizedString(@"Purchase_PurchaseFaildInformative", @"An error has occurred.\n%@ - %d");
-            NSAlert *alert = [[NSAlert alloc] init];
-            alert.messageText = NSLocalizedString(@"Purchase_Failed", @"Purchase Faild");
-            alert.informativeText = [NSString stringWithFormat:informative, transaction.error.domain, transaction.error.code];
-            [alert addButtonWithTitle:NSLocalizedString(@"Close", @"Close")];;
-            [alert runModal];
-        }
-            break;
-        case SKPaymentTransactionStatePurchased:
-        case SKPaymentTransactionStateRestored:
-            break;
-    }
 }
 
 @end

@@ -17,9 +17,11 @@
 @implementation ProductRequestInfo
 @end
 
-@interface IAP () <SKProductsRequestDelegate, SKPaymentTransactionObserver> {
+@interface IAP () <SKProductsRequestDelegate, SKPaymentTransactionObserver, ReceiptVerifierDelegate> {
     NSMutableArray *_productRequestInfos;
     ObserverList *_observers;
+    ReceiptVerifier *_verifier;
+    SKPaymentTransaction *_purchasedTransaction;
 }
 @end
 
@@ -42,12 +44,16 @@ static IAP *_sharedInstance = nil;
     if (self) {
         _productRequestInfos = [NSMutableArray array];
         _observers = [[ObserverList alloc] init];
+        
+        NSURL *appleCert = [[NSBundle mainBundle] URLForResource:@"AppleIncRootCertificate" withExtension:@"cer"];
+        _verifier = [ReceiptVerifier verifierFromCertFile:appleCert.path];
     }
     return self;
 }
 
 - (void)initialize
 {
+    [self verifyReceipt:nil];
     [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
 }
 
@@ -64,6 +70,21 @@ static IAP *_sharedInstance = nil;
 - (void)removeObserver:(id<IAPObserver>)observer
 {
     [_observers removeObserver:observer];
+}
+
+- (void)verifyReceipt:(id<ReceiptVerifierDelegate>)delegate
+{
+    NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
+    AppStoreReceipt *receipt = [AppStoreReceipt parseFromFile:receiptURL.path];
+    
+    _verifier.delegate = delegate;
+    [_verifier verify:receipt];
+}
+
+- (void)findIAPProduct:(NSString *)productID delegate:(id<ReceiptVerifierDelegate>)delegate
+{
+    _verifier.delegate = delegate;
+    [_verifier findIAPProduct:productID];
 }
 
 - (void)requestProductInfo:(NSArray *)productIdentifiers callback:(void (^)(SKProductsResponse *response))callback
@@ -87,11 +108,6 @@ static IAP *_sharedInstance = nil;
 #endif
 }
 
-- (void)finishTransaction:(SKPaymentTransaction *)transaction
-{
-    [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
-}
-
 #pragma mark SKProductsRequestDelegate
 
 - (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response
@@ -113,13 +129,70 @@ static IAP *_sharedInstance = nil;
 
 - (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray <SKPaymentTransaction *> *)transactions
 {
-    for (SKPaymentTransaction *transaction in transactions) {
-        [NSThread performBlockOnMainThread:^{
+    [NSThread performBlockOnMainThread:^{
+        for (SKPaymentTransaction *transaction in transactions) {
+            switch (transaction.transactionState) {
+                case SKPaymentTransactionStatePurchasing:
+                case SKPaymentTransactionStateDeferred:
+                    break;
+                case SKPaymentTransactionStateFailed:
+                {
+                    [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+                    
+                    NSString *informative = NSLocalizedString(@"Purchase_PurchaseFaildInformative", @"An error has occurred.\n%@ - %d");
+                    NSAlert *alert = [[NSAlert alloc] init];
+                    alert.messageText = NSLocalizedString(@"Purchase_PurshaseFailed", @"Purchase Faild");
+                    alert.informativeText = [NSString stringWithFormat:informative, transaction.error.domain, transaction.error.code];
+                    [alert addButtonWithTitle:NSLocalizedString(@"Close", @"Close")];;
+                    [alert runModal];
+                }
+                    break;
+                case SKPaymentTransactionStatePurchased:
+                case SKPaymentTransactionStateRestored:
+                    _purchasedTransaction = transaction;
+                    [self verifyReceipt:self];
+                    [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+                    break;
+            }
+            
             for (id<IAPObserver> observer in _observers) {
                 [observer iap:self didUpdateTransaction:transaction];
             }
-        }];
-    }
+        }
+    }];
+}
+
+- (void)paymentQueue:(SKPaymentQueue *)queue restoreCompletedTransactionsFailedWithError:(NSError *)error
+{
+    NSString *informative = NSLocalizedString(@"Purchase_RestorePurchaseFaildInformative", @"An error has occurred.\n%@ - %d");
+    NSAlert *alert = [[NSAlert alloc] init];
+    alert.messageText = NSLocalizedString(@"Purchase_RestoreFailed", @"Restore Purchase Faild");
+    alert.informativeText = [NSString stringWithFormat:informative, error.domain, error.code];
+    [alert addButtonWithTitle:NSLocalizedString(@"Close", @"Close")];;
+    [alert runModal];
+}
+
+#pragma mark ReceiptVerifierDelegate
+
+- (void)verifierDidVerifySuccess:(ReceiptVerifier*)verifier
+{
+    [_verifier findIAPProduct:_purchasedTransaction.payment.productIdentifier];
+}
+
+- (void)verifierDidVerifyFail:(ReceiptVerifier*)verifier
+{
+    _purchasedTransaction = nil;
+}
+
+- (void)verifier:(ReceiptVerifier*)verifier didIAPProductFound:(NSString *)productID quantity:(int)quantity
+{
+    // TODO Answers
+    _purchasedTransaction = nil;
+}
+
+- (void)verifier:(ReceiptVerifier*)verifier didIAPProductNotFound:(NSString *)productID
+{
+    _purchasedTransaction = nil;
 }
 
 @end

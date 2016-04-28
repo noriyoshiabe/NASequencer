@@ -8,7 +8,6 @@
 
 #import "PurchaseViewController.h"
 #import "IAP.h"
-#import "ReceiptVerifier.h"
 #import "ColorButton.h"
 
 // TODO remove
@@ -79,7 +78,7 @@
 - (void)viewWillAppear
 {
     [super viewWillAppear];
-    [self verifyReceipt];
+    [[IAP sharedInstance] findIAPProduct:kIAPProductFullVersion delegate:self];
     [[IAP sharedInstance] addObserver:self];
 }
 
@@ -87,18 +86,6 @@
 {
     [super viewWillDisappear];
     [[IAP sharedInstance] removeObserver:self];
-}
-
-- (void)verifyReceipt
-{
-    NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
-    NSURL *appleCert = [[NSBundle mainBundle] URLForResource:@"AppleIncRootCertificate" withExtension:@"cer"];
-    
-    ReceiptVerifier *verifier = [ReceiptVerifier verifierFromCertFile:appleCert.path];
-    AppStoreReceipt *receipt = [AppStoreReceipt parseFromFile:receiptURL.path];
-    
-    verifier.delegate = self;
-    [verifier verify:receipt];
 }
 
 - (void)showPurchaseView
@@ -200,28 +187,6 @@ extern BOOL __fakePurchased__;
 #endif
 }
 
-#pragma mark ReceiptVerifierDelegate
-
-- (void)verifierDidVerifySuccess:(ReceiptVerifier*)verifier
-{
-    [verifier findIAPProduct:kIAPProductFullVersion];
-}
-
-- (void)verifierDidVerifyFail:(ReceiptVerifier*)verifier
-{
-    [self showPurchaseView];
-}
-
-- (void)verifier:(ReceiptVerifier*)verifier didIAPProductFound:(NSString *)productID quantity:(int)quantity
-{
-    [self showThanksView];
-}
-
-- (void)verifier:(ReceiptVerifier*)verifier didIAPProductNotFound:(NSString *)productID
-{
-    [self showPurchaseView];
-}
-
 #pragma mark IAPObserver
 
 - (void)iap:(IAP *)iap didUpdateTransaction:(SKPaymentTransaction *)transaction
@@ -239,9 +204,29 @@ extern BOOL __fakePurchased__;
             break;
         case SKPaymentTransactionStatePurchased:
         case SKPaymentTransactionStateRestored:
-            [self verifyReceipt];
+            [[IAP sharedInstance] findIAPProduct:kIAPProductFullVersion delegate:self];
             break;
     }
+}
+
+#pragma mark ReceiptVerifierDelegate
+
+- (void)verifierDidVerifySuccess:(ReceiptVerifier*)verifier
+{
+}
+
+- (void)verifierDidVerifyFail:(ReceiptVerifier*)verifier
+{
+}
+
+- (void)verifier:(ReceiptVerifier*)verifier didIAPProductFound:(NSString *)productID quantity:(int)quantity
+{
+    [self showThanksView];
+}
+
+- (void)verifier:(ReceiptVerifier*)verifier didIAPProductNotFound:(NSString *)productID
+{
+    [self showPurchaseView];
 }
 
 @end
