@@ -145,6 +145,7 @@
 		02CD042E1C88905D00BF6683 /* NSTextField+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CD042D1C88905D00BF6683 /* NSTextField+Support.m */; };
 		02CD04311C88930700BF6683 /* TextLink.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CD04301C88930700BF6683 /* TextLink.m */; };
 		02CD04341C889AC400BF6683 /* ColorButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CD04331C889AC400BF6683 /* ColorButton.m */; };
+		02F350541CD1A6D800DB8499 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02F350531CD1A6D800DB8499 /* StoreKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -389,6 +390,7 @@
 		02CD04301C88930700BF6683 /* TextLink.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextLink.m; sourceTree = "<group>"; };
 		02CD04321C889AC400BF6683 /* ColorButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorButton.h; sourceTree = "<group>"; };
 		02CD04331C889AC400BF6683 /* ColorButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ColorButton.m; sourceTree = "<group>"; };
+		02F350531CD1A6D800DB8499 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -399,6 +401,7 @@
 				025FAF6D1C7E302A00E4C3B3 /* libNAMIDI-Core.a in Frameworks */,
 				025FAF881C7E503900E4C3B3 /* AudioUnit.framework in Frameworks */,
 				025FAF8A1C7E504B00E4C3B3 /* AudioToolbox.framework in Frameworks */,
+				02F350541CD1A6D800DB8499 /* StoreKit.framework in Frameworks */,
 				0255F6281C7111DF00CF4C52 /* CoreText.framework in Frameworks */,
 				020CF8321C6A059C0025DF84 /* WebKit.framework in Frameworks */,
 			);
@@ -415,6 +418,7 @@
 				025FAF891C7E504B00E4C3B3 /* AudioToolbox.framework */,
 				0255F6271C7111DF00CF4C52 /* CoreText.framework */,
 				020CF8311C6A059C0025DF84 /* WebKit.framework */,
+				02F350531CD1A6D800DB8499 /* StoreKit.framework */,
 				0201F7CE1C688BB100A201F6 /* NAMIDI */,
 				0201F7CD1C688BB100A201F6 /* Products */,
 			);
@@ -822,7 +826,11 @@
 				TargetAttributes = {
 					0201F7CB1C688BB100A201F6 = {
 						CreatedOnToolsVersion = 7.2.1;
+						DevelopmentTeam = 63F66NTY34;
 						SystemCapabilities = {
+							com.apple.InAppPurchase = {
+								enabled = 1;
+							};
 							com.apple.Sandbox = {
 								enabled = 1;
 							};
@@ -1128,6 +1136,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = NAMIDI/NAMIDI.entitlements;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				HEADER_SEARCH_PATHS = (
 					"../core/**",
@@ -1141,6 +1151,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.nasequencer.NASequencer;
 				PRODUCT_NAME = NASequencer;
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -1148,6 +1159,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = NAMIDI/NAMIDI.entitlements;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				HEADER_SEARCH_PATHS = (
 					"../core/**",
@@ -1161,6 +1174,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.nasequencer.NASequencer;
 				PRODUCT_NAME = NASequencer;
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
