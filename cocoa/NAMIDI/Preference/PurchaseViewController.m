@@ -138,6 +138,11 @@ extern BOOL __fakePurchased__;
 
 - (IBAction)tweetPressed:(id)sender
 {
+    NSString *text = NSLocalizedString(@"Preference_PurchaseTweetMessage", @"NASequencer, the text-based music composition App.");
+    NSString *encodedText = [text stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet alphanumericCharacterSet]];
+    NSString *encodedUrl = [@"https://nasequencer.com" stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet alphanumericCharacterSet]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://twitter.com/intent/tweet?text=%@&url=%@&related=nasequencer", encodedText, encodedUrl]];
+    [[NSWorkspace sharedWorkspace] openURL: url];
 }
 
 - (IBAction)shareOnFacebookPressed:(id)sender
@@ -170,7 +175,6 @@ extern BOOL __fakePurchased__;
 
 - (void)iap:(IAP *)iap didPurchaseProduct:(NSString *)productId
 {
-    __Trace__
     [self verifyReceipt];;
 }
 
