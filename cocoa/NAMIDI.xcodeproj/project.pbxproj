@@ -44,6 +44,7 @@
 		0216EE0F1C7C689F009A7B90 /* PianoRollLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 0216EE0E1C7C689F009A7B90 /* PianoRollLayout.m */; };
 		022DCBFD1CD22BCE00798C28 /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 022DCBFB1CD22BCE00798C28 /* Fabric.framework */; };
 		022DCBFE1CD22BCE00798C28 /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 022DCBFC1CD22BCE00798C28 /* Crashlytics.framework */; };
+		022DCC021CD28E9600798C28 /* IAPMock.m in Sources */ = {isa = PBXBuildFile; fileRef = 022DCC011CD28E9600798C28 /* IAPMock.m */; };
 		0232CB101C88C88700542D34 /* NSWindow+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 0232CB0F1C88C88700542D34 /* NSWindow+Support.m */; };
 		0232CB161C88FA9700542D34 /* AlphaHilightButtonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0232CB151C88FA9700542D34 /* AlphaHilightButtonCell.m */; };
 		0232CB191C89058200542D34 /* WelcomeRecentRowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0232CB181C89058200542D34 /* WelcomeRecentRowView.m */; };
@@ -237,6 +238,8 @@
 		0216EE0E1C7C689F009A7B90 /* PianoRollLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PianoRollLayout.m; sourceTree = "<group>"; };
 		022DCBFB1CD22BCE00798C28 /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
 		022DCBFC1CD22BCE00798C28 /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
+		022DCC001CD28E9600798C28 /* IAPMock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAPMock.h; sourceTree = "<group>"; };
+		022DCC011CD28E9600798C28 /* IAPMock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAPMock.m; sourceTree = "<group>"; };
 		0232CB0E1C88C88700542D34 /* NSWindow+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSWindow+Support.h"; sourceTree = "<group>"; };
 		0232CB0F1C88C88700542D34 /* NSWindow+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSWindow+Support.m"; sourceTree = "<group>"; };
 		0232CB141C88FA9700542D34 /* AlphaHilightButtonCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlphaHilightButtonCell.h; sourceTree = "<group>"; };
@@ -843,6 +846,8 @@
 				02F3505F1CD1AECC00DB8499 /* ReceiptVerifierHardCodedString.h */,
 				02018D9C1CD1CD290025C851 /* IAP.h */,
 				02018D9D1CD1CD290025C851 /* IAP.m */,
+				022DCC001CD28E9600798C28 /* IAPMock.h */,
+				022DCC011CD28E9600798C28 /* IAPMock.m */,
 			);
 			path = IAP;
 			sourceTree = "<group>";
@@ -1042,6 +1047,7 @@
 				026D42DC1C7ABC08000267AD /* ConductorViewController.m in Sources */,
 				0232CB241C891EF700542D34 /* ListenToExampleRowView.m in Sources */,
 				025FAFAB1C81382000E4C3B3 /* ObserverList.m in Sources */,
+				022DCC021CD28E9600798C28 /* IAPMock.m in Sources */,
 				025FA8FE1C7CFC9800E4C3B3 /* EventListRowView.m in Sources */,
 				026D42E21C7ABC08000267AD /* MixerChannelViewController.m in Sources */,
 				025FAF991C7FAB1600E4C3B3 /* MidiSourceManagerRepresentation.m in Sources */,

@@ -12,30 +12,7 @@
 
 // TODO remove
 #ifdef DEBUG
-@interface FakePaymentTransaction : SKPaymentTransaction {
-    SKPaymentTransactionState __state;
-    NSError *__error;
-}
-@end
-@implementation FakePaymentTransaction
-- (instancetype)initWithState:(SKPaymentTransactionState)state error:(NSError *)error
-{
-    self = [super init];
-    if (self) {
-        __state = state;
-        __error = error;
-    }
-    return self;
-}
-- (SKPaymentTransactionState)transactionState
-{
-    return __state;
-}
-- (NSError *)error
-{
-    return __error;
-}
-@end
+#import "IAPMock.h"
 #endif
 
 @interface PurchaseViewController () <ReceiptVerifierDelegate, IAPObserver>
@@ -105,16 +82,17 @@
         _priceLabel.stringValue = NSLocalizedString(@"Purchase_PriceLoading", @"Loading…");
         
         [[IAP sharedInstance] requestProductInfo:@[kIAPProductFullVersion] callback:^(SKProductsResponse *response) {
-            
-            NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
-            // TODO replace to product's locale
-            formatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US"];
-            formatter.numberStyle = NSNumberFormatterCurrencyISOCodeStyle;
-            formatter.formatterBehavior = NSNumberFormatterBehavior10_4;
-            
-            NSString *format = NSLocalizedString(@"Purchase_PriceFormat", @"%@, for all your Macs");
-            // TODO replace to product's price;
-            _priceLabel.stringValue = [NSString stringWithFormat:format, [formatter stringFromNumber:[NSDecimalNumber numberWithFloat:24.99]]];
+            for (SKProduct *product in response.products) {
+                if ([product.productIdentifier isEqualToString:kIAPProductFullVersion]) {
+                    NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+                    formatter.locale = product.priceLocale;
+                    formatter.numberStyle = NSNumberFormatterCurrencyISOCodeStyle;
+                    formatter.formatterBehavior = NSNumberFormatterBehavior10_4;
+                    
+                    NSString *format = NSLocalizedString(@"Purchase_PriceFormat", @"%@, for all your Macs");
+                    _priceLabel.stringValue = [NSString stringWithFormat:format, [formatter stringFromNumber:product.price]];
+                }
+            }
             
             _purchaseButton.enabled = YES;
             _restorePurchaseButton.enabled = YES;
@@ -140,7 +118,7 @@ extern BOOL __fakePurchased__;
     
     [[IAP sharedInstance] paymentQueue:[SKPaymentQueue defaultQueue] updatedTransactions:@[[[FakePaymentTransaction alloc] initWithState:SKPaymentTransactionStatePurchasing error:nil]]];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [[IAP sharedInstance] paymentQueue:[SKPaymentQueue defaultQueue] updatedTransactions:@[[[FakePaymentTransaction alloc] initWithState:SKPaymentTransactionStateFailed error:[NSError errorWithDomain:SKErrorDomain code:SKErrorPaymentInvalid userInfo:nil]]]];
+        [[IAP sharedInstance] paymentQueue:[SKPaymentQueue defaultQueue] updatedTransactions:@[[[FakePaymentTransaction alloc] initWithState:SKPaymentTransactionStatePurchased error:[NSError errorWithDomain:SKErrorDomain code:SKErrorPaymentInvalid userInfo:nil]]]];
     });
 }
 
