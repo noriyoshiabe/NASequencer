@@ -146,6 +146,13 @@
 		02CD04311C88930700BF6683 /* TextLink.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CD04301C88930700BF6683 /* TextLink.m */; };
 		02CD04341C889AC400BF6683 /* ColorButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CD04331C889AC400BF6683 /* ColorButton.m */; };
 		02F350541CD1A6D800DB8499 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02F350531CD1A6D800DB8499 /* StoreKit.framework */; };
+		02F350601CD1AECC00DB8499 /* AppStoreReceipt.m in Sources */ = {isa = PBXBuildFile; fileRef = 02F350581CD1AECC00DB8499 /* AppStoreReceipt.m */; };
+		02F350611CD1AECC00DB8499 /* ASNReceipt.m in Sources */ = {isa = PBXBuildFile; fileRef = 02F3505A1CD1AECC00DB8499 /* ASNReceipt.m */; };
+		02F350621CD1AECC00DB8499 /* IAPReceipt.m in Sources */ = {isa = PBXBuildFile; fileRef = 02F3505C1CD1AECC00DB8499 /* IAPReceipt.m */; };
+		02F350631CD1AECC00DB8499 /* ReceiptVerifier.m in Sources */ = {isa = PBXBuildFile; fileRef = 02F3505E1CD1AECC00DB8499 /* ReceiptVerifier.m */; };
+		02F350661CD1AF7200DB8499 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 02F350641CD1AF7200DB8499 /* libcrypto.a */; };
+		02F350671CD1AF7200DB8499 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 02F350651CD1AF7200DB8499 /* libssl.a */; };
+		02F350691CD1B25D00DB8499 /* AppleIncRootCertificate.cer in Resources */ = {isa = PBXBuildFile; fileRef = 02F350681CD1B25D00DB8499 /* AppleIncRootCertificate.cer */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -391,6 +398,18 @@
 		02CD04321C889AC400BF6683 /* ColorButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorButton.h; sourceTree = "<group>"; };
 		02CD04331C889AC400BF6683 /* ColorButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ColorButton.m; sourceTree = "<group>"; };
 		02F350531CD1A6D800DB8499 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		02F350571CD1AECC00DB8499 /* AppStoreReceipt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppStoreReceipt.h; sourceTree = "<group>"; };
+		02F350581CD1AECC00DB8499 /* AppStoreReceipt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppStoreReceipt.m; sourceTree = "<group>"; };
+		02F350591CD1AECC00DB8499 /* ASNReceipt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASNReceipt.h; sourceTree = "<group>"; };
+		02F3505A1CD1AECC00DB8499 /* ASNReceipt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASNReceipt.m; sourceTree = "<group>"; };
+		02F3505B1CD1AECC00DB8499 /* IAPReceipt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAPReceipt.h; sourceTree = "<group>"; };
+		02F3505C1CD1AECC00DB8499 /* IAPReceipt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAPReceipt.m; sourceTree = "<group>"; };
+		02F3505D1CD1AECC00DB8499 /* ReceiptVerifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReceiptVerifier.h; sourceTree = "<group>"; };
+		02F3505E1CD1AECC00DB8499 /* ReceiptVerifier.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReceiptVerifier.m; sourceTree = "<group>"; };
+		02F3505F1CD1AECC00DB8499 /* ReceiptVerifierHardCodedString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReceiptVerifierHardCodedString.h; sourceTree = "<group>"; };
+		02F350641CD1AF7200DB8499 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = openssl/lib/libcrypto.a; sourceTree = "<group>"; };
+		02F350651CD1AF7200DB8499 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = openssl/lib/libssl.a; sourceTree = "<group>"; };
+		02F350681CD1B25D00DB8499 /* AppleIncRootCertificate.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = AppleIncRootCertificate.cer; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -401,9 +420,11 @@
 				025FAF6D1C7E302A00E4C3B3 /* libNAMIDI-Core.a in Frameworks */,
 				025FAF881C7E503900E4C3B3 /* AudioUnit.framework in Frameworks */,
 				025FAF8A1C7E504B00E4C3B3 /* AudioToolbox.framework in Frameworks */,
-				02F350541CD1A6D800DB8499 /* StoreKit.framework in Frameworks */,
 				0255F6281C7111DF00CF4C52 /* CoreText.framework in Frameworks */,
 				020CF8321C6A059C0025DF84 /* WebKit.framework in Frameworks */,
+				02F350541CD1A6D800DB8499 /* StoreKit.framework in Frameworks */,
+				02F350661CD1AF7200DB8499 /* libcrypto.a in Frameworks */,
+				02F350671CD1AF7200DB8499 /* libssl.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -419,6 +440,8 @@
 				0255F6271C7111DF00CF4C52 /* CoreText.framework */,
 				020CF8311C6A059C0025DF84 /* WebKit.framework */,
 				02F350531CD1A6D800DB8499 /* StoreKit.framework */,
+				02F350641CD1AF7200DB8499 /* libcrypto.a */,
+				02F350651CD1AF7200DB8499 /* libssl.a */,
 				0201F7CE1C688BB100A201F6 /* NAMIDI */,
 				0201F7CD1C688BB100A201F6 /* Products */,
 			);
@@ -435,6 +458,7 @@
 		0201F7CE1C688BB100A201F6 /* NAMIDI */ = {
 			isa = PBXGroup;
 			children = (
+				02F350561CD1AE8900DB8499 /* IAP */,
 				021483661C84B2CD00D653AE /* Export */,
 				02633EB91C7505FA00B9FF0E /* Component */,
 				028209241C70A5A0003EBCFB /* Model */,
@@ -779,6 +803,7 @@
 		02A673E81C6B3A5C00914C8B /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				02F350681CD1B25D00DB8499 /* AppleIncRootCertificate.cer */,
 				0262BAFD1C8A78AC00BEB76A /* GettingStarted */,
 				0232CB271C8931D000542D34 /* Example */,
 				025FAF9A1C7FAD7200E4C3B3 /* GeneralUser GS Live-Audigy v1.44.sf2 */,
@@ -793,6 +818,22 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		02F350561CD1AE8900DB8499 /* IAP */ = {
+			isa = PBXGroup;
+			children = (
+				02F350571CD1AECC00DB8499 /* AppStoreReceipt.h */,
+				02F350581CD1AECC00DB8499 /* AppStoreReceipt.m */,
+				02F350591CD1AECC00DB8499 /* ASNReceipt.h */,
+				02F3505A1CD1AECC00DB8499 /* ASNReceipt.m */,
+				02F3505B1CD1AECC00DB8499 /* IAPReceipt.h */,
+				02F3505C1CD1AECC00DB8499 /* IAPReceipt.m */,
+				02F3505D1CD1AECC00DB8499 /* ReceiptVerifier.h */,
+				02F3505E1CD1AECC00DB8499 /* ReceiptVerifier.m */,
+				02F3505F1CD1AECC00DB8499 /* ReceiptVerifierHardCodedString.h */,
+			);
+			path = IAP;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -800,6 +841,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 0201F7E31C688BB100A201F6 /* Build configuration list for PBXNativeTarget "NAMIDI" */;
 			buildPhases = (
+				02018D9B1CD1C85A0025C851 /* ShellScript */,
 				0201F7C81C688BB100A201F6 /* Sources */,
 				0201F7C91C688BB100A201F6 /* Frameworks */,
 				029BD4CC1CAE098400B66F4C /* Run Script */,
@@ -896,6 +938,7 @@
 				024A5B0D1C69FF990079D22C /* MainMenu.xib in Resources */,
 				026D42E91C7ABC08000267AD /* TrackViewController.xib in Resources */,
 				02A673FA1C6B3A5C00914C8B /* ABCIcon.iconset in Resources */,
+				02F350691CD1B25D00DB8499 /* AppleIncRootCertificate.cer in Resources */,
 				026D42DB1C7ABC08000267AD /* SelectionViewController.xib in Resources */,
 				0216EE0C1C7C5D15009A7B90 /* PianoRollNoteViewController.xib in Resources */,
 				0203F5A41CC23D2200F7C5BA /* luminous_rain.abc in Resources */,
@@ -933,6 +976,19 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		02018D9B1CD1C85A0025C851 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "SHORT_VERSION=$(/usr/libexec/PlistBuddy -c \"Print CFBundleShortVersionString\" \"$INFOPLIST_FILE\")\nTARGET_FILE=${PROJECT_DIR}/NAMIDI/IAP/ReceiptVerifierHardCodedString.h\n\necho \"#define kReceiptVerifierHardCodedBundleIdentifier @\\\"${PRODUCT_BUNDLE_IDENTIFIER}\\\"\" > ${TARGET_FILE}\necho \"#define kReceiptVerifierHardCodedBundleShortVersion @\\\"${SHORT_VERSION}\\\"\" >> ${TARGET_FILE}";
+		};
 		029BD4CC1CAE098400B66F4C /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -971,19 +1027,23 @@
 				025FA9021C7D1BE900E4C3B3 /* PianoRollKeyboardViewController.m in Sources */,
 				0216EE001C7C3333009A7B90 /* PianoRollConductorLabelView.m in Sources */,
 				028209271C70A5D8003EBCFB /* FileRepresentation.m in Sources */,
+				02F350631CD1AECC00DB8499 /* ReceiptVerifier.m in Sources */,
 				0216EE0B1C7C5D15009A7B90 /* PianoRollNoteViewController.m in Sources */,
+				02F350611CD1AECC00DB8499 /* ASNReceipt.m in Sources */,
 				02A973CD1C79F02200C21B8E /* SelectionButton.m in Sources */,
 				0262BAEC1C89E5CF00BEB76A /* NASHighlightSpec.m in Sources */,
 				0262BAEF1C89EF7300BEB76A /* HighlightProcessor.m in Sources */,
 				024A5B1D1C69FFD40079D22C /* MainWindowController.m in Sources */,
 				020CF8621C6AEA5F0025DF84 /* GeneralViewController.m in Sources */,
 				023BB20F1C6EF17B0030487C /* NSArray+Support.m in Sources */,
+				02F350621CD1AECC00DB8499 /* IAPReceipt.m in Sources */,
 				0232CB201C891AD400542D34 /* ListenToExampleWindowController.m in Sources */,
 				026D42D61C7ABC08000267AD /* DetailViewController.m in Sources */,
 				0232CB101C88C88700542D34 /* NSWindow+Support.m in Sources */,
 				0201F7D71C688BB100A201F6 /* Document.m in Sources */,
 				026D42DA1C7ABC08000267AD /* SelectionViewController.m in Sources */,
 				0214837A1C86583E00D653AE /* NSPathUtilities+Support.m in Sources */,
+				02F350601CD1AECC00DB8499 /* AppStoreReceipt.m in Sources */,
 				025FAF9F1C8065C300E4C3B3 /* MixerRepresentation.m in Sources */,
 				0232CB191C89058200542D34 /* WelcomeRecentRowView.m in Sources */,
 				0214836A1C84B2E700D653AE /* ExportWindowController.m in Sources */,
@@ -1146,9 +1206,14 @@
 					"../parser/**",
 					"../sequence/**",
 					"../synthesizer/**",
+					openssl/include,
 				);
 				INFOPLIST_FILE = NAMIDI/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/openssl/lib",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.nasequencer.NASequencer;
 				PRODUCT_NAME = NASequencer;
 				PROVISIONING_PROFILE = "";
@@ -1169,9 +1234,14 @@
 					"../parser/**",
 					"../sequence/**",
 					"../synthesizer/**",
+					openssl/include,
 				);
 				INFOPLIST_FILE = NAMIDI/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/openssl/lib",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.nasequencer.NASequencer;
 				PRODUCT_NAME = NASequencer;
 				PROVISIONING_PROFILE = "";
