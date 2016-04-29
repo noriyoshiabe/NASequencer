@@ -12,6 +12,8 @@
 #import "ApplicationController.h"
 #import "IAP.h"
 
+#import <Crashlytics/Answers.h>
+
 @import QuartzCore.CAMediaTimingFunction;
 
 @interface SynthesizerViewController () <NSTableViewDataSource, NSTableViewDelegate, MidiSourceManagerRepresentationObserver, SynthesizerCellViewDelegate> {
@@ -271,6 +273,12 @@
 {
     [self resizeWindowFrameAndReload];
     [_manager saveMidiSourcePreference];
+    
+    [Answers logCustomEventWithName:@"Synthesizer"
+                   customAttributes:@{@"Name": description.name,
+                                      @"File Name": description.filepath.lastPathComponent,
+                                      @"Available": description.available ? @"YES" : @"NO",
+                                      @"Error": @(MidiSourceDescriptionError2String(description.error))}];
 }
 
 - (void)midiSourceManager:(MidiSourceManagerRepresentation *)manager onUnloadMidiSourceDescription:(MidiSourceDescriptionRepresentation *)description
