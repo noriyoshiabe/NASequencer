@@ -90,9 +90,6 @@
     
     [self showEditor];
     
-    _isShiftKeyPressed = [NSEvent isShiftKeyPressed];
-    
-    [self updateToolBarItemFowardBackward];
     [self updateToolBarItemAutoScroll];
 }
 
@@ -206,6 +203,11 @@
 
 - (void)updateToolBarItemFowardBackward
 {
+    [self updateToolBarItemFowardBackwardWithForceCancel:NO];
+}
+
+- (void)updateToolBarItemFowardBackwardWithForceCancel:(BOOL)forceCancel
+{
     NSToolbarItem *forward = [self.window.toolbar.items objectPassingTest:^BOOL(__kindof NSToolbarItem *obj, NSUInteger idx, BOOL *stop) {
         return *stop = [obj.itemIdentifier isEqualToString:@"Forward"];
     }];
@@ -214,8 +216,8 @@
         return *stop = [obj.itemIdentifier isEqualToString:@"Backward"];
     }];
     
-    forward.image = [NSImage imageNamed:[NSEvent isShiftKeyPressed] ? @"forward_marker" : @"forward"];
-    backward.image = [NSImage imageNamed:[NSEvent isShiftKeyPressed] ? @"backward_marker" : @"backward"];
+    forward.image = [NSImage imageNamed:!forceCancel && [NSEvent isShiftKeyPressed] ? @"forward_marker" : @"forward"];
+    backward.image = [NSImage imageNamed:!forceCancel && [NSEvent isShiftKeyPressed] ? @"backward_marker" : @"backward"];
 }
 
 - (void)flagsChanged:(NSEvent *)theEvent
@@ -301,6 +303,17 @@
 {
     [_namidi.player stop];
     return YES;
+}
+
+- (void)windowDidBecomeKey:(NSNotification *)notification
+{
+    _isShiftKeyPressed = [NSEvent isShiftKeyPressed];
+    [self updateToolBarItemFowardBackward];
+}
+
+- (void)windowDidResignKey:(NSNotification *)notification
+{
+    [self updateToolBarItemFowardBackwardWithForceCancel:YES];
 }
 
 #pragma mark MainViewControllerDelegate
