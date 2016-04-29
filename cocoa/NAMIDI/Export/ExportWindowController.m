@@ -11,6 +11,8 @@
 #import "Color.h"
 #import "Preference.h"
 
+#import <Crashlytics/Answers.h>
+
 @interface ExportWindowController () <ExporterRepresentationDelegate> {
     ExporterRepresentation *_exporter;
 }
@@ -70,6 +72,9 @@
             else {
                 [self finish];
             }
+            
+            NSString *ext = _outputUrl.path.pathExtension;
+            [Answers logCustomEventWithName:@"Export" customAttributes:@{@"File Type": ext ? ext.uppercaseString : @"Unknown"}];
         });
     });
 }

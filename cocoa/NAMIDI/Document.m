@@ -68,10 +68,7 @@
     [self addWindowController: mainWC];
     
     NSString *ext = _file.filename.pathExtension.uppercaseString;
-    if (!ext) {
-        ext = @"Unknown";
-    }
-    [Answers logCustomEventWithName:@"File Type" customAttributes:@{@"Extension": ext}];
+    [Answers logCustomEventWithName:@"Document" customAttributes:@{@"File Type": ext ? ext.uppercaseString : @"Unknown"}];
 }
 
 #pragma mark Disable menu action
