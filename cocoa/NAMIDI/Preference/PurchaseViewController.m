@@ -148,7 +148,7 @@ extern BOOL __fakePurchased__;
     [alert addButtonWithTitle:NSLocalizedString(@"OK", @"OK")];;
     [alert runModal];
 #else
-    NSString *text = NSLocalizedString(@"Preference_PurchaseTweetMessage", @"NASequencer, the text-based music composition App.");
+    NSString *text = NSLocalizedString(@"Preference_PurchaseTweetMessage", @"NASequencer, the text-based music composing application.");
     NSString *encodedText = [text stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet alphanumericCharacterSet]];
     NSString *encodedUrl = [@"https://nasequencer.com" stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet alphanumericCharacterSet]];
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://twitter.com/intent/tweet?text=%@&url=%@&related=nasequencer", encodedText, encodedUrl]];
