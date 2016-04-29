@@ -121,7 +121,13 @@
             break;
     }
     
-    return messageFormat ? [NSString stringWithFormat:messageFormat, _description.filepath] : nil;
+    if (messageFormat) {
+        NSString *filepath = [_description.filepath stringByReplacingOccurrencesOfString:NSUserHomeDirectory() withString:@"~"];
+        return [NSString stringWithFormat:messageFormat, filepath];
+    }
+    else {
+        return nil;
+    }
 }
 
 - (IBAction)unloadButtonPressed:(id)sender

@@ -181,7 +181,12 @@ static MidiSourceManagerRepresentation *_sharedInstance = nil;
 
 - (NSString *)pathForDefaultMidiSource
 {
-    return [[NSBundle mainBundle] pathForResource:@"GeneralUser GS Live-Audigy v1.44" ofType:@"sf2"];
+    NSString *path = [[NSBundle mainBundle] pathForResource:@"GeneralUser GS Live-Audigy v1.44" ofType:@"sf2"];
+    if (!path) {
+        // Care for that default soundfont deleted by fuckin' user
+        path = [[NSBundle mainBundle].resourcePath stringByAppendingString:@"/GeneralUser GS Live-Audigy v1.44.sf2"];
+    }
+    return path;
 }
 
 - (void)saveMidiSourcePreference
