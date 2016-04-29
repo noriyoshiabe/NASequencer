@@ -24,6 +24,10 @@
 #define kSelectedFileTypeForExport @"SelectedFileTypeForExport"
 
 #define kSuppressedNewVersion @"SuppressedNewVersion"
+#define kRequestRatingInfo @"RequestRatingInfo"
+#define kRequestRatingInfoLastLaunchedDay @"RequestRatingInfoLastLaunchedDay"
+#define kRequestRatingInfoLaunchedDayCount @"RequestRatingInfoLaunchedDayCount"
+#define kRequestRatingInfoCompleted @"RequestRatingInfoCompleted"
 
 @interface Preference : NSObject
 @property (readonly, nonatomic) BOOL showWelcome;
@@ -35,6 +39,7 @@
 @property (readwrite, nonatomic) NSArray *midiSourceSettings;
 @property (readwrite, nonatomic) NSString *lastRootDirectory;
 @property (readwrite, nonatomic) NSString *suppressedNewVersion;
+@property (readwrite, nonatomic) NSDictionary *requestRatingInfo;
 + (Preference *)sharedInstance;
 - (void)initialize;
 - (NSString *)defaultIncludeSearchPath;

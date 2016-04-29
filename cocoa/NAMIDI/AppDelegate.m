@@ -30,14 +30,13 @@
 #endif
     
     [AppController initialize];
-    [[IAP sharedInstance] initialize];
     
     _inLaunchOrReopenProcess = YES;
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification
 {
-    [[IAP sharedInstance] finalize];
+    [AppController finalize];
 }
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification

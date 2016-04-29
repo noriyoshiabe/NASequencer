@@ -193,4 +193,20 @@ static Preference *_sharedInstance = nil;
     [_userDefaults synchronize];
 }
 
+- (NSDictionary *)requestRatingInfo
+{
+    return [_userDefaults dictionaryForKey:kRequestRatingInfo];
+}
+
+- (void)setRequestRatingInfo:(NSDictionary *)requestRatingInfo
+{
+    if (requestRatingInfo) {
+        [_userDefaults setValue:requestRatingInfo forKey:kRequestRatingInfo];
+    }
+    else {
+        [_userDefaults removeObjectForKey:kRequestRatingInfo];
+    }
+    [_userDefaults synchronize];
+}
+
 @end

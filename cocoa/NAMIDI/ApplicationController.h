@@ -13,6 +13,7 @@
 @interface ApplicationController : NSObject
 @property (readonly, nonatomic) BOOL needShowWelcome;
 - (void)initialize;
+- (void)finalize;
 - (void)showWelcomeWindow;
 - (void)closeWelcomeWindow;
 - (void)showGettingStartedWindow;

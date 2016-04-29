@@ -60,6 +60,7 @@ ApplicationController *AppController;
 - (void)initialize
 {
     [[Preference sharedInstance] initialize];
+    [[IAP sharedInstance] initialize];
     
     [self createDefaultIncludeDirectory];
     
@@ -72,7 +73,16 @@ ApplicationController *AppController;
     
     [[MidiSourceManagerRepresentation sharedInstance] initialize];
     
-    [self checkNewVersion];
+    [self checkNewVersion:^(BOOL newVersionAnnounced) {
+        if (!newVersionAnnounced) {
+            [self checkRequestRating];
+        }
+    }];
+}
+
+- (void)finalize
+{
+    [[IAP sharedInstance] finalize];
 }
 
 - (void)createDefaultIncludeDirectory
@@ -373,9 +383,9 @@ ApplicationController *AppController;
     }
 }
 
-#pragma mark New Version Annonce
+#pragma mark New Version Annoncement
 
-- (void)checkNewVersion
+- (void)checkNewVersion:(void(^)(BOOL newVersionAnnounced))completion
 {
     NSURL *url = [NSURL URLWithString:@"https://nasequencer.com/latest-version.json"];
     
@@ -385,6 +395,8 @@ ApplicationController *AppController;
     
     [[session dataTaskWithURL:url completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         [NSThread performBlockOnMainThread:^{
+            BOOL newVersionAnnounced = NO;
+            
             if (data) {
                 NSDictionary *versionInfo = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
                 
@@ -418,11 +430,74 @@ ApplicationController *AppController;
                         if (NSOnState == alert.suppressionButton.state) {
                             [Preference sharedInstance].suppressedNewVersion = latestVersion;
                         }
+                        
+                        newVersionAnnounced = YES;
                     }
                 }
             }
+            
+            completion(newVersionAnnounced);
         }];
     }] resume];
+}
+
+#pragma mark Request Rating
+
+- (void)checkRequestRating
+{
+    [[IAP sharedInstance] findIAPProduct:kIAPProductFullVersion found:^(NSString *productID, int quantity) {
+        NSMutableDictionary *requestRatingInfo = [[Preference sharedInstance].requestRatingInfo mutableCopy];
+        if (!requestRatingInfo) {
+            requestRatingInfo = [NSMutableDictionary dictionary];
+        }
+        
+        if ([requestRatingInfo[kRequestRatingInfoCompleted] boolValue]) {
+            return;
+        }
+        
+        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+        formatter.dateFormat = @"yyyy-MM-dd";
+        NSString *dateString = [formatter stringFromDate:[NSDate date]];
+        
+        if ([requestRatingInfo[kRequestRatingInfoLastLaunchedDay] isEqualToString:dateString]) {
+            return;
+        }
+        
+        requestRatingInfo[kRequestRatingInfoLastLaunchedDay] = dateString;
+        
+        int dayCount = [requestRatingInfo[kRequestRatingInfoLaunchedDayCount] intValue];
+        ++dayCount;
+        
+        if (5 > dayCount) {
+            requestRatingInfo[kRequestRatingInfoLaunchedDayCount] = @(dayCount);
+        }
+        else {
+            requestRatingInfo[kRequestRatingInfoLaunchedDayCount] = @(0);
+            
+            NSAlert *alert = [[NSAlert alloc] init];
+            [alert addButtonWithTitle:NSLocalizedString(@"RateItNow", @"Rate It Now")];
+            [alert addButtonWithTitle:NSLocalizedString(@"RemindMeLater", @"Remind Me Later")];
+            [alert addButtonWithTitle:NSLocalizedString(@"NoThanks", @"No, Thanks")];
+            alert.messageText = NSLocalizedString(@"RateApp", @"Rate NASequencer");
+            alert.informativeText = NSLocalizedString(@"RateRequestMessage", @"If you enjoy NASequencer, would you mind taking a moment to rate it? Thanks for your supporting NASequencer's development!");
+            alert.alertStyle = NSInformationalAlertStyle;
+            
+            NSModalResponse response = [alert runModal];
+            switch (response) {
+                case NSAlertFirstButtonReturn:
+                    [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"macappstore://itunes.apple.com/us/app/nasequencer/id1108716642?ls=1&mt=8"]];
+                    requestRatingInfo[kRequestRatingInfoCompleted] = @YES;
+                    break;
+                case NSAlertSecondButtonReturn:
+                    break;
+                case NSAlertThirdButtonReturn:
+                    requestRatingInfo[kRequestRatingInfoCompleted] = @YES;
+                    break;
+            }
+        }
+        
+        [Preference sharedInstance].requestRatingInfo = requestRatingInfo;
+    } notFound:nil];
 }
 
 @end
