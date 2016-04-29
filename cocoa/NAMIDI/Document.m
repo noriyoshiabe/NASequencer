@@ -12,6 +12,8 @@
 #import "NAMidiRepresentation.h"
 #import "Preference.h"
 
+#import <Crashlytics/Answers.h>
+
 @interface Document ()
 @property (strong, nonatomic) FileRepresentation *file;
 @property (strong, nonatomic) NAMidiRepresentation *namidi;
@@ -64,6 +66,12 @@
     MainWindowController *mainWC = [[MainWindowController alloc] init];
     mainWC.namidi = _namidi;
     [self addWindowController: mainWC];
+    
+    NSString *ext = _file.filename.pathExtension.uppercaseString;
+    if (!ext) {
+        ext = @"Unknown";
+    }
+    [Answers logCustomEventWithName:@"File Type" customAttributes:@{@"Extension": ext}];
 }
 
 #pragma mark Disable menu action
