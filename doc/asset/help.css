@@ -222,6 +222,10 @@ body.support          .support          { display: block; }
 body.license          .license          { display: block; }
 
 
+body.license .license pre {
+  background-color: #fff !important;
+}
+
 body {
     -ms-text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;
