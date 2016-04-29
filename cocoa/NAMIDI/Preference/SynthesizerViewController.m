@@ -9,6 +9,8 @@
 #import "SynthesizerViewController.h"
 #import "SynthesizerCellView.h"
 #import "MidiSourceManagerRepresentation.h"
+#import "ApplicationController.h"
+#import "IAP.h"
 
 @import QuartzCore.CAMediaTimingFunction;
 
@@ -96,14 +98,28 @@
 
 - (IBAction)addSynthesizerButtonPressed:(id)sender
 {
-    NSOpenPanel *openPanel = [NSOpenPanel openPanel];
-    openPanel.allowedFileTypes = @[@"sf2"];
-    
-    [openPanel beginSheetModalForWindow:self.view.window completionHandler:^(NSInteger result) {
-        if (NSFileHandlingPanelOKButton == result) {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                [_manager loadMidiSourceDescriptionFromSoundFont:openPanel.URL.path];
-            });
+    [[IAP sharedInstance] findIAPProduct:kIAPProductFullVersion found:^(NSString *productID, int quantity) {
+        NSOpenPanel *openPanel = [NSOpenPanel openPanel];
+        openPanel.allowedFileTypes = @[@"sf2"];
+        
+        [openPanel beginSheetModalForWindow:self.view.window completionHandler:^(NSInteger result) {
+            if (NSFileHandlingPanelOKButton == result) {
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                    [_manager loadMidiSourceDescriptionFromSoundFont:openPanel.URL.path];
+                });
+            }
+        }];
+    } notFound:^(NSString *productID) {
+        NSAlert *alert = [[NSAlert alloc] init];
+        [alert addButtonWithTitle:NSLocalizedString(@"AboutFullVersion", @"About Full Version")];
+        [alert addButtonWithTitle:NSLocalizedString(@"Cancel", @"Cancel")];
+        alert.messageText = NSLocalizedString(@"FullVersionFeature", @"Full Version Feature");
+        alert.informativeText = NSLocalizedString(@"Synthesizer_NeedFullVersion", @"Adding Synthesizer is only for Full Version.\nPlease check about Full Version in Purchase Tab.");
+        [alert setAlertStyle:NSInformationalAlertStyle];
+        
+        NSModalResponse response = [alert runModal];
+        if (NSAlertFirstButtonReturn == response) {
+            [AppController showPreferenceWindowWithIdeintifier:@"Purchase" animate:YES];
         }
     }];
 }

@@ -16,5 +16,5 @@
 @end
 
 @interface PreferenceWindowController : NSWindowController
-
+- (void)setSelectedViewControllerForIdentifier:(NSString *)identifier animate:(BOOL)animate;
 @end

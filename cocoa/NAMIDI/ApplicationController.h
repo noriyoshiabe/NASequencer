@@ -18,6 +18,7 @@
 - (void)showGettingStartedWindow;
 - (void)showAboutWindow;
 - (void)showPreferenceWindow;
+- (void)showPreferenceWindowWithIdeintifier:(NSString *)identifier animate:(BOOL)animate;
 - (NSArray *)allowedFileTypes;
 - (NSArray *)allowedFileTypesInEditor;
 - (void)openDocumentWithContentsOfURL:(NSURL *)url;

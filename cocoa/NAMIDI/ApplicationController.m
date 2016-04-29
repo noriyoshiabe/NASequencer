@@ -16,6 +16,7 @@
 #import "MainWindowController.h"
 #import "Preference.h"
 #import "Document.h"
+#import "IAP.h"
 
 ApplicationController *AppController;
 
@@ -133,12 +134,21 @@ ApplicationController *AppController;
 
 - (void)showPreferenceWindow
 {
+    [self showPreferenceWindowWithIdeintifier:nil animate:NO];
+}
+
+- (void)showPreferenceWindowWithIdeintifier:(NSString *)identifier animate:(BOOL)animate
+{
     if (!_preferenceWC) {
         _preferenceWC = [[PreferenceWindowController alloc] init];
     }
     
     [_preferenceWC showWindow:self];
     [_preferenceWC.window setFlippedFrameTopLeftPoint:CGPointMake(200, 200)];
+    
+    if (identifier) {
+        [_preferenceWC setSelectedViewControllerForIdentifier:identifier animate:animate];
+    }
 }
 
 - (NSArray *)allowedFileTypes
@@ -274,35 +284,49 @@ ApplicationController *AppController;
 
 - (void)exportDocumentForWindow:(NSWindow *)window file:(FileRepresentation *)file
 {
-    _exportPanel = [NSSavePanel savePanel];
-    _exportPanel.delegate = self;
-    _exportPanel.prompt = NSLocalizedString(@"Document_Export", @"Export");
-    _exportPanel.title = NSLocalizedString(@"Document_ExportDocument", @"Export Document");
-    _exportPanel.nameFieldLabel = NSLocalizedString(@"Document_Filename", @"File Name:");
-    
-    NSString *ext = [Preference sharedInstance].selectedFileTypeForExport;
-    [_exportPanelFileTypePopoupButton selectItemAtIndex: [self.allowedExportFileTypes indexOfObject:ext]];
-    _exportPanel.accessoryView = _exportPanelAccessoryView;
-    _exportPanel.nameFieldStringValue = [_exportPanel.nameFieldStringValue stringByAppendingPathExtension:ext];
-    _exportPanel.allowedFileTypes = @[ext];
-    
-    [_exportPanel beginSheetModalForWindow:window completionHandler:^(NSInteger result) {
-        if (NSFileHandlingPanelOKButton == result) {
-            ExportWindowController *exportWC = [[ExportWindowController alloc] init];
-            exportWC.file = file;
-            exportWC.outputUrl = _exportPanel.URL;
-            exportWC.delegate = self;
-            
-            CGRect frame = window.frame;
-            frame.origin.x = frame.origin.x + frame.size.width - CGRectGetWidth(exportWC.window.frame) - 10;
-            frame.origin.y = frame.origin.y + frame.size.height - CGRectGetHeight(exportWC.window.frame) - 65;
-            frame.size = exportWC.window.frame.size;
-            [exportWC.window setFrame:frame display:YES];
-            [exportWC showWindow:self];
-            
-            [_exportControllers addObject:exportWC];
-            
-            _exportPanel = nil;
+    [[IAP sharedInstance] findIAPProduct:kIAPProductFullVersion found:^(NSString *productID, int quantity) {
+        _exportPanel = [NSSavePanel savePanel];
+        _exportPanel.delegate = self;
+        _exportPanel.prompt = NSLocalizedString(@"Document_Export", @"Export");
+        _exportPanel.title = NSLocalizedString(@"Document_ExportDocument", @"Export Document");
+        _exportPanel.nameFieldLabel = NSLocalizedString(@"Document_Filename", @"File Name:");
+        
+        NSString *ext = [Preference sharedInstance].selectedFileTypeForExport;
+        [_exportPanelFileTypePopoupButton selectItemAtIndex: [self.allowedExportFileTypes indexOfObject:ext]];
+        _exportPanel.accessoryView = _exportPanelAccessoryView;
+        _exportPanel.nameFieldStringValue = [_exportPanel.nameFieldStringValue stringByAppendingPathExtension:ext];
+        _exportPanel.allowedFileTypes = @[ext];
+        
+        [_exportPanel beginSheetModalForWindow:window completionHandler:^(NSInteger result) {
+            if (NSFileHandlingPanelOKButton == result) {
+                ExportWindowController *exportWC = [[ExportWindowController alloc] init];
+                exportWC.file = file;
+                exportWC.outputUrl = _exportPanel.URL;
+                exportWC.delegate = self;
+                
+                CGRect frame = window.frame;
+                frame.origin.x = frame.origin.x + frame.size.width - CGRectGetWidth(exportWC.window.frame) - 10;
+                frame.origin.y = frame.origin.y + frame.size.height - CGRectGetHeight(exportWC.window.frame) - 65;
+                frame.size = exportWC.window.frame.size;
+                [exportWC.window setFrame:frame display:YES];
+                [exportWC showWindow:self];
+                
+                [_exportControllers addObject:exportWC];
+                
+                _exportPanel = nil;
+            }
+        }];
+    } notFound:^(NSString *productID) {
+        NSAlert *alert = [[NSAlert alloc] init];
+        [alert addButtonWithTitle:NSLocalizedString(@"AboutFullVersion", @"About Full Version")];
+        [alert addButtonWithTitle:NSLocalizedString(@"Cancel", @"Cancel")];
+        alert.messageText = NSLocalizedString(@"FullVersionFeature", @"Full Version Feature");
+        alert.informativeText = NSLocalizedString(@"Export_NeedFullVersion", @"Exporting is only for Full Version.\nPlease check about Full Version in Preferences.");
+        [alert setAlertStyle:NSInformationalAlertStyle];
+        
+        NSModalResponse response = [alert runModal];
+        if (NSAlertFirstButtonReturn == response) {
+            [AppController showPreferenceWindowWithIdeintifier:@"Purchase" animate:NO];
         }
     }];
 }

@@ -59,6 +59,11 @@
     [self setSelectedViewController:_viewControllers[0] animate:NO];
 }
 
+- (void)setSelectedViewControllerForIdentifier:(NSString *)identifier animate:(BOOL)animate
+{
+    [self setSelectedViewController:[self controllerForIdentifier:identifier] animate:animate];
+}
+
 - (void)setSelectedViewController:(NSViewController<PreferenceViewController> *)controller
 {
     [self setSelectedViewController:controller animate:YES];
