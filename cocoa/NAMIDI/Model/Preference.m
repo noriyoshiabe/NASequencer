@@ -177,4 +177,20 @@ static Preference *_sharedInstance = nil;
     [_userDefaults synchronize];
 }
 
+- (NSString *)suppressedNewVersion
+{
+    return [_userDefaults stringForKey:kSuppressedNewVersion];
+}
+
+- (void)setSuppressedNewVersion:(NSString *)suppressedNewVersion
+{
+    if (suppressedNewVersion) {
+        [_userDefaults setValue:suppressedNewVersion forKey:kSuppressedNewVersion];
+    }
+    else {
+        [_userDefaults removeObjectForKey:kSuppressedNewVersion];
+    }
+    [_userDefaults synchronize];
+}
+
 @end

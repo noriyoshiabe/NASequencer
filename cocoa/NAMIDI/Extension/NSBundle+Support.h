@@ -9,5 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @interface NSBundle (Support)
++ (NSString *)shortVersionString;
++ (NSString *)bundleVersion;
 + (NSString *)versionString;
 @end

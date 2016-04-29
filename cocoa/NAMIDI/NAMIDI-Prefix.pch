@@ -25,6 +25,8 @@
 #import "NSTextField+Support.h"
 #import "NSBundle+Support.h"
 #import "NSEvent+Support.h"
+#import "NSString+Support.h"
+#import "NSNull+Support.h"
 
 #ifdef DEBUG
 #define __Trace__ NSLog(@"%s - %d", __func__, __LINE__);

@@ -384,12 +384,44 @@ ApplicationController *AppController;
     NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration];
     
     [[session dataTaskWithURL:url completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-        if (data) {
-            NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
-            NSLog(@"## %@", json);
-            
-            // TODO
-        }
+        [NSThread performBlockOnMainThread:^{
+            if (data) {
+                NSDictionary *versionInfo = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
+                
+                NSString *latestVersion = versionInfo[@"CFBundleShortVersionString"];
+                NSString *currentVersion = [NSBundle shortVersionString];
+                NSString *suppressdVersion = [Preference sharedInstance].suppressedNewVersion;
+                
+                if ([currentVersion isVersionSmallerThan:latestVersion]) {
+                    if (!suppressdVersion || [suppressdVersion isVersionSmallerThan:latestVersion]) {
+                        NSAlert *alert = [[NSAlert alloc] init];
+                        [alert addButtonWithTitle:NSLocalizedString(@"Update", @"Update")];
+                        [alert addButtonWithTitle:NSLocalizedString(@"NotNow", @"Not now")];
+                        alert.messageText = NSLocalizedString(@"NewVersionAvailable", @"New Version Available");
+                        
+                        NSString *format = NSLocalizedString(@"NewVersionAvailableMessageFormat", @"NASequencer %@ is now available. Would you like to download it now?");
+                        if (![NSNull isNull:versionInfo[@"AdditionalInformation"]]) {
+                            format = [format stringByAppendingFormat:@"\n\n%@", versionInfo[@"AdditionalInformation"]];
+                        }
+                        
+                        alert.informativeText = [NSString stringWithFormat:format, latestVersion];
+                        alert.showsSuppressionButton = YES;
+                        alert.suppressionButton.controlSize = NSSmallControlSize;
+                        alert.suppressionButton.font = [NSFont systemFontOfSize:11.0];
+                        alert.alertStyle = NSInformationalAlertStyle;
+                        
+                        NSModalResponse response = [alert runModal];
+                        if (NSAlertFirstButtonReturn == response) {
+                            [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"macappstore://itunes.apple.com/us/app/nasequencer/id1108716642?ls=1&mt=8"]];
+                        }
+                        
+                        if (NSOnState == alert.suppressionButton.state) {
+                            [Preference sharedInstance].suppressedNewVersion = latestVersion;
+                        }
+                    }
+                }
+            }
+        }];
     }] resume];
 }
 

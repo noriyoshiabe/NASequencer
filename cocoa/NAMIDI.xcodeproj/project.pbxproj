@@ -127,6 +127,8 @@
 		028589561C71320A00A53B8C /* EditorStatusViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 028589541C71320A00A53B8C /* EditorStatusViewController.xib */; };
 		0290B8C91CC4D637009524A3 /* PresetSelectionWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0290B8C71CC4D637009524A3 /* PresetSelectionWindowController.m */; };
 		0290B8CA1CC4D637009524A3 /* PresetSelectionWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0290B8C81CC4D637009524A3 /* PresetSelectionWindowController.xib */; };
+		029357D41CD3BA9C004B87B2 /* NSString+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 029357D31CD3BA9C004B87B2 /* NSString+Support.m */; };
+		029357D71CD3CE0F004B87B2 /* NSNull+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 029357D61CD3CE0F004B87B2 /* NSNull+Support.m */; };
 		029BADC81CBFFE52008EC950 /* jaunty_gumption.mml in Resources */ = {isa = PBXBuildFile; fileRef = 029BADC71CBFFE52008EC950 /* jaunty_gumption.mml */; };
 		02A673FA1C6B3A5C00914C8B /* ABCIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 02A673E91C6B3A5C00914C8B /* ABCIcon.iconset */; };
 		02A673FB1C6B3A5C00914C8B /* AppIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 02A673EA1C6B3A5C00914C8B /* AppIcon.iconset */; };
@@ -374,6 +376,10 @@
 		0290B8C61CC4D637009524A3 /* PresetSelectionWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PresetSelectionWindowController.h; sourceTree = "<group>"; };
 		0290B8C71CC4D637009524A3 /* PresetSelectionWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PresetSelectionWindowController.m; sourceTree = "<group>"; };
 		0290B8C81CC4D637009524A3 /* PresetSelectionWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PresetSelectionWindowController.xib; sourceTree = "<group>"; };
+		029357D21CD3BA9C004B87B2 /* NSString+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Support.h"; sourceTree = "<group>"; };
+		029357D31CD3BA9C004B87B2 /* NSString+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Support.m"; sourceTree = "<group>"; };
+		029357D51CD3CE0F004B87B2 /* NSNull+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSNull+Support.h"; sourceTree = "<group>"; };
+		029357D61CD3CE0F004B87B2 /* NSNull+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSNull+Support.m"; sourceTree = "<group>"; };
 		029BADC71CBFFE52008EC950 /* jaunty_gumption.mml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = jaunty_gumption.mml; sourceTree = "<group>"; };
 		02A673E91C6B3A5C00914C8B /* ABCIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = ABCIcon.iconset; sourceTree = "<group>"; };
 		02A673EA1C6B3A5C00914C8B /* AppIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = AppIcon.iconset; sourceTree = "<group>"; };
@@ -584,6 +590,10 @@
 				02B160801C9685FF009A2823 /* NSBundle+Support.m */,
 				020600EF1CC5FC840011660E /* NSEvent+Support.h */,
 				020600F01CC5FC840011660E /* NSEvent+Support.m */,
+				029357D21CD3BA9C004B87B2 /* NSString+Support.h */,
+				029357D31CD3BA9C004B87B2 /* NSString+Support.m */,
+				029357D51CD3CE0F004B87B2 /* NSNull+Support.h */,
+				029357D61CD3CE0F004B87B2 /* NSNull+Support.m */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -1060,6 +1070,7 @@
 				0262BAF21C8A30F400BEB76A /* ABCHighlightSpec.m in Sources */,
 				026D42E61C7ABC08000267AD /* TrackChannelViewController.m in Sources */,
 				025FA9021C7D1BE900E4C3B3 /* PianoRollKeyboardViewController.m in Sources */,
+				029357D71CD3CE0F004B87B2 /* NSNull+Support.m in Sources */,
 				0216EE001C7C3333009A7B90 /* PianoRollConductorLabelView.m in Sources */,
 				028209271C70A5D8003EBCFB /* FileRepresentation.m in Sources */,
 				02F350631CD1AECC00DB8499 /* ReceiptVerifier.m in Sources */,
@@ -1079,6 +1090,7 @@
 				026D42DA1C7ABC08000267AD /* SelectionViewController.m in Sources */,
 				0214837A1C86583E00D653AE /* NSPathUtilities+Support.m in Sources */,
 				02F350601CD1AECC00DB8499 /* AppStoreReceipt.m in Sources */,
+				029357D41CD3BA9C004B87B2 /* NSString+Support.m in Sources */,
 				025FAF9F1C8065C300E4C3B3 /* MixerRepresentation.m in Sources */,
 				0232CB191C89058200542D34 /* WelcomeRecentRowView.m in Sources */,
 				0214836A1C84B2E700D653AE /* ExportWindowController.m in Sources */,

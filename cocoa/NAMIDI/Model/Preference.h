@@ -23,6 +23,8 @@
 #define kSelectedFileTypeForCreation @"SelectedFileTypeForCreation"
 #define kSelectedFileTypeForExport @"SelectedFileTypeForExport"
 
+#define kSuppressedNewVersion @"SuppressedNewVersion"
+
 @interface Preference : NSObject
 @property (readonly, nonatomic) BOOL showWelcome;
 @property (readwrite, nonatomic) NSString *selectedFileTypeForCreation;
@@ -32,6 +34,7 @@
 @property (readwrite, nonatomic) NSData *includeSearchPathBookmark;
 @property (readwrite, nonatomic) NSArray *midiSourceSettings;
 @property (readwrite, nonatomic) NSString *lastRootDirectory;
+@property (readwrite, nonatomic) NSString *suppressedNewVersion;
 + (Preference *)sharedInstance;
 - (void)initialize;
 - (NSString *)defaultIncludeSearchPath;

@@ -10,11 +10,19 @@
 
 @implementation NSBundle (Support)
 
++ (NSString *)shortVersionString
+{
+    return [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+}
+
++ (NSString *)bundleVersion
+{
+    return [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
+}
+
 + (NSString *)versionString
 {
-    NSString *shortVersionString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-    NSString *bundleVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
-    return [NSString stringWithFormat:@"Version %@ (%@)", shortVersionString, bundleVersion];
+    return [NSString stringWithFormat:@"Version %@ (%@)", self.shortVersionString, self.bundleVersion];
 }
 
 @end
