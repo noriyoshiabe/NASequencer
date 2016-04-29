@@ -71,6 +71,8 @@ ApplicationController *AppController;
     }
     
     [[MidiSourceManagerRepresentation sharedInstance] initialize];
+    
+    [self checkNewVersion];
 }
 
 - (void)createDefaultIncludeDirectory
@@ -369,6 +371,26 @@ ApplicationController *AppController;
     else {
         return nil;
     }
+}
+
+#pragma mark New Version Annonce
+
+- (void)checkNewVersion
+{
+    NSURL *url = [NSURL URLWithString:@"https://nasequencer.com/latest-version.json"];
+    
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration];
+    
+    [[session dataTaskWithURL:url completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        if (data) {
+            NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
+            NSLog(@"## %@", json);
+            
+            // TODO
+        }
+    }] resume];
 }
 
 @end
