@@ -97,6 +97,17 @@
     // Suppress warning
 }
 
+- (IBAction)officialSite:(id)sender
+{
+    [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://nasequencer.com"]];
+}
+
+- (IBAction)customerSupport:(id)sender
+{
+    NSString *bookName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleHelpBookName"];
+    [[NSHelpManager sharedHelpManager] openHelpAnchor:@"support" inBook:bookName];
+}
+
 #pragma Default Menu Title
 
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem

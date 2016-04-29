@@ -56,18 +56,13 @@
 
 - (IBAction)officialSitePressed:(NSTextField *)sender
 {
-    [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:sender.stringValue]];
+    [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://nasequencer.com"]];
 }
 
 - (IBAction)supportMailPressed:(NSTextField *)sender
 {
-    NSString *subject = NSLocalizedString(@"About_MailSubject", @"Inquiry about NASequencer");
-    
-    NSOperatingSystemVersion version = [[NSProcessInfo processInfo] operatingSystemVersion];
-    NSString *osVersion = [NSString stringWithFormat:@"OS Version: %ld.%ld.%ld", version.majorVersion, version.minorVersion, version.patchVersion];
-    NSString *body = [NSString stringWithFormat:NSLocalizedString(@"About_MailBody", @"%@"), osVersion];
-    NSString *mailtoAddress = [NSString stringWithFormat:@"mailto:%@?Subject=%@&body=%@", sender.stringValue, subject, body];
-    [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:[mailtoAddress stringByReplacingOccurrencesOfString:@" " withString:@"%20"]]];
+    NSString *bookName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleHelpBookName"];
+    [[NSHelpManager sharedHelpManager] openHelpAnchor:@"support" inBook:bookName];
 }
 
 @end

@@ -367,6 +367,19 @@ Gw
                                     <action selector="showHelp:" target="-1" id="y7X-2Q-9no"/>
                                 </connections>
                             </menuItem>
+                            <menuItem isSeparatorItem="YES" id="wsH-g1-PXT"/>
+                            <menuItem title="Official Site" id="zpw-M3-ICN">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="officialSite:" target="-1" id="NGA-LB-Rnu"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Customer Support" id="guA-bc-8Ma">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="customerSupport:" target="-1" id="SFg-Pc-a3a"/>
+                                </connections>
+                            </menuItem>
                         </items>
                     </menu>
                 </menuItem>
