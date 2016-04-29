@@ -9,8 +9,6 @@
 #import <Foundation/Foundation.h>
 #import <StoreKit/StoreKit.h>
 
-#import "ReceiptVerifier.h"
-
 #define kIAPProductFullVersion @"com.nasequencer.NASequencer.full_version"
 
 @class IAP;
@@ -25,8 +23,7 @@
 - (void)finalize;
 - (void)addObserver:(id<IAPObserver>)observer;
 - (void)removeObserver:(id<IAPObserver>)observer;
-- (void)verifyReceipt:(id<ReceiptVerifierDelegate>)delegate;
-- (void)findIAPProduct:(NSString *)productID delegate:(id<ReceiptVerifierDelegate>)delegate;
+- (void)findIAPProduct:(NSString *)productID found:(void(^)(NSString *productID, int quantity))found notFound:(void(^)(NSString *productID))notFound;
 - (void)requestProductInfo:(NSArray *)productIdentifiers callback:(void (^)(SKProductsResponse *response))callback;
 // TODO remove
 #ifdef DEBUG

@@ -15,7 +15,7 @@
 #import "IAPMock.h"
 #endif
 
-@interface PurchaseViewController () <ReceiptVerifierDelegate, IAPObserver>
+@interface PurchaseViewController () <IAPObserver>
 @property (weak) IBOutlet NSView *additionalViewContainer;
 @property (weak) IBOutlet NSView *purchaseView;
 @property (weak) IBOutlet NSView *thanksView;
@@ -55,7 +55,13 @@
 - (void)viewWillAppear
 {
     [super viewWillAppear];
-    [[IAP sharedInstance] findIAPProduct:kIAPProductFullVersion delegate:self];
+    
+    [[IAP sharedInstance] findIAPProduct:kIAPProductFullVersion found:^(NSString *productID, int quantity) {
+        [self showThanksView];
+    } notFound:^(NSString *productID) {
+        [self showPurchaseView];
+    }];
+    
     [[IAP sharedInstance] addObserver:self];
 }
 
@@ -182,29 +188,13 @@ extern BOOL __fakePurchased__;
             break;
         case SKPaymentTransactionStatePurchased:
         case SKPaymentTransactionStateRestored:
-            [[IAP sharedInstance] findIAPProduct:kIAPProductFullVersion delegate:self];
+            [[IAP sharedInstance] findIAPProduct:kIAPProductFullVersion found:^(NSString *productID, int quantity) {
+                [self showThanksView];
+            } notFound:^(NSString *productID) {
+                [self showPurchaseView];
+            }];
             break;
     }
-}
-
-#pragma mark ReceiptVerifierDelegate
-
-- (void)verifierDidVerifySuccess:(ReceiptVerifier*)verifier
-{
-}
-
-- (void)verifierDidVerifyFail:(ReceiptVerifier*)verifier
-{
-}
-
-- (void)verifier:(ReceiptVerifier*)verifier didIAPProductFound:(NSString *)productID quantity:(int)quantity
-{
-    [self showThanksView];
-}
-
-- (void)verifier:(ReceiptVerifier*)verifier didIAPProductNotFound:(NSString *)productID
-{
-    [self showPurchaseView];
 }
 
 @end

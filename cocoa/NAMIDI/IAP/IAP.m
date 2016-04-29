@@ -8,6 +8,7 @@
 
 #import "IAP.h"
 #import "ObserverList.h"
+#import "ReceiptVerifier.h"
 
 #import <Crashlytics/Answers.h>
 
@@ -29,6 +30,8 @@
     ObserverList *_observers;
     ReceiptVerifier *_verifier;
     SKPaymentTransaction *_purchasedTransaction;
+    void(^_found)(NSString *, int);
+    void(^_notFound)(NSString *);
 }
 @end
 
@@ -54,6 +57,7 @@ static IAP *_sharedInstance = nil;
         
         NSURL *appleCert = [[NSBundle mainBundle] URLForResource:@"AppleIncRootCertificate" withExtension:@"cer"];
         _verifier = [ReceiptVerifier verifierFromCertFile:appleCert.path];
+        _verifier.delegate = self;
     }
     return self;
 }
@@ -83,14 +87,13 @@ static IAP *_sharedInstance = nil;
 {
     NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
     AppStoreReceipt *receipt = [AppStoreReceipt parseFromFile:receiptURL.path];
-    
-    _verifier.delegate = delegate;
     [_verifier verify:receipt];
 }
 
-- (void)findIAPProduct:(NSString *)productID delegate:(id<ReceiptVerifierDelegate>)delegate
+- (void)findIAPProduct:(NSString *)productID found:(void(^)(NSString *productID, int quantity))found notFound:(void(^)(NSString *productID))notFound
 {
-    _verifier.delegate = delegate;
+    _found = found;
+    _notFound = notFound;
     [_verifier findIAPProduct:productID];
 }
 
@@ -196,7 +199,37 @@ static IAP *_sharedInstance = nil;
 - (void)verifierDidVerifySuccess:(ReceiptVerifier*)verifier
 {
     if (_purchasedTransaction) {
-        [_verifier findIAPProduct:_purchasedTransaction.payment.productIdentifier];
+        [self findIAPProduct:_purchasedTransaction.payment.productIdentifier found:^(NSString *productID, int quantity) {
+            SKPaymentTransaction *transaction = _purchasedTransaction;
+            
+            [self requestProductInfo:@[transaction.payment.productIdentifier] callback:^(SKProductsResponse *response) {
+                SKProduct *product = response.products.firstObject;
+                if (product) {
+                    if (SKPaymentTransactionStatePurchased == transaction.transactionState) {
+                        NSDictionary *types = @{kIAPProductFullVersion: @"Non-consumable"};
+                        [Answers logPurchaseWithPrice:product.price
+                                             currency:[product.priceLocale objectForKey:NSLocaleCurrencyCode]
+                                              success:@YES
+                                             itemName:product.localizedTitle
+                                             itemType:types[product.productIdentifier]
+                                               itemId:product.productIdentifier
+                                     customAttributes:@{}];
+                    }
+                    else if (SKPaymentTransactionStateRestored == transaction.transactionState) {
+                        [Answers logCustomEventWithName:@"Restore Purchase" customAttributes:@{@"Item ID" : product.productIdentifier}];
+                    }
+                    else {
+                        [Answers logCustomEventWithName:@"Trace" customAttributes:@{@"Category": @"Purchase", @"Message" : [NSString stringWithFormat:@"Illegal transaction state with purchase success transactionState=%ld", transaction.transactionState]}];
+                    }
+                    
+                }
+            }];
+            
+            _purchasedTransaction = nil;
+        } notFound:^(NSString *productID) {
+            [Answers logCustomEventWithName:@"Trace" customAttributes:@{@"Category": @"Purchase", @"Message" : [NSString stringWithFormat:@"verifier:didIAPProductNotFound: productID=%@", productID]}];
+            _purchasedTransaction = nil;
+        }];
     }
 }
 
@@ -208,37 +241,22 @@ static IAP *_sharedInstance = nil;
 
 - (void)verifier:(ReceiptVerifier*)verifier didIAPProductFound:(NSString *)productID quantity:(int)quantity
 {
-    SKPaymentTransaction *transaction = _purchasedTransaction;
+    if(_found) {
+        _found(productID, quantity);
+    }
     
-    [self requestProductInfo:@[transaction.payment.productIdentifier] callback:^(SKProductsResponse *response) {
-        SKProduct *product = response.products.firstObject;
-        if (product) {
-            if (SKPaymentTransactionStatePurchased == transaction.transactionState) {
-                NSDictionary *types = @{kIAPProductFullVersion: @"Non-consumable"};
-                [Answers logPurchaseWithPrice:product.price
-                                     currency:[product.priceLocale objectForKey:NSLocaleCurrencyCode]
-                                      success:@YES
-                                     itemName:product.localizedTitle
-                                     itemType:types[product.productIdentifier]
-                                       itemId:product.productIdentifier
-                             customAttributes:@{}];
-            }
-            else if (SKPaymentTransactionStateRestored == transaction.transactionState) {
-                [Answers logCustomEventWithName:@"Restore Purchase" customAttributes:@{@"Item ID" : product.productIdentifier}];
-            }
-            else {
-                [Answers logCustomEventWithName:@"Trace" customAttributes:@{@"Category": @"Purchase", @"Message" : [NSString stringWithFormat:@"Illegal transaction state with purchase success transactionState=%ld", transaction.transactionState]}];
-            }
-            
-        }
-    }];
-    _purchasedTransaction = nil;
+    _found = nil;
+    _notFound = nil;
 }
 
 - (void)verifier:(ReceiptVerifier*)verifier didIAPProductNotFound:(NSString *)productID
 {
-    [Answers logCustomEventWithName:@"Trace" customAttributes:@{@"Category": @"Purchase", @"Message" : [NSString stringWithFormat:@"verifier:didIAPProductNotFound: productID=%@", productID]}];
-    _purchasedTransaction = nil;
+    if (_notFound) {
+        _notFound(productID);
+    }
+    
+    _found = nil;
+    _notFound = nil;
 }
 
 @end
