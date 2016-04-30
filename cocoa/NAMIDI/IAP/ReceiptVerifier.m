@@ -48,6 +48,12 @@
 
 - (void)verify:(AppStoreReceipt *)receipt
 {
+// TODO remove
+#ifdef DEBUG
+    [_delegate verifierDidVerifySuccess:self];
+    return;
+#else
+
     if (!receipt.exist) {
         [_delegate verifierDidVerifyFail:self];
         return;
@@ -98,20 +104,15 @@
     
     EVP_cleanup();
     [_delegate verifierDidVerifySuccess:self];
-}
-
-#ifdef DEBUG
-// TODO remove
-BOOL __fakePurchased__ = NO;
 #endif
+}
 
 - (void)findIAPProduct:(NSString *)productID
 {
 #ifdef DEBUG
     // TODO remove
-    if (__fakePurchased__) {
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"FakePurchased"]) {
         [_delegate verifier:self didIAPProductFound:productID quantity:1];
-        return;
     }
 #endif
     

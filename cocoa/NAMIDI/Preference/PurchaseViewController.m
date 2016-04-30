@@ -114,13 +114,11 @@
     [_additionalViewContainer addSubview:_thanksView];
 }
 
-// TODO remove
-extern BOOL __fakePurchased__;
-
 - (IBAction)purchasePressed:(id)sender
 {
     // TODO
-    __fakePurchased__ = YES;
+    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"FakePurchased"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
     
     [[IAP sharedInstance] paymentQueue:[SKPaymentQueue defaultQueue] updatedTransactions:@[[[FakePaymentTransaction alloc] initWithState:SKPaymentTransactionStatePurchasing error:nil]]];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -131,7 +129,8 @@ extern BOOL __fakePurchased__;
 - (IBAction)restorePurchasePressed:(id)sender
 {
     // TODO
-    __fakePurchased__ = YES;
+    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"FakePurchased"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
     
     [[IAP sharedInstance] paymentQueue:[SKPaymentQueue defaultQueue] updatedTransactions:@[[[FakePaymentTransaction alloc] initWithState:SKPaymentTransactionStatePurchasing error:nil]]];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
