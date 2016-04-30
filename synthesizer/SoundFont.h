@@ -223,6 +223,8 @@ typedef struct _SoundFont {
     uint32_t igenLength;
     SFSampleHeader *shdr;
     uint32_t shdrLength;
+
+    uint32_t crc32;
 } SoundFont;
 
 typedef enum {

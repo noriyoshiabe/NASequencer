@@ -23,6 +23,7 @@ typedef struct _MidiSourceDescriptionImpl {
     int gain;
     int masterVolume;
     MidiSourceDescriptionError error;
+    uint32_t crc32;
     SoundFont *sf;
     int sortIndex;
 } MidiSourceDescriptionImpl;
@@ -180,6 +181,7 @@ bool MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(MidiSourceManager *
             free(description->name);
             description->name = strdup(description->sf->INAM);
             description->available = true;
+            description->crc32 = description->sf->crc32;
 
             bool notifyUnloadDefault = 0 == NAArrayCount(self->availableDescriptions);
             NAArrayAppend(self->availableDescriptions, description);
@@ -260,10 +262,10 @@ bool MidiSourceManagerReloadMidiSourceDescription(MidiSourceManager *self, MidiS
         free(description->name);
         description->name = strdup(description->sf->INAM);
         description->available = true;
+        description->crc32 = description->sf->crc32;
 
-        int i;
         int count = NAArrayCount(self->availableDescriptions);
-        for (i = 0; i <= count; ++i) {
+        for (int i = 0; i <= count; ++i) {
             if (count <= i) {
                 NAArrayAppend(self->availableDescriptions, description);
                 break;
@@ -277,13 +279,27 @@ bool MidiSourceManagerReloadMidiSourceDescription(MidiSourceManager *self, MidiS
         }
 
         MidiSourceManagerNotifyLoadAvailableMidiSourceDescription(self, description);
-
-        if (i < count) {
-            MidiSourceManagerNotifyReorderMidiSourceDescriptions(self, self->descriptions, self->availableDescriptions);
-        }
+        MidiSourceManagerNotifyReorderMidiSourceDescriptions(self, self->descriptions, self->availableDescriptions);
     }
 
     return !!description->sf;
+}
+
+void MidiSourceManagerDisableAvailableMidiSourceDescription(MidiSourceManager *self, MidiSourceDescription *description, MidiSourceDescriptionError error)
+{
+    int index = NAArrayFindFirstIndex(self->availableDescriptions, description, MidiSourceDescriptionFindComparator);
+    if (-1 != index) {
+        NAArrayRemoveAt(self->availableDescriptions, index);
+        MidiSourceManagerNotifyUnloadAvailableMidiSourceDescription(self, (MidiSourceDescriptionImpl *)description);
+    }
+
+    MidiSourceDescriptionImpl *_description = (MidiSourceDescriptionImpl *)description;
+    if (_description) {
+        SoundFontDestroy(_description->sf);
+        _description->sf = NULL;
+        _description->available = false;
+        _description->error = error;
+    }
 }
 
 MidiSource *MidiSourceManagerAllocMidiSource(MidiSourceManager *self, MidiSourceDescription *_description, double sampleRate)
@@ -434,7 +450,7 @@ static void MidiSourceDescriptionImplDestroy(MidiSourceDescriptionImpl *self)
 
 
 static MidiSourceDescriptionImpl DefaultMidiSourceDescription = {
-    "N/A", "N/A", true, 0, 0, MidiSourceDescriptionErrorNoError, NULL
+    "N/A", "N/A", true, 0, 0, MidiSourceDescriptionErrorNoError, 0, NULL, 0
 };
 
 static PresetInfo DefaultMidiSourcePresetInfo = {

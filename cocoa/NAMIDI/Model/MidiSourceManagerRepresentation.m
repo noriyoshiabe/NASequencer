@@ -274,6 +274,13 @@ static MidiSourceManagerRepresentation *_sharedInstance = nil;
 
 - (void)onLoadAvailableMidiSourceDescription:(MidiSourceDescription *)description
 {
+    if ([self.pathForDefaultMidiSource isEqualToString:@(description->filepath)]) {
+        if (0x27B16C24 != description->crc32) {
+            MidiSourceManagerDisableAvailableMidiSourceDescription(_manager, description, MidiSourceDescriptionErrorInvalidCRC);
+            return;
+        }
+    }
+    
     MidiSourceDescriptionRepresentation *_description = [[MidiSourceDescriptionRepresentation alloc] initWithMidiSourceDescription:description];
     [_availableDescriptions addObject:_description];
     

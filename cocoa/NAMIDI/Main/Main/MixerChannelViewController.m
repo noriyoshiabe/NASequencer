@@ -64,7 +64,7 @@
     [_soloButton bind:@"value" toObject:self withKeyPath:@"solo" options:nil];
     
     [_synthButton bind:@"content" toObject:self withKeyPath:@"availableDescriptions" options:nil];
-    [_synthButton bind:@"contentValues" toObject:self withKeyPath:@"availableDescriptions.name" options:nil];
+    [_synthButton bind:@"contentValues" toObject:self withKeyPath:@"availableDescriptions.name" options:@{NSNullPlaceholderBindingOption: @"N/A"}];
     [_synthButton bind:@"selectedObject" toObject:self withKeyPath:@"midiSourceDescription" options:nil];
     
     [_presetButton bind:@"title" toObject:self withKeyPath:@"presetLabel" options:nil];

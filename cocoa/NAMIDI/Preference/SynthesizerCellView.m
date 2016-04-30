@@ -117,7 +117,10 @@
             messageFormat = NSLocalizedString(@"Preference_MidiSourceFileUnsupportedVersion", @"Unsupported File Format Version \"%@\".");
             break;
         case MidiSourceDescriptionErrorInvalidFileFormat:
-            messageFormat = NSLocalizedString(@"Preference_MidiSourceFileUnsupportedVersion", @"Invlalid File Format \"%@\".");
+            messageFormat = NSLocalizedString(@"Preference_MidiSourceInvalidFileFormat", @"Invlalid File Format \"%@\".");
+            break;
+        case MidiSourceDescriptionErrorInvalidCRC:
+            messageFormat = NSLocalizedString(@"Preference_MidiSourceInvalidCRC", @"Invlalid CRC \"%@\".");
             break;
     }
     
