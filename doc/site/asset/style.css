@@ -1,0 +1,634 @@
+body {
+  color: #333;
+  font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif;
+  word-wrap: break-word;
+  background-color: #fff;
+}
+* {
+  font-size: 14px;
+  line-height: 1.6;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+nav > div,
+header > div,
+footer > div,
+section > div {
+  max-width: 1024px;
+  margin: auto;
+}
+
+nav {
+  height: 47px;
+  border-bottom: 1px solid #979797;
+}
+nav > div {
+  height: 100%;
+}
+nav a {
+  text-decoration: none;
+  font-size: 1.5rem;
+  font-weight: 100;
+  height: 47px;
+  line-height: 47px;
+}
+nav a:first-child {
+  color: #000;
+  float: left;
+  margin-left: 36px;
+  font-weight: 200;
+}
+nav a:not(:first-child) {
+  color: #888;
+  float: right;
+  margin-right: 36px;
+}
+nav a:hover {
+  color: #4183c4;
+}
+
+html {
+  height: 100%;
+}
+body {
+  position: relative;
+  min-height: 100%;
+  padding-bottom: 96px;
+}
+footer {
+  position: absolute;
+  bottom: 0;
+  height: 96px;
+  width: 100%;
+  background-color: #f6f6f6;
+  border-top: 1px solid #979797;
+}
+footer > div {
+  height: 100%;
+}
+footer a {
+  text-decoration: none;
+  color: #888;
+  font-size: 1.3rem;
+  font-weight: 100;
+  float: left;
+  margin-left: 36px;
+  height: 47px;
+  line-height: 47px;
+}
+footer a:hover {
+  color: #4183c4;
+}
+footer p {
+  clear: both;
+  margin-left: 36px;
+  font-size: 1.0rem;
+  color: #888;
+  font-weight: 100;
+}
+footer p:last-child {
+  font-size: 0.9rem;
+}
+
+.md {
+  padding: 15px 80px 60px;
+}
+
+.md a {
+    background: 0 0;
+    color: #4183c4;
+    text-decoration: none
+}
+.md a:active,
+.md a:hover {
+    outline: 0
+}
+.md a:active,
+.md a:focus,
+.md a:hover {
+    text-decoration: underline
+}
+.md strong {
+    font-weight: 700
+}
+.md em {
+    font-style: italic
+}
+.md blockquote,
+.md dl,
+.md ol,
+.md p,
+.md pre,
+.md table,
+.md ul {
+    margin-top: 0;
+    margin-bottom: 16px
+}
+.md h1,
+.md h2,
+.md h3,
+.md h4,
+.md h5,
+.md h6 {
+    font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif;
+    position: relative;
+    margin-top: 1.5em;
+    margin-bottom: 16px;
+    font-weight: 700;
+    line-height: 1.4
+}
+.md h1,
+.md h2,
+.md h3 {
+    padding-bottom: .3em;
+    border-bottom: 1px solid #eee
+}
+.md h1 {
+    font-size: 1.75em;
+    line-height: 1.225;
+    font-weight: 200;
+    color: #555;
+}
+.md h1:before {
+    content: " ";
+    margin: 0 7px 0 0;
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    background: url(../images/AppIcon.png);
+    background-size: contain;
+    transform: translateY(5px);
+}
+.md h2 {
+    font-size: 1.375em;
+}
+.md h3 {
+    font-size: 1.25em;
+}
+.md h4 {
+    font-size: 1.125em;
+}
+.md h5 {
+    font-size: 1em;
+}
+.md h6 {
+    font-size: 1em;
+    color: #777;
+}
+.md code,
+.md kbd,
+.md pre {
+    font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace
+}
+.md code {
+    padding: .2em 0;
+    margin: 0;
+    font-size: 85%;
+    background-color: rgba(0, 0, 0, .04);
+    border-radius: 3px
+}
+.md code:after,
+.md code:before {
+    letter-spacing: -.2em;
+    content: '\00a0'
+}
+.md pre {
+    word-wrap: normal;
+    padding: 10px;
+    overflow: auto;
+    font-size: 85%;
+    line-height: 1.45;
+    background-color: #f7f7f7;
+    border-radius: 3px;
+}
+.md pre code {
+    display: inline;
+    max-width: initial;
+    padding: 0;
+    margin: 0;
+    overflow: initial;
+    line-height: inherit;
+    word-wrap: normal;
+    background: 0 0
+}
+.md pre code:after,
+.md pre code:before {
+    content: normal
+}
+.md pre>code {
+    font-size: 1em;
+    word-break: normal;
+    white-space: pre;
+    border: 0
+}
+.md kbd {
+    background-color: #e7e7e7;
+    background-image: -webkit-linear-gradient(#fefefe, #e7e7e7);
+    background-image: linear-gradient(#fefefe, #e7e7e7);
+    background-repeat: repeat-x;
+    display: inline-block;
+    padding: 5px 5px 1px;
+    margin: 0 1px;
+    font-size: 11px;
+    line-height: 10px;
+    color: #000;
+    border: 1px solid #cfcfcf;
+    border-radius: 2px;
+    box-shadow: 0 1px 0 #ccc
+}
+.md hr:after,
+.md hr:before {
+    display: table;
+    content: ''
+}
+.md input {
+    color: inherit;
+    font: inherit;
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.4;
+    font-family: Helvetica, Arial, freesans, clean, sans-serif, 'Segoe UI Emoji', 'Segoe UI Symbol'
+}
+.md input[disabled] {
+    cursor: default
+}
+.md input[type=checkbox] {
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 0
+}
+.md blockquote {
+    margin: 0 0 16px;
+    padding: 0 15px;
+    color: #777;
+    border-left: 4px solid #ddd
+}
+.md blockquote>:first-child {
+    margin-top: 0
+}
+.md blockquote>:last-child {
+    margin-bottom: 0
+}
+.md img {
+    border: 0;
+    max-width: 100%;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box
+}
+.md hr {
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
+    overflow: hidden;
+    background: #e7e7e7;
+    height: 4px;
+    padding: 0;
+    margin: 16px 0;
+    border: 0
+}
+.md hr:after {
+    clear: both
+}
+.md td,
+.md th {
+    padding: 0
+}
+.md table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    display: block;
+    width: auto;
+    overflow: auto;
+    word-break: normal;
+    word-break: keep-all
+}
+.md table td,
+.md table th {
+    padding: 6px 13px;
+    border: 1px solid #ddd
+}
+.md table th {
+    font-weight: 700
+}
+.md table tr {
+    background-color: #fff;
+    border-top: 1px solid #ccc
+}
+.md table tr:nth-child(2n) {
+    background-color: #f8f8f8
+}
+.md ol,
+.md ul {
+    padding: 0 0 0 2em
+}
+.md ol ol,
+.md ul ol {
+    list-style-type: lower-roman
+}
+.md ol ol,
+.md ol ul,
+.md ul ol,
+.md ul ul {
+    margin-top: 0;
+    margin-bottom: 0
+}
+.md ol ol ol,
+.md ol ul ol,
+.md ul ol ol,
+.md ul ul ol {
+    list-style-type: lower-alpha
+}
+.md li>p {
+    margin-top: 16px
+}
+.md dd {
+    margin-left: 0
+}
+.md dl {
+    padding: 0
+}
+.md dl dt {
+    padding: 0;
+    margin-top: 16px;
+    font-size: 1em;
+    font-style: italic;
+    font-weight: 700
+}
+.md dl dd {
+    padding: 0 16px;
+    margin-bottom: 16px
+}
+
+
+.help {
+  padding: 15px 80px 60px;
+}
+
+.help a {
+    background: 0 0;
+    color: #4183c4;
+    text-decoration: none
+}
+.help a:active,
+.help a:hover {
+    outline: 0
+}
+.help a:active,
+.help a:focus,
+.help a:hover {
+    text-decoration: underline
+}
+.help strong {
+    font-weight: 700
+}
+.help em {
+    font-style: italic
+}
+.help blockquote,
+.help dl,
+.help ol,
+.help p,
+.help pre,
+.help table,
+.help ul {
+    margin-top: 0;
+    margin-bottom: 16px
+}
+.help h1,
+.help h2,
+.help h3,
+.help h4,
+.help h5,
+.help h6,
+.help h7 {
+    font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif;
+    position: relative;
+    margin-top: 1.5em;
+    margin-bottom: 16px;
+    font-weight: 700;
+    line-height: 1.4
+}
+.help h1,
+.help h2,
+.help h3 {
+    padding-bottom: .3em;
+    border-bottom: 1px solid #eee
+}
+.help h1 {
+    font-size: 1.75em;
+    line-height: 1.225;
+    font-weight: 200;
+    color: #555;
+}
+.help h1:before {
+    content: " ";
+    margin: 0 7px 0 0;
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    background: url(../images/AppIcon.png);
+    background-size: contain;
+    transform: translateY(5px);
+}
+.help h2 {
+    font-size: 1.75em;
+}
+.help h3 {
+    font-size: 1.375em;
+}
+.help h4 {
+    font-size: 1.25em;
+}
+.help h5 {
+    font-size: 1.125em;
+}
+.help h6 {
+    font-size: 1em;
+}
+.help h7 {
+    font-size: 1em;
+    color: #777;
+}
+.help code,
+.help kbd,
+.help pre {
+    font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace
+}
+.help code {
+    padding: .2em 0;
+    margin: 0;
+    font-size: 85%;
+    background-color: rgba(0, 0, 0, .04);
+    border-radius: 3px
+}
+.help code:after,
+.help code:before {
+    letter-spacing: -.2em;
+    content: '\00a0'
+}
+.help pre {
+    word-wrap: normal;
+    padding: 10px;
+    overflow: auto;
+    font-size: 85%;
+    line-height: 1.45;
+    background-color: #f7f7f7;
+    border-radius: 3px;
+}
+.help pre code {
+    display: inline;
+    max-width: initial;
+    padding: 0;
+    margin: 0;
+    overflow: initial;
+    line-height: inherit;
+    word-wrap: normal;
+    background: 0 0
+}
+.help pre code:after,
+.help pre code:before {
+    content: normal
+}
+.help pre>code {
+    font-size: 1em;
+    word-break: normal;
+    white-space: pre;
+    border: 0
+}
+.help kbd {
+    background-color: #e7e7e7;
+    background-image: -webkit-linear-gradient(#fefefe, #e7e7e7);
+    background-image: linear-gradient(#fefefe, #e7e7e7);
+    background-repeat: repeat-x;
+    display: inline-block;
+    padding: 5px 5px 1px;
+    margin: 0 1px;
+    font-size: 11px;
+    line-height: 10px;
+    color: #000;
+    border: 1px solid #cfcfcf;
+    border-radius: 2px;
+    box-shadow: 0 1px 0 #ccc
+}
+.help hr:after,
+.help hr:before {
+    display: table;
+    content: ''
+}
+.help input {
+    color: inherit;
+    font: inherit;
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.4;
+    font-family: Helvetica, Arial, freesans, clean, sans-serif, 'Segoe UI Emoji', 'Segoe UI Symbol'
+}
+.help input[disabled] {
+    cursor: default
+}
+.help input[type=checkbox] {
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 0
+}
+.help blockquote {
+    margin: 0 0 16px;
+    padding: 0 15px;
+    color: #777;
+    border-left: 4px solid #ddd
+}
+.help blockquote>:first-child {
+    margin-top: 0
+}
+.help blockquote>:last-child {
+    margin-bottom: 0
+}
+.help img {
+    border: 0;
+    max-width: 100%;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box
+}
+.help hr {
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
+    overflow: hidden;
+    background: #e7e7e7;
+    height: 4px;
+    padding: 0;
+    margin: 16px 0;
+    border: 0
+}
+.help hr:after {
+    clear: both
+}
+.help td,
+.help th {
+    padding: 0
+}
+.help table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    display: block;
+    width: auto;
+    overflow: auto;
+    word-break: normal;
+    word-break: keep-all
+}
+.help table td,
+.help table th {
+    padding: 6px 13px;
+    border: 1px solid #ddd
+}
+.help table th {
+    font-weight: 700
+}
+.help table tr {
+    background-color: #fff;
+    border-top: 1px solid #ccc
+}
+.help table tr:nth-child(2n) {
+    background-color: #f8f8f8
+}
+.help ol,
+.help ul {
+    padding: 0 0 0 2em
+}
+.help ol ol,
+.help ul ol {
+    list-style-type: lower-roman
+}
+.help ol ol,
+.help ol ul,
+.help ul ol,
+.help ul ul {
+    margin-top: 0;
+    margin-bottom: 0
+}
+.help ol ol ol,
+.help ol ul ol,
+.help ul ol ol,
+.help ul ul ol {
+    list-style-type: lower-alpha
+}
+.help li>p {
+    margin-top: 16px
+}
+.help dd {
+    margin-left: 0
+}
+.help dl {
+    padding: 0
+}
+.help dl dt {
+    padding: 0;
+    margin-top: 16px;
+    font-size: 1em;
+    font-style: italic;
+    font-weight: 700
+}
+.help dl dd {
+    padding: 0 16px;
+    margin-bottom: 16px
+}

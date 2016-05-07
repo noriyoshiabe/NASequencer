@@ -50,7 +50,7 @@ function main(argv, callback) {
     'mml',
   ], renderer.help);
 
-  execSync('cp '+__dirname+'/site/asset/*.{png,svg,ico} '+dstDir);
+  execSync('cp '+__dirname+'/site/asset/*.{png,svg,ico,css} '+dstDir);
   execSync('cp '+__dirname+'/images/*.png '+dstDir+'/images');
 }
 
