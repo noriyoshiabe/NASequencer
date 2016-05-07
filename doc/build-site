@@ -9,7 +9,8 @@ var beautify = require('js-beautify').html;
 
 var dstDir = __dirname+'/dest/site';
 
-function renderPage (name, mds) {
+function renderPage (name, mds, _renderer) {
+  _renderer = _renderer || renderer.normal
   mds = mds || []
 
   var template = __dirname+'/site/pages/'+name+'.ejs';
@@ -18,7 +19,7 @@ function renderPage (name, mds) {
   for (var i = 0; i < mds.length; ++i) {
     var identifier = mds[i];
     var md = fs.readFileSync(__dirname + '/md/'+identifier+'.md', 'utf8');
-    values[identifier] = marked(md, {renderer: renderer.normal(marked)});
+    values[identifier] = marked(md, {renderer: _renderer(marked, identifier)});
   }
   
   ejs.renderFile(template, values, function(err, result) {
@@ -34,9 +35,20 @@ function main(argv, callback) {
   execSync('mkdir -p '+dstDir+'/images');
 
   renderPage('index');
+  renderPage('third-party-licenses', ['license']);
   renderPage('privacy-policy', ['privacy_policy']);
   renderPage('specified-commercial-transaction-law', ['specified_commercial_transaction_law']);
   renderPage('support', ['support']);
+
+  renderPage('help', [
+    'site_help_index',
+    'getting_started',
+    'general',
+    'preference',
+    'nas',
+    'abc',
+    'mml',
+  ], renderer.help);
 
   execSync('cp '+__dirname+'/site/asset/*.{png,svg,ico} '+dstDir);
   execSync('cp '+__dirname+'/images/*.png '+dstDir+'/images');

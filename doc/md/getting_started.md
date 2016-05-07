@@ -99,7 +99,7 @@ C2 | x---            .               .
 
 Then, play it and you can hear melody of 'C D E F G A B C/E/G'.
 
-Check the basic structure
+Check the Basic Structure
 -------------------------
 
 #### hello.nas
