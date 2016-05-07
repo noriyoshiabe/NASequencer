@@ -3,15 +3,27 @@
 var fs = require('fs');
 var execSync = require('child_process').execSync;
 var ejs = require('ejs');
+var renderer = require('./lib/site_md_renderer');
+var marked = require('marked');
+var beautify = require('js-beautify').html;
 
 var dstDir = __dirname+'/dest/site';
 
-function renderPage (name) {
+function renderPage (name, mds) {
+  mds = mds || []
+
   var template = __dirname+'/site/pages/'+name+'.ejs';
   var values = JSON.parse(fs.readFileSync(__dirname+'/site/values/'+name+'.json'));
-  var html = ejs.renderFile(template, values, function(err, result) {
+
+  for (var i = 0; i < mds.length; ++i) {
+    var identifier = mds[i];
+    var md = fs.readFileSync(__dirname + '/md/'+identifier+'.md', 'utf8');
+    values[identifier] = marked(md, {renderer: renderer.normal(marked)});
+  }
+  
+  ejs.renderFile(template, values, function(err, result) {
     if (!err) {
-      fs.writeFileSync(dstDir+'/'+name+'.html', result);
+      fs.writeFileSync(dstDir+'/'+name+'.html', beautify(result, {indent_size: 2}));
     }
   });
 }
@@ -22,6 +34,9 @@ function main(argv, callback) {
   execSync('mkdir -p '+dstDir+'/images');
 
   renderPage('index');
+  renderPage('privacy-policy', ['privacy_policy']);
+  renderPage('specified-commercial-transaction-law', ['specified_commercial_transaction_law']);
+  renderPage('support', ['support']);
 
   execSync('cp '+__dirname+'/site/asset/*.{png,svg,ico} '+dstDir);
   execSync('cp '+__dirname+'/images/*.png '+dstDir+'/images');

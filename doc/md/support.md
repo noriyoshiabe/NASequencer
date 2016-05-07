@@ -1,5 +1,5 @@
-Support
-=======
+NASequencer Support
+===================
 
 Feel free to ask me about NASequencer. Your feedback or any request is welcome.
 Sorry in advance if my response is slow. I'm not a hard worker. 😪
