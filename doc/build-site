@@ -1,0 +1,37 @@
+#!/usr/bin/env node
+
+var fs = require('fs');
+var execSync = require('child_process').execSync;
+var ejs = require('ejs');
+
+var dstDir = __dirname+'/dest/site';
+
+function renderPage (name) {
+  var template = __dirname+'/site/pages/'+name+'.ejs';
+  var values = JSON.parse(fs.readFileSync(__dirname+'/site/values/'+name+'.json'));
+  var html = ejs.renderFile(template, values, function(err, result) {
+    if (!err) {
+      fs.writeFileSync(dstDir+'/'+name+'.html', result);
+    }
+  });
+}
+
+function main(argv, callback) {
+  execSync('rm -rf '+dstDir);
+  execSync('mkdir -p '+dstDir);
+  execSync('mkdir -p '+dstDir+'/images');
+
+  renderPage('index');
+
+  execSync('cp '+__dirname+'/site/asset/*.{png,svg,ico} '+dstDir);
+  execSync('cp '+__dirname+'/images/*.png '+dstDir+'/images');
+}
+
+if (!module.parent) {
+  main(process.argv.slice(), function(err, code) {
+    if (err) throw err;
+    return process.exit(code || 0);
+  });
+} else {
+  module.exports = main;
+}
