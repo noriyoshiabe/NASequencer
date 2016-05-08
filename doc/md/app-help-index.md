@@ -46,7 +46,7 @@
     - <input type="checkbox"/>[Purchase](preference.md#=)
         - [Purchase Full Version](preference.md#=)
         - [Restore Purchase](preference.md#=)
-- <input type="checkbox"/>[Syntax Reference](syntax_reference.md)
+- <input type="checkbox"/>[Syntax Reference](syntax-reference.md)
     - <input type="checkbox"/>[Note as Sequence](note-as-sequence.md)
         - <input type="checkbox"/>[Basics](note-as-sequence.md#=)
             - [File Format](note-as-sequence.md#=)

@@ -57,6 +57,14 @@ function main(argv, callback) {
   renderPage('index', {content: 'none', template: 'index'});
   renderPage('overview');
   renderPage('getting-started');
+  renderPage('operation-manual');
+  renderPage('preference');
+  renderPage('syntax-reference');
+  renderPage('note-as-sequence');
+  renderPage('abc-notation');
+  renderPage('music-macro-language');
+  renderPage('support');
+  renderPage('third-party-licenses');
 }
 
 if (!module.parent) {
