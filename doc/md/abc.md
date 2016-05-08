@@ -1,5 +1,5 @@
-ABC Syntax
-==========
+Syntax Reference - ABC Notation
+===============================
 
 The ABC Notation interpreted by NASequencer confirms to the abc music standard 2.1.
 See original website for the details.  

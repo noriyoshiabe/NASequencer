@@ -1,5 +1,5 @@
-Note as Sequence Syntax
-=======================
+Syntax Reference - Note as Sequence
+===================================
 Version 0.5.0 Draft, 2016
 
 Basics

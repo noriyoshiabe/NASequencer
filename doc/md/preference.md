@@ -1,5 +1,5 @@
-Operation Manual Preference
-===========================
+Operation Manual - Preference
+=============================
 
 General Settings
 ----------------

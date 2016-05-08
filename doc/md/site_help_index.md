@@ -1,12 +1,12 @@
-Site Help Index
-===============
+NASequencer Help
+================
 
 - [Getting Started](getting_started.md)
     - [Create New File](getting_started.md#=)
     - [Hello NASequencer](getting_started.md#=)
     - [Check the Basic Structure](getting_started.md#=)
     - [Next Step](getting_started.md#=)
-- [Operation Manual](__#operation_manual)
+- Operation Manual
     - [General](general.md)
         - [File](general.md#=)
         - [Playback Control](general.md#=)
@@ -17,7 +17,7 @@ Site Help Index
         - [General Settings](preference.md#=)
         - [Synthesizer Settings](preference.md#=)
         - [Purchase](preference.md#=)
-- [Syntax Reference](__#syntax_reference)
+- Syntax Reference
     - [Note as Sequence](nas.md)
         - [Basics](nas.md#=)
         - [References](nas.md#=)

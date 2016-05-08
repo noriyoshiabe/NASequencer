@@ -19,12 +19,15 @@ function renderPage (name, mds, _renderer) {
   for (var i = 0; i < mds.length; ++i) {
     var identifier = mds[i];
     var md = fs.readFileSync(__dirname + '/md/'+identifier+'.md', 'utf8');
-    values[identifier] = marked(md, {renderer: _renderer(marked, identifier)});
+    values[identifier] = marked(md, {renderer: _renderer(marked)});
   }
   
   ejs.renderFile(template, values, function(err, result) {
     if (!err) {
       fs.writeFileSync(dstDir+'/'+name+'.html', beautify(result, {indent_size: 2}));
+    }
+    else {
+      console.log(err);
     }
   });
 }
@@ -33,6 +36,7 @@ function main(argv, callback) {
   execSync('rm -rf '+dstDir);
   execSync('mkdir -p '+dstDir);
   execSync('mkdir -p '+dstDir+'/images');
+  execSync('mkdir -p '+dstDir+'/help');
 
   renderPage('index');
   renderPage('third-party-licenses', ['license']);
@@ -40,15 +44,9 @@ function main(argv, callback) {
   renderPage('specified-commercial-transaction-law', ['specified_commercial_transaction_law']);
   renderPage('support', ['support']);
 
-  renderPage('help', [
-    'site_help_index',
-    'getting_started',
-    'general',
-    'preference',
-    'nas',
-    'abc',
-    'mml',
-  ], renderer.help);
+  renderPage('help/index', ['site_help_index'], renderer.help);
+  renderPage('help/getting-started', ['getting_started'], renderer.help);
+  renderPage('help/operation-manual-general', ['general'], renderer.help);
 
   execSync('cp '+__dirname+'/site/asset/*.{png,svg,ico,css} '+dstDir);
   execSync('cp '+__dirname+'/images/*.png '+dstDir+'/images');
