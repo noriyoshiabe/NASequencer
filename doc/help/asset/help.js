@@ -79,11 +79,15 @@ document.onreadystatechange = function () {
     }
 
     if ('index.html' != lastpath) {
-      toggleMenu();
+      if (!sessionStorage.getItem('session-started')) {
+        toggleMenu();
+      }
       var anchor = unescape(lastpath + location.hash);
       openTopic(anchor);
       selectTopic(anchor);
     }
+
+    sessionStorage.setItem('session-started', true);
 
     if (sessionStorage.getItem('is-menu-open')) {
       body.classList.add('is-menu-open');
@@ -116,14 +120,20 @@ document.onreadystatechange = function () {
     }
 
     break;
+
   case 'complete':
     break;
   }
 };
 
 if ("HelpViewer" in window && "showTOCButton" in window.HelpViewer) {
-	window.setTimeout(function () {
-		window.HelpViewer.showTOCButton(true, toggleMenu, toggleMenu);
-		window.HelpViewer.setTOCButton(true);
-	}, 100);
+  var _enableTOC = function () {
+    window.HelpViewer.showTOCButton(true, false, toggleMenu);
+  };
+  window.setTimeout(_enableTOC, 0);
+  window.setTimeout(_enableTOC, 50);
+  window.setTimeout(_enableTOC, 100);
+  window.setTimeout(_enableTOC, 150);
+  window.setTimeout(_enableTOC, 200);
+  window.setTimeout(_enableTOC, 250);
 }
