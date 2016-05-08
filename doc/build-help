@@ -5,39 +5,42 @@ var execSync = require('child_process').execSync;
 var ejs = require('ejs');
 var renderer = require('./lib/help_renderer');
 var marked = require('marked');
+var beautify = require('js-beautify').html;
 
 var dstDir = __dirname+'/dest/help/Contents';
 
-function renderHelp () {
-  var template = fs.readFileSync(__dirname+'/help/index.ejs', 'utf-8');
-
-  var contents = [
-    'index',
-    'overview',
-    'getting_started',
-    'general',
-    'preference',
-    'nas',
-    'abc',
-    'mml',
-    'support',
-    'license',
-  ]
-
-  var renderAttrs = {};
-
-  for (var i = 0; i < contents.length; ++i) {
-    var identifier = contents[i];
-    var contentPath = __dirname + '/md/'+identifier+'.md';
-    var md = fs.readFileSync(contentPath, 'utf8');
-
-    renderAttrs[identifier] = marked(md, {renderer: renderer(marked, identifier)});
+function renderPage (name, options) {
+  function lastPathComponent(path) {
+    var arr = path.split('/');
+    return arr[arr.length - 1];
   }
 
-  var html = ejs.render(template, renderAttrs);
-  fs.writeFileSync(dstDir+'/Resources/en.lproj/index.html', html);
-}
+  options = options || {};
+  options.template = options.template || 'md-content';
+  options.content = options.content || lastPathComponent(name);
 
+  var template = __dirname+'/help/pages/'+options.template+'.ejs';
+  var values = JSON.parse(fs.readFileSync(__dirname+'/help/values/'+name+'.json'));
+
+  values.anchor = name == 'index' ? 'top' : name;
+
+  var md = fs.readFileSync(__dirname + '/md/app-help-index.md', 'utf8');
+  values.index = marked(md, {renderer: renderer(marked)});
+
+  if ('none' != options.content) {
+    var md = fs.readFileSync(__dirname + '/md/'+options.content+'.md', 'utf8');
+    values.content = marked(md, {renderer: renderer(marked)});
+  }
+  
+  ejs.renderFile(template, values, function(err, result) {
+    if (!err) {
+      fs.writeFileSync(dstDir+'/Resources/en.lproj/'+name+'.html', beautify(result, {indent_size: 2}));
+    }
+    else {
+      console.log(err);
+    }
+  });
+}
 
 function main(argv, callback) {
   execSync('rm -rf '+dstDir);
@@ -47,11 +50,13 @@ function main(argv, callback) {
   execSync('mkdir -p '+dstDir+'/Resources/en.lproj');
 
   execSync('cp '+__dirname+'/images/*.png '+dstDir+'/Resources/images');
-  execSync('cp '+__dirname+'/help/help.js '+dstDir+'/Resources/en.lproj');
-  execSync('cp '+__dirname+'/help/help.css '+dstDir+'/Resources/en.lproj');
-  execSync('cp '+__dirname+'/help/Info.plist '+dstDir);
+  execSync('cp '+__dirname+'/help/asset/help.js '+dstDir+'/Resources/en.lproj');
+  execSync('cp '+__dirname+'/help/asset/help.css '+dstDir+'/Resources/en.lproj');
+  execSync('cp '+__dirname+'/help/asset/Info.plist '+dstDir);
 
-  var html = renderHelp();
+  renderPage('index', {content: 'none', template: 'index'});
+  renderPage('overview');
+  renderPage('getting-started');
 }
 
 if (!module.parent) {

@@ -1,9 +1,6 @@
-Index
-=====
-
 - [NASequencer Overview](overview.md)
 - [Getting Started](getting-started.md)
-- <input type="checkbox"/>[Operation Manual](operation_manual.md)
+- <input type="checkbox"/>[Operation Manual](operation-manual.md)
     - <input type="checkbox"/>[File](operation-manual.md#=)
         - [Create New File](operation-manual.md#=)
         - [Open Existing File](operation-manual.md#=)

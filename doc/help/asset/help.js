@@ -56,9 +56,11 @@ document.onreadystatechange = function () {
     for (var i = 0; i < transits.length; ++i) {
       transits[i].addEventListener('click', function () {
         var isMenuOpen = body.classList.contains('is-menu-open');
-        body.className = this.getAttribute('href').substring(1).split('__')[0];
         if (isMenuOpen) {
           body.classList.add('is-menu-open');
+        }
+        else {
+          body.classList.remove('is-menu-open');
         }
 
         setTimeout(function () {
@@ -72,7 +74,6 @@ document.onreadystatechange = function () {
     if (!location.hash) {
       location.hash = '#top';
     }
-    body.className = location.hash.substring(1).split('__')[0];
 
     if ('#top' != location.hash) {
       body.classList.add('is-menu-open');
@@ -89,9 +90,11 @@ document.onreadystatechange = function () {
 
     window.addEventListener('popstate', function () {
       var isMenuOpen = body.classList.contains('is-menu-open');
-      body.className = location.hash.substring(1).split('__')[0];
       if (isMenuOpen) {
         body.classList.add('is-menu-open');
+      }
+      else {
+        body.classList.remove('is-menu-open');
       }
 
       openTopic(location.hash);

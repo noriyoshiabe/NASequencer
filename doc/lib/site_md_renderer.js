@@ -31,7 +31,7 @@ module.exports = {
       }
       else if (href.match(/.+\.md.*/)) {
         var matches = href.match(/(.+)\.md(.*)/);
-        var page = matches[1].replace(/_/g, '-')
+        var page = matches[1];
         var anchor = matches[2] ? '#=' == matches[2] ? '#'+text : matches[2] : '';
         return '<a href="'+page+'.html'+anchor+'">'+text+'</a>';
       }
