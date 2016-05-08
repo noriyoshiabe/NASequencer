@@ -61,6 +61,7 @@ function main(argv, callback) {
 
   execSync('cp '+__dirname+'/site/asset/*.{png,svg,ico,css} '+dstDir);
   execSync('cp '+__dirname+'/images/*.png '+dstDir+'/images');
+  execSync('cp '+__dirname+'/site/images/*.png '+dstDir+'/images');
 }
 
 if (!module.parent) {

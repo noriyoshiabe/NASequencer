@@ -92,6 +92,250 @@ footer p:last-child {
   font-size: 0.9rem;
 }
 
+/* Home Content */
+
+#home header {
+  height: 380px;
+  background-color: #f6f6f6;
+}
+
+#home header > div {
+  position: relative;
+}
+
+#home header h1,
+#home header h2,
+#home header p {
+  position: absolute;
+  left: 100px;
+  font-weight: 200;
+}
+
+#home header h1 {
+  top: 111px;
+  font-size: 3.0rem;
+  color: #000;
+}
+
+#home header h2 {
+  top: 183px;
+  font-size: 1.5rem;
+  line-height: 1.8rem;
+  color: #4a4a4a;
+}
+
+#home header p {
+  top: 261px;
+  font-size: 1.8rem;
+  color: #000;
+}
+
+#home header > div > img {
+  position: absolute;
+  top: 64px;
+  right: 133px;
+  width: 256px;
+  height: 256px;
+}
+
+#home header > div > a {
+  position: absolute;
+  top: 255px;
+  left: 264px;
+  width: 165px;
+  height: 40px;
+}
+
+#home header > div > a > img {
+  width: 100%;
+  height: 100%;
+}
+
+#home > section > div {
+  position: relative;
+  padding-bottom: 60px;
+}
+
+#home > section ~ section > div:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 100px;
+  right: 100px;
+  border-top: 1px solid #979797;
+}
+
+#home section h1 {
+  padding-top: 39px;
+  color: #4a4a4a;
+  font-size: 2.25rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+#home section p {
+  padding: 20px 80px 0;
+  font-size: 1.35rem;
+  line-height: 1.8rem;
+  font-weight: 200;
+}
+
+#home section h2 {
+  font-size: 1.85rem;
+  font-weight: 500;
+  color: #4a4a4a;
+}
+
+#home section ul li {
+  list-style: none;
+  font-size: 1.4rem;
+  font-weight: 200;
+  color: #4a4a4a;
+  padding-left: 1.7rem;
+  line-height: 1.4rem;
+  margin-top: 0.7rem;
+}
+#home section ul li:before {
+  position: absolute;
+  content:"・";
+  left: 0;
+  font-size: 1.4rem;
+  font-weight: 100;
+  vertical-align: middle;
+}
+#home section ul li span {
+  font-size: 1.0rem;
+  font-weight: 200;
+  color: #4a4a4a;
+}
+
+#home section section {
+  position: relative;
+}
+#home section section > a img {
+  width: 100%;
+  height: 100%;
+}
+
+#home section.playback {
+  height: 315px;
+}
+#home section.playback > div {
+  position: absolute;
+  top: 104px;
+  left: 61px;
+  width: 240px;
+}
+#home section.playback > a.main-view {
+  position: absolute;
+  top: 36px;
+  right: 377px;
+  width: 307px;
+  height: 213px;
+}
+#home section.playback > a.mixer-panel {
+  position: absolute;
+  top: 15px;
+  right: 114px;
+  width: 198px;
+  height: 117px;
+}
+#home section.playback > a.synthesizer-sheet {
+  position: absolute;
+  top: 161px;
+  right: 72px;
+  width: 282px;
+  height: 122px;
+}
+
+#home section.preview {
+  height: 435px;
+}
+#home section.preview > div {
+  position: absolute;
+  top: 124px;
+  right: 74px;
+  width: 250px;
+}
+#home section.preview > a.piano-roll {
+  position: absolute;
+  top: 24px;
+  left: 112px;
+  width: 329px;
+  height: 248px;
+}
+#home section.preview > a.event-list {
+  position: absolute;
+  top: 150px;
+  left: 235px;
+  width: 329px;
+  height: 248px;
+}
+
+#home section.editor {
+  height: 325px;
+}
+#home section.editor > div {
+  position: absolute;
+  top: 90px;
+  left: 81px;
+  width: 270px;
+}
+#home section.editor > a.embedded {
+  position: absolute;
+  top: 44px;
+  right: 362px;
+  width: 264px;
+  height: 215px;
+}
+#home section.editor > a.external {
+  position: absolute;
+  top: 70px;
+  right: 88px;
+  width: 232px;
+  height: 165px;
+}
+
+#home section.language > div {
+  position: relative;
+  margin: auto;
+  width: 570px;
+  padding-bottom: 20px;
+}
+#home section.language > div h2 {
+  text-align: center;
+}
+
+#home section.synthesizer {
+  height: 325px;
+}
+#home section.synthesizer > div {
+  position: absolute;
+  top: 92px;
+  left: 81px;
+  width: 500px;
+}
+#home section.synthesizer > a.preference {
+  position: absolute;
+  top: 40px;
+  right: 89px;
+  width: 324px;
+  height: 229px;
+}
+
+#home section.export > div {
+  position: relative;
+  margin: auto;
+  width: 625px;
+  padding-bottom: 20px;
+}
+#home section.export > div h2 {
+  text-align: center;
+}
+
+
+/* Markdown Content */
+
 .md {
   padding: 15px 80px 60px;
 }
