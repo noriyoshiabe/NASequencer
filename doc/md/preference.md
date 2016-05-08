@@ -1,5 +1,5 @@
-Operation Manual - Preference
-=============================
+Preferences
+===========
 
 General Settings
 ----------------
@@ -17,7 +17,7 @@ Checkbox to toggle show Welcome Window on Launch Application.
 If you want to reset to using Internal Editor, uncheck the "Use External Editor" checkbox.
 
 ### Include Search Path
-This path is used by [Include Directive](nas.md#Include).
+This path is used by [Include Directive](note-as-sequence.md#Include).
 If the path points to default "/Users/&lt;USERNAME&gt;/Music/NASequencer" and Include Directive is notated on source file like below,
 ```
 #include "drums-pattern.nas"
@@ -45,7 +45,7 @@ _**Full Version Feature**_
 0. Choose prefer SoundFont on selection dialog
 
 #### Change Default Synthesizer
-Order of synthesizer panel affects to the order of [Synth](general.md#Mixer Panel) pull-down menu.
+Order of synthesizer panel affects to the order of [Synth](operation-manual.md#Mixer Panel) pull-down menu.
 First synthesizer of the order is the default synthesizer used for default sound.
 
 ![](../images/preference-synthesizer-2.png)

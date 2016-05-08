@@ -9,17 +9,23 @@ var beautify = require('js-beautify').html;
 
 var dstDir = __dirname+'/dest/site';
 
-function renderPage (name, mds, _renderer) {
-  _renderer = _renderer || renderer.normal
-  mds = mds || []
+function renderPage (name, options) {
+  function lastPathComponent(path) {
+    var arr = path.split('/');
+    return arr[arr.length - 1];
+  }
 
-  var template = __dirname+'/site/pages/'+name+'.ejs';
+  options = options || {};
+  options.template = options.template || 'md-content';
+  options.renderer = options.renderer || renderer.normal;
+  options.content = options.content || lastPathComponent(name);
+
+  var template = __dirname+'/site/pages/'+options.template+'.ejs';
   var values = JSON.parse(fs.readFileSync(__dirname+'/site/values/'+name+'.json'));
 
-  for (var i = 0; i < mds.length; ++i) {
-    var identifier = mds[i];
-    var md = fs.readFileSync(__dirname + '/md/'+identifier+'.md', 'utf8');
-    values[identifier] = marked(md, {renderer: _renderer(marked)});
+  if ('none' != options.content) {
+    var md = fs.readFileSync(__dirname + '/md/'+options.content+'.md', 'utf8');
+    values.content = marked(md, {renderer: options.renderer(marked)});
   }
   
   ejs.renderFile(template, values, function(err, result) {
@@ -38,15 +44,20 @@ function main(argv, callback) {
   execSync('mkdir -p '+dstDir+'/images');
   execSync('mkdir -p '+dstDir+'/help');
 
-  renderPage('index');
-  renderPage('third-party-licenses', ['license']);
-  renderPage('privacy-policy', ['privacy_policy']);
-  renderPage('specified-commercial-transaction-law', ['specified_commercial_transaction_law']);
-  renderPage('support', ['support']);
+  renderPage('index', {content: 'none', template: 'index'});
+  renderPage('third-party-licenses');
+  renderPage('privacy-policy');
+  renderPage('specified-commercial-transaction-law');
+  renderPage('support');
 
-  renderPage('help/index', ['site_help_index'], renderer.help);
-  renderPage('help/getting-started', ['getting_started'], renderer.help);
-  renderPage('help/operation-manual-general', ['general'], renderer.help);
+  renderPage('help/index',                {renderer: renderer.help, content: 'site-help-index'});
+  renderPage('help/getting-started',      {renderer: renderer.help});
+  renderPage('help/operation-manual',     {renderer: renderer.help});
+  renderPage('help/preference',           {renderer: renderer.help});
+  renderPage('help/syntax-reference',     {renderer: renderer.help});
+  renderPage('help/note-as-sequence',     {renderer: renderer.help});
+  renderPage('help/abc-notation',         {renderer: renderer.help});
+  renderPage('help/music-macro-language', {renderer: renderer.help});
 
   execSync('cp '+__dirname+'/site/asset/*.{png,svg,ico,css} '+dstDir);
   execSync('cp '+__dirname+'/images/*.png '+dstDir+'/images');

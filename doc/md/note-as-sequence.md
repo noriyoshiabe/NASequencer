@@ -1,5 +1,5 @@
-Syntax Reference - Note as Sequence
-===================================
+Note as Sequence
+================
 Version 0.5.0 Draft, 2016
 
 Basics
@@ -403,7 +403,7 @@ TIME 3/4
 
 ### MARKER
 Inserts a marker.
-Acts as separator of sections for repeat play if [Repeat State](general.md#Toggle Repeat) on the player is Repeat Marker.
+Acts as separator of sections for repeat play if [Repeat State](operation-manual.md#Toggle Repeat) on the player is Repeat Marker.
 Exported to Standard MIDI File as Marker(FF 06h) in first MTrk chunk.
 
 ```

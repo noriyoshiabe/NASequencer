@@ -34,4 +34,4 @@ Full Version
 --------------
 
 **See Also**  
-[Getting Started](getting_started.md)
+[Getting Started](getting-started.md)

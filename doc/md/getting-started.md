@@ -127,7 +127,7 @@ The defalut ticks per a measure on 4/4 beat is 1920.
 480 means quarter note length.
 
 **Tips**  
-You can change config of ticks per quarter note by [RESOLUTION](nas.md#RESOLUTION) statement.
+You can change config of ticks per quarter note by [RESOLUTION](note-as-sequence.md#RESOLUTION) statement.
 However in most of cases, it's unnecessary to change it because 480 is the defact standard of division used by many DAW.
 
 ### Note
@@ -137,7 +137,7 @@ However in most of cases, it's unnecessary to change it because 480 is the defac
 
 - `#` is for the sharp, `b` is for the flat and `n` is for natural
 - Double sharp and double flat is acceptable
-- Natural is only affected when [KEY](nas.md#KEY) is specified
+- Natural is only affected when [KEY](note-as-sequence.md#KEY) is specified
 
 ### Comment
 `==` `--` `//` can be used the line comment. It does not affect the result of sequence.
@@ -158,15 +158,15 @@ When you want to reset it, reopen example from welcome window.
 ### Check Syntax Reference
 Documented about syntax in this section is just for introduction. Please check the references.
 
-- [Note as Sequence](nas.md)
+- [Note as Sequence](note-as-sequence.md)
 
 ### Other Languages
 NASequencer suports following languages.
 
-- [ABC Notation](abc.md)
-- [Music Macro Language](mml.md)
+- [ABC Notation](abc-notation.md)
+- [Music Macro Language](music-macro-language.md)
 
 If you familiar with those. you can choose format form file creation dialog.
 
 ### Advanced Usage
-When you are familiar with basics, read [Operation Manual](__#operation_manual) for more advanced usage.
+When you are familiar with basics, read [Operation Manual](operation-manual.md) for more advanced usage.

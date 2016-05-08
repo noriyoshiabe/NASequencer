@@ -1,5 +1,5 @@
-Operation Manual - General
-==========================
+Operation Manual
+================
 
 File
 ----
@@ -122,7 +122,7 @@ Choose \[Control\] -> \[Backward\] from menu or click toolbar button in document
 ⌘ + ←
 
 ### Forward to Marker
-Forward playing location to next marker notated by [Marker Event](nas.md#MARKER).
+Forward playing location to next marker notated by [Marker Event](note-as-sequence.md#MARKER).
 
 Choose \[Control\] -> \[Forward to Marker\] from menu or click toolbar button with shift key in document window.
 
@@ -132,7 +132,7 @@ Choose \[Control\] -> \[Forward to Marker\] from menu or click toolbar button wi
 Shift + ⌘ + →
 
 ### Backward to Marker
-Backward playing location to next marker notated by [Marker Event](nas.md#MARKER).
+Backward playing location to next marker notated by [Marker Event](note-as-sequence.md#MARKER).
 
 Choose \[Control\] -> \[Backward to Marker\] from menu or click toolbar button with shift key in document window.
 
@@ -167,7 +167,7 @@ Play again from beginning of sequence when playing location reach to end of sequ
 ![](../images/repeat_marker.png)
 
 Play again from beginning of section when playing location reach to end of section.
-Section is divided by [Marker Event](nas.md#MARKER).
+Section is divided by [Marker Event](note-as-sequence.md#MARKER).
 For example, if sequence events are
 ```
 001:01:000 C2 Gatetime=1920
@@ -254,7 +254,7 @@ Shown by preset button on [Mixer Panel](#Mixer Panel).
 
 **Note:**  
 Text field for Synthesizer Name is selectable.
-You can copy it and paste to source file for [SYNTH](nas.md#SYNTH) statement.
+You can copy it and paste to source file for [SYNTH](note-as-sequence.md#SYNTH) statement.
 
 #### Preset List
 List of available presets of synthesizer. By click list or ←→ key up/down, selected preset will be changed.
@@ -264,22 +264,22 @@ In Preset Selection sheet, previewing sound of preset is available.
 Mapping of hardware keyboard is shown on the sheet.
 ←→ keys are for octave shift.
 
-<a name="general__main_measure"></a>
+<a name="main_measure"></a>
 ### Measure
 - Display guide for measure and beat
 - Seek current location to clicked position with click
 
-<a name="general__main_conductor_track"></a>
+<a name="main_conductor_track"></a>
 ### Conductor Track
 - Display events below.
-    - [Tempo Change](nas.md#TEMPO)
-    - [Time Signature](nas.md#TIME)
-    - [Marker](nas.md#MARKER)
+    - [Tempo Change](note-as-sequence.md#TEMPO)
+    - [Time Signature](note-as-sequence.md#TIME)
+    - [Marker](note-as-sequence.md#MARKER)
 - Select track with click
 - Show detail view with click after selection
 
 ### Channel Track
-- Display [Note](nas.md#NOTE) events
+- Display [Note](note-as-sequence.md#NOTE) events
 - Select track with click
 - Show detail view with click after selection
 
@@ -315,30 +315,30 @@ Button to toggle display for events in track.
 ##### Disable (There is no event in track)
 ![](../images/track-selection-disable.png)
 
-<a name="general__detail_measure"></a>
+<a name="detail_measure"></a>
 ### Measure
 Behavior is same as main-view.
 
 - Display guide for measure and beat
 - Seek current location to clicked position with click
 
-<a name="general__detail_conductor_track"></a>
+<a name="detail_conductor_track"></a>
 ### Conductor Track
 Display events below.
 
-- [Tempo Change](nas.md#TEMPO)
-- [Time Signature](nas.md#TIME)
-- [Marker](nas.md#MARKER)
+- [Tempo Change](note-as-sequence.md#TEMPO)
+- [Time Signature](note-as-sequence.md#TIME)
+- [Marker](note-as-sequence.md#MARKER)
 
 ### Piano Roll
-Display [Note](nas.md#NOTE) events in selected channel tracks.
+Display [Note](note-as-sequence.md#NOTE) events in selected channel tracks.
 
 ### Keyboard
 - Guide for scale
 - Preview sound on selected channel track with click
 
 ### Velocity
-Display velocity of [Note](nas.md#NOTE) events in selected channel track.
+Display velocity of [Note](note-as-sequence.md#NOTE) events in selected channel track.
 
 ### Event List Switch
 Button to toggle display event list.
