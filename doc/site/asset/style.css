@@ -12,6 +12,12 @@ body {
   box-sizing: border-box;
 }
 
+@media screen and (max-width: 480px) {
+  * {
+    font-size: 12px;
+  }
+}
+
 nav > div,
 header > div,
 footer > div,
@@ -30,7 +36,7 @@ nav > div {
 nav a {
   text-decoration: none;
   font-size: 1.5rem;
-  font-weight: 100;
+  font-weight: 200;
   height: 47px;
   line-height: 47px;
 }
@@ -60,7 +66,7 @@ body {
 footer {
   position: absolute;
   bottom: 0;
-  height: 96px;
+  height: 100px;
   width: 100%;
   background-color: #f6f6f6;
   border-top: 1px solid #979797;
@@ -72,7 +78,7 @@ footer a {
   text-decoration: none;
   color: #888;
   font-size: 1.3rem;
-  font-weight: 100;
+  font-weight: 200;
   float: left;
   margin-left: 36px;
   height: 47px;
@@ -86,10 +92,30 @@ footer p {
   margin-left: 36px;
   font-size: 1.0rem;
   color: #888;
-  font-weight: 100;
+  font-weight: 200;
 }
 footer p:last-child {
   font-size: 0.9rem;
+}
+
+@media screen and (max-width: 640px) {
+  footer {
+    height: 135px;
+    padding-top: 20px;
+  }
+  footer a {
+    height: 30px;
+    line-height: 20px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  nav a:first-child {
+    margin-left: 20px;
+  }
+  nav a:not(:first-child) {
+    margin-right: 20px;
+  }
 }
 
 /* Home Content */
@@ -150,6 +176,72 @@ footer p:last-child {
   width: 100%;
   height: 100%;
 }
+
+@media screen and (max-width: 980px) {
+  #home header > div > img {
+    right: 40px;
+  }
+
+  #home header h1,
+  #home header h2,
+  #home header p {
+    left: 60px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  #home header {
+    height: auto;
+  }
+
+  #home header > div {
+    text-align: center;
+    padding: 50px 0;
+  }
+
+  #home header > div > img {
+    position: relative;
+    top: auto;
+    right: auto;
+    text-align: center;
+  }
+
+  #home header h1,
+  #home header h2,
+  #home header p {
+    position: relative;
+    top: auto;
+    left: auto;
+    text-align: center;
+    padding-top: 10px;
+  }
+
+  #home header > div > p {
+    line-height: 50px;
+  }
+  #home header > div > a {
+    position: relative;
+    display: inline-block;
+    top: auto;
+    left: auto;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  #home header > div > img {
+    width: 160px;
+    height: 160px;
+  }
+
+  #home header h1 {
+    font-size: 2.5rem;
+  }
+  #home header h2 {
+    font-size: 1.25rem;
+  }
+}
+
+/* Home Sections */
 
 #home > section > div {
   position: relative;
@@ -212,125 +304,204 @@ footer p:last-child {
 #home section section {
   position: relative;
 }
-#home section section > a img {
-  width: 100%;
-  height: 100%;
+
+@media screen and (min-width: 981px) {
+  #home section section > a img {
+    width: 100%;
+    height: 100%;
+  }
+
+  #home section.playback {
+    height: 315px;
+  }
+  #home section.playback > div {
+    position: absolute;
+    top: 104px;
+    left: 61px;
+    width: 240px;
+  }
+  #home section.playback > a.main-view {
+    position: absolute;
+    top: 36px;
+    right: 377px;
+    width: 307px;
+    height: 213px;
+  }
+  #home section.playback > a.mixer-panel {
+    position: absolute;
+    top: 15px;
+    right: 114px;
+    width: 198px;
+    height: 117px;
+  }
+  #home section.playback > a.synthesizer-sheet {
+    position: absolute;
+    top: 161px;
+    right: 72px;
+    width: 282px;
+    height: 122px;
+  }
+
+  #home section.preview {
+    height: 435px;
+  }
+  #home section.preview > div {
+    position: absolute;
+    top: 124px;
+    right: 74px;
+    width: 250px;
+  }
+  #home section.preview > a.piano-roll {
+    position: absolute;
+    top: 24px;
+    left: 112px;
+    width: 329px;
+    height: 248px;
+  }
+  #home section.preview > a.event-list {
+    position: absolute;
+    top: 150px;
+    left: 235px;
+    width: 329px;
+    height: 248px;
+  }
+
+  #home section.editor {
+    height: 325px;
+  }
+  #home section.editor > div {
+    position: absolute;
+    top: 90px;
+    left: 81px;
+    width: 270px;
+  }
+  #home section.editor > a.embedded {
+    position: absolute;
+    top: 44px;
+    right: 362px;
+    width: 264px;
+    height: 215px;
+  }
+  #home section.editor > a.external {
+    position: absolute;
+    top: 70px;
+    right: 88px;
+    width: 232px;
+    height: 165px;
+  }
+
+  #home section.language > div {
+    position: relative;
+    margin: auto;
+    width: 570px;
+    padding-bottom: 20px;
+  }
+  #home section.language > div h2 {
+    text-align: center;
+  }
+
+  #home section.synthesizer {
+    height: 325px;
+  }
+  #home section.synthesizer > div {
+    position: absolute;
+    top: 92px;
+    left: 81px;
+    width: 500px;
+  }
+  #home section.synthesizer > a.preference {
+    position: absolute;
+    top: 40px;
+    right: 89px;
+    width: 324px;
+    height: 229px;
+  }
+
+  #home section.export > div {
+    position: relative;
+    margin: auto;
+    width: 625px;
+    padding-bottom: 20px;
+  }
+  #home section.export > div h2 {
+    text-align: center;
+  }
 }
 
-#home section.playback {
-  height: 315px;
-}
-#home section.playback > div {
-  position: absolute;
-  top: 104px;
-  left: 61px;
-  width: 240px;
-}
-#home section.playback > a.main-view {
-  position: absolute;
-  top: 36px;
-  right: 377px;
-  width: 307px;
-  height: 213px;
-}
-#home section.playback > a.mixer-panel {
-  position: absolute;
-  top: 15px;
-  right: 114px;
-  width: 198px;
-  height: 117px;
-}
-#home section.playback > a.synthesizer-sheet {
-  position: absolute;
-  top: 161px;
-  right: 72px;
-  width: 282px;
-  height: 122px;
+@media screen and (max-width: 980px) {
+  #home section p {
+    padding: 20px 60px 0;
+  }
+
+  #home section section ~ section {
+    padding-top: 40px;
+  }
+  #home section section > div {
+    position: relative;
+    margin: auto;
+    padding: 0 20px 20px;
+  }
+  #home section section > div h2 {
+    text-align: center;
+    padding-top: 20px;
+  }
+
+  #home section section ul li {
+    text-align: center;
+    padding-left: 0;
+    margin-left: -20px;
+  }
+
+  #home section ul li:before {
+    position: relative;
+  }
+
+  #home section section a {
+    padding-top: 20px;
+    margin: auto;
+    display: block;
+    width: 360px;
+    text-align: center;
+  }
+
+  #home section section a img {
+    max-width: 100%;
+    margin: auto;
+  }
 }
 
-#home section.preview {
-  height: 435px;
-}
-#home section.preview > div {
-  position: absolute;
-  top: 124px;
-  right: 74px;
-  width: 250px;
-}
-#home section.preview > a.piano-roll {
-  position: absolute;
-  top: 24px;
-  left: 112px;
-  width: 329px;
-  height: 248px;
-}
-#home section.preview > a.event-list {
-  position: absolute;
-  top: 150px;
-  left: 235px;
-  width: 329px;
-  height: 248px;
+@media screen and (max-width: 640px) {
+  #home > section ~ section > div:before {
+    left: 50px;
+    right: 50px;
+  }
+  #home section p {
+    padding: 20px 40px 0;
+  }
+
+  #home section section ul li {
+    font-size: 1.25rem;
+    padding-left: 1.5rem;
+    line-height: 1.25rem;
+    margin-top: 0.75rem;
+  }
+
+  #home section ul li:before {
+    font-size: 1.25rem;
+  }
+  #home section ul li span {
+    font-size: 1.0rem;
+  }
 }
 
-#home section.editor {
-  height: 325px;
-}
-#home section.editor > div {
-  position: absolute;
-  top: 90px;
-  left: 81px;
-  width: 270px;
-}
-#home section.editor > a.embedded {
-  position: absolute;
-  top: 44px;
-  right: 362px;
-  width: 264px;
-  height: 215px;
-}
-#home section.editor > a.external {
-  position: absolute;
-  top: 70px;
-  right: 88px;
-  width: 232px;
-  height: 165px;
-}
+@media screen and (max-width: 480px) {
+  #home section p {
+    padding: 20px 20px 0;
+  }
 
-#home section.language > div {
-  position: relative;
-  margin: auto;
-  width: 570px;
-  padding-bottom: 20px;
-}
-#home section.language > div h2 {
-  text-align: center;
-}
-
-#home section.synthesizer {
-  height: 325px;
-}
-#home section.synthesizer > div {
-  position: absolute;
-  top: 92px;
-  left: 81px;
-  width: 500px;
-}
-#home section.synthesizer > a.preference {
-  position: absolute;
-  top: 40px;
-  right: 89px;
-  width: 324px;
-  height: 229px;
-}
-
-#home section.export > div {
-  position: relative;
-  margin: auto;
-  width: 625px;
-  padding-bottom: 20px;
-}
-#home section.export > div h2 {
-  text-align: center;
+  #home section section a {
+    width: 256px;
+  }
 }
 
 
@@ -602,4 +773,16 @@ footer p:last-child {
 .md dl dd {
     padding: 0 16px;
     margin-bottom: 16px
+}
+
+@media screen and (max-width: 640px) {
+  .md {
+    padding: 10px 40px 60px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .md {
+    padding: 0 20px 60px;
+  }
 }
