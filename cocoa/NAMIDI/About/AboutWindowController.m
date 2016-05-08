@@ -51,7 +51,7 @@
 - (IBAction)licensePressed:(id)sender
 {
     NSString *bookName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleHelpBookName"];
-    [[NSHelpManager sharedHelpManager] openHelpAnchor:@"license" inBook:bookName];
+    [[NSHelpManager sharedHelpManager] openHelpAnchor:@"third-party-licenses" inBook:bookName];
 }
 
 - (IBAction)officialSitePressed:(NSTextField *)sender

@@ -26,14 +26,16 @@
 - (IBAction)operationManualPressed:(id)sender
 {
     NSString *bookName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleHelpBookName"];
-    [[NSHelpManager sharedHelpManager] openHelpAnchor:@"operation_manual" inBook:bookName];
+    [[NSHelpManager sharedHelpManager] openHelpAnchor:@"operation-manual" inBook:bookName];
 }
 
 - (IBAction)syntaxReferencePressed:(id)sender
 {
-    NSString *ext = _namidi.file.filename.pathExtension.lowercaseString;
+    NSString *anchor = @{@"nas": @"note-as-sequence",
+                         @"abc": @"abc-notation",
+                         @"mml": @"music-macro-language"}[_namidi.file.filename.pathExtension.lowercaseString];
     NSString *bookName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleHelpBookName"];
-    [[NSHelpManager sharedHelpManager] openHelpAnchor:ext inBook:bookName];
+    [[NSHelpManager sharedHelpManager] openHelpAnchor:anchor inBook:bookName];
 }
 
 @end

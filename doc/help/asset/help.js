@@ -1,11 +1,20 @@
 function updateTopicsLabel() {
   var body = document.querySelector('body');
   var topic = document.querySelector('a#topic');
-  topic.textContent = body.classList.contains('is-menu-open') ? 'Hide topics' : 'Show topics';
+  if (topic) {
+    topic.textContent = body.classList.contains('is-menu-open') ? 'Hide topics' : 'Show topics';
+  }
 }
 
 function toggleMenu(e) {
-  document.querySelector('body').classList.toggle('is-menu-open');
+  var body = document.querySelector('body');
+  body.classList.toggle('is-menu-open');
+  if (body.classList.contains('is-menu-open')) {
+    sessionStorage.setItem('is-menu-open', true);
+  }
+  else {
+    sessionStorage.removeItem('is-menu-open');
+  }
   updateTopicsLabel();
 
   if (e && e.preventDefault) {
@@ -22,8 +31,13 @@ function openTopic(anchor) {
     while (list) {
       if (list && list.previousSibling && list.previousSibling.previousSibling) {
         var element = list.previousSibling.previousSibling;
-        if ('INPUT' == element.nodeName && 'checkbox' == element.type) {
+        if ('A' == element.nodeName) {
+          element = element.previousSibling;
+        }
+        if (element && 'INPUT' == element.nodeName && 'checkbox' == element.type) {
           element.checked = true;
+          var _anchor = unescape(lastPathComponent(element.nextSibling.href));
+          sessionStorage.setItem(_anchor, true);
         }
       }
 
@@ -32,11 +46,16 @@ function openTopic(anchor) {
   }
 }
 
+function lastPathComponent(path) {
+  var arr = path.split('/');
+  return 0 < arr.length ? arr[arr.length - 1] : '';
+}
+
 function selectTopic(anchor) {
   var links = document.querySelectorAll('nav a');
   for (var i = 0; i < links.length; ++i) {
     var link = links[i];
-    if (link.hash == anchor) {
+    if (lastPathComponent(link.href) == anchor) {
       link.closest('li').classList.add('is-active');
     }
     else {
@@ -50,61 +69,51 @@ document.onreadystatechange = function () {
   case 'interactive':
     var body = document.querySelector('body');
     var topic = document.querySelector('a#topic');
-    topic.addEventListener('click', toggleMenu);
-
-    var transits = document.querySelectorAll('.js-transit');
-    for (var i = 0; i < transits.length; ++i) {
-      transits[i].addEventListener('click', function () {
-        var isMenuOpen = body.classList.contains('is-menu-open');
-        if (isMenuOpen) {
-          body.classList.add('is-menu-open');
-        }
-        else {
-          body.classList.remove('is-menu-open');
-        }
-
-        setTimeout(function () {
-          if (!location.hash.match(/__/)) {
-            body.scrollTop = 0;
-          }
-        }, 0);
-      });
+    if (topic) {
+      topic.addEventListener('click', toggleMenu);
     }
 
-    if (!location.hash) {
-      location.hash = '#top';
+    var lastpath = lastPathComponent(location.pathname);
+    if (0 < location.hash.length && lastpath.replace('.html', '') == location.hash.substring(1)) {
+      location.hash = '';
     }
 
-    if ('#top' != location.hash) {
+    if ('index.html' != lastpath) {
+      toggleMenu();
+      var anchor = unescape(lastpath + location.hash);
+      openTopic(anchor);
+      selectTopic(anchor);
+    }
+
+    if (sessionStorage.getItem('is-menu-open')) {
       body.classList.add('is-menu-open');
       updateTopicsLabel();
-      openTopic(location.hash);
-      selectTopic(location.hash);
-
-      setTimeout(function () {
-        if (!location.hash.match(/__/)) {
-          body.scrollTop = 0;
-        }
-      }, 0);
     }
 
     window.addEventListener('popstate', function () {
-      var isMenuOpen = body.classList.contains('is-menu-open');
-      if (isMenuOpen) {
-        body.classList.add('is-menu-open');
-      }
-      else {
-        body.classList.remove('is-menu-open');
-      }
-
-      openTopic(location.hash);
-      selectTopic(location.hash);
-
-      body.style.overflow = 'hidden';
-      setTimeout(function () {
-        body.style.overflow = '';
-      }, 10);
+      var anchor = unescape(lastpath + location.hash);
+      openTopic(anchor);
+      selectTopic(anchor);
     });
+
+    var checkboxes = document.querySelectorAll('nav input[type="checkbox"]');
+    for (var i = 0; i < checkboxes.length; ++i) {
+      var checkbox = checkboxes[i];
+      var anchor = unescape(lastPathComponent(checkbox.nextSibling.href));
+      if (sessionStorage.getItem(anchor)) {
+        checkbox.checked = true;
+      }
+
+      checkbox.addEventListener('click', function () {
+        var anchor = unescape(lastPathComponent(this.nextSibling.href));
+        if (this.checked) {
+          sessionStorage.setItem(anchor, true);
+        }
+        else {
+          sessionStorage.removeItem(anchor);
+        }
+      });
+    }
 
     break;
   case 'complete':

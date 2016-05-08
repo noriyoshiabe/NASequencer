@@ -1,12 +1,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <% include _header.ejs -%>
   <body>
+    <a name="<%= anchor %>"></a>
+
     <nav>
       <%- index %>
     </nav>
 
-		<main class="md">
-      <a name="<%= anchor %>"></a>
+    <main class="md">
       <%- content %>
     </main>
   </body>

@@ -117,14 +117,14 @@ static void __AudioCallback(void *receiver, AudioSample *buffer, uint32_t count)
                 [self.window toggleFullScreen:self];
             }
             NSString *bookName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleHelpBookName"];
-            [[NSHelpManager sharedHelpManager] openHelpAnchor:@"syntax_reference" inBook:bookName];
+            [[NSHelpManager sharedHelpManager] openHelpAnchor:@"syntax-reference" inBook:bookName];
         }
         else if ([request.URL.host isEqualToString:@"operation"]) {
             if (self.window.isFullScreen) {
                 [self.window toggleFullScreen:self];
             }
             NSString *bookName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleHelpBookName"];
-            [[NSHelpManager sharedHelpManager] openHelpAnchor:@"operation_manual" inBook:bookName];
+            [[NSHelpManager sharedHelpManager] openHelpAnchor:@"operation-manual" inBook:bookName];
         }
     }
 }
