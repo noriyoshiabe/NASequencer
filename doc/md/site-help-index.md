@@ -16,7 +16,7 @@ NASequencer Help
     - [General Settings](preference.md#=)
     - [Synthesizer Settings](preference.md#=)
     - [Purchase](preference.md#=)
-- [Syntax Reference](syntax-Reference.md)
+- [Syntax Reference](syntax-reference.md)
     - [Note as Sequence](note-as-sequence.md)
         - [Basics](note-as-sequence.md#=)
         - [References](note-as-sequence.md#=)

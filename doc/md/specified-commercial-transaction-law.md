@@ -18,6 +18,5 @@ Purchase and payment are made by Mac App Store.
 Cancel and Refund
 -----------------
 Please note that I cannot comply with your request for cancellation after purchasing.
-If the feature purchased in the application is unavailable and the problem is obviously due to the application, please report the problem and request refund to Apple.
-
+If the feature purchased in the application is unavailable and the problem is obviously due to the application, please report the problem and request refund to Apple.  
 [https://reportaproblem.apple.com/](https://reportaproblem.apple.com/)

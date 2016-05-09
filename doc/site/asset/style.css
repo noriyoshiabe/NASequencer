@@ -116,6 +116,12 @@ footer p:last-child {
   nav a:not(:first-child) {
     margin-right: 20px;
   }
+  footer a {
+    margin-left: 20px;
+  }
+  footer p {
+    margin-left: 20px;
+  }
 }
 
 /* Home Content */
