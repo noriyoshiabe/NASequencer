@@ -36,7 +36,8 @@ function openTopic(anchor) {
         }
         if (element && 'INPUT' == element.nodeName && 'checkbox' == element.type) {
           element.checked = true;
-          var _anchor = unescape(lastPathComponent(element.nextSibling.href));
+          var href = element.nextSibling.href;
+          var _anchor = unescape(lastPathComponent(href));
           sessionStorage.setItem(_anchor, true);
         }
       }
@@ -47,8 +48,11 @@ function openTopic(anchor) {
 }
 
 function lastPathComponent(path) {
+  var arr = path.split('#');
+  var path = arr[0];
+  var hash = 1 < arr.length ? '#'+arr[1] : '';
   var arr = path.split('/');
-  return 0 < arr.length ? arr[arr.length - 1] : '';
+  return (0 < arr.length ? arr[arr.length - 1] : '') + hash;
 }
 
 function selectTopic(anchor) {
@@ -73,6 +77,18 @@ document.onreadystatechange = function () {
       topic.addEventListener('click', toggleMenu);
     }
 
+    var nav = document.querySelector('nav');
+    nav.innerHTML = window.__tocHTML;
+    nav.onscroll = function () {
+      sessionStorage.setItem('nav:scrollTop', nav.scrollTop);
+    };
+    setTimeout(function () {
+      var scrollTop = sessionStorage.getItem('nav:scrollTop') || 0;
+      if (0 < scrollTop) {
+        nav.scrollTop = scrollTop;
+      }
+    }, 0);
+
     var lastpath = lastPathComponent(location.pathname);
     if (0 < location.hash.length && lastpath.replace('.html', '') == location.hash.substring(1)) {
       location.hash = '';
@@ -95,7 +111,7 @@ document.onreadystatechange = function () {
     }
 
     window.addEventListener('popstate', function () {
-      var anchor = unescape(lastpath + location.hash);
+      var anchor = unescape(lastPathComponent(location.href));
       openTopic(anchor);
       selectTopic(anchor);
     });

@@ -1,11 +1,6 @@
 module.exports = function (marked, identifier) {
   var renderer = new marked.Renderer();
 
-  // For Help Indexer
-  renderer.br = function () {
-    return '<br/>';
-  }
-
   renderer.heading = function (text, level) {
     return '<a name="'+text+'"></a><h'+level+'>'+text+'</h'+level+'>';
   }
