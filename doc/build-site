@@ -7,7 +7,8 @@ var renderer = require('./lib/site_md_renderer');
 var marked = require('marked');
 var beautify = require('js-beautify').html;
 
-var dstDir = __dirname+'/dest/site';
+var env = 2 < process.argv.length && 'production' ==  process.argv[2] ? 'production' : 'staging';
+var dstDir = __dirname+'/dest/site/'+env;
 
 function renderPage (name, options) {
   function lastPathComponent(path) {
@@ -59,9 +60,12 @@ function main(argv, callback) {
   renderPage('help/abc-notation',         {renderer: renderer.help});
   renderPage('help/music-macro-language', {renderer: renderer.help});
 
-  execSync('cp '+__dirname+'/site/asset/*.{png,svg,ico,css} '+dstDir);
+  execSync('cp '+__dirname+'/site/asset/*.{png,svg,ico,css,js,json} '+dstDir);
   execSync('cp '+__dirname+'/images/*.png '+dstDir+'/images');
   execSync('cp '+__dirname+'/site/images/*.png '+dstDir+'/images');
+
+  var num = 'production' == env ? 1 : 2;
+  execSync("sed -i '' -E 's/(UA-77464123)-X/\\1-"+num+"/' "+dstDir+"/google-analytics.js")
 }
 
 if (!module.parent) {
