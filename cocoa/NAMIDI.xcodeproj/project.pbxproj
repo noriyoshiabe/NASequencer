@@ -1045,7 +1045,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "${SRCROOT}/../doc/build-help\n\nrm -rf ${SRCROOT}/NAMIDI/Resources/NASequencer.help\nmkdir -p ${SRCROOT}/NAMIDI/Resources/NASequencer.help\ncp -r ${SRCROOT}/../doc/dest/help/Contents ${SRCROOT}/NAMIDI/Resources/NASequencer.help/Contents\n\ncd ${SRCROOT}/NAMIDI/Resources/NASequencer.help/Contents/Resources/en.lproj/\nhiutil -C -a -f search.helpindex .";
+			shellScript = "${SRCROOT}/../doc/build-help\n\nrm -rf ${SRCROOT}/NAMIDI/Resources/NASequencer.help\nmkdir -p ${SRCROOT}/NAMIDI/Resources/NASequencer.help\ncp -r ${SRCROOT}/../doc/dest/help/Contents ${SRCROOT}/NAMIDI/Resources/NASequencer.help/Contents\n\ncd ${SRCROOT}/NAMIDI/Resources/NASequencer.help/Contents/Resources/en.lproj/\nhiutil -C -a -l en_US -s en -f search.helpindex .";
 		};
 /* End PBXShellScriptBuildPhase section */
 
