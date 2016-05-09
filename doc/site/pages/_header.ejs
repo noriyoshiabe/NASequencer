@@ -14,15 +14,15 @@
   <meta property="og:type" content="<%= og_type %>" />
   <meta property="og:title" content="<%= title %>" />
   <meta property="og:description" content="<%= description %>" />
-  <meta property="og:image" content="https://nasequencer.com/og-image.png" />
-  <meta property="og:url" content="https://nasequencer.com/" />
+  <meta property="og:image" content="<%= site_url %>/og-image.png" />
+  <meta property="og:url" content="<%= site_url %>/" />
   <meta property="og:site_name" content="NASequencer" />
 
   <link rel="shortcut icon" href="/favicon.ico" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
 <% if (typeof canonical != 'undefined') { -%>
-  <link rel="canonical" href="<%= canonical %>" />
+  <link rel="canonical" href="<%= site_url %><%= canonical %>" />
 <% } -%>
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />

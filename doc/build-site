@@ -24,6 +24,8 @@ function renderPage (name, options) {
   var template = __dirname+'/site/pages/'+options.template+'.ejs';
   var values = JSON.parse(fs.readFileSync(__dirname+'/site/values/'+name+'.json'));
 
+  values.site_url = 'production' == env ? 'https://nasequencer.com' : 'http://staging.nasequencer.com';
+
   if ('none' != options.content) {
     var md = fs.readFileSync(__dirname + '/md/'+options.content+'.md', 'utf8');
     values.content = marked(md, {renderer: options.renderer(marked)});
@@ -66,6 +68,10 @@ function main(argv, callback) {
 
   var num = 'production' == env ? 1 : 2;
   execSync("sed -i '' -E 's/(UA-77464123)-X/\\1-"+num+"/' "+dstDir+"/google-analytics.js")
+
+  if ('staging' == env) {
+    execSync('echo "User-agent: *\nDisallow: /\n" > '+dstDir+'/robots.txt');
+  }
 }
 
 if (!module.parent) {
