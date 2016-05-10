@@ -424,7 +424,7 @@ ApplicationController *AppController;
                         
                         NSModalResponse response = [alert runModal];
                         if (NSAlertFirstButtonReturn == response) {
-                            [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"macappstore://itunes.apple.com/us/app/nasequencer/id1108716642?ls=1&mt=8"]];
+                            [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"macappstore://itunes.apple.com/us/app/nasequencer/id1108716642?ls=1&mt=12"]];
                         }
                         
                         if (NSOnState == alert.suppressionButton.state) {
@@ -485,7 +485,7 @@ ApplicationController *AppController;
             NSModalResponse response = [alert runModal];
             switch (response) {
                 case NSAlertFirstButtonReturn:
-                    [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"macappstore://itunes.apple.com/us/app/nasequencer/id1108716642?ls=1&mt=8"]];
+                    [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"macappstore://itunes.apple.com/us/app/nasequencer/id1108716642?ls=1&mt=12"]];
                     requestRatingInfo[kRequestRatingInfoCompleted] = @YES;
                     break;
                 case NSAlertSecondButtonReturn:
