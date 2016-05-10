@@ -9,6 +9,7 @@ NASequencer Help
 - [Operation Manual](operation-manual.md)
     - [File](operation-manual.md#=)
     - [Playback Control](operation-manual.md#=)
+    - [Preview Control](operation-manual.md#=)
     - [Main View](operation-manual.md#=)
     - [Detail View](operation-manual.md#=)
     - [Error Window](operation-manual.md#=)

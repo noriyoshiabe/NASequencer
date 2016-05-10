@@ -196,6 +196,9 @@ S = beginning of sequence
 E = end of sequence
 ```
 
+
+Preview Control
+----------------
 ### Toggle Auto Scroll
 Toggle enable/disable auto scroll sequence view to playing position.
 
@@ -204,6 +207,23 @@ Toggle enable/disable auto scroll sequence view to playing position.
 
 **Shortcut Key**  
 Control + S
+
+### Change Zoom Level
+Zoom in, out or reset to default zoom level for sequence view.
+
+![](../images/zoom_in.png) _Zoom In Button_
+![](../images/zoom_out.png) _Zoom Out Button_  
+![](../images/zoom_reset.png) _Zoom Reset Button_
+
+**Shortcut Key**  
+- ⌘ + plus(+) for zoom in
+- ⌘ + minus(-) for zoom out
+- ⌘ + zero(0) for zoom reset
+
+**Tips**  
+You can also change zoom level with trackpad (or scroll wheel).
+- ⌘ + swipe up (wheel up) for zoom in
+- ⌘ + swipe down (wheel down) for zoom out
 
 
 Main View
