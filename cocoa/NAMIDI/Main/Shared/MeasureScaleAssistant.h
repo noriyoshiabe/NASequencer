@@ -18,4 +18,7 @@
 - (BOOL)scrollWheel:(NSEvent *)theEvent;
 - (CGFloat)viewWidth;
 - (CGFloat)length;
+- (void)zoomIn;
+- (void)zoomOut;
+- (void)zoomReset;
 @end

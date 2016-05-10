@@ -10,6 +10,14 @@
 
 #define MINIMUM_MEASURE 128
 
+static const CGFloat _zoomLevels[] = {
+    // Geometric progression of 1.26
+    0.20, 0.25, 0.31, 0.40, 0.50, 0.63, 0.79,
+    1.00,
+    1.26, 1.59, 2.00, 2.52, 3.18, 4.00, 5.04, 6.35, 8.00, 10.00
+};
+static const CGFloat _zoomLevelCount = sizeof(_zoomLevels) / sizeof(_zoomLevels[0]);
+
 @implementation MeasureScaleAssistant
 
 - (instancetype)init
@@ -56,6 +64,31 @@
 - (CGFloat)length
 {
     return MAX(_namidi.sequence.length, _namidi.sequence.resolution * 4 * MINIMUM_MEASURE);
+}
+
+- (void)zoomIn
+{
+    for (int i = 0; i < _zoomLevelCount - 1; ++i) {
+        if (_zoomLevels[i] <= _scale && _scale < _zoomLevels[i + 1]) {
+            self.scale = _zoomLevels[i + 1];
+            break;
+        }
+    }
+}
+
+- (void)zoomOut
+{
+    for (int i = 1; i < _zoomLevelCount; ++i) {
+        if (_zoomLevels[i - 1] < _scale && _scale <= _zoomLevels[i]) {
+            self.scale = _zoomLevels[i - 1];
+            break;
+        }
+    }
+}
+
+- (void)zoomReset
+{
+    self.scale = 1.0;
 }
 
 @end

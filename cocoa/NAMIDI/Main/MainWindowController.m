@@ -294,17 +294,17 @@
 
 - (IBAction)zoomOut:(id)sender
 {
-    __Trace__
+    [_scaleAssistant zoomOut];
 }
 
 - (IBAction)zoomReset:(id)sender
 {
-    __Trace__
+    [_scaleAssistant zoomReset];
 }
 
 - (IBAction)zoomIn:(id)sender
 {
-    __Trace__
+    [_scaleAssistant zoomIn];
 }
 
 - (IBAction)export:(id)sender
