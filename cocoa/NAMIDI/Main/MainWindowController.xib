@@ -22,7 +22,7 @@
             <value key="minSize" type="size" width="600" height="400"/>
             <view key="contentView" id="gIp-Ho-8D9">
                 <rect key="frame" x="0.0" y="0.0" width="960" height="640"/>
-                <autoresizingMask key="autoresizingMask"/>
+                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="90Z-5k-1hx">
                         <rect key="frame" x="0.0" y="0.0" width="960" height="640"/>
@@ -109,6 +109,21 @@
                             <action selector="export:" target="-1" id="CJu-ZW-J9x"/>
                         </connections>
                     </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="89DF191E-5A6E-4FD5-B17F-17791F268D41" label="Zoom Out" paletteLabel="Zoom Out" tag="-1" image="zoom_out" id="nzQ-dJ-WwO">
+                        <connections>
+                            <action selector="zoomOut:" target="-1" id="Zp8-yL-iwH"/>
+                        </connections>
+                    </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="72564446-6505-4D54-9E4C-8FB25712BA7E" label="Zoom Reset" paletteLabel="Zoom Reset" tag="-1" image="zoom_reset" id="ru6-oH-10b">
+                        <connections>
+                            <action selector="zoomReset:" target="-1" id="g5E-p5-ZEW"/>
+                        </connections>
+                    </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="8145EA44-566D-4A8C-9429-4C5557C973E2" label="Zoom In" paletteLabel="Zoom In" tag="-1" image="zoom_in" id="IvS-sJ-rpV">
+                        <connections>
+                            <action selector="zoomIn:" target="-1" id="A2H-0Y-jat"/>
+                        </connections>
+                    </toolbarItem>
                 </allowedToolbarItems>
                 <defaultToolbarItems>
                     <toolbarItem reference="BN2-JS-ffX"/>
@@ -122,6 +137,10 @@
                     <toolbarItem reference="5Cn-B4-1t4"/>
                     <toolbarItem reference="VpO-QX-X6k"/>
                     <toolbarItem reference="lm7-Jm-Vyk"/>
+                    <toolbarItem reference="nzQ-dJ-WwO"/>
+                    <toolbarItem reference="ru6-oH-10b"/>
+                    <toolbarItem reference="IvS-sJ-rpV"/>
+                    <toolbarItem reference="RYG-zr-Tvh"/>
                     <toolbarItem reference="YUF-3s-pU0"/>
                 </defaultToolbarItems>
             </toolbar>
@@ -139,5 +158,8 @@
         <image name="play" width="24" height="24"/>
         <image name="repeat_off" width="24" height="24"/>
         <image name="rewind" width="24" height="24"/>
+        <image name="zoom_in" width="24" height="24"/>
+        <image name="zoom_out" width="24" height="24"/>
+        <image name="zoom_reset" width="24" height="24"/>
     </resources>
 </document>

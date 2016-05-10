@@ -291,6 +291,22 @@ Gw
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="2Zq-lv-Bfl"/>
+                            <menuItem title="Zoom In" keyEquivalent="+" id="M2r-kf-yY0">
+                                <connections>
+                                    <action selector="zoomIn:" target="-1" id="y6b-Lq-rVE"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Zoom Out" keyEquivalent="-" id="xKQ-VH-GS1">
+                                <connections>
+                                    <action selector="zoomOut:" target="-1" id="efh-LD-xos"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Zoom Reset" keyEquivalent="0" id="3P2-JM-P7O">
+                                <connections>
+                                    <action selector="zoomReset:" target="-1" id="aHw-zx-v6c"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="ZYT-m4-A5L"/>
                             <menuItem title="Show Event List" keyEquivalent="L" id="eTc-NC-7Bo">
                                 <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
                                 <connections>

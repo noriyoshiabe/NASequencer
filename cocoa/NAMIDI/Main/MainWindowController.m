@@ -292,6 +292,21 @@
     [self updateToolBarItemAutoScroll];
 }
 
+- (IBAction)zoomOut:(id)sender
+{
+    __Trace__
+}
+
+- (IBAction)zoomReset:(id)sender
+{
+    __Trace__
+}
+
+- (IBAction)zoomIn:(id)sender
+{
+    __Trace__
+}
+
 - (IBAction)export:(id)sender
 {
     [AppController exportDocumentForWindow:self.window file:_namidi.file];
