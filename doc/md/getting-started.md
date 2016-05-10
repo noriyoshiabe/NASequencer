@@ -166,7 +166,7 @@ NASequencer suports following languages.
 - [ABC Notation](abc-notation.md)
 - [Music Macro Language](music-macro-language.md)
 
-If you familiar with those. you can choose format form file creation dialog.
+If you familiar with those. you can choose format from file creation dialog.
 
 ### Advanced Usage
 When you are familiar with basics, read [Operation Manual](operation-manual.md) for more advanced usage.
