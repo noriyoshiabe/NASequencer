@@ -30,6 +30,7 @@
 #endif
     
     [AppController initialize];
+    [AppController reportApplicationLaunch];
     
     _inLaunchOrReopenProcess = YES;
 }

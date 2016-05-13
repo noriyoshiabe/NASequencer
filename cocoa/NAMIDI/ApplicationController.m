@@ -18,6 +18,8 @@
 #import "Document.h"
 #import "IAP.h"
 
+#import <Crashlytics/Answers.h>
+
 ApplicationController *AppController;
 
 @interface ApplicationController () <NSMenuDelegate, NSOpenSavePanelDelegate, ExportWindowControllerDelegate> {
@@ -498,6 +500,27 @@ ApplicationController *AppController;
         
         [Preference sharedInstance].requestRatingInfo = requestRatingInfo;
     } notFound:nil];
+}
+
+#pragma mark Report to Answers
+
+- (void)reportApplicationLaunch
+{
+    NSString *editorName = [Preference sharedInstance].externalEditorName;
+    if (!editorName) {
+        editorName = @"Internal Editor";
+    }
+    NSString *locale = [NSLocale preferredLanguages].firstObject;
+    
+    [[IAP sharedInstance] findIAPProduct:kIAPProductFullVersion found:^(NSString *productID, int quantity) {
+        [Answers logCustomEventWithName:@"Application Launch" customAttributes:@{@"Editor": editorName,
+                                                                                 @"Locale": locale,
+                                                                                 @"Full Version": @"true"}];
+    } notFound:^(NSString *productID) {
+        [Answers logCustomEventWithName:@"Application Launch" customAttributes:@{@"Editor": editorName,
+                                                                                 @"Locale": locale,
+                                                                                 @"Full Version": @"false"}];
+    }];
 }
 
 @end

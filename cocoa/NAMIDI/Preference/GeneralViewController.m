@@ -9,8 +9,6 @@
 #import "GeneralViewController.h"
 #import "Preference.h"
 
-#import <Crashlytics/Answers.h>
-
 @interface GeneralViewController () <NSOpenSavePanelDelegate> {
     NSString *_externalEditorName;
 }
@@ -58,8 +56,6 @@
     if (!_useExternalEditor) {
         [Preference sharedInstance].externalEditorName = nil;
         _externalEditorName = nil;
-        
-        [Answers logCustomEventWithName:@"Editor" customAttributes:@{@"Name": @"Internal Editor"}];
     }
     
     [self refreshEditorSettings];
@@ -109,8 +105,6 @@
             _externalEditorName = [appBundle objectForInfoDictionaryKey:@"CFBundleName"];
             [Preference sharedInstance].externalEditorName = _externalEditorName;
             [self refreshEditorSettings];
-            
-            [Answers logCustomEventWithName:@"Editor" customAttributes:@{@"Name": _externalEditorName}];
         }
     }];
 }
