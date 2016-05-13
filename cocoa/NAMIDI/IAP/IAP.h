@@ -14,6 +14,7 @@
 @class IAP;
 @protocol IAPObserver <NSObject>
 - (void)iap:(IAP *)iap didUpdateTransaction:(SKPaymentTransaction *)transaction;
+- (void)iap:(IAP *)iap didRefreshReceiptWithError:(NSError *)error;
 @end
 
 @interface IAP : NSObject
@@ -28,4 +29,6 @@
 #ifdef __IAP_MOCK__
 - (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray <SKPaymentTransaction *> *)transactions;
 #endif
+- (void)purchase:(NSString *)productID;
+- (void)restorePurchase:(NSString *)productID;
 @end

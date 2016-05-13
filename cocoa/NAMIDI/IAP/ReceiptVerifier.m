@@ -101,6 +101,10 @@
     
     _iapReceipts = receipt.iapReceipts;
     
+#ifdef __DUMP_RECEIPT
+    NSLog(@"%@", receipt);
+#endif
+    
     EVP_cleanup();
     [_delegate verifierDidVerifySuccess:self];
 #endif

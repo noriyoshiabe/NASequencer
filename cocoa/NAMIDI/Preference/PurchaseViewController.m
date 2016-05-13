@@ -124,6 +124,7 @@
         [[IAP sharedInstance] paymentQueue:[SKPaymentQueue defaultQueue] updatedTransactions:@[[[FakePaymentTransaction alloc] initWithState:SKPaymentTransactionStatePurchased error:[NSError errorWithDomain:SKErrorDomain code:SKErrorPaymentInvalid userInfo:nil]]]];
     });
 #else
+    [[IAP sharedInstance] purchase:kIAPProductFullVersion];
 #endif // __IAP_MOCK__
 }
 
@@ -138,6 +139,7 @@
         [[IAP sharedInstance] paymentQueue:[SKPaymentQueue defaultQueue] updatedTransactions:@[[[FakePaymentTransaction alloc] initWithState:SKPaymentTransactionStateRestored error:[NSError errorWithDomain:SKErrorDomain code:SKErrorPaymentInvalid userInfo:nil]]]];
     });
 #else
+    [[IAP sharedInstance] restorePurchase:kIAPProductFullVersion];
 #endif // __IAP_MOCK__
 }
 
@@ -181,6 +183,17 @@
             }];
             break;
     }
+}
+
+- (void)iap:(IAP *)iap didRefreshReceiptWithError:(NSError *)error
+{
+    [[IAP sharedInstance] findIAPProduct:kIAPProductFullVersion found:^(NSString *productID, int quantity) {
+        [self showThanksView];
+    } notFound:^(NSString *productID) {
+        _purchaseButton.enabled = YES;
+        _restorePurchaseButton.enabled = YES;
+        [self showPurchaseView];
+    }];
 }
 
 @end
