@@ -6,6 +6,9 @@
 //  Copyright © 2016 Noriyoshi Abe. All rights reserved.
 //
 
+
+#ifdef __IAP_MOCK__
+
 #import <Foundation/Foundation.h>
 #import <StoreKit/StoreKit.h>
 #import "IAP.h"
@@ -25,3 +28,5 @@
 
 @interface FakeProduct : SKProduct
 @end
+
+#endif // __IAP_MOCK__

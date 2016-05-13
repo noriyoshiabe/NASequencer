@@ -25,8 +25,7 @@
 - (void)removeObserver:(id<IAPObserver>)observer;
 - (void)findIAPProduct:(NSString *)productID found:(void(^)(NSString *productID, int quantity))found notFound:(void(^)(NSString *productID))notFound;
 - (void)requestProductInfo:(NSArray *)productIdentifiers callback:(void (^)(SKProductsResponse *response))callback;
-// TODO remove
-#ifdef DEBUG
+#ifdef __IAP_MOCK__
 - (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray <SKPaymentTransaction *> *)transactions;
 #endif
 @end

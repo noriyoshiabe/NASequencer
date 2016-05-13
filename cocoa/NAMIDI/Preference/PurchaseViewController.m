@@ -10,8 +10,7 @@
 #import "IAP.h"
 #import "ColorButton.h"
 
-// TODO remove
-#ifdef DEBUG
+#ifdef __IAP_MOCK__
 #import "IAPMock.h"
 #endif
 
@@ -116,7 +115,7 @@
 
 - (IBAction)purchasePressed:(id)sender
 {
-    // TODO
+#ifdef __IAP_MOCK__
     [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"FakePurchased"];
     [[NSUserDefaults standardUserDefaults] synchronize];
     
@@ -124,11 +123,13 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [[IAP sharedInstance] paymentQueue:[SKPaymentQueue defaultQueue] updatedTransactions:@[[[FakePaymentTransaction alloc] initWithState:SKPaymentTransactionStatePurchased error:[NSError errorWithDomain:SKErrorDomain code:SKErrorPaymentInvalid userInfo:nil]]]];
     });
+#else
+#endif // __IAP_MOCK__
 }
 
 - (IBAction)restorePurchasePressed:(id)sender
 {
-    // TODO
+#ifdef __IAP_MOCK__
     [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"FakePurchased"];
     [[NSUserDefaults standardUserDefaults] synchronize];
     
@@ -136,38 +137,24 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [[IAP sharedInstance] paymentQueue:[SKPaymentQueue defaultQueue] updatedTransactions:@[[[FakePaymentTransaction alloc] initWithState:SKPaymentTransactionStateRestored error:[NSError errorWithDomain:SKErrorDomain code:SKErrorPaymentInvalid userInfo:nil]]]];
     });
+#else
+#endif // __IAP_MOCK__
 }
 
 - (IBAction)tweetPressed:(id)sender
 {
-// TODO remove
-#ifdef DEBUG
-    NSAlert *alert = [[NSAlert alloc] init];
-    alert.messageText = @"Sorry, this function is for production app.";
-    [alert addButtonWithTitle:NSLocalizedString(@"OK", @"OK")];;
-    [alert runModal];
-#else
     NSString *text = NSLocalizedString(@"Preference_PurchaseTweetMessage", @"NASequencer, the text-based music composing application. For Composition, Transcribe, Karaoke, etc.");
     NSString *encodedText = [text stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet alphanumericCharacterSet]];
     NSString *encodedUrl = [@"https://nasequencer.com" stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet alphanumericCharacterSet]];
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://twitter.com/intent/tweet?text=%@&url=%@", encodedText, encodedUrl]];
     [[NSWorkspace sharedWorkspace] openURL: url];
-#endif
 }
 
 - (IBAction)shareOnFacebookPressed:(id)sender
 {
-// TODO remove
-#ifdef DEBUG
-    NSAlert *alert = [[NSAlert alloc] init];
-    alert.messageText = @"Sorry, this function is for production app.";
-    [alert addButtonWithTitle:NSLocalizedString(@"OK", @"OK")];;
-    [alert runModal];
-#else
     NSString *encodedUrl = [@"https://nasequencer.com" stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet alphanumericCharacterSet]];
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://www.facebook.com/sharer/sharer.php?u=%@", encodedUrl]];
     [[NSWorkspace sharedWorkspace] openURL: url];
-#endif
 }
 
 #pragma mark IAPObserver

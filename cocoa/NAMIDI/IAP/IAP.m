@@ -12,8 +12,7 @@
 
 #import <Crashlytics/Answers.h>
 
-// TODO remove
-#ifdef DEBUG
+#ifdef __IAP_MOCK__
 #import "IAPMock.h"
 #endif
 
@@ -99,12 +98,11 @@ static IAP *_sharedInstance = nil;
 
 - (void)requestProductInfo:(NSArray *)productIdentifiers callback:(void (^)(SKProductsResponse *response))callback
 {
-    // TODO test after IAP product is enabled
+#ifdef __IAP_MOCK__
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         callback([[FakeProductResponse alloc] init]);
     });
-    
-#if 0
+#else
     SKProductsRequest *productsRequest = [[SKProductsRequest alloc] initWithProductIdentifiers:[NSSet setWithArray:productIdentifiers]];
     
     ProductRequestInfo *requestInfo = [[ProductRequestInfo alloc] init];
@@ -115,7 +113,7 @@ static IAP *_sharedInstance = nil;
     
     productsRequest.delegate = self;
     [productsRequest start];
-#endif
+#endif // __IAP_MOCK__
 }
 
 #pragma mark SKProductsRequestDelegate

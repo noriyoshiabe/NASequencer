@@ -48,8 +48,7 @@
 
 - (void)verify:(AppStoreReceipt *)receipt
 {
-// TODO remove
-#ifdef DEBUG
+#ifdef __IAP_MOCK__
     [_delegate verifierDidVerifySuccess:self];
     return;
 #else
@@ -109,12 +108,14 @@
 
 - (void)findIAPProduct:(NSString *)productID
 {
-#ifdef DEBUG
-    // TODO remove
+#ifdef __IAP_MOCK__
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"FakePurchased"]) {
         [_delegate verifier:self didIAPProductFound:productID quantity:1];
     }
-#endif
+    else {
+        [_delegate verifier:self didIAPProductNotFound:productID];
+    }
+#else
     
     for (IAPReceipt *iapReceipt in _iapReceipts) {
         if ([iapReceipt.productId isEqualToString:productID]) {
@@ -130,6 +131,7 @@
     }
     
     [_delegate verifier:self didIAPProductNotFound:productID];
+#endif
 }
 
 - (NSData *)macAddress

@@ -6,6 +6,8 @@
 //  Copyright © 2016 Noriyoshi Abe. All rights reserved.
 //
 
+#ifdef __IAP_MOCK__
+
 #import "IAPMock.h"
 
 @implementation FakePayment
@@ -78,3 +80,5 @@
 }
 
 @end
+
+#endif // __IAP_MOCK__
