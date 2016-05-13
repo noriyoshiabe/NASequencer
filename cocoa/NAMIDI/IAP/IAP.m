@@ -207,23 +207,24 @@ static IAP *_sharedInstance = nil;
     [NSThread performBlockOnMainThread:^{
         NSAlert *alert = [[NSAlert alloc] init];
         alert.messageText = NSLocalizedString(@"Purchase_RestoreFailed", @"Restore Purchase Faild");
-        alert.informativeText = [self restorePurchaseFaildInformativeForError:error];
+        
+        NSString *errorText;
+        if (error) {
+            NSString *format = NSLocalizedString(@"Purchase_RestorePurchaseFaildErrorFormat", @"An error has occurred.\n%@ - %d");
+            errorText = [NSString stringWithFormat:format, error.domain, error.code];
+        }
+        else {
+            errorText = @"Unknown Error.";
+        }
+        
+        NSString *informative = NSLocalizedString(@"Purchase_RestorePurchaseFaildInformative",
+                                                  @"%@\n\n"
+                                                  @"Please try again and make sure you're using the same Apple ID you have previously used to purchase.");
+        
+        alert.informativeText = [NSString stringWithFormat:informative, errorText];
         [alert addButtonWithTitle:NSLocalizedString(@"Close", @"Close")];;
         [alert runModal];
     }];
-}
-
-- (NSString *)restorePurchaseFaildInformativeForError:(NSError *)error
-{
-    if (error) {
-        NSString *informative = NSLocalizedString(@"Purchase_RestorePurchaseFaildInformative", @"An error has occurred.\n%@ - %d");
-        return [NSString stringWithFormat:informative, error.domain, error.code];;
-    }
-    else {
-        return NSLocalizedString(@"Purchase_RestorePurchaseFaildInformativeWithUnknownError",
-                                 @"Unknown Error\n\n"
-                                 @"Please try again and make sure you're using the same Apple ID you have previously used to purchase.");
-    }
 }
 
 #pragma mark ReceiptVerifierDelegate
