@@ -30,7 +30,6 @@
     ObserverList *_observers;
     ReceiptVerifier *_verifier;
     SKPaymentTransaction *_purchasedTransaction;
-    SKReceiptRefreshRequest *_receiptRefreshRequest;
     void(^_found)(NSString *, int);
     void(^_notFound)(NSString *);
 }
@@ -130,9 +129,7 @@ static IAP *_sharedInstance = nil;
 
 - (void)restorePurchase:(NSString *)productID
 {
-    _receiptRefreshRequest = [[SKReceiptRefreshRequest alloc] init];
-    _receiptRefreshRequest.delegate = self;
-    [_receiptRefreshRequest start];
+    [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
 }
 
 #pragma mark SKProductsRequestDelegate
@@ -226,40 +223,6 @@ static IAP *_sharedInstance = nil;
         return NSLocalizedString(@"Purchase_RestorePurchaseFaildInformativeWithUnknownError",
                                  @"Unknown Error\n\n"
                                  @"Please try again and make sure you're using the same Apple ID you have previously used to purchase.");
-    }
-}
-
-#pragma mark SKRequestDelegate
-
-- (void)requestDidFinish:(SKRequest *)request
-{
-    if (_receiptRefreshRequest == request) {
-        [NSThread performBlockOnMainThread:^{
-            for (id<IAPObserver> observer in _observers) {
-                [observer iap:self didRefreshReceiptWithError:nil];
-            }
-        }];
-        
-        _receiptRefreshRequest = nil;
-    }
-}
-
-- (void)request:(SKRequest *)request didFailWithError:(nullable NSError *)error
-{
-    if (_receiptRefreshRequest == request) {
-        [NSThread performBlockOnMainThread:^{
-            NSAlert *alert = [[NSAlert alloc] init];
-            alert.messageText = NSLocalizedString(@"Purchase_RestoreFailed", @"Restore Purchase Faild");
-            alert.informativeText = [self restorePurchaseFaildInformativeForError:error];
-            [alert addButtonWithTitle:NSLocalizedString(@"Close", @"Close")];;
-            [alert runModal];
-            
-            for (id<IAPObserver> observer in _observers) {
-                [observer iap:self didRefreshReceiptWithError:error];
-            }
-        }];
-        
-        _receiptRefreshRequest = nil;
     }
 }
 

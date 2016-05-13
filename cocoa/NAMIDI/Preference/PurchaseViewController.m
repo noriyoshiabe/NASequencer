@@ -185,17 +185,6 @@
     }
 }
 
-- (void)iap:(IAP *)iap didRefreshReceiptWithError:(NSError *)error
-{
-    [[IAP sharedInstance] findIAPProduct:kIAPProductFullVersion found:^(NSString *productID, int quantity) {
-        [self showThanksView];
-    } notFound:^(NSString *productID) {
-        _purchaseButton.enabled = YES;
-        _restorePurchaseButton.enabled = YES;
-        [self showPurchaseView];
-    }];
-}
-
 @end
 
 

@@ -14,7 +14,6 @@
 @class IAP;
 @protocol IAPObserver <NSObject>
 - (void)iap:(IAP *)iap didUpdateTransaction:(SKPaymentTransaction *)transaction;
-- (void)iap:(IAP *)iap didRefreshReceiptWithError:(NSError *)error;
 @end
 
 @interface IAP : NSObject
