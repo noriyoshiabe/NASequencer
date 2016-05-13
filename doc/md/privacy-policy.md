@@ -21,6 +21,8 @@ NASequencer collects following information via Crashlytics and Answers.
 - Name of the SoundFont that is added by user
 - Name of the External Editor or Internal Editor that is selected by user
 - File format of the exporting data that is exported by user
+- Preferred language that is set as primary on System preferences
+- Full Version is purchased or not
 - Trace information of In App Purchase Transaction
 
 Those informations are used for only improvement of NASequencer and investigation of bug.
