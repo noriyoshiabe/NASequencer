@@ -1,8 +1,8 @@
 NASequencer Support
 ===================
 
-Feel free to ask me about NASequencer. Your feedback or any request is welcome.
-Sorry in advance if my response is slow. I'm not a hard worker. 😪
+Feel free to ask me about NASequencer. Your feedback or other requests are welcome.
+I apologize in advance if any responses are slow; I'm not so good at English.
 
 Inquiry
 -------
@@ -12,7 +12,7 @@ Bug Report
 ----------
 [bug-report@nasequencer.com](mailto:bug-report@nasequencer.com)
 
-Please, write a detail for reproducing. Thank you!
+Please include a detailed description of how to reproduce the bug. Thank you!
 
 Feature Request
 ---------------
