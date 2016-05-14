@@ -11,6 +11,12 @@ function toggleMenu(e) {
   body.classList.toggle('is-menu-open');
   if (body.classList.contains('is-menu-open')) {
     sessionStorage.setItem('is-menu-open', true);
+
+    if (510 > document.width) {
+      if ("HelpViewer" in window && "resizeTo" in window.HelpViewer) {
+        window.HelpViewer.resizeTo(510, 0, 0, "easeInEaseOut");
+      }
+    }
   }
   else {
     sessionStorage.removeItem('is-menu-open');
