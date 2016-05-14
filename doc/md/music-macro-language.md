@@ -1,6 +1,6 @@
 Music Macro Language
 ====================
-Version 0.5.0 Draft, 2016
+Version 1.0 for NASequencer, May 2016
 
 About MML
 ---------

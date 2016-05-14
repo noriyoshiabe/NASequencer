@@ -1,6 +1,6 @@
 Note as Sequence
 ================
-Version 0.5.0 Draft, 2016
+Version 1.0, May 2016
 
 Basics
 ------
