@@ -189,9 +189,10 @@
 
 - (void)tableViewSelectionDidChange:(NSNotification *)notification
 {
-    NSInteger selectedRow = [_tableView selectedRow];
-    NSTableRowView *myRowView = [_tableView rowViewAtRow:selectedRow makeIfNecessary:NO];
-    [myRowView setEmphasized:NO];
+    if (-1 != _tableView.selectedRow) {
+        NSTableRowView *myRowView = [_tableView rowViewAtRow:_tableView.selectedRow makeIfNecessary:NO];
+        [myRowView setEmphasized:NO];
+    }
 }
 
 - (id<NSPasteboardWriting>)tableView:(NSTableView *)tableView pasteboardWriterForRow:(NSInteger)row

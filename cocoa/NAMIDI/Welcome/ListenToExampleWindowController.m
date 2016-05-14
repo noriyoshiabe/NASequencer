@@ -56,7 +56,9 @@
 
 - (IBAction)tableViewSelectionChanged:(id)sender
 {
-    [AppController openExampleDocument:self.examples[_tableView.selectedRow][@"fileType"]];
+    if (-1 != _tableView.clickedRow) {
+        [AppController openExampleDocument:self.examples[_tableView.clickedRow][@"fileType"]];
+    }
 }
 
 #pragma mark NSTableViewDataSource

@@ -358,11 +358,13 @@
 
 - (void)tableViewSelectionDidChange:(NSNotification *)notification
 {
-    PresetRepresentation *preset = [_mixerChannel.presets objectAtIndex:_presetTableView.selectedRow];
-    if (_mixerChannel.preset != preset) {
-        [_mixer sendAllSoundOff:_mixerChannel];
+    if (-1 != _presetTableView.selectedRow) {
+        PresetRepresentation *preset = [_mixerChannel.presets objectAtIndex:_presetTableView.selectedRow];
+        if (_mixerChannel.preset != preset) {
+            [_mixer sendAllSoundOff:_mixerChannel];
+        }
+        _mixerChannel.preset = preset;
     }
-    _mixerChannel.preset = preset;
 }
 
 #pragma mark MixerRepresentationObserver

@@ -76,6 +76,7 @@
     
     _recentTableView.dataSource = self;
     _recentTableView.delegate = self;
+    _recentTableView.allowsEmptySelection = NO;
     
     [_recentTableView reloadData];
     
@@ -173,15 +174,18 @@
 
 - (IBAction)recentTableViewSelectionChanged:(id)sender
 {
-    FileRepresentation *recentFile = self.recentDocuments[_recentTableView.selectedRow];
-    [AppController openDocumentWithContentsOfURL:recentFile.url];
+    if (-1 != _recentTableView.clickedRow) {
+        FileRepresentation *recentFile = self.recentDocuments[_recentTableView.clickedRow];
+        [AppController openDocumentWithContentsOfURL:recentFile.url];
+    }
 }
 
 - (void)keyDown:(NSEvent *)theEvent
 {
     unichar key = [[theEvent charactersIgnoringModifiers] characterAtIndex:0];
     if (NSCarriageReturnCharacter == key && -1 != _recentTableView.selectedRow) {
-        [self recentTableViewSelectionChanged:self];
+        FileRepresentation *recentFile = self.recentDocuments[_recentTableView.selectedRow];
+        [AppController openDocumentWithContentsOfURL:recentFile.url];
     }
     else {
         [super keyDown:theEvent];
