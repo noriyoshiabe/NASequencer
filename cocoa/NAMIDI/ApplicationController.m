@@ -357,6 +357,10 @@ ApplicationController *AppController;
 - (void)menuDidClose:(NSMenu *)menu
 {
     NSString *ext = menu.highlightedItem.representedObject;
+    if (!ext) {
+        // nil is set when menu selection is canceled.
+        return;
+    }
     
     if (_savePanel) {
         _savePanel.nameFieldStringValue = [_savePanel.nameFieldStringValue.stringByDeletingPathExtension stringByAppendingPathExtension:ext];
