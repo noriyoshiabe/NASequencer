@@ -9,10 +9,6 @@
 #import "PresetSelectionWindowController.h"
 #import "ColorButton.h"
 
-@interface PresetTableView : NSTableView
-@property (weak, nonatomic) PresetSelectionWindowController *controller;
-@end
-
 @interface PresetKeyboardButton : ColorButton
 @property (weak, nonatomic) IBOutlet PresetSelectionWindowController *controller;
 @property (assign, nonatomic) unichar key;
@@ -24,12 +20,13 @@
 
 @interface PresetSelectionWindowController () <NSWindowDelegate, NSTableViewDataSource, NSTableViewDelegate, MixerRepresentationObserver, NSWindowDelegate> {
     int _octave;
+    id _keyDownMonitor;
 }
 @property (weak) IBOutlet NSTextField *channelField;
 @property (weak) IBOutlet NSTextField *synthesizerNameField;
 @property (weak) IBOutlet NSTextField *bankNoField;
 @property (weak) IBOutlet NSTextField *programNoField;
-@property (weak) IBOutlet PresetTableView *presetTableView;
+@property (weak) IBOutlet NSTableView *presetTableView;
 @property (strong, nonatomic) NSMutableDictionary<NSNumber *, PresetKeyboardButton *> *keys;
 @property (weak) IBOutlet NSTextField *octaveLabel1;
 @property (weak) IBOutlet NSTextField *octaveLabel2;
@@ -56,7 +53,6 @@
     [super windowDidLoad];
     self.window.preventsApplicationTerminationWhenModal = NO;
     
-    _presetTableView.controller = self;
     _octave = 2;
     [self updateOctaveLabel];
 }
@@ -136,6 +132,13 @@
     self.synthesizerNameField.nextResponder = self;
     self.bankNoField.nextResponder = self;
     self.programNoField.nextResponder = self;
+    
+    _keyDownMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:NSKeyDownMask | NSKeyUpMask | NSFlagsChangedMask handler:self.keyDownMonitorHandler];
+}
+
+- (void)windowDidResignKey:(NSNotification *)notification
+{
+    [NSEvent removeMonitor:_keyDownMonitor];
 }
 
 - (void)cancelOperation:(id)sender
@@ -228,53 +231,116 @@
     }
 }
 
-- (void)keyDown:(NSEvent *)theEvent
+- (BOOL)handleKeyDown:(NSEvent *)event
 {
-    if (theEvent.isARepeat || (theEvent.modifierFlags & NSCommandKeyMask)) {
-        return;
-    }
-    
-    unichar key = [theEvent.charactersIgnoringModifiers characterAtIndex:0];
+    unichar key = [event.charactersIgnoringModifiers characterAtIndex:0];
     switch (key) {
         case NSCarriageReturnCharacter:
-            [self okButtonPressed:self];
-            break;
+            if (!event.isARepeat) {
+                [self okButtonPressed:self];
+            }
+            return YES;
+            
         case NSLeftArrowFunctionKey:
-            if (-2 < _octave) {
-                --_octave;
-                [self updateOctaveLabel];
+            if (event.modifierFlags & NSShiftKeyMask) {
+                return NO;
             }
-            break;
+            else {
+                if (-2 < _octave) {
+                    --_octave;
+                    [self updateOctaveLabel];
+                }
+                return YES;
+            }
+            
         case NSRightArrowFunctionKey:
-            if (8 > _octave) {
-                ++_octave;
-                [self updateOctaveLabel];
+            if (event.modifierFlags & NSShiftKeyMask) {
+                return NO;
             }
-            break;
+            else {
+                if (8 > _octave) {
+                    ++_octave;
+                    [self updateOctaveLabel];
+                }
+                return YES;
+            }
+            
+        case NSUpArrowFunctionKey:
+        case NSDownArrowFunctionKey:
+            [_presetTableView keyDown:event];
+            return YES;
+            
         default:
-        {
-            PresetKeyboardButton *button = _keys[@(key)];
-            if (button.enabled) {
-                button.state = NSOnState;
-                [button sendNoteOn:key];
+            if (!event.isARepeat && !(event.modifierFlags & NSCommandKeyMask)) {
+                PresetKeyboardButton *button = _keys[@(key)];
+                if (button.enabled) {
+                    button.state = NSOnState;
+                    [button sendNoteOn:key];
+                }
             }
-        }
-            break;
+            
+            return YES;
     }
 }
 
-- (void)keyUp:(NSEvent *)theEvent
+- (BOOL)handleKeyUp:(NSEvent *)event
 {
-    unichar key = [theEvent.charactersIgnoringModifiers characterAtIndex:0];
-    _keys[@(key)].state = NSOffState;
-    [_keys[@(key)] sendNoteOff];
+    unichar key = [event.charactersIgnoringModifiers characterAtIndex:0];
+    if (_keys[@(key)]) {
+        _keys[@(key)].state = NSOffState;
+        [_keys[@(key)] sendNoteOff];
+        return YES;
+    }
+    else {
+        return NO;
+    }
 }
 
-- (void)flagsChanged:(NSEvent *)theEvent
+- (BOOL)handleFlagsChanged:(NSEvent *)event
 {
-    if (theEvent.modifierFlags & NSCommandKeyMask) {
+    if (event.modifierFlags & NSCommandKeyMask) {
         [self cancelAllKeys];
+        return YES;
     }
+    else {
+        return NO;
+    }
+}
+
+- (NSEvent* __nullable (^)(NSEvent*))keyDownMonitorHandler
+{
+    return ^NSEvent * _Nullable(NSEvent *event) {
+        if (53 == event.keyCode) {
+            [self cancelOperation:self];
+            return nil;
+        }
+        
+        switch (event.type) {
+            case NSKeyDown:
+                if ([self handleKeyDown:event]) {
+                    return nil;
+                }
+                else {
+                    return event;
+                }
+            case NSKeyUp:
+                if ([self handleKeyUp:event]) {
+                    return nil;
+                }
+                else {
+                    return event;
+                }
+            case NSFlagsChanged:
+                if ([self handleFlagsChanged:event]) {
+                    return nil;
+                }
+                else {
+                    return event;
+                }
+            default:
+                return event;
+        }
+    };
 }
 
 #pragma mark NSTableViewDataSource
@@ -326,28 +392,6 @@
             case MixerChannelStatusKindSolo:
                 break;
         }
-    }
-}
-
-@end
-
-
-@implementation PresetTableView
-
-- (void)keyDown:(NSEvent *)theEvent
-{
-    // ESC
-    if (53 == theEvent.keyCode) {
-        [_controller cancelOperation:self];
-        return;
-    }
-    
-    unichar key = [theEvent.charactersIgnoringModifiers characterAtIndex:0];
-    if (NSUpArrowFunctionKey == key || NSDownArrowFunctionKey == key) {
-        [super keyDown:theEvent];
-    }
-    else {
-        [_controller keyDown:theEvent];
     }
 }
 
