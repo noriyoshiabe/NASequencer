@@ -3,7 +3,7 @@ Getting Started
 
 Create New File
 ---------------
-At the beginning, you need to create an empty file.
+First, you need to create an empty file.
 
 - Create empty file from menu [File] -> [New]
 - In file creation dialog, choose file type with Note as Sequence(.nas)
@@ -69,7 +69,7 @@ Let's edit "hello.nas" with NASequencer is stayed running.
 Adding 3 notes and 1 chord up to 1 octave.
 Then save it.
 
-Anytime you save file, NASequencer automatically reflects music sequence in document window.
+Anytime you save the file, NASequencer automatically reflects any changes in the document window.
 Now, you can see the sequence like following list.
 
 ```
@@ -149,11 +149,11 @@ Next Step
 ### Listen to example
 Show welcom window by menu [Window] -> [Welcome to NASequencer].
 Choose "Listen to example" from the window.
-Then, figure out composition of music syntax.
+Then, figure out the syntax for composition.
 
 **Tips**  
-You can edit example and preview result.
-When you want to reset it, reopen example from welcome window.
+You can edit the examples and preview the results.
+To return the file to its original state, reopen the examples from the welcome window.
 
 ### Check Syntax Reference
 Documented about syntax in this section is just for introduction. Please check the references.
@@ -161,12 +161,12 @@ Documented about syntax in this section is just for introduction. Please check t
 - [Note as Sequence](note-as-sequence.md)
 
 ### Other Languages
-NASequencer suports following languages.
+NASequencer supports following languages.
 
 - [ABC Notation](abc-notation.md)
 - [Music Macro Language](music-macro-language.md)
 
-If you familiar with those. you can choose format from file creation dialog.
+If you familiar with those, you can choose format from file creation dialog.
 
 ### Advanced Usage
-When you are familiar with basics, read [Operation Manual](operation-manual.md) for more advanced usage.
+When you are familiar with the basics, you can read the [Operation Manual](operation-manual.md) for more advanced usage.

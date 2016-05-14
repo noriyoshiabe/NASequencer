@@ -57,11 +57,13 @@ Click "Purchase" button to purchase from App Store and unlock full version featu
 Your purchase will help NASequencer's development. Thank you!
 
 #### Full Version Features
-- Adding Synthesizer
-
-    Loading additional synthesizer with SoundFont file. (.sf2 format)
+- Additional Synthesizers
+  - Support for loading additional synthesizers
+    - in SoundFont format (.sf2 files)
+  - Mix multiple sounds from different SoundFonts
 
 - Exporting to SMF/WAV/AAC
+
     Exporting your sequence data to
 
     - Standard MIDI File (Format 1)
