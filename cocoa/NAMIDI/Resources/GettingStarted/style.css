@@ -5,7 +5,7 @@ html {
 body {
   font-family: Helvetica, sans-serif;
   color: #fff;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 .btn-exit {
@@ -351,7 +351,8 @@ body {
 
 .demonstration {
   position: absolute;
-  top: 2.5vw;
+  top: 50vh;
+  margin-top: -25vw;
   left: 2.5vw;
   width: 95vw;
   height: 55vw;
@@ -396,9 +397,9 @@ body {
 
 .demonstration .document-description {
   position: absolute;
-  bottom: 0vw;
-  right: 0vw;
-  width: 52.5vw;
+  top: 35vw;
+  left: 15vw;
+  width: 35vw;
   text-align: center;
 }
 
@@ -965,6 +966,11 @@ body {
 }
 .ending h2 {
   font-size: 1.8vw;
+  margin-top: 2.5vw;
+  margin-bottom: 0;
+}
+.ending h2 ~ p {
+  margin-top: 0.5vw;
 }
 .ending a {
   color: #4a90e2;
