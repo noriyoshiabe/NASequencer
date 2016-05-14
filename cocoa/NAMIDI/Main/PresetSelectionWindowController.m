@@ -128,10 +128,7 @@
 
 - (void)windowDidBecomeKey:(NSNotification *)notification
 {
-    self.presetTableView.nextResponder = self;
-    self.synthesizerNameField.nextResponder = self;
-    self.bankNoField.nextResponder = self;
-    self.programNoField.nextResponder = self;
+    [_presetTableView.nextResponder becomeFirstResponder];
     
     _keyDownMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:NSKeyDownMask | NSKeyUpMask | NSFlagsChangedMask handler:self.keyDownMonitorHandler];
 }
