@@ -42,7 +42,7 @@
                     <rect key="frame" x="18" y="330" width="493" height="48"/>
                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" id="FeJ-Dn-CvZ">
                         <font key="font" metaFont="cellTitle"/>
-                        <string key="title">Thank you for downloading NASquencer and trying out the free version. Purchase the full version to both further support NASequencer’s development and to unlock the following features:</string>
+                        <string key="title">Thank you for downloading NASequencer and trying out the free version. Purchase the full version to both further support NASequencer's development and to unlock the following features:</string>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
@@ -97,7 +97,7 @@
             <subviews>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="in9-TN-BXO">
                     <rect key="frame" x="18" y="115" width="428" height="16"/>
-                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Your purchase will help NASequencer’s development." id="Yw2-aB-Thp">
+                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Your purchase will help NASequencer's development." id="Yw2-aB-Thp">
                         <font key="font" metaFont="cellTitle"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -158,7 +158,7 @@
                     <rect key="frame" x="18" y="42" width="493" height="64"/>
                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" id="xf3-cg-yfg">
                         <font key="font" metaFont="cellTitle"/>
-                        <string key="title">Thank you so much for supporting NASequencer’s development. You can now activate NASquencer on any other of your Macs by clicking the “Restore Purchase” button. Please help spread the word about NASquencer!</string>
+                        <string key="title">Thank you so much for supporting NASequencer's development. You can now activate NASequencer on any other of your Macs by clicking the "Restore Purchase" button. Please help spread the word about NASequencer!</string>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
