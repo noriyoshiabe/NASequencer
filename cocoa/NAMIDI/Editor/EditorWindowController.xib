@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15E65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10116"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="EditorWindowController">
             <connections>
                 <outlet property="contentView" destination="9bB-V9-SKr" id="6Wy-0n-2uZ"/>
-                <outlet property="tabContainer" destination="zai-Et-OIj" id="yyU-fg-8h0"/>
                 <outlet property="window" destination="F0z-JX-Cv5" id="gIp-Ho-8D9"/>
             </connections>
         </customObject>
@@ -18,7 +17,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="100" y="100" width="640" height="500"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1366" height="745"/>
             <view key="contentView" id="se5-gp-TjO">
                 <rect key="frame" x="0.0" y="0.0" width="640" height="500"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -39,11 +38,5 @@
             </connections>
             <point key="canvasLocation" x="148" y="390"/>
         </window>
-        <customView translatesAutoresizingMaskIntoConstraints="NO" id="zai-Et-OIj">
-            <rect key="frame" x="0.0" y="0.0" width="640" height="22"/>
-            <constraints>
-                <constraint firstAttribute="height" constant="22" id="9XF-Po-Pdd"/>
-            </constraints>
-        </customView>
     </objects>
 </document>

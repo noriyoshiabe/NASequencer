@@ -12,7 +12,6 @@
 #import "ApplicationController.h"
 
 @interface EditorWindowController () <EditorStatusViewControllerDelegate, EditorViewControllerDelegate, NSWindowDelegate>
-@property (weak) IBOutlet NSView *tabContainer;
 @property (weak) IBOutlet NSView *contentView;
 @property (strong, nonatomic) NSMutableArray *files;
 @property (strong, nonatomic) NSMutableDictionary *controllers;
@@ -44,7 +43,6 @@
     
     _statusViewControlelr = [[EditorStatusViewController alloc] init];
     _statusViewControlelr.delegate = self;
-    [_tabContainer addSubviewWithFitConstraints:_statusViewControlelr.view];
     
     self.window.contentView.wantsLayer = YES;
     self.window.contentView.layer.masksToBounds = YES;
@@ -54,7 +52,8 @@
 
 - (void)dealloc
 {
-    [self.window removeTitlebarAccessoryViewControllerAtIndex:0];
+    // For avoid memory leak. why (--?)
+    [_statusViewControlelr removeFromParentViewController];
 }
 
 - (void)addFileRepresentation:(FileRepresentation *)file
