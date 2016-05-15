@@ -15,9 +15,9 @@
 
 @implementation EditorTabItem
 
-- (void)viewDidLoad
+- (void)awakeFromNib
 {
-    [super viewDidLoad];
+    [super awakeFromNib];
     self.view.wantsLayer = YES;
     self.active = NO;
 }

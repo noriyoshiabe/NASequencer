@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15E65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10116"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="EditorTabItem">
             <connections>
+                <outlet property="textField" destination="Lvf-C8-K1s" id="T4L-3f-ug1"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
         </customObject>
@@ -27,7 +28,7 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                     <connections>
-                        <binding destination="1T5-Mo-d9l" name="value" keyPath="representedObject.filename" id="VNr-rF-QBd"/>
+                        <binding destination="-2" name="value" keyPath="representedObject.filename" id="dl2-S5-Lxc"/>
                     </connections>
                 </textField>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="iBH-zc-EaQ">
@@ -41,7 +42,7 @@
                         <font key="font" metaFont="smallSystemBold"/>
                     </buttonCell>
                     <connections>
-                        <action selector="closeButtonPressed:" target="1T5-Mo-d9l" id="9T7-1d-JGR"/>
+                        <action selector="closeButtonPressed:" target="-2" id="mah-bi-ttx"/>
                     </connections>
                 </button>
             </subviews>
@@ -56,12 +57,6 @@
             </constraints>
             <point key="canvasLocation" x="240" y="198"/>
         </customView>
-        <collectionViewItem id="1T5-Mo-d9l" customClass="EditorTabItem">
-            <connections>
-                <outlet property="textField" destination="Lvf-C8-K1s" id="iYA-1Q-HqY"/>
-                <outlet property="view" destination="Hz6-mo-xeY" id="E33-da-k2S"/>
-            </connections>
-        </collectionViewItem>
     </objects>
     <resources>
         <image name="NSStopProgressFreestandingTemplate" width="14" height="14"/>

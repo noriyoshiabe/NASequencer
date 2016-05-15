@@ -42,7 +42,7 @@
     [super windowDidLoad];
     self.windowFrameAutosaveName = @"EditorWindowFrame";
     
-    self.statusViewControlelr = [[EditorStatusViewController alloc] init];
+    _statusViewControlelr = [[EditorStatusViewController alloc] init];
     _statusViewControlelr.delegate = self;
     [_tabContainer addSubviewWithFitConstraints:_statusViewControlelr.view];
     
@@ -50,6 +50,11 @@
     self.window.contentView.layer.masksToBounds = YES;
     
     [self.window addTitlebarAccessoryViewController:_statusViewControlelr];
+}
+
+- (void)dealloc
+{
+    [self.window removeTitlebarAccessoryViewControllerAtIndex:0];
 }
 
 - (void)addFileRepresentation:(FileRepresentation *)file

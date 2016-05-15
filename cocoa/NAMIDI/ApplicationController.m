@@ -442,6 +442,8 @@ ApplicationController *AppController;
                 }
             }
             
+            [session invalidateAndCancel];
+            
             completion(newVersionAnnounced);
         }];
     }] resume];
