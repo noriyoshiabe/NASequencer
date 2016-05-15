@@ -717,7 +717,7 @@ footer p:last-child {
     background: #e7e7e7;
     height: 4px;
     padding: 0;
-    margin: 16px 0;
+    margin: 48px 0 16px;
     border: 0
 }
 .md hr:after {

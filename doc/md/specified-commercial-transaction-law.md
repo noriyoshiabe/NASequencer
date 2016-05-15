@@ -1,6 +1,5 @@
 Specified Commercial Transactions Law
 =====================================
-Last Updated May 4, 2016
 
 Sellar
 ------

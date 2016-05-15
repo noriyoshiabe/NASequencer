@@ -1,6 +1,5 @@
 NASequencer Privacy Policy
 ==========================
-Last Updated May 4, 2016
 
 No personal information nor identifiable information is collected
 -----------------------------------------------------------------
@@ -44,3 +43,6 @@ If I make a change to this policy, I will notify by posting notice of these chan
 Contact
 -------
 If you have any questions about this policy, please feel free to contact me at [support@nasequencer.com](mailto:support@nasequencer.com)
+
+---
+Created May 15, 2016
