@@ -13,15 +13,15 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView id="Hz6-mo-xeY">
-            <rect key="frame" x="0.0" y="0.0" width="130" height="20"/>
+            <rect key="frame" x="0.0" y="0.0" width="140" height="20"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Lvf-C8-K1s">
-                    <rect key="frame" x="-2" y="0.0" width="115" height="20"/>
+                    <rect key="frame" x="3" y="0.0" width="120" height="20"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="20" id="P2V-JS-b7z"/>
                     </constraints>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="example.nas" id="DV7-1E-7RR">
+                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="center" title="example.nas" id="DV7-1E-7RR">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -31,7 +31,7 @@
                     </connections>
                 </textField>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="iBH-zc-EaQ">
-                    <rect key="frame" x="111" y="2" width="17" height="17"/>
+                    <rect key="frame" x="121" y="2" width="17" height="17"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="17" id="KSF-MI-GTF"/>
                         <constraint firstAttribute="height" constant="17" id="keQ-Id-Jmb"/>
@@ -48,7 +48,7 @@
             <constraints>
                 <constraint firstAttribute="bottom" secondItem="iBH-zc-EaQ" secondAttribute="bottom" constant="2" id="1hY-KZ-vPu"/>
                 <constraint firstAttribute="bottom" secondItem="Lvf-C8-K1s" secondAttribute="bottom" id="7KY-46-Vpb"/>
-                <constraint firstItem="Lvf-C8-K1s" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="IRk-Ec-RPx"/>
+                <constraint firstItem="Lvf-C8-K1s" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="5" id="IRk-Ec-RPx"/>
                 <constraint firstAttribute="trailing" secondItem="iBH-zc-EaQ" secondAttribute="trailing" constant="2" id="bFD-6t-onZ"/>
                 <constraint firstItem="iBH-zc-EaQ" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="1" id="hVn-cd-yay"/>
                 <constraint firstItem="iBH-zc-EaQ" firstAttribute="leading" secondItem="Lvf-C8-K1s" secondAttribute="trailing" id="tcC-0v-ncN"/>
