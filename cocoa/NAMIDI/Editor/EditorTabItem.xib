@@ -5,9 +5,8 @@
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
     </dependencies>
     <objects>
-        <customObject id="-2" userLabel="File's Owner" customClass="EditorTabItem">
+        <customObject id="-2" userLabel="File's Owner">
             <connections>
-                <outlet property="textField" destination="Lvf-C8-K1s" id="T4L-3f-ug1"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
         </customObject>
@@ -28,7 +27,7 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                     <connections>
-                        <binding destination="-2" name="value" keyPath="representedObject.filename" id="dl2-S5-Lxc"/>
+                        <binding destination="FQ5-rF-FgC" name="value" keyPath="representedObject.filename" id="jlg-YG-ns3"/>
                     </connections>
                 </textField>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="iBH-zc-EaQ">
@@ -42,7 +41,7 @@
                         <font key="font" metaFont="smallSystemBold"/>
                     </buttonCell>
                     <connections>
-                        <action selector="closeButtonPressed:" target="-2" id="mah-bi-ttx"/>
+                        <action selector="closeButtonPressed:" target="FQ5-rF-FgC" id="84t-yf-OFu"/>
                     </connections>
                 </button>
             </subviews>
@@ -57,6 +56,12 @@
             </constraints>
             <point key="canvasLocation" x="240" y="198"/>
         </customView>
+        <collectionViewItem id="FQ5-rF-FgC" customClass="EditorTabItem">
+            <connections>
+                <outlet property="textField" destination="Lvf-C8-K1s" id="RgM-p1-EYl"/>
+                <outlet property="view" destination="Hz6-mo-xeY" id="hNi-fD-C6u"/>
+            </connections>
+        </collectionViewItem>
     </objects>
     <resources>
         <image name="NSStopProgressFreestandingTemplate" width="14" height="14"/>

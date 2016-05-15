@@ -25,6 +25,9 @@
     _underLine.wantsLayer = YES;
     _underLine.layer.backgroundColor = [Color darkGray].CGColor;
     
+    // This registering is for reduce memory leak
+    [_collectionView registerNib:[[NSNib alloc] initWithNibNamed:@"EditorTabItem" bundle:[NSBundle mainBundle]]  forItemWithIdentifier:@"TabItem"];
+    
     _collectionView.delegate = self;
     _collectionView.dataSource = self;
 }
@@ -51,7 +54,9 @@
 
 - (NSCollectionViewItem *)collectionView:(NSCollectionView *)collectionView itemForRepresentedObjectAtIndexPath:(NSIndexPath *)indexPath
 {
-    EditorTabItem *item = (EditorTabItem *)[collectionView makeItemWithIdentifier:@"EditorTabItem" forIndexPath:indexPath];
+    // Fuckin' collection view makes memory leak with makeItemWithIdentifier:forIndexPath >_< on OS 10.11.4
+    
+    EditorTabItem *item = [collectionView makeItemWithIdentifier:@"TabItem" forIndexPath:indexPath];
     item.delegate = self;
     item.representedObject = _files[indexPath.item];
     item.active = [item.representedObject isEqual:_selectedFile];
