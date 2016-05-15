@@ -182,6 +182,9 @@ footer p:last-child {
   width: 100%;
   height: 100%;
 }
+#home header > div > a#comming-soon > img {
+  opacity: 0.2;
+}
 
 @media screen and (max-width: 980px) {
   #home header > div > img {
