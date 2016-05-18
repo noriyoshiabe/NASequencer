@@ -1277,7 +1277,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = NAMIDI/NAMIDI.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "3rd Party Mac Developer Application: Noriyoshi Abe (63F66NTY34)";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1300,7 +1300,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.nasequencer.NASequencer;
 				PRODUCT_NAME = NASequencer;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "7f0cf993-990e-4ad7-afd2-c1762905cc36";
 			};
 			name = Release;
 		};
