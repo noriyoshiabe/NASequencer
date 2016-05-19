@@ -74,9 +74,9 @@
     [NSFileCoordinator addFilePresenter:self];
 }
 
-- (void)viewWillAppear
+- (void)viewDidAppear
 {
-    [super viewWillAppear];
+    [super viewDidAppear];
     [self.view.window makeFirstResponder:_textView];
 }
 
