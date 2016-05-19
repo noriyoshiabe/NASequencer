@@ -335,19 +335,7 @@ ApplicationController *AppController;
                 _exportPanel = nil;
             }
         }];
-    } notFound:^(NSString *productID) {
-        NSAlert *alert = [[NSAlert alloc] init];
-        [alert addButtonWithTitle:NSLocalizedString(@"AboutFullVersion", @"About Full Version")];
-        [alert addButtonWithTitle:NSLocalizedString(@"Cancel", @"Cancel")];
-        alert.messageText = NSLocalizedString(@"FullVersionFeature", @"Full Version Feature");
-        alert.informativeText = NSLocalizedString(@"Export_NeedFullVersion", @"Exporting is only for Full Version.\nPlease check about Full Version in Preferences.");
-        [alert setAlertStyle:NSInformationalAlertStyle];
-        
-        NSModalResponse response = [alert runModal];
-        if (NSAlertFirstButtonReturn == response) {
-            [AppController showPreferenceWindowWithIdeintifier:@"Purchase" animate:NO];
-        }
-    }];
+    } notFound:nil];
 }
 
 - (void)updateMenuItem
