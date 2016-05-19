@@ -22,7 +22,7 @@
 
 ApplicationController *AppController;
 
-@interface ApplicationController () <NSMenuDelegate, NSOpenSavePanelDelegate, ExportWindowControllerDelegate> {
+@interface ApplicationController () <NSMenuDelegate, NSOpenSavePanelDelegate, ExportWindowControllerDelegate, IAPObserver> {
     NSMutableArray *_exportControllers;
     NSMutableArray *_exampleDocuments;
 }
@@ -37,6 +37,7 @@ ApplicationController *AppController;
 @property (strong, nonatomic) GettingStartedWindowController *gettingStartedWC;
 @property (strong, nonatomic) AboutWindowController *aboutWC;
 @property (strong, nonatomic) PreferenceWindowController *preferenceWC;
+@property (weak) IBOutlet NSMenuItem *exportMenuItem;
 @end
 
 
@@ -63,6 +64,9 @@ ApplicationController *AppController;
 {
     [[Preference sharedInstance] initialize];
     [[IAP sharedInstance] initialize];
+    [[IAP sharedInstance] addObserver:self];
+    
+    [self updateMenuItem];
     
     [self createDefaultIncludeDirectory];
     
@@ -84,6 +88,7 @@ ApplicationController *AppController;
 
 - (void)finalize
 {
+    [[IAP sharedInstance] removeObserver:self];
     [[IAP sharedInstance] finalize];
 }
 
@@ -345,6 +350,15 @@ ApplicationController *AppController;
     }];
 }
 
+- (void)updateMenuItem
+{
+    [[IAP sharedInstance] findIAPProduct:kIAPProductFullVersion found:^(NSString *productID, int quantity) {
+        _exportMenuItem.hidden = NO;
+    } notFound:^(NSString *productID) {
+        _exportMenuItem.hidden = YES;
+    }];
+}
+
 #pragma mark ExportWindowControllerDelegate
 
 -(void)exportControllerDidClose:(ExportWindowController *)controller
@@ -387,6 +401,13 @@ ApplicationController *AppController;
     else {
         return nil;
     }
+}
+
+#pragma mark IAPObserver
+
+- (void)iap:(IAP *)iap didUpdateTransaction:(SKPaymentTransaction *)transaction
+{
+    [self updateMenuItem];
 }
 
 #pragma mark New Version Annoncement

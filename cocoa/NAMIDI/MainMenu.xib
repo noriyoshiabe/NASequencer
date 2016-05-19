@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10116"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="Application">
@@ -16,6 +16,7 @@
         <customObject id="YLy-65-1bz" customClass="NSFontManager"/>
         <customObject id="rVQ-EZ-xEO" customClass="ApplicationController">
             <connections>
+                <outlet property="exportMenuItem" destination="v6Y-ta-zrb" id="SpO-bm-vaD"/>
                 <outlet property="exportPanelAccessoryView" destination="H7K-cw-eMP" id="ejb-xm-pbf"/>
                 <outlet property="exportPanelFileTypePopoupButton" destination="mL0-Gc-Tow" id="qwB-v8-7WE"/>
                 <outlet property="savePanelAccessoryView" destination="VRr-0u-oDY" id="X20-td-K1a"/>
@@ -127,7 +128,7 @@
                                     <action selector="openDocumentInEditor:" target="-1" id="AJa-xp-iSV"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Export…" keyEquivalent="E" id="v6Y-ta-zrb">
+                            <menuItem title="Export…" hidden="YES" keyEquivalent="E" id="v6Y-ta-zrb">
                                 <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
                                 <connections>
                                     <action selector="export:" target="-1" id="07h-RC-NUX"/>
