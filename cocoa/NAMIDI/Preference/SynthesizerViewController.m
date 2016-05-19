@@ -131,19 +131,7 @@
                 });
             }
         }];
-    } notFound:^(NSString *productID) {
-        NSAlert *alert = [[NSAlert alloc] init];
-        [alert addButtonWithTitle:NSLocalizedString(@"AboutFullVersion", @"About Full Version")];
-        [alert addButtonWithTitle:NSLocalizedString(@"Cancel", @"Cancel")];
-        alert.messageText = NSLocalizedString(@"FullVersionFeature", @"Full Version Feature");
-        alert.informativeText = NSLocalizedString(@"Synthesizer_NeedFullVersion", @"Adding Synthesizer is only for Full Version.\nPlease check about Full Version in Purchase Tab.");
-        [alert setAlertStyle:NSInformationalAlertStyle];
-        
-        NSModalResponse response = [alert runModal];
-        if (NSAlertFirstButtonReturn == response) {
-            [AppController showPreferenceWindowWithIdeintifier:@"Purchase" animate:YES];
-        }
-    }];
+    } notFound:nil];
 }
 
 - (void)mouseDown:(NSEvent *)theEvent
