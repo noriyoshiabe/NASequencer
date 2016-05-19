@@ -199,20 +199,16 @@
 
 - (void)updateToolBarItemExport
 {
-    BOOL (^predicate)(id obj, NSUInteger idx, BOOL *stop) = ^BOOL(__kindof NSToolbarItem * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    NSToolbarItem *export = [self.window.toolbar.items objectPassingTest:^BOOL(__kindof NSToolbarItem *obj, NSUInteger idx, BOOL *stop) {
         return *stop = [obj.itemIdentifier isEqualToString:@"Export"];
-    };
+    }];
     
     [[IAP sharedInstance] findIAPProduct:kIAPProductFullVersion found:^(NSString *productID, int quantity) {
-        NSUInteger index = [self.window.toolbar.items indexOfObjectPassingTest:predicate];
-        if (NSNotFound == index) {
-            [self.window.toolbar insertItemWithItemIdentifier:@"Export" atIndex:self.window.toolbar.items.count];
-        }
+        export.image = [NSImage imageNamed:@"export"];
+        export.enabled = YES;
     } notFound:^(NSString *productID) {
-        NSUInteger index = [self.window.toolbar.items indexOfObjectPassingTest:predicate];
-        if (NSNotFound != index) {
-            [self.window.toolbar removeItemAtIndex:index];
-        }
+        export.image = nil;
+        export.enabled = NO;
     }];
 }
 
