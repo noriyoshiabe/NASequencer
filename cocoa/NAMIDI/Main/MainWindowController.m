@@ -17,8 +17,9 @@
 #import "Preference.h"
 #import "PresetSelectionWindowController.h"
 #import "MainWindowContext.h"
+#import "IAP.h"
 
-@interface MainWindowController () <TrackSelectionDelegate, NAMidiRepresentationObserver, PlayerRepresentationObserver, MainViewControllerDelegate, NSUserInterfaceValidations, NSWindowDelegate> {
+@interface MainWindowController () <TrackSelectionDelegate, NAMidiRepresentationObserver, PlayerRepresentationObserver, MainViewControllerDelegate, IAPObserver, NSUserInterfaceValidations, NSWindowDelegate> {
     BOOL _isShiftKeyPressed;
     MainWindowContext *_mainWindowContext;
 }
@@ -91,12 +92,16 @@
     [self showEditor];
     
     [self updateToolBarItemAutoScroll];
+    
+    [[IAP sharedInstance] addObserver:self];
+    [self updateToolBarItemExport];
 }
 
 - (void)dealloc
 {
     [_namidi removeObserver:self];
     [_namidi.player removeObserver:self];
+    [[IAP sharedInstance] removeObserver:self];
 }
 
 - (void)showErrorWindow
@@ -190,6 +195,25 @@
             repeat.image = [NSImage imageNamed:@"repeat_marker"];
             break;
     }
+}
+
+- (void)updateToolBarItemExport
+{
+    BOOL (^predicate)(id obj, NSUInteger idx, BOOL *stop) = ^BOOL(__kindof NSToolbarItem * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        return *stop = [obj.itemIdentifier isEqualToString:@"Export"];
+    };
+    
+    [[IAP sharedInstance] findIAPProduct:kIAPProductFullVersion found:^(NSString *productID, int quantity) {
+        NSUInteger index = [self.window.toolbar.items indexOfObjectPassingTest:predicate];
+        if (NSNotFound == index) {
+            [self.window.toolbar insertItemWithItemIdentifier:@"Export" atIndex:self.window.toolbar.items.count];
+        }
+    } notFound:^(NSString *productID) {
+        NSUInteger index = [self.window.toolbar.items indexOfObjectPassingTest:predicate];
+        if (NSNotFound != index) {
+            [self.window.toolbar removeItemAtIndex:index];
+        }
+    }];
 }
 
 - (void)updateToolBarItemAutoScroll
@@ -310,6 +334,13 @@
 - (IBAction)export:(id)sender
 {
     [AppController exportDocumentForWindow:self.window file:_namidi.file];
+}
+
+#pragma mark IAPObserver
+
+- (void)iap:(IAP *)iap didUpdateTransaction:(SKPaymentTransaction *)transaction
+{
+    [self updateToolBarItemExport];
 }
 
 #pragma mark NSWindowDelegate
