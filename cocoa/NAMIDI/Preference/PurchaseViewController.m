@@ -116,11 +116,12 @@
 - (IBAction)purchasePressed:(id)sender
 {
 #ifdef __IAP_MOCK__
-    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"FakePurchased"];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-    
     [[IAP sharedInstance] paymentQueue:[SKPaymentQueue defaultQueue] updatedTransactions:@[[[FakePaymentTransaction alloc] initWithState:SKPaymentTransactionStatePurchasing error:nil]]];
+    
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"FakePurchased"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    
         [[IAP sharedInstance] paymentQueue:[SKPaymentQueue defaultQueue] updatedTransactions:@[[[FakePaymentTransaction alloc] initWithState:SKPaymentTransactionStatePurchased error:[NSError errorWithDomain:SKErrorDomain code:SKErrorPaymentInvalid userInfo:nil]]]];
     });
 #else
@@ -131,11 +132,12 @@
 - (IBAction)restorePurchasePressed:(id)sender
 {
 #ifdef __IAP_MOCK__
-    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"FakePurchased"];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-    
     [[IAP sharedInstance] paymentQueue:[SKPaymentQueue defaultQueue] updatedTransactions:@[[[FakePaymentTransaction alloc] initWithState:SKPaymentTransactionStatePurchasing error:nil]]];
+    
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"FakePurchased"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        
         [[IAP sharedInstance] paymentQueue:[SKPaymentQueue defaultQueue] updatedTransactions:@[[[FakePaymentTransaction alloc] initWithState:SKPaymentTransactionStateRestored error:[NSError errorWithDomain:SKErrorDomain code:SKErrorPaymentInvalid userInfo:nil]]]];
     });
 #else
