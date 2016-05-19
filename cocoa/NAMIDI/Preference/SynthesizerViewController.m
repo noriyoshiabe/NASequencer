@@ -14,17 +14,21 @@
 
 #import <Crashlytics/Answers.h>
 
+#define kAddSynthesizerHeight 35.0
+#define kExplanationHeight 33.30
+
 @import QuartzCore.CAMediaTimingFunction;
 
-@interface SynthesizerViewController () <NSTableViewDataSource, NSTableViewDelegate, MidiSourceManagerRepresentationObserver, SynthesizerCellViewDelegate> {
+@interface SynthesizerViewController () <NSTableViewDataSource, NSTableViewDelegate, MidiSourceManagerRepresentationObserver, SynthesizerCellViewDelegate, IAPObserver> {
     MidiSourceManagerRepresentation *_manager;
     CGRect _initialViewRect;
     CGFloat _initilalTableViewHeight;
     NSUInteger _draggedIndex;
 }
 @property (weak) IBOutlet NSTableView *tableView;
-@property (weak) IBOutlet NSTextField *explanationLabel;
 @property (weak) IBOutlet NSLayoutConstraint *tableViewHeightConstraint;
+@property (weak) IBOutlet NSLayoutConstraint *addSynthesizerHeightConstraint;
+@property (weak) IBOutlet NSLayoutConstraint *explanationHeightConstraint;
 @end
 
 @implementation SynthesizerViewController
@@ -47,29 +51,24 @@
 - (void)layout
 {
     [self view];
-    self.view.frame = self.desiredViewFrame;
+    
     _tableViewHeightConstraint.constant = self.desiredTableViewHeight;
+    [self updateAdditionalViewHeightConstraint];
+    
+    self.view.frame = self.desiredViewFrame;
 }
 
 - (CGRect)desiredViewFrame
 {
-    CGFloat height = _initialViewRect.size.height + (_manager.descriptions.count - 1) * _initilalTableViewHeight - _explanationLabel.frame.size.height + self.desiredExplanationLabelHeight;
+    CGFloat height = _initialViewRect.size.height - kAddSynthesizerHeight - kExplanationHeight
+                   + (_manager.descriptions.count - 1) * _initilalTableViewHeight
+                   + _addSynthesizerHeightConstraint.constant + _explanationHeightConstraint.constant;
     return CGRectMake(0, 0, self.view.frame.size.width, height);
 }
 
 - (CGFloat)desiredTableViewHeight
 {
     return _initilalTableViewHeight * _manager.descriptions.count;
-}
-
-- (CGFloat)desiredExplanationLabelHeight
-{
-    return 1 < _manager.descriptions.count ? _explanationLabel.frame.size.height : 0;
-}
-
-- (BOOL)isExplanationLabelHidden
-{
-    return 2 > _manager.descriptions.count;
 }
 
 - (void)viewDidLoad
@@ -88,14 +87,35 @@
     _tableView.dataSource = self;
     _tableView.delegate = self;
     
-    _explanationLabel.hidden = self.isExplanationLabelHidden;
-    
     [_tableView reloadData];
+}
+
+- (void)viewWillAppear
+{
+    [super viewWillAppear];
+    [[IAP sharedInstance] addObserver:self];
+}
+
+- (void)viewDidDisappear
+{
+    [super viewDidDisappear];
+    [[IAP sharedInstance] removeObserver:self];
 }
 
 - (void)dealloc
 {
     [_manager removeObserver:self];
+}
+
+- (void)updateAdditionalViewHeightConstraint
+{
+    [[IAP sharedInstance] findIAPProduct:kIAPProductFullVersion found:^(NSString *productID, int quantity) {
+        _addSynthesizerHeightConstraint.constant = kAddSynthesizerHeight;
+    } notFound:^(NSString *productID) {
+        _addSynthesizerHeightConstraint.constant = 0.0;
+    }];
+    
+    _explanationHeightConstraint.constant = 1 < _manager.descriptions.count ? kExplanationHeight : 0.0;
 }
 
 - (IBAction)addSynthesizerButtonPressed:(id)sender
@@ -134,6 +154,8 @@
 
 - (void)resizeWindowFrameAndReload
 {
+    [self updateAdditionalViewHeightConstraint];
+    
     CGRect newWindowFrame = [self.view.window frameRectForContentRect:self.desiredViewFrame];
     newWindowFrame.origin.x = NSMinX(self.view.window.frame);
     newWindowFrame.origin.y = NSMinY(self.view.window.frame) + (NSHeight(self.view.window.frame) - NSHeight(newWindowFrame));
@@ -143,7 +165,6 @@
         context.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
         [self.view.window.animator setFrame:newWindowFrame display:YES];
         _tableViewHeightConstraint.animator.constant = self.desiredTableViewHeight;
-        _explanationLabel.animator.hidden = self.isExplanationLabelHidden;
     } completionHandler:^{
         [_tableView reloadData];
     }];
@@ -157,6 +178,13 @@
     [descriptions insertObject:description atIndex:toIndex];
     [_manager setReorderdDescriptions:descriptions];
     [_tableView.animator moveRowAtIndex:fromIndex toIndex:toIndex];
+}
+
+#pragma mark IAPObserver
+
+- (void)iap:(IAP *)iap didUpdateTransaction:(SKPaymentTransaction *)transaction
+{
+    [self resizeWindowFrameAndReload];
 }
 
 #pragma mark NSTableViewDataSource

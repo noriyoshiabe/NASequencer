@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10116"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SynthesizerViewController">
             <connections>
-                <outlet property="explanationLabel" destination="jNQ-ex-VLt" id="Qeu-4M-Yb0"/>
+                <outlet property="addSynthesizerHeightConstraint" destination="3L1-am-y7d" id="wpJ-PP-OBD"/>
+                <outlet property="explanationHeightConstraint" destination="Gaw-aQ-O9c" id="U7R-GS-XPe"/>
                 <outlet property="tableView" destination="u3N-RV-xhO" id="RQ0-LQ-UJU"/>
                 <outlet property="tableViewHeightConstraint" destination="rzz-BK-qqA" id="17R-Bs-Nyh"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
@@ -74,41 +75,62 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
                 </scrollView>
-                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="OwH-7J-hoi">
-                    <rect key="frame" x="355" y="40" width="132" height="32"/>
+                <customView translatesAutoresizingMaskIntoConstraints="NO" id="e8n-vU-cRp">
+                    <rect key="frame" x="0.0" y="33" width="495" height="35"/>
+                    <subviews>
+                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="OwH-7J-hoi">
+                            <rect key="frame" x="355" y="7" width="132" height="32"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="21" id="H5j-dv-ieh"/>
+                                <constraint firstAttribute="width" constant="120" id="bnT-KW-ZH6"/>
+                            </constraints>
+                            <buttonCell key="cell" type="push" title="Add Synthesizer" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="gzj-2n-a4m">
+                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="addSynthesizerButtonPressed:" target="-2" id="opw-kH-Xma"/>
+                            </connections>
+                        </button>
+                    </subviews>
                     <constraints>
-                        <constraint firstAttribute="height" constant="21" id="H5j-dv-ieh"/>
-                        <constraint firstAttribute="width" constant="120" id="bnT-KW-ZH6"/>
+                        <constraint firstAttribute="height" constant="35" id="3L1-am-y7d"/>
+                        <constraint firstItem="OwH-7J-hoi" firstAttribute="leading" secondItem="e8n-vU-cRp" secondAttribute="leading" constant="361" id="deS-4t-HzR"/>
+                        <constraint firstItem="OwH-7J-hoi" firstAttribute="top" secondItem="e8n-vU-cRp" secondAttribute="top" id="gUt-tH-Dab"/>
                     </constraints>
-                    <buttonCell key="cell" type="push" title="Add Synthesizer" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="gzj-2n-a4m">
-                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                        <font key="font" metaFont="system"/>
-                    </buttonCell>
-                    <connections>
-                        <action selector="addSynthesizerButtonPressed:" target="-2" id="opw-kH-Xma"/>
-                    </connections>
-                </button>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="jNQ-ex-VLt">
-                    <rect key="frame" x="13" y="0.0" width="475" height="33"/>
+                </customView>
+                <customView translatesAutoresizingMaskIntoConstraints="NO" id="gRX-eX-UDI">
+                    <rect key="frame" x="0.0" y="0.0" width="495" height="33"/>
+                    <subviews>
+                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="jNQ-ex-VLt">
+                            <rect key="frame" x="13" y="0.0" width="475" height="33"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="471" id="2ur-7b-KfY"/>
+                                <constraint firstAttribute="height" constant="33" id="xWP-tb-Ufv"/>
+                            </constraints>
+                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Drag synthesizer panel to change the order in witch is loaded as default." id="vPj-Fn-LOi">
+                                <font key="font" metaFont="system"/>
+                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                            </textFieldCell>
+                        </textField>
+                    </subviews>
                     <constraints>
-                        <constraint firstAttribute="width" constant="471" id="2ur-7b-KfY"/>
-                        <constraint firstAttribute="height" constant="33" id="xWP-tb-Ufv"/>
+                        <constraint firstItem="jNQ-ex-VLt" firstAttribute="leading" secondItem="gRX-eX-UDI" secondAttribute="leading" constant="15" id="B28-Lp-H5v"/>
+                        <constraint firstAttribute="height" constant="33" id="Gaw-aQ-O9c"/>
+                        <constraint firstItem="jNQ-ex-VLt" firstAttribute="top" secondItem="gRX-eX-UDI" secondAttribute="top" id="oEA-Uf-mzg"/>
                     </constraints>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Drag synthesizer panel to change the order in witch is loaded as default." id="vPj-Fn-LOi">
-                        <font key="font" metaFont="system"/>
-                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
+                </customView>
             </subviews>
             <constraints>
-                <constraint firstItem="jNQ-ex-VLt" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="15" id="2ev-2P-Hmt"/>
+                <constraint firstItem="e8n-vU-cRp" firstAttribute="top" secondItem="lLZ-SI-vio" secondAttribute="bottom" constant="14" id="0u4-fN-ugV"/>
                 <constraint firstItem="lLZ-SI-vio" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="12" id="6Kc-6Z-DZL"/>
+                <constraint firstAttribute="trailing" secondItem="e8n-vU-cRp" secondAttribute="trailing" id="7I9-eD-Krn"/>
                 <constraint firstItem="lLZ-SI-vio" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="10" id="BAM-EB-u8P"/>
-                <constraint firstItem="OwH-7J-hoi" firstAttribute="top" secondItem="lLZ-SI-vio" secondAttribute="bottom" constant="14" id="M0y-0E-Iwc"/>
-                <constraint firstItem="jNQ-ex-VLt" firstAttribute="top" secondItem="OwH-7J-hoi" secondAttribute="bottom" constant="14" id="dgk-cf-oVE"/>
-                <constraint firstItem="jNQ-ex-VLt" firstAttribute="top" secondItem="OwH-7J-hoi" secondAttribute="bottom" constant="14" id="eTo-ck-vHl"/>
-                <constraint firstItem="OwH-7J-hoi" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="361" id="jKe-hi-qUB"/>
+                <constraint firstItem="gRX-eX-UDI" firstAttribute="top" secondItem="e8n-vU-cRp" secondAttribute="bottom" id="Tbd-Xe-Zav"/>
+                <constraint firstAttribute="trailing" secondItem="gRX-eX-UDI" secondAttribute="trailing" id="dZq-QX-eug"/>
+                <constraint firstItem="e8n-vU-cRp" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="kC2-A3-AhE"/>
+                <constraint firstItem="gRX-eX-UDI" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="kuu-re-QFg"/>
             </constraints>
             <point key="canvasLocation" x="303.5" y="234"/>
         </customView>
