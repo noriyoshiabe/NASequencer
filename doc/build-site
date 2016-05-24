@@ -75,6 +75,7 @@ function main(argv, callback) {
 
   if ('production' == env) {
     execSync('cp '+__dirname+'/site/asset/googlea18abc152da67b80.html '+dstDir);
+    execSync('cp '+__dirname+'/site/asset/sitemap.xml '+dstDir);
   }
 }
 
