@@ -5,6 +5,13 @@
 #define VERSION "0.4.0"
 #define VERSION_LONG "NASequencer CLI Version "VERSION" January 2, 2016\n"
 
+#define ___doc_en_nas_md     ___doc_md_note_as_sequence_md
+#define ___doc_en_nas_md_len ___doc_md_note_as_sequence_md_len
+#define ___doc_en_abc_md     ___doc_md_abc_notation_md
+#define ___doc_en_abc_md_len ___doc_md_abc_notation_md_len
+#define ___doc_en_mml_md     ___doc_md_music_macro_language_md
+#define ___doc_en_mml_md_len ___doc_md_music_macro_language_md_len
+
 extern unsigned char ___doc_en_nas_md[];
 extern int ___doc_en_nas_md_len;
 extern unsigned char ___doc_en_abc_md[];

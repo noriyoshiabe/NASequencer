@@ -34,22 +34,22 @@ add_custom_command(
 add_custom_command(
   OUTPUT syntax_namidi.c
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  COMMAND xxd -i ../doc/en/nas.md ${CMAKE_CURRENT_BINARY_DIR}/syntax_namidi.c
-  DEPENDS ../doc/en/nas.md
+  COMMAND xxd -i ../doc/md/note-as-sequence.md ${CMAKE_CURRENT_BINARY_DIR}/syntax_namidi.c
+  DEPENDS ../doc/md/note-as-sequence.md
 )
 
 add_custom_command(
   OUTPUT syntax_abc.c
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  COMMAND xxd -i ../doc/en/abc.md ${CMAKE_CURRENT_BINARY_DIR}/syntax_abc.c
-  DEPENDS ../doc/en/abc.md
+  COMMAND xxd -i ../doc/md/abc-notation.md ${CMAKE_CURRENT_BINARY_DIR}/syntax_abc.c
+  DEPENDS ../doc/md/abc-notation.md
 )
 
 add_custom_command(
   OUTPUT syntax_mml.c
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  COMMAND xxd -i ../doc/en/mml.md ${CMAKE_CURRENT_BINARY_DIR}/syntax_mml.c
-  DEPENDS ../doc/en/mml.md
+  COMMAND xxd -i ../doc/md/music-macro-language.md ${CMAKE_CURRENT_BINARY_DIR}/syntax_mml.c
+  DEPENDS ../doc/md/music-macro-language.md
 )
 
 include_directories(
