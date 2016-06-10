@@ -41,7 +41,7 @@ int main(int argc, char **argv)
     const char *output = NULL;
     const char *input = NULL;
 
-    while (-1 != (opt = getopt_long(argc, argv, "o:s:h:v", _options, NULL))) {
+    while (-1 != (opt = getopt_long(argc, argv, "o:s:hv", _options, NULL))) {
         switch (opt) {
         case 'o':
             output = optarg;
