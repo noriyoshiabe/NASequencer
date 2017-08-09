@@ -2,7 +2,12 @@ module.exports = function (marked, identifier) {
   var renderer = new marked.Renderer();
 
   renderer.heading = function (text, level) {
-    return '<a name="'+text+'"></a><h'+level+'>'+text+'</h'+level+'>';
+    if (4 > level) {
+      return '<a name="'+text+'"></a><h'+level+'>'+text+'</h'+level+'>';
+    }
+    else {
+      return '<h'+level+'>'+text+'</h'+level+'>';
+    }
   }
 
   renderer.link = function (href, title, text) {
