@@ -12,6 +12,7 @@
 
 @interface PlayLineView : NSView <PlayerRepresentationObserver> {
     BOOL _scrolling;
+    CALayer *_lineLayer;
 }
 @property (weak, nonatomic) NSScrollView *containerView;
 @property (strong, nonatomic) MeasureScaleAssistant *scaleAssistant;
@@ -57,7 +58,9 @@
 
 - (void)awakeFromNib
 {
-    self.layer.backgroundColor = [NSColor yellowColor].CGColor;
+    _lineLayer = [CALayer layer];
+    _lineLayer.backgroundColor = [NSColor yellowColor].CGColor;
+    [self.layer addSublayer:_lineLayer];
 }
 
 - (void)dealloc
@@ -89,7 +92,7 @@
     
     [CATransaction begin];
     [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
-    self.layer.bounds = CGRectMake(0, 0, 1, _containerView.frame.size.height);
+    _lineLayer.bounds = CGRectMake(0, 0, 1, _containerView.frame.size.height);
     [CATransaction commit];
     
     [super layout];
@@ -102,7 +105,7 @@
     CGFloat x = round(_player.tick * _scaleAssistant.pixelPerTick) + _scaleAssistant.measureOffset - 0.5;
     [CATransaction begin];
     [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
-    self.layer.transform = CATransform3DMakeTranslation(x, 0, 0);
+    _lineLayer.transform = CATransform3DMakeTranslation(x, 0, 0);
     [CATransaction commit];
 }
 
