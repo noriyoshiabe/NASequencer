@@ -52,6 +52,9 @@ static Preset *SynthesizerFindPreset(Synthesizer *self, uint16_t midiPresetNo, u
 static int PresetComparator(const void *preset1, const void *preset2);
 static int SynthesizerNoteOn(Synthesizer *self, uint8_t channel, uint8_t noteNo, uint8_t velocity);
 static void SynthesizerNoteOff(Synthesizer *self, uint8_t channel, uint8_t noteNo);
+static void SynthesizerKeyPressure(Synthesizer *self, uint8_t channel, uint8_t key, int16_t value);
+static void SynthesizerChannelPressure(Synthesizer *self, uint8_t channel, int16_t value);
+static void SynthesizerPitchBend(Synthesizer *self, uint8_t channel, int16_t value);
 static void SynthesizerReleaseExclusiveClass(Synthesizer *self, Voice *newVoice);
 static void SynthesizerReleaseIdenticalVoice(Synthesizer *self, Voice *newVoice);
 static void SynthesizerProgramChange(Synthesizer *self, uint8_t channel, uint8_t programNo);
@@ -79,7 +82,7 @@ static void send(void *_self, uint8_t *bytes, size_t length)
     case 0xA0:
         if (3 <= length) {
             uint8_t channel = bytes[0] & 0x0F;
-            self->channels[channel].keyPressure[0x7F & bytes[1]] = bytes[2];
+            SynthesizerKeyPressure(self, channel, 0x7F & bytes[1], bytes[2]);
         }
         break;
     case 0xB0:
@@ -97,13 +100,13 @@ static void send(void *_self, uint8_t *bytes, size_t length)
     case 0xD0:
         if (2 <= length) {
             uint8_t channel = bytes[0] & 0x0F;
-            self->channels[channel].channelPressure = bytes[1];
+            SynthesizerChannelPressure(self, channel, bytes[1]);
         }
         break;
     case 0xE0:
         if (3 <= length) {
             uint8_t channel = bytes[0] & 0x0F;
-            self->channels[channel].pitchBend = bytes[1] | (bytes[2] << 7);
+            SynthesizerPitchBend(self, channel, bytes[1] | (bytes[2] << 7));
         }
         break;
     }
@@ -448,6 +451,38 @@ static void SynthesizerNoteOff(Synthesizer *self, uint8_t channel, uint8_t noteN
             else {
                 VoiceRelease(voice);
             }
+        }
+    }
+}
+
+static void SynthesizerKeyPressure(Synthesizer *self, uint8_t channel, uint8_t key, int16_t value)
+{
+    self->channels[channel].keyPressure[key] = value;
+
+    for (Voice *voice = self->voiceFirst; NULL != voice; voice = voice->next) {
+        if (voice->channel == &self->channels[channel]) {
+            VoiceUpdateRuntimeParams(voice);
+        }
+    }
+}
+
+static void SynthesizerChannelPressure(Synthesizer *self, uint8_t channel, int16_t value)
+{
+    self->channels[channel].channelPressure = value;
+
+    for (Voice *voice = self->voiceFirst; NULL != voice; voice = voice->next) {
+        if (voice->channel == &self->channels[channel]) {
+            VoiceUpdateRuntimeParams(voice);
+        }
+    }
+}
+static void SynthesizerPitchBend(Synthesizer *self, uint8_t channel, int16_t value)
+{
+    self->channels[channel].pitchBend = value;
+
+    for (Voice *voice = self->voiceFirst; NULL != voice; voice = voice->next) {
+        if (voice->channel == &self->channels[channel]) {
+            VoiceUpdateRuntimeParams(voice);
         }
     }
 }
