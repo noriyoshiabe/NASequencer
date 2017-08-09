@@ -384,6 +384,21 @@ static void ExporterBuildAudioSample(Exporter *self, ExporterAudioBuffer *audioB
                 case MidiEventTypeReverb:
                     MixerSendReverb(mixer, (ReverbEvent *)event);
                     break;
+                case MidiEventTypeExpression:
+                    MixerSendExpression(mixer, (ExpressionEvent *)event);
+                    break;
+                case MidiEventTypePitch:
+                    MixerSendPitch(mixer, (PitchEvent *)event);
+                    break;
+                case MidiEventTypeSustain:
+                    MixerSendSustain(mixer, (SustainEvent *)event);
+                    break;
+                case MidiEventTypeDetune:
+                    MixerSendDetune(mixer, (DetuneEvent *)event);
+                    break;
+                case MidiEventTypePitchSense:
+                    MixerSendPitchSense(mixer, (PitchSenseEvent *)event);
+                    break;
                 case MidiEventTypeSynth:
                     MixerSendSynth(mixer, (SynthEvent *)event);
                     break;
