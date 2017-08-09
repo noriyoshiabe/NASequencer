@@ -1247,6 +1247,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 63F66NTY34;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -1268,7 +1269,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.nasequencer.NASequencer;
 				PRODUCT_NAME = NASequencer;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "290c46e5-b05a-45e0-ac0b-dc4733e3a91e";
+				PROVISIONING_PROFILE_SPECIFIER = "NASequencer Development";
 			};
 			name = Debug;
 		};
@@ -1279,6 +1281,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "3rd Party Mac Developer Application: Noriyoshi Abe (63F66NTY34)";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 63F66NTY34;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -1300,7 +1303,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.nasequencer.NASequencer;
 				PRODUCT_NAME = NASequencer;
-				PROVISIONING_PROFILE = "7f0cf993-990e-4ad7-afd2-c1762905cc36";
+				PROVISIONING_PROFILE = "283eec72-6e91-4799-aa96-6e67aa6ea267";
+				PROVISIONING_PROFILE_SPECIFIER = "NASequencer Distribution";
 			};
 			name = Release;
 		};
