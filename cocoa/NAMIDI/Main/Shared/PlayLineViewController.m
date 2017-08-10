@@ -92,7 +92,8 @@
     
     [CATransaction begin];
     [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
-    _lineLayer.bounds = CGRectMake(0, 0, 1, _containerView.frame.size.height);
+    _lineLayer.transform = CATransform3DIdentity;
+    _lineLayer.frame = CGRectMake(0, 0, 1, _containerView.frame.size.height);
     [CATransaction commit];
     
     [super layout];
