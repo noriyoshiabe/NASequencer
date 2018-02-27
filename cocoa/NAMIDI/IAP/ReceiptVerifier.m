@@ -124,7 +124,7 @@
     for (IAPReceipt *iapReceipt in _iapReceipts) {
         if ([iapReceipt.productId isEqualToString:productID]) {
             if (iapReceipt.originalTransactionId && iapReceipt.originalPurchaseDate) {
-                if (!iapReceipt.cancelDate) {
+                if (!iapReceipt.cancelDate.length) {
                     if (0 < iapReceipt.quantity) {
                         [_delegate verifier:self didIAPProductFound:iapReceipt.productId quantity:iapReceipt.quantity];
                         return;
