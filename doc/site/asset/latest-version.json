@@ -1,5 +1,5 @@
 {
-  "CFBundleShortVersionString": "1.0.2",
-  "CFBundleVersion": 4,
-  "AdditionalInformation": "- Fix bug on OS Sierra that yellow screen covers whole preview when scrolling\n- Fix not applying pitch bend in real time\n- Fix not applying some midi events to exported AAC/WAV"
+  "CFBundleShortVersionString": "1.0.3",
+  "CFBundleVersion": 5,
+  "AdditionalInformation": "Fix verification for unlock full version."
 }
