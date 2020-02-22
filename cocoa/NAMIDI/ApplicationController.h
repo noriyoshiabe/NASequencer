@@ -30,7 +30,6 @@
 - (void)createDocumentForWindow:(NSWindow *)window completion:(void (^)(NSURL *url))completionHandler;
 - (void)openExampleDocument:(NSString *)fileType;
 - (void)exportDocumentForWindow:(NSWindow *)window file:(FileRepresentation *)file;
-- (void)reportApplicationLaunch;
 @end
 
 extern ApplicationController *AppController;

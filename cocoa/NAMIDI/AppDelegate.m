@@ -10,9 +10,6 @@
 #import "ApplicationController.h"
 #import "IAP.h"
 
-#import <Fabric/Fabric.h>
-#import <Crashlytics/Crashlytics.h>
-
 @interface AppDelegate () {
     BOOL _inLaunchOrReopenProcess;
 }
@@ -23,14 +20,8 @@
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
     [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"NSApplicationCrashOnExceptions":@YES}];
-#if DEBUG
-    [Crashlytics startWithAPIKey:@"36c32c7a4e94be63461f7a6015dc8b342058be4e"];
-#else
-    [Crashlytics startWithAPIKey:@"5ca7632975921be3a41bdf2b4544373f5f888ac4"];
-#endif
     
     [AppController initialize];
-    [AppController reportApplicationLaunch];
     
     _inLaunchOrReopenProcess = YES;
 }

@@ -10,8 +10,6 @@
 #import "ObserverList.h"
 #import "ReceiptVerifier.h"
 
-#import <Crashlytics/Answers.h>
-
 #ifdef __IAP_MOCK__
 #import "IAPMock.h"
 #endif
@@ -165,17 +163,12 @@ static IAP *_sharedInstance = nil;
                 case SKPaymentTransactionStatePurchasing:
                     break;
                 case SKPaymentTransactionStateDeferred:
-                    [Answers logCustomEventWithName:@"Trace" customAttributes:@{@"Category": @"Purchase", @"Message" : @"SKPaymentTransactionStateDeferred"}];
                     break;
                 case SKPaymentTransactionStateFailed:
                 {
                     [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
                     
                     if (SKErrorPaymentCancelled != transaction.error.code) {
-                        [Answers logCustomEventWithName:@"Trace"
-                                       customAttributes:@{@"Category": @"Purchase",
-                                                          @"Message" : [NSString stringWithFormat:@"SKPaymentTransactionStateFailed %@", transaction.error]}];
-                        
                         NSString *informative = NSLocalizedString(@"Purchase_PurchaseFaildInformative", @"An error has occurred.\n%@ - %d");
                         NSAlert *alert = [[NSAlert alloc] init];
                         alert.messageText = NSLocalizedString(@"Purchase_PurshaseFailed", @"Purchase Faild");
@@ -202,10 +195,6 @@ static IAP *_sharedInstance = nil;
 
 - (void)paymentQueue:(SKPaymentQueue *)queue restoreCompletedTransactionsFailedWithError:(NSError *)error
 {
-    [Answers logCustomEventWithName:@"Trace"
-                   customAttributes:@{@"Category": @"Purchase",
-                                      @"Message" : [NSString stringWithFormat:@"paymentQueue:restoreCompletedTransactionsFailedWithError: %@", error]}];
-    
     [NSThread performBlockOnMainThread:^{
         NSAlert *alert = [[NSAlert alloc] init];
         alert.messageText = NSLocalizedString(@"Purchase_RestoreFailed", @"Restore Purchase Faild");
@@ -233,35 +222,11 @@ static IAP *_sharedInstance = nil;
 
 - (void)verifierDidVerifySuccess:(ReceiptVerifier*)verifier
 {
-    if (_purchasedTransaction) {
-        [self findIAPProduct:_purchasedTransaction.payment.productIdentifier found:^(NSString *productID, int quantity) {
-            SKProduct *product = _products[_purchasedTransaction.payment.productIdentifier];
-            
-            if (product) {
-                [self reportPurchaseResult:_purchasedTransaction product:product];
-            }
-            else {
-                SKPaymentTransaction *transaction = _purchasedTransaction;
-                
-                [self requestProductInfo:@[transaction.payment.productIdentifier] callback:^(SKProductsResponse *response) {
-                    SKProduct *product = response.products.firstObject;
-                    if (product) {
-                        [self reportPurchaseResult:transaction product:product];
-                    }
-                }];
-            }
-            
-            _purchasedTransaction = nil;
-        } notFound:^(NSString *productID) {
-            [Answers logCustomEventWithName:@"Trace" customAttributes:@{@"Category": @"Purchase", @"Message" : [NSString stringWithFormat:@"verifier:didIAPProductNotFound: productID=%@", productID]}];
-            _purchasedTransaction = nil;
-        }];
-    }
+    _purchasedTransaction = nil;
 }
 
 - (void)verifierDidVerifyFail:(ReceiptVerifier*)verifier
 {
-    [Answers logCustomEventWithName:@"Trace" customAttributes:@{@"Category": @"Purchase", @"Message" : @"verifierDidVerifyFail:"}];
     _purchasedTransaction = nil;
 }
 
@@ -283,28 +248,6 @@ static IAP *_sharedInstance = nil;
     
     _found = nil;
     _notFound = nil;
-}
-
-#pragma mark Report Purchase Result
-
-- (void)reportPurchaseResult:(SKPaymentTransaction *)transaction product:(SKProduct *)product
-{
-    if (SKPaymentTransactionStatePurchased == transaction.transactionState) {
-        NSDictionary *types = @{kIAPProductFullVersion: @"Non-consumable"};
-        [Answers logPurchaseWithPrice:product.price
-                             currency:[product.priceLocale objectForKey:NSLocaleCurrencyCode]
-                              success:@YES
-                             itemName:product.localizedTitle
-                             itemType:types[product.productIdentifier]
-                               itemId:product.productIdentifier
-                     customAttributes:@{}];
-    }
-    else if (SKPaymentTransactionStateRestored == transaction.transactionState) {
-        [Answers logCustomEventWithName:@"Restore Purchase" customAttributes:@{@"Item ID" : product.productIdentifier}];
-    }
-    else {
-        [Answers logCustomEventWithName:@"Trace" customAttributes:@{@"Category": @"Purchase", @"Message" : [NSString stringWithFormat:@"Illegal transaction state with purchase success transactionState=%ld", transaction.transactionState]}];
-    }
 }
 
 @end

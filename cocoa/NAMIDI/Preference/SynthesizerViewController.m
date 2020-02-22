@@ -12,8 +12,6 @@
 #import "ApplicationController.h"
 #import "IAP.h"
 
-#import <Crashlytics/Answers.h>
-
 #define kAddSynthesizerHeight 35.0
 #define kExplanationHeight 33.30
 
@@ -290,12 +288,6 @@
 {
     [self resizeWindowFrameAndReload];
     [_manager saveMidiSourcePreference];
-    
-    [Answers logCustomEventWithName:@"Synthesizer"
-                   customAttributes:@{@"Name": description.name,
-                                      @"File Name": description.filepath.lastPathComponent,
-                                      @"Available": description.available ? @"YES" : @"NO",
-                                      @"Error": @(MidiSourceDescriptionError2String(description.error))}];
 }
 
 - (void)midiSourceManager:(MidiSourceManagerRepresentation *)manager onUnloadMidiSourceDescription:(MidiSourceDescriptionRepresentation *)description

@@ -42,8 +42,6 @@
 		0216EE0B1C7C5D15009A7B90 /* PianoRollNoteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0216EE091C7C5D15009A7B90 /* PianoRollNoteViewController.m */; };
 		0216EE0C1C7C5D15009A7B90 /* PianoRollNoteViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0216EE0A1C7C5D15009A7B90 /* PianoRollNoteViewController.xib */; };
 		0216EE0F1C7C689F009A7B90 /* PianoRollLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 0216EE0E1C7C689F009A7B90 /* PianoRollLayout.m */; };
-		022DCBFD1CD22BCE00798C28 /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 022DCBFB1CD22BCE00798C28 /* Fabric.framework */; };
-		022DCBFE1CD22BCE00798C28 /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 022DCBFC1CD22BCE00798C28 /* Crashlytics.framework */; };
 		022DCC021CD28E9600798C28 /* IAPMock.m in Sources */ = {isa = PBXBuildFile; fileRef = 022DCC011CD28E9600798C28 /* IAPMock.m */; };
 		0232CB101C88C88700542D34 /* NSWindow+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 0232CB0F1C88C88700542D34 /* NSWindow+Support.m */; };
 		0232CB161C88FA9700542D34 /* AlphaHilightButtonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0232CB151C88FA9700542D34 /* AlphaHilightButtonCell.m */; };
@@ -238,8 +236,6 @@
 		0216EE0A1C7C5D15009A7B90 /* PianoRollNoteViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PianoRollNoteViewController.xib; sourceTree = "<group>"; };
 		0216EE0D1C7C689F009A7B90 /* PianoRollLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PianoRollLayout.h; sourceTree = "<group>"; };
 		0216EE0E1C7C689F009A7B90 /* PianoRollLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PianoRollLayout.m; sourceTree = "<group>"; };
-		022DCBFB1CD22BCE00798C28 /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
-		022DCBFC1CD22BCE00798C28 /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
 		022DCC001CD28E9600798C28 /* IAPMock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAPMock.h; sourceTree = "<group>"; };
 		022DCC011CD28E9600798C28 /* IAPMock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAPMock.m; sourceTree = "<group>"; };
 		0232CB0E1C88C88700542D34 /* NSWindow+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSWindow+Support.h"; sourceTree = "<group>"; };
@@ -438,8 +434,6 @@
 				025FAF8A1C7E504B00E4C3B3 /* AudioToolbox.framework in Frameworks */,
 				0255F6281C7111DF00CF4C52 /* CoreText.framework in Frameworks */,
 				020CF8321C6A059C0025DF84 /* WebKit.framework in Frameworks */,
-				022DCBFD1CD22BCE00798C28 /* Fabric.framework in Frameworks */,
-				022DCBFE1CD22BCE00798C28 /* Crashlytics.framework in Frameworks */,
 				02F350541CD1A6D800DB8499 /* StoreKit.framework in Frameworks */,
 				02F350661CD1AF7200DB8499 /* libcrypto.a in Frameworks */,
 				02F350671CD1AF7200DB8499 /* libssl.a in Frameworks */,
@@ -458,8 +452,6 @@
 				0255F6271C7111DF00CF4C52 /* CoreText.framework */,
 				020CF8311C6A059C0025DF84 /* WebKit.framework */,
 				02F350531CD1A6D800DB8499 /* StoreKit.framework */,
-				022DCBFB1CD22BCE00798C28 /* Fabric.framework */,
-				022DCBFC1CD22BCE00798C28 /* Crashlytics.framework */,
 				02F350641CD1AF7200DB8499 /* libcrypto.a */,
 				02F350651CD1AF7200DB8499 /* libssl.a */,
 				0201F7CE1C688BB100A201F6 /* NAMIDI */,
@@ -874,7 +866,6 @@
 				0201F7C91C688BB100A201F6 /* Frameworks */,
 				029BD4CC1CAE098400B66F4C /* Run Script (Help) */,
 				0201F7CA1C688BB100A201F6 /* Resources */,
-				022DCBFA1CD22B6F00798C28 /* Run Script (Fabric) */,
 			);
 			buildRules = (
 			);
@@ -1018,20 +1009,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "SHORT_VERSION=$(/usr/libexec/PlistBuddy -c \"Print CFBundleShortVersionString\" \"$INFOPLIST_FILE\")\nTARGET_FILE=${PROJECT_DIR}/NAMIDI/IAP/ReceiptVerifierHardCodedString.h\n\necho \"#define kReceiptVerifierHardCodedBundleIdentifier @\\\"${PRODUCT_BUNDLE_IDENTIFIER}\\\"\" > ${TARGET_FILE}\necho \"#define kReceiptVerifierHardCodedBundleShortVersion @\\\"${SHORT_VERSION}\\\"\" >> ${TARGET_FILE}";
-		};
-		022DCBFA1CD22B6F00798C28 /* Run Script (Fabric) */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Run Script (Fabric)";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if [ \"${CONFIGURATION}\" = \"Release\" ]; then\n./Fabric.framework/run 5ca7632975921be3a41bdf2b4544373f5f888ac4 cc7348510bf8ed24a837b4cfb8d494d4e9f7b177a8c69b18b0d75f35ea0e7182\nelse\n./Fabric.framework/run 36c32c7a4e94be63461f7a6015dc8b342058be4e 4b1a03aba1af4cb925b23384e385ddc854f00cfa3bec959d66ba478b56997592\nfi";
 		};
 		029BD4CC1CAE098400B66F4C /* Run Script (Help) */ = {
 			isa = PBXShellScriptBuildPhase;
