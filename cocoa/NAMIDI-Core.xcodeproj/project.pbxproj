@@ -880,7 +880,7 @@
 		025FAD871C7DD15B00E4C3B3 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0720;
+				LastUpgradeCheck = 1130;
 				ORGANIZATIONNAME = "Noriyoshi Abe";
 				TargetAttributes = {
 					025FAD8E1C7DD15B00E4C3B3 = {
@@ -890,10 +890,11 @@
 			};
 			buildConfigurationList = 025FAD8A1C7DD15B00E4C3B3 /* Build configuration list for PBXProject "NAMIDI-Core" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = 025FAD861C7DD15B00E4C3B3;
 			productRefGroup = 025FAD901C7DD15B00E4C3B3 /* Products */;

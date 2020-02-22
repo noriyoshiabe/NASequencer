@@ -883,7 +883,7 @@
 		0201F7C41C688BB100A201F6 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0720;
+				LastUpgradeCheck = 1130;
 				ORGANIZATIONNAME = "Noriyoshi Abe";
 				TargetAttributes = {
 					0201F7CB1C688BB100A201F6 = {
@@ -902,7 +902,7 @@
 			};
 			buildConfigurationList = 0201F7C71C688BB100A201F6 /* Build configuration list for PBXProject "NAMIDI" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
@@ -1225,6 +1225,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 63F66NTY34;
+				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -1259,6 +1260,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "3rd Party Mac Developer Application: Noriyoshi Abe (63F66NTY34)";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 63F66NTY34;
+				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
