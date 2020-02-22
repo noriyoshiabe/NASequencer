@@ -142,7 +142,9 @@ static IAP *_sharedInstance = nil;
     
     for (ProductRequestInfo *requestInfo in _productRequestInfos) {
         if ([request isEqualTo:requestInfo.request]) {
-            requestInfo.callback(response);
+            [NSThread performBlockOnMainThread:^{
+                requestInfo.callback(response);
+            }];
             [_productRequestInfos removeObject:requestInfo];
             break;
         }
