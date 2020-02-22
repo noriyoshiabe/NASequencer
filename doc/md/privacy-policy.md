@@ -23,5 +23,5 @@ Contact
 If you have any questions about this policy, please feel free to contact me at [support@nasequencer.com](mailto:support@nasequencer.com)
 
 ---
-Updated Feb 22, 2020
+Updated Feb 22, 2020  
 Created May 15, 2016
