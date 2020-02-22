@@ -15,6 +15,8 @@
 			<string>NASIcon</string>
 			<key>CFBundleTypeName</key>
 			<string>Note as Sequence</string>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>LSItemContentTypes</key>
@@ -35,6 +37,8 @@
 			<string>ABCIcon</string>
 			<key>CFBundleTypeName</key>
 			<string>ABC Notation</string>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>LSItemContentTypes</key>
@@ -56,6 +60,8 @@
 			<string>MMLIcon</string>
 			<key>CFBundleTypeName</key>
 			<string>Music Macro Language</string>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>LSItemContentTypes</key>
