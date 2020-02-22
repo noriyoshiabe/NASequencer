@@ -6,6 +6,16 @@ function updateTopicsLabel() {
   }
 }
 
+function updateNavState() {
+  var body = document.querySelector('body');
+  if (body.classList.contains('is-menu-open')) {
+    document.querySelector('nav').setAttribute('aria-hidden', false);
+  }
+  else {
+    document.querySelector('nav').setAttribute('aria-hidden', true);
+  }
+}
+
 function toggleMenu(e) {
   var body = document.querySelector('body');
   body.classList.toggle('is-menu-open');
@@ -21,7 +31,9 @@ function toggleMenu(e) {
   else {
     sessionStorage.removeItem('is-menu-open');
   }
+
   updateTopicsLabel();
+  updateNavState();
 
   if (e && e.preventDefault) {
     e.preventDefault();
@@ -114,6 +126,7 @@ document.onreadystatechange = function () {
     if (sessionStorage.getItem('is-menu-open')) {
       body.classList.add('is-menu-open');
       updateTopicsLabel();
+      updateNavState();
     }
 
     window.addEventListener('popstate', function () {
@@ -149,13 +162,7 @@ document.onreadystatechange = function () {
 };
 
 if ("HelpViewer" in window && "showTOCButton" in window.HelpViewer) {
-  var _enableTOC = function () {
-    window.HelpViewer.showTOCButton(true, false, toggleMenu);
-  };
-  window.setTimeout(_enableTOC, 0);
-  window.setTimeout(_enableTOC, 50);
-  window.setTimeout(_enableTOC, 100);
-  window.setTimeout(_enableTOC, 150);
-  window.setTimeout(_enableTOC, 200);
-  window.setTimeout(_enableTOC, 250);
+  window.setTimeout(function () {
+    window.HelpViewer.showTOCButton(true, toggleMenu, toggleMenu);
+  }, 250);
 }
