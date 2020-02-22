@@ -134,8 +134,8 @@
 
 - (void)awakeFromNib
 {
-    _gridColor = [Color grid].CGColor;
-    _gridWeakColor = [Color gridWeak].CGColor;
+    _gridColor = CGColorRetain([Color grid].CGColor);
+    _gridWeakColor = CGColorRetain([Color gridWeak].CGColor);
     
     for (int i = 0; i < 16; ++i) {
         NSColor *baseColor = [Color channelColor:i + 1];
@@ -149,6 +149,9 @@
 
 - (void)dealloc
 {
+    CGColorRelease(_gridColor);
+    CGColorRelease(_gridWeakColor);
+    
     if (_eventBorderColor[0]) {
         for (int i = 0; i < 16; ++i) {
             CGColorRelease(_eventBorderColor[i]);

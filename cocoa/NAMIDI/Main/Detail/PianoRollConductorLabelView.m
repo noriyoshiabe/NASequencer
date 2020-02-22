@@ -22,8 +22,13 @@
 
 - (void)awakeFromNib
 {
-    _lineColor = [Color gray].CGColor;
+    _lineColor = CGColorRetain([Color gray].CGColor);
     _textAttrs = @{NSFontAttributeName:[NSFont systemFontOfSize:10.0], NSForegroundColorAttributeName: [Color gray]};
+}
+
+- (void)dealloc
+{
+    CGColorRelease(_lineColor);
 }
 
 - (BOOL)isFlipped

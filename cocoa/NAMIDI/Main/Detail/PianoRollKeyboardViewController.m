@@ -159,6 +159,8 @@ HIT:
     _edgeColor = [Color semiLightGray].CGColor;
     _blackKeyColor = [NSColor blackColor].CGColor;
     _hitKeyColor = [NSColor colorWith8bitRed:160.0 green:160.0 blue:255.0 alpha:255.0].CGColor;
+    CGColorRetain(_edgeColor);
+    CGColorRetain(_blackKeyColor);
     CGColorRetain(_hitKeyColor);
     
     NSMutableParagraphStyle *ps = [[NSMutableParagraphStyle alloc] init];
@@ -181,6 +183,8 @@ HIT:
 
 - (void)dealloc
 {
+    CGColorRelease(_edgeColor);
+    CGColorRelease(_blackKeyColor);
     CGColorRelease(_hitKeyColor);
 }
 

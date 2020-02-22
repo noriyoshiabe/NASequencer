@@ -89,14 +89,18 @@
     _eventBorderColor = [Color gray].CGColor;
     _eventFillColor = [NSColor colorWith8bitRed:87.0 green:90.0 blue:112.0 alpha:76.5].CGColor;
     
+    CGColorRetain(_gridColor);
+    CGColorRetain(_gridWeakColor);
+    CGColorRetain(_eventBorderColor);
     CGColorRetain(_eventFillColor);
 }
 
 - (void)dealloc
 {
-    if (_eventFillColor) {
-        CGColorRelease(_eventFillColor);
-    }
+    CGColorRelease(_gridColor);
+    CGColorRelease(_gridWeakColor);
+    CGColorRelease(_eventBorderColor);
+    CGColorRelease(_eventFillColor);
 }
 
 - (BOOL)isFlipped
