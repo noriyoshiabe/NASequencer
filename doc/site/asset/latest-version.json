@@ -1,5 +1,5 @@
 {
   "CFBundleShortVersionString": "1.0.4",
-  "CFBundleVersion": 7,
+  "CFBundleVersion": 8,
   "AdditionalInformation": "Fix crash on macOS Catalina."
 }
