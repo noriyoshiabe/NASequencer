@@ -22,7 +22,8 @@
 #define CONDUCTOR_BOTTOM_LINE_HEIGHT 1.0
 
 @interface PianoRollViewController () <NSSplitViewDelegate, NAMidiRepresentationObserver> {
-    BOOL _dividerInitialized;
+    BOOL _viewInitialized;
+    CGPoint _pendingScrollPoint;
 }
 
 @property (weak) IBOutlet NSSplitView *horizontalSplitView;
@@ -149,9 +150,10 @@
 {
     [super viewDidAppear];
     
-    if (!_dividerInitialized) {
+    if (!_viewInitialized) {
         [_horizontalSplitView setPosition:CGRectGetHeight(self.view.frame) - VELOCITY_VIEW_HEIGHT_MAX ofDividerAtIndex:0];
-        _dividerInitialized = YES;
+        [_measureView.contentView scrollToPoint:_pendingScrollPoint];
+        _viewInitialized = YES;
     }
 }
 
@@ -184,7 +186,12 @@
 
 - (void)setScrollPoint:(CGPoint)scrollPoint
 {
-    [_measureView.contentView scrollToPoint:scrollPoint];
+    if (_viewInitialized) {
+        [_measureView.contentView scrollToPoint:scrollPoint];
+    }
+    else {
+        _pendingScrollPoint = scrollPoint;
+    }
 }
 
 #pragma mark NSSplitViewDelegate
