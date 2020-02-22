@@ -1,5 +1,5 @@
 {
-  "CFBundleShortVersionString": "1.0.3",
-  "CFBundleVersion": 5,
-  "AdditionalInformation": "Fix verification for unlock full version."
+  "CFBundleShortVersionString": "1.0.4",
+  "CFBundleVersion": 6,
+  "AdditionalInformation": "Fix crash on macOS Catalina."
 }
