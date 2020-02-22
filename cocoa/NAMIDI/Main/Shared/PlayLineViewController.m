@@ -40,6 +40,12 @@
     [_scaleAssistant addObserver:self forKeyPath:@"scale" options:0 context:NULL];
 }
 
+- (void)viewDidAppear
+{
+    [super viewDidAppear];
+    [_playLineView layout];
+}
+
 - (void)dealloc
 {
     [_scaleAssistant removeObserver:self forKeyPath:@"scale"];
