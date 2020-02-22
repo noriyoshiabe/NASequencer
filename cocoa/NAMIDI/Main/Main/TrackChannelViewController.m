@@ -92,12 +92,15 @@
 
 - (void)awakeFromNib
 {
-    _blackColor = [NSColor blackColor].CGColor;
-    _whiteColor = [NSColor whiteColor].CGColor;
+    _blackColor = CGColorRetain([NSColor blackColor].CGColor);
+    _whiteColor = CGColorRetain([NSColor whiteColor].CGColor);
 }
 
 - (void)dealloc
 {
+    CGColorRelease(_blackColor);
+    CGColorRelease(_whiteColor);
+    
     if (_gradient) {
         CGGradientRelease(_gradient);
     }

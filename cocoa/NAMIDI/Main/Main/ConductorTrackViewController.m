@@ -96,9 +96,16 @@
 
 - (void)awakeFromNib
 {
-    _whiteColor = [NSColor whiteColor].CGColor;
-    _lightGrayColor = [Color lightGray].CGColor;
-    _blackColor = [NSColor blackColor].CGColor;
+    _whiteColor = CGColorRetain([NSColor whiteColor].CGColor);
+    _lightGrayColor = CGColorRetain([Color lightGray].CGColor);
+    _blackColor = CGColorRetain([NSColor blackColor].CGColor);
+}
+
+- (void)dealloc
+{
+    CGColorRelease(_whiteColor);
+    CGColorRelease(_lightGrayColor);
+    CGColorRelease(_blackColor);
 }
 
 - (BOOL)isFlipped
