@@ -13,7 +13,3 @@ Bug Report
 [bug-report@nasequencer.com](mailto:bug-report@nasequencer.com)
 
 Please include a detailed description of how to reproduce the bug. Thank you!
-
-Feature Request
----------------
-[request@nasequencer.com](mailto:request@nasequencer.com)
