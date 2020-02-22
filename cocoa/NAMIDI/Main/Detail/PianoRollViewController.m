@@ -21,7 +21,10 @@
 #define CONDUCTOR_HEIGHT 43
 #define CONDUCTOR_BOTTOM_LINE_HEIGHT 1.0
 
-@interface PianoRollViewController () <NSSplitViewDelegate, NAMidiRepresentationObserver>
+@interface PianoRollViewController () <NSSplitViewDelegate, NAMidiRepresentationObserver> {
+    BOOL _dividerInitialized;
+}
+
 @property (weak) IBOutlet NSSplitView *horizontalSplitView;
 @property (weak) IBOutlet NSView *emptyHeaderView;
 @property (weak) IBOutlet NSView *conductorLabelView;
@@ -132,8 +135,6 @@
     
     [_keyboardView observeScrollForScrollView:_noteView x:NO y:YES];
     [_noteView observeScrollForScrollView:_keyboardView x:NO y:YES];
-    
-    [_horizontalSplitView setPosition:CGRectGetHeight(self.view.frame) - VELOCITY_VIEW_HEIGHT_MAX ofDividerAtIndex:0];
 }
 
 - (void)viewWillAppear
@@ -142,6 +143,16 @@
     [self updateConductorVisibility];
     [_trackSelection addObserver:self forKeyPath:@"selectionFlags" options:0 context:NULL];
     [_namidi addObserver:self];
+}
+
+- (void)viewDidAppear
+{
+    [super viewDidAppear];
+    
+    if (!_dividerInitialized) {
+        [_horizontalSplitView setPosition:CGRectGetHeight(self.view.frame) - VELOCITY_VIEW_HEIGHT_MAX ofDividerAtIndex:0];
+        _dividerInitialized = YES;
+    }
 }
 
 - (void)viewDidDisappear
