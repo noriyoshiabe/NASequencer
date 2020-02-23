@@ -7,6 +7,7 @@
 //
 
 #import "TipsViewController.h"
+#import "ApplicationController.h"
 
 @interface TipsViewController ()
 @property (weak) IBOutlet NSTextField *operationManual;
@@ -25,17 +26,15 @@
 
 - (IBAction)operationManualPressed:(id)sender
 {
-    NSString *bookName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleHelpBookName"];
-    [[NSHelpManager sharedHelpManager] openHelpAnchor:@"operation-manual" inBook:bookName];
+    [AppController openHelpPage:@"operation-manual"];
 }
 
 - (IBAction)syntaxReferencePressed:(id)sender
 {
-    NSString *anchor = @{@"nas": @"note-as-sequence",
+    NSString *pageName = @{@"nas": @"note-as-sequence",
                          @"abc": @"abc-notation",
                          @"mml": @"music-macro-language"}[_namidi.file.filename.pathExtension.lowercaseString];
-    NSString *bookName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleHelpBookName"];
-    [[NSHelpManager sharedHelpManager] openHelpAnchor:anchor inBook:bookName];
+    [AppController openHelpPage:pageName];
 }
 
 @end

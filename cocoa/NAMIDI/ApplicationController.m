@@ -18,6 +18,8 @@
 #import "Document.h"
 #import "IAP.h"
 
+#import <Carbon/Carbon.h>
+
 ApplicationController *AppController;
 
 @interface ApplicationController () <NSMenuDelegate, NSOpenSavePanelDelegate, ExportWindowControllerDelegate, IAPObserver> {
@@ -65,8 +67,8 @@ ApplicationController *AppController;
     [[IAP sharedInstance] addObserver:self];
     
     [self updateMenuItem];
-    
     [self createDefaultIncludeDirectory];
+    [self registerHelpBundle];
     
     NSData *bookmark = [Preference sharedInstance].includeSearchPathBookmark;
     if (bookmark) {
@@ -394,6 +396,22 @@ ApplicationController *AppController;
 - (void)iap:(IAP *)iap didUpdateTransaction:(SKPaymentTransaction *)transaction
 {
     [self updateMenuItem];
+}
+
+#pragma mark Help Page
+
+- (void)registerHelpBundle
+{
+    [[NSHelpManager sharedHelpManager] registerBooksInBundle: [NSBundle mainBundle]];
+}
+
+- (void)openHelpPage:(NSString *)pageName
+{
+    NSString *path = [NSString stringWithFormat:@"NASequencer.help/Contents/Resources/en.lproj/%@", pageName];
+    NSURL *url = [[NSBundle mainBundle] URLForResource:path withExtension:@"html"];
+    if (url) {
+        AHGotoPage(NULL, (__bridge CFStringRef)url.absoluteString, NULL);
+    }
 }
 
 #pragma mark New Version Annoncement

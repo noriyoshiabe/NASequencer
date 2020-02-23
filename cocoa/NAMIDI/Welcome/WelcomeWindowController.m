@@ -158,8 +158,7 @@
 
 - (IBAction)helpButtonTapped:(id)sender
 {
-    NSString *bookName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleHelpBookName"];
-    [[NSHelpManager sharedHelpManager] openHelpAnchor:@"top" inBook:bookName];
+    [AppController openHelpPage:@"index"];
 }
 
 - (IBAction)preferenceButtonTapped:(id)sender

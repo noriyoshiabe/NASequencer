@@ -116,15 +116,13 @@ static void __AudioCallback(void *receiver, AudioSample *buffer, uint32_t count)
             if (self.window.isFullScreen) {
                 [self.window toggleFullScreen:self];
             }
-            NSString *bookName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleHelpBookName"];
-            [[NSHelpManager sharedHelpManager] openHelpAnchor:@"syntax-reference" inBook:bookName];
+            [AppController openHelpPage:@"syntax-reference"];
         }
         else if ([request.URL.host isEqualToString:@"operation"]) {
             if (self.window.isFullScreen) {
                 [self.window toggleFullScreen:self];
             }
-            NSString *bookName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleHelpBookName"];
-            [[NSHelpManager sharedHelpManager] openHelpAnchor:@"operation-manual" inBook:bookName];
+            [AppController openHelpPage:@"operation-manual"];
         }
     }
 }

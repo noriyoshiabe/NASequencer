@@ -7,6 +7,7 @@
 //
 
 #import "AboutWindowController.h"
+#import "ApplicationController.h"
 
 @interface AboutWindowController ()
 @property (readonly) NSString *appName;
@@ -50,8 +51,7 @@
 
 - (IBAction)licensePressed:(id)sender
 {
-    NSString *bookName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleHelpBookName"];
-    [[NSHelpManager sharedHelpManager] openHelpAnchor:@"third-party-licenses" inBook:bookName];
+    [AppController openHelpPage:@"third-party-licenses"];
 }
 
 - (IBAction)officialSitePressed:(NSTextField *)sender
@@ -61,8 +61,7 @@
 
 - (IBAction)supportMailPressed:(NSTextField *)sender
 {
-    NSString *bookName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleHelpBookName"];
-    [[NSHelpManager sharedHelpManager] openHelpAnchor:@"support" inBook:bookName];
+    [AppController openHelpPage:@"support"];
 }
 
 @end

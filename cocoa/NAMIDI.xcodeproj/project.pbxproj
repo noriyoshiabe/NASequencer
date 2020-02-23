@@ -27,6 +27,7 @@
 		020CF87A1C6B0AB20025DF84 /* AboutWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 020CF8781C6B0AB20025DF84 /* AboutWindowController.m */; };
 		020CF87B1C6B0AB20025DF84 /* AboutWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 020CF8791C6B0AB20025DF84 /* AboutWindowController.xib */; };
 		020CF87E1C6B20C50025DF84 /* Application.m in Sources */ = {isa = PBXBuildFile; fileRef = 020CF87D1C6B20C50025DF84 /* Application.m */; };
+		020DBEAF240262E100038A95 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 020DBEAE240262E100038A95 /* Carbon.framework */; };
 		021483631C84A66F00D653AE /* ExporterRepresentation.m in Sources */ = {isa = PBXBuildFile; fileRef = 021483621C84A66F00D653AE /* ExporterRepresentation.m */; };
 		0214836A1C84B2E700D653AE /* ExportWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 021483681C84B2E700D653AE /* ExportWindowController.m */; };
 		0214836B1C84B2E700D653AE /* ExportWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 021483691C84B2E700D653AE /* ExportWindowController.xib */; };
@@ -211,6 +212,7 @@
 		020CF8791C6B0AB20025DF84 /* AboutWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AboutWindowController.xib; sourceTree = "<group>"; };
 		020CF87C1C6B20C50025DF84 /* Application.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Application.h; sourceTree = "<group>"; };
 		020CF87D1C6B20C50025DF84 /* Application.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Application.m; sourceTree = "<group>"; };
+		020DBEAE240262E100038A95 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 		021483611C84A66F00D653AE /* ExporterRepresentation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExporterRepresentation.h; sourceTree = "<group>"; };
 		021483621C84A66F00D653AE /* ExporterRepresentation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExporterRepresentation.m; sourceTree = "<group>"; };
 		021483671C84B2E700D653AE /* ExportWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExportWindowController.h; sourceTree = "<group>"; };
@@ -433,6 +435,7 @@
 				025FAF881C7E503900E4C3B3 /* AudioUnit.framework in Frameworks */,
 				025FAF8A1C7E504B00E4C3B3 /* AudioToolbox.framework in Frameworks */,
 				0255F6281C7111DF00CF4C52 /* CoreText.framework in Frameworks */,
+				020DBEAF240262E100038A95 /* Carbon.framework in Frameworks */,
 				020CF8321C6A059C0025DF84 /* WebKit.framework in Frameworks */,
 				02F350541CD1A6D800DB8499 /* StoreKit.framework in Frameworks */,
 				02F350661CD1AF7200DB8499 /* libcrypto.a in Frameworks */,
@@ -456,6 +459,7 @@
 				02F350651CD1AF7200DB8499 /* libssl.a */,
 				0201F7CE1C688BB100A201F6 /* NAMIDI */,
 				0201F7CD1C688BB100A201F6 /* Products */,
+				020DBEAD240262E000038A95 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -537,6 +541,14 @@
 				020CF8791C6B0AB20025DF84 /* AboutWindowController.xib */,
 			);
 			path = About;
+			sourceTree = "<group>";
+		};
+		020DBEAD240262E000038A95 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				020DBEAE240262E100038A95 /* Carbon.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		021483661C84B2CD00D653AE /* Export */ = {

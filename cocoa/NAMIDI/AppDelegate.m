@@ -95,8 +95,7 @@
 
 - (IBAction)customerSupport:(id)sender
 {
-    NSString *bookName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleHelpBookName"];
-    [[NSHelpManager sharedHelpManager] openHelpAnchor:@"support" inBook:bookName];
+    [AppController openHelpPage:@"support"];
 }
 
 #pragma Default Menu Title
