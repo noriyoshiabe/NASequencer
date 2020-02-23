@@ -9,6 +9,7 @@
 #import <Cocoa/Cocoa.h>
 
 @interface Color : NSObject
++ (NSColor *)ultraDarkGray;
 + (NSColor *)darkGray;
 + (NSColor *)gray;
 + (NSColor *)semiLightGray;

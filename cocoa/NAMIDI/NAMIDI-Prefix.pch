@@ -27,6 +27,7 @@
 #import "NSEvent+Support.h"
 #import "NSString+Support.h"
 #import "NSNull+Support.h"
+#import "NSColor+DarkMode.h"
 
 #ifdef DEBUG
 #define __Trace__ NSLog(@"%s - %d", __func__, __LINE__);

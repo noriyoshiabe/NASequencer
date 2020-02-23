@@ -14,6 +14,7 @@
 #define HSBA(h,s,b,a) [NSColor colorWithHue:h saturation:s brightness:b alpha:a]
 #define HSB(h,s,b)    HSBA(h,s,b,1.0)
 
+static NSColor *UltraDarkGray;
 static NSColor *DarkGray;
 static NSColor *Gray;
 static NSColor *SemiLightGray;
@@ -29,6 +30,7 @@ static NSColor *Pink;
 
 + (void)initialize
 {
+    UltraDarkGray = GSCALE(40.0);
     DarkGray = GSCALE(74.0);
     Gray = GSCALE(151.0);
     SemiLightGray = GSCALE(200.0);
@@ -45,6 +47,11 @@ static NSColor *Pink;
     GridWeak = RGBA(240.0, 240.0, 250.0, 255.0);
     
     Pink = RGBA(255.0, 66.0, 97.0, 255.0);
+}
+
++ (NSColor *)ultraDarkGray
+{
+    return UltraDarkGray;
 }
 
 + (NSColor *)darkGray

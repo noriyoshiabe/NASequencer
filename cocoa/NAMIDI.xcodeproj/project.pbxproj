@@ -139,6 +139,7 @@
 		02AE740D1C96D8C50036B8B1 /* ABHIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 02AE740C1C96D8C50036B8B1 /* ABHIcon.iconset */; };
 		02B160811C9685FF009A2823 /* NSBundle+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 02B160801C9685FF009A2823 /* NSBundle+Support.m */; };
 		02B160831C96924B009A2823 /* NASIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 02B160821C96924B009A2823 /* NASIcon.iconset */; };
+		02BD8AAD24029F5900F46752 /* NSColor+DarkMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 02BD8AAC24029F5900F46752 /* NSColor+DarkMode.m */; };
 		02CAF6A91C771F6E00AD81B2 /* SynchronizedScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CAF6A81C771F6E00AD81B2 /* SynchronizedScrollView.m */; };
 		02CAF6C01C77858000AD81B2 /* LocationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CAF6BF1C77858000AD81B2 /* LocationView.m */; };
 		02CAF6C41C778C2200AD81B2 /* ErrorWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CAF6C21C778C2200AD81B2 /* ErrorWindowController.m */; };
@@ -392,6 +393,8 @@
 		02B1607F1C9685FF009A2823 /* NSBundle+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSBundle+Support.h"; sourceTree = "<group>"; };
 		02B160801C9685FF009A2823 /* NSBundle+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSBundle+Support.m"; sourceTree = "<group>"; };
 		02B160821C96924B009A2823 /* NASIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = NASIcon.iconset; sourceTree = "<group>"; };
+		02BD8AAB24029F5900F46752 /* NSColor+DarkMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSColor+DarkMode.h"; sourceTree = "<group>"; };
+		02BD8AAC24029F5900F46752 /* NSColor+DarkMode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSColor+DarkMode.m"; sourceTree = "<group>"; };
 		02CAF6A71C771F6E00AD81B2 /* SynchronizedScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SynchronizedScrollView.h; sourceTree = "<group>"; };
 		02CAF6A81C771F6E00AD81B2 /* SynchronizedScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SynchronizedScrollView.m; sourceTree = "<group>"; };
 		02CAF6BE1C77858000AD81B2 /* LocationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocationView.h; sourceTree = "<group>"; };
@@ -598,6 +601,8 @@
 				029357D31CD3BA9C004B87B2 /* NSString+Support.m */,
 				029357D51CD3CE0F004B87B2 /* NSNull+Support.h */,
 				029357D61CD3CE0F004B87B2 /* NSNull+Support.m */,
+				02BD8AAB24029F5900F46752 /* NSColor+DarkMode.h */,
+				02BD8AAC24029F5900F46752 /* NSColor+DarkMode.m */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -1127,6 +1132,7 @@
 				02CD042E1C88905D00BF6683 /* NSTextField+Support.m in Sources */,
 				020CF86C1C6AF4D90025DF84 /* SynthesizerViewController.m in Sources */,
 				0216EDFC1C7ADA09009A7B90 /* PianoRollViewController.m in Sources */,
+				02BD8AAD24029F5900F46752 /* NSColor+DarkMode.m in Sources */,
 				0216EE061C7C3C76009A7B90 /* PianoRollConductorViewController.m in Sources */,
 				0254235E1C6F2EB6007D53CC /* EditorWindowController.m in Sources */,
 				020CF8711C6AF53D0025DF84 /* PurchaseViewController.m in Sources */,

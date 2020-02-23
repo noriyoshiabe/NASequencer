@@ -28,7 +28,7 @@
 + (void)processTextStorage:(NSTextStorage *)textStorage spec:(HighlightSpec *)spec
 {
     NSRange range = NSMakeRange(0, textStorage.length);
-    [textStorage removeAttribute:NSForegroundColorAttributeName range:range];
+    [textStorage addAttribute:NSForegroundColorAttributeName value:NSColor.textColor range:range];
     [self processTextStorage:textStorage spec:spec range:range];
 }
 
@@ -86,7 +86,7 @@ static NSColor *NoteColor;
 + (void)initialize
 {
     CommentColor = [NSColor colorWithHexRGBA:0x057523FF];
-    DirectiveColor = [NSColor colorWithHexRGBA:0x151B88FF];
+    DirectiveColor = [NSColor colorWithHexRGBA:0xE53BA8FF];
     StringColor = [NSColor colorWithHexRGBA:0xDB2023FF];
     KeywordColor = [NSColor colorWithHexRGBA:0x376FB1FF];
     
@@ -95,7 +95,7 @@ static NSColor *NoteColor;
     
     FreeTextColor = StepColor;
     TuneHeaderColor = KeywordColor;
-    TuneBodyColor = [NSColor blackColor];
+    TuneBodyColor = [NSColor secondaryLabelColor];
     NoteColor = StringColor;
 }
 
