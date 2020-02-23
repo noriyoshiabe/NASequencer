@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="15705" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10116"/>
-        <capability name="box content view" minToolsVersion="7.0"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="15705"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="SynthesizerCellView">
@@ -17,18 +17,18 @@
             <rect key="frame" x="0.0" y="0.0" width="471" height="86"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <view key="contentView" id="lOf-LZ-Slo">
-                <rect key="frame" x="1" y="1" width="469" height="84"/>
+                <rect key="frame" x="3" y="3" width="465" height="80"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="RZQ-qu-Ju5">
-                        <rect key="frame" x="18" y="57" width="315" height="17"/>
+                        <rect key="frame" x="18" y="53" width="315" height="17"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="315" id="G8i-MH-Se2"/>
                             <constraint firstAttribute="height" constant="17" id="TAi-fc-kie"/>
                         </constraints>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="GeneralUser GS Live/Audigy version 1.44" drawsBackground="YES" id="ZyH-rl-BZc">
                             <font key="font" metaFont="systemMedium" size="12"/>
-                            <color key="textColor" red="0.23137254900000001" green="0.23137254900000001" blue="0.23137254900000001" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" white="1" alpha="0.0" colorSpace="deviceWhite"/>
                         </textFieldCell>
                         <connections>
@@ -36,14 +36,14 @@
                         </connections>
                     </textField>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7d1-9z-4gl">
-                        <rect key="frame" x="398" y="50" width="64" height="28"/>
+                        <rect key="frame" x="398" y="46" width="64" height="27"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="54" id="2lB-gV-HxH"/>
                             <constraint firstAttribute="height" constant="18" id="zdI-nC-Ssv"/>
                         </constraints>
                         <buttonCell key="cell" type="push" title="Reset" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="m1B-X2-tUb">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="smallSystem"/>
+                            <font key="font" metaFont="menu" size="11"/>
                         </buttonCell>
                         <connections>
                             <action selector="resetButtonPressed:" target="-2" id="3h9-eJ-YEK"/>
@@ -51,7 +51,7 @@
                         </connections>
                     </button>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0Q3-I2-WbF">
-                        <rect key="frame" x="18" y="34" width="49" height="13"/>
+                        <rect key="frame" x="18" y="30" width="49" height="13"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="13" id="leM-iT-4ua"/>
                             <constraint firstAttribute="width" constant="45" id="mnG-cz-HEI"/>
@@ -63,7 +63,7 @@
                         </textFieldCell>
                     </textField>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uV7-kD-xbH">
-                        <rect key="frame" x="18" y="15" width="81" height="13"/>
+                        <rect key="frame" x="18" y="11" width="81" height="13"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="77" id="CoF-3B-64H"/>
                             <constraint firstAttribute="height" constant="13" id="a8n-8c-IwU"/>
@@ -75,7 +75,7 @@
                         </textFieldCell>
                     </textField>
                     <slider verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="CHb-hq-G6z" customClass="SynthesizerSlider">
-                        <rect key="frame" x="110" y="32" width="300" height="17"/>
+                        <rect key="frame" x="110" y="28" width="300" height="17"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="15" id="fuD-F7-ePJ"/>
                             <constraint firstAttribute="width" constant="300" id="o08-cX-r4e"/>
@@ -87,7 +87,7 @@
                         </connections>
                     </slider>
                     <slider verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="HR5-EX-Eyh" customClass="SynthesizerSlider">
-                        <rect key="frame" x="110" y="13" width="300" height="17"/>
+                        <rect key="frame" x="110" y="9" width="300" height="17"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="15" id="4zY-aB-cYH"/>
                             <constraint firstAttribute="width" constant="300" id="OX1-ob-l2U"/>
@@ -99,7 +99,7 @@
                         </connections>
                     </slider>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" preferredMaxLayoutWidth="34" translatesAutoresizingMaskIntoConstraints="NO" id="CxH-dp-nLG">
-                        <rect key="frame" x="419" y="34" width="34" height="13"/>
+                        <rect key="frame" x="419" y="30" width="34" height="13"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="30" id="Gy1-oA-MT8"/>
                             <constraint firstAttribute="height" constant="13" id="Jxg-SG-hcp"/>
@@ -114,7 +114,7 @@
                         </connections>
                     </textField>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" preferredMaxLayoutWidth="34" translatesAutoresizingMaskIntoConstraints="NO" id="TT7-Uw-dnA">
-                        <rect key="frame" x="419" y="15" width="34" height="13"/>
+                        <rect key="frame" x="419" y="11" width="34" height="13"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="30" id="7Qq-ro-Oeq"/>
                             <constraint firstAttribute="height" constant="13" id="Ye4-tH-Cbg"/>
@@ -129,14 +129,14 @@
                         </connections>
                     </textField>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0VF-S9-xap">
-                        <rect key="frame" x="336" y="50" width="64" height="28"/>
+                        <rect key="frame" x="336" y="46" width="64" height="27"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="18" id="1qh-DM-6ga"/>
                             <constraint firstAttribute="width" constant="54" id="jfQ-xn-DkI"/>
                         </constraints>
                         <buttonCell key="cell" type="push" title="Unload" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="w2b-fN-ZBY">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="smallSystem"/>
+                            <font key="font" metaFont="menu" size="11"/>
                         </buttonCell>
                         <connections>
                             <action selector="unloadButtonPressed:" target="-2" id="iaJ-GB-chJ"/>
@@ -149,13 +149,14 @@
                         </connections>
                     </button>
                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="f5k-X6-9Rq" customClass="SynthesizerErrorBackgroundView">
-                        <rect key="frame" x="1" y="1" width="467" height="82"/>
+                        <rect key="frame" x="1" y="1" width="463" height="78"/>
                         <subviews>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rgs-eJ-Km0">
-                                <rect key="frame" x="334" y="49" width="64" height="28"/>
+                                <rect key="frame" x="334" y="45" width="64" height="28"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="push" title="Delete" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="GON-ax-yDf">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="smallSystem"/>
+                                    <font key="font" metaFont="menu" size="11"/>
                                 </buttonCell>
                                 <connections>
                                     <action selector="deleteButtonPressed:" target="-2" id="wuT-1E-w0f"/>
@@ -167,17 +168,19 @@
                                 </connections>
                             </button>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PaT-tI-99m">
-                                <rect key="frame" x="396" y="49" width="64" height="28"/>
+                                <rect key="frame" x="396" y="45" width="64" height="28"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="push" title="Reload" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Cbt-pr-sAJ">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="smallSystem"/>
+                                    <font key="font" metaFont="menu" size="11"/>
                                 </buttonCell>
                                 <connections>
                                     <action selector="reloadButtonPressed:" target="-2" id="9Uw-t0-asK"/>
                                 </connections>
                             </button>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LJ3-tm-A2k">
-                                <rect key="frame" x="18" y="51" width="84" height="16"/>
+                                <rect key="frame" x="18" y="47" width="84" height="16"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Load Failed." id="fl7-UU-ZAr">
                                     <font key="font" metaFont="systemBlack" size="12"/>
                                     <color key="textColor" red="1" green="0.22853336238947364" blue="0.23038369133684211" alpha="1" colorSpace="calibratedRGB"/>
@@ -185,9 +188,10 @@
                                 </textFieldCell>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" preferredMaxLayoutWidth="435" translatesAutoresizingMaskIntoConstraints="NO" id="0X8-Cf-04V">
-                                <rect key="frame" x="18" y="7" width="439" height="36"/>
+                                <rect key="frame" x="18" y="3" width="439" height="36"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" controlSize="small" lineBreakMode="charWrapping" truncatesLastVisibleLine="YES" sendsActionOnEndEditing="YES" title="&quot;~/Documents/NASequencer/sf/FluidR3 GM2-2.SF2&quot; does not exsit. " id="j83-ae-d7K">
-                                    <font key="font" metaFont="cellTitle"/>
+                                    <font key="font" metaFont="label" size="12"/>
                                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
@@ -226,8 +230,6 @@
                     <constraint firstItem="uV7-kD-xbH" firstAttribute="top" secondItem="0Q3-I2-WbF" secondAttribute="bottom" constant="6" id="yGi-PM-3fX"/>
                 </constraints>
             </view>
-            <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-            <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             <point key="canvasLocation" x="139.5" y="388"/>
         </box>
     </objects>
