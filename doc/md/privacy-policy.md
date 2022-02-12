@@ -7,7 +7,7 @@ NASequencer does not collect any personal information nor identifiable informati
 
 Tracking and cookies on this site
 ---------------------------------
-This site, nasequencer.com, uses a Google Analytics tracking code.
+This site, nasequencer.com, does not use cookie and uses a Google Analytics tracking code with disabling cookie storage.
 The information collected by Google Analytics is only used for understanding how the site can be made better.
 This information is anonymous and does not include identifiable information.
 For more information about the data collected by Google Analytics through nasequencer.com and how that data is used, please visit following link.
@@ -23,5 +23,5 @@ Contact
 If you have any questions about this policy, please feel free to contact me at [support@nasequencer.com](mailto:support@nasequencer.com)
 
 ---
-Updated Feb 22, 2020  
+Updated Feb 12, 2022  
 Created May 15, 2016

@@ -25,6 +25,7 @@ function renderPage (name, options) {
   var values = JSON.parse(fs.readFileSync(__dirname+'/site/values/'+name+'.json'));
 
   values.site_url = 'production' == env ? 'https://nasequencer.com' : 'http://staging.nasequencer.com';
+  values.ga_tracking_id = 'UA-77464123-' + ('production' == env ? '1' : '2');
 
   if ('none' != options.content) {
     var md = fs.readFileSync(__dirname + '/md/'+options.content+'.md', 'utf8');

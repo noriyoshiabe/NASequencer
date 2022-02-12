@@ -1,18 +1,28 @@
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+(function() {
+  var CLIENT_ID_KEY = "GA_CLIENT_ID_ONLY_FOR_THIS_SITE";
 
-ga('create', 'UA-77464123-X', 'auto');
-ga('send', 'pageview');
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
 
-document.onreadystatechange = function () {
-  if ('complete' == document.readyState) {
-    var appStore = document.querySelector('a#app-store');
-    if (appStore) {
-      appStore.addEventListener('click', function () {
-        ga('send', 'event', 'AppStore', 'click');
-      });
+  if (window.localStorage) {
+    var clientId = window.localStorage.getItem(CLIENT_ID_KEY);
+    if (!clientId) {
+      clientId = Array.apply(null, Array(32)).map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+      window.localStorage.setItem(CLIENT_ID_KEY, clientId);
     }
+
+    gtag('config', 'UA-77464123-X', {client_storage: 'none', client_id: clientId});
   }
-};
+
+  document.onreadystatechange = function () {
+    if ('complete' == document.readyState) {
+      var appStore = document.querySelector('a#app-store');
+      if (appStore) {
+        appStore.addEventListener('click', function () {
+          gtag('event', 'click', {event_category: 'AppStore'});
+        });
+      }
+    }
+  };
+})();
