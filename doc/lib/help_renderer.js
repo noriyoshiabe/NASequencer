@@ -12,7 +12,7 @@ module.exports = function (marked, identifier) {
 
   renderer.link = function (href, title, text) {
     if (href.startsWith('http')) {
-      return '<a href="'+href+'" target="_blank">'+text+'</a>';
+      return '<a href="'+href+'" target="_blank" rel="noopener">'+text+'</a>';
     }
     else if (href.match(/.+\.md.*/)) {
       var matches = href.match(/(.+)\.md(.*)/);

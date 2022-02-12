@@ -8,7 +8,7 @@ module.exports = {
 
     renderer.link = function (href, title, text) {
       if (href.startsWith('http')) {
-        return '<a href="'+href+'" target="_blank">'+text+'</a>';
+        return '<a href="'+href+'" target="_blank" rel="noopener">'+text+'</a>';
       }
       else {
         return '<a href="'+href+'">'+text+'</a>';
@@ -27,7 +27,7 @@ module.exports = {
 
     renderer.link = function (href, title, text) {
       if (href.startsWith('http')) {
-        return '<a href="'+href+'" target="_blank">'+text+'</a>';
+        return '<a href="'+href+'" target="_blank" rel="noopener">'+text+'</a>';
       }
       else if (href.match(/.+\.md.*/)) {
         var matches = href.match(/(.+)\.md(.*)/);
