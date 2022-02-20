@@ -2,7 +2,7 @@
 
 uint32_t NAHashAddress(void *value)
 {
-    return (uint32_t)value >> 2;
+    return (uint32_t)((uintptr_t)value >> 2);
 }
 
 uint32_t NAHashCString(void *value)

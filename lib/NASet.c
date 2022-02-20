@@ -258,7 +258,7 @@ NAIterator *NASetGetIterator(NASet *self, void *buffer)
 void NASetDescription(void *_self, FILE *stream)
 {
     NASet *self = _self;
-    fprintf(stream, "<NASet 0x%X\n", (uint32_t)self);
+    fprintf(stream, "<NASet 0x%lX\n", (uintptr_t)self);
 
     for (int i = 0; i < self->size; ++i) {
         Entry *entry = self->buckets[i];

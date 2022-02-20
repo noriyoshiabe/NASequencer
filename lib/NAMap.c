@@ -320,7 +320,7 @@ NAIterator *NAMapGetIterator(NAMap *self, void *buffer)
 void NAMapDescription(void *_self, FILE *stream)
 {
     NAMap *self = _self;
-    fprintf(stream, "<NAMap 0x%X\n", (uint32_t)self);
+    fprintf(stream, "<NAMap 0x%lX\n", (uintptr_t)self);
 
     for (int i = 0; i < self->size; ++i) {
         Entry *entry = self->buckets[i];

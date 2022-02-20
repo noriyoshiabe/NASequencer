@@ -272,7 +272,7 @@ NAIterator *NAArrayGetReverseIterator(NAArray *self, void *buffer)
 void NAArrayDescription(void *_self, FILE *stream)
 {
     NAArray *self = _self;
-    fprintf(stream, "<NAArray capacity=%d count=%d 0x%X\n", self->capacity, self->count, (uint32_t)self);
+    fprintf(stream, "<NAArray capacity=%d count=%d 0x%lX\n", self->capacity, self->count, (uintptr_t)self);
 
     for (int i = 0; i < self->count; ++i) {
         fprintf(stream, "  [%d] ", i);
