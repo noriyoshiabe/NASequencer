@@ -124,7 +124,7 @@ char *NACStringToUpperCase(char *string)
 {
     char *c = string;
     while (*c) {
-        *c = tolower(*c);
+        *c = toupper(*c);
         ++c;
     }
     return string;
