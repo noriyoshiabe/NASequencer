@@ -18,6 +18,7 @@ static bool isAudioFileType(const char *filepath);
 static struct option _options[] = {
     { "output", required_argument, NULL, 'o'},
     { "sound-font", required_argument, NULL, 's'},
+    { "gain", required_argument, NULL, 'g'},
     { "help", no_argument, NULL, 'h'},
     { "version", no_argument, NULL, 'v'},
 
@@ -36,18 +37,24 @@ int main(int argc, char **argv)
     int opt;
     
     const char *soundSources[8] = {NULL};
-    int index = 0;
+    int indexSource = 0;
 
+    const CLIOption *options[8] = {NULL};
+    int indexOption = 0;
+    
     const char *output = NULL;
     const char *input = NULL;
 
-    while (-1 != (opt = getopt_long(argc, argv, "o:s:hv", _options, NULL))) {
+    while (-1 != (opt = getopt_long(argc, argv, "o:s:g:hv", _options, NULL))) {
         switch (opt) {
         case 'o':
             output = optarg;
             break;
         case 's':
-            soundSources[index++] = optarg;
+            soundSources[indexSource++] = optarg;
+            break;
+        case 'g':
+            options[indexOption] = &(CLIOption){.name = "gain", .valueInt = atoi(optarg)};
             break;
         case 'h':
             showHelp();
@@ -80,7 +87,7 @@ int main(int argc, char **argv)
         showWelcome();
     }
 
-    _cli = CLICreate(input, soundSources);
+    _cli = CLICreate(input, soundSources, options);
 
     bool success;
     if (output) {

@@ -8,7 +8,12 @@
 
 typedef struct _CLI CLI;
 
-extern CLI *CLICreate(const char *filepath, const char **soundSources);
+typedef struct _CLIOption {
+    const char *name;
+    const int valueInt;
+} CLIOption;
+
+extern CLI *CLICreate(const char *filepath, const char **soundSources, const CLIOption **options);
 extern void CLIDestroy(CLI *self);
 extern bool CLIRunShell(CLI *self);
 extern void CLISigInt(CLI *self);

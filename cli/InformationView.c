@@ -37,6 +37,7 @@ const char *USAGE =
 " -o, --outout <file>      Write output to SMF, WAV or AAC.\n"
 "                          WAV and AAC output require valid synthesizer with -s, --sound-font option.\n"
 " -s, --sound-font <file>  Specify sound font file for synthesizer.\n"
+" -g, --gain <level>       Specify gain level for synthesizer.\n"
 " -h, --help               This help text.\n";
 
 void InformationViewShowWelCome()

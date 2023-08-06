@@ -22,6 +22,7 @@
 
 struct _CLI {
     char *filepath;
+    const CLIOption **options;
     NAMidi *namidi;
     MidiSourceManager *manager;
     PianoRollView *pianoRollView;
@@ -39,10 +40,11 @@ static ExporterObserverCallbacks CLIExporterObserverCallbacks;
 
 static char **CLICompletion(const char *text, int start, int end);
 
-CLI *CLICreate(const char *filepath, const char **soundSources)
+CLI *CLICreate(const char *filepath, const char **soundSources, const CLIOption **options)
 {
     CLI *self = calloc(1, sizeof(CLI));
     self->filepath = filepath ? strdup(filepath) : NULL;
+    self->options = options;
     self->namidi = NAMidiCreate();
     self->manager = MidiSourceManagerSharedInstance();
     self->pianoRollView = PianoRollViewCreate(self->namidi);
@@ -250,6 +252,17 @@ void CLISetFilepath(CLI *self, const char *filepath)
 }
 
 
+static const CLIOption *CLIGetOption(CLI *self, const char *name)
+{
+    for (const CLIOption **option = self->options; NULL != *option; ++option) {
+        if (0 == strcmp(name, (*option)->name)) {
+            return *option;
+        }
+    }
+
+    return NULL;
+}
+
 static void CLINAMidiOnBeforeParse(void *receiver, bool fileChanged)
 {
     if (fileChanged) {
@@ -330,11 +343,19 @@ static PlayerObserverCallbacks CLIPlayerObserverCallbacks = {
 
 static void CLIMidiSourceManagerOnLoadMidiSourceDescription(void *receiver, MidiSourceDescription *description)
 {
+    CLI *self = receiver;
+
     if (!description->available) {
         printf("[%s] is not available. error=%s\n", description->filepath, MidiSourceDescriptionError2String(description->error));
     }
     else {
         printf("[%s] is loaded\n", description->name);
+        
+        const CLIOption *option = CLIGetOption(self, "gain");
+        if (option) {
+            printf("set gain to %d\n", option->valueInt);
+            MidiSourceManagerSetGainForDescription(self->manager, description, option->valueInt);
+        }
     }
 }
 
