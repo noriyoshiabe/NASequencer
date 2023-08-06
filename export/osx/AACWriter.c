@@ -146,7 +146,8 @@ static OSStatus AACWriterEncoderDataProc(AudioConverterRef inAudioConverter, UIn
 	ioData->mBuffers[0].mDataByteSize = outNumBytes;
 	ioData->mBuffers[0].mNumberChannels = 2;
 
-    *outDataPacketDescription = NULL;
+    if (outDataPacketDescription)
+        *outDataPacketDescription = NULL;
 
     return noErr;
 }
