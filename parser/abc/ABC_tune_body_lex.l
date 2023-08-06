@@ -13,7 +13,6 @@
     if (strchr(yytext, '\n')) yycolumn = 1; \
     else yycolumn += yyleng;
 
-#define YYMORE() yymore(), yycolumn -= yyleng
 #define ECHO
 
 %}
@@ -126,7 +125,8 @@ RESERVED      [#\*;\?@]
                         return '\n';
                     }
                     else if (ABCParserIsDecoration(yyextra, '!')) {
-                        YYMORE();
+                        yymore();
+                        yycolumn -= yyleng;
                         BEGIN(x_DECORATION);
                     }
                     else {
@@ -136,7 +136,8 @@ RESERVED      [#\*;\?@]
 
 "+"             {
                     if (ABCParserIsDecoration(yyextra, '+')) {
-                        YYMORE();
+                        yymore();
+                        yycolumn -= yyleng;
                         BEGIN(x_DECORATION);
                     }
                     else {
@@ -188,7 +189,8 @@ RESERVED      [#\*;\?@]
                                     return DECORATION;
                                 }
                                 else {
-                                    YYMORE();
+                                    yymore();
+                                    yycolumn -= yyleng;
                                 }
                             }
 <x_DECORATION>[[:space:]]   { return 1; }
