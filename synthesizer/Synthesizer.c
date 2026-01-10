@@ -420,6 +420,7 @@ static int SynthesizerNoteOn(Synthesizer *self, uint8_t channel, uint8_t noteNo,
             VoiceInitialize(voice, &self->channels[channel], noteNo, velocity,
                     preset->globalZone, presetZone, instrument->globalZone, instrumentZone,
                     self->sf, self->sampleRate, self->gain, self->masterVolume);
+            VoiceUpdateRuntimeParams(voice);
 
             SynthesizerReleaseExclusiveClass(self, voice);
             SynthesizerReleaseIdenticalVoice(self, voice);
