@@ -234,11 +234,13 @@ Location TimeTableTick2Location(TimeTable *self, int32_t tick)
 
     int32_t tickFromPreviousTimeSign = (tick - records[i]->tickStart);
     int32_t tickPerBeat = self->resolution * 4 / records[i]->timeSign.denominator;
+    int32_t measure = records[i]->measureStart + tickFromPreviousTimeSign / records[i]->measureLength;
+    int32_t tickFromMeasureStart = tick - TimeTableTickByMeasure(self, measure);
 
     Location ret;
-    ret.m = records[i]->measureStart + tickFromPreviousTimeSign / records[i]->measureLength;
+    ret.m = measure;
     ret.b = (tickFromPreviousTimeSign % records[i]->measureLength) / tickPerBeat + 1;
-    ret.t = tick % tickPerBeat;
+    ret.t = tickFromMeasureStart % tickPerBeat;
 
     return ret;
 }
