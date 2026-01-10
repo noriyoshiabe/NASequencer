@@ -177,6 +177,9 @@
     int tick = (dirtyRect.origin.x) * tickPerPixel;
     int tickTo = (dirtyRect.origin.x + dirtyRect.size.width) * tickPerPixel;
     
+    tick = MAX(0, MIN(tick, _sequence.length));
+    tickTo = MAX(0, MIN(tickTo, _sequence.length));
+
     Location location = [_sequence locationByTick:tick];
     location.t = 0;
     tick = [_sequence tickByLocation:location];
