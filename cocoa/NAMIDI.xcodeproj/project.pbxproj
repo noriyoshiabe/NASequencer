@@ -906,6 +906,7 @@
 					0201F7CB1C688BB100A201F6 = {
 						CreatedOnToolsVersion = 7.2.1;
 						DevelopmentTeam = 63F66NTY34;
+						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.InAppPurchase = {
 								enabled = 1;
@@ -1239,8 +1240,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = NAMIDI/NAMIDI.entitlements;
-				CODE_SIGN_IDENTITY = "Mac Developer";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 63F66NTY34;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -1265,8 +1266,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.nasequencer.NASequencer;
 				PRODUCT_NAME = NASequencer;
-				PROVISIONING_PROFILE = "290c46e5-b05a-45e0-ac0b-dc4733e3a91e";
-				PROVISIONING_PROFILE_SPECIFIER = "NASequencer Development";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Debug;
 		};
@@ -1274,8 +1274,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = NAMIDI/NAMIDI.entitlements;
-				CODE_SIGN_IDENTITY = "Mac Developer";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "3rd Party Mac Developer Application: Noriyoshi Abe (63F66NTY34)";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 63F66NTY34;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -1300,8 +1300,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.nasequencer.NASequencer;
 				PRODUCT_NAME = NASequencer;
-				PROVISIONING_PROFILE = "283eec72-6e91-4799-aa96-6e67aa6ea267";
-				PROVISIONING_PROFILE_SPECIFIER = "NASequencer Distribution";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Release;
 		};
