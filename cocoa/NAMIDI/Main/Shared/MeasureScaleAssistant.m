@@ -46,7 +46,7 @@ static const CGFloat _zoomLevelCount = sizeof(_zoomLevels) / sizeof(_zoomLevels[
 
 - (BOOL)scrollWheel:(NSEvent *)theEvent
 {
-    if (NSCommandKeyMask & theEvent.modifierFlags) {
+    if (NSEventModifierFlagCommand & theEvent.modifierFlags) {
         CGFloat scale = _scale + theEvent.deltaY * -0.05 * (1.0 > _scale ? pow(_scale, 2.0) : 1.0);
         self.scale = MAX(0.2, MIN(10.0, scale));
         return YES;

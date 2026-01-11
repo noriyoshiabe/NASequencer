@@ -100,7 +100,7 @@
     openPanel.delegate = self;
     
     [openPanel beginSheetModalForWindow:self.view.window completionHandler:^(NSInteger result) {
-        if (NSFileHandlingPanelOKButton == result) {
+        if (NSModalResponseOK == result) {
             NSBundle *appBundle = [NSBundle bundleWithURL:openPanel.URL];
             _externalEditorName = [appBundle objectForInfoDictionaryKey:@"CFBundleName"];
             [Preference sharedInstance].externalEditorName = _externalEditorName;
@@ -117,7 +117,7 @@
     openPanel.canCreateDirectories = YES;
     
     [openPanel beginSheetModalForWindow:self.view.window completionHandler:^(NSInteger result) {
-        if (NSFileHandlingPanelOKButton == result) {
+        if (NSModalResponseOK == result) {
             [Preference sharedInstance].includeSearchPath = openPanel.URL.path;
             
             NSError *error = nil;

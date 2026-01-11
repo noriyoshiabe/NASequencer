@@ -51,10 +51,10 @@
 - (void)click:(int)trackNo event:(NSEvent *)event
 {
     if (0 <= trackNo && trackNo <= 16) {
-        if (NSCommandKeyMask & [NSEvent modifierFlags]) {
+        if (NSEventModifierFlagCommand & [NSEvent modifierFlags]) {
             [self toggle:trackNo];
         }
-        else if (NSShiftKeyMask & [NSEvent modifierFlags]) {
+        else if (NSEventModifierFlagShift & [NSEvent modifierFlags]) {
             [self selectFromLastSelectedTo:trackNo];
         }
         else {

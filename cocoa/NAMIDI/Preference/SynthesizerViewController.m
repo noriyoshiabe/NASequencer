@@ -123,7 +123,7 @@
         openPanel.allowedFileTypes = @[@"sf2"];
         
         [openPanel beginSheetModalForWindow:self.view.window completionHandler:^(NSInteger result) {
-            if (NSFileHandlingPanelOKButton == result) {
+            if (NSModalResponseOK == result) {
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                     [_manager loadMidiSourceDescriptionFromSoundFont:openPanel.URL.path];
                 });

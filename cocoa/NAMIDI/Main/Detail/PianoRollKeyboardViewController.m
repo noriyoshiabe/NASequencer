@@ -164,7 +164,7 @@ HIT:
     CGColorRetain(_hitKeyColor);
     
     NSMutableParagraphStyle *ps = [[NSMutableParagraphStyle alloc] init];
-    ps.alignment = NSRightTextAlignment;
+    ps.alignment = NSTextAlignmentRight;
     
     _labelAttrs = @{NSFontAttributeName:[NSFont systemFontOfSize:10.0],
                     NSForegroundColorAttributeName: [Color gray],

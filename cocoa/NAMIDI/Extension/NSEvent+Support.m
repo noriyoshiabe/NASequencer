@@ -12,12 +12,12 @@
 
 + (BOOL)isAlternateKeyPressed
 {
-    return 0 != ([NSEvent modifierFlags] & NSAlternateKeyMask);
+    return 0 != ([NSEvent modifierFlags] & NSEventModifierFlagOption);
 }
 
 + (BOOL)isShiftKeyPressed
 {
-    return 0 != ([NSEvent modifierFlags] & NSShiftKeyMask);
+    return 0 != ([NSEvent modifierFlags] & NSEventModifierFlagShift);
 }
 
 @end

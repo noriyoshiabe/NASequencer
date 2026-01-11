@@ -197,7 +197,7 @@ ApplicationController *AppController;
     NSOpenPanel *openPanel = [NSOpenPanel openPanel];
     openPanel.allowedFileTypes = self.allowedFileTypes;
     
-    if (NSFileHandlingPanelOKButton == [openPanel runModal]) {
+    if (NSModalResponseOK == [openPanel runModal]) {
         [self openDocumentWithContentsOfURL:openPanel.URL];
     }
 }
@@ -211,7 +211,7 @@ ApplicationController *AppController;
     openPanel.directoryURL = [NSURL fileURLWithPath:[Preference sharedInstance].includeSearchPath];
     
     [openPanel beginSheetModalForWindow:window completionHandler:^(NSInteger result) {
-        if (NSFileHandlingPanelOKButton == result) {
+        if (NSModalResponseOK == result) {
             completionHandler(openPanel.URL);
         }
         
@@ -226,7 +226,7 @@ ApplicationController *AppController;
     savePanel.allowedFileTypes = @[filename.pathExtension];
     
     [savePanel beginSheetModalForWindow:window completionHandler:^(NSInteger result) {
-        if (NSFileHandlingPanelOKButton == result) {
+        if (NSModalResponseOK == result) {
             completionHandler(savePanel.URL);
         }
     }];
@@ -255,7 +255,7 @@ ApplicationController *AppController;
     
     if (window) {
         [_savePanel beginSheetModalForWindow:window completionHandler:^(NSInteger result) {
-            if (NSFileHandlingPanelOKButton == result) {
+            if (NSModalResponseOK == result) {
                 // Create empty file
                 [[NSData data] writeToURL:_savePanel.URL atomically:YES];
                 
@@ -267,9 +267,9 @@ ApplicationController *AppController;
     else {
         // Avoid unwanted moving on NSSavePanel with runModal
         _savePanel.message = @" ";
-        _savePanel.styleMask |= NSFullSizeContentViewWindowMask;
+        _savePanel.styleMask |= NSWindowStyleMaskFullSizeContentView;
         
-        if (NSFileHandlingPanelOKButton == [_savePanel runModal]) {
+        if (NSModalResponseOK == [_savePanel runModal]) {
             // Create empty file
             [[NSData data] writeToURL:_savePanel.URL atomically:YES];
             
@@ -317,7 +317,7 @@ ApplicationController *AppController;
         _exportPanel.allowedFileTypes = @[ext];
         
         [_exportPanel beginSheetModalForWindow:window completionHandler:^(NSInteger result) {
-            if (NSFileHandlingPanelOKButton == result) {
+            if (NSModalResponseOK == result) {
                 ExportWindowController *exportWC = [[ExportWindowController alloc] init];
                 exportWC.file = file;
                 exportWC.outputUrl = _exportPanel.URL;
@@ -449,9 +449,9 @@ ApplicationController *AppController;
                         
                         alert.informativeText = [NSString stringWithFormat:format, latestVersion];
                         alert.showsSuppressionButton = YES;
-                        alert.suppressionButton.controlSize = NSSmallControlSize;
+                        alert.suppressionButton.controlSize = NSControlSizeSmall;
                         alert.suppressionButton.font = [NSFont systemFontOfSize:11.0];
-                        alert.alertStyle = NSInformationalAlertStyle;
+                        alert.alertStyle = NSAlertStyleInformational;
                         
                         NSModalResponse response = [alert runModal];
                         if (NSAlertFirstButtonReturn == response) {
@@ -513,7 +513,7 @@ ApplicationController *AppController;
             [alert addButtonWithTitle:NSLocalizedString(@"NoThanks", @"No, Thanks")];
             alert.messageText = NSLocalizedString(@"RateApp", @"Rate NASequencer");
             alert.informativeText = NSLocalizedString(@"RateRequestMessage", @"If you enjoy NASequencer, would you mind taking a moment to rate it? Thanks for your supporting NASequencer's development!");
-            alert.alertStyle = NSInformationalAlertStyle;
+            alert.alertStyle = NSAlertStyleInformational;
             
             NSModalResponse response = [alert runModal];
             switch (response) {

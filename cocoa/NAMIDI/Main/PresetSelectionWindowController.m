@@ -130,7 +130,7 @@
 {
     [_presetTableView.nextResponder becomeFirstResponder];
     
-    _keyDownMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:NSKeyDownMask | NSKeyUpMask | NSFlagsChangedMask handler:self.keyDownMonitorHandler];
+    _keyDownMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskKeyDown | NSEventMaskKeyUp | NSEventMaskFlagsChanged handler:self.keyDownMonitorHandler];
 }
 
 - (void)windowDidResignKey:(NSNotification *)notification
@@ -239,7 +239,7 @@
             return YES;
             
         case NSLeftArrowFunctionKey:
-            if (event.modifierFlags & NSShiftKeyMask) {
+            if (event.modifierFlags & NSEventModifierFlagShift) {
                 return NO;
             }
             else {
@@ -251,7 +251,7 @@
             }
             
         case NSRightArrowFunctionKey:
-            if (event.modifierFlags & NSShiftKeyMask) {
+            if (event.modifierFlags & NSEventModifierFlagShift) {
                 return NO;
             }
             else {
@@ -268,7 +268,7 @@
             return YES;
             
         default:
-            if (!event.isARepeat && !(event.modifierFlags & NSCommandKeyMask)) {
+            if (!event.isARepeat && !(event.modifierFlags & NSEventModifierFlagCommand)) {
                 PresetKeyboardButton *button = _keys[@(key)];
                 if (button.enabled) {
                     button.state = NSOnState;
@@ -295,7 +295,7 @@
 
 - (BOOL)handleFlagsChanged:(NSEvent *)event
 {
-    if (event.modifierFlags & NSCommandKeyMask) {
+    if (event.modifierFlags & NSEventModifierFlagCommand) {
         [self cancelAllKeys];
         return YES;
     }
@@ -313,21 +313,21 @@
         }
         
         switch (event.type) {
-            case NSKeyDown:
+            case NSEventTypeKeyDown:
                 if ([self handleKeyDown:event]) {
                     return nil;
                 }
                 else {
                     return event;
                 }
-            case NSKeyUp:
+            case NSEventTypeKeyUp:
                 if ([self handleKeyUp:event]) {
                     return nil;
                 }
                 else {
                     return event;
                 }
-            case NSFlagsChanged:
+            case NSEventTypeFlagsChanged:
                 if ([self handleFlagsChanged:event]) {
                     return nil;
                 }

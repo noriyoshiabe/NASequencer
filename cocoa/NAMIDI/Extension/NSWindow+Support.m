@@ -18,7 +18,7 @@
 
 - (BOOL)isFullScreen
 {
-    return NSFullScreenWindowMask == (self.styleMask & NSFullScreenWindowMask);
+    return NSWindowStyleMaskFullScreen == (self.styleMask & NSWindowStyleMaskFullScreen);
 }
 
 @end
