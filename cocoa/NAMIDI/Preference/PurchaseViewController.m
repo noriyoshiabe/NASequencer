@@ -135,6 +135,9 @@
 - (void)iap:(id<IAPDelegate>)iap didUpdateTransaction:(IAPTransaction *)transaction
 {
     switch (transaction.transactionState) {
+        case IAPTransactionStateUnknown:
+        case IAPTransactionStateCanceled:
+            break;
         case IAPTransactionStatePurchasing:
             _purchaseButton.enabled = NO;
             _restorePurchaseButton.enabled = NO;
