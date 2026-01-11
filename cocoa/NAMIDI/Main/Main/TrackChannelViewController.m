@@ -258,7 +258,9 @@
             CGFloat left = round(note->tick * pixelPerTick) + measureOffset;
             CGFloat right = left + round(note->gatetime * pixelPerTick);
             CGFloat y = floor(centerY + heightPerKey * (note->noteNo - centerNoteNo)) + 0.5;
-            if (CGRectContainsPoint(dirtyRect, CGPointMake(left, y)) || CGRectContainsPoint(dirtyRect, CGPointMake(right, y))) {
+            
+            if (!(right < CGRectGetMinX(dirtyRect)) && !(CGRectGetMaxX(dirtyRect) < left)
+                    && !(y < CGRectGetMinY(dirtyRect)) && !(CGRectGetMaxY(dirtyRect) < y)) {
                 CGContextMoveToPoint(ctx, left, y);
                 CGContextAddLineToPoint(ctx, right, y);
                 CGContextStrokePath(ctx);
