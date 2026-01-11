@@ -59,7 +59,7 @@ static IAP *_sharedInstance = nil;
 
 - (void)initialize
 {
-    [self verifyReceipt:self];
+    [self verifyReceipt];
     [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
 }
 
@@ -78,7 +78,7 @@ static IAP *_sharedInstance = nil;
     [_observers removeObserver:observer];
 }
 
-- (void)verifyReceipt:(id<ReceiptVerifierDelegate>)delegate
+- (void)verifyReceipt
 {
     NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
     AppStoreReceipt *receipt = [AppStoreReceipt parseFromFile:receiptURL.path];
@@ -171,7 +171,7 @@ static IAP *_sharedInstance = nil;
                 case SKPaymentTransactionStatePurchased:
                 case SKPaymentTransactionStateRestored:
                     _purchasedTransaction = transaction;
-                    [self verifyReceipt:self];
+                    [self verifyReceipt];
                     [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
                     break;
             }

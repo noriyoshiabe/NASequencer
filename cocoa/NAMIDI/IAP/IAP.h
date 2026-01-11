@@ -17,7 +17,6 @@
 @end
 
 @interface IAP : NSObject
-@property (readonly, nonatomic) BOOL hasFullVersion;
 + (IAP *)sharedInstance;
 - (void)initialize;
 - (void)finalize;
