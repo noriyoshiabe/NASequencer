@@ -2,6 +2,8 @@
 
 set -e
 
+export MACOSX_DEPLOYMENT_TARGET=10.13
+
 OPENSSL_VERSION="3.5.4"
 CWD=`cd $(dirname $0) && pwd`
 
