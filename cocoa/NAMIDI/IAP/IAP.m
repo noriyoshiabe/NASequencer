@@ -8,33 +8,15 @@
 
 #import "IAP.h"
 #import "IAPDelegate_OS15.h"
+#import "IAPDelegate_OS26.h"
+
+@implementation IAPEntitlement
+@end
 
 @implementation IAPProductInfo
-
-- (instancetype)initWithProductId:(NSString *)productId displayPrice:(NSString *)displayPrice
-{
-    self = [super init];
-    if (self) {
-        _productId = productId;
-        _displayPrice = displayPrice;
-    }
-    return self;
-}
-
 @end
 
 @implementation IAPTransaction
-
-- (instancetype)initWithProductId:(NSString *)productId transactionState:(IAPTransactionState)transactionState
-{
-    self = [super init];
-    if (self) {
-        _productId = productId;
-        _transactionState = transactionState;
-    }
-    return self;
-}
-
 @end
 
 @interface IAP () {
@@ -50,7 +32,11 @@ static id<IAPDelegate> _sharedInstance = nil;
 {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        _sharedInstance = [[IAPDelegate_OS15 alloc] init];
+        if (@available(macOS 26.0, *)) {
+            _sharedInstance = [[IAPDelegate_OS26 alloc] init];
+        } else {
+            _sharedInstance = [[IAPDelegate_OS15 alloc] init];
+        }
     });
     return _sharedInstance;
 }

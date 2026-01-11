@@ -124,6 +124,8 @@
 		028589551C71320A00A53B8C /* EditorStatusViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 028589531C71320A00A53B8C /* EditorStatusViewController.m */; };
 		028589561C71320A00A53B8C /* EditorStatusViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 028589541C71320A00A53B8C /* EditorStatusViewController.xib */; };
 		028B57E52F13AAF0003A6421 /* IAPDelegate_OS15.m in Sources */ = {isa = PBXBuildFile; fileRef = 028B57E42F13AAF0003A6421 /* IAPDelegate_OS15.m */; };
+		028B57E82F13C296003A6421 /* IAPDelegate_OS26_Swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 028B57E72F13C296003A6421 /* IAPDelegate_OS26_Swift.swift */; };
+		028B57ED2F13D842003A6421 /* IAPDelegate_OS26.m in Sources */ = {isa = PBXBuildFile; fileRef = 028B57EC2F13D842003A6421 /* IAPDelegate_OS26.m */; };
 		0290B8C91CC4D637009524A3 /* PresetSelectionWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0290B8C71CC4D637009524A3 /* PresetSelectionWindowController.m */; };
 		0290B8CA1CC4D637009524A3 /* PresetSelectionWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0290B8C81CC4D637009524A3 /* PresetSelectionWindowController.xib */; };
 		029357D41CD3BA9C004B87B2 /* NSString+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 029357D31CD3BA9C004B87B2 /* NSString+Support.m */; };
@@ -372,6 +374,10 @@
 		028589541C71320A00A53B8C /* EditorStatusViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EditorStatusViewController.xib; sourceTree = "<group>"; };
 		028B57E32F13AAF0003A6421 /* IAPDelegate_OS15.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IAPDelegate_OS15.h; sourceTree = "<group>"; };
 		028B57E42F13AAF0003A6421 /* IAPDelegate_OS15.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IAPDelegate_OS15.m; sourceTree = "<group>"; };
+		028B57E62F13C295003A6421 /* NAMIDI-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NAMIDI-Bridging-Header.h"; sourceTree = "<group>"; };
+		028B57E72F13C296003A6421 /* IAPDelegate_OS26_Swift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAPDelegate_OS26_Swift.swift; sourceTree = "<group>"; };
+		028B57EB2F13D842003A6421 /* IAPDelegate_OS26.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IAPDelegate_OS26.h; sourceTree = "<group>"; };
+		028B57EC2F13D842003A6421 /* IAPDelegate_OS26.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IAPDelegate_OS26.m; sourceTree = "<group>"; };
 		0290B8C61CC4D637009524A3 /* PresetSelectionWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PresetSelectionWindowController.h; sourceTree = "<group>"; };
 		0290B8C71CC4D637009524A3 /* PresetSelectionWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PresetSelectionWindowController.m; sourceTree = "<group>"; };
 		0290B8C81CC4D637009524A3 /* PresetSelectionWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PresetSelectionWindowController.xib; sourceTree = "<group>"; };
@@ -490,6 +496,7 @@
 				020CF8761C6B09E30025DF84 /* About */,
 				026160B51C689E18001E99A9 /* NAMIDI.entitlements */,
 				020CF8681C6AF1A80025DF84 /* NAMIDI-Prefix.pch */,
+				028B57E62F13C295003A6421 /* NAMIDI-Bridging-Header.h */,
 				0240A2461C6C30F2002D6F72 /* ApplicationController.h */,
 				0240A2471C6C30F2002D6F72 /* ApplicationController.m */,
 				020CF87C1C6B20C50025DF84 /* Application.h */,
@@ -867,6 +874,9 @@
 				02018D9D1CD1CD290025C851 /* IAP.m */,
 				028B57E32F13AAF0003A6421 /* IAPDelegate_OS15.h */,
 				028B57E42F13AAF0003A6421 /* IAPDelegate_OS15.m */,
+				028B57EB2F13D842003A6421 /* IAPDelegate_OS26.h */,
+				028B57EC2F13D842003A6421 /* IAPDelegate_OS26.m */,
+				028B57E72F13C296003A6421 /* IAPDelegate_OS26_Swift.swift */,
 			);
 			path = IAP;
 			sourceTree = "<group>";
@@ -906,6 +916,7 @@
 					0201F7CB1C688BB100A201F6 = {
 						CreatedOnToolsVersion = 7.2.1;
 						DevelopmentTeam = 63F66NTY34;
+						LastSwiftMigration = 2620;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.InAppPurchase = {
@@ -1078,6 +1089,7 @@
 				023BB20F1C6EF17B0030487C /* NSArray+Support.m in Sources */,
 				02F350621CD1AECC00DB8499 /* IAPReceipt.m in Sources */,
 				0232CB201C891AD400542D34 /* ListenToExampleWindowController.m in Sources */,
+				028B57E82F13C296003A6421 /* IAPDelegate_OS26_Swift.swift in Sources */,
 				026D42D61C7ABC08000267AD /* DetailViewController.m in Sources */,
 				0232CB101C88C88700542D34 /* NSWindow+Support.m in Sources */,
 				0201F7D71C688BB100A201F6 /* Document.m in Sources */,
@@ -1115,6 +1127,7 @@
 				02633EB81C74ED9300B9FF0E /* NSView+Support.m in Sources */,
 				026D42D81C7ABC08000267AD /* EventListViewController.m in Sources */,
 				0201F7D11C688BB100A201F6 /* AppDelegate.m in Sources */,
+				028B57ED2F13D842003A6421 /* IAPDelegate_OS26.m in Sources */,
 				02CD04221C871B3400BF6683 /* SynthesizerCellView.m in Sources */,
 				02CD04311C88930700BF6683 /* TextLink.m in Sources */,
 				0216EDF71C7AC431009A7B90 /* ConductorTrackViewController.m in Sources */,
@@ -1239,6 +1252,7 @@
 		0201F7E41C688BB100A201F6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = NAMIDI/NAMIDI.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
@@ -1267,12 +1281,16 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.nasequencer.NASequencer;
 				PRODUCT_NAME = NASequencer;
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "NAMIDI/NAMIDI-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
 			};
 			name = Debug;
 		};
 		0201F7E51C688BB100A201F6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = NAMIDI/NAMIDI.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
@@ -1301,6 +1319,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.nasequencer.NASequencer;
 				PRODUCT_NAME = NASequencer;
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "NAMIDI/NAMIDI-Bridging-Header.h";
+				SWIFT_VERSION = 6.0;
 			};
 			name = Release;
 		};

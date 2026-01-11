@@ -11,6 +11,11 @@
 
 #define kIAPProductFullVersion @"com.nasequencer.NASequencer.full_version"
 
+@interface IAPEntitlement : NSObject
+@property (strong, nonatomic) NSString *productId;
+@property (nonatomic) int quantity;
+@end
+
 @interface IAPProductInfo : NSObject
 @property (strong, nonatomic) NSString *productId;
 @property (strong, nonatomic) NSString *displayPrice;
@@ -22,11 +27,15 @@ typedef NS_ENUM(NSInteger, IAPTransactionState) {
     IAPTransactionStateFailed = SKPaymentTransactionStateFailed,
     IAPTransactionStateRestored = SKPaymentTransactionStateRestored,
     IAPTransactionStateDeferred = SKPaymentTransactionStateDeferred,
+    
+    IAPTransactionStateUnknown = -1,
+    IAPTransactionStateCanceled = -2,
 };
 
 @interface IAPTransaction : NSObject
 @property (strong, nonatomic) NSString *productId;
 @property (nonatomic) IAPTransactionState transactionState;
+@property (strong, nonatomic) NSError *error;
 @end
 
 @protocol IAPDelegate;
