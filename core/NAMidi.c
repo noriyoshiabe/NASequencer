@@ -150,20 +150,37 @@ void NAMidiParse(NAMidi *self, const char *filepath)
     NAArrayTraverseWithContext(self->observers, self, NAMidiNotifyBeforeParse, self->changed);
 
     Sequence *sequence = NAMidiParseInternal(self, filepath, &info);
-    if (0 < NAArrayCount(info->errors) && self->changed) {
-        ParseError *error = NAArrayGetValueAt(info->errors, 0);
+    bool shouldRetry = false;
 
-        /*
-         * Retry parsing once, after file not found error occurs with reloading.
-         * Cause some of editor, for example MacVim, remove file with saving?
-         */
-        if (GeneralParseErrorFileNotFound == error->code) {
-            SequenceRelease(sequence);
-            ParseInfoRelease(info);
+    if (self->changed) {
+        if (0 < NAArrayCount(info->errors)) {
+            ParseError *error = NAArrayGetValueAt(info->errors, 0);
 
-            usleep(50 * 1000);
-            sequence = NAMidiParseInternal(self, filepath, &info);
+            /*
+             * Retry parsing once, after file not found error occurs with reloading.
+             * Cause some of editor, for example MacVim, remove file with saving?
+             */
+            if (GeneralParseErrorFileNotFound == error->code) {
+                shouldRetry = true;
+            }
+        } else {
+
+            /*
+             * Also retry parsing once, empty sequence on reloading.
+             * Frequently occurring with MacVim on macOS 26.
+             */
+            if (0 == NAArrayCount(sequence->events)) {
+                shouldRetry = true;
+            }
         }
+    }
+
+    if (shouldRetry) {
+        SequenceRelease(sequence);
+        ParseInfoRelease(info);
+
+        usleep(50 * 1000);
+        sequence = NAMidiParseInternal(self, filepath, &info);
     }
 
     if (self->sequence) {
