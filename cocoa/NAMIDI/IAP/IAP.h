@@ -11,19 +11,40 @@
 
 #define kIAPProductFullVersion @"com.nasequencer.NASequencer.full_version"
 
-@class IAP;
-@protocol IAPObserver <NSObject>
-- (void)iap:(IAP *)iap didUpdateTransaction:(SKPaymentTransaction *)transaction;
+@interface IAPProductInfo : NSObject
+@property (strong, nonatomic) NSString *productId;
+@property (strong, nonatomic) NSString *displayPrice;
 @end
 
-@interface IAP : NSObject
-+ (IAP *)sharedInstance;
+typedef NS_ENUM(NSInteger, IAPTransactionState) {
+    IAPTransactionStatePurchasing = SKPaymentTransactionStatePurchasing,
+    IAPTransactionStatePurchased = SKPaymentTransactionStatePurchased,
+    IAPTransactionStateFailed = SKPaymentTransactionStateFailed,
+    IAPTransactionStateRestored = SKPaymentTransactionStateRestored,
+    IAPTransactionStateDeferred = SKPaymentTransactionStateDeferred,
+};
+
+@interface IAPTransaction : NSObject
+@property (strong, nonatomic) NSString *productId;
+@property (nonatomic) IAPTransactionState transactionState;
+@end
+
+@protocol IAPDelegate;
+@protocol IAPObserver <NSObject>
+- (void)iap:(id<IAPDelegate>)iap didUpdateTransaction:(IAPTransaction *)transaction;
+@end
+
+@protocol IAPDelegate <NSObject>
 - (void)initialize;
 - (void)finalize;
 - (void)addObserver:(id<IAPObserver>)observer;
 - (void)removeObserver:(id<IAPObserver>)observer;
 - (void)findIAPProduct:(NSString *)productID found:(void(^)(NSString *productID, int quantity))found notFound:(void(^)(NSString *productID))notFound;
-- (void)requestProductInfo:(NSArray *)productIdentifiers callback:(void (^)(SKProductsResponse *response))callback;
+- (void)requestProductInfo:(NSArray *)productIdentifiers callback:(void (^)(NSArray *productInfos))callback;
 - (void)purchase:(NSString *)productID;
 - (void)restorePurchase:(NSString *)productID;
+@end
+
+@interface IAP : NSObject
++ (id<IAPDelegate>)sharedInstance;
 @end

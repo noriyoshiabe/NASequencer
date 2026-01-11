@@ -82,16 +82,11 @@
     else {
         _priceLabel.stringValue = NSLocalizedString(@"Purchase_PriceLoading", @"Loading…");
         
-        [[IAP sharedInstance] requestProductInfo:@[kIAPProductFullVersion] callback:^(SKProductsResponse *response) {
-            for (SKProduct *product in response.products) {
-                if ([product.productIdentifier isEqualToString:kIAPProductFullVersion]) {
-                    NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
-                    formatter.locale = product.priceLocale;
-                    formatter.numberStyle = NSNumberFormatterCurrencyISOCodeStyle;
-                    formatter.formatterBehavior = NSNumberFormatterBehavior10_4;
-                    
+        [[IAP sharedInstance] requestProductInfo:@[kIAPProductFullVersion] callback:^(NSArray *productInfos) {
+            for (IAPProductInfo *product in productInfos) {
+                if ([product.productId isEqualToString:kIAPProductFullVersion]) {
                     NSString *format = NSLocalizedString(@"Purchase_PriceFormat", @"%@, for all your Macs");
-                    _priceLabel.stringValue = [NSString stringWithFormat:format, [formatter stringFromNumber:product.price]];
+                    _priceLabel.stringValue = [NSString stringWithFormat:format, product.displayPrice];
                 }
             }
             
@@ -137,21 +132,21 @@
 
 #pragma mark IAPObserver
 
-- (void)iap:(IAP *)iap didUpdateTransaction:(SKPaymentTransaction *)transaction
+- (void)iap:(id<IAPDelegate>)iap didUpdateTransaction:(IAPTransaction *)transaction
 {
     switch (transaction.transactionState) {
-        case SKPaymentTransactionStatePurchasing:
+        case IAPTransactionStatePurchasing:
             _purchaseButton.enabled = NO;
             _restorePurchaseButton.enabled = NO;
             break;
-        case SKPaymentTransactionStateDeferred:
+        case IAPTransactionStateDeferred:
             break;
-        case SKPaymentTransactionStateFailed:
+        case IAPTransactionStateFailed:
             _purchaseButton.enabled = YES;
             _restorePurchaseButton.enabled = YES;
             break;
-        case SKPaymentTransactionStatePurchased:
-        case SKPaymentTransactionStateRestored:
+        case IAPTransactionStatePurchased:
+        case IAPTransactionStateRestored:
             [[IAP sharedInstance] findIAPProduct:kIAPProductFullVersion found:^(NSString *productID, int quantity) {
                 [self showThanksView];
             } notFound:^(NSString *productID) {

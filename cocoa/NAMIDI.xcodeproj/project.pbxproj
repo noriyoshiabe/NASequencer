@@ -123,6 +123,7 @@
 		0284DC981CBEA382007CED1C /* bebop25.nas in Resources */ = {isa = PBXBuildFile; fileRef = 0284DC971CBEA382007CED1C /* bebop25.nas */; };
 		028589551C71320A00A53B8C /* EditorStatusViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 028589531C71320A00A53B8C /* EditorStatusViewController.m */; };
 		028589561C71320A00A53B8C /* EditorStatusViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 028589541C71320A00A53B8C /* EditorStatusViewController.xib */; };
+		028B57E52F13AAF0003A6421 /* IAPDelegate_OS15.m in Sources */ = {isa = PBXBuildFile; fileRef = 028B57E42F13AAF0003A6421 /* IAPDelegate_OS15.m */; };
 		0290B8C91CC4D637009524A3 /* PresetSelectionWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0290B8C71CC4D637009524A3 /* PresetSelectionWindowController.m */; };
 		0290B8CA1CC4D637009524A3 /* PresetSelectionWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0290B8C81CC4D637009524A3 /* PresetSelectionWindowController.xib */; };
 		029357D41CD3BA9C004B87B2 /* NSString+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 029357D31CD3BA9C004B87B2 /* NSString+Support.m */; };
@@ -369,6 +370,8 @@
 		028589521C71320A00A53B8C /* EditorStatusViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorStatusViewController.h; sourceTree = "<group>"; };
 		028589531C71320A00A53B8C /* EditorStatusViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditorStatusViewController.m; sourceTree = "<group>"; };
 		028589541C71320A00A53B8C /* EditorStatusViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EditorStatusViewController.xib; sourceTree = "<group>"; };
+		028B57E32F13AAF0003A6421 /* IAPDelegate_OS15.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IAPDelegate_OS15.h; sourceTree = "<group>"; };
+		028B57E42F13AAF0003A6421 /* IAPDelegate_OS15.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IAPDelegate_OS15.m; sourceTree = "<group>"; };
 		0290B8C61CC4D637009524A3 /* PresetSelectionWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PresetSelectionWindowController.h; sourceTree = "<group>"; };
 		0290B8C71CC4D637009524A3 /* PresetSelectionWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PresetSelectionWindowController.m; sourceTree = "<group>"; };
 		0290B8C81CC4D637009524A3 /* PresetSelectionWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PresetSelectionWindowController.xib; sourceTree = "<group>"; };
@@ -862,6 +865,8 @@
 				02F3505F1CD1AECC00DB8499 /* ReceiptVerifierHardCodedString.h */,
 				02018D9C1CD1CD290025C851 /* IAP.h */,
 				02018D9D1CD1CD290025C851 /* IAP.m */,
+				028B57E32F13AAF0003A6421 /* IAPDelegate_OS15.h */,
+				028B57E42F13AAF0003A6421 /* IAPDelegate_OS15.m */,
 			);
 			path = IAP;
 			sourceTree = "<group>";
@@ -1077,6 +1082,7 @@
 				0232CB101C88C88700542D34 /* NSWindow+Support.m in Sources */,
 				0201F7D71C688BB100A201F6 /* Document.m in Sources */,
 				026D42DA1C7ABC08000267AD /* SelectionViewController.m in Sources */,
+				028B57E52F13AAF0003A6421 /* IAPDelegate_OS15.m in Sources */,
 				0214837A1C86583E00D653AE /* NSPathUtilities+Support.m in Sources */,
 				02F350601CD1AECC00DB8499 /* AppStoreReceipt.m in Sources */,
 				029357D41CD3BA9C004B87B2 /* NSString+Support.m in Sources */,

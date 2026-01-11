@@ -334,7 +334,7 @@
 
 #pragma mark IAPObserver
 
-- (void)iap:(IAP *)iap didUpdateTransaction:(SKPaymentTransaction *)transaction
+- (void)iap:(id<IAPDelegate>)iap didUpdateTransaction:(IAPTransaction *)transaction
 {
     [self updateToolBarItemExport];
 }
