@@ -273,6 +273,7 @@ static void PlayerProcessMessage(Player *self, PlayerMessage message, void *data
         }
 
         self->sequence = data;
+        self->index = 0;
 
         {
             int32_t tick =  TimeTableLength(self->sequence->timeTable);

@@ -163,7 +163,8 @@ void NAMidiParse(NAMidi *self, const char *filepath)
             if (GeneralParseErrorFileNotFound == error->code) {
                 shouldRetry = true;
             }
-        } else {
+        }
+        else {
 
             /*
              * Also retry parsing once, empty sequence on reloading.
