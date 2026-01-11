@@ -10,10 +10,6 @@
 #import "ObserverList.h"
 #import "ReceiptVerifier.h"
 
-#ifdef __IAP_MOCK__
-#import "IAPMock.h"
-#endif
-
 @interface ProductRequestInfo : NSObject
 @property (strong, nonatomic) SKProductsRequest *request;
 @property (strong, nonatomic) void (^callback)(SKProductsResponse *response);
@@ -98,11 +94,6 @@ static IAP *_sharedInstance = nil;
 
 - (void)requestProductInfo:(NSArray *)productIdentifiers callback:(void (^)(SKProductsResponse *response))callback
 {
-#ifdef __IAP_MOCK__
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        callback([[FakeProductResponse alloc] init]);
-    });
-#else
     SKProductsRequest *productsRequest = [[SKProductsRequest alloc] initWithProductIdentifiers:[NSSet setWithArray:productIdentifiers]];
     
     ProductRequestInfo *requestInfo = [[ProductRequestInfo alloc] init];
@@ -113,7 +104,6 @@ static IAP *_sharedInstance = nil;
     
     productsRequest.delegate = self;
     [productsRequest start];
-#endif // __IAP_MOCK__
 }
 
 - (void)purchase:(NSString *)productID

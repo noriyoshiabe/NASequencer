@@ -10,10 +10,6 @@
 #import "IAP.h"
 #import "ColorButton.h"
 
-#ifdef __IAP_MOCK__
-#import "IAPMock.h"
-#endif
-
 @interface PurchaseViewController () <IAPObserver>
 @property (weak) IBOutlet NSView *additionalViewContainer;
 @property (weak) IBOutlet NSView *purchaseView;
@@ -115,34 +111,12 @@
 
 - (IBAction)purchasePressed:(id)sender
 {
-#ifdef __IAP_MOCK__
-    [[IAP sharedInstance] paymentQueue:[SKPaymentQueue defaultQueue] updatedTransactions:@[[[FakePaymentTransaction alloc] initWithState:SKPaymentTransactionStatePurchasing error:nil]]];
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"FakePurchased"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    
-        [[IAP sharedInstance] paymentQueue:[SKPaymentQueue defaultQueue] updatedTransactions:@[[[FakePaymentTransaction alloc] initWithState:SKPaymentTransactionStatePurchased error:[NSError errorWithDomain:SKErrorDomain code:SKErrorPaymentInvalid userInfo:nil]]]];
-    });
-#else
     [[IAP sharedInstance] purchase:kIAPProductFullVersion];
-#endif // __IAP_MOCK__
 }
 
 - (IBAction)restorePurchasePressed:(id)sender
 {
-#ifdef __IAP_MOCK__
-    [[IAP sharedInstance] paymentQueue:[SKPaymentQueue defaultQueue] updatedTransactions:@[[[FakePaymentTransaction alloc] initWithState:SKPaymentTransactionStatePurchasing error:nil]]];
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"FakePurchased"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-        
-        [[IAP sharedInstance] paymentQueue:[SKPaymentQueue defaultQueue] updatedTransactions:@[[[FakePaymentTransaction alloc] initWithState:SKPaymentTransactionStateRestored error:[NSError errorWithDomain:SKErrorDomain code:SKErrorPaymentInvalid userInfo:nil]]]];
-    });
-#else
     [[IAP sharedInstance] restorePurchase:kIAPProductFullVersion];
-#endif // __IAP_MOCK__
 }
 
 - (IBAction)tweetPressed:(id)sender
