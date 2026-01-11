@@ -45,6 +45,11 @@ int main(int argc, const char * argv[])
 __attribute__((constructor))
 static void verifyReceipt()
 {
+    if (@available(macOS 15.0, *)) {
+        // exit(173) Receipt Fetching Deprecated on Sequoia
+        return;
+    }
+    
     NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
     NSURL *appleCert = [[NSBundle mainBundle] URLForResource:@"AppleIncRootCertificate" withExtension:@"cer"];
     
