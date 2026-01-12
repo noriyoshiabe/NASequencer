@@ -50,7 +50,9 @@ NS_ASSUME_NONNULL_BEGIN
     [IAPDelegate_OS26_Swift currentEntitlementFor:productID completionHandler:^(IAPEntitlement * _Nullable entitlement) {
         [NSThread performBlockOnMainThread:^{
             if (entitlement) {
-                found(entitlement.productId, entitlement.quantity);
+                if (found != nil) {
+                    found(entitlement.productId, entitlement.quantity);
+                }
             } else {
                 if (notFound != nil) {
                     notFound(productID);
