@@ -175,20 +175,3 @@
 }
 
 @end
-
-#pragma mark For Error
-
-@interface SynthesizerErrorBackgroundView : NSView
-@end
-
-@implementation SynthesizerErrorBackgroundView
-
-- (void)drawRect:(NSRect)dirtyRect
-{
-    [super drawRect:dirtyRect];
-    
-    [[Color statusBackground] set];
-    [[NSBezierPath bezierPathWithRoundedRect:self.bounds xRadius:4.0 yRadius:4.0] fill];
-}
-
-@end

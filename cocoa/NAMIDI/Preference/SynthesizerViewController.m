@@ -12,8 +12,9 @@
 #import "ApplicationController.h"
 #import "IAP.h"
 
-#define kAddSynthesizerHeight 35.0
-#define kExplanationHeight 33.30
+#define kViewWidth 511.0
+#define kAddSynthesizerHeight 40.0
+#define kExplanationHeight 35.0
 
 @import QuartzCore.CAMediaTimingFunction;
 
@@ -61,7 +62,7 @@
     CGFloat height = _initialViewRect.size.height - kAddSynthesizerHeight - kExplanationHeight
                    + (_manager.descriptions.count - 1) * _initilalTableViewHeight
                    + _addSynthesizerHeightConstraint.constant + _explanationHeightConstraint.constant;
-    return CGRectMake(0, 0, self.view.frame.size.width, height);
+    return CGRectMake(0, 0, kViewWidth, height);
 }
 
 - (CGFloat)desiredTableViewHeight
@@ -109,8 +110,10 @@
 {
     [[IAP sharedInstance] findIAPProduct:kIAPProductFullVersion found:^(NSString *productID, int quantity) {
         _addSynthesizerHeightConstraint.constant = kAddSynthesizerHeight;
+        [self resizeWindowFrame];
     } notFound:^(NSString *productID) {
         _addSynthesizerHeightConstraint.constant = 0.0;
+        [self resizeWindowFrame];
     }];
     
     _explanationHeightConstraint.constant = 1 < _manager.descriptions.count ? kExplanationHeight : 0.0;
@@ -154,6 +157,19 @@
     } completionHandler:^{
         [_tableView reloadData];
     }];
+}
+
+- (void)resizeWindowFrame
+{
+    CGRect newWindowFrame = [self.view.window frameRectForContentRect:self.desiredViewFrame];
+    newWindowFrame.origin.x = NSMinX(self.view.window.frame);
+    newWindowFrame.origin.y = NSMinY(self.view.window.frame) + (NSHeight(self.view.window.frame) - NSHeight(newWindowFrame));
+    
+    [NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
+        context.duration = 0.25;
+        context.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+        [self.view.window.animator setFrame:newWindowFrame display:YES];
+    } completionHandler:nil];
 }
 
 - (void)changeMidiSourceOrder:(NSUInteger)fromIndex toIndex:(NSUInteger)toIndex
@@ -320,7 +336,7 @@
 - (void)drawDraggingDestinationFeedbackInRect:(NSRect)dirtyRect
 {
     [[NSColor selectedControlColor] set];
-    [[NSBezierPath bezierPathWithRoundedRect:self.bounds xRadius:4.0 yRadius:4.0] fill];
+    [[NSBezierPath bezierPathWithRoundedRect:self.bounds xRadius:0 yRadius:0] fill];
 }
 
 @end
