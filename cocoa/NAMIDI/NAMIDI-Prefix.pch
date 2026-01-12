@@ -25,7 +25,6 @@
 #import "NSTextField+Support.h"
 #import "NSBundle+Support.h"
 #import "NSEvent+Support.h"
-#import "NSString+Support.h"
 #import "NSNull+Support.h"
 #import "NSColor+DarkMode.h"
 

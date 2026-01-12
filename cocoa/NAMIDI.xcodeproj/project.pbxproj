@@ -128,7 +128,6 @@
 		028B57ED2F13D842003A6421 /* IAPDelegate_OS26.m in Sources */ = {isa = PBXBuildFile; fileRef = 028B57EC2F13D842003A6421 /* IAPDelegate_OS26.m */; };
 		0290B8C91CC4D637009524A3 /* PresetSelectionWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0290B8C71CC4D637009524A3 /* PresetSelectionWindowController.m */; };
 		0290B8CA1CC4D637009524A3 /* PresetSelectionWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0290B8C81CC4D637009524A3 /* PresetSelectionWindowController.xib */; };
-		029357D41CD3BA9C004B87B2 /* NSString+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 029357D31CD3BA9C004B87B2 /* NSString+Support.m */; };
 		029357D71CD3CE0F004B87B2 /* NSNull+Support.m in Sources */ = {isa = PBXBuildFile; fileRef = 029357D61CD3CE0F004B87B2 /* NSNull+Support.m */; };
 		029BADC81CBFFE52008EC950 /* jaunty_gumption.mml in Resources */ = {isa = PBXBuildFile; fileRef = 029BADC71CBFFE52008EC950 /* jaunty_gumption.mml */; };
 		02A673FA1C6B3A5C00914C8B /* ABCIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 02A673E91C6B3A5C00914C8B /* ABCIcon.iconset */; };
@@ -381,8 +380,6 @@
 		0290B8C61CC4D637009524A3 /* PresetSelectionWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PresetSelectionWindowController.h; sourceTree = "<group>"; };
 		0290B8C71CC4D637009524A3 /* PresetSelectionWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PresetSelectionWindowController.m; sourceTree = "<group>"; };
 		0290B8C81CC4D637009524A3 /* PresetSelectionWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PresetSelectionWindowController.xib; sourceTree = "<group>"; };
-		029357D21CD3BA9C004B87B2 /* NSString+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Support.h"; sourceTree = "<group>"; };
-		029357D31CD3BA9C004B87B2 /* NSString+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Support.m"; sourceTree = "<group>"; };
 		029357D51CD3CE0F004B87B2 /* NSNull+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSNull+Support.h"; sourceTree = "<group>"; };
 		029357D61CD3CE0F004B87B2 /* NSNull+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSNull+Support.m"; sourceTree = "<group>"; };
 		029BADC71CBFFE52008EC950 /* jaunty_gumption.mml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = jaunty_gumption.mml; sourceTree = "<group>"; };
@@ -604,8 +601,6 @@
 				02B160801C9685FF009A2823 /* NSBundle+Support.m */,
 				020600EF1CC5FC840011660E /* NSEvent+Support.h */,
 				020600F01CC5FC840011660E /* NSEvent+Support.m */,
-				029357D21CD3BA9C004B87B2 /* NSString+Support.h */,
-				029357D31CD3BA9C004B87B2 /* NSString+Support.m */,
 				029357D51CD3CE0F004B87B2 /* NSNull+Support.h */,
 				029357D61CD3CE0F004B87B2 /* NSNull+Support.m */,
 				02BD8AAB24029F5900F46752 /* NSColor+DarkMode.h */,
@@ -1097,7 +1092,6 @@
 				028B57E52F13AAF0003A6421 /* IAPDelegate_OS15.m in Sources */,
 				0214837A1C86583E00D653AE /* NSPathUtilities+Support.m in Sources */,
 				02F350601CD1AECC00DB8499 /* AppStoreReceipt.m in Sources */,
-				029357D41CD3BA9C004B87B2 /* NSString+Support.m in Sources */,
 				025FAF9F1C8065C300E4C3B3 /* MixerRepresentation.m in Sources */,
 				0232CB191C89058200542D34 /* WelcomeRecentRowView.m in Sources */,
 				0214836A1C84B2E700D653AE /* ExportWindowController.m in Sources */,
