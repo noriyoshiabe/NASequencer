@@ -23,6 +23,7 @@
     CGRect _initialViewRect;
     CGFloat _initilalTableViewHeight;
     NSUInteger _draggedIndex;
+    NSMutableDictionary *_cellViewCache;
 }
 @property (weak) IBOutlet NSTableView *tableView;
 @property (weak) IBOutlet NSLayoutConstraint *tableViewHeightConstraint;
@@ -31,6 +32,15 @@
 @end
 
 @implementation SynthesizerViewController
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        _cellViewCache = [[NSMutableDictionary alloc] init];
+    }
+    return self;
+}
 
 - (NSString *)identifier
 {
@@ -206,9 +216,17 @@
 
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
 {
+    MidiSourceDescriptionRepresentation *description = _manager.descriptions[row];
+    if (_cellViewCache[description.filepath]) {
+        return _cellViewCache[description.filepath];
+    }
+    
     SynthesizerCellView *view = [tableView makeViewWithIdentifier:@"SynthesizerCell" owner:nil];
     view.delegate = self;
-    view.description = _manager.descriptions[row];
+    view.description = description;
+    
+    _cellViewCache[description.filepath] = view;
+    
     return view;
 }
 
@@ -310,6 +328,8 @@
 {
     [self resizeWindowFrameAndReload];
     [_manager saveMidiSourcePreference];
+    
+    [_cellViewCache removeObjectForKey:description.filepath];
 }
 
 - (void)midiSourceManager:(MidiSourceManagerRepresentation *)manager onReorderMidiSourceDescriptions:(NSArray<MidiSourceDescriptionRepresentation *> *)descriptions availableDescriptions:(NSArray<MidiSourceDescriptionRepresentation *> *)availableDescriptions

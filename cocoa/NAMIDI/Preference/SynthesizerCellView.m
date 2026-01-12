@@ -83,7 +83,7 @@
 
 - (int)gain
 {
-    return _description.gain;
+    return _description ? _description.gain : -100;
 }
 
 - (void)setGain:(int)gain
