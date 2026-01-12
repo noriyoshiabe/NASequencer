@@ -407,11 +407,8 @@ ApplicationController *AppController;
 
 - (void)openHelpPage:(NSString *)pageName
 {
-    NSString *path = [NSString stringWithFormat:@"NASequencer.help/Contents/Resources/en.lproj/%@", pageName];
-    NSURL *url = [[NSBundle mainBundle] URLForResource:path withExtension:@"html"];
-    if (url) {
-        AHGotoPage(NULL, (__bridge CFStringRef)url.absoluteString, NULL);
-    }
+    NSString *path = [NSString stringWithFormat:@"%@.html", pageName];
+    AHGotoPage((__bridge CFStringRef)@"NASequencer Help", (__bridge CFStringRef)path, NULL);
 }
 
 #pragma mark New Version Annoncement
