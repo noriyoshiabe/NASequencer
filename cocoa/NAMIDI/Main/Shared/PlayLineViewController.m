@@ -38,6 +38,7 @@
     _playLineView.player = _namidi.player;
     
     [_scaleAssistant addObserver:self forKeyPath:@"scale" options:0 context:NULL];
+    [_containerView addObserver:self forKeyPath:@"frame" options:0 context:NULL];
 }
 
 - (void)viewDidAppear
@@ -49,11 +50,12 @@
 - (void)dealloc
 {
     [_scaleAssistant removeObserver:self forKeyPath:@"scale"];
+    [_containerView removeObserver:self forKeyPath:@"frame"];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context
 {
-    if (object == _scaleAssistant) {
+    if (object == _scaleAssistant || object == _containerView) {
         [_playLineView layout];
     }
 }
