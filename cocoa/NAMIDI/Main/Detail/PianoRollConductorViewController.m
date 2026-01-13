@@ -127,7 +127,7 @@
     [super drawRect:dirtyRect];
     
     if (_sequence) {
-        CGContextRef ctx = [NSGraphicsContext currentContext].graphicsPort;
+        CGContextRef ctx = [NSGraphicsContext currentContext].CGContext;
         [self drawGrid:dirtyRect context:ctx];
         [self drawEvents:dirtyRect context:ctx];
     }

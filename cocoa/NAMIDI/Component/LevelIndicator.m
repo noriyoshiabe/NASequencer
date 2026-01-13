@@ -33,7 +33,7 @@
 {
     [super drawRect:dirtyRect];
     
-    CGContextRef ctx = [NSGraphicsContext currentContext].graphicsPort;
+    CGContextRef ctx = [NSGraphicsContext currentContext].CGContext;
     CGContextSetLineWidth(ctx, 2.0);
     
     int level = (MAX(-500, _intValue) + 500) / 10;

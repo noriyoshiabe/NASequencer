@@ -271,7 +271,7 @@
             if (!event.isARepeat && !(event.modifierFlags & NSEventModifierFlagCommand)) {
                 PresetKeyboardButton *button = _keys[@(key)];
                 if (button.enabled) {
-                    button.state = NSOnState;
+                    button.state = NSControlStateValueOn;
                     [button sendNoteOn:key];
                 }
             }
@@ -284,7 +284,7 @@
 {
     unichar key = [event.charactersIgnoringModifiers characterAtIndex:0];
     if (_keys[@(key)]) {
-        _keys[@(key)].state = NSOffState;
+        _keys[@(key)].state = NSControlStateValueOff;
         [_keys[@(key)] sendNoteOff];
         return YES;
     }
@@ -440,7 +440,7 @@
 {
     [self sendNoteOff];
     _sentNoteNo = -1;
-    self.state = NSOffState;
+    self.state = NSControlStateValueOff;
 }
 
 - (void)mouseDown:(NSEvent *)theEvent
@@ -449,7 +449,7 @@
         return;
     }
     
-    self.state = NSOnState;
+    self.state = NSControlStateValueOn;
     [self sendNoteOn:self.key];
 }
 
@@ -459,7 +459,7 @@
         return;
     }
     
-    self.state = NSOffState;
+    self.state = NSControlStateValueOff;
     [self sendNoteOff];
 }
 
@@ -469,14 +469,14 @@
         return;
     }
     
-    self.state = NSOffState;
+    self.state = NSControlStateValueOff;
     [self sendNoteOff];
 }
 
 - (void)setEnabled:(BOOL)enabled
 {
-    if (!enabled && NSOnState == self.state) {
-        self.state = NSOffState;
+    if (!enabled && NSControlStateValueOn == self.state) {
+        self.state = NSControlStateValueOff;
         [self sendNoteOff];
     }
     [super setEnabled:enabled];

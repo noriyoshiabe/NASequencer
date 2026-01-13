@@ -181,7 +181,7 @@
         return;
     }
     
-    self.state = NSOnState;
+    self.state = NSControlStateValueOn;
 }
 
 - (void)mouseUp:(NSEvent *)theEvent
@@ -190,7 +190,7 @@
         return;
     }
     
-    self.state = NSOffState;
+    self.state = NSControlStateValueOff;
     
     [self sendAction:self.action to:self.target];
 }
@@ -201,7 +201,7 @@
         return;
     }
     
-    self.state = NSOffState;
+    self.state = NSControlStateValueOff;
 }
 
 @end

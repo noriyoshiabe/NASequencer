@@ -39,7 +39,7 @@
 - (void)drawRect:(NSRect)dirtyRect
 {
     [super drawRect:dirtyRect];
-    CGContextRef ctx = [NSGraphicsContext currentContext].graphicsPort;
+    CGContextRef ctx = [NSGraphicsContext currentContext].CGContext;
     
     [self drawLine:dirtyRect context:ctx];
     [self drawText:dirtyRect context:ctx];

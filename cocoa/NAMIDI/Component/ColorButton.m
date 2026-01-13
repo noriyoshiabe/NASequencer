@@ -31,9 +31,9 @@
 - (void)drawRect:(NSRect)dirtyRect
 {
     NSColor *borderColor = !self.enabled ? _disableBorderColor :
-    self.state == NSOnState ? _activeBorderColor : _inactiveBorderColor;
-    NSColor *backgroundColor = self.state == NSOnState ? _activeBackgroundColor : _inactiveBackgroundColor;
-    NSColor *textColor = !self.enabled ? _disableTextColor : self.state == NSOnState ? _activeTextColor : _inactiveTextColor;
+    self.state == NSControlStateValueOn ? _activeBorderColor : _inactiveBorderColor;
+    NSColor *backgroundColor = self.state == NSControlStateValueOn ? _activeBackgroundColor : _inactiveBackgroundColor;
+    NSColor *textColor = !self.enabled ? _disableTextColor : self.state == NSControlStateValueOn ? _activeTextColor : _inactiveTextColor;
     
     [NSBezierPath setDefaultLineWidth:_borderWidth];
     [borderColor setFill];
@@ -45,7 +45,7 @@
     [background fill];
     
     if (textColor) {
-        NSFont *font = _activeFontWeight && self.enabled && self.state == NSOnState ? [NSFont systemFontOfSize:self.font.pointSize weight:_activeFontWeight] : self.font;
+        NSFont *font = _activeFontWeight && self.enabled && self.state == NSControlStateValueOn ? [NSFont systemFontOfSize:self.font.pointSize weight:_activeFontWeight] : self.font;
         NSDictionary *textAttrs = @{NSFontAttributeName:font, NSForegroundColorAttributeName: textColor};
         NSString *string = self.title;
         CGSize size = [string sizeWithAttributes:textAttrs];

@@ -90,11 +90,11 @@
     for (int i = 0; i < _buttons.count; ++i) {
         if ([_trackSelection isAvailable:i]) {
             _buttons[i].enabled = YES;
-            _buttons[i].state = [_trackSelection isTrackSelected:i] ? NSOnState : NSOffState;
+            _buttons[i].state = [_trackSelection isTrackSelected:i] ? NSControlStateValueOn : NSControlStateValueOff;
         }
         else {
             _buttons[i].enabled = NO;
-            _buttons[i].state = NSOffState;
+            _buttons[i].state = NSControlStateValueOff;
         }
     }
 }
@@ -103,7 +103,7 @@
 {
     int trackNo = (int)sender.tag;
     
-    if (NSOnState == sender.state) {
+    if (NSControlStateValueOn == sender.state) {
         [_trackSelection select:trackNo];
     }
     else {
@@ -113,12 +113,12 @@
 
 - (BOOL)listOpened
 {
-    return NSOnState == _listOpener.state;
+    return NSControlStateValueOn == _listOpener.state;
 }
 
 - (IBAction)toggleListOpened:(id)sender
 {
-    _listOpener.image = [NSImage imageNamed:NSOnState == _listOpener.state ? @"list_opened" : @"list_closed"];
+    _listOpener.image = [NSImage imageNamed:NSControlStateValueOn == _listOpener.state ? @"list_opened" : @"list_closed"];
     [_delegate selectionViewControllerDidToggleListOpened:self];
 }
 
@@ -138,7 +138,7 @@
 
 - (IBAction)showEventList:(id)sender
 {
-    _listOpener.state = NSOnState == _listOpener.state ? NSOffState : NSOnState;
+    _listOpener.state = NSControlStateValueOn == _listOpener.state ? NSControlStateValueOff : NSControlStateValueOn;
     [self toggleListOpened:self];
 }
 

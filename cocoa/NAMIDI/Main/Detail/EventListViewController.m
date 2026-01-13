@@ -61,8 +61,8 @@
     _controlButton.inactiveTextColor = [Color gray];
     _controlButton.inactiveBackgroundColor = [Color darkGray];
     
-    _noteButton.state = NSOnState;
-    _controlButton.state = NSOnState;
+    _noteButton.state = NSControlStateValueOn;
+    _controlButton.state = NSControlStateValueOn;
     
     _tableView.dataSource = self;
     _tableView.delegate = self;
@@ -97,12 +97,12 @@
     for (MidiEventRepresentation *event in _namidi.sequence.events) {
         if ([_trackSelection isTrackSelected:event.channel]) {
             if (MidiEventTypeNote == event.type) {
-                if (NSOnState == _noteButton.state) {
+                if (NSControlStateValueOn == _noteButton.state) {
                     [_events addObject:event];
                 }
             }
             else {
-                if (NSOnState == _controlButton.state) {
+                if (NSControlStateValueOn == _controlButton.state) {
                     [_events addObject:event];
                 }
             }
@@ -143,13 +143,13 @@
 
 - (IBAction)filterNoteEvent:(id)sender
 {
-    _noteButton.state = NSOnState == _noteButton.state ? NSOffState : NSOnState;
+    _noteButton.state = NSControlStateValueOn == _noteButton.state ? NSControlStateValueOff : NSControlStateValueOn;
     [self buildEvents];
 }
 
 - (IBAction)filterControlEvent:(id)sender
 {
-    _controlButton.state = NSOnState == _controlButton.state ? NSOffState : NSOnState;
+    _controlButton.state = NSControlStateValueOn == _controlButton.state ? NSControlStateValueOff : NSControlStateValueOn;
     [self buildEvents];
 }
 
@@ -369,7 +369,7 @@
 {
     [super drawRect:dirtyRect];
     
-    CGContextRef ctx = [NSGraphicsContext currentContext].graphicsPort;
+    CGContextRef ctx = [NSGraphicsContext currentContext].CGContext;
     CGContextSaveGState(ctx);
     
     CGContextSetLineWidth(ctx, 0.5);

@@ -234,7 +234,7 @@ HIT:
 {
     [super drawRect:dirtyRect];
     
-    CGContextRef ctx = [NSGraphicsContext currentContext].graphicsPort;
+    CGContextRef ctx = [NSGraphicsContext currentContext].CGContext;
     [self drawKeyboard:dirtyRect context:ctx];
 }
 

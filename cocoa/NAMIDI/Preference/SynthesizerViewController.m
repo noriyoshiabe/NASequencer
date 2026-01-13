@@ -84,7 +84,7 @@
 {
     [super viewDidLoad];
     
-    [_tableView registerForDraggedTypes:@[NSStringPboardType]];
+    [_tableView registerForDraggedTypes:@[NSPasteboardTypeString]];
     _tableView.selectionHighlightStyle = NSTableViewSelectionHighlightStyleNone;
     
     _initialViewRect = self.view.frame;

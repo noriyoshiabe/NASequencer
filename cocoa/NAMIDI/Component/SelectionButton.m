@@ -58,10 +58,10 @@
 - (void)drawRect:(NSRect)dirtyRect
 {
     NSColor *borderColor = !self.enabled ? _disableBorderColor :
-                            self.state == NSOnState ? _activeBorderColor : _inactiveBorderColor;
+    self.state == NSControlStateValueOn ? _activeBorderColor : _inactiveBorderColor;
     
-    NSColor *backgroundColor = self.state == NSOnState ? _activeBackgroundColor : _inactiveBackgroundColor;
-    NSDictionary *textAttrs = self.state == NSOnState ? _activeTextAttrs : _inactiveTextAttrs;
+    NSColor *backgroundColor = self.state == NSControlStateValueOn ? _activeBackgroundColor : _inactiveBackgroundColor;
+    NSDictionary *textAttrs = self.state == NSControlStateValueOn ? _activeTextAttrs : _inactiveTextAttrs;
     
     [borderColor setFill];
     NSBezierPath *border = [NSBezierPath bezierPathWithRoundedRect:self.bounds xRadius:5.0 yRadius:5.0];
