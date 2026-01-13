@@ -20,4 +20,5 @@
 + (NSColor *)grid;
 + (NSColor *)gridWeak;
 + (NSColor *)pink;
++ (NSColor *)themeableGray;
 @end

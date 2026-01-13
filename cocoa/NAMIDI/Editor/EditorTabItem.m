@@ -41,11 +41,11 @@
 - (void)setColor
 {
     if (NSColor.isDarkMode) {
-        self.view.layer.backgroundColor = _active ? [Color darkGray].CGColor : [Color ultraDarkGray].CGColor;
+        self.view.layer.backgroundColor = _active ? [Color themeableGray].CGColor : [NSColor blackColor].CGColor;
         self.textField.textColor = _active ? [NSColor whiteColor] : [NSColor grayColor];
     }
     else {
-        self.view.layer.backgroundColor = _active ? [Color darkGray].CGColor : [NSColor lightGrayColor].CGColor;
+        self.view.layer.backgroundColor = _active ? [Color themeableGray].CGColor : [NSColor lightGrayColor].CGColor;
         self.textField.textColor = _active ? [NSColor whiteColor] : [NSColor blackColor];
     }
 }

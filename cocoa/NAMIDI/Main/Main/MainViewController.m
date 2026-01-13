@@ -43,10 +43,10 @@
 {
     [super viewDidLoad];
     
-    _conductorView.layer.backgroundColor = [Color darkGray].CGColor;
-    _mixerView.backgroundColor = [Color darkGray];
-    _measureView.backgroundColor = [Color darkGray];
-    _conductorTrackView.backgroundColor = [Color darkGray];
+    _conductorView.layer.backgroundColor = [Color themeableGray].CGColor;
+    _mixerView.backgroundColor = [Color themeableGray];
+    _measureView.backgroundColor = [Color themeableGray];
+    _conductorTrackView.backgroundColor = [Color themeableGray];
     
     _horizontalLine.layer.backgroundColor = [Color gray].CGColor;
     _verticalLine.layer.backgroundColor = [Color gray].CGColor;

@@ -23,7 +23,7 @@
     [super viewDidLoad];
     
     _underLine.wantsLayer = YES;
-    _underLine.layer.backgroundColor = [Color darkGray].CGColor;
+    _underLine.layer.backgroundColor = [Color themeableGray].CGColor;
     
     // This registering is for reduce memory leak
     [_collectionView registerNib:[[NSNib alloc] initWithNibNamed:@"EditorTabItem" bundle:[NSBundle mainBundle]]  forItemWithIdentifier:@"TabItem"];

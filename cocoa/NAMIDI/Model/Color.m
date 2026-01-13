@@ -25,6 +25,7 @@ static NSColor *StatusBackground;
 static NSColor *Grid;
 static NSColor *GridWeak;
 static NSColor *Pink;
+static NSColor *ThemeableGray;
 
 @implementation Color
 
@@ -47,6 +48,8 @@ static NSColor *Pink;
     GridWeak = RGBA(240.0, 240.0, 250.0, 255.0);
     
     Pink = RGBA(255.0, 66.0, 97.0, 255.0);
+    
+    ThemeableGray = RGBA(32, 32, 32, 212.0);
 }
 
 + (NSColor *)ultraDarkGray
@@ -102,6 +105,11 @@ static NSColor *Pink;
 + (NSColor *)pink
 {
     return Pink;
+}
+
++ (NSColor *)themeableGray
+{
+    return ThemeableGray;
 }
 
 @end

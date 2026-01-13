@@ -49,7 +49,7 @@
     _disableBorderColor = [Color gray];
     
     _activeBackgroundColor = [NSColor blackColor];
-    _inactiveBackgroundColor = [Color darkGray];
+    _inactiveBackgroundColor = [Color themeableGray];
     
     _activeTextAttrs = @{NSFontAttributeName:[NSFont boldSystemFontOfSize:fontSize], NSForegroundColorAttributeName: [NSColor whiteColor]};
     _inactiveTextAttrs = @{NSFontAttributeName:[NSFont boldSystemFontOfSize:fontSize], NSForegroundColorAttributeName: [Color gray]};

@@ -51,10 +51,9 @@
     [self.window setFrameTopLeftPoint:CGPointZero];
     
     self.window.opaque = NO;
-    self.window.backgroundColor = [NSColor clearColor];
     
     self.window.contentView.wantsLayer = YES;
-    self.window.contentView.layer.backgroundColor = [Color darkGray].CGColor;
+    self.window.contentView.layer.backgroundColor = [Color themeableGray].CGColor;
     self.window.contentView.layer.masksToBounds = YES;
     
     _rightBackgroundView.wantsLayer = YES;
