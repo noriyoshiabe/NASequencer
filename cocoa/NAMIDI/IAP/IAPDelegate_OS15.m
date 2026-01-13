@@ -256,6 +256,11 @@ NS_ASSUME_NONNULL_BEGIN
     _notFound = nil;
 }
 
+- (BOOL)canMakePayments
+{
+    return [SKPaymentQueue canMakePayments];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

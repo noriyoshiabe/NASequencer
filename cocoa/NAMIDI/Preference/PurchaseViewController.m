@@ -76,7 +76,7 @@
     _purchaseButton.enabled = NO;
     _restorePurchaseButton.enabled = NO;
     
-    if (![SKPaymentQueue canMakePayments]) {
+    if (![IAP sharedInstance].canMakePayments) {
         _priceLabel.stringValue = NSLocalizedString(@"Purchase_CannotMakePayments", @"Sorry, you are not allowed to make payments.");
     }
     else {

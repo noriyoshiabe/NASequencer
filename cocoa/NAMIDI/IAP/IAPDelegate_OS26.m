@@ -94,6 +94,11 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 }
 
+- (BOOL)canMakePayments
+{
+    return IAPDelegate_OS26_Swift.canMakePayments;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

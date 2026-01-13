@@ -52,6 +52,7 @@ typedef NS_ENUM(NSInteger, IAPTransactionState) {
 - (void)requestProductInfo:(NSArray *)productIdentifiers callback:(void (^)(NSArray *productInfos))callback;
 - (void)purchase:(NSString *)productID;
 - (void)restorePurchase:(NSString *)productID;
+- (BOOL)canMakePayments;
 @end
 
 @interface IAP : NSObject

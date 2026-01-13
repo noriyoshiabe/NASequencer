@@ -120,6 +120,14 @@ enum ErrorCode: Int {
         }
     }
     
+    @objc static func canMakePayments() -> Bool {
+        if #available(macOS 12.0, *) {
+            return AppStore.canMakePayments
+        } else {
+            return false
+        }
+    }
+    
     private static func makeTransaction(productId: String, transactionState: IAPTransactionState, error: NSError?) -> IAPTransaction {
         let transaction = IAPTransaction()
         transaction.productId = productId
