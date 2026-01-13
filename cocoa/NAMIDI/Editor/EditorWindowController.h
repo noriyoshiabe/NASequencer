@@ -12,4 +12,5 @@
 
 @interface EditorWindowController : NSWindowController
 - (void)addFileRepresentation:(FileRepresentation *)file;
+- (BOOL)closeFilesWithConfirmation;
 @end

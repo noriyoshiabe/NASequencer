@@ -344,6 +344,11 @@
 - (BOOL)windowShouldClose:(id)sender
 {
     [_namidi.player stop];
+    
+    if (_editorWC) {
+        return [_editorWC closeFilesWithConfirmation];
+    }
+    
     return YES;
 }
 

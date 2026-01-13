@@ -145,6 +145,30 @@
     }];
 }
 
+- (BOOL)closeFilesWithConfirmation
+{
+    BOOL shouldCloseWindow = YES;
+    
+    for (FileRepresentation *file in _controllers) {
+        EditorViewController *controller = _controllers[file];
+        if (controller.isDocumentEdited) {
+            [self selectFile:controller.file];
+            [_statusViewControlelr selectFile:controller.file];
+            [self closeFileWithConfirmation:controller.file];
+            shouldCloseWindow = NO;
+            break;
+        }
+    }
+    
+    if (shouldCloseWindow) {
+        for (FileRepresentation *file in [_files copy]) {
+            [self closeFile:file];
+        }
+    }
+    
+    return shouldCloseWindow;
+}
+
 - (void)revertFileWithConfirmation
 {
     FileRepresentation *file = _currentController.file;
