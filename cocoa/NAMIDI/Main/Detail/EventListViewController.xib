@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="15705" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24506" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="15705"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24506"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -25,7 +25,7 @@
                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="Q4m-Fc-hT3">
                     <rect key="frame" x="0.0" y="268" width="450" height="32"/>
                     <subviews>
-                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="aKf-id-GsD">
+                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="aKf-id-GsD">
                             <rect key="frame" x="6" y="5" width="354" height="18"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="18" id="4RZ-dC-Ge3"/>
@@ -39,28 +39,28 @@
                         </textField>
                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="oa0-gw-Ebl" customClass="ColorButton">
                             <rect key="frame" x="337" y="7" width="49" height="18"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="18" id="1qz-jN-ZKj"/>
-                                <constraint firstAttribute="width" constant="49" id="b3j-Dg-3n2"/>
-                            </constraints>
                             <buttonCell key="cell" type="bevel" title="Note" bezelStyle="regularSquare" alignment="center" imageScaling="proportionallyDown" inset="2" id="TGS-4F-gDl">
                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                 <font key="font" metaFont="systemBold" size="10"/>
                             </buttonCell>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="18" id="1qz-jN-ZKj"/>
+                                <constraint firstAttribute="width" constant="49" id="b3j-Dg-3n2"/>
+                            </constraints>
                             <connections>
                                 <action selector="filterButtonPressed:" target="-2" id="A3g-nz-ChF"/>
                             </connections>
                         </button>
                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="I2O-8F-HqY" customClass="ColorButton">
                             <rect key="frame" x="393" y="7" width="49" height="18"/>
-                            <constraints>
-                                <constraint firstAttribute="width" constant="49" id="YgS-5J-2u1"/>
-                                <constraint firstAttribute="height" constant="18" id="uaU-tn-3i7"/>
-                            </constraints>
                             <buttonCell key="cell" type="bevel" title="Control" bezelStyle="regularSquare" alignment="center" imageScaling="proportionallyDown" inset="2" id="ekF-61-cxs">
                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                 <font key="font" metaFont="systemBold" size="10"/>
                             </buttonCell>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="49" id="YgS-5J-2u1"/>
+                                <constraint firstAttribute="height" constant="18" id="uaU-tn-3i7"/>
+                            </constraints>
                             <connections>
                                 <action selector="filterButtonPressed:" target="-2" id="kkU-pD-JLS"/>
                             </connections>
@@ -89,7 +89,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="450" height="268"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="none" columnReordering="NO" columnResizing="NO" multipleSelection="NO" emptySelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="18" viewBased="YES" id="C9e-BD-OYu">
+                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="plain" selectionHighlightStyle="none" columnReordering="NO" columnResizing="NO" multipleSelection="NO" emptySelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="18" viewBased="YES" id="C9e-BD-OYu">
                                 <rect key="frame" x="0.0" y="0.0" width="450" height="260"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="1" alpha="0.0" colorSpace="deviceWhite"/>
@@ -97,7 +97,6 @@
                                 <tableColumns>
                                     <tableColumn width="450" minWidth="400" maxWidth="3000" id="ZQx-16-eje">
                                         <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border">
-                                            <font key="font" metaFont="message" size="11"/>
                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                         </tableHeaderCell>
@@ -108,12 +107,11 @@
                                         </textFieldCell>
                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                         <prototypeCellViews>
-                                            <customView identifier="EventListRow" misplaced="YES" id="KAf-xK-k0Y" customClass="EventListRowView">
+                                            <customView identifier="EventListRow" translatesAutoresizingMaskIntoConstraints="NO" id="KAf-xK-k0Y" customClass="EventListRowView">
                                                 <rect key="frame" x="0.0" y="0.0" width="450" height="18"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <subviews>
-                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="1ed-E2-YKl">
-                                                        <rect key="frame" x="6" y="0.0" width="442" height="14"/>
+                                                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="1ed-E2-YKl">
+                                                        <rect key="frame" x="6" y="0.0" width="442" height="18"/>
                                                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Type              Location    Channel  Data" id="Eif-cf-85s">
                                                             <font key="font" size="12" name="Menlo-Regular"/>
                                                             <color key="textColor" white="0.10000000000000001" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -124,6 +122,7 @@
                                                 <constraints>
                                                     <constraint firstAttribute="trailing" secondItem="1ed-E2-YKl" secondAttribute="trailing" constant="4" id="6Th-O5-HTl"/>
                                                     <constraint firstAttribute="bottom" secondItem="1ed-E2-YKl" secondAttribute="bottom" id="TIT-I2-EJi"/>
+                                                    <constraint firstAttribute="height" constant="18" id="YoB-ZB-tJg"/>
                                                     <constraint firstItem="1ed-E2-YKl" firstAttribute="top" secondItem="KAf-xK-k0Y" secondAttribute="top" id="ii3-Mb-GaV"/>
                                                     <constraint firstItem="1ed-E2-YKl" firstAttribute="leading" secondItem="KAf-xK-k0Y" secondAttribute="leading" constant="8" id="lSr-Jj-zV8"/>
                                                 </constraints>
