@@ -60,6 +60,8 @@
 		024A5B2E1C69FFD90079D22C /* WelcomeWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A5B281C69FFD90079D22C /* WelcomeWindowController.m */; };
 		024A5B2F1C69FFD90079D22C /* WelcomeWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 024A5B291C69FFD90079D22C /* WelcomeWindowController.xib */; };
 		024A5B361C6A01280079D22C /* GettingStartedWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 024A5B341C6A01280079D22C /* GettingStartedWindowController.m */; };
+		024E3C992F1677110011EC57 /* MeasureViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 024E3C982F1677110011EC57 /* MeasureViewController.xib */; };
+		024E3C9A2F1677110011EC57 /* MeasureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 024E3C972F1677110011EC57 /* MeasureViewController.m */; };
 		0254235E1C6F2EB6007D53CC /* EditorWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0254235C1C6F2EB6007D53CC /* EditorWindowController.m */; };
 		0254235F1C6F2EB6007D53CC /* EditorWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0254235D1C6F2EB6007D53CC /* EditorWindowController.xib */; };
 		025423631C6F31DF007D53CC /* EditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 025423611C6F31DF007D53CC /* EditorViewController.m */; };
@@ -104,8 +106,6 @@
 		026D42DD1C7ABC08000267AD /* ConductorViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 026D42BD1C7ABC08000267AD /* ConductorViewController.xib */; };
 		026D42DE1C7ABC08000267AD /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 026D42BF1C7ABC08000267AD /* MainViewController.m */; };
 		026D42DF1C7ABC08000267AD /* MainViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 026D42C01C7ABC08000267AD /* MainViewController.xib */; };
-		026D42E01C7ABC08000267AD /* MeasureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 026D42C21C7ABC08000267AD /* MeasureViewController.m */; };
-		026D42E11C7ABC08000267AD /* MeasureViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 026D42C31C7ABC08000267AD /* MeasureViewController.xib */; };
 		026D42E21C7ABC08000267AD /* MixerChannelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 026D42C51C7ABC08000267AD /* MixerChannelViewController.m */; };
 		026D42E31C7ABC08000267AD /* MixerChannelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 026D42C61C7ABC08000267AD /* MixerChannelViewController.xib */; };
 		026D42E41C7ABC08000267AD /* MixerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 026D42C81C7ABC08000267AD /* MixerViewController.m */; };
@@ -268,6 +268,9 @@
 		024A5B291C69FFD90079D22C /* WelcomeWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = WelcomeWindowController.xib; sourceTree = "<group>"; };
 		024A5B331C6A01280079D22C /* GettingStartedWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GettingStartedWindowController.h; sourceTree = "<group>"; };
 		024A5B341C6A01280079D22C /* GettingStartedWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GettingStartedWindowController.m; sourceTree = "<group>"; };
+		024E3C962F1677110011EC57 /* MeasureViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MeasureViewController.h; sourceTree = "<group>"; };
+		024E3C972F1677110011EC57 /* MeasureViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MeasureViewController.m; sourceTree = "<group>"; };
+		024E3C982F1677110011EC57 /* MeasureViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MeasureViewController.xib; sourceTree = "<group>"; };
 		0254235B1C6F2EB6007D53CC /* EditorWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorWindowController.h; sourceTree = "<group>"; };
 		0254235C1C6F2EB6007D53CC /* EditorWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditorWindowController.m; sourceTree = "<group>"; };
 		0254235D1C6F2EB6007D53CC /* EditorWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EditorWindowController.xib; sourceTree = "<group>"; };
@@ -342,9 +345,6 @@
 		026D42BE1C7ABC08000267AD /* MainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
 		026D42BF1C7ABC08000267AD /* MainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
 		026D42C01C7ABC08000267AD /* MainViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainViewController.xib; sourceTree = "<group>"; };
-		026D42C11C7ABC08000267AD /* MeasureViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MeasureViewController.h; path = ../Main/MeasureViewController.h; sourceTree = "<group>"; };
-		026D42C21C7ABC08000267AD /* MeasureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MeasureViewController.m; path = ../Main/MeasureViewController.m; sourceTree = "<group>"; };
-		026D42C31C7ABC08000267AD /* MeasureViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MeasureViewController.xib; path = ../Main/MeasureViewController.xib; sourceTree = "<group>"; };
 		026D42C41C7ABC08000267AD /* MixerChannelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MixerChannelViewController.h; sourceTree = "<group>"; };
 		026D42C51C7ABC08000267AD /* MixerChannelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MixerChannelViewController.m; sourceTree = "<group>"; };
 		026D42C61C7ABC08000267AD /* MixerChannelViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MixerChannelViewController.xib; sourceTree = "<group>"; };
@@ -390,8 +390,8 @@
 		02A674051C6B3A7600914C8B /* NASequencer.help */ = {isa = PBXFileReference; lastKnownFileType = folder; path = NASequencer.help; sourceTree = "<group>"; };
 		02A973C31C798B6100C21B8E /* NSColor+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSColor+Support.h"; sourceTree = "<group>"; };
 		02A973C41C798B6100C21B8E /* NSColor+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSColor+Support.m"; sourceTree = "<group>"; };
-		02A973CB1C79F02200C21B8E /* SelectionButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SelectionButton.h; path = ../../Component/SelectionButton.h; sourceTree = "<group>"; };
-		02A973CC1C79F02200C21B8E /* SelectionButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SelectionButton.m; path = ../../Component/SelectionButton.m; sourceTree = "<group>"; };
+		02A973CB1C79F02200C21B8E /* SelectionButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SelectionButton.h; sourceTree = "<group>"; };
+		02A973CC1C79F02200C21B8E /* SelectionButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SelectionButton.m; sourceTree = "<group>"; };
 		02AE740C1C96D8C50036B8B1 /* ABHIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = ABHIcon.iconset; sourceTree = "<group>"; };
 		02B1607F1C9685FF009A2823 /* NSBundle+Support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSBundle+Support.h"; sourceTree = "<group>"; };
 		02B160801C9685FF009A2823 /* NSBundle+Support.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSBundle+Support.m"; sourceTree = "<group>"; };
@@ -709,6 +709,8 @@
 				02CD04301C88930700BF6683 /* TextLink.m */,
 				02CD04321C889AC400BF6683 /* ColorButton.h */,
 				02CD04331C889AC400BF6683 /* ColorButton.m */,
+				02A973CB1C79F02200C21B8E /* SelectionButton.h */,
+				02A973CC1C79F02200C21B8E /* SelectionButton.m */,
 				0232CB141C88FA9700542D34 /* AlphaHilightButtonCell.h */,
 				0232CB151C88FA9700542D34 /* AlphaHilightButtonCell.m */,
 			);
@@ -729,8 +731,6 @@
 				026D42B71C7ABC08000267AD /* SelectionViewController.h */,
 				026D42B81C7ABC08000267AD /* SelectionViewController.m */,
 				026D42B91C7ABC08000267AD /* SelectionViewController.xib */,
-				02A973CB1C79F02200C21B8E /* SelectionButton.h */,
-				02A973CC1C79F02200C21B8E /* SelectionButton.m */,
 				0216EDF91C7ADA09009A7B90 /* PianoRollViewController.h */,
 				0216EDFA1C7ADA09009A7B90 /* PianoRollViewController.m */,
 				0216EDFB1C7ADA09009A7B90 /* PianoRollViewController.xib */,
@@ -794,9 +794,9 @@
 				025FA8FA1C7CECBA00E4C3B3 /* TrackSelection.m */,
 				026D42D11C7ABC08000267AD /* MeasureScaleAssistant.h */,
 				026D42D21C7ABC08000267AD /* MeasureScaleAssistant.m */,
-				026D42C11C7ABC08000267AD /* MeasureViewController.h */,
-				026D42C21C7ABC08000267AD /* MeasureViewController.m */,
-				026D42C31C7ABC08000267AD /* MeasureViewController.xib */,
+				024E3C962F1677110011EC57 /* MeasureViewController.h */,
+				024E3C972F1677110011EC57 /* MeasureViewController.m */,
+				024E3C982F1677110011EC57 /* MeasureViewController.xib */,
 				026D42D31C7ABC08000267AD /* PlayLineViewController.h */,
 				026D42D41C7ABC08000267AD /* PlayLineViewController.m */,
 				026D42D51C7ABC08000267AD /* PlayLineViewController.xib */,
@@ -966,7 +966,6 @@
 				026D42E31C7ABC08000267AD /* MixerChannelViewController.xib in Resources */,
 				020CF86D1C6AF4D90025DF84 /* SynthesizerViewController.xib in Resources */,
 				026D42DF1C7ABC08000267AD /* MainViewController.xib in Resources */,
-				026D42E11C7ABC08000267AD /* MeasureViewController.xib in Resources */,
 				02A674061C6B3A7600914C8B /* NASequencer.help in Resources */,
 				026D42DD1C7ABC08000267AD /* ConductorViewController.xib in Resources */,
 				0262BAFE1C8A78AC00BEB76A /* GettingStarted in Resources */,
@@ -978,6 +977,7 @@
 				02CAF6C51C778C2200AD81B2 /* ErrorWindowController.xib in Resources */,
 				025FA9031C7D1BE900E4C3B3 /* PianoRollKeyboardViewController.xib in Resources */,
 				02A673FD1C6B3A5C00914C8B /* MMLIcon.iconset in Resources */,
+				024E3C992F1677110011EC57 /* MeasureViewController.xib in Resources */,
 				025FA9101C7D2CE700E4C3B3 /* PianoRollVelocityViewController.xib in Resources */,
 				024A5B0D1C69FF990079D22C /* MainMenu.xib in Resources */,
 				026D42E91C7ABC08000267AD /* TrackViewController.xib in Resources */,
@@ -1092,6 +1092,7 @@
 				028B57E52F13AAF0003A6421 /* IAPDelegate_OS15.m in Sources */,
 				0214837A1C86583E00D653AE /* NSPathUtilities+Support.m in Sources */,
 				02F350601CD1AECC00DB8499 /* AppStoreReceipt.m in Sources */,
+				024E3C9A2F1677110011EC57 /* MeasureViewController.m in Sources */,
 				025FAF9F1C8065C300E4C3B3 /* MixerRepresentation.m in Sources */,
 				0232CB191C89058200542D34 /* WelcomeRecentRowView.m in Sources */,
 				0214836A1C84B2E700D653AE /* ExportWindowController.m in Sources */,
@@ -1117,7 +1118,6 @@
 				021483771C86454500D653AE /* Preference.m in Sources */,
 				0216EE0F1C7C689F009A7B90 /* PianoRollLayout.m in Sources */,
 				026D42DE1C7ABC08000267AD /* MainViewController.m in Sources */,
-				026D42E01C7ABC08000267AD /* MeasureViewController.m in Sources */,
 				02633EB81C74ED9300B9FF0E /* NSView+Support.m in Sources */,
 				026D42D81C7ABC08000267AD /* EventListViewController.m in Sources */,
 				0201F7D11C688BB100A201F6 /* AppDelegate.m in Sources */,
