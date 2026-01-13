@@ -30,6 +30,9 @@
     
     _collectionView.delegate = self;
     _collectionView.dataSource = self;
+    
+    // Suppress undisireble grow height from 22 in xib to 36 on MacOS 26
+    self.view.frame = CGRectMake(0, 0, self.view.frame.size.width, 22);
 }
 
 - (void)setFiles:(NSMutableArray *)files

@@ -290,7 +290,7 @@
 - (void)drawHashMarksAndLabelsInRect:(NSRect)rect
 {
     [[Color darkGray] setFill];
-    NSRectFill(rect);
+    NSRectFill(NSIntersectionRect(self.frame, rect));
     
     NSTextView *textView = (NSTextView *)self.clientView;
     NSLayoutManager *layoutManager = textView.layoutManager;
