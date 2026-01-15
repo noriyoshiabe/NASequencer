@@ -1,45 +1,3 @@
-function updateTopicsLabel() {
-  var body = document.querySelector('body');
-  var topic = document.querySelector('a#topic');
-  if (topic) {
-    topic.textContent = body.classList.contains('is-menu-open') ? 'Hide topics' : 'Show topics';
-  }
-}
-
-function updateNavState() {
-  var body = document.querySelector('body');
-  if (body.classList.contains('is-menu-open')) {
-    document.querySelector('nav').setAttribute('aria-hidden', false);
-  }
-  else {
-    document.querySelector('nav').setAttribute('aria-hidden', true);
-  }
-}
-
-function toggleMenu(e) {
-  var body = document.querySelector('body');
-  body.classList.toggle('is-menu-open');
-  if (body.classList.contains('is-menu-open')) {
-    sessionStorage.setItem('is-menu-open', true);
-
-    if (510 > document.width) {
-      if ("HelpViewer" in window && "resizeTo" in window.HelpViewer) {
-        window.HelpViewer.resizeTo(510, 0, 0, "easeInEaseOut");
-      }
-    }
-  }
-  else {
-    sessionStorage.removeItem('is-menu-open');
-  }
-
-  updateTopicsLabel();
-  updateNavState();
-
-  if (e && e.preventDefault) {
-    e.preventDefault();
-  }
-}
-
 function openTopic(anchor) {
   var link = document.querySelector('nav a[href="'+anchor+'"]');
 
@@ -90,10 +48,6 @@ document.onreadystatechange = function () {
   switch (document.readyState) {
   case 'interactive':
     var body = document.querySelector('body');
-    var topic = document.querySelector('a#topic');
-    if (topic) {
-      topic.addEventListener('click', toggleMenu);
-    }
 
     var nav = document.querySelector('nav');
     nav.innerHTML = window.__tocHTML;
@@ -113,20 +67,9 @@ document.onreadystatechange = function () {
     }
 
     if ('index.html' != lastpath) {
-      if (!sessionStorage.getItem('session-started')) {
-        toggleMenu();
-      }
       var anchor = unescape(lastpath + location.hash);
       openTopic(anchor);
       selectTopic(anchor);
-    }
-
-    sessionStorage.setItem('session-started', true);
-
-    if (sessionStorage.getItem('is-menu-open')) {
-      body.classList.add('is-menu-open');
-      updateTopicsLabel();
-      updateNavState();
     }
 
     window.addEventListener('popstate', function () {
@@ -160,9 +103,3 @@ document.onreadystatechange = function () {
     break;
   }
 };
-
-if ("HelpViewer" in window && "showTOCButton" in window.HelpViewer) {
-  window.setTimeout(function () {
-    window.HelpViewer.showTOCButton(true, toggleMenu, toggleMenu);
-  }, 250);
-}
