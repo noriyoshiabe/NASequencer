@@ -29,7 +29,7 @@ function renderPage (name, options) {
 
   if ('none' != options.content) {
     var md = fs.readFileSync(__dirname + '/md/'+options.content+'.md', 'utf8');
-    values.content = marked(md, {renderer: options.renderer(marked)});
+    values.content = marked.use({renderer: options.renderer}).parse(md);
   }
   
   ejs.renderFile(template, values, function(err, result) {

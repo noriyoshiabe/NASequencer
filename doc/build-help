@@ -17,6 +17,7 @@ function renderPage (name, options) {
 
   options = options || {};
   options.template = options.template || 'md-content';
+  options.renderer = options.renderer || renderer;
   options.content = options.content || lastPathComponent(name);
 
   var template = __dirname+'/help/pages/'+options.template+'.ejs';
@@ -26,7 +27,7 @@ function renderPage (name, options) {
 
   if ('none' != options.content) {
     var md = fs.readFileSync(__dirname + '/md/'+options.content+'.md', 'utf8');
-    values.content = marked(md, {renderer: renderer(marked), xhtml: true});
+    values.content = marked.use({renderer: options.renderer}).parse(md);
   }
   
   ejs.renderFile(template, values, function(err, result) {
@@ -52,7 +53,7 @@ function main(argv, callback) {
   execSync('cp '+__dirname+'/help/asset/Info.plist '+dstDir);
 
   var md = fs.readFileSync(__dirname + '/md/app-help-index.md', 'utf8');
-  var js = "window.__tocHTML = '"+marked(md, {renderer: renderer(marked), xhtml: true}).split('\n').join(' ')+"';";
+  var js = "window.__tocHTML = '"+marked.use({renderer}).parse(md).split('\n').join(' ')+"';";
   fs.writeFileSync(dstDir+'/Resources/en.lproj/index.js', js);
 
   renderPage('index', {content: 'none', template: 'index'});
