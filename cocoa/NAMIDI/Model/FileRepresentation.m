@@ -7,6 +7,8 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import <UniformTypeIdentifiers/UTType.h>
+
 #import "FileRepresentation.h"
 
 #include <pwd.h>
@@ -35,7 +37,11 @@
 
 - (NSImage *)fileTypeIcon
 {
-    return [[NSWorkspace sharedWorkspace] iconForFileType:_url.lastPathComponent.pathExtension];
+    if (@available(macOS 11.0, *)) {
+        return [[NSWorkspace sharedWorkspace] iconForContentType:[UTType typeWithFilenameExtension:_url.pathExtension]];
+    } else {
+        return [[NSWorkspace sharedWorkspace] iconForFileType:_url.lastPathComponent.pathExtension];
+    }
 }
 
 - (NSString *)filename
