@@ -25,7 +25,6 @@ function renderPage (name, options) {
   var values = JSON.parse(fs.readFileSync(__dirname+'/site/values/'+name+'.json'));
 
   values.site_url = 'production' == env ? 'https://nasequencer.com' : 'http://staging.nasequencer.com';
-  values.ga_tracking_id = 'UA-77464123-' + ('production' == env ? '1' : '2');
 
   if ('none' != options.content) {
     var md = fs.readFileSync(__dirname + '/md/'+options.content+'.md', 'utf8');
@@ -63,12 +62,9 @@ function main(argv, callback) {
   renderPage('help/abc-notation',         {renderer: renderer.help});
   renderPage('help/music-macro-language', {renderer: renderer.help});
 
-  execSync('cp '+__dirname+'/site/asset/*.{png,svg,ico,css,js,json} '+dstDir);
+  execSync('cp '+__dirname+'/site/asset/*.{png,svg,ico,css,json} '+dstDir);
   execSync('cp '+__dirname+'/images/*.png '+dstDir+'/images');
   execSync('cp '+__dirname+'/site/images/*.png '+dstDir+'/images');
-
-  var num = 'production' == env ? 1 : 2;
-  execSync("sed -i '' -E 's/(UA-77464123)-X/\\1-"+num+"/' "+dstDir+"/google-analytics.js")
 
   if ('staging' == env) {
     execSync('echo "User-agent: *\nDisallow: /\n" > '+dstDir+'/robots.txt');

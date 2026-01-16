@@ -3,8 +3,9 @@ Specified Commercial Transactions Law
 
 Sellar
 ------
-Noriyoshi Abe  
-101, 3-38-21, Koenjikita, Suginami, Tokyo, 166-0002, Japan
+Noriyoshi Abe
+
+<small style="font-size: smaller;">\* In accordance with Japan's Specified Commercial Transactions Raw, I will disclose seller information upon request.</small>
 
 Contact
 -------
