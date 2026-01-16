@@ -19,6 +19,7 @@
 #import "IAP.h"
 
 #import <Carbon/Carbon.h>
+#import <UniformTypeIdentifiers/UTType.h>
 
 ApplicationController *AppController;
 
@@ -174,6 +175,20 @@ ApplicationController *AppController;
     return @[@"nas", @"abc", @"abh", @"mml"];
 }
 
+- (NSArray *)allowedContentTypes
+{
+    return [[self allowedFileTypes] mapObjectsUsingBlock:^id(id obj) {
+        return [UTType typeWithFilenameExtension:obj];
+    }];
+}
+
+- (NSArray *)allowedContentTypesInEditor
+{
+    return [[self allowedFileTypesInEditor] mapObjectsUsingBlock:^id(id obj) {
+        return [UTType typeWithFilenameExtension:obj];
+    }];
+}
+
 - (void)openDocumentWithContentsOfURL:(NSURL *)url
 {
     [AppController closeWelcomeWindow];
@@ -189,7 +204,12 @@ ApplicationController *AppController;
 - (void)openDocument
 {
     NSOpenPanel *openPanel = [NSOpenPanel openPanel];
-    openPanel.allowedFileTypes = self.allowedFileTypes;
+    
+    if (@available(macOS 11.0, *)) {
+        openPanel.allowedContentTypes = self.allowedContentTypes;
+    } else {
+        openPanel.allowedFileTypes = self.allowedFileTypes;
+    }
     
     if (NSModalResponseOK == [openPanel runModal]) {
         [self openDocumentWithContentsOfURL:openPanel.URL];
@@ -201,8 +221,13 @@ ApplicationController *AppController;
     NSString *lastRootDirectory = [Preference sharedInstance].lastRootDirectory;
     
     NSOpenPanel *openPanel = [NSOpenPanel openPanel];
-    openPanel.allowedFileTypes = self.allowedFileTypesInEditor;
+    if (@available(macOS 11.0, *)) {
+        openPanel.allowedContentTypes = self.allowedContentTypesInEditor;
+    } else {
+        openPanel.allowedFileTypes = self.allowedFileTypesInEditor;
+    }
     openPanel.directoryURL = [NSURL fileURLWithPath:[Preference sharedInstance].includeSearchPath];
+    
     
     [openPanel beginSheetModalForWindow:window completionHandler:^(NSInteger result) {
         if (NSModalResponseOK == result) {
@@ -217,7 +242,11 @@ ApplicationController *AppController;
 {
     NSSavePanel *savePanel = [NSSavePanel savePanel];
     savePanel.nameFieldStringValue = filename;
-    savePanel.allowedFileTypes = @[filename.pathExtension];
+    if (@available(macOS 11.0, *)) {
+        savePanel.allowedContentTypes = @[[UTType typeWithFilenameExtension:filename.pathExtension]];
+    } else {
+        savePanel.allowedFileTypes = @[filename.pathExtension];
+    }
     
     [savePanel beginSheetModalForWindow:window completionHandler:^(NSInteger result) {
         if (NSModalResponseOK == result) {
@@ -245,7 +274,11 @@ ApplicationController *AppController;
     [_savePanelFileTypePopupButton selectItemAtIndex: [self.allowedFileTypes indexOfObject:ext]];
     _savePanel.accessoryView = _savePanelAccessoryView;
     _savePanel.nameFieldStringValue = [_savePanel.nameFieldStringValue stringByAppendingPathExtension:ext];
-    _savePanel.allowedFileTypes = @[ext];
+    if (@available(macOS 11.0, *)) {
+        _savePanel.allowedContentTypes = @[[UTType typeWithFilenameExtension:ext]];
+    } else {
+        _savePanel.allowedFileTypes = @[ext];
+    }
     
     if (window) {
         [_savePanel beginSheetModalForWindow:window completionHandler:^(NSInteger result) {
@@ -308,7 +341,11 @@ ApplicationController *AppController;
         [_exportPanelFileTypePopoupButton selectItemAtIndex: [self.allowedExportFileTypes indexOfObject:ext]];
         _exportPanel.accessoryView = _exportPanelAccessoryView;
         _exportPanel.nameFieldStringValue = [_exportPanel.nameFieldStringValue stringByAppendingPathExtension:ext];
-        _exportPanel.allowedFileTypes = @[ext];
+        if (@available(macOS 11.0, *)) {
+            _exportPanel.allowedContentTypes = @[[UTType typeWithFilenameExtension:ext]];
+        } else {
+            _exportPanel.allowedFileTypes = @[ext];
+        }
         
         [_exportPanel beginSheetModalForWindow:window completionHandler:^(NSInteger result) {
             if (NSModalResponseOK == result) {
@@ -360,12 +397,20 @@ ApplicationController *AppController;
     
     if (_savePanel) {
         _savePanel.nameFieldStringValue = [_savePanel.nameFieldStringValue.stringByDeletingPathExtension stringByAppendingPathExtension:ext];
-        _savePanel.allowedFileTypes = @[ext];
+        if (@available(macOS 11.0, *)) {
+            _savePanel.allowedContentTypes = @[[UTType typeWithFilenameExtension:ext]];
+        } else {
+            _savePanel.allowedFileTypes = @[ext];
+        }
         [Preference sharedInstance].selectedFileTypeForCreation = ext;
     }
     else if (_exportPanel) {
         _exportPanel.nameFieldStringValue = [_exportPanel.nameFieldStringValue.stringByDeletingPathExtension stringByAppendingPathExtension:ext];
-        _exportPanel.allowedFileTypes = @[ext];
+        if (@available(macOS 11.0, *)) {
+            _exportPanel.allowedContentTypes = @[[UTType typeWithFilenameExtension:ext]];
+        } else {
+            _exportPanel.allowedFileTypes = @[ext];
+        }
         [Preference sharedInstance].selectedFileTypeForExport = ext;
     }
 }

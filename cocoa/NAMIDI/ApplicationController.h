@@ -22,6 +22,8 @@
 - (void)showPreferenceWindowWithIdeintifier:(NSString *)identifier animate:(BOOL)animate;
 - (NSArray *)allowedFileTypes;
 - (NSArray *)allowedFileTypesInEditor;
+- (NSArray *)allowedContentTypes API_AVAILABLE(macos(11.0));
+- (NSArray *)allowedContentTypesInEditor API_AVAILABLE(macos(11.0));
 - (void)openDocumentWithContentsOfURL:(NSURL *)url;
 - (void)openDocument;
 - (void)openDocumentInEditorWindow:(NSWindow *)window completion:(void (^)(NSURL *url))completionHandler;

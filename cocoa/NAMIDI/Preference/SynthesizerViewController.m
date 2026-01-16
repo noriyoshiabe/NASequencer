@@ -12,6 +12,8 @@
 #import "ApplicationController.h"
 #import "IAP.h"
 
+#import <UniformTypeIdentifiers/UTType.h>
+
 #define kViewWidth 511.0
 #define kAddSynthesizerHeight 40.0
 #define kExplanationHeight 35.0
@@ -133,7 +135,11 @@
 {
     [[IAP sharedInstance] findIAPProduct:kIAPProductFullVersion found:^(NSString *productID, int quantity) {
         NSOpenPanel *openPanel = [NSOpenPanel openPanel];
-        openPanel.allowedFileTypes = @[@"sf2"];
+        if (@available(macOS 11.0, *)) {
+            openPanel.allowedContentTypes = @[[UTType typeWithFilenameExtension:@"sf2"]];
+        } else {
+            openPanel.allowedFileTypes = @[@"sf2"];
+        }
         
         [openPanel beginSheetModalForWindow:self.view.window completionHandler:^(NSInteger result) {
             if (NSModalResponseOK == result) {
