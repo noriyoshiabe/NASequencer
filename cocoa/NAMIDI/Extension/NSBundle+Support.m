@@ -25,4 +25,14 @@
     return [NSString stringWithFormat:@"Version %@ (%@)", self.shortVersionString, self.bundleVersion];
 }
 
+- (NSString *)bundleName
+{
+    return self.infoDictionary[@"CFBundleName"];
+}
+
+- (NSString *)bundleDisplayName
+{
+    return self.infoDictionary[@"CFBundleDisplayName"];
+}
+
 @end

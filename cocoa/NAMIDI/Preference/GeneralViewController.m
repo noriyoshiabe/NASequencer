@@ -9,6 +9,8 @@
 #import "GeneralViewController.h"
 #import "Preference.h"
 
+#import <UniformTypeIdentifiers/UTType.h>
+
 @interface GeneralViewController () <NSOpenSavePanelDelegate> {
     NSString *_externalEditorName;
 }
@@ -74,7 +76,23 @@
 - (NSImage *)editorIconImage
 {
     if (_useExternalEditor && _externalEditorName) {
-        NSString *appPath = [[NSWorkspace sharedWorkspace] fullPathForApplication:_externalEditorName];
+        NSString *appPath;
+        
+        if (@available(macOS 12.0, *)) {
+            NSArray *urls = [[NSWorkspace sharedWorkspace] URLsForApplicationsToOpenContentType:[UTType typeWithMIMEType:@"text/plain"]];
+            for (NSURL *url in urls) {
+                NSBundle *bundle = [NSBundle bundleWithURL:url];
+                NSString *appName = bundle.bundleDisplayName ? bundle.bundleDisplayName : bundle.bundleName;
+                if ([_externalEditorName isEqualTo:appName]) {
+                    appPath = url.path;
+                    break;
+                }
+            }
+        }
+        else {
+            appPath = [[NSWorkspace sharedWorkspace] fullPathForApplication:_externalEditorName];
+        }
+        
         return [[NSWorkspace sharedWorkspace] iconForFile:appPath];
     }
     else {

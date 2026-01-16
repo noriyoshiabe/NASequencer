@@ -12,4 +12,6 @@
 + (NSString *)shortVersionString;
 + (NSString *)bundleVersion;
 + (NSString *)versionString;
+- (NSString *)bundleName;
+- (NSString *)bundleDisplayName;
 @end

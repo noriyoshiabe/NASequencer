@@ -160,7 +160,22 @@
 
 - (void)showExternalEditor
 {
-    [[NSWorkspace sharedWorkspace] openFile:_namidi.file.url.path withApplication:[Preference sharedInstance].externalEditorName];
+    if (@available(macOS 15.0, *)) {
+        NSString *editorName = [Preference sharedInstance].externalEditorName;
+        
+        NSArray *urls = [[NSWorkspace sharedWorkspace] URLsForApplicationsToOpenURL:_namidi.file.url];
+        for (NSURL *url in urls) {
+            NSBundle *bundle = [NSBundle bundleWithURL:url];
+            NSString *appName = bundle.bundleDisplayName ? bundle.bundleDisplayName : bundle.bundleName;
+            if ([editorName isEqualTo:appName]) {
+                [[NSWorkspace sharedWorkspace] openURLs:@[_namidi.file.url] withApplicationAtURL:url configuration:NSWorkspaceOpenConfiguration.configuration completionHandler:^(NSRunningApplication * _Nullable app, NSError * _Nullable error) {}];
+                return;
+            }
+        }
+    }
+    else {
+        [[NSWorkspace sharedWorkspace] openFile:_namidi.file.url.path withApplication:[Preference sharedInstance].externalEditorName];
+    }
 }
 
 - (void)updateToolBarItem
