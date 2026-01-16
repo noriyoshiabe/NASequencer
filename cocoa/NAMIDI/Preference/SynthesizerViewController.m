@@ -143,8 +143,9 @@
         
         [openPanel beginSheetModalForWindow:self.view.window completionHandler:^(NSInteger result) {
             if (NSModalResponseOK == result) {
+                NSURL *url = openPanel.URL;
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    [_manager loadMidiSourceDescriptionFromSoundFont:openPanel.URL.path];
+                    [_manager loadMidiSourceDescriptionFromSoundFont:url.path];
                 });
             }
         }];
