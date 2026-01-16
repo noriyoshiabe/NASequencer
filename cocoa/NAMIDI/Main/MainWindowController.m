@@ -442,14 +442,14 @@
 
 - (void)awakeFromNib
 {
-    [self registerForDraggedTypes:@[NSFilenamesPboardType]];
+    [self registerForDraggedTypes:@[NSPasteboardTypeFileURL]];
 }
 
 - (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender
 {
-    NSArray *files = [[sender draggingPasteboard] propertyListForType:NSFilenamesPboardType];
-    for (NSString *filename in files) {
-        if (![AppController.allowedFileTypes containsObject:filename.pathExtension.lowercaseString]) {
+    NSArray *urls = [[sender draggingPasteboard] readObjectsForClasses:@[[NSURL class]] options:nil];
+    for (NSURL *url in urls) {
+        if (![AppController.allowedFileTypes containsObject:url.pathExtension.lowercaseString]) {
             return NSDragOperationNone;
         }
     }
@@ -459,9 +459,9 @@
 
 - (BOOL)performDragOperation:(id<NSDraggingInfo>)sender
 {
-    NSArray *files = [[sender draggingPasteboard] propertyListForType:NSFilenamesPboardType];
-    for (NSString *filename in files) {
-        [AppController openDocumentWithContentsOfURL:[NSURL fileURLWithPath:filename]];
+    NSArray *urls = [[sender draggingPasteboard] readObjectsForClasses:@[[NSURL class]] options:nil];
+    for (NSURL *url in urls) {
+        [AppController openDocumentWithContentsOfURL:url];
     }
     return YES;
 }
