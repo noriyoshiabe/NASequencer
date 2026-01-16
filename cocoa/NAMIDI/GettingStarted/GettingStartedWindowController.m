@@ -14,13 +14,13 @@
 
 @import WebKit;
 
-@interface GettingStartedWindowController () <WebPolicyDelegate, NSWindowDelegate> {
+@interface GettingStartedWindowController () <WKNavigationDelegate, NSWindowDelegate> {
     BOOL _needOpenExample;
     AudioOut *_audioOut;
 @public
     MidiSource *_midiSource;
 }
-@property (weak) IBOutlet WebView *webView;
+@property (weak) IBOutlet WKWebView *webView;
 @end
 
 static void __AudioCallback(void *receiver, AudioSample *buffer, uint32_t count)
@@ -60,10 +60,10 @@ static void __AudioCallback(void *receiver, AudioSample *buffer, uint32_t count)
     NSString* filePath = [[NSBundle mainBundle] pathForResource:@"index" ofType:@"html" inDirectory:@"GettingStarted"];
     NSURL* fileURL = [NSURL fileURLWithPath:filePath];
     NSURLRequest* request = [NSURLRequest requestWithURL:fileURL];
-    [[_webView mainFrame] loadRequest:request];
+    [_webView loadRequest:request];
     
-    [_webView setDrawsBackground:NO];
-    _webView.policyDelegate = self;
+    [_webView setValue:@NO forKey:@"drawsBackground"];
+    _webView.navigationDelegate = self;
     
     self.window.backgroundColor = [Color darkGray];
     [self.window toggleFullScreen:self];
@@ -81,50 +81,59 @@ static void __AudioCallback(void *receiver, AudioSample *buffer, uint32_t count)
     MidiSourceManagerDeallocMidiSource(MidiSourceManagerSharedInstance(), _midiSource);
 }
 
-- (void)webView:(WebView *)webView decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id<WebPolicyDecisionListener>)listener
+#pragma mark WKNavigationDelegate
+
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(WK_SWIFT_UI_ACTOR void (^)(WKNavigationActionPolicy))decisionHandler
 {
-    if ([request.URL.scheme isEqualToString:@"nasequencer"]) {
-        if ([request.URL.host isEqualToString:@"note_on"]) {
-            int noteNo = [request.URL.lastPathComponent intValue];
-            uint8_t bytes[3] = {0x91, noteNo, 100};
-            _midiSource->send(_midiSource, bytes, 3);
+    NSURLRequest *request = navigationAction.request;
+    
+    if (![request.URL.scheme isEqualToString:@"nasequencer"]) {
+        decisionHandler(WKNavigationActionPolicyAllow);
+        return;
+    }
+    
+    if ([request.URL.host isEqualToString:@"note_on"]) {
+        int noteNo = [request.URL.lastPathComponent intValue];
+        uint8_t bytes[3] = {0x91, noteNo, 100};
+        _midiSource->send(_midiSource, bytes, 3);
+    }
+    else if ([request.URL.host isEqualToString:@"note_off"]) {
+        int noteNo = [request.URL.lastPathComponent intValue];
+        uint8_t bytes[3] = {0x81, noteNo, 0};
+        _midiSource->send(_midiSource, bytes, 3);
+    }
+    else if ([request.URL.host isEqualToString:@"all_note_off"]) {
+        uint8_t bytes[3] = {0xB1, 0x7B, 0x00};
+        _midiSource->send(_midiSource, bytes, 3);
+        bytes[1] = 0x78;
+        _midiSource->send(_midiSource, bytes, 3);
+    }
+    else if ([request.URL.host isEqualToString:@"exit"]) {
+        [self close];
+    }
+    else if ([request.URL.host isEqualToString:@"example"]) {
+        if (self.window.isFullScreen) {
+            _needOpenExample = YES;
+            [self.window toggleFullScreen:self];
         }
-        else if ([request.URL.host isEqualToString:@"note_off"]) {
-            int noteNo = [request.URL.lastPathComponent intValue];
-            uint8_t bytes[3] = {0x81, noteNo, 0};
-            _midiSource->send(_midiSource, bytes, 3);
-        }
-        else if ([request.URL.host isEqualToString:@"all_note_off"]) {
-            uint8_t bytes[3] = {0xB1, 0x7B, 0x00};
-            _midiSource->send(_midiSource, bytes, 3);
-            bytes[1] = 0x78;
-            _midiSource->send(_midiSource, bytes, 3);
-        }
-        else if ([request.URL.host isEqualToString:@"exit"]) {
-            [self close];
-        }
-        else if ([request.URL.host isEqualToString:@"example"]) {
-            if (self.window.isFullScreen) {
-                _needOpenExample = YES;
-                [self.window toggleFullScreen:self];
-            }
-            else {
-                [AppController openExampleDocument:@"nas"];
-            }
-        }
-        else if ([request.URL.host isEqualToString:@"syntax"]) {
-            if (self.window.isFullScreen) {
-                [self.window toggleFullScreen:self];
-            }
-            [AppController openHelpPage:@"syntax-reference"];
-        }
-        else if ([request.URL.host isEqualToString:@"operation"]) {
-            if (self.window.isFullScreen) {
-                [self.window toggleFullScreen:self];
-            }
-            [AppController openHelpPage:@"operation-manual"];
+        else {
+            [AppController openExampleDocument:@"nas"];
         }
     }
+    else if ([request.URL.host isEqualToString:@"syntax"]) {
+        if (self.window.isFullScreen) {
+            [self.window toggleFullScreen:self];
+        }
+        [AppController openHelpPage:@"syntax-reference"];
+    }
+    else if ([request.URL.host isEqualToString:@"operation"]) {
+        if (self.window.isFullScreen) {
+            [self.window toggleFullScreen:self];
+        }
+        [AppController openHelpPage:@"operation-manual"];
+    }
+        
+    decisionHandler(WKNavigationActionPolicyCancel);
 }
 
 #pragma mark NSWindowDelegate

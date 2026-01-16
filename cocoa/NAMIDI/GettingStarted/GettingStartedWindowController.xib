@@ -1,40 +1,42 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24506" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10116"/>
-        <plugIn identifier="com.apple.WebKitIBPlugin" version="10116"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24506"/>
+        <plugIn identifier="com.apple.WebKit2IBPlugin" version="24506"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="GettingStartedWindowController">
             <connections>
-                <outlet property="webView" destination="dkC-3N-3Il" id="UNf-rJ-hdY"/>
+                <outlet property="webView" destination="uwv-Gv-yhY" id="NgP-kl-SNc"/>
                 <outlet property="window" destination="F0z-JX-Cv5" id="gIp-Ho-8D9"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
-        <window title="Getting Started" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" animationBehavior="default" id="F0z-JX-Cv5">
+        <window title="Getting Started" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="F0z-JX-Cv5">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" resizable="YES" fullSizeContentView="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="180" y="280" width="640" height="420"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1470" height="923"/>
             <view key="contentView" wantsLayer="YES" id="se5-gp-TjO">
                 <rect key="frame" x="0.0" y="0.0" width="640" height="420"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <webView translatesAutoresizingMaskIntoConstraints="NO" id="dkC-3N-3Il">
+                    <wkWebView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uwv-Gv-yhY">
                         <rect key="frame" x="0.0" y="0.0" width="640" height="420"/>
-                        <webPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12">
-                            <nil key="identifier"/>
-                        </webPreferences>
-                    </webView>
+                        <wkWebViewConfiguration key="configuration">
+                            <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
+                            <wkPreferences key="preferences"/>
+                        </wkWebViewConfiguration>
+                    </wkWebView>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="dkC-3N-3Il" firstAttribute="top" secondItem="se5-gp-TjO" secondAttribute="top" id="5NX-HL-ly8"/>
-                    <constraint firstAttribute="bottom" secondItem="dkC-3N-3Il" secondAttribute="bottom" id="Wv9-Bw-5Ie"/>
-                    <constraint firstItem="dkC-3N-3Il" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" id="XF7-qX-E3k"/>
-                    <constraint firstAttribute="trailing" secondItem="dkC-3N-3Il" secondAttribute="trailing" id="YxU-SA-cMH"/>
+                    <constraint firstAttribute="trailing" secondItem="uwv-Gv-yhY" secondAttribute="trailing" id="Adc-fI-K2I"/>
+                    <constraint firstItem="uwv-Gv-yhY" firstAttribute="top" secondItem="se5-gp-TjO" secondAttribute="top" id="HUZ-mm-BRE"/>
+                    <constraint firstAttribute="bottom" secondItem="uwv-Gv-yhY" secondAttribute="bottom" id="gIn-4y-flo"/>
+                    <constraint firstItem="uwv-Gv-yhY" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" id="tl3-Qr-2p2"/>
                 </constraints>
             </view>
             <connections>
