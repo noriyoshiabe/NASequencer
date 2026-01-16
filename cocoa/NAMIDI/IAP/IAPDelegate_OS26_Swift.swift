@@ -35,9 +35,9 @@ enum ErrorCode: Int {
         }
     }
     
-    @objc static func currentEntitlement(for productId: String) async -> IAPEntitlement? {
+    @objc static func latestEntitlement(for productId: String) async -> IAPEntitlement? {
         if #available(macOS 12.0, *) {
-            if let verificationResult = await Transaction.currentEntitlement(for: productId) {
+            if let verificationResult = await Transaction.latest(for: productId) {
                 switch verificationResult {
                 case let .verified(transaction):
                     let entitlement = IAPEntitlement()

@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)findIAPProduct:(NSString *)productID found:(void (^)(NSString *, int))found notFound:(void (^)(NSString *))notFound {
-    [IAPDelegate_OS26_Swift currentEntitlementFor:productID completionHandler:^(IAPEntitlement * _Nullable entitlement) {
+    [IAPDelegate_OS26_Swift latestEntitlementFor:productID completionHandler:^(IAPEntitlement * _Nullable entitlement) {
         [NSThread performBlockOnMainThread:^{
             if (entitlement) {
                 if (found != nil) {
