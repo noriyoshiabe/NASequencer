@@ -157,7 +157,7 @@
 
 - (IBAction)helpButtonTapped:(id)sender
 {
-    [AppController openHelpPage:@"index"];
+    [AppController openHelpAnker:@"top"];
 }
 
 - (IBAction)preferenceButtonTapped:(id)sender

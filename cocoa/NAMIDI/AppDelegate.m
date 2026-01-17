@@ -95,7 +95,7 @@
 
 - (IBAction)customerSupport:(id)sender
 {
-    [AppController openHelpPage:@"support"];
+    [AppController openHelpAnker:@"support"];
 }
 
 #pragma Default Menu Title

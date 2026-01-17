@@ -444,10 +444,10 @@ ApplicationController *AppController;
     [[NSHelpManager sharedHelpManager] registerBooksInBundle: [NSBundle mainBundle]];
 }
 
-- (void)openHelpPage:(NSString *)pageName
+- (void)openHelpAnker:(NSString *)anchor
 {
-    NSString *path = [NSString stringWithFormat:@"%@.html", pageName];
-    AHGotoPage((__bridge CFStringRef)@"NASequencer Help", (__bridge CFStringRef)path, NULL);
+    NSString *bookName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleHelpBookName"];
+    [[NSHelpManager sharedHelpManager] openHelpAnchor:anchor inBook:bookName];
 }
 
 @end

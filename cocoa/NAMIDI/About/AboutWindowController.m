@@ -51,7 +51,7 @@
 
 - (IBAction)licensePressed:(id)sender
 {
-    [AppController openHelpPage:@"third-party-licenses"];
+    [AppController openHelpAnker:@"third-party-licenses"];
 }
 
 - (IBAction)officialSitePressed:(NSTextField *)sender
@@ -61,7 +61,7 @@
 
 - (IBAction)supportMailPressed:(NSTextField *)sender
 {
-    [AppController openHelpPage:@"support"];
+    [AppController openHelpAnker:@"support"];
 }
 
 @end

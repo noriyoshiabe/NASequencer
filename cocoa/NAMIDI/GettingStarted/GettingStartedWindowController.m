@@ -124,13 +124,13 @@ static void __AudioCallback(void *receiver, AudioSample *buffer, uint32_t count)
         if (self.window.isFullScreen) {
             [self.window toggleFullScreen:self];
         }
-        [AppController openHelpPage:@"syntax-reference"];
+        [AppController openHelpAnker:@"syntax-reference"];
     }
     else if ([request.URL.host isEqualToString:@"operation"]) {
         if (self.window.isFullScreen) {
             [self.window toggleFullScreen:self];
         }
-        [AppController openHelpPage:@"operation-manual"];
+        [AppController openHelpAnker:@"operation-manual"];
     }
         
     decisionHandler(WKNavigationActionPolicyCancel);

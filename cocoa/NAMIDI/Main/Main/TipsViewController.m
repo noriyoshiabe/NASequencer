@@ -26,15 +26,15 @@
 
 - (IBAction)operationManualPressed:(id)sender
 {
-    [AppController openHelpPage:@"operation-manual"];
+    [AppController openHelpAnker:@"operation-manual"];
 }
 
 - (IBAction)syntaxReferencePressed:(id)sender
 {
-    NSString *pageName = @{@"nas": @"note-as-sequence",
+    NSString *anchor = @{@"nas": @"note-as-sequence",
                          @"abc": @"abc-notation",
                          @"mml": @"music-macro-language"}[_namidi.file.filename.pathExtension.lowercaseString];
-    [AppController openHelpPage:pageName];
+    [AppController openHelpAnker:anchor];
 }
 
 @end

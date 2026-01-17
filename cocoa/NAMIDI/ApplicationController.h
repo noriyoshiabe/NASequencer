@@ -32,7 +32,7 @@
 - (void)createDocumentForWindow:(NSWindow *)window completion:(void (^)(NSURL *url))completionHandler;
 - (void)openExampleDocument:(NSString *)fileType;
 - (void)exportDocumentForWindow:(NSWindow *)window file:(FileRepresentation *)file;
-- (void)openHelpPage:(NSString *)pageName;
+- (void)openHelpAnker:(NSString *)anchorName;
 @end
 
 extern ApplicationController *AppController;
