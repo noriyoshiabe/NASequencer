@@ -494,7 +494,7 @@ Applies to note event in absolute number if gatetime is omitted with note statem
 ```
 GATETIME 120
 
-480: C // Gatetime will be 480
+480: C // Gatetime will be 120
 ```
 
 #### Step Setting
