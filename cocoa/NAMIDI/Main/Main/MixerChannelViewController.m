@@ -248,3 +248,69 @@
 }
 
 @end
+
+#pragma mark CustomButton for MacOS 26.0 and later
+
+@interface SynthesizerSelectionButton : NSPopUpButton
+@end
+
+@implementation SynthesizerSelectionButton
+
+- (void)drawRect:(NSRect)dirtyRect
+{
+    [[NSColor textBackgroundColor] setFill];
+    [[NSBezierPath bezierPathWithRoundedRect:self.bounds xRadius:5.0 yRadius:5.0] fill];
+
+    [super drawRect:dirtyRect];
+}
+
+@end
+
+@interface SynthesizerSelectionButtonCell : NSPopUpButtonCell
+@end
+
+@implementation SynthesizerSelectionButtonCell
+
+- (NSRect)drawTitle:(NSAttributedString *)title withFrame:(NSRect)frame inView:(NSView *)controlView
+{
+    NSMutableAttributedString *_title = [[NSMutableAttributedString alloc] initWithAttributedString:title];
+    [_title addAttribute:NSForegroundColorAttributeName value:[NSColor textColor] range:NSMakeRange(0, _title.string.length)];
+    
+    frame.origin.x = 5.0;
+    
+    return [super drawTitle:_title withFrame:frame inView:controlView];
+}
+
+@end
+
+@interface PresetSelectionButton : NSButton
+@end
+
+@implementation PresetSelectionButton
+
+- (void)drawRect:(NSRect)dirtyRect
+{
+    [[NSColor textBackgroundColor] setFill];
+    [[NSBezierPath bezierPathWithRoundedRect:self.bounds xRadius:5.0 yRadius:5.0] fill];
+
+    [super drawRect:dirtyRect];
+}
+
+@end
+
+@interface PresetSelectionButtonCell : NSButtonCell
+@end
+
+@implementation PresetSelectionButtonCell
+
+- (NSRect)drawTitle:(NSAttributedString *)title withFrame:(NSRect)frame inView:(NSView *)controlView
+{
+    NSMutableAttributedString *_title = [[NSMutableAttributedString alloc] initWithAttributedString:title];
+    [_title addAttribute:NSForegroundColorAttributeName value:[NSColor textColor] range:NSMakeRange(0, _title.string.length)];
+    
+    frame.origin.x = 5.0;
+    
+    return [super drawTitle:_title withFrame:frame inView:controlView];
+}
+
+@end

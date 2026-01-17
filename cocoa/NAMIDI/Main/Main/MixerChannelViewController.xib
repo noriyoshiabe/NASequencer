@@ -24,7 +24,7 @@
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
-        <customView appearanceType="darkAqua" id="Hz6-mo-xeY">
+        <customView appearanceType="aqua" id="Hz6-mo-xeY">
             <rect key="frame" x="0.0" y="0.0" width="250" height="157"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
@@ -45,7 +45,7 @@
                     </connections>
                 </textField>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MRJ-sG-6VX" customClass="ColorButton">
-                    <rect key="frame" x="122" y="129" width="50" height="18"/>
+                    <rect key="frame" x="124" y="129" width="50" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="bevel" title="Mute" bezelStyle="rounded" alignment="center" lineBreakMode="truncatingTail" inset="2" id="xF9-VN-3Oh">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
@@ -67,7 +67,7 @@
                     </userDefinedRuntimeAttributes>
                 </button>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="HGt-5d-DJd" userLabel="SynthLabel">
-                    <rect key="frame" x="12" y="103" width="39" height="17"/>
+                    <rect key="frame" x="12" y="101" width="39" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Synth" id="Bzz-wa-eLd">
                         <font key="font" metaFont="smallSystem"/>
@@ -76,7 +76,7 @@
                     </textFieldCell>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VGe-rO-4Jr" userLabel="PresetLabel">
-                    <rect key="frame" x="12" y="81" width="39" height="17"/>
+                    <rect key="frame" x="12" y="78" width="39" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Preset" id="tMx-Ie-0jS">
                         <font key="font" metaFont="smallSystem"/>
@@ -84,21 +84,6 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="E4Y-Lg-yud" userLabel="Synth">
-                    <rect key="frame" x="64" y="103" width="172" height="22"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="fHo-RO-TQM" id="WSu-9t-vto">
-                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                        <font key="font" metaFont="smallSystem"/>
-                        <menu key="menu" id="y2x-Lw-9Hk">
-                            <items>
-                                <menuItem title="Item 1" state="on" id="fHo-RO-TQM"/>
-                                <menuItem title="Item 2" id="E7q-Vp-HjC"/>
-                                <menuItem title="Item 3" id="1YD-e4-gLi"/>
-                            </items>
-                        </menu>
-                    </popUpButtonCell>
-                </popUpButton>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="O2Q-wV-lLf" userLabel="VolumeLabel">
                     <rect key="frame" x="12" y="58" width="43" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -186,7 +171,7 @@
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                 </customView>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CRd-H7-6bk" customClass="ColorButton">
-                    <rect key="frame" x="184" y="129" width="50" height="18"/>
+                    <rect key="frame" x="186" y="129" width="50" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="bevel" title="Solo" bezelStyle="rounded" alignment="center" lineBreakMode="truncatingTail" inset="2" id="ubT-2K-Bit">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
@@ -207,10 +192,10 @@
                         </userDefinedRuntimeAttribute>
                     </userDefinedRuntimeAttributes>
                 </button>
-                <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9kV-qT-H3i">
-                    <rect key="frame" x="64" y="83" width="172" height="14"/>
+                <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9kV-qT-H3i" customClass="PresetSelectionButton">
+                    <rect key="frame" x="66" y="80" width="170" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="bevel" title="Preset" bezelStyle="regularSquare" alignment="left" controlSize="small" lineBreakMode="truncatingTail" borderStyle="border" inset="2" id="o1q-wS-hGl">
+                    <buttonCell key="cell" type="bevel" title="Preset" bezelStyle="regularSquare" alignment="left" controlSize="small" lineBreakMode="truncatingTail" inset="2" id="o1q-wS-hGl" customClass="PresetSelectionButtonCell">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                     </buttonCell>
@@ -218,6 +203,21 @@
                         <action selector="presetButtonPressed:" target="-2" id="jkK-RH-BhJ"/>
                     </connections>
                 </button>
+                <popUpButton fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="E4Y-Lg-yud" userLabel="Synth" customClass="SynthesizerSelectionButton">
+                    <rect key="frame" x="66" y="103" width="170" height="18"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <popUpButtonCell key="cell" type="bevel" title="Item 1" bezelStyle="regularSquare" alignment="left" lineBreakMode="truncatingTail" state="on" imageScaling="proportionallyDown" inset="2" selectedItem="fHo-RO-TQM" id="WSu-9t-vto" customClass="SynthesizerSelectionButtonCell">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="smallSystem"/>
+                        <menu key="menu" id="y2x-Lw-9Hk">
+                            <items>
+                                <menuItem title="Item 1" state="on" id="fHo-RO-TQM"/>
+                                <menuItem title="Item 2" id="E7q-Vp-HjC"/>
+                                <menuItem title="Item 3" id="1YD-e4-gLi"/>
+                            </items>
+                        </menu>
+                    </popUpButtonCell>
+                </popUpButton>
             </subviews>
             <point key="canvasLocation" x="303" y="389.5"/>
         </customView>
