@@ -21,6 +21,9 @@ set(SOURCES
   Window.c
   MainView.c
   HeaderView.c
+  Controller.c
+  Debug.c
+  DebugWindow.c
 )
 
 add_executable(${TARGET_NAME} ${SOURCES})

@@ -41,8 +41,8 @@ MainView *MainViewCreate()
     self->node = ViewNodeCreate(self);
 
     HeaderView *header = HeaderViewCreate();
-    Rect rect = {{1, 1}, {100, 2}};
-    ViewSetFrame(header, rect);
+    Rect frame = {{1, 1}, {100, 2}};
+    ViewSetFrame(header, frame);
     ViewAppendChild(self, header);
 
     return self;

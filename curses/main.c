@@ -1,8 +1,8 @@
-#include <ncurses.h>
+#include "Controller.h"
+#include "Debug.h"
+#include "DebugWindow.h"
 
-#include "View.h"
-#include "Window.h"
-#include "MainView.h"
+#include <ncurses.h>
 
 int main(int argc, char **argv)
 {
@@ -12,26 +12,19 @@ int main(int argc, char **argv)
     curs_set(0);
     refresh(); 
 
-    Rect frame = {
-        .point = { .x = 0, .y = 0 },
-        .size = { .width = COLS, .height = LINES},
-    };
+    Controller *controller = ControllerCreate();
+    DebugWindow *debugWindow = DebugWindowCreate(100, 20);
 
-    Window *window = WindowCreate(frame);
+    for (;;) {
+        char c = getch();
+        if (c == 'q')
+            break;
+        Debug("####### %c", c);
+    }
 
-    MainView *mainView = MainViewCreate();
-
-    ViewSetWindow(mainView, window);
-
-    ViewSetFrame(mainView, frame);
-    ViewInvalidate(mainView);
-
-    getch();
-
-    WindowDestroy(window);
-    ViewDestroy((View *)mainView);
+    ControllerDestroy(controller);
+    DebugWindowDestroy(debugWindow);
 
     endwin();
-    
     return 0;
 }
