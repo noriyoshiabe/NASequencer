@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Rect.h"
+#include "KeyHandler.h"
 
 typedef struct _Window Window;
 

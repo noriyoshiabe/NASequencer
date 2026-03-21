@@ -1,6 +1,7 @@
 #include "Controller.h"
-#include "Debug.h"
 #include "DebugWindow.h"
+#include "Debug.h"
+#include "KeyHandler.h"
 
 #include <ncurses.h>
 
@@ -17,9 +18,10 @@ int main(int argc, char **argv)
 
     for (;;) {
         char c = getch();
-        if (c == 'q')
+        if (c == 'q') {
             break;
-        Debug("####### %c", c);
+        }
+        KeyHandlerHandleKeyEvent(controller, c);
     }
 
     ControllerDestroy(controller);

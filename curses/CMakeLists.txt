@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 project(namidi-curses)
 set(TARGET_NAME cnaseq)
 
-#add_definitions(-Wall)
+add_definitions(-Wall)
 
 find_library(NCURSES_LIBRARY ncurses)
 
@@ -22,6 +22,7 @@ set(SOURCES
   MainView.c
   HeaderView.c
   Controller.c
+  KeyHandler.c
   Debug.c
   DebugWindow.c
 )
