@@ -8,8 +8,8 @@ struct _ViewNode {
     NAArray *children;
     Rect frame;
     Window *window;
-    char *buffer;
     bool isDrawing;
+    bool hidden;
 };
 
 static Point ViewNodeOffsetInRootView(ViewNode *self);
@@ -19,7 +19,6 @@ ViewNode *ViewNodeCreate(View *owner)
     ViewNode *self = calloc(1, sizeof(ViewNode));
     self->owner = owner;
     self->children = NAArrayCreate(4, NULL);
-    self->buffer = calloc(1, 1);
     return self;
 };
 
@@ -87,7 +86,16 @@ Rect ViewNodeGetFrame(ViewNode *self)
 void ViewNodeSetFrame(ViewNode *self, Rect frame)
 {
     self->frame = frame;
-    self->buffer = realloc(self->buffer, frame.size.width * frame.size.height + 1);
+}
+
+bool ViewNodeGetHidden(ViewNode *self)
+{
+    return self->hidden;
+}
+
+void ViewNodeSetHidden(ViewNode *self, bool hidden)
+{
+    self->hidden = hidden;
 }
 
 void ViewNodeInvalidate(ViewNode *self)
@@ -97,6 +105,9 @@ void ViewNodeInvalidate(ViewNode *self)
 
 void ViewNodeDisplay(ViewNode *self)
 {
+    if (self->hidden)
+        return;
+
     bool isParentDrawing = self->parent && ViewNodeIsDrawing(ViewGetNode(self->parent));
 
     if (!isParentDrawing) {
@@ -113,7 +124,7 @@ void ViewNodeDisplay(ViewNode *self)
     self->isDrawing = true;
 
     ViewDraw(self->owner, self->frame.size);
-    NAArrayTraverse(self->children, ViewInvalidate);
+    NAArrayTraverse(self->children, ViewDisplay);
 
     self->isDrawing = false;
 

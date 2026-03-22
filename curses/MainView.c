@@ -3,6 +3,7 @@
 #include "ViewNode.h"
 #include "MainView.h"
 #include "HeaderView.h"
+#include "ChannelView.h"
 #include "KeyHandler.h"
 #include "Debug.h"
 
@@ -14,6 +15,9 @@ struct _MainView {
     const InterfaceVtbl *vtbl;
     ViewNode *node;
     KeyHandler *nextKeyHandler;
+    NAMidi *namidi;
+    NAArray *channelViews;
+    bool channelExsits[16];
 };
 
 static ViewNode *MainViewGetNode(View *self);
@@ -47,6 +51,8 @@ static const InterfaceVtbl MainViewInterfaceVtbl = {
     .queryInterface = MainViewQueryInteface,
 };
 
+static NAMidiObserverCallbacks MainViewNAMidiObserverCallbacks;
+
 MainView *MainViewCreate(NAMidi *namidi)
 {
     MainView *self = calloc(1, sizeof(MainView));
@@ -58,6 +64,16 @@ MainView *MainViewCreate(NAMidi *namidi)
     ViewSetFrame(header, frame);
     ViewAppendChild(self, header);
 
+    self->channelViews = NAArrayCreate(16, NULL);
+    for (int i = 0; i < 16; ++i) {
+        ChannelView *channelView = ChannelViewCreate(NAMidiGetMixer(namidi), i + 1);
+        ViewAppendChild(self, channelView);
+        NAArrayAppend(self->channelViews, channelView);
+    }
+
+    self->namidi = namidi;
+    NAMidiAddObserver(self->namidi, self, &MainViewNAMidiObserverCallbacks);
+
     return self;
 }
 
@@ -67,14 +83,32 @@ static ViewNode *MainViewGetNode(View *_self)
     return self->node;
 }
 
-static void MainViewDraw(View *self, Size size)
+static void MainViewDraw(View *_self, Size size)
 {
-    ViewPrintf(self, 2, 4, "Main");
+    MainView *self = (MainView *)_self;
+
+    int offsetY = 3;
+
+    for (int i = 0; i < 16; ++i) {
+        Rect frame = {{0, offsetY}, {COLS, 5}};
+        ChannelView *channelView = NAArrayGetValueAt(self->channelViews, i);
+        
+        if (self->channelExsits[i]) {
+            ViewSetFrame(channelView, frame);
+            ViewSetHidden(channelView, false);
+            offsetY += 5;
+        } else {
+            ViewSetHidden(channelView, true);
+        }
+    }
 }
 
 static void MainViewDestroy(View *_self)
 {
     MainView *self = (MainView *)_self;
+
+    NAMidiRemoveObserver(self->namidi, self);
+    NAArrayDestroy(self->channelViews);
     ViewNodeDestroy(self->node);
     free(self);
 }
@@ -97,3 +131,38 @@ static void MainViewSetNextKeyHandler(KeyHandler *_self, KeyHandler *next)
     MainView *self = (MainView *)_self;
     self->nextKeyHandler = next;
 }
+
+static void MainViewNAMidiOnBeforeParse(void *receiver, bool fileChanged)
+{
+}
+
+static void MainViewNAMidiOnParseFinish(void *receiver, Sequence *sequence, ParseInfo *info)
+{
+    MainView *self = receiver;
+
+    for (int i = 0; i < 16; ++i) {
+        self->channelExsits[i] = false;
+    }
+
+    NAIterator *iterator = NAArrayGetIterator(sequence->events);
+    while (iterator->hasNext(iterator)) {
+        MidiEvent *event = iterator->next(iterator);
+        switch (event->type) {
+        case MidiEventTypeTempo:
+        case MidiEventTypeTime:
+        case MidiEventTypeKey:
+        case MidiEventTypeMarker:
+            break;
+        default:
+            self->channelExsits[((ChannelEvent *)event)->channel - 1] = true;
+            break;
+        }
+    }
+
+    ViewInvalidate(self);
+}
+
+static NAMidiObserverCallbacks MainViewNAMidiObserverCallbacks = {
+    MainViewNAMidiOnBeforeParse,
+    MainViewNAMidiOnParseFinish,
+};

@@ -38,6 +38,8 @@ extern void ViewAppendChild(View *self, View *child);
 extern void ViewRemoveChild(View *self, View *child);
 extern Rect ViewGetFrame(View *self);
 extern void ViewSetFrame(View *self, Rect frame);
+extern bool ViewGetHidden(View *self);
+extern void ViewSetHidden(View *self, bool hidden);
 extern void ViewInvalidate(View *self);
 extern void ViewDisplay(View *self);
 extern void ViewPrintf(View *self, int x, int y, const char *fmt, ...);

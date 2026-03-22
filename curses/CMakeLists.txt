@@ -36,11 +36,12 @@ set(SOURCES
   ViewNode.c
   Window.c
   WindowManager.c
-  MainView.c
-  HeaderView.c
+  Argument.c
   Controller.c
   KeyHandler.c
-  Argument.c
+  MainView.c
+  HeaderView.c
+  ChannelView.c
   Debug.c
   DebugWindow.c
 )

@@ -6,7 +6,6 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include <libgen.h>
 
 struct _HeaderView {
     const InterfaceVtbl *vtbl;

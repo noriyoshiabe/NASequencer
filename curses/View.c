@@ -46,6 +46,18 @@ void ViewSetFrame(View *self, Rect frame)
     ViewNodeSetFrame(node, frame);
 }
 
+bool ViewGetHidden(View *self)
+{
+    ViewNode *node = QueryInterface(self, IIDView, IView)->getNode(self);
+    return ViewNodeGetHidden(node);
+}
+
+void ViewSetHidden(View *self, bool hidden)
+{
+    ViewNode *node = QueryInterface(self, IIDView, IView)->getNode(self);
+    ViewNodeSetHidden(node, hidden);
+}
+
 void ViewInvalidate(View *self)
 {
     ViewNode *node = QueryInterface(self, IIDView, IView)->getNode(self);
