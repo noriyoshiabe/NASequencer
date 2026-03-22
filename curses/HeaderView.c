@@ -92,7 +92,7 @@ static void HeaderViewDraw(View *_self, Size size)
     char timeTable[64] = {};
     snprintf(timeTable, sizeof(timeTable), "Tempo %.2f Time Signature %d/%d", tempo, ts.numerator, ts.denominator);
     char timeLocation[35] = {};
-    snprintf(timeLocation, sizeof(timeLocation), "Location %03d:%02d:%03d Time %02d:%02d:%03d", loc.m, loc.b, loc.t, sec / 60, sec % 60, msec);
+    snprintf(timeLocation, sizeof(timeLocation), "Location %03d:%02d:%03d Time %02d:%02d:%03d", loc.m, loc.b, loc.t, sec / 60, sec % 60, msec % 1000);
 
     snprintf(line, sizeof(line), "%-*s", size.width, timeTable);
     snprintf(line + size.width - 34, 35, "%s", timeLocation);
