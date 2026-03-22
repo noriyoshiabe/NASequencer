@@ -272,15 +272,17 @@ static void PlayerProcessMessage(Player *self, PlayerMessage message, void *data
 {
     switch (message) {
     case PlayerMessageSetSequence:
-        if (self->sequence) {
-            PlayerSendAllNoteOff(self);
-            SequenceRelease(self->sequence);
-        }
-
-        self->sequence = data;
-        self->index = 0;
-
         {
+            Sequence *sequenceWillRelease = NULL;
+
+            if (self->sequence) {
+                PlayerSendAllNoteOff(self);
+                sequenceWillRelease = self->sequence;
+            }
+
+            self->sequence = data;
+            self->index = 0;
+
             int32_t tick =  TimeTableLength(self->sequence->timeTable);
 
             if (tick < self->tick) {
@@ -290,6 +292,10 @@ static void PlayerProcessMessage(Player *self, PlayerMessage message, void *data
                 self->start = currentMicroSec();
                 PlayerUpdateClock(self, tick, self->usec, location);
                 PlayerTriggerEvent(self, PlayerEventBackward);
+            }
+
+            if (sequenceWillRelease) {
+                SequenceRelease(sequenceWillRelease);
             }
         }
         break;
