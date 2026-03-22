@@ -5,6 +5,7 @@
 #include "KeyHandler.h"
 #include "Argument.h"
 #include "NAMidi.h"
+#include "Color.h"
 
 #include <ncurses.h>
 #include <unistd.h>
@@ -32,11 +33,22 @@ int main(int argc, char **argv)
     }
 
     initscr();
+
+    start_color();
+    use_default_colors();
+    init_pair(ColorFocused, COLOR_WHITE, COLOR_BLUE);
+    init_pair(ColorSelected, COLOR_WHITE, COLOR_RED);
+    init_pair(ColorMute, COLOR_BLUE, COLOR_YELLOW);
+    init_pair(ColorSolo, COLOR_BLUE, COLOR_GREEN);
+    init_pair(ColorLevelLow, COLOR_GREEN, -1);
+    init_pair(ColorLevelHigh, COLOR_RED, -1);
+
     cbreak();
     noecho();
     keypad(stdscr, TRUE);
     nodelay(stdscr, TRUE);
     curs_set(0);
+
     refresh(); 
 
     WindowManager *windowManager = WindowManagerSharedInstance();

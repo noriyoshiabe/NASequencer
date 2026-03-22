@@ -70,6 +70,12 @@ void ViewDisplay(View *self)
     ViewNodeDisplay(node);
 }
 
+void ViewSetColor(View *self, Color color)
+{
+    ViewNode *node = QueryInterface(self, IIDView, IView)->getNode(self);
+    ViewNodeSetColor(node, color);
+}
+
 void ViewPrintf(View *self, int x, int y, const char *fmt, ...)
 {
     va_list argList;

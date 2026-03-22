@@ -4,6 +4,7 @@
 #include "Window.h"
 #include "Rect.h"
 #include "NAArray.h"
+#include "Color.h"
 
 extern const IID IIDView;
 
@@ -42,4 +43,5 @@ extern bool ViewGetHidden(View *self);
 extern void ViewSetHidden(View *self, bool hidden);
 extern void ViewInvalidate(View *self);
 extern void ViewDisplay(View *self);
+extern void ViewSetColor(View *self, Color color);
 extern void ViewPrintf(View *self, int x, int y, const char *fmt, ...);

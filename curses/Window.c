@@ -76,6 +76,11 @@ void WindowMarkViewAsDirty(Window *self, View *view)
     NAMessageQPost(self->msgQ, WindowMessageDirtyView, view);
 }
 
+void WindowSetColor(Window *self, Color color)
+{
+    wattrset(self->window, color == ColorDefault ? A_NORMAL : COLOR_PAIR(color));
+}
+
 void WindowPrint(Window *self, int x, int y, const char *str)
 {
     mvwprintw(self->window, y, x, str);

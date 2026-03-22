@@ -133,6 +133,11 @@ void ViewNodeDisplay(ViewNode *self)
     }
 }
 
+void ViewNodeSetColor(ViewNode *self, Color color)
+{
+    WindowSetColor(self->window, color);
+}
+
 void ViewNodePrintf(ViewNode *self, int x, int y, const char *fmt, va_list argList)
 {
     int maxLength = self->frame.size.width - x;
