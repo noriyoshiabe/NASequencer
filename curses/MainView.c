@@ -25,7 +25,7 @@ static const ViewVtbl MainViewViewVtbl = {
     .destroy = MainViewDestroy,
 };
 
-static bool MainViewOnKeyEvent(KeyHandler *self, char code);
+static bool MainViewOnKeyEvent(KeyHandler *self, int code);
 static void MainViewSetNextKeyHandler(KeyHandler *self, KeyHandler *next);
 
 static const KeyHandlerVtbl MainViewKeyHandlerVtbl = {
@@ -78,7 +78,7 @@ static void MainViewDestroy(View *_self)
     free(self);
 }
 
-static bool MainViewOnKeyEvent(KeyHandler *_self, char code)
+static bool MainViewOnKeyEvent(KeyHandler *_self, int code)
 {
     MainView *self = (MainView *)_self;
 

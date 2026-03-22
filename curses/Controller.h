@@ -1,6 +1,8 @@
 #pragma once
 
+#include "NAMidi.h"
+
 typedef struct _Controller Controller;
 
-extern Controller *ControllerCreate();
+extern Controller *ControllerCreate(NAMidi *namidi);
 extern void ControllerDestroy(Controller *controller);

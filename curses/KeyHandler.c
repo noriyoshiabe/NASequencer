@@ -3,7 +3,7 @@
 
 const IID IIDKeyHandler = InterfaceID("KeyHandler");
 
-bool KeyHandlerHandleKeyEvent(KeyHandler *self, char code)
+bool KeyHandlerHandleKeyEvent(KeyHandler *self, int code)
 {
     return QueryInterface(self, IIDKeyHandler, IKeyHandler)->onKeyEvent(self, code);
 }

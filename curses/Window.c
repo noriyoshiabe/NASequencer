@@ -11,7 +11,7 @@ struct _Window {
     KeyHandler *nextKeyHandler;
 };
 
-static bool WindowOnKeyEvent(KeyHandler *self, char code);
+static bool WindowOnKeyEvent(KeyHandler *self, int code);
 static void WindowSetNextKeyHandler(KeyHandler *self, KeyHandler *keyHandler);
 
 static const KeyHandlerVtbl WindowKeyHandlerVtbl = {
@@ -54,7 +54,7 @@ void WindowRefresh(Window *self)
     wrefresh(self->window);
 }
 
-static bool WindowOnKeyEvent(KeyHandler *_self, char code)
+static bool WindowOnKeyEvent(KeyHandler *_self, int code)
 {
     Window *self = (Window *)_self;
 

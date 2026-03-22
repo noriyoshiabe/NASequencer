@@ -12,9 +12,10 @@ struct _Controller {
     Window *mainWindow;
     MainView *mainView;
     KeyHandler *nextKeyHandler;
+    NAMidi *namidi;
 };
 
-static bool ControllerOnKeyEvent(KeyHandler *self, char code);
+static bool ControllerOnKeyEvent(KeyHandler *self, int code);
 static void ControllerSetNextKeyHandler(KeyHandler *self, KeyHandler *keyHandler);
 
 static const KeyHandlerVtbl ControllerKeyHandlerVtbl = {
@@ -33,7 +34,9 @@ static const InterfaceVtbl ControllerInterfaceVtbl = {
     .queryInterface = ControllerQueryInteface,
 };
 
-Controller *ControllerCreate()
+static NAMidiObserverCallbacks ControllerNAMidiObserverCallbacks;
+
+Controller *ControllerCreate(NAMidi *namidi)
 {
     Controller *self = calloc(1, sizeof(Controller));
     self->vtbl = &ControllerInterfaceVtbl;
@@ -49,19 +52,48 @@ Controller *ControllerCreate()
     KeyHandlerSetNextKeyHandler(self, self->mainWindow);
     KeyHandlerSetNextKeyHandler(self->mainWindow, self->mainView);
 
+    self->namidi = namidi;
+    NAMidiAddObserver(self->namidi, self, &ControllerNAMidiObserverCallbacks);
+
     return self;
 }
 
 void ControllerDestroy(Controller *self)
 {
+    NAMidiRemoveObserver(self->namidi, self);
+
     ViewDestroy((View *)self->mainView);
     WindowDestroy(self->mainWindow);
     free(self);
 }
 
-static bool ControllerOnKeyEvent(KeyHandler *_self, char code)
+static bool ControllerOnKeyEvent(KeyHandler *_self, int code)
 {
     Controller *self = (Controller *)_self;
+    Player *player = NAMidiGetPlayer(self->namidi);
+
+    __Dump__C(code);
+
+    switch (code) {
+    case ' ':
+        PlayerPlayPause(player);
+        return true;
+    case 'r':
+        PlayerRewind(player);
+        return true;
+    case KEY_LEFT:
+        PlayerBackWard(player);
+        return true;
+    case KEY_RIGHT:
+        PlayerForward(player);
+        return true;
+    case '<':
+        PlayerBackWardToMarker(player);
+        return true;
+    case '>':
+        PlayerForwardToMarker(player);
+        return true;
+    }
 
     if (self->nextKeyHandler) {
         return KeyHandlerHandleKeyEvent(self->nextKeyHandler, code);
@@ -70,8 +102,36 @@ static bool ControllerOnKeyEvent(KeyHandler *_self, char code)
     return false;
 }
 
+static void ControllerNAMidiOnBeforeParse(void *receiver, bool fileChanged)
+{
+}
+
+static void ControllerNAMidiOnParseFinish(void *receiver, Sequence *sequence, ParseInfo *info)
+{
+    Controller *self = receiver;
+
+    // TODO process sequence
+
+    ViewInvalidate(self->mainView);
+
+    __Trace__;
+
+    NAIterator *iterator = NAArrayGetIterator(info->errors);
+    while (iterator->hasNext(iterator)) {
+        ParseError *error = iterator->next(iterator);
+        char *formatted = ParseErrorFormattedString(error);
+        free(formatted);
+        // TODO error display
+    }
+}
+
 static void ControllerSetNextKeyHandler(KeyHandler *_self, KeyHandler *next)
 {
     Controller *self = (Controller *)_self;
     self->nextKeyHandler = next;
 }
+
+static NAMidiObserverCallbacks ControllerNAMidiObserverCallbacks = {
+    ControllerNAMidiOnBeforeParse,
+    ControllerNAMidiOnParseFinish,
+};
