@@ -1,5 +1,9 @@
 #include "Window.h"
+#include "WindowManager.h"
 #include "Debug.h"
+#include "View.h"
+#include "NASet.h"
+#include "NAMessageQ.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -9,7 +13,11 @@ struct _Window {
     const InterfaceVtbl *vtbl;
     WINDOW *window;
     KeyHandler *nextKeyHandler;
+    NASet *views;
+    NAMessageQ *msgQ;
 };
+
+static const int WindowMessageDirtyView = 1;
 
 static bool WindowOnKeyEvent(KeyHandler *self, int code);
 static void WindowSetNextKeyHandler(KeyHandler *self, KeyHandler *keyHandler);
@@ -34,14 +42,38 @@ Window *WindowCreate(Rect rect)
 {
     Window *self = calloc(1, sizeof(Window));
     self->vtbl = &WindowInterfaceVtbl;
+    self->views = NASetCreate(NULL, NULL);
+    self->msgQ = NAMessageQCreate(32);
     self->window = newwin(rect.size.height, rect.size.width, rect.point.y, rect.point.x);
+
+    WindowManager *windowManager = WindowManagerSharedInstance();
+    WindowManagerAppendWindow(windowManager, self);
+
     return self;
 }
 
 void WindowDestroy(Window *self)
 {
+    WindowManager *windowManager = WindowManagerSharedInstance();
+    WindowManagerRemoveWindow(windowManager, self);
+
     delwin(self->window);
     free(self);
+}
+
+void WindowAppendView(Window *self, View *view)
+{
+    NASetAdd(self->views, view);
+}
+
+void WindowRemoveView(Window *self, View *view)
+{
+    NASetRemove(self->views, view);
+}
+
+void WindowMarkViewAsDirty(Window *self, View *view)
+{
+    NAMessageQPost(self->msgQ, WindowMessageDirtyView, view);
 }
 
 void WindowPrint(Window *self, int x, int y, const char *str)
@@ -52,6 +84,21 @@ void WindowPrint(Window *self, int x, int y, const char *str)
 void WindowRefresh(Window *self)
 {
     wrefresh(self->window);
+}
+
+void WindowDisplayIfNeeded(Window *self)
+{
+    NAMessage msg;
+
+    while (NAMessageQPeek(self->msgQ, &msg)) {
+        switch (msg.kind) {
+        case WindowMessageDirtyView:
+            if (NASetContains(self->views, msg.data)) {
+                ViewDisplay(msg.data);
+            }
+            break;
+        }
+    }
 }
 
 static bool WindowOnKeyEvent(KeyHandler *_self, int code)

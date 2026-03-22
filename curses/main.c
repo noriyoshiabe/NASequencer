@@ -1,3 +1,4 @@
+#include "WindowManager.h"
 #include "Controller.h"
 #include "DebugWindow.h"
 #include "Debug.h"
@@ -6,6 +7,7 @@
 #include "NAMidi.h"
 
 #include <ncurses.h>
+#include <unistd.h>
 
 int main(int argc, char **argv)
 {
@@ -33,9 +35,11 @@ int main(int argc, char **argv)
     cbreak();
     noecho();
     keypad(stdscr, TRUE);
+    nodelay(stdscr, TRUE);
     curs_set(0);
     refresh(); 
 
+    WindowManager *windowManager = WindowManagerSharedInstance();
     Controller *controller = ControllerCreate(namidi);
     DebugWindow *debugWindow = DebugWindowCreate(COLS, 5);
 
@@ -47,7 +51,12 @@ int main(int argc, char **argv)
         if (c == 'q') {
             break;
         }
-        KeyHandlerHandleKeyEvent(controller, c);
+        if (c != ERR) {
+            KeyHandlerHandleKeyEvent(controller, c);
+        }
+
+        WindowManagerDisplayIfNeeded(windowManager);
+        usleep(100);
     }
 
     ControllerDestroy(controller);

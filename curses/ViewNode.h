@@ -17,6 +17,7 @@ extern void ViewNodeRemoveChild(ViewNode *self, View *child);
 extern Rect ViewNodeGetFrame(ViewNode *self);
 extern void ViewNodeSetFrame(ViewNode *self, Rect frame);
 extern void ViewNodeInvalidate(ViewNode *self);
+extern void ViewNodeDisplay(ViewNode *self);
 extern bool ViewNodeIsDrawing(ViewNode *self);
 extern void ViewNodePrintf(ViewNode *self, int x, int y, const char *fmt, va_list argList);
 extern void ViewNodeDestroy(ViewNode *self);

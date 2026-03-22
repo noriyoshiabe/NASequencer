@@ -39,4 +39,5 @@ extern void ViewRemoveChild(View *self, View *child);
 extern Rect ViewGetFrame(View *self);
 extern void ViewSetFrame(View *self, Rect frame);
 extern void ViewInvalidate(View *self);
+extern void ViewDisplay(View *self);
 extern void ViewPrintf(View *self, int x, int y, const char *fmt, ...);

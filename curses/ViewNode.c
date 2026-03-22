@@ -32,6 +32,10 @@ void ViewNodeSetWindow(ViewNode *self, Window *window)
 {
     self->window = window;
 
+    if (self->window) {
+        WindowAppendView(self->window, self->owner);
+    }
+
     NAIterator *iterator = NAArrayGetIterator(self->children);
     while (iterator->hasNext(iterator)) {
         View *child = iterator->next(iterator);
@@ -52,6 +56,11 @@ void ViewNodeAppendChild(ViewNode *self, View *child)
     }
 
     childNode->window = self->window;
+
+    if (childNode->window) {
+        WindowAppendView(childNode->window, childNode->owner);
+    }
+
     childNode->parent = self->parent;
 
     NAArrayAppend(self->children, child);
@@ -63,7 +72,10 @@ void ViewNodeRemoveChild(ViewNode *self, View *child)
     NAArrayRemoveAt(self->children, index);
 
     ViewNode *childNode = ViewGetNode(child);
-    childNode->window = NULL;
+    if (childNode->window) {
+        WindowRemoveView(childNode->window, childNode->owner);
+        childNode->window = NULL;
+    }
     childNode->parent = NULL;
 };
 
@@ -79,6 +91,11 @@ void ViewNodeSetFrame(ViewNode *self, Rect frame)
 }
 
 void ViewNodeInvalidate(ViewNode *self)
+{
+    WindowMarkViewAsDirty(self->window, self->owner);
+}
+
+void ViewNodeDisplay(ViewNode *self)
 {
     bool isParentDrawing = self->parent && ViewNodeIsDrawing(ViewGetNode(self->parent));
 
@@ -122,6 +139,10 @@ bool ViewNodeIsDrawing(ViewNode *node)
 
 void ViewNodeDestroy(ViewNode *self)
 {
+    if (self->window) {
+        WindowRemoveView(self->window, self->owner);
+    }
+
     NAIterator *iterator = NAArrayGetIterator(self->children);
     while (iterator->hasNext(iterator)) {
         View *child = iterator->next(iterator);

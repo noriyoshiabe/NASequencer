@@ -30,6 +30,7 @@ set(SOURCES
   View.c
   ViewNode.c
   Window.c
+  WindowManager.c
   MainView.c
   HeaderView.c
   Controller.c

@@ -52,6 +52,12 @@ void ViewInvalidate(View *self)
     ViewNodeInvalidate(node);
 }
 
+void ViewDisplay(View *self)
+{
+    ViewNode *node = QueryInterface(self, IIDView, IView)->getNode(self);
+    ViewNodeDisplay(node);
+}
+
 void ViewPrintf(View *self, int x, int y, const char *fmt, ...)
 {
     va_list argList;
