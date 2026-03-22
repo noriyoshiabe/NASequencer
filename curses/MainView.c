@@ -8,6 +8,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <ncurses.h>
 
 struct _MainView {
     const InterfaceVtbl *vtbl;
@@ -46,14 +47,14 @@ static const InterfaceVtbl MainViewInterfaceVtbl = {
     .queryInterface = MainViewQueryInteface,
 };
 
-MainView *MainViewCreate()
+MainView *MainViewCreate(NAMidi *namidi)
 {
     MainView *self = calloc(1, sizeof(MainView));
     self->vtbl = &MainViewInterfaceVtbl;
     self->node = ViewNodeCreate(self);
 
-    HeaderView *header = HeaderViewCreate();
-    Rect frame = {{1, 1}, {100, 2}};
+    HeaderView *header = HeaderViewCreate(namidi);
+    Rect frame = {{0, 0}, {COLS, 3}};
     ViewSetFrame(header, frame);
     ViewAppendChild(self, header);
 

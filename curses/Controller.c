@@ -43,11 +43,10 @@ Controller *ControllerCreate(NAMidi *namidi)
 
     Rect frame = {{0, 0}, {COLS, LINES}};
     self->mainWindow = WindowCreate(frame);
-    self->mainView = MainViewCreate();
+    self->mainView = MainViewCreate(namidi);
 
     ViewSetFrame(self->mainView, frame);
     ViewSetWindow(self->mainView, self->mainWindow);
-    ViewInvalidate(self->mainView);
 
     KeyHandlerSetNextKeyHandler(self, self->mainWindow);
     KeyHandlerSetNextKeyHandler(self->mainWindow, self->mainView);
@@ -102,19 +101,19 @@ static bool ControllerOnKeyEvent(KeyHandler *_self, int code)
     return false;
 }
 
+static void ControllerSetNextKeyHandler(KeyHandler *_self, KeyHandler *next)
+{
+    Controller *self = (Controller *)_self;
+    self->nextKeyHandler = next;
+}
+
 static void ControllerNAMidiOnBeforeParse(void *receiver, bool fileChanged)
 {
 }
 
 static void ControllerNAMidiOnParseFinish(void *receiver, Sequence *sequence, ParseInfo *info)
 {
-    Controller *self = receiver;
-
-    // TODO process sequence
-
-    ViewInvalidate(self->mainView);
-
-    __Trace__;
+    //Controller *self = receiver;
 
     NAIterator *iterator = NAArrayGetIterator(info->errors);
     while (iterator->hasNext(iterator)) {
@@ -123,12 +122,6 @@ static void ControllerNAMidiOnParseFinish(void *receiver, Sequence *sequence, Pa
         free(formatted);
         // TODO error display
     }
-}
-
-static void ControllerSetNextKeyHandler(KeyHandler *_self, KeyHandler *next)
-{
-    Controller *self = (Controller *)_self;
-    self->nextKeyHandler = next;
 }
 
 static NAMidiObserverCallbacks ControllerNAMidiObserverCallbacks = {
