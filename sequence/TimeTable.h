@@ -34,6 +34,7 @@ extern int64_t TimeTableTick2MicroSec(TimeTable *self, int32_t tick);
 extern int32_t TimeTableMicroSec2Tick(TimeTable *self, int64_t usec);
 extern RepeatSection TimeTableRepeatSectionOnTick(TimeTable *self, int32_t tick);
 extern NAArray *TimeTableGetRepeatSections(TimeTable *self);
+extern const char *TimeTableMarkerTextOnTick(TimeTable *self, int32_t tick);
 
 extern const Location LocationZero;
 
@@ -44,5 +45,6 @@ extern void TimeTableSetLength(TimeTable *self, int32_t length);
 extern bool TimeTableAddTimeSign(TimeTable *self, int32_t tick, TimeSign timeSign);
 extern bool TimeTableAddTempo(TimeTable *self, int32_t tick, float tempo);
 extern bool TimeTableAddRepeatPoint(TimeTable *self, int32_t tick);
+extern bool TimeTableAddMarkerText(TimeTable *self, int32_t tick, const char *markerText);
 
 extern void TimeTableDump(TimeTable *self, int indent);

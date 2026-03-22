@@ -209,6 +209,11 @@ TimeSign PlayerGetTimeSign(Player *self)
     return TimeTableTimeSignOnTick(self->sequence->timeTable, self->tick);
 }
 
+const char *PlayerGetMarkerText(Player *self)
+{
+    return TimeTableMarkerTextOnTick(self->sequence->timeTable, self->tick);
+}
+
 PlayerRepeatState PlayerGetRepeatState(Player *self)
 {
     return self->repeatState;

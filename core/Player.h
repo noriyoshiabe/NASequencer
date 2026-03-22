@@ -56,6 +56,7 @@ extern int PlayerGetTick(Player *self);
 extern Location PlayerGetLocation(Player *self);
 extern float PlayerGetTempo(Player *self);
 extern TimeSign PlayerGetTimeSign(Player *self);
+extern const char *PlayerGetMarkerText(Player *self);
 extern PlayerRepeatState PlayerGetRepeatState(Player *self);
 
 static inline const char *PlayerEvent2String(PlayerEvent event)

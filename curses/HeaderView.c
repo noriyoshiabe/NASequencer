@@ -74,8 +74,10 @@ static void HeaderViewDraw(View *_self, Size size)
         snprintf(name, sizeof(name), "%s - %s", name, self->sequence->title);
     }
 
+    const char *markerText = PlayerGetMarkerText(self->player);
+
     char section[64] = {};
-    snprintf(section, sizeof(section), "Section %s", "TODO");
+    snprintf(section, sizeof(section), "Section %s", markerText);
 
     snprintf(line, sizeof(line), "%-*s", size.width, name);
     snprintf(line + size.width - strlen(section), strlen(section) + 1, "%s", section);

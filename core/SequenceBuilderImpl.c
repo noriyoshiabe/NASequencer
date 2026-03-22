@@ -108,6 +108,7 @@ static void SequenceBuilderAppendMarker(void *_self, int tick, const char *marke
     strcpy(event->text, marker);
     NAArrayAppend(sequence->events, event);
     TimeTableAddRepeatPoint(sequence->timeTable, tick);
+    TimeTableAddMarkerText(sequence->timeTable, tick, marker);
 }
 
 static void SequenceBuilderAppendBank(void *_self, int tick, int channel, int bankNo)

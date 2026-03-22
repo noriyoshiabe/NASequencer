@@ -22,12 +22,19 @@ typedef struct _TempoRecord {
     int64_t usecEnd;
 } TempoRecord;
 
+typedef struct _MarkerRecord {
+    int32_t tickStart;
+    int32_t tickEnd;
+    char *text;
+} MarkerRecord;
+
 struct _TimeTable {
     int32_t resolution;
     int32_t length;
     NAArray *timeSignRecords;
     NAArray *tempoRecords;
     NAArray *repeatSections;
+    NAArray *markerRecords;
 };
 
 static int TimeSignRecordFindByTickComparator(const void *_tick, const void *_record);
@@ -35,9 +42,12 @@ static int TimeSignRecordFindByMeasureComparator(const void *_measure, const voi
 static int TempoRecordFindByTickComparator(const void *_tick, const void *_record);
 static int TempoRecordFindByUsecComparator(const void *_usec, const void *_record);
 static int RepeatSectionFindByTickComparator(const void *_tick, const void *_section);
+static int MarkerRecordFindByTickComparator(const void *_tick, const void *_record);
 
 static void TimeTableRefreshMeasureFrom(TimeTable *self, int index);
 static void TimeTableRefreshUsecFrom(TimeTable *self, int index);
+
+static void MarkerRecordDestroy(MarkerRecord *self);
 
 const Location LocationZero = {1, 1, 0};
 
@@ -48,6 +58,7 @@ TimeTable *TimeTableCreate()
     self->timeSignRecords = NAArrayCreate(4, NULL);
     self->tempoRecords = NAArrayCreate(4, NULL);
     self->repeatSections = NAArrayCreate(4, NULL);
+    self->markerRecords = NAArrayCreate(4, NULL);
 
     TimeSignRecord *timeSign = malloc(sizeof(TimeSignRecord));
     *timeSign = (TimeSignRecord){0, INT32_MAX, {4, 4}, 1, INT32_MAX, 480 * 4};
@@ -61,6 +72,10 @@ TimeTable *TimeTableCreate()
     *section = (RepeatSection){0, INT32_MAX};
     NAArrayAppend(self->repeatSections, section);
 
+    MarkerRecord *marker = malloc(sizeof(MarkerRecord));
+    *marker = (MarkerRecord){0, INT32_MAX, strdup("None")};
+    NAArrayAppend(self->markerRecords, marker);
+
     return self;
 }
 
@@ -69,9 +84,11 @@ void TimeTableDestroy(TimeTable *self)
     NAArrayTraverse(self->timeSignRecords, free);
     NAArrayTraverse(self->tempoRecords, free);
     NAArrayTraverse(self->repeatSections, free);
+    NAArrayTraverse(self->markerRecords, MarkerRecordDestroy);
     NAArrayDestroy(self->timeSignRecords);
     NAArrayDestroy(self->tempoRecords);
     NAArrayDestroy(self->repeatSections);
+    NAArrayDestroy(self->markerRecords);
     free(self);
 }
 
@@ -166,6 +183,39 @@ extern bool TimeTableAddRepeatPoint(TimeTable *self, int32_t tick)
     insert->tickStart = tick;
 
     NAArrayInsertAt(self->repeatSections, i + 1, insert);
+    return true;
+}
+
+bool TimeTableAddMarkerText(TimeTable *self, int32_t tick, const char *markerText)
+{
+    int count = NAArrayCount(self->markerRecords);
+    MarkerRecord **records = NAArrayGetValues(self->markerRecords);
+
+    int i = NAArrayBSearchIndex(self->markerRecords, &tick, TempoRecordFindByTickComparator);
+    if (0 == strcmp(records[i]->text, markerText)) {
+        return true;
+    }
+
+    if (records[i]->tickStart == tick) {
+        free(records[i]->text);
+        records[i]->text = strdup(markerText);
+        return true;
+    }
+
+    if (i + 1 < count) {
+        if (0 == strcmp(records[i + 1]->text, markerText)) {
+            records[i + 1]->tickStart = tick;
+            return true;
+        }
+    }
+
+    MarkerRecord *insert = malloc(sizeof(MarkerRecord));
+    *insert = *records[i];
+    records[i]->tickEnd = tick;
+    insert->tickStart = tick;
+    insert->text = strdup(markerText);
+
+    NAArrayInsertAt(self->markerRecords, i + 1, insert);
     return true;
 }
 
@@ -280,6 +330,13 @@ NAArray *TimeTableGetRepeatSections(TimeTable *self)
     return self->repeatSections;
 }
 
+const char *TimeTableMarkerTextOnTick(TimeTable *self, int32_t tick)
+{
+    MarkerRecord **records = NAArrayGetValues(self->markerRecords);
+    int i = NAArrayBSearchIndex(self->markerRecords, &tick, MarkerRecordFindByTickComparator);
+    return records[i]->text;
+}
+
 static void TimeTableRefreshMeasureFrom(TimeTable *self, int index)
 {
     int count = NAArrayCount(self->timeSignRecords);
@@ -306,6 +363,12 @@ static void TimeTableRefreshUsecFrom(TimeTable *self, int index)
         records[i]->usecEnd = records[i]->usecStart + round((records[i]->tickEnd - records[i]->tickStart) * usecPerTick);
         previous = records[i];
     }
+}
+
+static void MarkerRecordDestroy(MarkerRecord *self)
+{
+    free(self->text);
+    free(self);
 }
 
 static int TimeSignRecordFindByTickComparator(const void *_tick, const void *_record)
@@ -370,6 +433,19 @@ static int RepeatSectionFindByTickComparator(const void *_tick, const void *_sec
     }
     else {
         return *tick - section->tickStart;
+    }
+}
+
+static int MarkerRecordFindByTickComparator(const void *_tick, const void *_record)
+{
+    const int32_t *tick = _tick;
+    const MarkerRecord *record = *((const MarkerRecord **)_record);
+
+    if (record->tickStart <= *tick && *tick < record->tickEnd) {
+        return 0;
+    }
+    else {
+        return *tick - record->tickStart;
     }
 }
 
