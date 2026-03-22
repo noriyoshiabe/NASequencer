@@ -5,6 +5,11 @@ set(TARGET_NAME cnaseq)
 
 add_definitions(-Wall)
 
+if (CMAKE_BUILD_TYPE MATCHES "Debug")
+  add_definitions(-DDEBUG)
+  add_definitions(-g)
+endif (CMAKE_BUILD_TYPE MATCHES "Debug")
+
 find_library(NCURSES_LIBRARY ncurses)
 
 add_subdirectory (../lib ${CMAKE_CURRENT_BINARY_DIR}/lib)
@@ -47,5 +52,15 @@ target_link_libraries(${TARGET_NAME} namidi-lib)
 target_link_libraries(${TARGET_NAME} namidi-core)
 target_link_libraries(${TARGET_NAME} namidi-sequence)
 target_link_libraries(${TARGET_NAME} namidi-parser)
-target_link_libraries(${TARGET_NAME} namidi-lib)
 target_link_libraries(${TARGET_NAME} namidi-synthesizer)
+
+if (CMAKE_BUILD_TYPE MATCHES "Debug")
+  if(APPLE)
+    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+      COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/debug.entitlements ${CMAKE_CURRENT_BINARY_DIR}/debug.entitlements
+    )
+    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+      COMMAND codesign --force --options runtime --entitlements debug.entitlements -s - ${TARGET_NAME}
+    )
+  endif()
+endif (CMAKE_BUILD_TYPE MATCHES "Debug")
