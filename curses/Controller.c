@@ -72,10 +72,10 @@ static bool ControllerOnKeyEvent(KeyHandler *_self, int code)
     case 'r':
         PlayerRewind(player);
         return true;
-    case KEY_LEFT:
+    case ',':
         PlayerBackWard(player);
         return true;
-    case KEY_RIGHT:
+    case '.':
         PlayerForward(player);
         return true;
     case '<':
