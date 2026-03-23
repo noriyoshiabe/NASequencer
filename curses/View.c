@@ -70,10 +70,10 @@ void ViewDisplay(View *self)
     ViewNodeDisplay(node);
 }
 
-void ViewSetColor(View *self, Color color)
+void ViewSetAttr(View *self, int attrs)
 {
     ViewNode *node = QueryInterface(self, IIDView, IView)->getNode(self);
-    ViewNodeSetColor(node, color);
+    ViewNodeSetAttr(node, attrs);
 }
 
 void ViewBecomeKeyView(View *self)

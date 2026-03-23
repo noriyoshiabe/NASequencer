@@ -154,9 +154,9 @@ bool ViewNodeIsDrawing(ViewNode *node)
     return node->isDrawing;
 }
 
-void ViewNodeSetColor(ViewNode *self, Color color)
+void ViewNodeSetAttr(ViewNode *self, int attrs)
 {
-    WindowSetColor(self->window, color);
+    WindowSetAttr(self->window, attrs);
 }
 
 void ViewNodeBecomeKeyView(ViewNode *self)

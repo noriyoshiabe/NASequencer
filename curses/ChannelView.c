@@ -3,7 +3,7 @@
 #include "View.h"
 #include "ViewNode.h"
 #include "KeyHandler.h"
-#include "Color.h"
+#include "Attribute.h"
 #include "Debug.h"
 
 #include <string.h>
@@ -32,6 +32,7 @@ struct _ChannelView {
     MixerChannel *mixerChannel;
     int channel;
     Focus focus;
+    bool selected;
 };
 
 static ViewNode *ChannelViewGetNode(View *self);
@@ -116,43 +117,43 @@ static void ChannelViewDraw(View *_self, Size size)
     MidiSourceDescription *description = MixerChannelGetMidiSourceDescription(self->mixerChannel);
     PresetInfo *preset = MixerChannelGetPresetInfo(self->mixerChannel);
 
-    ViewSetColor(self, isMuteFocused ? ColorFocused : mute ? ColorMute : ColorDefault);
+    ViewSetAttr(self, Attribute(mute ? ColorMute : ColorDefault, isMuteFocused, false));
     ViewPrintf(self, 12, 0, "[Mute]");
-    ViewSetColor(self, isSoloFocused ? ColorFocused : solo ? ColorSolo : ColorDefault);
+    ViewSetAttr(self, Attribute(solo ? ColorSolo : ColorDefault, isSoloFocused, false));
     ViewPrintf(self, 19, 0, "[Solo]");
 
     int left = size.width - 47;
 
-    ViewSetColor(self, ColorDefault);
+    ViewSetAttr(self, AttributeDefault);
     ViewPrintf(self, left +  0, 0, "Volume");
-    ViewSetColor(self, isVolumeFocused ? ColorFocused : ColorDefault);
+    ViewSetAttr(self, Attribute(ColorDefault, isVolumeFocused, self->selected));
     ViewPrintf(self, left +  7, 0, "[%3d]", volume);
 
-    ViewSetColor(self, ColorDefault);
+    ViewSetAttr(self, AttributeDefault);
     ViewPrintf(self, left + 13, 0, "Pan");
-    ViewSetColor(self, isPanFocused ? ColorFocused : ColorDefault);
+    ViewSetAttr(self, Attribute(ColorDefault, isPanFocused, self->selected));
     ViewPrintf(self, left + 17, 0, pan == 0 ? "[%3d]" : "[%+3d]", pan);
 
-    ViewSetColor(self, ColorDefault);
+    ViewSetAttr(self, AttributeDefault);
     ViewPrintf(self, left + 23, 0, "Chorus");
-    ViewSetColor(self, isCholusFocused ? ColorFocused : ColorDefault);
+    ViewSetAttr(self, Attribute(ColorDefault, isCholusFocused, self->selected));
     ViewPrintf(self, left + 30, 0, "[%3d]", chorus);
 
-    ViewSetColor(self, ColorDefault);
+    ViewSetAttr(self, AttributeDefault);
     ViewPrintf(self, left + 36, 0, "Reverb");
-    ViewSetColor(self, isReverbFocused ? ColorFocused : ColorDefault);
+    ViewSetAttr(self, Attribute(ColorDefault, isReverbFocused, self->selected));
     ViewPrintf(self, left + 42, 0, "[%3d]", reverb);
 
-    ViewSetColor(self, ColorDefault);
+    ViewSetAttr(self, AttributeDefault);
     ViewPrintf(self, 0, 1, "Syntesizer");
-    ViewSetColor(self, isSyntesizerFocused ? ColorFocused : ColorDefault);
+    ViewSetAttr(self, Attribute(ColorDefault, isSyntesizerFocused, self->selected));
     ViewPrintf(self, 11, 1, "[%s]", description->name);
 
     left = 14 + strlen(description->name);
 
-    ViewSetColor(self, ColorDefault);
+    ViewSetAttr(self, AttributeDefault);
     ViewPrintf(self, left, 1, "Preset");
-    ViewSetColor(self, isPresetFocused ? ColorFocused : ColorDefault);
+    ViewSetAttr(self, Attribute(ColorDefault, isPresetFocused, self->selected));
     ViewPrintf(self, left + 7, 1, "[%s]", preset->name);
 
     Level level = MixerChannelGetLevel(self->mixerChannel);
@@ -164,35 +165,35 @@ static void ChannelViewDraw(View *_self, Size size)
 
     char bar[levelMax + 1];
 
-    ViewSetColor(self, ColorDefault);
+    ViewSetAttr(self, AttributeDefault);
     ViewPrintf(self, 0, 2, "L: ");
 
-    ViewSetColor(self, ColorLevelLow);
+    ViewSetAttr(self, Attribute(ColorLevelLow, false, true));
     int levelGreenL = MIN(levelL, levelMax - peak);
     memset(bar, '|', levelGreenL);
     bar[levelGreenL] = '\0';
     ViewPrintf(self, 3, 2, bar);
     if (levelGreenL < levelL) {
-        ViewSetColor(self, ColorLevelHigh);
+        ViewSetAttr(self, Attribute(ColorLevelHigh, false, true));
         bar[levelL - levelGreenL] = '\0';
         ViewPrintf(self, size.width - peak, 2, bar);
     }
 
-    ViewSetColor(self, ColorDefault);
+    ViewSetAttr(self, ColorDefault);
     ViewPrintf(self, 0, 3, "R: ");
 
-    ViewSetColor(self, ColorLevelLow);
+    ViewSetAttr(self, Attribute(ColorLevelLow, false, true));
     int levelGreenR = MIN(levelR, levelMax - peak);
     memset(bar, '|', levelGreenR);
     bar[levelGreenR] = '\0';
     ViewPrintf(self, 3, 3, bar);
     if (levelGreenR < levelR) {
-        ViewSetColor(self, ColorLevelHigh);
+        ViewSetAttr(self, Attribute(ColorLevelHigh, false, true));
         bar[levelR - levelGreenR] = '\0';
         ViewPrintf(self, size.width - peak, 3, bar);
     }
 
-    ViewSetColor(self, ColorDefault);
+    ViewSetAttr(self, AttributeDefault);
     char line[size.width + 1];
     memset(line, '-', size.width);
     line[size.width] = '\0';
@@ -203,41 +204,105 @@ static bool ChannelViewOnKeyEvent(KeyHandler *_self, int code)
 {
     ChannelView *self = _self;
 
-    switch (code) {
-    case KEY_UP:
-        if (self->focus <= FocusReverb) {
-            return false;
-        }
-        self->focus = FocusMute;
-        return true;
-    case KEY_DOWN:
-        if (FocusSyntesizer <= self->focus) {
-            return false;
-        }
-        self->focus = FocusSyntesizer;
-        return true;
-    case KEY_LEFT:
-        if (self->focus <= FocusReverb) {
-            if (FocusMute < self->focus) {
-                --self->focus;
+    if (self->selected) {
+        switch (code) {
+        case 27:
+        case '\n':
+            self->selected = false;
+            return true;
+        case KEY_LEFT:
+        case KEY_DOWN:
+            switch (self->focus) {
+            case FocusVolume:
+                MixerChannelSetVolume(self->mixerChannel, MAX(0, MixerChannelGetVolume(self->mixerChannel) - 1));
+                return true;
+            case FocusPan:
+                MixerChannelSetPan(self->mixerChannel, MAX(-64, MixerChannelGetPan(self->mixerChannel) - 1));
+                return true;
+            case FocusCholus:
+                MixerChannelSetChorusSend(self->mixerChannel, MAX(0, MixerChannelGetChorusSend(self->mixerChannel) - 1));
+                return true;
+            case FocusReverb:
+                MixerChannelSetReverbSend(self->mixerChannel, MAX(0, MixerChannelGetReverbSend(self->mixerChannel) - 1));
+                return true;
+            default:
+                return true;
             }
-        } else {
-            if (FocusSyntesizer < self->focus) {
-                --self->focus;
+        case KEY_RIGHT:
+        case KEY_UP:
+            switch (self->focus) {
+            case FocusVolume:
+                MixerChannelSetVolume(self->mixerChannel, MIN(127, MixerChannelGetVolume(self->mixerChannel) + 1));
+                return true;
+            case FocusPan:
+                MixerChannelSetPan(self->mixerChannel, MIN(63, MixerChannelGetPan(self->mixerChannel) + 1));
+                return true;
+            case FocusCholus:
+                MixerChannelSetChorusSend(self->mixerChannel, MIN(127, MixerChannelGetChorusSend(self->mixerChannel) + 1));
+                return true;
+            case FocusReverb:
+                MixerChannelSetReverbSend(self->mixerChannel, MIN(127, MixerChannelGetReverbSend(self->mixerChannel) + 1));
+                return true;
+            default:
+                return true;
             }
+        default:
+            return true;
         }
-        return true;
-    case KEY_RIGHT:
-        if (self->focus <= FocusReverb) {
-            if (self->focus < FocusReverb) {
-                ++self->focus;
+
+    } else {
+        switch (code) {
+        case '\n':
+            switch (self->focus) {
+            case FocusMute:
+                MixerChannelSetMute(self->mixerChannel, !MixerChannelGetMute(self->mixerChannel));
+                return true;
+            case FocusSolo:
+                MixerChannelSetSolo(self->mixerChannel, !MixerChannelGetSolo(self->mixerChannel));
+                return true;
+            case FocusSyntesizer:
+            case FocusPreset:
+                // TODO
+                return true;
+            default:
+                self->selected = !self->selected;
+                return true;
             }
-        } else {
-            if (self->focus < FocusPreset) {
-                ++self->focus;
+        case KEY_UP:
+            if (self->focus <= FocusReverb) {
+                return false;
             }
+            self->focus = FocusMute;
+            return true;
+        case KEY_DOWN:
+            if (FocusSyntesizer <= self->focus) {
+                return false;
+            }
+            self->focus = FocusSyntesizer;
+            return true;
+        case KEY_LEFT:
+            if (self->focus <= FocusReverb) {
+                if (FocusMute < self->focus) {
+                    --self->focus;
+                }
+            } else {
+                if (FocusSyntesizer < self->focus) {
+                    --self->focus;
+                }
+            }
+            return true;
+        case KEY_RIGHT:
+            if (self->focus <= FocusReverb) {
+                if (self->focus < FocusReverb) {
+                    ++self->focus;
+                }
+            } else {
+                if (self->focus < FocusPreset) {
+                    ++self->focus;
+                }
+            }
+            return true;
         }
-        return true;
     }
 
     return false;
