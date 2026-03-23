@@ -10,7 +10,9 @@ typedef void KeyHandler;
 typedef struct {
     bool (*onKeyEvent)(KeyHandler *self, int code);
     void (*setNextKeyHandler)(KeyHandler *self, KeyHandler *next);
+    KeyHandler *(*getNextKeyHandler)(KeyHandler *self);
 } KeyHandlerVtbl, *IKeyHandler;
 
 extern bool KeyHandlerHandleKeyEvent(KeyHandler *self, int code);
 extern void KeyHandlerSetNextKeyHandler(KeyHandler *self, KeyHandler *next);
+extern KeyHandler *KeyHandlerGetNextKeyHandler(KeyHandler *self);

@@ -1,26 +1,26 @@
 #include "Controller.h"
 #include "View.h"
-#include "Window.h"
+#include "KeyHandler.h"
 #include "MainView.h"
 #include "Debug.h"
 
-#include <ncurses.h>
 #include <stdlib.h>
+#include <ncurses.h>
 
 struct _Controller {
     const InterfaceVtbl *vtbl;
-    Window *mainWindow;
     MainView *mainView;
-    KeyHandler *nextKeyHandler;
     NAMidi *namidi;
 };
 
 static bool ControllerOnKeyEvent(KeyHandler *self, int code);
 static void ControllerSetNextKeyHandler(KeyHandler *self, KeyHandler *keyHandler);
+static KeyHandler *ControllerGetNextKeyHandler(KeyHandler *self);
 
 static const KeyHandlerVtbl ControllerKeyHandlerVtbl = {
     .onKeyEvent = ControllerOnKeyEvent,
     .setNextKeyHandler = ControllerSetNextKeyHandler,
+    .getNextKeyHandler = ControllerGetNextKeyHandler,
 };
 
 static void *ControllerQueryInteface(void *self, IID iid)
@@ -41,15 +41,8 @@ Controller *ControllerCreate(NAMidi *namidi)
     Controller *self = calloc(1, sizeof(Controller));
     self->vtbl = &ControllerInterfaceVtbl;
 
-    Rect frame = {{0, 0}, {COLS, LINES}};
-    self->mainWindow = WindowCreate(frame);
     self->mainView = MainViewCreate(namidi);
-
-    ViewSetFrame(self->mainView, frame);
-    ViewSetWindow(self->mainView, self->mainWindow);
-
-    KeyHandlerSetNextKeyHandler(self, self->mainWindow);
-    KeyHandlerSetNextKeyHandler(self->mainWindow, self->mainView);
+    KeyHandlerSetNextKeyHandler(self->mainView, self);
 
     self->namidi = namidi;
     NAMidiAddObserver(self->namidi, self, &ControllerNAMidiObserverCallbacks);
@@ -62,13 +55,12 @@ void ControllerDestroy(Controller *self)
     NAMidiRemoveObserver(self->namidi, self);
 
     ViewDestroy((View *)self->mainView);
-    WindowDestroy(self->mainWindow);
     free(self);
 }
 
 static bool ControllerOnKeyEvent(KeyHandler *_self, int code)
 {
-    Controller *self = (Controller *)_self;
+    Controller *self = _self;
     Player *player = NAMidiGetPlayer(self->namidi);
 
     __Dump__C(code);
@@ -94,17 +86,16 @@ static bool ControllerOnKeyEvent(KeyHandler *_self, int code)
         return true;
     }
 
-    if (self->nextKeyHandler) {
-        return KeyHandlerHandleKeyEvent(self->nextKeyHandler, code);
-    }
-
     return false;
 }
 
 static void ControllerSetNextKeyHandler(KeyHandler *_self, KeyHandler *next)
 {
-    Controller *self = (Controller *)_self;
-    self->nextKeyHandler = next;
+}
+
+static KeyHandler *ControllerGetNextKeyHandler(KeyHandler *_self)
+{
+    return NULL;
 }
 
 static void ControllerNAMidiOnBeforeParse(void *receiver, bool fileChanged)

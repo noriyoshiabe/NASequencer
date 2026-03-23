@@ -10,7 +10,10 @@ bool KeyHandlerHandleKeyEvent(KeyHandler *self, int code)
 
 void KeyHandlerSetNextKeyHandler(KeyHandler *self, KeyHandler *next)
 {
-    if (QueryInterface(next, IIDKeyHandler, IKeyHandler)) {
-        QueryInterface(self, IIDKeyHandler, IKeyHandler)->setNextKeyHandler(self, next);
-    }
+    QueryInterface(self, IIDKeyHandler, IKeyHandler)->setNextKeyHandler(self, next);
+}
+
+KeyHandler *KeyHandlerGetNextKeyHandler(KeyHandler *self)
+{
+    return QueryInterface(self, IIDKeyHandler, IKeyHandler)->getNextKeyHandler(self);
 }

@@ -5,6 +5,7 @@
 
 struct _WindowManager {
     NASet *windows;
+    Window *keyWindow;
 };
 
 static WindowManager *_sharedInstance = NULL;
@@ -35,11 +36,25 @@ WindowManager *WindowManagerSharedInstance()
 void WindowManagerAppendWindow(WindowManager *self, Window *window)
 {
     NASetAdd(self->windows, window);
+    self->keyWindow = window;
 }
 
 void WindowManagerRemoveWindow(WindowManager *self, Window *window)
 {
     NASetRemove(self->windows, window);
+
+    if (self->keyWindow == window) {
+        self->keyWindow = NULL;
+    }
+}
+
+bool WindowManagerDispatchKeyEvent(WindowManager *self, int code)
+{
+    if (self->keyWindow) {
+        return WindowDispatchKeyEvent(self->keyWindow, code);
+    }
+
+    return false;
 }
 
 void WindowManagerDisplayIfNeeded(WindowManager *self)

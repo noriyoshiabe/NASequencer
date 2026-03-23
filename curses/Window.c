@@ -2,6 +2,7 @@
 #include "WindowManager.h"
 #include "Debug.h"
 #include "View.h"
+#include "KeyHandler.h"
 #include "NASet.h"
 #include "NAMessageQ.h"
 
@@ -10,38 +11,17 @@
 #include <ncurses.h>
 
 struct _Window {
-    const InterfaceVtbl *vtbl;
     WINDOW *window;
-    KeyHandler *nextKeyHandler;
+    View *keyView;
     NASet *views;
     NAMessageQ *msgQ;
 };
 
 static const int WindowMessageDirtyView = 1;
 
-static bool WindowOnKeyEvent(KeyHandler *self, int code);
-static void WindowSetNextKeyHandler(KeyHandler *self, KeyHandler *keyHandler);
-
-static const KeyHandlerVtbl WindowKeyHandlerVtbl = {
-    .onKeyEvent = WindowOnKeyEvent,
-    .setNextKeyHandler = WindowSetNextKeyHandler,
-};
-
-static void *WindowQueryInteface(void *self, IID iid)
-{
-    if (iid == IIDKeyHandler)
-        return (void*)&WindowKeyHandlerVtbl;
-    return NULL;
-}
-
-static const InterfaceVtbl WindowInterfaceVtbl = {
-    .queryInterface = WindowQueryInteface,
-};
-
 Window *WindowCreate(Rect rect)
 {
     Window *self = calloc(1, sizeof(Window));
-    self->vtbl = &WindowInterfaceVtbl;
     self->views = NASetCreate(NULL, NULL);
     self->msgQ = NAMessageQCreate(32);
     self->window = newwin(rect.size.height, rect.size.width, rect.point.y, rect.point.x);
@@ -69,6 +49,34 @@ void WindowAppendView(Window *self, View *view)
 void WindowRemoveView(Window *self, View *view)
 {
     NASetRemove(self->views, view);
+
+    if (self->keyView == view) {
+        self->keyView = NULL;
+    }
+}
+
+bool WindowDispatchKeyEvent(Window *self, int code)
+{
+    KeyHandler *keyHandler = self->keyView;
+
+    while (keyHandler) {
+        if (KeyHandlerHandleKeyEvent(keyHandler, code)) {
+            return true;
+        }
+        keyHandler = KeyHandlerGetNextKeyHandler(keyHandler);
+    }
+
+    return false;
+}
+
+void WindowSetKeyView(Window *self, View *view)
+{
+    self->keyView = view;
+}
+
+bool WindowIsKeyView(Window *self, View *view)
+{
+    return self->keyView == view;
 }
 
 void WindowMarkViewAsDirty(Window *self, View *view)
@@ -104,21 +112,4 @@ void WindowDisplayIfNeeded(Window *self)
             break;
         }
     }
-}
-
-static bool WindowOnKeyEvent(KeyHandler *_self, int code)
-{
-    Window *self = (Window *)_self;
-
-    if (self->nextKeyHandler) {
-        return KeyHandlerHandleKeyEvent(self->nextKeyHandler, code);
-    }
-
-    return false;
-}
-
-static void WindowSetNextKeyHandler(KeyHandler *_self, KeyHandler *next)
-{
-    Window *self = (Window *)_self;
-    self->nextKeyHandler = next;
 }

@@ -44,4 +44,6 @@ extern void ViewSetHidden(View *self, bool hidden);
 extern void ViewInvalidate(View *self);
 extern void ViewDisplay(View *self);
 extern void ViewSetColor(View *self, Color color);
+extern void ViewBecomeKeyView(View *self);
+extern bool ViewIsKeyView(View *self);
 extern void ViewPrintf(View *self, int x, int y, const char *fmt, ...);

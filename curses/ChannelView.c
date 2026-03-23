@@ -1,8 +1,10 @@
 #include "Interface.h"
+#include "ChannelView.h"
 #include "View.h"
 #include "ViewNode.h"
-#include "ChannelView.h"
+#include "KeyHandler.h"
 #include "Color.h"
+#include "Debug.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -13,6 +15,7 @@
 struct _ChannelView {
     const InterfaceVtbl *vtbl;
     ViewNode *node;
+    KeyHandler *nextKeyHandler;
     Mixer *mixer;
     MixerChannel *mixerChannel;
     int channel;
@@ -28,10 +31,22 @@ static const ViewVtbl ChannelViewViewVtbl = {
     .destroy = ChannelViewDestroy,
 };
 
+static bool ChannelViewOnKeyEvent(KeyHandler *self, int code);
+static void ChannelViewSetNextKeyHandler(KeyHandler *self, KeyHandler *next);
+static KeyHandler *ChannelViewGetNextKeyHandler(KeyHandler *self);
+
+static const KeyHandlerVtbl ChannelViewKeyHandlerVtbl = {
+    .onKeyEvent = ChannelViewOnKeyEvent,
+    .setNextKeyHandler = ChannelViewSetNextKeyHandler,
+    .getNextKeyHandler = ChannelViewGetNextKeyHandler,
+};
+
 static void *ChannelViewQueryInteface(void *self, IID iid)
 {
     if (iid == IIDView)
         return (void*)&ChannelViewViewVtbl;
+    if (iid == IIDKeyHandler)
+        return (void*)&ChannelViewKeyHandlerVtbl;
     return NULL;
 }
 
@@ -63,7 +78,9 @@ static ViewNode *ChannelViewGetNode(View *_self)
 
 static void ChannelViewDraw(View *_self, Size size)
 {
-    ChannelView *self = (ChannelView *)_self;
+    ChannelView *self = _self;
+
+    bool isKeyView = ViewIsKeyView(self);
 
     ViewPrintf(self, 0, 0, "Channel: %2d", self->channel);
 
@@ -77,7 +94,7 @@ static void ChannelViewDraw(View *_self, Size size)
     MidiSourceDescription *description = MixerChannelGetMidiSourceDescription(self->mixerChannel);
     PresetInfo *preset = MixerChannelGetPresetInfo(self->mixerChannel);
 
-    ViewSetColor(self, mute ? ColorMute : ColorDefault);
+    ViewSetColor(self, isKeyView ? ColorFocused : mute ? ColorMute : ColorDefault);
     ViewPrintf(self, 12, 0, "[Mute]");
     ViewSetColor(self, solo ? ColorSolo : ColorDefault);
     ViewPrintf(self, 19, 0, "[Solo]");
@@ -143,6 +160,29 @@ static void ChannelViewDraw(View *_self, Size size)
     memset(line, '-', size.width);
     line[size.width] = '\0';
     ViewPrintf(self, 0, 4, line);
+}
+
+static bool ChannelViewOnKeyEvent(KeyHandler *_self, int code)
+{
+    ChannelView *self = _self;
+
+    // TODO focus change
+
+    __Dump__P(self);
+
+    return false;
+}
+
+static void ChannelViewSetNextKeyHandler(KeyHandler *_self, KeyHandler *next)
+{
+    ChannelView *self = _self;
+    self->nextKeyHandler = next;
+}
+
+static KeyHandler *ChannelViewGetNextKeyHandler(KeyHandler *_self)
+{
+    ChannelView *self = _self;
+    return self->nextKeyHandler;
 }
 
 static void ChannelViewDestroy(View *_self)

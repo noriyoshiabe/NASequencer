@@ -9,6 +9,7 @@ typedef void View;
 typedef struct _ViewNode ViewNode;
 
 extern ViewNode *ViewNodeCreate(View *owner);
+extern void ViewNodeDestroy(ViewNode *self);
 extern Window *ViewNodeGetWindow(ViewNode *self);
 extern void ViewNodeSetWindow(ViewNode *self, Window *window);
 extern View *ViewNodeGetParent(ViewNode *self);
@@ -22,5 +23,6 @@ extern void ViewNodeInvalidate(ViewNode *self);
 extern void ViewNodeDisplay(ViewNode *self);
 extern bool ViewNodeIsDrawing(ViewNode *self);
 extern void ViewNodeSetColor(ViewNode *self, Color color);
+extern void ViewNodeBecomeKeyView(ViewNode *self);
+extern bool ViewNodeIsKeyView(ViewNode *self);
 extern void ViewNodePrintf(ViewNode *self, int x, int y, const char *fmt, va_list argList);
-extern void ViewNodeDestroy(ViewNode *self);

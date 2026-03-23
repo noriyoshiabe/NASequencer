@@ -76,6 +76,18 @@ void ViewSetColor(View *self, Color color)
     ViewNodeSetColor(node, color);
 }
 
+void ViewBecomeKeyView(View *self)
+{
+    ViewNode *node = QueryInterface(self, IIDView, IView)->getNode(self);
+    ViewNodeBecomeKeyView(node);
+}
+
+bool ViewIsKeyView(View *self)
+{
+    ViewNode *node = QueryInterface(self, IIDView, IView)->getNode(self);
+    return ViewNodeIsKeyView(node);
+}
+
 void ViewPrintf(View *self, int x, int y, const char *fmt, ...)
 {
     va_list argList;

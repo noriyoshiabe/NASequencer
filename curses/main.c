@@ -63,8 +63,9 @@ int main(int argc, char **argv)
         if (c == 'q') {
             break;
         }
+
         if (c != ERR) {
-            KeyHandlerHandleKeyEvent(controller, c);
+            WindowManagerDispatchKeyEvent(windowManager, c);
         }
 
         WindowManagerDisplayIfNeeded(windowManager);

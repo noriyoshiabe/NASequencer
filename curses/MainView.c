@@ -15,8 +15,11 @@ struct _MainView {
     const InterfaceVtbl *vtbl;
     ViewNode *node;
     KeyHandler *nextKeyHandler;
+    Window *window;
     NAMidi *namidi;
     NAArray *channelViews;
+    NAArray *activeChannelViews;
+    int focusedChannelViewIndex;
     bool channelExsits[16];
 };
 
@@ -32,10 +35,12 @@ static const ViewVtbl MainViewViewVtbl = {
 
 static bool MainViewOnKeyEvent(KeyHandler *self, int code);
 static void MainViewSetNextKeyHandler(KeyHandler *self, KeyHandler *next);
+static KeyHandler *MainViewGetNextKeyHandler(KeyHandler *self);
 
 static const KeyHandlerVtbl MainViewKeyHandlerVtbl = {
     .onKeyEvent = MainViewOnKeyEvent,
     .setNextKeyHandler = MainViewSetNextKeyHandler,
+    .getNextKeyHandler = MainViewGetNextKeyHandler,
 };
 
 static void *MainViewQueryInteface(void *self, IID iid)
@@ -59,15 +64,24 @@ MainView *MainViewCreate(NAMidi *namidi)
     self->vtbl = &MainViewInterfaceVtbl;
     self->node = ViewNodeCreate(self);
 
+    Rect frame = {{0, 0}, {COLS, LINES}};
+    self->window = WindowCreate(frame);
+
+    ViewSetWindow(self, self->window);
+    ViewSetFrame(self, frame);
+
     HeaderView *header = HeaderViewCreate(namidi);
-    Rect frame = {{0, 0}, {COLS, 3}};
+    frame = (Rect){{0, 0}, {COLS, 3}};
     ViewSetFrame(header, frame);
     ViewAppendChild(self, header);
 
     self->channelViews = NAArrayCreate(16, NULL);
+    self->activeChannelViews = NAArrayCreate(16, NULL);
+
     for (int i = 0; i < 16; ++i) {
         ChannelView *channelView = ChannelViewCreate(NAMidiGetMixer(namidi), i + 1);
         ViewAppendChild(self, channelView);
+        KeyHandlerSetNextKeyHandler(channelView, self);
         NAArrayAppend(self->channelViews, channelView);
     }
 
@@ -85,7 +99,7 @@ static ViewNode *MainViewGetNode(View *_self)
 
 static void MainViewDraw(View *_self, Size size)
 {
-    MainView *self = (MainView *)_self;
+    MainView *self = _self;
 
     int offsetY = 3;
 
@@ -108,17 +122,41 @@ static void MainViewDestroy(View *_self)
     MainView *self = (MainView *)_self;
 
     NAMidiRemoveObserver(self->namidi, self);
+
     NAArrayDestroy(self->channelViews);
+    NAArrayDestroy(self->activeChannelViews);
     ViewNodeDestroy(self->node);
+    WindowDestroy(self->window);
     free(self);
 }
 
 static bool MainViewOnKeyEvent(KeyHandler *_self, int code)
 {
-    MainView *self = (MainView *)_self;
+    MainView *self = _self;
 
-    if (self->nextKeyHandler) {
-        return KeyHandlerHandleKeyEvent(self->nextKeyHandler, code);
+    int activeChannelViewCount = NAArrayCount(self->activeChannelViews);
+
+    if (0 < activeChannelViewCount) {
+        switch (code) {
+        case KEY_DOWN:
+            ++self->focusedChannelViewIndex;
+
+            if (activeChannelViewCount <= self->focusedChannelViewIndex) {
+                self->focusedChannelViewIndex = activeChannelViewCount - 1;
+            }
+
+            ViewBecomeKeyView(NAArrayGetValueAt(self->activeChannelViews, self->focusedChannelViewIndex));
+            return true;
+        case KEY_UP:
+            --self->focusedChannelViewIndex;
+
+            if (self->focusedChannelViewIndex < 0) {
+                self->focusedChannelViewIndex = 0;
+            }
+
+            ViewBecomeKeyView(NAArrayGetValueAt(self->activeChannelViews, self->focusedChannelViewIndex));
+            return true;
+        }
     }
 
     __Dump__P(self);
@@ -128,8 +166,14 @@ static bool MainViewOnKeyEvent(KeyHandler *_self, int code)
 
 static void MainViewSetNextKeyHandler(KeyHandler *_self, KeyHandler *next)
 {
-    MainView *self = (MainView *)_self;
+    MainView *self = _self;
     self->nextKeyHandler = next;
+}
+
+static KeyHandler *MainViewGetNextKeyHandler(KeyHandler *_self)
+{
+    MainView *self = _self;
+    return self->nextKeyHandler;
 }
 
 static void MainViewNAMidiOnBeforeParse(void *receiver, bool fileChanged)
@@ -144,6 +188,8 @@ static void MainViewNAMidiOnParseFinish(void *receiver, Sequence *sequence, Pars
         self->channelExsits[i] = false;
     }
 
+    NAArrayRemoveAll(self->activeChannelViews);
+
     NAIterator *iterator = NAArrayGetIterator(sequence->events);
     while (iterator->hasNext(iterator)) {
         MidiEvent *event = iterator->next(iterator);
@@ -157,6 +203,21 @@ static void MainViewNAMidiOnParseFinish(void *receiver, Sequence *sequence, Pars
             self->channelExsits[((ChannelEvent *)event)->channel - 1] = true;
             break;
         }
+    }
+
+    for (int i = 0; i < 16; ++i) {
+        if (self->channelExsits[i]) {
+            NAArrayAppend(self->activeChannelViews, NAArrayGetValueAt(self->channelViews, i));
+        }
+    }
+
+    int activeChannelViewCount = NAArrayCount(self->activeChannelViews);
+    if (activeChannelViewCount <= self->focusedChannelViewIndex) {
+        self->focusedChannelViewIndex = activeChannelViewCount - 1;
+    }
+
+    if (0 < activeChannelViewCount) {
+        ViewBecomeKeyView(NAArrayGetValueAt(self->activeChannelViews, self->focusedChannelViewIndex));
     }
 
     ViewInvalidate(self);

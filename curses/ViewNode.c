@@ -20,7 +20,23 @@ ViewNode *ViewNodeCreate(View *owner)
     self->owner = owner;
     self->children = NAArrayCreate(4, NULL);
     return self;
-};
+}
+
+void ViewNodeDestroy(ViewNode *self)
+{
+    if (self->window) {
+        WindowRemoveView(self->window, self->owner);
+    }
+
+    NAIterator *iterator = NAArrayGetIterator(self->children);
+    while (iterator->hasNext(iterator)) {
+        View *child = iterator->next(iterator);
+        ViewDestroy(child);
+    }
+
+    NAArrayDestroy(self->children);
+    free(self);
+}
 
 Window *ViewNodeGetWindow(ViewNode *self)
 {
@@ -60,7 +76,7 @@ void ViewNodeAppendChild(ViewNode *self, View *child)
         WindowAppendView(childNode->window, childNode->owner);
     }
 
-    childNode->parent = self->parent;
+    childNode->parent = self->owner;
 
     NAArrayAppend(self->children, child);
 }
@@ -133,9 +149,24 @@ void ViewNodeDisplay(ViewNode *self)
     }
 }
 
+bool ViewNodeIsDrawing(ViewNode *node)
+{
+    return node->isDrawing;
+}
+
 void ViewNodeSetColor(ViewNode *self, Color color)
 {
     WindowSetColor(self->window, color);
+}
+
+void ViewNodeBecomeKeyView(ViewNode *self)
+{
+    WindowSetKeyView(self->window, self->owner);
+}
+
+bool ViewNodeIsKeyView(ViewNode *self)
+{
+    return WindowIsKeyView(self->window, self->owner);
 }
 
 void ViewNodePrintf(ViewNode *self, int x, int y, const char *fmt, va_list argList)
@@ -148,37 +179,16 @@ void ViewNodePrintf(ViewNode *self, int x, int y, const char *fmt, va_list argLi
     WindowPrint(self->window, offset.x + x, offset.y + y, line);
 }
 
-bool ViewNodeIsDrawing(ViewNode *node)
-{
-    return node->isDrawing;
-}
-
-void ViewNodeDestroy(ViewNode *self)
-{
-    if (self->window) {
-        WindowRemoveView(self->window, self->owner);
-    }
-
-    NAIterator *iterator = NAArrayGetIterator(self->children);
-    while (iterator->hasNext(iterator)) {
-        View *child = iterator->next(iterator);
-        ViewDestroy(child);
-    }
-
-    NAArrayDestroy(self->children);
-    free(self);
-}
-
 static Point ViewNodeOffsetInRootView(ViewNode *self)
 {
     Point point = self->frame.point;
 
     View *ancestor = self->parent;
     while (ancestor) {
-        ancestor = ViewGetParent(ancestor);
         Rect ancestorFrame = ViewGetFrame(ancestor);
         point.x += ancestorFrame.point.x;
         point.y += ancestorFrame.point.y;
+        ancestor = ViewGetParent(ancestor);
     }
 
     return point;
