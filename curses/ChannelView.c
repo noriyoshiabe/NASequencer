@@ -8,9 +8,21 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <ncurses.h>
 
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
+
+typedef enum {
+    FocusMute,
+    FocusSolo,
+    FocusVolume,
+    FocusPan,
+    FocusCholus,
+    FocusReverb,
+    FocusSyntesizer,
+    FocusPreset,
+} Focus;
 
 struct _ChannelView {
     const InterfaceVtbl *vtbl;
@@ -19,6 +31,7 @@ struct _ChannelView {
     Mixer *mixer;
     MixerChannel *mixerChannel;
     int channel;
+    Focus focus;
 };
 
 static ViewNode *ChannelViewGetNode(View *self);
@@ -82,6 +95,15 @@ static void ChannelViewDraw(View *_self, Size size)
 
     bool isKeyView = ViewIsKeyView(self);
 
+    bool isMuteFocused = isKeyView && self->focus == FocusMute;
+    bool isSoloFocused = isKeyView && self->focus == FocusSolo;
+    bool isVolumeFocused = isKeyView && self->focus == FocusVolume;
+    bool isPanFocused = isKeyView && self->focus == FocusPan;
+    bool isCholusFocused = isKeyView && self->focus == FocusCholus;
+    bool isReverbFocused = isKeyView && self->focus == FocusReverb;
+    bool isSyntesizerFocused = isKeyView && self->focus == FocusSyntesizer;
+    bool isPresetFocused = isKeyView && self->focus == FocusPreset;
+
     ViewPrintf(self, 0, 0, "Channel: %2d", self->channel);
 
     bool mute = MixerChannelGetMute(self->mixerChannel);
@@ -94,28 +116,43 @@ static void ChannelViewDraw(View *_self, Size size)
     MidiSourceDescription *description = MixerChannelGetMidiSourceDescription(self->mixerChannel);
     PresetInfo *preset = MixerChannelGetPresetInfo(self->mixerChannel);
 
-    ViewSetColor(self, isKeyView ? ColorFocused : mute ? ColorMute : ColorDefault);
+    ViewSetColor(self, isMuteFocused ? ColorFocused : mute ? ColorMute : ColorDefault);
     ViewPrintf(self, 12, 0, "[Mute]");
-    ViewSetColor(self, solo ? ColorSolo : ColorDefault);
+    ViewSetColor(self, isSoloFocused ? ColorFocused : solo ? ColorSolo : ColorDefault);
     ViewPrintf(self, 19, 0, "[Solo]");
 
     int left = size.width - 47;
-    ViewSetColor(self, ColorDefault);
 
+    ViewSetColor(self, ColorDefault);
     ViewPrintf(self, left +  0, 0, "Volume");
+    ViewSetColor(self, isVolumeFocused ? ColorFocused : ColorDefault);
     ViewPrintf(self, left +  7, 0, "[%3d]", volume);
+
+    ViewSetColor(self, ColorDefault);
     ViewPrintf(self, left + 13, 0, "Pan");
+    ViewSetColor(self, isPanFocused ? ColorFocused : ColorDefault);
     ViewPrintf(self, left + 17, 0, pan == 0 ? "[%3d]" : "[%+3d]", pan);
+
+    ViewSetColor(self, ColorDefault);
     ViewPrintf(self, left + 23, 0, "Chorus");
+    ViewSetColor(self, isCholusFocused ? ColorFocused : ColorDefault);
     ViewPrintf(self, left + 30, 0, "[%3d]", chorus);
+
+    ViewSetColor(self, ColorDefault);
     ViewPrintf(self, left + 36, 0, "Reverb");
+    ViewSetColor(self, isReverbFocused ? ColorFocused : ColorDefault);
     ViewPrintf(self, left + 42, 0, "[%3d]", reverb);
 
+    ViewSetColor(self, ColorDefault);
     ViewPrintf(self, 0, 1, "Syntesizer");
+    ViewSetColor(self, isSyntesizerFocused ? ColorFocused : ColorDefault);
     ViewPrintf(self, 11, 1, "[%s]", description->name);
 
     left = 14 + strlen(description->name);
+
+    ViewSetColor(self, ColorDefault);
     ViewPrintf(self, left, 1, "Preset");
+    ViewSetColor(self, isPresetFocused ? ColorFocused : ColorDefault);
     ViewPrintf(self, left + 7, 1, "[%s]", preset->name);
 
     Level level = MixerChannelGetLevel(self->mixerChannel);
@@ -166,9 +203,42 @@ static bool ChannelViewOnKeyEvent(KeyHandler *_self, int code)
 {
     ChannelView *self = _self;
 
-    // TODO focus change
-
-    __Dump__P(self);
+    switch (code) {
+    case KEY_UP:
+        if (self->focus <= FocusReverb) {
+            return false;
+        }
+        self->focus = FocusMute;
+        return true;
+    case KEY_DOWN:
+        if (FocusSyntesizer <= self->focus) {
+            return false;
+        }
+        self->focus = FocusSyntesizer;
+        return true;
+    case KEY_LEFT:
+        if (self->focus <= FocusReverb) {
+            if (FocusMute < self->focus) {
+                --self->focus;
+            }
+        } else {
+            if (FocusSyntesizer < self->focus) {
+                --self->focus;
+            }
+        }
+        return true;
+    case KEY_RIGHT:
+        if (self->focus <= FocusReverb) {
+            if (self->focus < FocusReverb) {
+                ++self->focus;
+            }
+        } else {
+            if (self->focus < FocusPreset) {
+                ++self->focus;
+            }
+        }
+        return true;
+    }
 
     return false;
 }
