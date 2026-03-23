@@ -9,9 +9,12 @@
 
 #include <ncurses.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 int main(int argc, char **argv)
 {
+    bool isDebug = getenv("DEBUG") != NULL;
+
     Argument *argument = ArgumentParse(argc, argv);
     if (argument->error) {
         puts(argument->error);
@@ -53,7 +56,11 @@ int main(int argc, char **argv)
 
     WindowManager *windowManager = WindowManagerSharedInstance();
     Controller *controller = ControllerCreate(namidi);
-    DebugWindow *debugWindow = DebugWindowCreate(COLS, 5);
+
+    DebugWindow *debugWindow;
+    if (isDebug) {
+        debugWindow = DebugWindowCreate(COLS, 5);
+    }
 
     NAMidiSetWatchEnable(namidi, true);
     NAMidiParse(namidi, argument->filepath);
@@ -73,10 +80,13 @@ int main(int argc, char **argv)
     }
 
     ControllerDestroy(controller);
-    DebugWindowDestroy(debugWindow);
     ArgumentDestroy(argument);
 
     NAMidiDestroy(namidi);
+
+    if (isDebug) {
+        DebugWindowDestroy(debugWindow);
+    }
 
     endwin();
     return 0;

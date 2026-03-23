@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-static DebugWindow *__debugWindow;
+static DebugWindow *__debugWindow = NULL;
 
 void DebugInit(DebugWindow *debugWindow)
 {
@@ -17,7 +17,9 @@ void Debug(const char *fmt, ...)
     va_start(argList, fmt);
 
 #if 1
-    DebugWindowAppendLog(__debugWindow, fmt, argList);
+    if (__debugWindow) {
+        DebugWindowAppendLog(__debugWindow, fmt, argList);
+    }
 #else
     FILE *fp = fopen("debug.log", "a");
     if (fp != NULL) {
