@@ -42,6 +42,7 @@ set(SOURCES
   MainView.c
   HeaderView.c
   ChannelView.c
+  MasterView.c
   Debug.c
   DebugWindow.c
 )

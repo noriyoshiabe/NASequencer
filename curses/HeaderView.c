@@ -2,6 +2,7 @@
 #include "View.h"
 #include "ViewNode.h"
 #include "HeaderView.h"
+#include "Attribute.h"
 #include "NAIO.h"
 
 #include <string.h>
@@ -64,6 +65,8 @@ static ViewNode *HeaderViewGetNode(View *_self)
 static void HeaderViewDraw(View *_self, Size size)
 {
     HeaderView *self = (HeaderView *)_self;
+
+    ViewSetAttr(self, AttributeDefault);
 
     char line[size.width + 1];
     char name[64] = {};

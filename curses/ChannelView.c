@@ -89,7 +89,7 @@ ChannelView *ChannelViewCreate(Mixer *mixer, int channel)
 
 static ViewNode *ChannelViewGetNode(View *_self)
 {
-    ChannelView *self = (ChannelView *)_self;
+    ChannelView *self = _self;
     return self->node;
 }
 
@@ -108,6 +108,7 @@ static void ChannelViewDraw(View *_self, Size size)
     bool isSyntesizerFocused = isKeyView && self->focus == FocusSyntesizer;
     bool isPresetFocused = isKeyView && self->focus == FocusPreset;
 
+    ViewSetAttr(self, AttributeDefault);
     ViewPrintf(self, 0, 0, "Channel: %2d", self->channel);
 
     bool mute = MixerChannelGetMute(self->mixerChannel);
@@ -171,6 +172,11 @@ static void ChannelViewDraw(View *_self, Size size)
     ViewSetAttr(self, AttributeDefault);
     ViewPrintf(self, 0, 2, "L: ");
 
+    ViewSetAttr(self, Attribute(ColorLevelNone, false, true));
+    memset(bar, '|', levelMax);
+    bar[levelMax] = '\0';
+    ViewPrintf(self, 3, 2, bar);
+
     ViewSetAttr(self, Attribute(ColorLevelLow, false, true));
     int levelGreenL = MIN(levelL, levelMax - peak);
     memset(bar, '|', levelGreenL);
@@ -184,6 +190,11 @@ static void ChannelViewDraw(View *_self, Size size)
 
     ViewSetAttr(self, ColorDefault);
     ViewPrintf(self, 0, 3, "R: ");
+
+    ViewSetAttr(self, Attribute(ColorLevelNone, false, true));
+    memset(bar, '|', levelMax);
+    bar[levelMax] = '\0';
+    ViewPrintf(self, 3, 3, bar);
 
     ViewSetAttr(self, Attribute(ColorLevelLow, false, true));
     int levelGreenR = MIN(levelR, levelMax - peak);
@@ -374,7 +385,9 @@ static void ChannelViewDestroy(View *_self)
 static void ChannelViewMixerOnChannelStatusChange(void *receiver, MixerChannel *channel, MixerChannelStatusKind kind)
 {
     ChannelView *self = receiver;
-    ViewInvalidate(self);
+    if (self->mixerChannel == channel) {
+        ViewInvalidate(self);
+    }
 }
 
 static void ChannelViewMixerOnAvailableMidiSourceChange(void *receiver, NAArray *descriptions)

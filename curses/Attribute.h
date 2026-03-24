@@ -8,6 +8,7 @@ typedef enum {
     ColorSolo,
     ColorLevelLow,
     ColorLevelHigh,
+    ColorLevelNone,
 } Color;
 
 typedef enum {
@@ -22,6 +23,7 @@ static inline void AttributeInitializeColorPair()
     init_pair(ColorSolo, COLOR_BLUE, COLOR_GREEN);
     init_pair(ColorLevelLow, COLOR_GREEN, -1);
     init_pair(ColorLevelHigh, COLOR_RED, -1);
+    init_pair(ColorLevelNone, 240, -1);
 }
 
 static inline int Attribute(Color color, bool focused, bool selected)

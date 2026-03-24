@@ -4,6 +4,7 @@
 #include "MainView.h"
 #include "HeaderView.h"
 #include "ChannelView.h"
+#include "MasterView.h"
 #include "KeyHandler.h"
 #include "Debug.h"
 
@@ -19,7 +20,8 @@ struct _MainView {
     NAMidi *namidi;
     NAArray *channelViews;
     NAArray *activeChannelViews;
-    int focusedChannelViewIndex;
+    MasterView *masterView;
+    int focusedViewIndex;
     bool channelExsits[16];
 };
 
@@ -85,6 +87,10 @@ MainView *MainViewCreate(NAMidi *namidi)
         NAArrayAppend(self->channelViews, channelView);
     }
 
+    self->masterView = MasterViewCreate(NAMidiGetMixer(namidi));
+    ViewAppendChild(self, self->masterView);
+    KeyHandlerSetNextKeyHandler(self->masterView, self);
+
     self->namidi = namidi;
     NAMidiAddObserver(self->namidi, self, &MainViewNAMidiObserverCallbacks);
 
@@ -115,6 +121,9 @@ static void MainViewDraw(View *_self, Size size)
             ViewSetHidden(channelView, true);
         }
     }
+
+    Rect frame = {{0, offsetY}, {COLS, 3}};
+    ViewSetFrame(self->masterView, frame);
 }
 
 static void MainViewDestroy(View *_self)
@@ -134,29 +143,31 @@ static bool MainViewOnKeyEvent(KeyHandler *_self, int code)
 {
     MainView *self = _self;
 
-    int activeChannelViewCount = NAArrayCount(self->activeChannelViews);
+    int activeViewCount = NAArrayCount(self->activeChannelViews) + 1;
 
-    if (0 < activeChannelViewCount) {
-        switch (code) {
-        case KEY_DOWN:
-            ++self->focusedChannelViewIndex;
+    switch (code) {
+    case KEY_DOWN:
+        ++self->focusedViewIndex;
 
-            if (activeChannelViewCount <= self->focusedChannelViewIndex) {
-                self->focusedChannelViewIndex = activeChannelViewCount - 1;
-            }
-
-            ViewBecomeKeyView(NAArrayGetValueAt(self->activeChannelViews, self->focusedChannelViewIndex));
-            return true;
-        case KEY_UP:
-            --self->focusedChannelViewIndex;
-
-            if (self->focusedChannelViewIndex < 0) {
-                self->focusedChannelViewIndex = 0;
-            }
-
-            ViewBecomeKeyView(NAArrayGetValueAt(self->activeChannelViews, self->focusedChannelViewIndex));
-            return true;
+        if (activeViewCount <= self->focusedViewIndex) {
+            self->focusedViewIndex = activeViewCount - 1;
         }
+
+        if (activeViewCount - 1 <= self->focusedViewIndex) {
+            ViewBecomeKeyView(self->masterView);
+        } else {
+            ViewBecomeKeyView(NAArrayGetValueAt(self->activeChannelViews, self->focusedViewIndex));
+        }
+        return true;
+    case KEY_UP:
+        --self->focusedViewIndex;
+
+        if (self->focusedViewIndex < 0) {
+            self->focusedViewIndex = 0;
+        }
+
+        ViewBecomeKeyView(NAArrayGetValueAt(self->activeChannelViews, self->focusedViewIndex));
+        return true;
     }
 
     __Dump__P(self);
@@ -212,12 +223,12 @@ static void MainViewNAMidiOnParseFinish(void *receiver, Sequence *sequence, Pars
     }
 
     int activeChannelViewCount = NAArrayCount(self->activeChannelViews);
-    if (activeChannelViewCount <= self->focusedChannelViewIndex) {
-        self->focusedChannelViewIndex = activeChannelViewCount - 1;
+    if (activeChannelViewCount <= self->focusedViewIndex) {
+        self->focusedViewIndex = activeChannelViewCount - 1;
     }
 
     if (0 < activeChannelViewCount) {
-        ViewBecomeKeyView(NAArrayGetValueAt(self->activeChannelViews, self->focusedChannelViewIndex));
+        ViewBecomeKeyView(NAArrayGetValueAt(self->activeChannelViews, self->focusedViewIndex));
     }
 
     ViewInvalidate(self);
