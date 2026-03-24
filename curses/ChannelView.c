@@ -70,6 +70,9 @@ static const InterfaceVtbl ChannelViewInterfaceVtbl = {
 
 static MixerObserverCallbacks ChannelViewMixerObserverCallbacks;
 
+static PresetInfo *getNextPresetInfo(MixerChannel *mixerChannel);
+static PresetInfo *getPreviousPresetInfo(MixerChannel *mixerChannel);
+
 ChannelView *ChannelViewCreate(Mixer *mixer, int channel)
 {
     ChannelView *self = calloc(1, sizeof(ChannelView));
@@ -225,6 +228,11 @@ static bool ChannelViewOnKeyEvent(KeyHandler *_self, int code)
             case FocusReverb:
                 MixerChannelSetReverbSend(self->mixerChannel, MAX(0, MixerChannelGetReverbSend(self->mixerChannel) - 1));
                 return true;
+            case FocusPreset:
+                if (code == KEY_DOWN) {
+                    MixerChannelSetPresetInfo(self->mixerChannel, getNextPresetInfo(self->mixerChannel));
+                }
+                return true;
             default:
                 return true;
             }
@@ -243,13 +251,15 @@ static bool ChannelViewOnKeyEvent(KeyHandler *_self, int code)
             case FocusReverb:
                 MixerChannelSetReverbSend(self->mixerChannel, MIN(127, MixerChannelGetReverbSend(self->mixerChannel) + 1));
                 return true;
+            case FocusPreset:
+                if (code == KEY_UP) {
+                    MixerChannelSetPresetInfo(self->mixerChannel, getPreviousPresetInfo(self->mixerChannel));
+                }
+                return true;
             default:
                 return true;
             }
-        default:
-            return true;
         }
-
     } else {
         switch (code) {
         case '\n':
@@ -261,7 +271,6 @@ static bool ChannelViewOnKeyEvent(KeyHandler *_self, int code)
                 MixerChannelSetSolo(self->mixerChannel, !MixerChannelGetSolo(self->mixerChannel));
                 return true;
             case FocusSyntesizer:
-            case FocusPreset:
                 // TODO
                 return true;
             default:
@@ -306,6 +315,40 @@ static bool ChannelViewOnKeyEvent(KeyHandler *_self, int code)
     }
 
     return false;
+}
+
+static PresetInfo *getNextPresetInfo(MixerChannel *mixerChannel)
+{
+    int count = MixerChannelGetPresetCount(mixerChannel);
+    PresetInfo **presetInfos = MixerChannelGetPresetInfos(mixerChannel);
+    PresetInfo *presetInfo = MixerChannelGetPresetInfo(mixerChannel);
+    
+    int index = 0;
+    for (int i = 0; i < count; ++i) {
+        if (presetInfo == presetInfos[i]) {
+            index = MIN(count - 1, i + 1);
+            break;
+        }
+    }
+
+    return presetInfos[index];
+}
+
+static PresetInfo *getPreviousPresetInfo(MixerChannel *mixerChannel)
+{
+    int count = MixerChannelGetPresetCount(mixerChannel);
+    PresetInfo **presetInfos = MixerChannelGetPresetInfos(mixerChannel);
+    PresetInfo *presetInfo = MixerChannelGetPresetInfo(mixerChannel);
+    
+    int index = 0;
+    for (int i = 0; i < count; ++i) {
+        if (presetInfo == presetInfos[i]) {
+            index = MAX(0, i - 1);
+            break;
+        }
+    }
+
+    return presetInfos[index];
 }
 
 static void ChannelViewSetNextKeyHandler(KeyHandler *_self, KeyHandler *next)
