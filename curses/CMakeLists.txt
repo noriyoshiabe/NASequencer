@@ -43,6 +43,7 @@ set(SOURCES
   HeaderView.c
   ChannelView.c
   MasterView.c
+  ViewHelper.c
   Debug.c
   DebugWindow.c
 )

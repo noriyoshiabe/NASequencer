@@ -4,14 +4,12 @@
 #include "ViewNode.h"
 #include "KeyHandler.h"
 #include "Attribute.h"
+#include "ViewHelper.h"
 #include "Debug.h"
 
 #include <string.h>
 #include <stdlib.h>
 #include <ncurses.h>
-
-#define MAX(a, b) ((a) > (b) ? (a) : (b))
-#define MIN(a, b) ((a) < (b) ? (a) : (b))
 
 typedef enum {
     FocusMute,
@@ -160,52 +158,7 @@ static void ChannelViewDraw(View *_self, Size size)
     ViewSetAttr(self, Attribute(ColorDefault, isPresetFocused, self->selected));
     ViewPrintf(self, left + 7, 1, "[%s]", preset->name);
 
-    Level level = MixerChannelGetLevel(self->mixerChannel);
-
-    int levelMax = (size.width - 3);
-    int peak = levelMax / 10;
-    int levelL = (int)(((MAX(-500, level.L) + 500) / 500.0) * levelMax);
-    int levelR = (int)(((MAX(-500, level.R) + 500) / 500.0) * levelMax);
-
-    char bar[levelMax + 1];
-
-    ViewSetAttr(self, AttributeDefault);
-    ViewPrintf(self, 0, 2, "L: ");
-
-    ViewSetAttr(self, Attribute(ColorLevelNone, false, true));
-    memset(bar, '|', levelMax);
-    bar[levelMax] = '\0';
-    ViewPrintf(self, 3, 2, bar);
-
-    ViewSetAttr(self, Attribute(ColorLevelLow, false, true));
-    int levelGreenL = MIN(levelL, levelMax - peak);
-    memset(bar, '|', levelGreenL);
-    bar[levelGreenL] = '\0';
-    ViewPrintf(self, 3, 2, bar);
-    if (levelGreenL < levelL) {
-        ViewSetAttr(self, Attribute(ColorLevelHigh, false, true));
-        bar[levelL - levelGreenL] = '\0';
-        ViewPrintf(self, size.width - peak, 2, bar);
-    }
-
-    ViewSetAttr(self, ColorDefault);
-    ViewPrintf(self, 0, 3, "R: ");
-
-    ViewSetAttr(self, Attribute(ColorLevelNone, false, true));
-    memset(bar, '|', levelMax);
-    bar[levelMax] = '\0';
-    ViewPrintf(self, 3, 3, bar);
-
-    ViewSetAttr(self, Attribute(ColorLevelLow, false, true));
-    int levelGreenR = MIN(levelR, levelMax - peak);
-    memset(bar, '|', levelGreenR);
-    bar[levelGreenR] = '\0';
-    ViewPrintf(self, 3, 3, bar);
-    if (levelGreenR < levelR) {
-        ViewSetAttr(self, Attribute(ColorLevelHigh, false, true));
-        bar[levelR - levelGreenR] = '\0';
-        ViewPrintf(self, size.width - peak, 3, bar);
-    }
+    ViewHelperDisplayLevel(self, 2, MixerChannelGetLevel(self->mixerChannel));
 
     ViewSetAttr(self, AttributeDefault);
     char line[size.width + 1];
