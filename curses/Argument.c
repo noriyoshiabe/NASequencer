@@ -16,12 +16,11 @@ extern Argument *ArgumentParse(int argc, char **argv)
     Argument *self = calloc(1, sizeof(Argument));
 
     int opt;
-    int indexSource = 0;
     
     while (-1 != (opt = getopt_long(argc, argv, "s:g:", _options, NULL))) {
         switch (opt) {
         case 's':
-            self->soundSources[indexSource++] = strdup(optarg);
+            self->soundSource = strdup(optarg);
             break;
         case 'g':
             self->gain = atoi(optarg);
@@ -44,14 +43,19 @@ extern Argument *ArgumentParse(int argc, char **argv)
         fclose(fp);
     }
 
+    char buffer[64];
+    sprintf(buffer, "");
+
     if (!self->filepath) {
-        self->error = malloc(64);
-        sprintf(self->error, "No input source file.");
+        strcat(buffer, "No input source file. ");
     }
 
-    if (!self->soundSources[0]) {
-        self->error = malloc(64);
-        sprintf(self->error, "No sound sources.");
+    if (!self->soundSource) {
+        strcat(buffer, "No sound sources.");
+    }
+
+    if (0 < strlen(buffer)) {
+        self->error = strdup(buffer);
     }
 
     return self;
@@ -63,8 +67,8 @@ extern void ArgumentDestroy(Argument *self)
         free(self->filepath);
     }
 
-    for (char **soundSource = self->soundSources; NULL != *soundSource; ++soundSource) {
-        free(*soundSource);
+    if (self->soundSource) {
+        free(self->soundSource);
     }
 
     if (self->error) {

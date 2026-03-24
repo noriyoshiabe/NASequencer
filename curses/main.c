@@ -24,16 +24,10 @@ int main(int argc, char **argv)
     NAMidi *namidi = NAMidiCreate();
 
     MidiSourceManager *sourceManager = MidiSourceManagerSharedInstance();
-    for (char **source = argument->soundSources; NULL != *source; ++source) {
-        MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(sourceManager, *source);
-    }
+    MidiSourceManagerLoadMidiSourceDescriptionFromSoundFont(sourceManager, argument->soundSource);
 
-    NAArray *descriptions = MidiSourceManagerGetAvailableDescriptions(sourceManager);
-    NAIterator *iterator = NAArrayGetIterator(descriptions);
-    while (iterator->hasNext(iterator)) {
-        MidiSourceDescription *description = iterator->next(iterator);
-        MidiSourceManagerSetGainForDescription(sourceManager, description, argument->gain);
-    }
+    MidiSourceDescription *description = MidiSourceManagerGetDefaultDescription(sourceManager);
+    MidiSourceManagerSetGainForDescription(sourceManager, description, argument->gain);
 
     initscr();
 

@@ -2,7 +2,7 @@
 
 typedef struct {
     char *filepath;
-    char *soundSources[8];
+    char *soundSource;
     int gain;
     char *error;
 } Argument;
