@@ -29,6 +29,7 @@ int main(int argc, char **argv)
     MidiSourceDescription *description = MidiSourceManagerGetDefaultDescription(sourceManager);
     MidiSourceManagerSetGainForDescription(sourceManager, description, argument->gain);
 
+    setenv("ESCDELAY", "25", 1);
     initscr();
 
     start_color();
