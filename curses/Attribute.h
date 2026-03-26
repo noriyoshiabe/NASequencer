@@ -9,6 +9,7 @@ typedef enum {
     ColorLevelLow,
     ColorLevelHigh,
     ColorLevelNone,
+    ColorSelected,
 } Color;
 
 typedef enum {
@@ -24,16 +25,16 @@ static inline void AttributeInitializeColorPair()
     init_pair(ColorLevelLow, COLOR_GREEN, -1);
     init_pair(ColorLevelHigh, COLOR_RED, -1);
     init_pair(ColorLevelNone, 240, -1);
+    init_pair(ColorSelected, COLOR_BLUE, COLOR_WHITE);
 }
 
 static inline int Attribute(Color color, bool focused, bool selected)
 {
     int attrs = A_NORMAL;
 
-    attrs |= focused ? A_UNDERLINE : 0;
-    attrs |= focused && selected ? A_BOLD: 0;
+    attrs |= focused ? A_REVERSE : 0;
     
-    return attrs | COLOR_PAIR(color);
+    return attrs | ((focused && selected) ? COLOR_PAIR(ColorSelected) : COLOR_PAIR(color));
 }
 
 #define AttributeDefault A_NORMAL
