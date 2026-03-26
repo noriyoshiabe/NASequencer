@@ -12,6 +12,7 @@
 
 struct _Window {
     WINDOW *window;
+    View *rootView;
     View *keyView;
     NASet *views;
     NAMessageQ *msgQ;
@@ -41,8 +42,17 @@ void WindowDestroy(Window *self)
     free(self);
 }
 
+void WindowSetBox(Window *self)
+{
+    box(self->window, 0, 0);
+}
+
 void WindowAppendView(Window *self, View *view)
 {
+    if (0 == NASetCount(self->views)) {
+        self->rootView = view;
+    }
+
     NASetAdd(self->views, view);
 }
 
@@ -51,7 +61,7 @@ void WindowRemoveView(Window *self, View *view)
     NASetRemove(self->views, view);
 
     if (self->keyView == view) {
-        self->keyView = NULL;
+        self->keyView = self->rootView;
     }
 }
 
@@ -99,17 +109,31 @@ void WindowRefresh(Window *self)
     wrefresh(self->window);
 }
 
-void WindowDisplayIfNeeded(Window *self)
+bool WindowDisplayIfNeeded(Window *self)
 {
     NAMessage msg;
+    bool displayed = false;
 
     while (NAMessageQPeek(self->msgQ, &msg)) {
         switch (msg.kind) {
         case WindowMessageDirtyView:
             if (NASetContains(self->views, msg.data)) {
                 ViewDisplay(msg.data);
+                displayed = true;
             }
             break;
         }
     }
+
+    return displayed;
+}
+
+void WindowTouch(Window *self)
+{
+    touchwin(self->window);
+}
+
+void WindowNOutRefresh(Window *self)
+{
+    wnoutrefresh(self->window);
 }

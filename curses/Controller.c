@@ -3,6 +3,8 @@
 #include "KeyHandler.h"
 #include "MainView.h"
 #include "Debug.h"
+#include "ErrorWindow.h"
+#include "NAMessageQ.h"
 
 #include <stdlib.h>
 #include <ncurses.h>
@@ -11,7 +13,11 @@ struct _Controller {
     const InterfaceVtbl *vtbl;
     MainView *mainView;
     NAMidi *namidi;
+    NAMessageQ *msgQ;
+    ErrorWindow *errorWindow;
 };
+
+static const int ControllerMessageParseErrors = 1;
 
 static bool ControllerOnKeyEvent(KeyHandler *self, int code);
 static void ControllerSetNextKeyHandler(KeyHandler *self, KeyHandler *keyHandler);
@@ -47,6 +53,8 @@ Controller *ControllerCreate(NAMidi *namidi)
     self->namidi = namidi;
     NAMidiAddObserver(self->namidi, self, &ControllerNAMidiObserverCallbacks);
 
+    self->msgQ = NAMessageQCreate(4);
+
     return self;
 }
 
@@ -56,6 +64,36 @@ void ControllerDestroy(Controller *self)
 
     ViewDestroy((View *)self->mainView);
     free(self);
+}
+
+void ControllerProcessMessage(Controller *self)
+{
+    NAMessage msg;
+
+    while (NAMessageQPeek(self->msgQ, &msg)) {
+        switch (msg.kind) {
+        case ControllerMessageParseErrors:
+            {
+                NAArray *errors = msg.data;
+
+                if (0 < NAArrayCount(errors)) {
+                    if (!self->errorWindow) {
+                        self->errorWindow = ErrorWindowCreate();
+                        KeyHandlerSetNextKeyHandler(self->errorWindow, self);
+                    }
+
+                    ErrorWindowDraw(self->errorWindow, errors);
+                }
+                else {
+                    if (self->errorWindow) {
+                        ErrorWindowDestroy(self->errorWindow);
+                        self->errorWindow = NULL;
+                    }
+                }
+            }
+            break;
+        }
+    }
 }
 
 static bool ControllerOnKeyEvent(KeyHandler *_self, int code)
@@ -104,15 +142,8 @@ static void ControllerNAMidiOnBeforeParse(void *receiver, bool fileChanged)
 
 static void ControllerNAMidiOnParseFinish(void *receiver, Sequence *sequence, ParseInfo *info)
 {
-    //Controller *self = receiver;
-
-    NAIterator *iterator = NAArrayGetIterator(info->errors);
-    while (iterator->hasNext(iterator)) {
-        ParseError *error = iterator->next(iterator);
-        char *formatted = ParseErrorFormattedString(error);
-        free(formatted);
-        // TODO error display
-    }
+    Controller *self = receiver;
+    NAMessageQPost(self->msgQ, ControllerMessageParseErrors, info->errors);
 }
 
 static NAMidiObserverCallbacks ControllerNAMidiObserverCallbacks = {

@@ -44,6 +44,7 @@ set(SOURCES
   ChannelView.c
   MasterView.c
   ViewHelper.c
+  ErrorWindow.c
   Debug.c
   DebugWindow.c
 )

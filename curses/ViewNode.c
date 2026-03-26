@@ -145,7 +145,7 @@ void ViewNodeDisplay(ViewNode *self)
     self->isDrawing = false;
 
     if (!isParentDrawing) {
-        WindowRefresh(self->window);
+        WindowNOutRefresh(self->window);
     }
 }
 

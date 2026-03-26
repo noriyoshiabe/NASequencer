@@ -62,6 +62,8 @@ int main(int argc, char **argv)
             break;
         }
 
+        ControllerProcessMessage(controller);
+
         if (c != ERR) {
             WindowManagerDispatchKeyEvent(windowManager, c);
         }
