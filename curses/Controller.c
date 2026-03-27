@@ -9,6 +9,7 @@
 
 #include <stdlib.h>
 #include <ncurses.h>
+#include <sys/time.h>
 
 struct _Controller {
     const InterfaceVtbl *vtbl;
@@ -17,7 +18,16 @@ struct _Controller {
     NAMessageQ *msgQ;
     ErrorWindow *errorWindow;
     SynthesizerWindow *synthesizerWindow;
+    NAArray *timers;
 };
+
+typedef struct {
+    void *receiver;
+    void (*callback)(void *receiver, int64_t msec);
+} Timer;
+
+static int TimerFindComparator(const void *receiver, const void *timer);
+static int64_t currentMilliSec();
 
 static bool ControllerOnKeyEvent(KeyHandler *self, int code);
 static void ControllerSetNextKeyHandler(KeyHandler *self, KeyHandler *keyHandler);
@@ -55,6 +65,7 @@ Controller *ControllerCreate(NAMidi *namidi)
     NAMidiAddObserver(self->namidi, self, &ControllerNAMidiObserverCallbacks);
 
     self->msgQ = NAMessageQCreate(4);
+    self->timers = NAArrayCreate(4, NULL);
 
     return self;
 }
@@ -67,12 +78,7 @@ void ControllerDestroy(Controller *self)
     free(self);
 }
 
-void ControllerPostMessage(Controller *self, int kind, void *data)
-{
-    NAMessageQPost(self->msgQ, kind, data);
-}
-
-void ControllerProcessMessage(Controller *self)
+void ControllerRunOnLoop(Controller *self)
 {
     NAMessage msg;
 
@@ -112,6 +118,45 @@ void ControllerProcessMessage(Controller *self)
             break;
         }
     }
+
+    int64_t msec = currentMilliSec();
+    NAIterator *iterator = NAArrayGetIterator(self->timers);
+    while (iterator->hasNext(iterator)) {
+        Timer *timer = iterator->next(iterator);
+        timer->callback(timer->receiver, msec);
+    }
+}
+
+void ControllerPostMessage(Controller *self, int kind, void *data)
+{
+    NAMessageQPost(self->msgQ, kind, data);
+}
+
+void ControllerRegisterTimer(Controller *self, void *receiver, void (*callback)(void *receiver, int64_t msec))
+{
+    Timer *timer = malloc(sizeof(Timer));
+    timer->receiver = timer;
+    timer->callback = callback;
+    NAArrayAppend(self->timers, timer);
+}
+
+void ControllerUnregisterTimer(Controller *self, void *receiver)
+{
+    int index = NAArrayFindFirstIndex(self->timers, receiver, TimerFindComparator);
+    NAArrayApplyAt(self->timers, index, free);
+    NAArrayRemoveAt(self->timers, index);
+}
+
+static int TimerFindComparator(const void *receiver, const void *timer)
+{
+    return receiver - ((Timer *)timer)->receiver;
+}
+
+static int64_t currentMilliSec()
+{
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec * 1000 + tv.tv_usec / 1000;
 }
 
 static bool ControllerOnKeyEvent(KeyHandler *_self, int code)

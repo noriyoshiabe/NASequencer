@@ -62,14 +62,14 @@ int main(int argc, char **argv)
             break;
         }
 
-        ControllerProcessMessage(controller);
+        ControllerRunOnLoop(controller);
 
         if (c != ERR) {
             WindowManagerDispatchKeyEvent(windowManager, c);
         }
 
         WindowManagerDisplayIfNeeded(windowManager);
-        usleep(100);
+        usleep(1000);
     }
 
     ControllerDestroy(controller);

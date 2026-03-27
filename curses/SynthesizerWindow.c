@@ -17,6 +17,8 @@ struct _SynthesizerWindow {
     Controller *controller;
 };
 
+static void SynthesizerTimerCallback(void *receiver, int64_t msec);
+
 static bool SynthesizerWindowOnKeyEvent(KeyHandler *self, int code);
 static void SynthesizerWindowSetNextKeyHandler(KeyHandler *self, KeyHandler *keyHandler);
 static KeyHandler *SynthesizerWindowGetNextKeyHandler(KeyHandler *self);
@@ -56,6 +58,7 @@ SynthesizerWindow *SynthesizerWindowCreate(int channel)
 
 void SynthesizerWindowDestroy(SynthesizerWindow *self)
 {
+    ControllerUnregisterTimer(self->controller, self);
     WindowDestroy(self->window);
     free(self);
 }
@@ -68,6 +71,12 @@ int SynthesizerWindowGetChannel(SynthesizerWindow *self)
 void SynthesizerWindowSetController(SynthesizerWindow *self, Controller *controller)
 {
     self->controller = controller;
+    ControllerRegisterTimer(self->controller, self, SynthesizerTimerCallback);
+}
+
+static void SynthesizerTimerCallback(void *receiver, int64_t msec)
+{
+    __Dump__L(msec);
 }
 
 static bool SynthesizerWindowOnKeyEvent(KeyHandler *_self, int code)
