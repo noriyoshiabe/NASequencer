@@ -23,6 +23,7 @@ struct _MainView {
     MasterView *masterView;
     int focusedViewIndex;
     bool channelExsits[16];
+    Controller *controller;
 };
 
 static ViewNode *MainViewGetNode(View *self);
@@ -95,6 +96,22 @@ MainView *MainViewCreate(NAMidi *namidi)
     NAMidiAddObserver(self->namidi, self, &MainViewNAMidiObserverCallbacks);
 
     return self;
+}
+
+bool MainViewGetChannelExists(MainView *self, int channel)
+{
+    return self->channelExsits[channel - 1];
+}
+
+void MainViewSetController(MainView *self, Controller *controller)
+{
+    self->controller = controller;
+
+    NAIterator *iterator = NAArrayGetIterator(self->channelViews);
+    while (iterator->hasNext(iterator)) {
+        ChannelView *channelView = iterator->next(iterator);
+        ChannelViewSetController(channelView, self->controller);
+    }
 }
 
 static ViewNode *MainViewGetNode(View *_self)

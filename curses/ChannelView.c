@@ -31,6 +31,7 @@ struct _ChannelView {
     int channel;
     Focus focus;
     bool selected;
+    Controller *controller;
 };
 
 static ViewNode *ChannelViewGetNode(View *self);
@@ -167,6 +168,11 @@ static void ChannelViewDraw(View *_self, Size size)
     ViewPrintf(self, 0, 4, line);
 }
 
+void ChannelViewSetController(ChannelView *self, Controller *controller)
+{
+    self->controller = controller;
+}
+
 static bool ChannelViewOnKeyEvent(KeyHandler *_self, int code)
 {
     ChannelView *self = _self;
@@ -235,7 +241,7 @@ static bool ChannelViewOnKeyEvent(KeyHandler *_self, int code)
                 MixerChannelSetSolo(self->mixerChannel, !MixerChannelGetSolo(self->mixerChannel));
                 return true;
             case FocusSyntesizer:
-                // TODO
+                ControllerPostMessage(self->controller, ControllerMessageOpenSynthesizerWindow, &self->channel);
                 return true;
             default:
                 self->selected = !self->selected;

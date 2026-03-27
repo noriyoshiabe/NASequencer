@@ -9,6 +9,8 @@ struct _WindowManager {
     Window *keyWindow;
 };
 
+static void WindowManagerRefresh(WindowManager *self);
+
 static WindowManager *_sharedInstance = NULL;
 
 static WindowManager *WindowManagerCreate()
@@ -38,6 +40,7 @@ void WindowManagerAppendWindow(WindowManager *self, Window *window)
 {
     NAArrayAppend(self->windows, window);
     self->keyWindow = window;
+    WindowManagerRefresh(self);
 }
 
 void WindowManagerRemoveWindow(WindowManager *self, Window *window)
@@ -48,6 +51,8 @@ void WindowManagerRemoveWindow(WindowManager *self, Window *window)
     if (self->keyWindow == window) {
         self->keyWindow = NAArrayGetValueAt(self->windows, NAArrayCount(self->windows) - 1);
     }
+
+    WindowManagerRefresh(self);
 }
 
 bool WindowManagerDispatchKeyEvent(WindowManager *self, int code)
@@ -78,4 +83,16 @@ void WindowManagerDisplayIfNeeded(WindowManager *self)
     if (displayed) {
         doupdate();
     }
+}
+
+static void WindowManagerRefresh(WindowManager *self)
+{
+    NAIterator *iterator = NAArrayGetIterator(self->windows);
+    while (iterator->hasNext(iterator)) {
+        Window *window = iterator->next(iterator);
+        WindowTouch(window);
+        WindowNOutRefresh(window);
+    }
+
+    doupdate();
 }

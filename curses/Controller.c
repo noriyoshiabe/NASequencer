@@ -4,6 +4,7 @@
 #include "MainView.h"
 #include "Debug.h"
 #include "ErrorWindow.h"
+#include "SynthesizerWindow.h"
 #include "NAMessageQ.h"
 
 #include <stdlib.h>
@@ -15,9 +16,8 @@ struct _Controller {
     NAMidi *namidi;
     NAMessageQ *msgQ;
     ErrorWindow *errorWindow;
+    SynthesizerWindow *synthesizerWindow;
 };
-
-static const int ControllerMessageParseErrors = 1;
 
 static bool ControllerOnKeyEvent(KeyHandler *self, int code);
 static void ControllerSetNextKeyHandler(KeyHandler *self, KeyHandler *keyHandler);
@@ -49,6 +49,7 @@ Controller *ControllerCreate(NAMidi *namidi)
 
     self->mainView = MainViewCreate(namidi);
     KeyHandlerSetNextKeyHandler(self->mainView, self);
+    MainViewSetController(self->mainView, self);
 
     self->namidi = namidi;
     NAMidiAddObserver(self->namidi, self, &ControllerNAMidiObserverCallbacks);
@@ -64,6 +65,11 @@ void ControllerDestroy(Controller *self)
 
     ViewDestroy((View *)self->mainView);
     free(self);
+}
+
+void ControllerPostMessage(Controller *self, int kind, void *data)
+{
+    NAMessageQPost(self->msgQ, kind, data);
 }
 
 void ControllerProcessMessage(Controller *self)
@@ -91,6 +97,18 @@ void ControllerProcessMessage(Controller *self)
                     }
                 }
             }
+            break;
+        case ControllerMessageOpenSynthesizerWindow:
+            {
+                int channel = *((int *)msg.data);
+                self->synthesizerWindow = SynthesizerWindowCreate(channel);
+                KeyHandlerSetNextKeyHandler(self->synthesizerWindow, self);
+                SynthesizerWindowSetController(self->synthesizerWindow, self);
+            }
+            break;
+        case ControllerMessageCloseSynthesizerWindow:
+            SynthesizerWindowDestroy(self->synthesizerWindow);
+            self->synthesizerWindow = NULL;
             break;
         }
     }
@@ -144,6 +162,13 @@ static void ControllerNAMidiOnParseFinish(void *receiver, Sequence *sequence, Pa
 {
     Controller *self = receiver;
     NAMessageQPost(self->msgQ, ControllerMessageParseErrors, info->errors);
+
+    if (self->synthesizerWindow) {
+        int channel = SynthesizerWindowGetChannel(self->synthesizerWindow);
+        if (!MainViewGetChannelExists(self->mainView, channel)) {
+            NAMessageQPost(self->msgQ, ControllerMessageCloseSynthesizerWindow, NULL);
+        }
+    }
 }
 
 static NAMidiObserverCallbacks ControllerNAMidiObserverCallbacks = {
