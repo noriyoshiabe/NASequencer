@@ -46,6 +46,7 @@ set(SOURCES
   ViewHelper.c
   ErrorWindow.c
   SynthesizerWindow.c
+  SynthesizerView.c
   Debug.c
   DebugWindow.c
 )

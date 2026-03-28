@@ -1,6 +1,8 @@
 #include "SynthesizerWindow.h"
+#include "SynthesizerView.h"
 #include "Interface.h"
 #include "Window.h"
+#include "View.h"
 #include "KeyHandler.h"
 #include "Debug.h"
 
@@ -14,10 +16,9 @@ struct _SynthesizerWindow {
     Rect frame;
     KeyHandler *nextKeyHandler;
     int channel;
+    SynthesizerView *synthesizerView;
     Controller *controller;
 };
-
-static void SynthesizerTimerCallback(void *receiver, int64_t msec);
 
 static bool SynthesizerWindowOnKeyEvent(KeyHandler *self, int code);
 static void SynthesizerWindowSetNextKeyHandler(KeyHandler *self, KeyHandler *keyHandler);
@@ -40,25 +41,33 @@ static const InterfaceVtbl SynthesizerWindowInterfaceVtbl = {
     .queryInterface = SynthesizerWindowQueryInteface,
 };
 
-SynthesizerWindow *SynthesizerWindowCreate(int channel)
+SynthesizerWindow *SynthesizerWindowCreate(Mixer *mixer, int channel)
 {
     SynthesizerWindow *self = calloc(1, sizeof(SynthesizerWindow));
     self->vtbl = &SynthesizerWindowInterfaceVtbl;
 
     self->frame = (Rect){{(COLS - 69) / 2, (LINES - 13) / 2}, {69, 13}};
     self->window = WindowCreate(self->frame);
-    WindowSetKeyView(self->window, self);
-
-    self->channel = channel;
 
     WindowSetBox(self->window);
+
+    self->synthesizerView = SynthesizerViewCreate(mixer, channel);
+    KeyHandlerSetNextKeyHandler(self->synthesizerView, self);
+
+    ViewSetWindow(self->synthesizerView, self->window);
+    ViewSetFrame(self->synthesizerView, (Rect){{2, 1}, {65, 11}});
+
+    WindowSetKeyView(self->window, self->synthesizerView);
+    ViewInvalidate(self->synthesizerView);
+
+    self->channel = channel;
 
     return self;
 }
 
 void SynthesizerWindowDestroy(SynthesizerWindow *self)
 {
-    ControllerUnregisterTimer(self->controller, self);
+    ViewDestroy((View *)self->synthesizerView);
     WindowDestroy(self->window);
     free(self);
 }
@@ -71,12 +80,7 @@ int SynthesizerWindowGetChannel(SynthesizerWindow *self)
 void SynthesizerWindowSetController(SynthesizerWindow *self, Controller *controller)
 {
     self->controller = controller;
-    ControllerRegisterTimer(self->controller, self, SynthesizerTimerCallback);
-}
-
-static void SynthesizerTimerCallback(void *receiver, int64_t msec)
-{
-    __Dump__L(msec);
+    SynthesizerViewSetController(self->synthesizerView, controller);
 }
 
 static bool SynthesizerWindowOnKeyEvent(KeyHandler *_self, int code)

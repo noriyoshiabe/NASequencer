@@ -86,6 +86,11 @@ ChannelView *ChannelViewCreate(Mixer *mixer, int channel)
     return self;
 }
 
+void ChannelViewSetController(ChannelView *self, Controller *controller)
+{
+    self->controller = controller;
+}
+
 static ViewNode *ChannelViewGetNode(View *_self)
 {
     ChannelView *self = _self;
@@ -148,11 +153,11 @@ static void ChannelViewDraw(View *_self, Size size)
     ViewPrintf(self, left + 42, 0, "[%3d]", reverb);
 
     ViewSetAttr(self, AttributeDefault);
-    ViewPrintf(self, 0, 1, "Syntesizer");
+    ViewPrintf(self, 0, 1, "Synthesizer");
     ViewSetAttr(self, Attribute(ColorDefault, isSyntesizerFocused, self->selected));
-    ViewPrintf(self, 11, 1, "[%s]", description->name);
+    ViewPrintf(self, 12, 1, "[%s]", description->name);
 
-    left = 14 + strlen(description->name);
+    left = 15 + strlen(description->name);
 
     ViewSetAttr(self, AttributeDefault);
     ViewPrintf(self, left, 1, "Preset");
@@ -166,11 +171,6 @@ static void ChannelViewDraw(View *_self, Size size)
     memset(line, '-', size.width);
     line[size.width] = '\0';
     ViewPrintf(self, 0, 4, line);
-}
-
-void ChannelViewSetController(ChannelView *self, Controller *controller)
-{
-    self->controller = controller;
 }
 
 static bool ChannelViewOnKeyEvent(KeyHandler *_self, int code)

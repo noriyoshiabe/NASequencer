@@ -133,7 +133,7 @@ void ViewNodeDisplay(ViewNode *self)
 
         Point offset = ViewNodeOffsetInRootView(self);
         for (int i = 0; i < self->frame.size.height; ++i) {
-            WindowPrint(self->window, 0, offset.y + i, line);
+            WindowPrint(self->window, offset.x, offset.y + i, line);
         }
     }
 

@@ -107,7 +107,7 @@ void ControllerRunOnLoop(Controller *self)
         case ControllerMessageOpenSynthesizerWindow:
             {
                 int channel = *((int *)msg.data);
-                self->synthesizerWindow = SynthesizerWindowCreate(channel);
+                self->synthesizerWindow = SynthesizerWindowCreate(NAMidiGetMixer(self->namidi), channel);
                 KeyHandlerSetNextKeyHandler(self->synthesizerWindow, self);
                 SynthesizerWindowSetController(self->synthesizerWindow, self);
             }
