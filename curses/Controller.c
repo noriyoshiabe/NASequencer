@@ -135,7 +135,7 @@ void ControllerPostMessage(Controller *self, int kind, void *data)
 void ControllerRegisterTimer(Controller *self, void *receiver, void (*callback)(void *receiver, int64_t msec))
 {
     Timer *timer = malloc(sizeof(Timer));
-    timer->receiver = timer;
+    timer->receiver = receiver;
     timer->callback = callback;
     NAArrayAppend(self->timers, timer);
 }

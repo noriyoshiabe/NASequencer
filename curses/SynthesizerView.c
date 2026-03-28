@@ -14,6 +14,17 @@
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
+typedef struct _Key {
+    int code;
+    int x;
+    int y;
+    char label;
+    int baseNote;
+    int sentNoteNo;
+    int64_t sentAt;
+    struct _Key *next;
+} Key;
+
 struct _SynthesizerView {
     const InterfaceVtbl *vtbl;
     ViewNode *node;
@@ -23,6 +34,9 @@ struct _SynthesizerView {
     int channel;
     int octave;
     int scroll;
+    Key keys[32];
+    Key *activeKeyList;
+    int64_t currentMsec;
     Controller *controller;
 };
 
@@ -60,8 +74,11 @@ static const InterfaceVtbl SynthesizerViewInterfaceVtbl = {
 };
 
 static void SynthesizerViewTimerCallback(void *receiver, int64_t msec);
+static void SynthesizerViewInitializeKeyPad(SynthesizerView *self);
 
 static MixerObserverCallbacks SynthesizerViewMixerObserverCallbacks;
+
+static int lastOctave = 2;
 
 SynthesizerView *SynthesizerViewCreate(Mixer *mixer, int channel)
 {
@@ -73,6 +90,13 @@ SynthesizerView *SynthesizerViewCreate(Mixer *mixer, int channel)
     self->mixerChannel = NAArrayGetValueAt(MixerGetChannels(mixer), channel - 1);
     self->channel = channel;
 
+    SynthesizerViewInitializeKeyPad(self);
+    self->octave = lastOctave;
+
+    PresetInfo *preset = MixerChannelGetPresetInfo(self->mixerChannel);
+    int index = PresetHelperFindPresetInfoIndex(self->mixerChannel, preset);
+    self->scroll = MAX(0, index + 1 - 7);
+
     MixerAddObserver(self->mixer, self, &SynthesizerViewMixerObserverCallbacks);
     return self;
 }
@@ -81,6 +105,45 @@ void SynthesizerViewSetController(SynthesizerView *self, Controller *controller)
 {
     self->controller = controller;
     ControllerRegisterTimer(self->controller, self, SynthesizerViewTimerCallback);
+}
+
+static void SynthesizerViewInitializeKeyPad(SynthesizerView *self)
+{
+    int i = 0;
+
+    self->keys[i++] = (Key){'z', 3, 7, 'Z', -3, -1, 0, NULL};
+    self->keys[i++] = (Key){'s', 5, 6, 'S', -2, -1, 0, NULL};
+    self->keys[i++] = (Key){'x', 7, 7, 'X', -1, -1, 0, NULL};
+    self->keys[i++] = (Key){'c', 11, 7, 'C', 0, -1, 0, NULL};
+    self->keys[i++] = (Key){'f', 13, 6, 'F', 1, -1, 0, NULL};
+    self->keys[i++] = (Key){'v', 15, 7, 'V', 2, -1, 0, NULL};
+    self->keys[i++] = (Key){'g', 17, 6, 'G', 3, -1, 0, NULL};
+    self->keys[i++] = (Key){'b', 19, 7, 'B', 4, -1, 0, NULL};
+    self->keys[i++] = (Key){'n', 23, 7, 'N', 5, -1, 0, NULL};
+    self->keys[i++] = (Key){'j', 25, 6, 'J', 6, -1, 0, NULL};
+    self->keys[i++] = (Key){'m', 27, 7, 'M', 7, -1, 0, NULL};
+    self->keys[i++] = (Key){'k', 29, 6, 'K', 8, -1, 0, NULL};
+    self->keys[i++] = (Key){',', 31, 7, ',', 9, -1, 0, NULL};
+    self->keys[i++] = (Key){'l', 33, 6, 'L', 10, -1, 0, NULL};
+    self->keys[i++] = (Key){'.', 35, 7, '.', 11, -1, 0, NULL};
+    self->keys[i++] = (Key){'/', 39, 7, '/', 12, -1, 0, NULL};
+
+    self->keys[i++] = (Key){'q', 0, 5, 'Q', 9, -1, 0, NULL};
+    self->keys[i++] = (Key){'2', 2, 4, '2', 10, -1, 0, NULL};
+    self->keys[i++] = (Key){'w', 4, 5, 'W', 11, -1, 0, NULL};
+    self->keys[i++] = (Key){'e', 8, 5, 'E', 12, -1, 0, NULL};
+    self->keys[i++] = (Key){'4', 10, 4, '4', 13, -1, 0, NULL};
+    self->keys[i++] = (Key){'r', 12, 5, 'R', 14, -1, 0, NULL};
+    self->keys[i++] = (Key){'5', 14, 4, '5', 15, -1, 0, NULL};
+    self->keys[i++] = (Key){'t', 16, 5, 'T', 16, -1, 0, NULL};
+    self->keys[i++] = (Key){'y', 20, 5, 'Y', 17, -1, 0, NULL};
+    self->keys[i++] = (Key){'7', 22, 4, '7', 18, -1, 0, NULL};
+    self->keys[i++] = (Key){'u', 24, 5, 'U', 19, -1, 0, NULL};
+    self->keys[i++] = (Key){'8', 26, 4, '8', 20, -1, 0, NULL};
+    self->keys[i++] = (Key){'i', 28, 5, 'I', 21, -1, 0, NULL};
+    self->keys[i++] = (Key){'9', 30, 4, '9', 22, -1, 0, NULL};
+    self->keys[i++] = (Key){'o', 32, 5, 'O', 23, -1, 0, NULL};
+    self->keys[i++] = (Key){'p', 36, 5, 'P', 24, -1, 0, NULL};
 }
 
 static ViewNode *SynthesizerViewGetNode(View *_self)
@@ -129,13 +192,17 @@ static void SynthesizerViewDraw(View *_self, Size size)
         snprintf(name, 20, "%s", _preset->name);
         ViewPrintf(self, 45, i - self->scroll + 4, name);
     }
+
+    for (int i = 0; i < 32; ++i) {
+        Key *key = &self->keys[i];
+        ViewSetAttr(self, key->sentNoteNo != -1 ? Attribute(ColorDefault, true, true) : AttributeDefault);
+        ViewPrintf(self, key->x, key->y, "[%c]", key->label);
+    }
 }
 
 static bool SynthesizerViewOnKeyEvent(KeyHandler *_self, int code)
 {
     SynthesizerView *self = _self;
-
-    __Dump__C(code);
 
     switch (code) {
     case KEY_DOWN:
@@ -143,8 +210,9 @@ static bool SynthesizerViewOnKeyEvent(KeyHandler *_self, int code)
             PresetInfo *preset = PresetHelperGetNextPresetInfo(self->mixerChannel);
             MixerChannelSetPresetInfo(self->mixerChannel, preset);
             int index = PresetHelperFindPresetInfoIndex(self->mixerChannel, preset);
-            if (self->scroll + 7 <= index) {
+            if (self->scroll + 7 + 1 < index) {
                 ++self->scroll;
+                ViewInvalidate(self);
             }
         }
         return true;
@@ -153,8 +221,9 @@ static bool SynthesizerViewOnKeyEvent(KeyHandler *_self, int code)
             PresetInfo *preset = PresetHelperGetPreviousPresetInfo(self->mixerChannel);
             MixerChannelSetPresetInfo(self->mixerChannel, preset);
             int index = PresetHelperFindPresetInfoIndex(self->mixerChannel, preset);
-            if (self->scroll > index) {
+            if (self->scroll - 7 - 1 > index) {
                 --self->scroll;
+                ViewInvalidate(self);
             }
         }
         return true;
@@ -170,6 +239,33 @@ static bool SynthesizerViewOnKeyEvent(KeyHandler *_self, int code)
             ViewInvalidate(self);
         }
         return true;
+    }
+
+    for (int i = 0; i < sizeof(self->keys)/sizeof(self->keys[0]); ++i) {
+        if (self->keys[i].code == code) {
+            int noteNo = self->keys[i].baseNote + (self->octave + 2) * 12;
+            if (0 <= noteNo && noteNo <= 127) {
+                bool active = -1 != self->keys[i].sentNoteNo;
+
+                if (active) {
+                    NoteEvent event = { .channel = self->channel, .noteNo = self->keys[i].sentNoteNo };
+                    MixerSendNoteOff(self->mixer, &event);
+                }
+
+                NoteEvent event = { .channel = self->channel, .noteNo = noteNo, .velocity = 100 };
+                MixerSendNoteOn(self->mixer, &event);
+                self->keys[i].sentNoteNo = noteNo;
+                self->keys[i].sentAt = self->currentMsec;
+
+                if (!active) {
+                    self->keys[i].next = self->activeKeyList;
+                    self->activeKeyList = &self->keys[i];
+                }
+
+                ViewInvalidate(self);
+            }
+            return true;
+        }
     }
 
     return false;
@@ -190,6 +286,7 @@ static KeyHandler *SynthesizerViewGetNextKeyHandler(KeyHandler *_self)
 static void SynthesizerViewDestroy(View *_self)
 {
     SynthesizerView *self = _self;
+    lastOctave = self->octave;
     ControllerUnregisterTimer(self->controller, self);
     MixerRemoveObserver(self->mixer, self);
     ViewNodeDestroy(self->node);
@@ -198,7 +295,34 @@ static void SynthesizerViewDestroy(View *_self)
 
 static void SynthesizerViewTimerCallback(void *receiver, int64_t msec)
 {
-    __Dump__L(msec);
+    SynthesizerView *self = receiver;
+    self->currentMsec = msec;
+
+    bool shoudInvalidate = false;
+
+    Key *prev = NULL;
+    for (Key *key = self->activeKeyList; key; key = key->next) {
+        if (200 < msec - key->sentAt) {
+            NoteEvent event = { .channel = self->channel, .noteNo = key->sentNoteNo };
+            MixerSendNoteOff(self->mixer, &event);
+            key->sentNoteNo = -1;
+            
+            if (key == self->activeKeyList) {
+                self->activeKeyList = key->next;
+            }
+            if (prev) {
+                prev->next = key->next;
+            }
+
+            shoudInvalidate = true;
+        }
+
+        prev = key;
+    }
+
+    if (shoudInvalidate) {
+        ViewInvalidate(self);
+    }
 }
 
 static void SynthesizerViewMixerOnChannelStatusChange(void *receiver, MixerChannel *channel, MixerChannelStatusKind kind)
@@ -206,9 +330,19 @@ static void SynthesizerViewMixerOnChannelStatusChange(void *receiver, MixerChann
     SynthesizerView *self = receiver;
     if (self->mixerChannel == channel) {
         if (kind == MixerChannelStatusKindPreset) {
+            PresetInfo *preset = MixerChannelGetPresetInfo(self->mixerChannel);
+            int index = PresetHelperFindPresetInfoIndex(self->mixerChannel, preset);
+            self->scroll = MAX(0, index + 1 - 7);
             ViewInvalidate(self);
         }
     }
+
+    for (Key *key = self->activeKeyList; key; key = key->next) {
+        key->sentNoteNo = -1;
+    }
+
+    self->activeKeyList = NULL;
+    MixerSendAllNoteOff(self->mixer);
 }
 
 static void SynthesizerViewMixerOnAvailableMidiSourceChange(void *receiver, NAArray *descriptions)

@@ -75,8 +75,10 @@ void WindowManagerDisplayIfNeeded(WindowManager *self)
         if (displayed) {
             WindowTouch(window);
             WindowNOutRefresh(window);
-        } else {
-            displayed = WindowDisplayIfNeeded(window);
+        }
+
+        if (WindowDisplayIfNeeded(window)) {
+            displayed = true;
         }
     }
 

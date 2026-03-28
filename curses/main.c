@@ -58,14 +58,15 @@ int main(int argc, char **argv)
 
     for (;;) {
         int c = getch();
-        if (c == 'q') {
-            break;
-        }
 
         ControllerRunOnLoop(controller);
 
         if (c != ERR) {
-            WindowManagerDispatchKeyEvent(windowManager, c);
+            if (!WindowManagerDispatchKeyEvent(windowManager, c)) {
+                if (c == 'q') {
+                    break;
+                }
+            };
         }
 
         WindowManagerDisplayIfNeeded(windowManager);
