@@ -5,6 +5,7 @@
 #include "KeyHandler.h"
 #include "Attribute.h"
 #include "ViewHelper.h"
+#include "PresetHelper.h"
 #include "Debug.h"
 
 #include <string.h>
@@ -68,9 +69,6 @@ static const InterfaceVtbl ChannelViewInterfaceVtbl = {
 };
 
 static MixerObserverCallbacks ChannelViewMixerObserverCallbacks;
-
-static PresetInfo *getNextPresetInfo(MixerChannel *mixerChannel);
-static PresetInfo *getPreviousPresetInfo(MixerChannel *mixerChannel);
 
 ChannelView *ChannelViewCreate(Mixer *mixer, int channel)
 {
@@ -200,7 +198,7 @@ static bool ChannelViewOnKeyEvent(KeyHandler *_self, int code)
                 return true;
             case FocusPreset:
                 if (code == KEY_DOWN) {
-                    MixerChannelSetPresetInfo(self->mixerChannel, getNextPresetInfo(self->mixerChannel));
+                    MixerChannelSetPresetInfo(self->mixerChannel, PresetHelperGetNextPresetInfo(self->mixerChannel));
                 }
                 return true;
             default:
@@ -223,7 +221,7 @@ static bool ChannelViewOnKeyEvent(KeyHandler *_self, int code)
                 return true;
             case FocusPreset:
                 if (code == KEY_UP) {
-                    MixerChannelSetPresetInfo(self->mixerChannel, getPreviousPresetInfo(self->mixerChannel));
+                    MixerChannelSetPresetInfo(self->mixerChannel, PresetHelperGetPreviousPresetInfo(self->mixerChannel));
                 }
                 return true;
             default:
@@ -285,40 +283,6 @@ static bool ChannelViewOnKeyEvent(KeyHandler *_self, int code)
     }
 
     return false;
-}
-
-static PresetInfo *getNextPresetInfo(MixerChannel *mixerChannel)
-{
-    int count = MixerChannelGetPresetCount(mixerChannel);
-    PresetInfo **presetInfos = MixerChannelGetPresetInfos(mixerChannel);
-    PresetInfo *presetInfo = MixerChannelGetPresetInfo(mixerChannel);
-    
-    int index = 0;
-    for (int i = 0; i < count; ++i) {
-        if (presetInfo == presetInfos[i]) {
-            index = MIN(count - 1, i + 1);
-            break;
-        }
-    }
-
-    return presetInfos[index];
-}
-
-static PresetInfo *getPreviousPresetInfo(MixerChannel *mixerChannel)
-{
-    int count = MixerChannelGetPresetCount(mixerChannel);
-    PresetInfo **presetInfos = MixerChannelGetPresetInfos(mixerChannel);
-    PresetInfo *presetInfo = MixerChannelGetPresetInfo(mixerChannel);
-    
-    int index = 0;
-    for (int i = 0; i < count; ++i) {
-        if (presetInfo == presetInfos[i]) {
-            index = MAX(0, i - 1);
-            break;
-        }
-    }
-
-    return presetInfos[index];
 }
 
 static void ChannelViewSetNextKeyHandler(KeyHandler *_self, KeyHandler *next)

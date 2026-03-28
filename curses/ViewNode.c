@@ -1,4 +1,5 @@
 #include "ViewNode.h"
+#include "Attribute.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -127,6 +128,8 @@ void ViewNodeDisplay(ViewNode *self)
     bool isParentDrawing = self->parent && ViewNodeIsDrawing(ViewGetNode(self->parent));
 
     if (!isParentDrawing) {
+        WindowSetAttr(self->window, AttributeDefault);
+
         char line[self->frame.size.width + 1];
         memset(line, ' ', self->frame.size.width);
         line[self->frame.size.width] = '\0';

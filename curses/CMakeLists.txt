@@ -44,6 +44,7 @@ set(SOURCES
   ChannelView.c
   MasterView.c
   ViewHelper.c
+  PresetHelper.c
   ErrorWindow.c
   SynthesizerWindow.c
   SynthesizerView.c

@@ -5,10 +5,14 @@
 #include "KeyHandler.h"
 #include "Attribute.h"
 #include "Debug.h"
+#include "PresetHelper.h"
 
 #include <string.h>
 #include <stdlib.h>
 #include <ncurses.h>
+
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
 
 struct _SynthesizerView {
     const InterfaceVtbl *vtbl;
@@ -18,6 +22,7 @@ struct _SynthesizerView {
     MixerChannel *mixerChannel;
     int channel;
     int octave;
+    int scroll;
     Controller *controller;
 };
 
@@ -107,6 +112,23 @@ static void SynthesizerViewDraw(View *_self, Size size)
     ViewPrintf(self, 21, 9, self->octave == 0 ? "%-3d" : "%+-2d", self->octave);
 
     ViewPrintf(self, 0, 10, "ESC: Close Modal");
+
+    PresetInfo **presetInfos = MixerChannelGetPresetInfos(self->mixerChannel);
+    int countPreset = MixerChannelGetPresetCount(self->mixerChannel);
+    int countTo = MIN(countPreset, self->scroll + 7);
+    for (int i = self->scroll; i < countTo; ++i) {
+        PresetInfo *_preset = presetInfos[i];
+        if (_preset == preset) {
+            ViewSetAttr(self, Attribute(ColorDefault, true, true));
+        }
+        else {
+            ViewSetAttr(self, AttributeDefault);
+        }
+
+        char name[21];
+        snprintf(name, 20, "%s", _preset->name);
+        ViewPrintf(self, 45, i - self->scroll + 4, name);
+    }
 }
 
 static bool SynthesizerViewOnKeyEvent(KeyHandler *_self, int code)
@@ -116,6 +138,26 @@ static bool SynthesizerViewOnKeyEvent(KeyHandler *_self, int code)
     __Dump__C(code);
 
     switch (code) {
+    case KEY_DOWN:
+        {
+            PresetInfo *preset = PresetHelperGetNextPresetInfo(self->mixerChannel);
+            MixerChannelSetPresetInfo(self->mixerChannel, preset);
+            int index = PresetHelperFindPresetInfoIndex(self->mixerChannel, preset);
+            if (self->scroll + 7 <= index) {
+                ++self->scroll;
+            }
+        }
+        return true;
+    case KEY_UP:
+        {
+            PresetInfo *preset = PresetHelperGetPreviousPresetInfo(self->mixerChannel);
+            MixerChannelSetPresetInfo(self->mixerChannel, preset);
+            int index = PresetHelperFindPresetInfoIndex(self->mixerChannel, preset);
+            if (self->scroll > index) {
+                --self->scroll;
+            }
+        }
+        return true;
     case '<':
         if (-2 < self->octave) {
             --self->octave;
